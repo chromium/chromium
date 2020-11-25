@@ -158,13 +158,6 @@ class HostContentSettingsMap : public content_settings::Observer,
                              base::Optional<content_settings::SessionModel>
                                  session_model = base::nullopt) const;
 
-  // Returns settings that are not applied.
-  // Example: Pattern for flash that are still set through enterprise policy but
-  // won't have any effect because they are deprecated.
-  void GetDiscardedSettingsForOneType(
-      ContentSettingsType content_type,
-      ContentSettingsForOneType* settings) const;
-
   // Sets the default setting for a particular content type. This method must
   // not be invoked on an incognito map.
   //

@@ -160,16 +160,6 @@ Polymer({
     tooltipText_: String,
 
     searchFilter: String,
-
-    /**
-     * Boolean which keeps a track if any of the list has discarded content
-     * setting patterns.
-     */
-    hasDiscardedExceptions: {
-      type: Boolean,
-      computed: 'computeHasDiscardedExceptions_(sites.*)',
-      notify: true,
-    }
   },
 
   // <if expr="chromeos">
@@ -535,16 +525,6 @@ Polymer({
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
-  },
-
-  /**
-   * Iterates through the sites list and returns true if one of those sites is
-   * a discarded content setting pattern.
-   * @return {boolean}
-   * @private
-   */
-  computeHasDiscardedExceptions_() {
-    return this.sites.some(exception => exception.isDiscarded);
   },
 
   /**

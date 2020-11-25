@@ -23,9 +23,6 @@ const char kIncognitoSessionOnlyError[] =
     "You cannot read incognito content settings when no incognito window "
     "is open.";
 const char kInvalidUrlError[] = "The URL \"*\" is invalid.";
-const char kWildcardPatternsForPluginsDisallowed[] =
-    "Host wildcards ('*') and \"<all_urls>\" are no longer "
-    "supported in `primaryPattern` for `plugins`.";
 const char kSettingPluginContentSettingsIsDisallowed[] =
     "`chrome.contentSettings.plugins.set()` API is no longer supported.";
 const char kSettingPluginContentSettingsResourceIdentifierIsDisallowed[] =

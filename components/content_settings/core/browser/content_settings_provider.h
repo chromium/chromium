@@ -37,15 +37,6 @@ class ProviderInterface {
       ContentSettingsType content_type,
       bool incognito) const = 0;
 
-  // Returns a |RuleIterator| over the discarded content setting rules stored
-  // by this provider. If |incognito| is true, the iterator returns only the
-  // content settings which are applicable to the incognito mode. Otherwise,
-  // it returns the content settings which are applicable only to the normal
-  // mode.
-  virtual std::unique_ptr<RuleIterator> GetDiscardedRuleIterator(
-      ContentSettingsType content_type,
-      bool incognito) const;
-
   // Asks the provider to set the website setting for a particular
   // |primary_pattern|, |secondary_pattern|, |content_type| tuple. If the
   // provider accepts the setting it returns true and takes the ownership of the

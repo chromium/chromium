@@ -100,7 +100,6 @@ let prefsChromeExtension;
  */
 let prefsEmbargo;
 
-
 /**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
  * this file. They are populated after test setup in order to access the
@@ -279,7 +278,7 @@ function populateTestExceptions() {
   ]);
 }
 
-suite('SiteListProperties', function() {
+suite('SiteListEmbargoedOrigin', function() {
   /**
    * A site list element created before each test.
    * @type {!SiteListElement}
@@ -1031,7 +1030,6 @@ suite('EditExceptionDialog', function() {
       embeddingOrigin: SITE_EXCEPTION_WILDCARD,
       isEmbargoed: false,
       incognito: false,
-      isDiscarded: false,
       setting: ContentSetting.BLOCK,
       enforcement: null,
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,

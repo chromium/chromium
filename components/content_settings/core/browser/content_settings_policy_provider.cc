@@ -24,8 +24,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace content_settings {
-
 namespace {
 
 struct PrefsForManagedContentSettingsMapEntry {
@@ -88,30 +86,9 @@ const PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::INSECURE_PRIVATE_NETWORK, CONTENT_SETTING_ALLOW},
 };
 
-class VectorRuleIterator : public RuleIterator {
- public:
-  VectorRuleIterator(const std::vector<Rule>::const_iterator& begin,
-                     const std::vector<Rule>::const_iterator& end)
-      : current_rule(begin), end_rule(end) {}
-
-  ~VectorRuleIterator() override {}
-
-  bool HasNext() const override { return current_rule != end_rule; }
-
-  Rule Next() override {
-    Rule rule(current_rule->primary_pattern, current_rule->secondary_pattern,
-              current_rule->value.Clone(), current_rule->expiration,
-              current_rule->session_model);
-    current_rule++;
-    return rule;
-  }
-
- private:
-  std::vector<Rule>::const_iterator current_rule;
-  std::vector<Rule>::const_iterator end_rule;
-};
-
 }  // namespace
+
+namespace content_settings {
 
 // The preferences used to manage the default policy value for
 // ContentSettingsTypes.
@@ -320,17 +297,6 @@ std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
     ContentSettingsType content_type,
     bool incognito) const {
   return value_map_.GetRuleIterator(content_type, &lock_);
-}
-
-std::unique_ptr<RuleIterator> PolicyProvider::GetDiscardedRuleIterator(
-    ContentSettingsType content_type,
-    bool incognito) const {
-  auto it = discarded_rules_value_map_.find(content_type);
-  if (it == discarded_rules_value_map_.end()) {
-    return std::make_unique<EmptyRuleIterator>(EmptyRuleIterator());
-  }
-  return std::make_unique<VectorRuleIterator>(it->second.begin(),
-                                              it->second.end());
 }
 
 void PolicyProvider::GetContentSettingsFromPreferences(

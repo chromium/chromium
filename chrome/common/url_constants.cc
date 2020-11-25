@@ -286,8 +286,6 @@ const char kUpgradeHelpCenterBaseURL[] =
 const char kWhoIsMyAdministratorHelpURL[] =
     "https://support.google.com/chrome?p=your_administrator";
 
-const char kChromeFlashRoadmapURL[] = "https://www.chromium.org/flash-roadmap/";
-
 #if defined(OS_ANDROID)
 const char kAndroidAppScheme[] = "android-app";
 #endif

@@ -1269,10 +1269,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacyPageTitle", IDS_SETTINGS_PRIVACY},
       {"privacyPageMore", IDS_SETTINGS_PRIVACY_MORE},
-      // TODO(crbug.com/1116608): This seemingly unrelated string resource is
-      // used because it already has a localized version available in M85, so
-      // we can ship this label in M85 on short notice.
-      {"discardedPerSiteSetting", IDS_POLICY_LABEL_IGNORED},
       {"doNotTrack", IDS_SETTINGS_ENABLE_DO_NOT_TRACK},
       {"doNotTrackDialogTitle", IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TITLE},
       // TODO(crbug.com/1062607): This string is no longer used. Remove.

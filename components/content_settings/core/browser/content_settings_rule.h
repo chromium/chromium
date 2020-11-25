@@ -46,16 +46,6 @@ class RuleIterator {
   virtual Rule Next() = 0;
 };
 
-class EmptyRuleIterator : public RuleIterator {
- public:
-  ~EmptyRuleIterator() override;
-
- protected:
-  // RuleIterator:
-  bool HasNext() const override;
-  Rule Next() override;
-};
-
 class ConcatenationIterator : public RuleIterator {
  public:
   // |auto_lock| can be null if no locking is needed.

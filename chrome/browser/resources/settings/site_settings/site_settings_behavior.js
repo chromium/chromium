@@ -169,7 +169,6 @@ const SiteSettingsBehaviorImpl = {
       embeddingOrigin: embeddingOrigin,
       incognito: exception.incognito,
       isEmbargoed: exception.isEmbargoed,
-      isDiscarded: exception.isDiscarded,
       origin: origin,
       displayName: exception.displayName,
       setting: exception.setting,

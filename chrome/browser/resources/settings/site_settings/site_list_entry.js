@@ -251,18 +251,5 @@ Polymer({
     this.browserProxy.isOriginValid(this.model.origin).then((valid) => {
       this.allowNavigateToSiteDetail_ = valid;
     });
-  },
-
-  /**
-   * Returns the appropriate class name for styling purposes. It could be empty
-   * or 'discarded' for discarded content setting patterns.
-   * Patterns like `*://*.google.com:443/* are no longer supported for Plugin
-   * content settings.
-   * @param {boolean} isDiscarded Whether the exception is discarded
-   * @return {string}
-   * @private
-   */
-  getClassForSiteListEntry_(isDiscarded) {
-    return isDiscarded ? 'discarded' : '';
   }
 });

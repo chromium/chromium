@@ -420,27 +420,6 @@ void HostContentSettingsMap::GetSettingsForOneType(
   }
 }
 
-void HostContentSettingsMap::GetDiscardedSettingsForOneType(
-    ContentSettingsType content_type,
-    ContentSettingsForOneType* settings) const {
-  DCHECK(settings);
-  UsedContentSettingsProviders();
-
-  for (const auto& provider_pair : content_settings_providers_) {
-    std::unique_ptr<content_settings::RuleIterator> discarded_rule_iterator(
-        provider_pair.second->GetDiscardedRuleIterator(content_type,
-                                                       is_off_the_record_));
-    while (discarded_rule_iterator->HasNext()) {
-      content_settings::Rule discarded_rule = discarded_rule_iterator->Next();
-      settings->emplace_back(
-          discarded_rule.primary_pattern, discarded_rule.secondary_pattern,
-          std::move(discarded_rule.value),
-          kProviderNamesSourceMap[provider_pair.first].provider_name,
-          is_off_the_record_, discarded_rule.expiration);
-    }
-  }
-}
-
 void HostContentSettingsMap::SetDefaultContentSetting(
     ContentSettingsType content_type,
     ContentSetting setting) {

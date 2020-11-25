@@ -58,7 +58,6 @@ export function createRawSiteException(origin, override) {
         incognito: false,
         origin: origin,
         displayName: '',
-        isDiscarded: false,
         setting: ContentSetting.ALLOW,
         source: SiteSettingSource.PREFERENCE,
       },

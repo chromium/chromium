@@ -7,30 +7,19 @@
         flex: 1
       }
 
-      .settings-row.discarded .display-name {
-        text-decoration: line-through;
-      }
-
-      .settings-row.discarded .discarded-label {
-        margin-inline-start: 8px;
-      }
-
       /* Tooltip is hidden since site-list will display a common tooltip. */
       cr-policy-pref-indicator::part(tooltip) {
         display: none;
       }
     </style>
     <div class="list-item" focus-row-container>
-      <div class$="settings-row [[getClassForSiteListEntry_(model.isDiscarded)]]"
+      <div class="settings-row"
           actionable$="[[allowNavigateToSiteDetail_]]" on-click="onOriginTap_">
         <site-favicon url="[[model.origin]]"></site-favicon>
         <div class="middle no-min-width">
           <div class="text-elide">
-            <span class="display-name url-directionality">
+            <span class="url-directionality">
               [[computeDisplayName_(model)]]</span>
-            <span class="discarded-label"
-              hidden="[[!model.isDiscarded]]">$i18n{discardedPerSiteSetting}
-            </span>
           </div>
 
           <!-- This div must not contain extra whitespace. -->
