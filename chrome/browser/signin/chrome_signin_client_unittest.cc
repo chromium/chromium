@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -28,7 +29,7 @@
 #endif
 
 // ChromeOS has its own network delay logic.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -335,4 +336,4 @@ INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          testing::ValuesIn(kSignoutSources));
 
 #endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -21,7 +22,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/google_api_keys.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/account_manager/account_manager_util.h"
 #endif
 
@@ -172,7 +173,7 @@ bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
 
 AccountConsistencyMethod
 AccountConsistencyModeManager::GetAccountConsistencyMethod() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/860671): ChromeOS should use the cached value.
   // Changing the value dynamically is not supported.
   return ComputeAccountConsistencyMethod(profile_);
@@ -196,7 +197,7 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
   return AccountConsistencyMethod::kMirror;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::IsAccountManagerAvailable(profile)
              ? AccountConsistencyMethod::kMirror
              : AccountConsistencyMethod::kDisabled;

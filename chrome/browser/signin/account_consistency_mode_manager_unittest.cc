@@ -11,6 +11,7 @@
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
@@ -42,7 +43,7 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
   std::unique_ptr<TestingProfile> profile =
       BuildTestingProfile(/*is_new_profile=*/false);
 
-#if BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(signin::AccountConsistencyMethod::kMirror,
             AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
   EXPECT_TRUE(
@@ -238,7 +239,7 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Mirror is enabled by default on Chrome OS, unless specified otherwise.
 TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
   // Creation of this object sets the current thread's id as UI thread.
@@ -290,7 +291,7 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
   EXPECT_EQ(signin::AccountConsistencyMethod::kDisabled,
             AccountConsistencyModeManager::GetMethodForProfile(otr_profile));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_MIRROR)
 // Test that Mirror is enabled for child accounts.

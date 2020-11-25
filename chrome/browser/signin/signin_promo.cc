@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/google/google_brand.h"
@@ -34,7 +35,7 @@ const char kSignInPromoQueryKeyAutoClose[] = "auto_close";
 const char kSignInPromoQueryKeyForceKeepData[] = "force_keep_data";
 const char kSignInPromoQueryKeyReason[] = "reason";
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
                          signin_metrics::Reason reason,
                          bool auto_close) {
@@ -69,7 +70,7 @@ GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
   url = net::AppendQueryParameter(url, "validateEmail", "1");
   return net::AppendQueryParameter(url, "readOnlyEmail", "1");
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 GURL GetChromeSyncURLForDice(const std::string& email,
                              const std::string& continue_url) {

@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,7 +26,7 @@
 
 namespace {
 
-#if BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
 const char kMirrorAction[] = "action=ADDSESSION";
 #endif
@@ -130,7 +131,7 @@ TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that user data is set on Mirror requests.
 TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
   // Process the header.
@@ -159,4 +160,4 @@ TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
   EXPECT_FALSE(response_adapter.GetUserData(
       signin::kManageAccountsHeaderReceivedUserDataKey));
 }
-#endif  // BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)

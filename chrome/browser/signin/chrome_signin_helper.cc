@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -56,7 +57,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -170,7 +171,7 @@ class ManageAccountsHeaderReceivedUserData
 void ProcessMirrorHeader(
     ManageAccountsParams manage_accounts_params,
     const content::WebContents::Getter& web_contents_getter) {
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GAIAServiceType service_type = manage_accounts_params.service_type;
@@ -188,7 +189,7 @@ void ProcessMirrorHeader(
   AccountReconcilor* account_reconcilor =
       AccountReconcilorFactory::GetForProfile(profile);
   account_reconcilor->OnReceivedManageAccountsResponse(service_type);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
 
@@ -292,7 +293,7 @@ void ProcessMirrorHeader(
       profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
   return;
 
-#else   // !defined(OS_CHROMEOS)
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (manage_accounts_params.show_consistency_promo &&
       base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
     auto* window = web_contents->GetNativeView()->GetWindowAndroid();
@@ -323,8 +324,8 @@ void ProcessMirrorHeader(
     SigninUtils::OpenAccountManagementScreen(window, service_type,
                                              manage_accounts_params.email);
   }
-#endif  // defined(OS_CHROMEOS)
-#endif  // defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -506,7 +507,7 @@ void FixAccountConsistencyRequestHeader(
     AccountConsistencyMethod account_consistency,
     std::string gaia_id,
     const base::Optional<bool>& is_child_account,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -523,7 +524,7 @@ void FixAccountConsistencyRequestHeader(
     profile_mode_mask |= PROFILE_MODE_INCOGNITO_DISABLED;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!is_secondary_account_addition_allowed) {
     account_consistency = AccountConsistencyMethod::kMirror;
     // Can't add new accounts.

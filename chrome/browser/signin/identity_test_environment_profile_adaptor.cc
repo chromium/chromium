@@ -5,10 +5,11 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
@@ -77,7 +78,7 @@ std::unique_ptr<KeyedService>
 IdentityTestEnvironmentProfileAdaptor::BuildIdentityManagerForTests(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       ChromeSigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetPath(),

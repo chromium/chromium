@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -26,7 +27,7 @@
 namespace {
 const char kEmail[] = "example@email.com";
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void CheckProfilePrefsReset(PrefService* pref_service,
                             bool expected_using_default_name) {
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kProfileUsingDefaultAvatar));
@@ -51,7 +52,7 @@ void SetProfilePrefs(PrefService* pref_service) {
 
   CheckProfilePrefsSet(pref_service, false);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 class SigninProfileAttributesUpdaterTest : public testing::Test {
@@ -93,7 +94,7 @@ class SigninProfileAttributesUpdaterTest : public testing::Test {
       signin_profile_attributes_updater_;
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the browser state info is updated on signin and signout.
 // ChromeOS does not support signout.
 TEST_F(SigninProfileAttributesUpdaterTest, SigninSignout) {
@@ -114,7 +115,7 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignout) {
   EXPECT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
   EXPECT_FALSE(entry->IsSigninRequired());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that the browser state info is updated on auth error change.
 TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
@@ -125,7 +126,7 @@ TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
   CoreAccountId account_id =
       identity_test_env_.MakePrimaryAccountAvailable(kEmail).account_id;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS only observes signin state at initial creation of the updater, so
   // recreate the updater after having set the primary account.
   RecreateSigninProfileAttributesUpdater();
@@ -146,7 +147,7 @@ TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
   EXPECT_FALSE(entry->IsAuthError());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
   PrefService* pref_service = profile_->GetPrefs();
   ProfileAttributesEntry* entry;
@@ -253,4 +254,4 @@ TEST_F(SigninProfileAttributesUpdaterWithForceSigninTest, IsSigninRequired) {
   EXPECT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
   EXPECT_TRUE(entry->IsSigninRequired());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,6 +9,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 using base::Value;
 
@@ -19,9 +20,9 @@ namespace test {
 std::string kPlatform = "win";
 #elif defined(OS_MAC)
 std::string kPlatform = "mac";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 std::string kPlatform = "chromeos";
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 std::string kPlatform = "linux";
 #elif defined(OS_ANDROID)
 std::string kPlatform = "android";

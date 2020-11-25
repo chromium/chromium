@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
@@ -211,7 +212,7 @@ void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed) {
 void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
 // All primary accounts are allowed on ChromeOS, so this method is a no-op on
 // ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager->HasPrimaryAccount())
     return;
@@ -257,7 +258,7 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
 #endif  // defined(CAN_DELETE_PROFILE)
       break;
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // TODO(crbug.com/1134111): Remove GuestSignedInUserData when Ephemeral Guest

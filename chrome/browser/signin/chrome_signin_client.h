@@ -14,24 +14,25 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 class ForceSigninVerifier;
 #endif
 class Profile;
 
 class ChromeSigninClient
     : public SigninClient,
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
 #endif
       public gaia::GaiaOAuthClient::Delegate {
@@ -69,7 +70,7 @@ class ChromeSigninClient
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // network::NetworkConnectionTracker::NetworkConnectionObserver
   // implementation.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
@@ -103,12 +104,12 @@ class ChromeSigninClient
   // Stored callback from PreSignOut();
   base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached_;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::list<base::OnceClosure> delayed_callbacks_;
 #endif
 
   bool should_display_user_manager_ = true;
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ForceSigninVerifier> force_signin_verifier_;
 #endif
 

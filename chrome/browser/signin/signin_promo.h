@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 class GURL;
@@ -29,7 +30,7 @@ extern const char kSignInPromoQueryKeyAutoClose[];
 extern const char kSignInPromoQueryKeyForceKeepData[];
 extern const char kSignInPromoQueryKeyReason[];
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // These functions are only used to unlock the profile from the desktop user
 // manager and the windows credential provider.
 
@@ -47,7 +48,7 @@ GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
 GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
                                    signin_metrics::Reason reason,
                                    const std::string& email);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns the URL to be used to signin and turn on Sync when DICE is enabled.
 // If email is not empty, then it will pass email as hint to the page so that it

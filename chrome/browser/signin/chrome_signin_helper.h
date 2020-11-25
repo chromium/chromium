@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/supports_user_data.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -96,7 +97,7 @@ void FixAccountConsistencyRequestHeader(
     AccountConsistencyMethod account_consistency,
     std::string gaia_id,
     const base::Optional<bool>& is_child_account,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

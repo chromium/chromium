@@ -19,6 +19,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -41,7 +42,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
 
@@ -169,14 +170,14 @@ base::string16 GetAuthenticatedUsername(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager->HasPrimaryAccount()) {
     user_display_name = identity_manager->GetPrimaryAccountInfo().email;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // See https://crbug.com/994798 for details.
     user_manager::User* user =
         chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
     // |user| may be null in tests.
     if (user)
       user_display_name = user->GetDisplayEmail();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   return base::UTF8ToUTF16(user_display_name);
