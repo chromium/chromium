@@ -10,7 +10,5 @@ android_library("java") {
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
-  sources = [
-    "java/src/org/chromium/chrome/browser/signin/SigninActivityLauncher.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java" ]
 }

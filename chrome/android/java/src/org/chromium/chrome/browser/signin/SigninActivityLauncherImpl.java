@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
