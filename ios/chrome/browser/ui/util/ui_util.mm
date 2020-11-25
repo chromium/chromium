@@ -38,6 +38,10 @@ bool IsIPhoneX() {
           (height == 2436 || height == 2688 || height == 1792));
 }
 
+bool IsSmallDevice() {
+  return CurrentScreenWidth() <= 375;
+}
+
 CGFloat DeviceCornerRadius() {
   return IsIPhoneX() ? 40.0 : 0.0;
 }
