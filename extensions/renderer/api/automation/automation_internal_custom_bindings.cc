@@ -2507,28 +2507,32 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
 void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
     AutomationAXTreeWrapper* tree,
     const ExtensionMsg_AccessibilityEventBundleParams& event_bundle) {
-  // Only send focus or blur if we got one of these events from the originating
-  // renderer. While sending events purely based upon whether the targeted
-  // focus/blur node changed may work, we end up firing too many events since
-  // intermediate states trigger more events than likely necessary. Also, the
-  // |event_from| field is only properly associated with focus/blur when the
-  // event type is also focus/blur.
-  base::Optional<ax::mojom::EventFrom> event_from;
+  ui::AXNode* old_node = nullptr;
+  AutomationAXTreeWrapper* old_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(focus_tree_id_);
+  if (old_wrapper) {
+    old_node =
+        old_wrapper->GetNodeFromTree(old_wrapper->GetTreeID(), focus_id_);
+  }
+
+  // Determine whether old focus was lost.
+  bool lost_old_focus = old_node == nullptr;
+
+  // Determine whether there's a focus or blur event and take its event from.
+  ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
+  bool event_bundle_has_focus_or_blur;
   for (const auto& event : event_bundle.events) {
     if (event.event_type == ax::mojom::Event::kBlur ||
-        event.event_type == ax::mojom::Event::kFocus)
+        event.event_type == ax::mojom::Event::kFocus) {
       event_from = event.event_from;
+      event_bundle_has_focus_or_blur = true;
+      break;
+    }
   }
 
-  if (!event_from) {
-    // There was no explicit focus/blur; return early.
-    // Make an exception for the desktop tree, where we can reliably infer
-    // focus/blur even without an explicit event.
-    if (!tree->IsDesktopTree())
-      return;
-
-    event_from = ax::mojom::EventFrom::kNone;
-  }
+  bool is_from_desktop = tree->IsDesktopTree();
+  if (!event_bundle_has_focus_or_blur && !lost_old_focus && !is_from_desktop)
+    return;
 
   // Get the root-most tree.
   AutomationAXTreeWrapper* root_tree = tree;
@@ -2541,13 +2545,6 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
   if (!GetFocusInternal(root_tree, &new_wrapper, &new_node))
     return;
 
-  ui::AXNode* old_node = nullptr;
-  AutomationAXTreeWrapper* old_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(focus_tree_id_);
-  if (old_wrapper)
-    old_node =
-        old_wrapper->GetNodeFromTree(old_wrapper->GetTreeID(), focus_id_);
-
   if (new_wrapper == old_wrapper && new_node == old_node)
     return;
 
@@ -2555,7 +2552,7 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
   if (old_node) {
     ui::AXEvent blur_event;
     blur_event.id = old_node->id();
-    blur_event.event_from = *event_from;
+    blur_event.event_from = event_from;
     blur_event.event_type = ax::mojom::Event::kBlur;
     SendAutomationEvent(old_wrapper->GetTreeID(), event_bundle.mouse_location,
                         blur_event);
@@ -2568,7 +2565,7 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
   if (new_node) {
     ui::AXEvent focus_event;
     focus_event.id = new_node->id();
-    focus_event.event_from = *event_from;
+    focus_event.event_from = event_from;
     focus_event.event_type = ax::mojom::Event::kFocus;
     SendAutomationEvent(new_wrapper->GetTreeID(), event_bundle.mouse_location,
                         focus_event);
