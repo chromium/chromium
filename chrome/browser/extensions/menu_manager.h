@@ -296,7 +296,8 @@ class MenuManager : public ProfileObserver,
   class TestObserver : public base::CheckedObserver {
    public:
     ~TestObserver() override = default;
-    virtual void DidReadFromStorage(const std::string& extension_id) = 0;
+    virtual void DidReadFromStorage(const std::string& extension_id) {}
+    virtual void WillWriteToStorage(const std::string& extension_id) {}
   };
 
   MenuManager(content::BrowserContext* context, StateStore* store_);

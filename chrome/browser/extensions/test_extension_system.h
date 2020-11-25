@@ -97,8 +97,9 @@ class TestExtensionSystem : public ExtensionSystem {
   Profile* profile_;
 
  private:
-  std::unique_ptr<StateStore> state_store_;
   scoped_refptr<TestValueStoreFactory> store_factory_;
+  // This depends on store_factory_.
+  std::unique_ptr<StateStore> state_store_;
   std::unique_ptr<ManagementPolicy> management_policy_;
   std::unique_ptr<RuntimeData> runtime_data_;
   std::unique_ptr<ExtensionService> extension_service_;

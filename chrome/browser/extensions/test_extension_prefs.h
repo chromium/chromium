@@ -99,6 +99,9 @@ class TestExtensionPrefs {
 
   ChromeAppSorting* app_sorting();
 
+  static void AddDefaultManifestKeys(const std::string& name,
+                                     base::DictionaryValue* dict);
+
  protected:
   class IncrementalClock;
 

@@ -821,6 +821,9 @@ void MenuManager::WriteToStorage(const Extension* extension,
     }
   }
 
+  for (TestObserver& observer : observers_)
+    observer.WillWriteToStorage(extension->id());
+
   if (store_) {
     store_->SetExtensionValue(extension->id(), kContextMenusKey,
                               MenuItemsToValue(all_items));

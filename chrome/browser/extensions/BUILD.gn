@@ -1280,6 +1280,8 @@ static_library("test_support") {
   sources = [
     "external_testing_loader.cc",
     "external_testing_loader.h",
+    "menu_manager_test_observer.cc",
+    "menu_manager_test_observer.h",
   ]
 
   deps = [

@@ -43,6 +43,10 @@ namespace extensions {
 TestExtensionSystem::TestExtensionSystem(Profile* profile)
     : profile_(profile),
       store_factory_(new TestValueStoreFactory()),
+      state_store_(new StateStore(profile_,
+                                  store_factory_,
+                                  ValueStoreFrontend::BackendType::RULES,
+                                  false)),
       info_map_(new InfoMap()),
       quota_service_(new QuotaService()),
       app_sorting_(new ChromeAppSorting(profile_)) {
@@ -65,8 +69,6 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::FilePath& install_directory,
     bool autoupdate_enabled,
     bool extensions_enabled) {
-  state_store_.reset(new StateStore(
-      profile_, store_factory_, ValueStoreFrontend::BackendType::RULES, false));
   management_policy_.reset(new ManagementPolicy());
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)

@@ -143,21 +143,17 @@ scoped_refptr<Extension> TestExtensionPrefs::AddExtension(
 
 scoped_refptr<Extension> TestExtensionPrefs::AddApp(const std::string& name) {
   base::DictionaryValue dictionary;
-  dictionary.SetString(manifest_keys::kName, name);
-  dictionary.SetString(manifest_keys::kVersion, "0.1");
+  AddDefaultManifestKeys(name, &dictionary);
   dictionary.SetString(manifest_keys::kApp, "true");
   dictionary.SetString(manifest_keys::kLaunchWebURL, "http://example.com");
   return AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
-
 }
 
 scoped_refptr<Extension> TestExtensionPrefs::AddExtensionWithLocation(
     const std::string& name,
     Manifest::Location location) {
   base::DictionaryValue dictionary;
-  dictionary.SetString(manifest_keys::kName, name);
-  dictionary.SetString(manifest_keys::kVersion, "0.1");
-  dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
+  AddDefaultManifestKeys(name, &dictionary);
   return AddExtensionWithManifest(dictionary, location);
 }
 
@@ -216,6 +212,14 @@ void TestExtensionPrefs::set_extensions_disabled(bool extensions_disabled) {
 ChromeAppSorting* TestExtensionPrefs::app_sorting() {
   return static_cast<ChromeAppSorting*>(
       ExtensionSystem::Get(&profile_)->app_sorting());
+}
+
+void TestExtensionPrefs::AddDefaultManifestKeys(const std::string& name,
+                                                base::DictionaryValue* dict) {
+  DCHECK(dict);
+  dict->SetString(manifest_keys::kName, name);
+  dict->SetString(manifest_keys::kVersion, "0.1");
+  dict->SetInteger(manifest_keys::kManifestVersion, 2);
 }
 
 }  // namespace extensions

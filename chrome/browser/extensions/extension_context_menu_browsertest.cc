@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/lazy_background_page_test_util.h"
+#include "chrome/browser/extensions/menu_manager_test_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -92,54 +93,6 @@ class StateStoreObserver : public StateStore::TestObserver {
   std::string waiting_for_id_;
   base::RunLoop run_loop_;
   ScopedObserver<StateStore, StateStore::TestObserver> observed_{this};
-};
-
-// Observe when a extension's context menu data is read from storage.
-class MenuManagerObserver : public MenuManager::TestObserver {
- public:
-  explicit MenuManagerObserver(MenuManager* menu_manager)
-      : menu_manager_(menu_manager) {
-    observed_.Add(menu_manager_);
-  }
-
-  ~MenuManagerObserver() final = default;
-
-  void WaitForExtension(const std::string& extension_id) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    // The extension's menus may have already been loaded before we were
-    // able to observe it.
-    if (MenusItemsFound(extension_id))
-      return;
-
-    if (ids_with_reads_.count(extension_id) == 0) {
-      waiting_for_id_ = extension_id;
-      run_loop_.Run();
-      DCHECK(MenusItemsFound(extension_id));
-    }
-  }
-
-  void DidReadFromStorage(const std::string& extension_id) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (extension_id == waiting_for_id_) {
-      run_loop_.Quit();
-    } else {
-      ids_with_reads_.insert(extension_id);
-    }
-  }
-
- private:
-  bool MenusItemsFound(const std::string& extension_id) {
-    const extensions::MenuItem::ExtensionKey key(extension_id);
-    return menu_manager_->MenuItems(key) &&
-           !menu_manager_->MenuItems(key)->empty();
-  }
-
-  MenuManager* const menu_manager_;
-  std::set<std::string> ids_with_reads_;
-  std::string waiting_for_id_;
-  base::RunLoop run_loop_;
-  ScopedObserver<MenuManager, MenuManager::TestObserver> observed_{this};
 };
 
 constexpr char kPersistentExtensionId[] = "cmgkkmeeoiceijkpmaabbmpgnkpaaela";
@@ -458,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Persistent) {
-  MenuManagerObserver observer(menu_manager());
+  extensions::MenuManagerTestObserver observer(menu_manager());
   ResultCatcher catcher;
 
   // Wait for the context menu to finish loading.
