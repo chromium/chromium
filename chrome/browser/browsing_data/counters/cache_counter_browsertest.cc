@@ -131,7 +131,7 @@ class CacheCounterTest : public InProcessBrowserTest {
 
 // Tests that for the empty cache, the result is zero.
 // Flaky. See crbug.com/971650.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_Empty DISABLED_Empty
 #else
 #define MAYBE_Empty Empty

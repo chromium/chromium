@@ -240,14 +240,7 @@ class CacheCounterTest : public PlatformTest {
 };
 
 // Tests that for the empty cache, the result is zero.
-// Disabled on Windows because this test randomly crashes on Win 7 Tests x64
-// (1). See: https://crbug.com/1152289
-#if defined(OS_WIN)
-#define MAYBE_Empty DISABLED_Empty
-#else
-#define MAYBE_Empty Empty
-#endif
-TEST_F(CacheCounterTest, MAYBE_Empty) {
+TEST_F(CacheCounterTest, Empty) {
   CacheCounter counter(browser_state());
   counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&CacheCounterTest::CountingCallback,
