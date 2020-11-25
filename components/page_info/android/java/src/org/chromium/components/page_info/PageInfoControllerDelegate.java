@@ -163,6 +163,13 @@ public abstract class PageInfoControllerDelegate {
     }
 
     /**
+     * Whether the page being shown is a paint preview.
+     */
+    public boolean isShowingPaintPreviewPage() {
+        return false;
+    }
+
+    /**
      * Initialize viewParams with Offline Page UI info, if any.
      * @param viewParams The PageInfoViewParams to set state on.
      * @param runAfterDismiss Used to set "open Online" button callback for offline page.
@@ -178,6 +185,15 @@ public abstract class PageInfoControllerDelegate {
      */
     @Nullable
     public String getOfflinePageConnectionMessage() {
+        return null;
+    }
+
+    /**
+     * Return the connection message shown for a paint preview page, if appropriate.
+     * Returns null if there's no paint preview page.
+     */
+    @Nullable
+    public String getPaintPreviewPageConnectionMessage() {
         return null;
     }
 
