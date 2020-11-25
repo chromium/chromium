@@ -365,8 +365,8 @@ void UpdateHitTestResult(HitTestResult& result,
 
   // We may already have set an inner node, but not a box fragment, if the inner
   // node was text or non-atomic inline content. Set the containing box fragment
-  // now.
-  if (!result.BoxFragment())
+  // now, unless it's an anonymous CSS box.
+  if (!result.BoxFragment() && (!fragment.IsCSSBox() || fragment.GetNode()))
     result.SetBoxFragment(&fragment);
 
   if (!result.InnerNode())
