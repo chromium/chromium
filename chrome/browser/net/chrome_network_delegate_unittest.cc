@@ -11,7 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/system/sys_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/time/time.h"
@@ -35,7 +35,8 @@ bool IsAccessAllowed(const std::string& path,
 }  // namespace
 
 TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    defined(OS_ANDROID)
   // Chrome OS and Android don't have access to random files.
   EXPECT_FALSE(IsAccessAllowed("/", ""));
   EXPECT_FALSE(IsAccessAllowed("/foo.txt", ""));
@@ -47,7 +48,7 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_TRUE(IsAccessAllowed("/foo.txt", ""));
 #endif
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::FilePath temp_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir));
   // Chrome OS allows the following directories.

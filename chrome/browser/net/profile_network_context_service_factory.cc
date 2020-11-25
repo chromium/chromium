@@ -5,11 +5,12 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
 #endif
 
@@ -29,7 +30,7 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ProfileNetworkContextService",
           BrowserContextDependencyManager::GetInstance()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
 }

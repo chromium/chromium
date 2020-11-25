@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
@@ -226,7 +227,7 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
   if (base::IsMachineExternallyManaged())
     return true;
 #endif
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (g_browser_process->browser_policy_connector()->HasMachineLevelPolicies())
     return true;
 #endif

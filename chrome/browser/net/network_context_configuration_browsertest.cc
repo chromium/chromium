@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -266,7 +267,7 @@ class NetworkContextConfigurationBrowserTest
       incognito_ = CreateIncognitoBrowser();
     SimulateNetworkServiceCrashIfNecessary();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // On ChromeOS the connection type comes from a fake Shill service, which
     // is configured with a fake ethernet connection asynchronously. Wait for
     // the connection type to be available to avoid getting notified of the

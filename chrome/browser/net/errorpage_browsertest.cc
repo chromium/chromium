@@ -79,7 +79,7 @@
 #include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/chrome_browser_main_chromeos.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -88,6 +88,7 @@
 #else
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #endif
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 
 using content::BrowserThread;
@@ -495,7 +496,9 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, MAYBE_IFrameDNSError_GoBack) {
 // This test fails regularly on win_rel trybots. See crbug.com/121540
 //
 // This fails on linux_aura bringup: http://crbug.com/163931
-#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_AURA))
+#if defined(OS_WIN) ||                                       \
+    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+     defined(USE_AURA))
 #define MAYBE_IFrameDNSError_GoBackAndForward DISABLED_IFrameDNSError_GoBackAndForward
 #else
 #define MAYBE_IFrameDNSError_GoBackAndForward IFrameDNSError_GoBackAndForward
@@ -636,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Incognito) {
   // Verify that the expected error page is being displayed.
   ExpectDisplayingErrorPage(incognito_browser, net::ERR_NAME_NOT_RESOLVED);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Can't currently show the diagnostics in incognito on any platform but
   // ChromeOS.
   EXPECT_FALSE(WebContentsCanShowDiagnosticsTool(
@@ -824,7 +827,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (enroll_) {
       // Set up fake install attributes.
       test_install_attributes_ =
@@ -841,7 +844,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
         .WillRepeatedly(testing::Return(true));
 
     policy::PolicyMap policy_map;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (enroll_)
       SetEnterpriseUsersDefaults(&policy_map);
 #endif
@@ -853,7 +856,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
     }
     policy_provider_.UpdateChromePolicy(policy_map);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
 #else
@@ -864,7 +867,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
   }
 
   std::string NavigateToPageAndReadText() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Check enterprise enrollment
     policy::BrowserPolicyConnectorChromeOS* connector =
         g_browser_process->platform_part()
@@ -896,7 +899,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
   // The value of AllowDinosaurEasterEgg policy we want to set
   bool value_of_allow_dinosaur_easter_egg_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Whether to enroll this CrOS device
   bool enroll_ = true;
 
@@ -927,7 +930,7 @@ class ErrorPageOfflineTestWithAllowDinosaurFalse : public ErrorPageOfflineTest {
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class ErrorPageOfflineTestUnEnrolledChromeOS : public ErrorPageOfflineTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -952,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestWithAllowDinosaurFalse,
   EXPECT_EQ(disabled_text, result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTest, CheckEasterEggIsDisabled) {
   std::string result = NavigateToPageAndReadText();
   std::string disabled_text =
@@ -966,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTest, CheckEasterEggIsAllowed) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestUnEnrolledChromeOS,
                        CheckEasterEggIsAllowed) {
   std::string result = NavigateToPageAndReadText();

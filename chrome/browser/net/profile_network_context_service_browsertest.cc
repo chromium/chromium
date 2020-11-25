@@ -24,6 +24,7 @@
 #include "base/threading/platform_thread.h"  // For |Sleep()|.
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -322,7 +323,7 @@ class AmbientAuthenticationTestWithPolicy
                   policy_value));
 // ChromeOS guest sessions don't have the capability to
 // do ambient authentications.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_EQ(
         AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
             CreateGuestBrowser()->profile()),

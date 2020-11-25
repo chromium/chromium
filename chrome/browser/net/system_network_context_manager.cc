@@ -19,6 +19,7 @@
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
@@ -71,17 +72,19 @@
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/net/dhcp_wpad_url_client.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
@@ -117,7 +120,7 @@ network::mojom::HttpAuthStaticParamsPtr CreateHttpAuthStaticParams(
       base::SplitString(local_state->GetString(prefs::kAuthSchemes), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   auth_static_params->gssapi_library_name =
       local_state->GetString(prefs::kGSSAPILibraryName);
 #endif
@@ -157,7 +160,7 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
       local_state->GetString(prefs::kAuthAndroidNegotiateAccountType);
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO: Use KerberosCredentialsManager to determine whether Kerberos is
   // enabled instead of relying directly on the preference.
   policy::BrowserPolicyConnectorChromeOS* connector =
@@ -374,11 +377,11 @@ SystemNetworkContextManager::SystemNetworkContextManager(
                              auth_pref_callback);
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO: Use KerberosCredentialsManager::Observer to be notified of when the
   // enabled state changes instead of relying directly on the preference.
   pref_change_registrar_.Add(prefs::kKerberosEnabled, auth_pref_callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   local_state_->SetDefaultPrefValue(
       prefs::kEnableReferrers,
@@ -400,9 +403,10 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   // Static auth params
   registry->RegisterStringPref(prefs::kAuthSchemes,
                                "basic,digest,ntlm,negotiate");
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(prefs::kGSSAPILibraryName, std::string());
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_POSIX) && !defined(OS_ANDROID) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Dynamic auth params.
   registry->RegisterBooleanPref(prefs::kDisableAuthNegotiateCnameLookup, false);
@@ -506,7 +510,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // NetworkContext is created, but before anything has the chance to use it.
   stub_resolver_config_reader_.UpdateNetworkService(true /* record_metrics */);
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -599,10 +605,10 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     } else {
       network_context_params->proxy_resolver_factory =
           ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       network_context_params->dhcp_wpad_url_client =
           chromeos::DhcpWpadUrlClient::CreateWithSelfOwnedReceiver();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
 

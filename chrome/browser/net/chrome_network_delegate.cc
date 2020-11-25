@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/system/sys_info.h"
 #include "chrome/browser/download/download_prefs.h"
 #endif
@@ -29,13 +29,13 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
   if (g_access_to_all_files_enabled)
     return true;
 
-#if !defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
     !defined(OS_ANDROID)
   return true;
 #else
 
   std::vector<base::FilePath> allowlist;
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Use an allowlist to only allow access to files residing in the list of
   // directories below.
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
@@ -111,7 +111,7 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
     }
   }
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Allow access to DriveFS logs. These reside in
   // $PROFILE_PATH/GCache/v2/<opaque id>/Logs.
   base::FilePath path_within_gcache_v2;
@@ -123,11 +123,11 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
       return true;
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DVLOG(1) << "File access denied - " << path.value().c_str();
   return false;
-#endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 }
 
 }  // namespace

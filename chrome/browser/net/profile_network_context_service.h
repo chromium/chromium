@@ -17,6 +17,7 @@
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -69,7 +70,7 @@ class ProfileNetworkContextService
       network::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void UpdateAdditionalCertificates();
 #endif
 

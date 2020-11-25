@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -61,7 +62,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
@@ -119,7 +120,7 @@ std::string ComputeAcceptLanguageFromPref(const std::string& language_pref) {
   return net::HttpUtil::GenerateAcceptLanguageHeader(accept_languages_str);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
     const policy::PolicyCertService* policy_cert_service,
     const base::FilePath& storage_partition_path) {
@@ -297,7 +298,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParams(
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileNetworkContextService::UpdateAdditionalCertificates() {
   const policy::PolicyCertService* policy_cert_service =
       policy::PolicyCertServiceFactory::GetForProfile(profile_);
@@ -532,7 +533,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
   if (!client_cert_store_factory_.is_null())
     return client_cert_store_factory_.Run();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool use_system_key_slot = false;
   // Enable client certificates for the Chrome OS sign-in frame, if this feature
   // is not disabled by a flag.
@@ -802,7 +803,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     drp_settings->AddCustomProxyConfigClient(std::move(config_client));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool profile_supports_policy_certs = false;
   if (chromeos::ProfileHelper::IsSigninProfile(profile_))
     profile_supports_policy_certs = true;

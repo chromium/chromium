@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
       SystemNetworkContextManager::GetHttpAuthStaticParamsForTesting();
   EXPECT_THAT(static_params->supported_schemes, testing::ElementsAre("basic"));
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   const char dev_null[] = "/dev/null";
   local_state->SetString(prefs::kGSSAPILibraryName, dev_null);
   static_params =
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_TRUE(dynamic_params->delegate_by_kdc_policy);
 #endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The kerberos.enabled pref is false and the device is not Active Directory
   // managed by default.
   EXPECT_FALSE(dynamic_params->allow_gssapi_library_load);
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->allow_gssapi_library_load);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 class SystemNetworkContextManagerStubResolverBrowsertest
