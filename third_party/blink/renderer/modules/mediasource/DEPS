@@ -4,4 +4,5 @@ include_rules = [
     "+third_party/blink/renderer/modules/event_modules.h",
     "+third_party/blink/renderer/modules/event_target_modules.h",
     "+third_party/blink/renderer/modules/mediasource",
+    "+third_party/blink/renderer/modules/webcodecs",
 ]

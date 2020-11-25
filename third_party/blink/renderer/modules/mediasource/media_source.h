@@ -31,6 +31,7 @@ class ExceptionState;
 class HTMLMediaElement;
 class CrossThreadMediaSourceAttachment;
 class SameThreadMediaSourceAttachment;
+class SourceBufferConfig;
 class TrackBase;
 class WebSourceBuffer;
 
@@ -66,6 +67,9 @@ class MediaSource final : public EventTargetWithInlineData,
     return active_source_buffers_.Get();
   }
   SourceBuffer* addSourceBuffer(const String& type, ExceptionState&)
+      LOCKS_EXCLUDED(attachment_link_lock_);
+  SourceBuffer* AddSourceBufferUsingConfig(const SourceBufferConfig*,
+                                           ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
   void removeSourceBuffer(SourceBuffer*, ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);

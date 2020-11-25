@@ -8092,6 +8092,7 @@ interface SourceBuffer : EventTarget
     getter videoTracks
     method abort
     method appendBuffer
+    method appendEncodedChunks
     method changeType
     method constructor
     method remove

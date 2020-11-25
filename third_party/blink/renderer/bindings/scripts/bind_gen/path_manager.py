@@ -230,4 +230,7 @@ _BACKWARD_COMPATIBLE_UNION_FILEPATHS = {
     # modules/beacon/navigator_beacon.idl
     'ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':
     'ReadableStreamOrXMLHttpRequestBodyInit',
+    # modules/mediasource/source_buffer.idl
+    'EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk':
+    'EncodedAVChunkSequenceOrEncodedAVChunk',
 }

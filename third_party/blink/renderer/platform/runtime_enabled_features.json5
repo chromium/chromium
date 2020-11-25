@@ -1233,6 +1233,10 @@
       status: "experimental",
     },
     {
+      name: "MediaSourceExtensionsForWebCodecs",
+      status: "experimental",
+    },
+    {
       name: "MediaSourceInWorkers",
       status: "experimental",
     },

@@ -38,6 +38,10 @@
 #include "media/base/logging_override_if_enabled.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
+#include "third_party/blink/renderer/bindings/modules/v8/encoded_av_chunk_sequence_or_encoded_av_chunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
@@ -53,6 +57,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -316,8 +322,9 @@ void SourceBuffer::setTimestampOffset(double offset,
   // 3. If the updating attribute equals true, then throw an InvalidStateError
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
-                                        exception_state))
+                                        exception_state)) {
     return;
+  }
 
   // Do the remainder of steps only if attachment is usable and underlying
   // demuxer is protected from destruction (applicable especially for
@@ -404,8 +411,9 @@ void SourceBuffer::setAppendWindowStart(double start,
   // 2. If the updating attribute equals true, then throw an InvalidStateError
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
-                                        exception_state))
+                                        exception_state)) {
     return;
+  }
 
   // 3. If the new value is less than 0 or greater than or equal to
   //    appendWindowEnd then throw a TypeError exception and abort these steps.
@@ -460,8 +468,9 @@ void SourceBuffer::setAppendWindowEnd(double end,
   // 2. If the updating attribute equals true, then throw an InvalidStateError
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
-                                        exception_state))
+                                        exception_state)) {
     return;
+  }
 
   // 3. If the new value equals NaN, then throw a TypeError and abort these
   //    steps.
@@ -524,6 +533,31 @@ void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
   AppendBufferInternal(
       static_cast<const unsigned char*>(data.View()->BaseAddress()),
       data.View()->byteLength(), exception_state);
+}
+
+ScriptPromise SourceBuffer::appendEncodedChunks(
+    ScriptState* script_state,
+    const EncodedChunks& chunks,
+    ExceptionState& exception_state) {
+  // Note that |chunks| may be a sequence of mixed audio and video encoded
+  // chunks (which should cause underlying buffering validation to emit error
+  // akin to appending video to an audio track or vice-versa). It was impossible
+  // to get the bindings generator to disambiguate sequence<audio> vs
+  // sequence<video>, hence we could not use simple overloading in the IDL for
+  // these two. Neither could the IDL union attempt similar. We must enforce
+  // that semantic in implementation. Further note, |chunks| may instead be a
+  // single audio or a single video chunk as a helpful additional overload for
+  // one-chunk-at-a-time append use-cases.
+
+  DVLOG(2) << __func__ << " this=" << this;
+
+  // TODO(crbug.com/1144908): Validate allowed in current state (and take lock
+  // at appropriate point), unwrap the chunks, get a promise and its resolver,
+  // give the resolver to the async validation and buffering of the chunks,
+  // return the promise.
+  exception_state.ThrowTypeError(
+      "unimplemented - see https://crbug.com/1144908");
+  return ScriptPromise();
 }
 
 void SourceBuffer::abort(ExceptionState& exception_state) {
@@ -620,8 +654,9 @@ void SourceBuffer::remove(double start,
   // 2. If the updating attribute equals true, then throw an InvalidStateError
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
-                                        exception_state))
+                                        exception_state)) {
     return;
+  }
 
   // Do remainder of steps only if attachment is usable and underlying demuxer
   // is protected from destruction (applicable especially for MSE-in-Worker
@@ -722,8 +757,9 @@ void SourceBuffer::changeType(const String& type,
   // 3. If the updating attribute equals true, then throw an InvalidStateError
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
-                                        exception_state))
+                                        exception_state)) {
     return;
+  }
 
   // Do remainder of steps only if attachment is usable and underlying demuxer
   // is protected from destruction (applicable especially for MSE-in-Worker
@@ -738,6 +774,39 @@ void SourceBuffer::changeType(const String& type,
         exception_state, DOMExceptionCode::kInvalidStateError,
         "Worker MediaSource attachment is closing");
   }
+}
+
+void SourceBuffer::ChangeTypeUsingConfig(const SourceBufferConfig* config,
+                                         ExceptionState& exception_state) {
+  DVLOG(2) << __func__ << " this=" << this;
+
+  // If this object has been removed from the sourceBuffers attribute of the
+  //    parent media source, then throw an InvalidStateError exception and abort
+  //    these steps.
+  // If the updating attribute equals true, then throw an InvalidStateError
+  //    exception and abort these steps.
+  if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
+                                        exception_state)) {
+    return;
+  }
+
+  // Before this IDL overload was added, changeType(null) yielded a
+  // kNotSupportedError, so preserve that behavior if the bindings resolve us
+  // instead of the original changeType(DOMString) when given a null parameter.
+  // Fortunately, a null or empty SourceBufferConfig here similarly should yield
+  // a kNotSupportedError.
+  if (!config || (!config->hasAudioConfig() && !config->hasVideoConfig())) {
+    MediaSource::LogAndThrowDOMException(
+        exception_state, DOMExceptionCode::kNotSupportedError,
+        "Changing to the type provided ('null' config) is not supported.");
+    return;
+  }
+
+  // TODO(crbug.com/1144908): Further validate allowed in current state (and
+  // take lock at appropriate point), unwrap the config, validate it, update
+  // internals to new config, etc.
+  exception_state.ThrowTypeError(
+      "unimplemented - see https://crbug.com/1144908");
 }
 
 void SourceBuffer::ChangeType_Locked(
@@ -806,8 +875,9 @@ void SourceBuffer::setTrackDefaults(TrackDefaultList* track_defaults,
   // 2. If the updating attribute equals true, then throw an InvalidStateError
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
-                                        exception_state))
+                                        exception_state)) {
     return;
+  }
 
   // 3. Update the attribute to the new value.
   track_defaults_ = track_defaults;

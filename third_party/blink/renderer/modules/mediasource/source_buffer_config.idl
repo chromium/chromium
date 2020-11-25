@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file
+
+// For MSE-for-WebCodecs. Explainer:
+// https://github.com/wolenetz/mse-for-webcodecs/blob/main/explainer.md
+
+dictionary SourceBufferConfig {
+  // Precisely one of these must be populated to signal via addSourceBuffer or
+  // changeType the intent to buffer the corresponding WebCodecs media.
+  // We use this dictionary as the parameter for SourceBuffer's overloads of
+  // addSourceBuffer() and changeType() since sniffing config types introduces
+  // implementation interoperability risk, and specific overloads for each of
+  // AudioDecoderConfig and VideoDecoderConfig dictionaries would not be
+  // differentiable without such sniffing.
+  AudioDecoderConfig audioConfig;  // For appending EncodedAudioChunks.
+  VideoDecoderConfig videoConfig;  // For appending EncodedVideoChunks.
+};

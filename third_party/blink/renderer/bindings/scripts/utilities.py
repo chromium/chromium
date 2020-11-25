@@ -497,6 +497,9 @@ def shorten_union_name(union_type):
         # modules/beacon/navigator_beacon.idl
         'ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':
         'ReadableStreamOrXMLHttpRequestBodyInit',
+        # modules/mediasource/source_buffer.idl
+        'EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk':
+        'EncodedAVChunkSequenceOrEncodedAVChunk',
     }
 
     idl_type = union_type

@@ -749,6 +749,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_spatial_sensor_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_spatial_sensor_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_error_event_init.cc",

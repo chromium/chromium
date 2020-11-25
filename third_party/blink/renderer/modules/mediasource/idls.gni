@@ -11,6 +11,8 @@ modules_idl_files = [
   "video_playback_quality.idl",
 ]
 
+modules_dictionary_idl_files = [ "source_buffer_config.idl" ]
+
 modules_dependency_idl_files = [
   "audio_track_source_buffer.idl",
   "html_video_element_media_source.idl",

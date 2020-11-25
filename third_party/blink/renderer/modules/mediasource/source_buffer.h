@@ -36,6 +36,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -50,11 +51,15 @@ namespace blink {
 class AudioTrackList;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
+class
+    EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk;
 class EventQueue;
 class ExceptionState;
 class MediaSource;
 class MediaSourceTracer;
 class MediaSourceAttachmentSupplement;
+class ScriptState;
+class SourceBufferConfig;
 class TimeRanges;
 class VideoTrackList;
 class WebSourceBuffer;
@@ -70,6 +75,10 @@ class SourceBuffer final : public EventTargetWithInlineData,
   static AtomicString SegmentsKeyword();
   static AtomicString SequenceKeyword();
 
+  // Mirror the IDL's typedef for EncodedChunks.
+  using EncodedChunks =
+      EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk;
+
   SourceBuffer(std::unique_ptr<WebSourceBuffer>, MediaSource*, EventQueue*);
   ~SourceBuffer() override;
 
@@ -82,9 +91,13 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void setTimestampOffset(double, ExceptionState&);
   void appendBuffer(DOMArrayBuffer* data, ExceptionState&);
   void appendBuffer(NotShared<DOMArrayBufferView> data, ExceptionState&);
+  ScriptPromise appendEncodedChunks(ScriptState*,
+                                    const EncodedChunks&,
+                                    ExceptionState&);
   void abort(ExceptionState&);
   void remove(double start, double end, ExceptionState&);
   void changeType(const String& type, ExceptionState&);
+  void ChangeTypeUsingConfig(const SourceBufferConfig*, ExceptionState&);
   double appendWindowStart() const;
   void setAppendWindowStart(double, ExceptionState&);
   double appendWindowEnd() const;

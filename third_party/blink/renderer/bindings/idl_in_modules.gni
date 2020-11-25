@@ -363,6 +363,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/mediasource/html_video_element_media_source.idl",
           "//third_party/blink/renderer/modules/mediasource/media_source.idl",
           "//third_party/blink/renderer/modules/mediasource/source_buffer.idl",
+          "//third_party/blink/renderer/modules/mediasource/source_buffer_config.idl",
           "//third_party/blink/renderer/modules/mediasource/source_buffer_list.idl",
           "//third_party/blink/renderer/modules/mediasource/track_default.idl",
           "//third_party/blink/renderer/modules/mediasource/track_default_list.idl",

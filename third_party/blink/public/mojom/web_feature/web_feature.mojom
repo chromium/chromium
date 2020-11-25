@@ -3059,6 +3059,9 @@ enum WebFeature {
   kAddEventListenerWithAbortSignal = 3730,
   kXRSessionRequestLightProbe = 3731,
   kBeforematchRevealedHiddenMatchable = 3732,
+  kAddSourceBufferUsingConfig = 3733,
+  kChangeTypeUsingConfig = 3734,
+  kV8SourceBuffer_AppendEncodedChunks_Method = 3735,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

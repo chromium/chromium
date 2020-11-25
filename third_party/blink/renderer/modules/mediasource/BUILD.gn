@@ -35,4 +35,8 @@ blink_modules_sources("mediasource") {
     "video_playback_quality.cc",
     "video_playback_quality.h",
   ]
+  deps = [
+    # Ensure the generated webcodecs v8 config and chunk bindings are available.
+    "//third_party/blink/renderer/modules/webcodecs:webcodecs",
+  ]
 }

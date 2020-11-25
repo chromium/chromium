@@ -1415,6 +1415,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter videoTracks
 [Worker]     method abort
 [Worker]     method appendBuffer
+[Worker]     method appendEncodedChunks
 [Worker]     method changeType
 [Worker]     method constructor
 [Worker]     method remove

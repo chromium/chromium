@@ -14,6 +14,9 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
@@ -216,6 +219,18 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
   }
 
   return source_buffer;
+}
+
+SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
+    const SourceBufferConfig* config,
+    ExceptionState& exception_state) {
+  DVLOG(2) << __func__ << " this=" << this;
+  // TODO(crbug.com/1144908): Validate allowed in current state (and take lock
+  // at appropriate point), unwrap the config, validate it, create sourcebuffer,
+  // etc.
+  exception_state.ThrowTypeError(
+      "unimplemented - see https://crbug.com/1144908");
+  return nullptr;
 }
 
 void MediaSource::AddSourceBuffer_Locked(
