@@ -262,7 +262,35 @@ class TemplateWriter(object):
     template['policy_definitions'] = \
         self.PreprocessPolicies(template['policy_definitions'])
     self.BeginTemplate()
-    for policy in template['policy_definitions']:
+    self.WritePolicies(template['policy_definitions'])
+    self.EndTemplate()
+
+    return self.GetTemplateText()
+
+  def PreprocessPolicies(self, policy_list):
+    '''Preprocesses a list of policies according to a given writer's needs.
+    Preprocessing steps include sorting policies and stripping unneeded
+    information such as groups (for writers that ignore them).
+    Subclasses are encouraged to override this method, overriding
+    implementations may call one of the provided specialized implementations.
+    The default behaviour is to use SortPoliciesGroupsFirst().
+
+    Args:
+      policy_list: A list containing the policies to sort.
+
+    Returns:
+      The sorted policy list.
+    '''
+    return self.SortPoliciesGroupsFirst(policy_list)
+
+  def WritePolicies(self, policy_list):
+    '''Appends the template text corresponding to all the policies into the
+    internal buffer.
+
+    Args:
+      policy_list: A list containing the policies to write.
+    '''
+    for policy in policy_list:
       if policy['type'] == 'group':
         child_policies = self._GetPoliciesForWriter(policy)
         child_recommended_policies = filter(self.CanBeRecommended,
@@ -283,25 +311,6 @@ class TemplateWriter(object):
         self.WritePolicy(policy)
         if self.CanBeRecommended(policy):
           self.WriteRecommendedPolicy(policy)
-    self.EndTemplate()
-
-    return self.GetTemplateText()
-
-  def PreprocessPolicies(self, policy_list):
-    '''Preprocesses a list of policies according to a given writer's needs.
-    Preprocessing steps include sorting policies and stripping unneeded
-    information such as groups (for writers that ignore them).
-    Subclasses are encouraged to override this method, overriding
-    implementations may call one of the provided specialized implementations.
-    The default behaviour is to use SortPoliciesGroupsFirst().
-
-    Args:
-      policy_list: A list containing the policies to sort.
-
-    Returns:
-      The sorted policy list.
-    '''
-    return self.SortPoliciesGroupsFirst(policy_list)
 
   def WritePolicy(self, policy):
     '''Appends the template text corresponding to a policy into the

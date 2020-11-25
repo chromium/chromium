@@ -19,6 +19,39 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
   '''Simple writer that writes app_config.xml files.
   '''
 
+  def _WritePolicyPresentation(self, policy, field_group):
+    element_type = self.policy_type_to_input_type[policy['type']]
+    if element_type:
+      attributes = {'type': element_type, 'keyName': policy['name']}
+      field = self.AddElement(field_group, 'field', attributes)
+      self._AddLocalizedElement(field, 'label', policy['caption'])
+      self._AddLocalizedElement(field, 'description', policy['desc'])
+
+  def _AddLocalizedElement(self,
+                           parent,
+                           element_type,
+                           text,
+                           localization={'value': 'en-US'}):
+    item = self.AddElement(parent, element_type, {})
+    localized = self.AddElement(item, 'language', localization)
+    self.AddText(localized, text)
+
+  def _WritePresentation(self, policy_list):
+    groups = [policy for policy in policy_list if policy['type'] == 'group']
+    policies_without_group = [
+        policy for policy in policy_list if policy['type'] != 'group'
+    ]
+    for policy in groups:
+      child_policies = self._GetPoliciesForWriter(policy)
+      if child_policies:
+        field_group = self.AddElement(self._presentation, 'fieldGroup', {})
+        self._AddLocalizedElement(field_group, 'name', policy['caption'])
+        for child_policy in child_policies:
+          self._WritePolicyPresentation(child_policy, field_group)
+    for policy in self._GetPoliciesForWriter(
+        {'policies': policies_without_group}):
+      self._WritePolicyPresentation(policy, self._presentation)
+
   def IsFuturePolicySupported(self, policy):
     # For now, include all future policies in appconfig.xml.
     return True
@@ -27,6 +60,18 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
     dom_impl = minidom.getDOMImplementation('')
     return dom_impl.createDocument('http://www.w3.org/2001/XMLSchema-instance',
                                    'managedAppConfiguration', None)
+
+  def WriteTemplate(self, template):
+    self.messages = template['messages']
+    self.Init()
+    template['policy_definitions'] = \
+        self.PreprocessPolicies(template['policy_definitions'])
+    self.BeginTemplate()
+    self.WritePolicies(template['policy_definitions'])
+    self._WritePresentation(template['policy_definitions'])
+    self.EndTemplate()
+
+    return self.GetTemplateText()
 
   def BeginTemplate(self):
     self._app_config.attributes[
@@ -41,6 +86,8 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
     bundle_id = self.AddElement(self._app_config, 'bundleId', {})
     self.AddText(bundle_id, self.config['bundle_id'])
     self._policies = self.AddElement(self._app_config, 'dict', {})
+    self._presentation = self.AddElement(self._app_config, 'presentation',
+                                         {'defaultLocale': 'en-US'})
 
   def WritePolicy(self, policy):
     element_type = self.policy_type_to_xml_tag[policy['type']]
@@ -65,6 +112,16 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
         'main': 'boolean',
         'list': 'stringArray',
         'dict': 'string',
+    }
+    self.policy_type_to_input_type = {
+        'string': 'input',
+        'int': 'input',
+        'int-enum': 'select',
+        'string-enum': 'select',
+        'string-enum-list': 'multiselect',
+        'main': 'checkbox',
+        'list': 'list',
+        'dict': 'input'
     }
 
   def GetTemplateText(self):
