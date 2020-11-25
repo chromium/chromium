@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
@@ -93,12 +94,9 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   self.authService->WaitUntilCacheIsPopulated();
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-
   GoogleServicesSettingsViewController* viewController =
-      [[GoogleServicesSettingsViewController alloc] initWithStyle:style];
+      [[GoogleServicesSettingsViewController alloc]
+          initWithStyle:SettingsTableViewStyle()];
   viewController.presentationDelegate = self;
   self.viewController = viewController;
   SyncSetupService* syncSetupService =

@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_multiline_detail_item.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -59,10 +60,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       isSignedIn:(BOOL)isSignedIn {
   DCHECK(fromEmail);
   DCHECK(toEmail);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     _delegate = delegate;
     _fromEmail = [fromEmail copy];

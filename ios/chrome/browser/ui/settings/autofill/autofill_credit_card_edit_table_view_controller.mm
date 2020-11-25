@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -69,10 +70,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
                personalDataManager:(autofill::PersonalDataManager*)dataManager {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     DCHECK(dataManager);
 

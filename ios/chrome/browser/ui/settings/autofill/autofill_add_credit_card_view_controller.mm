@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -75,10 +76,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithDelegate:
     (id<AddCreditCardViewControllerDelegate>)delegate {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+  self = [super initWithStyle:SettingsTableViewStyle()];
 
   if (self) {
     _delegate = delegate;

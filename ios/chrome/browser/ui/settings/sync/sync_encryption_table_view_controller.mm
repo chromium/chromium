@@ -68,10 +68,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     _browser = browser;
     ChromeBrowserState* browserState = self.browser->GetBrowserState();

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,12 +66,8 @@
   // To start, a password check manager should be ready.
   DCHECK(_manager);
 
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-
-  self.viewController =
-      [[PasswordIssuesTableViewController alloc] initWithStyle:style];
+  self.viewController = [[PasswordIssuesTableViewController alloc]
+      initWithStyle:SettingsTableViewStyle()];
 
   self.mediator =
       [[PasswordIssuesMediator alloc] initWithPasswordCheckManager:_manager];

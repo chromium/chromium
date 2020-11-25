@@ -60,10 +60,7 @@ const CGFloat kDefaultHeight = 70;
 #pragma mark - Public
 
 - (instancetype)init {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_ABOUT_PRODUCT_NAME);
   }

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/settings/language/language_settings_data_source.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_histograms.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -64,10 +65,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                        delegate {
   DCHECK(dataSource);
   DCHECK(delegate);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     _dataSource = dataSource;
     _delegate = delegate;

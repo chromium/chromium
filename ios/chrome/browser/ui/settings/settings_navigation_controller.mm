@@ -291,11 +291,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
 
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.view.backgroundColor = UIColor.cr_systemGroupedBackgroundColor;
     self.navigationBar.translucent = NO;
-    self.navigationBar.barTintColor = UIColor.cr_systemBackgroundColor;
-
+    self.navigationBar.barTintColor = UIColor.cr_systemGroupedBackgroundColor;
     self.toolbar.translucent = NO;
-    self.toolbar.barTintColor = UIColor.cr_systemBackgroundColor;
+    self.toolbar.barTintColor = UIColor.cr_systemGroupedBackgroundColor;
   }
 
   self.navigationBar.prefersLargeTitles = YES;

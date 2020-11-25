@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -95,10 +96,7 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
             personalDataManager:(autofill::PersonalDataManager*)dataManager {
   DCHECK(dataManager);
 
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     _personalDataManager = dataManager;
     _autofillProfile = profile;

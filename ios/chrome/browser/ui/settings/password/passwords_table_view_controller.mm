@@ -246,10 +246,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     _browser = browser;
     _browserState = browser->GetBrowserState();

@@ -9,6 +9,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -82,10 +83,7 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 - (instancetype)initWithPrefs:(PrefService*)prefs
                   settingPref:(const char*)settingPreference
                         title:(NSString*)title {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithStyle:style];
+  self = [super initWithStyle:SettingsTableViewStyle()];
   if (self) {
     self.title = title;
     _settingPreference.Init(settingPreference, prefs);
