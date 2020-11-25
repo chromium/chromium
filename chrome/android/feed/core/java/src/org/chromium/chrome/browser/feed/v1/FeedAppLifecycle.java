@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.feed.library.api.client.lifecycle.AppLifecycl
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
