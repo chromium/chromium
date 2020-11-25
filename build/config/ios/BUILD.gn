@@ -87,11 +87,14 @@ config("compiler") {
 # that is iOS-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  # The variable ios_sdk_path is relative to root_out_dir for goma RBE. As it
-  # is passed to the compiler via cflags, ldflags which do not rebase the
-  # values (since they are compiler flags, not paths), it has to rebased. Use
-  # a local variable to avoid repeating the rebase invocation.
-  _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
+  # The variable ios_sdk_path may be relative to root_out_dir on the bots. As
+  # it is passed to the compiler via cflags, ldflags which do not rebase the
+  # values (since they are compiler flags, not paths), it may be required to
+  # rebase it. Use a local variable to avoid repeating the rebase invocation.
+  _sdk_root = ios_sdk_path
+  if (ios_enable_relative_sdk_path) {
+    _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
+  }
 
   common_flags = [
     "-isysroot",
@@ -219,14 +222,16 @@ _xctrunner_path =
 #
 # To workaround this, add a target that pretends to create those files
 # (but does nothing). See https://crbug.com/1061487 for why this is needed.
-action("copy_xctrunner_app") {
-  testonly = true
-  script = "//build/noop.py"
-  outputs = [
-    "$_xctrunner_path/Info.plist",
-    "$_xctrunner_path/PkgInfo",
-    "$_xctrunner_path/XCTRunner",
-  ]
+if (ios_use_goma_rbe) {
+  action("copy_xctrunner_app") {
+    testonly = true
+    script = "//build/noop.py"
+    outputs = [
+      "$_xctrunner_path/Info.plist",
+      "$_xctrunner_path/PkgInfo",
+      "$_xctrunner_path/XCTRunner",
+    ]
+  }
 }
 
 # When creating the test runner for an XCUITest, the arm64e slice of the binary
@@ -246,5 +251,7 @@ action("xctest_runner_without_arm64e") {
     xcode_version,
   ]
 
-  deps = [ ":copy_xctrunner_app" ]
+  if (ios_use_goma_rbe) {
+    deps = [ ":copy_xctrunner_app" ]
+  }
 }
