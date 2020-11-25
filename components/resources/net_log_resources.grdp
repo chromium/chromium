@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <include name="IDR_NET_LOG_NET_EXPORT_HTML" file="../net_log/resources/net_export.html" flattenhtml="true" type="BINDATA" />
-  <include name="IDR_NET_LOG_NET_EXPORT_JS" file="../net_log/resources/net_export.js" flattenhtml="true" type="BINDATA" />
+  <include name="IDR_NET_LOG_NET_EXPORT_JS" file="../net_log/resources/net_export.js" type="BINDATA" />
 </grit-part>

@@ -24,13 +24,13 @@ Other resources that belong in this file:
       <include name="IDR_DEVTOOLS_PINCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_pinch_cursor_2x.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON" file="browser/resources/devtools/devtools_touch_cursor.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_touch_cursor_2x.png" type="BINDATA" />
-      <include name="IDR_HISTOGRAMS_INTERNALS_HTML" file="browser/resources/histograms/histograms_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="browser/resources/histograms/histograms_internals.js" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_HISTOGRAMS_INTERNALS_HTML" file="browser/resources/histograms/histograms_internals.html" type="BINDATA" />
+      <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="browser/resources/histograms/histograms_internals.js" type="BINDATA" />
       <include name="IDR_ORIGIN_MOJO_HTML" file="${root_gen_dir}/url/mojom/origin.mojom.html" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_HTML" file="../components/ukm/debug/ukm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_UKM_INTERNALS_JS" file="../components/ukm/debug/ukm_internals.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_UKM_INTERNALS_CSS" file="../components/ukm/debug/ukm_internals.css" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_UKM_INTERNALS_JS" file="../components/ukm/debug/ukm_internals.js" type="BINDATA" />
+      <include name="IDR_UKM_INTERNALS_CSS" file="../components/ukm/debug/ukm_internals.css" type="BINDATA" />
       <include name="IDR_UNGUESSABLE_TOKEN_MOJO_HTML" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom.html" use_base_dir="false" type="BINDATA" />
       <include name="IDR_UNGUESSABLE_TOKEN_MOJO_JS" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_URL_MOJO_HTML" file="${root_gen_dir}/url/mojom/url.mojom.html" use_base_dir="false" type="BINDATA" />

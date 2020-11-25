@@ -32,17 +32,17 @@
         <include name="IDR_HANGOUT_SERVICES_THUNK_JS" file="hangout_services/thunk.js" type="BINDATA" />
       </if>
       <if expr="not is_android">
-        <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="feedback/html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_DEFAULT_HTML" file="feedback/html/default.html" preprocess="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_SYSINFO_HTML" file="feedback/html/sys_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_EVENT_HANDLER_JS" file="feedback/js/event_handler.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_FEEDBACK_JS" file="feedback/js/feedback.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_SYSINFO_JS" file="feedback/js/sys_info.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="feedback/js/take_screenshot.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_TOPBAR_HANDLER_JS" file="feedback/js/topbar_handlers.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_SYSINFO_JS" file="feedback/js/sys_info.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="feedback/js/take_screenshot.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_TOPBAR_HANDLER_JS" file="feedback/js/topbar_handlers.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_CSS" file="feedback/css/assistant_logs_info.css" type="BINDATA" />
         <include name="IDR_FEEDBACK_FEEDBACK_CSS" file="feedback/css/feedback.css" type="BINDATA" />
         <include name="IDR_FEEDBACK_SYSINFO_CSS" file="feedback/css/sys_info.css" type="BINDATA" />

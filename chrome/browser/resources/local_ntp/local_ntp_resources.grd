@@ -15,18 +15,18 @@
       <include name="IDR_CUSTOM_LINKS_EDIT_JS" file="custom_links_edit.js" type="BINDATA" />
       <include name="IDR_CUSTOM_LINKS_EDIT_MENU_SVG" file="icons\edit_menu.svg" type="BINDATA" />
       <include name="IDR_LOCAL_NTP_COMMON_CSS" file="local_ntp_common.css" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_ANIMATIONS_CSS" file="animations.css" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_ANIMATIONS_JS" file="animations.js" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_ANIMATIONS_CSS" file="animations.css" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_ANIMATIONS_JS" file="animations.js" type="BINDATA" />
       <include name="IDR_LOCAL_NTP_CSS" file="local_ntp.css" flattenhtml="true" type="BINDATA" />
       <include name="IDR_LOCAL_NTP_CUSTOMIZE_CSS" file="customize.css" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_CUSTOMIZE_JS" file="customize.js" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_CUSTOMIZE_JS" file="customize.js" type="BINDATA" />
       <include name="IDR_LOCAL_NTP_DOODLES_CSS" file="doodles.css" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_DOODLES_JS" file="doodles.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_HTML" file="local_ntp.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_JS" file="local_ntp.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_UTILS_JS" file="utils.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_VOICE_CSS" file="voice.css" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_LOCAL_NTP_VOICE_JS" file="voice.js" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_DOODLES_JS" file="doodles.js" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_HTML" file="local_ntp.html" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_JS" file="local_ntp.js" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_UTILS_JS" file="utils.js" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_VOICE_CSS" file="voice.css" type="BINDATA" />
+      <include name="IDR_LOCAL_NTP_VOICE_JS" file="voice.js" type="BINDATA" />
       <include name="IDR_MOST_VISITED_DONT_SHOW_PNG" file="icons\dont_show.png" type="BINDATA" />
       <include name="IDR_MOST_VISITED_DONT_SHOW_2X_PNG" file="icons\dont_show_2x.png" type="BINDATA" />
       <include name="IDR_MOST_VISITED_IFRAME_CSS" file="most_visited_iframe.css" type="BINDATA" />
@@ -36,7 +36,7 @@
       <include name="IDR_MOST_VISITED_TITLE_CSS" file="most_visited_title.css" type="BINDATA" />
       <include name="IDR_MOST_VISITED_TITLE_HTML" file="most_visited_title.html" type="BINDATA" />
       <include name="IDR_MOST_VISITED_TITLE_JS" file="most_visited_title.js" type="BINDATA" />
-      <include name="IDR_MOST_VISITED_UTIL_JS" file="most_visited_util.js" type="BINDATA" flattenhtml="true" />
+      <include name="IDR_MOST_VISITED_UTIL_JS" file="most_visited_util.js" type="BINDATA" />
     </includes>
   </release>
 </grit>
