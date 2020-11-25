@@ -93,9 +93,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
       ToJavaIntArray(env, description_class_styles), janswer,
       ConvertUTF16ToJavaString(env, fill_into_edit),
       url::GURLAndroid::FromNativeGURL(env, destination_url),
-      url::GURLAndroid::FromNativeGURL(env, destination_url),
-      j_image_dominant_color, SupportsDeletion(), j_post_content_type,
-      j_post_content,
+      url::GURLAndroid::FromNativeGURL(env, image_url), j_image_dominant_color,
+      SupportsDeletion(), j_post_content_type, j_post_content,
       suggestion_group_id.value_or(
           SearchSuggestionParser::kNoSuggestionGroupId),
       j_query_tiles, ToJavaByteArray(env, clipboard_image_data), has_tab_match,
