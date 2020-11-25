@@ -33,8 +33,9 @@
             android:ellipsize="middle"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:paddingStart="@dimen/infobar_padding"
-            android:singleLine="true"/>
+            android:paddingStart="@dimen/infobar_small_icon_margin"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
     </LinearLayout>
 
 </LinearLayout>
