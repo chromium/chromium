@@ -75,7 +75,7 @@ const base::Feature kTopLevelAwait{"TopLevelAwait",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable EditingNG by default. This feature is for a kill switch.
-const base::Feature kEditingNG{"EditingNG", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEditingNG{"EditingNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable LayoutNG.
 const base::Feature kLayoutNG{"LayoutNG", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -88,7 +88,7 @@ const base::Feature kLayoutNGTextControl{"LayoutNGTextControl",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kFragmentItem{"FragmentItem",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
