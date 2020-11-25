@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/numerics/ranges.h"
 #include "cc/animation/animation_delegate.h"
@@ -33,6 +34,12 @@ ElementId CalculateTargetElementId(const ElementAnimations* element_animations,
   if (LIKELY(keyframe_model->element_id()))
     return keyframe_model->element_id();
   return element_animations->element_id();
+}
+
+bool UsingPaintWorklet(int property_index) {
+  // The set of properties where its animation uses paint worklet infra.
+  return property_index == TargetProperty::BACKGROUND_COLOR ||
+         property_index == TargetProperty::CSS_CUSTOM_PROPERTY;
 }
 
 }  // namespace
@@ -534,6 +541,18 @@ PropertyToElementIdMap ElementAnimations::GetPropertyToElementIdMap() const {
   for (int property_index = TargetProperty::FIRST_TARGET_PROPERTY;
        property_index <= TargetProperty::LAST_TARGET_PROPERTY;
        ++property_index) {
+    // We skip the set of properties that uses paint worklet, because the
+    // animation is not directly associated with the element its compositing
+    // layer targets and we use reserved element id when we attach a layer for
+    // the animation. In that case, the DCHECK here is no longer applicable.
+    // For example, when we have two paint worklet elements with two different
+    // custom property animations, then these two KeyframeModels would have
+    // different element_id and thus fail the first DCHECK here.
+    // It is not valid to include these properties in the PropertyToElementIdMap
+    // as they do not map to a single element id. Therefore, these properties
+    // should not be included in the map.
+    if (UsingPaintWorklet(property_index))
+      continue;
     TargetProperty::Type property =
         static_cast<TargetProperty::Type>(property_index);
     ElementId element_id_for_property;

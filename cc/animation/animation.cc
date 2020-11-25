@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 #include <algorithm>
+#include <string>
+#include <utility>
 
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"

@@ -146,7 +146,7 @@ void AnimationHost::SetHasInlineStyleMutation(bool has_inline_style_mutation) {
 
 void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
   for (auto map_entry : element_to_animations_map_) {
-    // kReservedElementId is reserved for an paint worklet element that animates
+    // kReservedElementId is reserved for a paint worklet element that animates
     // a custom property. This element is assumed to always be present as no
     // element is needed to tick this animation.
     if (mutator_host_client()->IsElementInPropertyTrees(map_entry.first,

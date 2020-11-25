@@ -4,7 +4,10 @@
 
 #include "cc/animation/keyframe_effect.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/stl_util.h"
 #include "base/time/time.h"
