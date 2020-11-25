@@ -348,7 +348,9 @@ void LoginDisplayHostCommon::Observe(
     ShutdownDisplayHost();
 }
 
-void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {}
+void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {
+  LoginDisplayHost::default_host()->StartSignInScreen();
+}
 
 void LoginDisplayHostCommon::OnAuthPrewarmDone() {
   auth_prewarmer_.reset();

@@ -649,8 +649,12 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
   append(std::make_unique<TpmErrorScreen>(
       oobe_ui->GetView<TpmErrorScreenHandler>()));
 
-  append(std::make_unique<GaiaPasswordChangedScreen>(
-      oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()));
+  auto gaia_password_change_screen =
+      std::make_unique<GaiaPasswordChangedScreen>(
+          base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
+                              weak_factory_.GetWeakPtr()),
+          oobe_ui->GetView<GaiaPasswordChangedScreenHandler>());
+  append(std::move(gaia_password_change_screen));
 
   append(std::make_unique<ActiveDirectoryPasswordChangeScreen>(
       oobe_ui->GetView<ActiveDirectoryPasswordChangeScreenHandler>(),
@@ -938,6 +942,22 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::CLOSE_DIALOG:
       LoginDisplayHost::default_host()->HideOobeDialog();
       break;
+  }
+}
+
+void WizardController::OnPasswordChangeScreenExit(
+    GaiaPasswordChangedScreen::Result result) {
+  if (!LoginDisplayHost::default_host())
+    return;
+  switch (result) {
+    case GaiaPasswordChangedScreen::Result::CANCEL:
+      LoginDisplayHost::default_host()->CancelPasswordChangedFlow();
+      break;
+    case GaiaPasswordChangedScreen::Result::RESYNC:
+      LoginDisplayHost::default_host()->ResyncUserData();
+      break;
+    case GaiaPasswordChangedScreen::Result::MIGRATE:
+      NOTREACHED();
   }
 }
 

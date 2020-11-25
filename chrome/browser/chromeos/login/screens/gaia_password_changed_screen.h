@@ -20,7 +20,16 @@ class GaiaPasswordChangedScreen : public BaseScreen {
  public:
   using TView = GaiaPasswordChangedView;
 
-  explicit GaiaPasswordChangedScreen(GaiaPasswordChangedView* view);
+  enum class Result {
+    CANCEL,
+    RESYNC,
+    MIGRATE,
+  };
+
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
+  explicit GaiaPasswordChangedScreen(const ScreenExitCallback& exit_callback,
+                                     GaiaPasswordChangedView* view);
   GaiaPasswordChangedScreen(const GaiaPasswordChangedScreen&) = delete;
   GaiaPasswordChangedScreen& operator=(const GaiaPasswordChangedScreen&) =
       delete;
@@ -59,6 +68,7 @@ class GaiaPasswordChangedScreen : public BaseScreen {
   bool show_error_ = false;
 
   GaiaPasswordChangedView* view_ = nullptr;
+  ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<GaiaPasswordChangedScreen> weak_factory_{this};
 };

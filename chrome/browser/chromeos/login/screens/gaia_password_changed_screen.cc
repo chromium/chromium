@@ -24,10 +24,12 @@ void RecordEulaScreenAction(GaiaPasswordChangedScreen::UserAction value) {
 }
 
 GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(
+    const ScreenExitCallback& exit_callback,
     GaiaPasswordChangedView* view)
     : BaseScreen(GaiaPasswordChangedView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view) {
+      exit_callback_(exit_callback) {
+  view_ = view;
   if (view_)
     view_->Bind(this);
 }
@@ -64,14 +66,13 @@ void GaiaPasswordChangedScreen::Configure(const AccountId& account_id,
 
 void GaiaPasswordChangedScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionCancelLogin) {
-    CancelPasswordChangedFlow();
     RecordEulaScreenAction(UserAction::kCancel);
+    CancelPasswordChangedFlow();
   } else if (action_id == kUserActionResyncData) {
     RecordEulaScreenAction(UserAction::kResyncUserData);
     // LDH will pass control to ExistingUserController to proceed with clearing
     // cryptohome.
-    if (LoginDisplayHost::default_host())
-      LoginDisplayHost::default_host()->ResyncUserData();
+    exit_callback_.Run(Result::RESYNC);
   }
 }
 
@@ -95,7 +96,7 @@ void GaiaPasswordChangedScreen::CancelPasswordChangedFlow() {
 }
 
 void GaiaPasswordChangedScreen::OnCookiesCleared() {
-  LoginDisplayHost::default_host()->StartSignInScreen();
+  exit_callback_.Run(Result::CANCEL);
 }
 
 }  // namespace chromeos
