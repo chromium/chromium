@@ -498,6 +498,7 @@ generate_jni("android_webview_unittests_jni") {
 junit_binary("android_webview_junit_tests") {
   sources = [
     "../junit/src/org/chromium/android_webview/robolectric/AwDisplayCutoutControllerTest.java",
+    "../junit/src/org/chromium/android_webview/robolectric/AwDisplayModeControllerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/AwLayoutSizerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/AwScrollOffsetManagerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/FindAddressTest.java",
@@ -518,6 +519,7 @@ junit_binary("android_webview_junit_tests") {
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
   ]
 
   package_name = "org.chromium.android_webview.robolectric"

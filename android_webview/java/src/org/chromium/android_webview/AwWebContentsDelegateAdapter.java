@@ -266,6 +266,11 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
+    public int getDisplayMode() {
+        return mAwContents.getDisplayMode();
+    }
+
+    @Override
     public void loadingStateChanged() {
         mContentsClient.updateTitle(mAwContents.getTitle(), false);
     }

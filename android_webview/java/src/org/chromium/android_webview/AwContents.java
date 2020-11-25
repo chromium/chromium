@@ -496,6 +496,8 @@ public class AwContents implements SmartClipProvider {
 
     private ContentCaptureConsumer mContentCaptureConsumer;
 
+    private final AwDisplayModeController mDisplayModeController;
+
     private static class WebContentsInternalsHolder implements WebContents.InternalsHolder {
         private final WeakReference<AwContents> mAwContentsRef;
 
@@ -944,6 +946,20 @@ public class AwContents implements SmartClipProvider {
             AwSettings settings, DependencyFactory dependencyFactory) {
         assert browserContext != null;
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwContents.constructor")) {
+            mDisplayModeController =
+                    new AwDisplayModeController(new AwDisplayModeController.Delegate() {
+                        @Override
+                        public int getDisplayWidth() {
+                            WindowAndroid windowAndroid = mWindowAndroid.getWindowAndroid();
+                            return windowAndroid.getDisplay().getDisplayWidth();
+                        }
+
+                        @Override
+                        public int getDisplayHeight() {
+                            WindowAndroid windowAndroid = mWindowAndroid.getWindowAndroid();
+                            return windowAndroid.getDisplay().getDisplayHeight();
+                        }
+                    }, containerView);
             mRendererPriority = RendererPriority.HIGH;
             mSettings = settings;
             updateDefaultLocale();
@@ -1188,6 +1204,7 @@ public class AwContents implements SmartClipProvider {
         awViewMethodsImpl.onFocusChanged(mContainerView.hasFocus(), 0, null);
         mContainerView.requestLayout();
         if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
+        mDisplayModeController.setCurrentContainerView(mContainerView);
     }
 
     // This class destroys the WindowAndroid when after it is gc-ed.
@@ -3359,6 +3376,10 @@ public class AwContents implements SmartClipProvider {
             return null;
         }
         return AwContentsJni.get().getRenderProcess(mNativeAwContents, AwContents.this);
+    }
+
+    public int getDisplayMode() {
+        return mDisplayModeController.getDisplayMode();
     }
 
     //--------------------------------------------------------------------------------------------

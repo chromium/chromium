@@ -443,6 +443,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwDebug.java",
     "java/src/org/chromium/android_webview/AwDevToolsServer.java",
     "java/src/org/chromium/android_webview/AwDisplayCutoutController.java",
+    "java/src/org/chromium/android_webview/AwDisplayModeController.java",
     "java/src/org/chromium/android_webview/AwFeatureList.java",
     "java/src/org/chromium/android_webview/AwFormDatabase.java",
     "java/src/org/chromium/android_webview/AwGeolocationPermissions.java",
@@ -551,6 +552,7 @@ android_library("browser_java") {
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/blink/public:blink_headers_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
