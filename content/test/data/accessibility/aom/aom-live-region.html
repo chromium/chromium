@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+@MAC-ALLOW:AXSubrole
+@MAC-ALLOW:AXARIALive
+@WIN-ALLOW:live*
+@WIN-ALLOW:container*
+@WIN-ALLOW:BUSY*
+@UIA-WIN-ALLOW:LiveSetting*
+@UIA-WIN-ALLOW:LocalizedControlType*
+@UIA-WIN-ALLOW:AriaProperties*
+@BLINK-ALLOW:busy*
+@BLINK-ALLOW:live*
+@BLINK-ALLOW:container*
+@AURALINUX-ALLOW:busy*
+@AURALINUX-ALLOW:container*
+@AURALINUX-ALLOW:live*
+-->
+<html>
+  <body>
+    <script>
+      var live_off_node = new AccessibleNode();
+      live_off_node.role = "marquee";
+      live_off_node.live = "off";
+      document.body.accessibleNode.appendChild(live_off_node);
+
+      var live_polite_node = new AccessibleNode();
+      live_polite_node.role = "marquee";
+      live_polite_node.live = "polite";
+      document.body.accessibleNode.appendChild(live_polite_node);
+
+      // Some roles such as "status" should have an implicit atomic value equal
+      // to true.
+      var live_assertive_node = new AccessibleNode();
+      live_assertive_node.role = "status";
+      live_assertive_node.live = "assertive";
+      document.body.accessibleNode.appendChild(live_assertive_node);
+
+      // Some roles such as "alert" have an implicit live status of assertive,
+      // and implicit atomic value equal to true.
+      var alert_node = new AccessibleNode();
+      alert_node.role = "alert";
+      document.body.accessibleNode.appendChild(alert_node);
+    </script>
+  </body>
+</html>

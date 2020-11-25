@@ -822,8 +822,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsLiveRegionRoot() const;  // Any live region, including polite="off".
   bool IsActiveLiveRegionRoot() const;  // Live region that is not polite="off".
   AXObject* LiveRegionRoot() const;  // Container that controls live politeness.
-  virtual const AtomicString& LiveRegionStatus() const { return g_null_atom; }
-  virtual const AtomicString& LiveRegionRelevant() const { return g_null_atom; }
+  virtual const AtomicString& LiveRegionStatus() const;
+  virtual const AtomicString& LiveRegionRelevant() const;
   bool LiveRegionAtomic() const;
 
   const AtomicString& ContainerLiveRegionStatus() const;

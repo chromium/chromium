@@ -2873,6 +2873,47 @@ bool AXObject::IsActiveLiveRegionRoot() const {
   return !live_region.IsEmpty() && !EqualIgnoringASCIICase(live_region, "off");
 }
 
+const AtomicString& AXObject::LiveRegionStatus() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_assertive,
+                      ("assertive"));
+  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_polite,
+                      ("polite"));
+  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_off, ("off"));
+
+  const AtomicString& live_region_status =
+      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kLive);
+  // These roles have implicit live region status.
+  if (live_region_status.IsEmpty()) {
+    switch (RoleValue()) {
+      case ax::mojom::blink::Role::kAlert:
+        return live_region_status_assertive;
+      case ax::mojom::blink::Role::kLog:
+      case ax::mojom::blink::Role::kStatus:
+        return live_region_status_polite;
+      case ax::mojom::blink::Role::kTimer:
+      case ax::mojom::blink::Role::kMarquee:
+        return live_region_status_off;
+      default:
+        break;
+    }
+  }
+
+  return live_region_status;
+}
+
+const AtomicString& AXObject::LiveRegionRelevant() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, default_live_region_relevant,
+                      ("additions text"));
+  const AtomicString& relevant =
+      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRelevant);
+
+  // Default aria-relevant = "additions text".
+  if (relevant.IsEmpty())
+    return default_live_region_relevant;
+
+  return relevant;
+}
+
 AXRestriction AXObject::Restriction() const {
   // According to ARIA, all elements of the base markup can be disabled.
   // According to CORE-AAM, any focusable descendant of aria-disabled

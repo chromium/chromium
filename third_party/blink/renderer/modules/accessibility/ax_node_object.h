@@ -183,10 +183,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void Dropeffects(
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;
 
-  // ARIA live-region features.
-  const AtomicString& LiveRegionStatus() const override;
-  const AtomicString& LiveRegionRelevant() const override;
-
   ax::mojom::blink::HasPopup HasPopup() const override;
 
   // AX name calculation.
