@@ -108,7 +108,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
                 .with(MessageBannerProperties.ICON,
                         ApiCompatibilityUtils.getDrawable(
                                 activity.getResources(), android.R.drawable.ic_menu_add))
-                .with(MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, (v) -> {})
+                .with(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {})
                 .with(MessageBannerProperties.ON_TOUCH_RUNNABLE, () -> {})
                 .with(MessageBannerProperties.ON_DISMISSED,
                         () -> { mDismissCallback.notifyCalled(); })

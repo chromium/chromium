@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import android.annotation.SuppressLint;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -42,6 +43,9 @@ public class SingleActionMessage implements MessageStateHandler {
         mDismissHandler = dismissHandler;
         mAutoDismissTimer = new MessageAutoDismissTimer(10 * DateUtils.SECOND_IN_MILLIS);
         mMaxTranslationSupplier = maxTranslationSupplier;
+
+        mModel.set(
+                MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
     }
 
     /**
@@ -95,6 +99,11 @@ public class SingleActionMessage implements MessageStateHandler {
         mAutoDismissTimer.cancelTimer();
         Runnable onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.run();
+    }
+
+    private void handlePrimaryAction(View v) {
+        mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+        mDismissHandler.onResult(mModel);
     }
 
     @VisibleForTesting
