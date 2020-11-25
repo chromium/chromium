@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module previews.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom";
@@ -20,13 +20,6 @@ struct PreviewsResourceLoadingHints {
   // TODO(tbansal): https://crbug.com/856243. Update the mojom message below
   // to match the updated resource loading hints proto.
   array<string> subresources_to_block;
-};
-
-// Image loading hints passed by the browser to renderers. Send at most once
-// per page load from browser to renderer. The hints are provided to the
-// renderer and aid in redirecting these public images to compressed versions.
-struct CompressPublicImagesHints {
-  array<string> image_urls;
 };
 
 // LiteVideo hints passed by the browser to renderers. Send at most once
@@ -52,16 +45,13 @@ interface PreviewsResourceLoadingHintsReceiver {
   // Sends the resource loading hints from the browser to renderers.
   SetResourceLoadingHints(PreviewsResourceLoadingHints previews_resource_loading_hints);
 
-  // Sends the public image URL hints from the browser to renderers.
-  SetCompressPublicImagesHints(CompressPublicImagesHints images_hints);
-
   // Sends the hints for reducing the data-costs of streaming
   // media/videos from the browser to renderers.
   SetLiteVideoHint(LiteVideoHint lite_video_hint);
 
   // Sends the hints for Blink.
   // TODO(https://crbug.com/1113980): Move this to its own mojo plumbing.
-  SetBlinkOptimizationGuideHints(BlinkOptimizationGuideHints hints);
+  SetBlinkOptimizationGuideHints(blink.mojom.BlinkOptimizationGuideHints hints);
 
   // Notifies the renderers that active media request throttles should be stopped
   // and not allow any new throttles.

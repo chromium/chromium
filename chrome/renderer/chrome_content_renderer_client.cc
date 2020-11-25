@@ -607,7 +607,8 @@ void ChromeContentRendererClient::RenderFrameCreated(
   new previews::ResourceLoadingHintsAgent(associated_interfaces, render_frame);
 
   if (subresource_redirect::IsPublicImageHintsBasedCompressionEnabled())
-    new subresource_redirect::SubresourceRedirectHintsAgent(render_frame);
+    new subresource_redirect::SubresourceRedirectHintsAgent(
+        associated_interfaces, render_frame);
 
   if (translate::IsSubFrameTranslationEnabled()) {
     new translate::PerFrameTranslateAgent(

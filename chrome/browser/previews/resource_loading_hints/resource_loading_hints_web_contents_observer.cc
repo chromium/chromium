@@ -14,6 +14,7 @@
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "components/previews/content/previews_ui_service.h"
 #include "components/previews/content/previews_user_data.h"
 #include "components/previews/core/previews_experiments.h"
@@ -26,7 +27,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 #include "url/gurl.h"
 
 ResourceLoadingHintsWebContentsObserver::
@@ -95,11 +95,11 @@ void ResourceLoadingHintsWebContentsObserver::SendResourceLoadingHints(
 
   bool is_redirect = previews_user_data->is_redirect();
 
-  mojo::Remote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+  mojo::Remote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
       hints_receiver;
 
-  blink::mojom::PreviewsResourceLoadingHintsPtr hints_ptr =
-      blink::mojom::PreviewsResourceLoadingHints::New();
+  previews::mojom::PreviewsResourceLoadingHintsPtr hints_ptr =
+      previews::mojom::PreviewsResourceLoadingHints::New();
 
   const std::vector<std::string>& hints =
       GetResourceLoadingHintsResourcePatternsToBlock(
@@ -144,10 +144,10 @@ const std::vector<std::string> ResourceLoadingHintsWebContentsObserver::
   return resource_patterns_to_block;
 }
 
-mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
 ResourceLoadingHintsWebContentsObserver::GetResourceLoadingHintsReceiver(
     content::NavigationHandle* navigation_handle) {
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+  mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
       loading_hints_agent;
 
   if (navigation_handle->GetRenderFrameHost()

@@ -135,7 +135,8 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
         new LiteVideoHintAgent(view_->GetMainRenderFrame());
 
     // Set some default hints.
-    blink::mojom::LiteVideoHintPtr hint = blink::mojom::LiteVideoHint::New();
+    previews::mojom::LiteVideoHintPtr hint =
+        previews::mojom::LiteVideoHint::New();
     hint->kilobytes_to_buffer_before_throttle = 10;
     hint->target_downlink_bandwidth_kbps = 60;
     hint->target_downlink_rtt_latency = base::TimeDelta::FromMilliseconds(500);

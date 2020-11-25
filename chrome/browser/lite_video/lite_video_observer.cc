@@ -20,6 +20,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
@@ -33,7 +34,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 
 namespace {
 
@@ -183,10 +183,10 @@ void LiteVideoObserver::SendHintToRenderFrameAgentForID(
   if (!render_frame_host)
     return;
 
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+  mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
       loading_hints_agent;
 
-  auto hint_ptr = blink::mojom::LiteVideoHint::New();
+  auto hint_ptr = previews::mojom::LiteVideoHint::New();
   hint_ptr->target_downlink_bandwidth_kbps =
       hint.target_downlink_bandwidth_kbps();
   hint_ptr->kilobytes_to_buffer_before_throttle =
@@ -249,7 +249,7 @@ void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
     return;
   }
 
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+  mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
       loading_hints_agent;
 
   if (!render_frame_host->GetRemoteAssociatedInterfaces())
@@ -291,7 +291,7 @@ void LiteVideoObserver::MediaPlayerSeek(const content::MediaPlayerId& id) {
     return;
   }
 
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+  mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
       loading_hints_agent;
 
   if (!render_frame_host->GetRemoteAssociatedInterfaces())

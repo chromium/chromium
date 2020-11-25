@@ -86,7 +86,7 @@ bool LiteVideoHintAgent::HasLiteVideoHint() const {
 }
 
 void LiteVideoHintAgent::SetLiteVideoHint(
-    blink::mojom::LiteVideoHintPtr lite_video_hint) {
+    previews::mojom::LiteVideoHintPtr lite_video_hint) {
   if (!lite_video_hint)
     return;
   target_downlink_bandwidth_kbps_ =

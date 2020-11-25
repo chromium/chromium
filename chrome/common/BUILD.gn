@@ -714,6 +714,7 @@ mojom("mojo_bindings") {
     "network_easter_egg.mojom",
     "open_search_description_document_handler.mojom",
     "plugin.mojom",
+    "previews_resource_loading_hints.mojom",
     "renderer_configuration.mojom",
     "subresource_redirect_service.mojom",
     "sync_encryption_keys_extension.mojom",

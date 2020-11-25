@@ -103,7 +103,7 @@ ResourceLoadingHintsAgent::~ResourceLoadingHintsAgent() = default;
 
 void ResourceLoadingHintsAgent::SetReceiver(
     mojo::PendingAssociatedReceiver<
-        blink::mojom::PreviewsResourceLoadingHintsReceiver> receiver) {
+        previews::mojom::PreviewsResourceLoadingHintsReceiver> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 
@@ -112,7 +112,7 @@ bool ResourceLoadingHintsAgent::IsMainFrame() const {
 }
 
 void ResourceLoadingHintsAgent::SetResourceLoadingHints(
-    blink::mojom::PreviewsResourceLoadingHintsPtr resource_loading_hints) {
+    previews::mojom::PreviewsResourceLoadingHintsPtr resource_loading_hints) {
   if (!IsMainFrame())
     return;
 
@@ -124,18 +124,8 @@ void ResourceLoadingHintsAgent::SetResourceLoadingHints(
   }
 }
 
-void ResourceLoadingHintsAgent::SetCompressPublicImagesHints(
-    blink::mojom::CompressPublicImagesHintsPtr images_hints) {
-  if (auto* subresource_redirect_hints_agent =
-          subresource_redirect::SubresourceRedirectHintsAgent::Get(
-              render_frame())) {
-    subresource_redirect_hints_agent->SetCompressPublicImagesHints(
-        std::move(images_hints));
-  }
-}
-
 void ResourceLoadingHintsAgent::SetLiteVideoHint(
-    blink::mojom::LiteVideoHintPtr lite_video_hint) {
+    previews::mojom::LiteVideoHintPtr lite_video_hint) {
   auto* lite_video_hint_agent =
       lite_video::LiteVideoHintAgent::Get(render_frame());
   if (lite_video_hint_agent)

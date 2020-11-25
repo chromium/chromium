@@ -7,10 +7,10 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
-#include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 #include "url/gurl.h"
 
 namespace lite_video {
@@ -40,7 +40,7 @@ class LiteVideoHintAgent
 
   // Updates the LiteVideo throttling parameters for calculating
   // the latency to add to media requests.
-  void SetLiteVideoHint(blink::mojom::LiteVideoHintPtr lite_video_hint);
+  void SetLiteVideoHint(previews::mojom::LiteVideoHintPtr lite_video_hint);
 
   // Returns whether |this| has been provided a LiteVideoHint and
   // has the parameters needed for calculating the throttling latency.

@@ -39,7 +39,7 @@ class SubresourceRedirectPublicImageHintsURLLoaderThrottleTest
   void SetCompressPublicImagesHints(
       const std::vector<std::string>& public_image_urls) {
     subresource_redirect_hints_agent_->SetCompressPublicImagesHints(
-        blink::mojom::CompressPublicImagesHints::New(public_image_urls));
+        mojom::CompressPublicImagesHints::New(public_image_urls));
   }
 
   std::unique_ptr<PublicImageHintsURLLoaderThrottle>
@@ -67,8 +67,8 @@ class SubresourceRedirectPublicImageHintsURLLoaderThrottleTest
         {{blink::features::kSubresourceRedirect,
           {{"enable_subresource_server_redirect", "true"}}}},
         {});
-    subresource_redirect_hints_agent_ =
-        new SubresourceRedirectHintsAgent(view_->GetMainRenderFrame());
+    subresource_redirect_hints_agent_ = new SubresourceRedirectHintsAgent(
+        &associated_interfaces_, view_->GetMainRenderFrame());
   }
 
  private:

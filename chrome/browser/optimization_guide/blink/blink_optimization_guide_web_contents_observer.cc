@@ -12,11 +12,11 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 
 namespace optimization_guide {
 
@@ -60,7 +60,7 @@ void BlinkOptimizationGuideWebContentsObserver::ReadyToCommitNavigation(
 
   // Tentatively use the Previews interface to talk with the renderer.
   // TODO(https://crbug.com/1113980): Implement our own interface.
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
+  mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
       hints_receiver_associated;
   if (navigation_handle->GetRenderFrameHost()
           ->GetRemoteAssociatedInterfaces()) {

@@ -98,7 +98,6 @@ mojom("mojom_platform") {
     "loader/fetch_client_settings_object.mojom",
     "loader/navigation_predictor.mojom",
     "loader/pause_subresource_loading_handle.mojom",
-    "loader/previews_resource_loading_hints.mojom",
     "loader/referrer.mojom",
     "loader/request_context_frame_type.mojom",
     "loader/resource_load_info.mojom",

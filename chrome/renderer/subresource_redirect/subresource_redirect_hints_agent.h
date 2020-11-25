@@ -9,12 +9,14 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
+#include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 #include "url/gurl.h"
 
 namespace subresource_redirect {
@@ -23,6 +25,7 @@ namespace subresource_redirect {
 // redirects public images for mainframes.
 class SubresourceRedirectHintsAgent
     : public content::RenderFrameObserver,
+      public mojom::SubresourceRedirectHintsReceiver,
       public content::RenderFrameObserverTracker<
           SubresourceRedirectHintsAgent> {
  public:
@@ -55,12 +58,18 @@ class SubresourceRedirectHintsAgent
     kIneligibleOtherImage
   };
 
-  explicit SubresourceRedirectHintsAgent(content::RenderFrame* render_frame);
+  explicit SubresourceRedirectHintsAgent(
+      blink::AssociatedInterfaceRegistry* associated_interfaces,
+      content::RenderFrame* render_frame);
   ~SubresourceRedirectHintsAgent() override;
 
   SubresourceRedirectHintsAgent(const SubresourceRedirectHintsAgent&) = delete;
   SubresourceRedirectHintsAgent& operator=(
       const SubresourceRedirectHintsAgent&) = delete;
+
+  // mojom::SubresourceRedirectHintsReceiver:
+  void SetCompressPublicImagesHints(
+      mojom::CompressPublicImagesHintsPtr images_hints) override;
 
   RedirectResult ShouldRedirectImage(const GURL& url) const;
 
@@ -68,9 +77,6 @@ class SubresourceRedirectHintsAgent
   void RecordMetricsOnLoadFinished(const GURL& url,
                                    int64_t content_length,
                                    RedirectResult redirect_result);
-
-  void SetCompressPublicImagesHints(
-      blink::mojom::CompressPublicImagesHintsPtr images_hints);
 
   // Notifies the browser process that https image compression fetch had failed.
   void NotifyHttpsImageCompressionFetchFailed(base::TimeDelta retry_after);
@@ -99,6 +105,11 @@ class SubresourceRedirectHintsAgent
   // image was in the delayed hints.
   void RecordImageHintsUnavailableMetrics();
 
+  // Binds the mojo hints receiver pipe.
+  void BindHintsReceiver(
+      mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
+          receiver);
+
   bool public_image_urls_received_ = false;
   base::flat_set<std::string> public_image_urls_;
 
@@ -110,6 +121,9 @@ class SubresourceRedirectHintsAgent
   // image hints was unavailable at the time of image fetch. This list is kept
   // until hints are received or it times out and used to record metrics.
   base::flat_set<std::pair<std::string, int64_t>> unavailable_image_hints_urls_;
+
+  mojo::AssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
+      subresource_redirect_hints_receiver_{this};
 
   mojo::AssociatedRemote<
       subresource_redirect::mojom::SubresourceRedirectService>

@@ -17,12 +17,18 @@
 namespace subresource_redirect {
 
 SubresourceRedirectHintsAgent::SubresourceRedirectHintsAgent(
+    blink::AssociatedInterfaceRegistry* associated_interfaces,
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<SubresourceRedirectHintsAgent>(
           render_frame) {
   DCHECK(render_frame);
   DCHECK(IsPublicImageHintsBasedCompressionEnabled());
+  // base::Unretained is safe here because |this| is created for the RenderFrame
+  // never destroyed.
+  associated_interfaces->AddInterface(
+      base::BindRepeating(&SubresourceRedirectHintsAgent::BindHintsReceiver,
+                          base::Unretained(this)));
 }
 
 SubresourceRedirectHintsAgent::~SubresourceRedirectHintsAgent() = default;
@@ -60,7 +66,7 @@ void SubresourceRedirectHintsAgent::OnDestruct() {
 }
 
 void SubresourceRedirectHintsAgent::SetCompressPublicImagesHints(
-    blink::mojom::CompressPublicImagesHintsPtr images_hints) {
+    mojom::CompressPublicImagesHintsPtr images_hints) {
   if (!IsMainFrame())
     return;
   DCHECK(public_image_urls_.empty());
@@ -183,6 +189,12 @@ void SubresourceRedirectHintsAgent::NotifyHttpsImageCompressionFetchFailed(
   subresource_redirect_service_remote_->NotifyCompressedImageFetchFailed(
       retry_after);
   ClearImageHints();
+}
+
+void SubresourceRedirectHintsAgent::BindHintsReceiver(
+    mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
+        receiver) {
+  subresource_redirect_hints_receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace subresource_redirect

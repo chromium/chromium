@@ -16,7 +16,6 @@
 #include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/loader/previews_resource_loading_hints.mojom.h"
 #include "url/gurl.h"
 
 namespace subresource_redirect {
@@ -45,14 +44,14 @@ GetOptimizationGuideDeciderFromWebContents(content::WebContents* web_contents) {
 // Pass down the |images_hints| to |render_frame_host|.
 void SetResourceLoadingImageHints(
     content::RenderFrameHost* render_frame_host,
-    blink::mojom::CompressPublicImagesHintsPtr images_hints) {
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
-      loading_hints_agent;
+    mojom::CompressPublicImagesHintsPtr images_hints) {
+  mojo::AssociatedRemote<mojom::SubresourceRedirectHintsReceiver>
+      hints_receiver;
 
   if (render_frame_host->GetRemoteAssociatedInterfaces()) {
     render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-        &loading_hints_agent);
-    loading_hints_agent->SetCompressPublicImagesHints(std::move(images_hints));
+        &hints_receiver);
+    hints_receiver->SetCompressPublicImagesHints(std::move(images_hints));
   }
 }
 
@@ -166,7 +165,7 @@ void SubresourceRedirectObserver::OnResourceLoadingImageHintsReceived(
   // purposes.
   SetResourceLoadingImageHints(
       current_render_frame_host,
-      blink::mojom::CompressPublicImagesHints::New(public_image_urls));
+      mojom::CompressPublicImagesHints::New(public_image_urls));
   if (!public_image_urls.empty())
     is_https_image_compression_applied_ = true;
 }
