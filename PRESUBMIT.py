@@ -319,6 +319,7 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
 # checks for them and prevent regressions.
 _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
+  '^base/cancelable_callback.h',  # Intentional.
   '^chrome/browser/android/webapps/add_to_homescreen_data_fetcher_unittest.cc',
   '^chrome/browser/apps/guest_view/',
   '^chrome/browser/browsing_data/',
@@ -826,6 +827,24 @@ _BANNED_CPP_FUNCTIONS = (
       (
           'Please use base::{Once,Repeating}Closure instead',
           'of base::Closure. (crbug.com/714018)',
+      ),
+      False,
+      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
+    ),
+    (
+      r'/\bbase::CancelableCallback[<:]',
+      (
+          'Please use base::Cancelable{Once,Repeating}Callback instead',
+          'of base::CancelableCallback. (crbug.com/714018)',
+      ),
+      False,
+      (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
+    ),
+    (
+      r'/\bbase::CancelableClosure\b',
+      (
+          'Please use base::Cancelable{Once,Repeating}Closure instead',
+          'of base::CancelableClosure. (crbug.com/714018)',
       ),
       False,
       (_NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK,),
