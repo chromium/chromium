@@ -277,12 +277,13 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
     base::string16 display_name = target.display_name;
     base::string16 secondary_display_name =
         target.secondary_display_name.value_or(base::string16());
+    base::Optional<gfx::ImageSkia> icon = target.icon;
 
     auto target_view = std::make_unique<SharesheetTargetButton>(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
                             base::Unretained(this),
                             base::Passed(std::move(target))),
-        display_name, secondary_display_name, target.icon,
+        display_name, secondary_display_name, icon,
         delegate_->GetVectorIcon(display_name));
 
     layout_for_target->AddView(std::move(target_view));
