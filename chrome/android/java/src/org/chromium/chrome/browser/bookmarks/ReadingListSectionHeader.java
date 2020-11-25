@@ -15,16 +15,16 @@ import java.util.List;
 /**
  * Helper class to manage all the logic and UI behind adding the reading list section headers in the
  * bookmark content UI.
- * TODO(crbug/1147787): Add integration tests.
  */
 class ReadingListSectionHeader {
     /**
      * Sorts the reading list and adds section headers if the list is a reading list.
      * Noop, if the list isn't a reading list. The layout rows are shown in the following order :
-     * 1 - Section header with title "Unread"
-     * 2 - Unread reading list articles.
-     * 3 - Section header with title "Read"
-     * 4 - Read reading list articles.
+     * 1 - Any promo header
+     * 2 - Section header with title "Unread"
+     * 3 - Unread reading list articles.
+     * 4 - Section header with title "Read"
+     * 5 - Read reading list articles.
      * @param listItems The list of bookmark items to be shown in the UI.
      * @param context The associated activity context.
      */
@@ -41,10 +41,11 @@ class ReadingListSectionHeader {
             readingListStartIndex++;
         }
 
-        assert readingListStartIndex < listItems.size();
+        // If we have no read/unread elements, exit.
+        if (readingListStartIndex == listItems.size()) return;
         sort(listItems, readingListStartIndex);
 
-        // Add a section header at the top.
+        // Add a section header at the top. If it is for read, exit right away.
         assert listItems.get(readingListStartIndex).getBookmarkItem().getId().getType()
                 == BookmarkType.READING_LIST;
         boolean isRead = listItems.get(readingListStartIndex).getBookmarkItem().isRead();

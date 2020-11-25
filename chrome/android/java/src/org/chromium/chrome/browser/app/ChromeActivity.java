@@ -1505,6 +1505,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return;
         }
 
+        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
+
         // Note we get user bookmark ID over just a bookmark ID here: Managed bookmarks can't be
         // edited. If the current URL is only bookmarked by managed bookmarks, this will return
         // INVALID_ID, so the code below will fall back on adding a new bookmark instead.
