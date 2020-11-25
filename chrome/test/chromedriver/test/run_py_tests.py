@@ -95,16 +95,6 @@ _OS_SPECIFIC_FILTER = {}
 _OS_SPECIFIC_FILTER['win'] = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=299
     'ChromeLogPathCapabilityTest.testChromeLogPath',
-    # https://bugs.chromium.org/p/chromium/issues/detail?id=1011095
-    'ChromeDownloadDirTest.testFileDownloadAfterTabHeadless',
-    'ChromeDownloadDirTest.testFileDownloadWithClickHeadless',
-    'ChromeDownloadDirTest.testFileDownloadWithGetHeadless',
-    'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
-    # HeadlessInvalidCertificateTest is sometimes flaky.
-    'HeadlessInvalidCertificateTest.*',
-    # Similar issues with HeadlessChromeDriverTest.
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3519
-    'HeadlessChromeDriverTest.*',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
