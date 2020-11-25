@@ -188,6 +188,12 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
     float pitch,
     SPDChromeVoice voice,
     base::OnceCallback<void(bool)> on_speak_finished) {
+  if (!conn_) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(on_speak_finished), false));
+    return;
+  }
+
   libspeechd_loader_.spd_set_output_module(conn_, voice.module.c_str());
   libspeechd_loader_.spd_set_synthesis_voice(conn_, voice.name.c_str());
 
@@ -216,17 +222,17 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
 }
 
 void TtsPlatformImplBackgroundWorker::Pause() {
-  if (msg_uid_ != kInvalidMessageUid)
+  if (conn_ && msg_uid_ != kInvalidMessageUid)
     libspeechd_loader_.spd_pause(conn_);
 }
 
 void TtsPlatformImplBackgroundWorker::Resume() {
-  if (msg_uid_ != kInvalidMessageUid)
+  if (conn_ && msg_uid_ != kInvalidMessageUid)
     libspeechd_loader_.spd_resume(conn_);
 }
 
 void TtsPlatformImplBackgroundWorker::StopSpeaking() {
-  if (msg_uid_ != kInvalidMessageUid) {
+  if (conn_ && msg_uid_ != kInvalidMessageUid) {
     int result = libspeechd_loader_.spd_stop(conn_);
     if (result == -1) {
       CloseConnection();
@@ -312,7 +318,7 @@ void TtsPlatformImplBackgroundWorker::CloseConnection() {
 void TtsPlatformImplBackgroundWorker::OnSpeechEvent(int msg_id,
                                                     SPDNotificationType type) {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (msg_id != msg_uid_)
+  if (!conn_ || msg_id != msg_uid_)
     return;
 
   switch (type) {
