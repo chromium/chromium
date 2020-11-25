@@ -294,6 +294,15 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
+  // The first editable element should be focused by default.
+  test('verifyFirstFieldFocused', async function() {
+    const dialog = await createAddressDialog(createEmptyAddressEntry());
+    const currentFocus = dialog.shadowRoot.activeElement;
+    const editableElements =
+        dialog.$.dialog.querySelectorAll('cr-input, select');
+    assertEquals(editableElements[0], currentFocus);
+  });
+
   test('verifyRemoveAddressDialogConfirmed', async function() {
     const autofillManager = new TestAutofillManager();
     const removeAddressDialog = createRemoveAddressDialog(autofillManager);

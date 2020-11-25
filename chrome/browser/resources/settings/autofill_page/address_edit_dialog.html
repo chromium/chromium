@@ -58,7 +58,7 @@
           </label>
           <select class="md-select" aria-labelledby="select-label"
               value="[[countryCode_]]" on-change="onCountryChange_"
-              tabindex="-1">
+              tabindex="-1" autofocus>
             <option value=""></option>
             <template is="dom-repeat" items="[[countries_]]">
               <option value="[[getCode_(item)]]"
@@ -74,13 +74,13 @@
               <template is="dom-if" if="[[item.isTextArea]]">
                 <settings-textarea label="[[item.component.fieldName]]"
                     value="{{item.value}}" on-value-changed="updateCanSave_"
-                    class$="address-column [[long_(item)]]" autofocus
+                    class$="address-column [[long_(item)]]"
                     spellcheck="false" maxlength="1000">
                 </settings-textarea>
               </template>
               <template is="dom-if" if="[[!item.isTextArea]]">
                 <cr-input type="text" label="[[item.component.fieldName]]"
-                    autofocus value="{{item.value}}" spellcheck="false"
+                    value="{{item.value}}" spellcheck="false"
                     on-value-changed="updateCanSave_" maxlength="1000"
                     class$="address-column [[long_(item)]]">
                 </cr-input>
