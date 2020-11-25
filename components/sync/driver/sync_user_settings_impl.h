@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
@@ -46,7 +47,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
                         UserSelectableTypeSet types) override;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
   void SetSelectedOsTypes(bool sync_all_os_types,

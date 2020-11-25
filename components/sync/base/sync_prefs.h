@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -113,7 +114,7 @@ class SyncPrefs : public CryptoSyncPrefs,
                         UserSelectableTypeSet registered_types,
                         UserSelectableTypeSet selected_types);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS provides a separate settings UI surface for sync of OS types,
   // including a separate "Sync All" toggle for OS types.
   bool IsSyncAllOsTypesEnabled() const;

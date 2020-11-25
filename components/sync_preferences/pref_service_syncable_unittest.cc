@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -35,7 +36,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -70,7 +71,7 @@ const char kDefaultCharsetPrefName[] = "default_charset";
 const char kNonDefaultCharsetValue[] = "foo";
 const char kDefaultCharsetValue[] = "utf-8";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr ModelTypeSet kAllPreferenceModelTypes(
     syncer::PREFERENCES,
     syncer::PRIORITY_PREFERENCES,
@@ -81,7 +82,7 @@ MATCHER_P(MatchesModelType, model_type, "") {
   const syncer::SyncChange& sync_change = arg;
   return Matches(model_type)(sync_change.sync_data().GetDataType());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
  public:
@@ -861,7 +862,7 @@ TEST_F(PrefServiceSyncableTest, DeletePreference) {
   EXPECT_TRUE(pref->IsDefaultValue());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The Chrome OS tests exercise pref model association that happens in the
 // constructor of PrefServiceSyncable. The tests must register prefs first,
 // then create the PrefServiceSyncable object. The tests live in this file
@@ -1198,7 +1199,7 @@ TEST_F(PrefServiceSyncableChromeOsTest,
 
   prefs_->RemoveSyncedPrefObserver("os_pref", &observer);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

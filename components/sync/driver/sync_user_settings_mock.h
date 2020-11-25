@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,7 +38,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (),
               (const override));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(bool, IsSyncAllOsTypesEnabled, (), (const override));
   MOCK_METHOD(UserSelectableOsTypeSet,
               GetSelectedOsTypes,

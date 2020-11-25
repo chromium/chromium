@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "ui/base/device_form_factor.h"
@@ -18,7 +19,7 @@ namespace {
 // Returns string that represents system in UserAgent.
 std::string GetSystemString() {
   std::string system;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   system = "CROS ";
 #elif defined(OS_ANDROID)
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -34,7 +35,7 @@ std::string GetSystemString() {
   }
 #elif defined(OS_WIN)
   system = "WIN ";
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   system = "LINUX ";
 #elif defined(OS_FREEBSD)
   system = "FREEBSD ";

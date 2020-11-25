@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 static_library("sync_preferences") {
@@ -19,13 +20,14 @@ static_library("sync_preferences") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
 }
@@ -59,6 +61,7 @@ source_set("unit_tests") {
     ":sync_preferences",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -67,7 +70,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
 }

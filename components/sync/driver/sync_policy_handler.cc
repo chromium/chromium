@@ -8,6 +8,7 @@
 
 #include "base/optional.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -15,9 +16,9 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {
 namespace {
@@ -31,7 +32,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
       prefs->SetValue(pref, base::Value(false));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsSplitSettingsSyncEnabled()) {
     // Check for OS types. This includes types that used to be browser types,
     // like "apps" and "preferences".
@@ -43,7 +44,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
         prefs->SetValue(os_pref, base::Value(false));
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace

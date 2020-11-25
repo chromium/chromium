@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/device_form_factor.h"
 
 namespace syncer {
@@ -29,7 +30,7 @@ void OnHardwareInfoReady(LocalDeviceNameInfo* name_info_ptr,
                          base::ScopedClosureRunner done_closure,
                          base::SysInfo::HardwareInfo hardware_info) {
   name_info_ptr->manufacturer_name = std::move(hardware_info.manufacturer);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For ChromeOS the returned model values are product code names like Eve. We
   // want to use generic names like Chromebook.
   name_info_ptr->model_name = GetChromeOSDeviceNameFromType();
@@ -50,9 +51,9 @@ void OnPersonalizableDeviceNameReady(LocalDeviceNameInfo* name_info_ptr,
 std::string GetPersonalizableDeviceNameInternal();
 
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return sync_pb::SyncEnums_DeviceType_TYPE_CROS;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
 #elif defined(OS_ANDROID) || defined(OS_IOS)
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET

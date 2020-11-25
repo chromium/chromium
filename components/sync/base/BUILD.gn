@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 declare_args() {
@@ -81,6 +82,7 @@ static_library("base") {
   ]
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/os_crypt",
     "//components/pref_registry",
     "//components/prefs",
@@ -92,7 +94,7 @@ static_library("base") {
     "//ui/base",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
 

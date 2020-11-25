@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -67,7 +68,7 @@ class SyncUserSettings {
   // registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // As above, but for Chrome OS-specific data types. These are controlled by
   // toggles in the OS Settings UI.
   virtual bool IsSyncAllOsTypesEnabled() const = 0;
@@ -80,7 +81,7 @@ class SyncUserSettings {
   // Exists in this interface for easier mocking in tests.
   virtual bool IsOsSyncFeatureEnabled() const = 0;
   virtual void SetOsSyncFeatureEnabled(bool enabled) = 0;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Encryption state.
   // Note that all of this state may only be queried or modified if the Sync

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -85,6 +86,7 @@ static_library("driver") {
   ]
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/data_use_measurement/core",
     "//components/invalidation/impl:feature_list",
     "//components/keyed_service/core",
@@ -107,7 +109,7 @@ static_library("driver") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
 
@@ -152,6 +154,7 @@ static_library("test_support") {
   public_deps = [ "//components/sync/base:test_support" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/invalidation/impl:test_support",
     "//components/pref_registry",
     "//components/prefs:test_support",

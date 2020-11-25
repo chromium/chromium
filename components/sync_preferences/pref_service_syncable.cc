@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/default_pref_store.h"
 #include "components/prefs/in_memory_pref_store.h"
@@ -21,7 +22,7 @@
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -53,7 +54,7 @@ PrefServiceSyncable::PrefServiceSyncable(
       priority_pref_sync_associator_(pref_model_associator_client,
                                      syncer::PRIORITY_PREFERENCES,
                                      user_prefs.get()),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       os_pref_sync_associator_(pref_model_associator_client,
                                syncer::OS_PREFERENCES,
                                user_prefs.get()),
@@ -64,7 +65,7 @@ PrefServiceSyncable::PrefServiceSyncable(
       pref_registry_(std::move(pref_registry)) {
   pref_sync_associator_.SetPrefService(this);
   priority_pref_sync_associator_.SetPrefService(this);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   os_pref_sync_associator_.SetPrefService(this);
   os_priority_pref_sync_associator_.SetPrefService(this);
 #endif
@@ -132,7 +133,7 @@ bool PrefServiceSyncable::IsPrioritySyncing() {
   return priority_pref_sync_associator_.models_associated();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrefServiceSyncable::AreOsPrefsSyncing() {
   return os_pref_sync_associator_.models_associated();
 }
@@ -140,7 +141,7 @@ bool PrefServiceSyncable::AreOsPrefsSyncing() {
 bool PrefServiceSyncable::AreOsPriorityPrefsSyncing() {
   return os_priority_pref_sync_associator_.models_associated();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PrefServiceSyncable::AddObserver(PrefServiceSyncableObserver* observer) {
   observer_list_.AddObserver(observer);
@@ -158,7 +159,7 @@ syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
       return &pref_sync_associator_;
     case syncer::PRIORITY_PREFERENCES:
       return &priority_pref_sync_associator_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case syncer::OS_PREFERENCES:
       return &os_pref_sync_associator_;
     case syncer::OS_PRIORITY_PREFERENCES:
@@ -182,7 +183,7 @@ void PrefServiceSyncable::AddSyncedPrefObserver(const std::string& name,
                                                 SyncedPrefObserver* observer) {
   pref_sync_associator_.AddSyncedPrefObserver(name, observer);
   priority_pref_sync_associator_.AddSyncedPrefObserver(name, observer);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   os_pref_sync_associator_.AddSyncedPrefObserver(name, observer);
   os_priority_pref_sync_associator_.AddSyncedPrefObserver(name, observer);
 #endif
@@ -193,7 +194,7 @@ void PrefServiceSyncable::RemoveSyncedPrefObserver(
     SyncedPrefObserver* observer) {
   pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
   priority_pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   os_pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
   os_priority_pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
 #endif
@@ -211,7 +212,7 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
     priority_pref_sync_associator_.RegisterPref(path);
     return;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) {
     if (chromeos::features::IsSplitSettingsSyncEnabled()) {
       // Register the pref under the new ModelType::OS_PREFERENCES.
@@ -248,7 +249,7 @@ void PrefServiceSyncable::OnIsSyncingChanged() {
 void PrefServiceSyncable::ProcessPrefChange(const std::string& name) {
   pref_sync_associator_.ProcessPrefChange(name);
   priority_pref_sync_associator_.ProcessPrefChange(name);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   os_pref_sync_associator_.ProcessPrefChange(name);
   os_priority_pref_sync_associator_.ProcessPrefChange(name);
 #endif

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_store.h"
@@ -112,7 +113,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   sync_prefs_->RemoveSyncPrefObserver(&mock_sync_pref_observer);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   EXPECT_CALL(mock_sync_pref_observer, OnPreferredDataTypesPrefChange());
@@ -246,7 +247,7 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, IsSyncAllOsTypesEnabled) {
   EXPECT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());
 
@@ -299,7 +300,7 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
     EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes());
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Similar to SyncPrefsTest, but does not create a SyncPrefs instance. This lets
 // individual tests set up the "before" state of the PrefService before

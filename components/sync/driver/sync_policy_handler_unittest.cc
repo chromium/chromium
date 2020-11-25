@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -14,10 +15,10 @@
 #include "components/sync/base/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {
 namespace {
@@ -95,7 +96,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   EXPECT_TRUE(enabled);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SyncPolicyHandlerOsTest : public testing::Test {
  public:
   SyncPolicyHandlerOsTest() {
@@ -162,7 +163,7 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   ASSERT_TRUE(prefs.GetBoolean(prefs::kSyncOsPreferences, &enabled));
   EXPECT_FALSE(enabled);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace syncer

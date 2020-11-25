@@ -4,6 +4,8 @@
 
 #include "components/sync/base/pref_names.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace syncer {
 
 namespace prefs {
@@ -27,7 +29,7 @@ const char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
 // (kSyncBookmarks, kSyncPasswords, etc.) can all be ignored.
 const char kSyncKeepEverythingSynced[] = "sync.keep_everything_synced";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref that records whether OS sync preferences were migrated due to
 // SplitSettingsSync rollout.
 const char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
@@ -45,7 +47,7 @@ const char kSyncAllOsTypes[] = "sync.all_os_types";
 // OS user selectable types.
 const char kSyncOsApps[] = "sync.os_apps";
 const char kSyncOsPreferences[] = "sync.os_preferences";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Booleans specifying whether the user has selected to sync the following
 // user selectable types.

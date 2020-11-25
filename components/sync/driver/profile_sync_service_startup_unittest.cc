@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
@@ -141,7 +142,7 @@ class ProfileSyncServiceStartupTest : public testing::Test {
 
 // ChromeOS does not support sign-in after startup (in particular,
 // IdentityManager::Observer::OnPrimaryAccountSet never gets called).
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
@@ -222,7 +223,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
 
   EXPECT_CALL(*data_type_manager, Stop(BROWSER_SHUTDOWN));
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ProfileSyncServiceStartupTest, StartNoCredentials) {
   // We're already signed in, but don't have a refresh token.
@@ -567,7 +568,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartDownloadFailed) {
 
 // ChromeOS does not support sign-in after startup (in particular,
 // IdentityManager::Observer::OnPrimaryAccountSet never gets called).
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
@@ -660,7 +661,7 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceNthTime) {
   // The user is already signed in and has completed Sync setup before.

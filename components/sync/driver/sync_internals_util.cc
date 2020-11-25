@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -24,7 +25,7 @@
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -331,7 +332,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       section_summary->AddStringStat("Transport State");
   Stat<std::string>* disable_reasons =
       section_summary->AddStringStat("Disable Reasons");
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Stat<std::string>* os_feature_state =
       section_summary->AddStringStat("Chrome OS Sync Feature");
 #endif
@@ -471,14 +472,14 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   // Summary.
   transport_state->Set(GetTransportStateString(service->GetTransportState()));
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!chromeos::features::IsSplitSettingsSyncEnabled())
     os_feature_state->Set("Flag disabled");
   else if (service->GetUserSettings()->IsOsSyncFeatureEnabled())
     os_feature_state->Set("Enabled");
   else
     os_feature_state->Set("Disabled");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
   std::string auth_error_str = service->GetAuthError().ToString();

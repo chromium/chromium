@@ -4,6 +4,7 @@
 
 #include "components/sync/driver/test_sync_user_settings.h"
 
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -92,7 +93,7 @@ UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
   return UserSelectableTypeSet::All();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
   return sync_all_os_types_enabled_;
 }

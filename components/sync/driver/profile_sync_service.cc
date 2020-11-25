@@ -21,6 +21,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -49,7 +50,7 @@
 #include "components/version_info/version_info_values.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -1036,7 +1037,7 @@ void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
       // that IsSyncRequested gets set to false, and Sync won't start again on
       // the next browser startup.
       StopAndClear();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ChromeOS, sign out the user after a dashboard
       // clear.
       if (!IsLocalSyncEnabled()) {

@@ -8,10 +8,11 @@
 
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -46,7 +47,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kPreferences: {
       ModelTypeSet model_types = {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES,
                                   SEARCH_ENGINES};
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // SplitSettingsSync makes Printers a separate OS setting.
       if (!chromeos::features::IsSplitSettingsSyncEnabled())
         model_types.Put(PRINTERS);
@@ -72,7 +73,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
     case UserSelectableType::kApps: {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // SplitSettingsSync moves apps to Chrome OS settings.
       if (chromeos::features::IsSplitSettingsSyncEnabled()) {
         return {kAppsTypeName, UNSPECIFIED};
@@ -93,7 +94,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               {PROXY_TABS, SESSIONS, DEPRECATED_FAVICON_IMAGES,
                DEPRECATED_FAVICON_TRACKING, SEND_TAB_TO_SELF}};
     case UserSelectableType::kWifiConfigurations: {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // SplitSettingsSync moves Wi-Fi configurations to Chrome OS settings.
       if (chromeos::features::IsSplitSettingsSyncEnabled())
         return {kWifiConfigurationsTypeName, UNSPECIFIED};
@@ -107,7 +108,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
   return {nullptr, UNSPECIFIED};
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kOsAppsTypeName[] = "osApps";
 constexpr char kOsPreferencesTypeName[] = "osPreferences";
 constexpr char kOsWifiConfigurationsTypeName[] = "osWifiConfigurations";
@@ -130,7 +131,7 @@ UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
               {WIFI_CONFIGURATIONS}};
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -202,7 +203,7 @@ int UserSelectableTypeToHistogramInt(UserSelectableType type) {
       ModelTypeHistogramValue(UserSelectableTypeToCanonicalModelType(type)));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).type_name;
 }
@@ -244,6 +245,6 @@ ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type) {
 ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).canonical_model_type;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace syncer

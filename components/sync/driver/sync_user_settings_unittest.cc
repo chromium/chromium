@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -18,7 +19,7 @@
 #include "components/sync/engine/configure_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
@@ -32,7 +33,7 @@ const char kSyncSessions[] = "sync.sessions";
 
 ModelTypeSet GetUserTypes() {
   ModelTypeSet user_types = UserTypes();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // These types only exist when SplitSettingsSync is enabled.
   if (!chromeos::features::IsSplitSettingsSyncEnabled()) {
     user_types.RemoveAll(
@@ -149,7 +150,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesSyncEverything) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsTest, PreferredTypesSyncAllOsTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
@@ -165,7 +166,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesSyncAllOsTypes) {
     EXPECT_EQ(GetUserTypes(), GetPreferredUserTypes(*sync_user_settings));
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(SyncUserSettingsTest, PreferredTypesNotKeepEverythingSynced) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
@@ -174,7 +175,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesNotKeepEverythingSynced) {
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*selected_types=*/UserSelectableTypeSet());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsSplitSettingsSyncEnabled()) {
     // GetPreferredUserTypes() returns ModelTypes, which includes both browser
     // and OS types. However, this test exercises browser UserSelectableTypes,
@@ -182,7 +183,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesNotKeepEverythingSynced) {
     sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                            UserSelectableOsTypeSet());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // No user selectable types are enabled, so only the "always preferred" types
   // are preferred.
   ASSERT_EQ(AlwaysPreferredUserTypes(),
@@ -201,7 +202,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesNotKeepEverythingSynced) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsTest, PreferredTypesNotAllOsTypesSynced) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
@@ -230,7 +231,7 @@ TEST_F(SyncUserSettingsTest, PreferredTypesNotAllOsTypesSynced) {
               GetPreferredUserTypes(*sync_user_settings));
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Device info should always be enabled.
 TEST_F(SyncUserSettingsTest, DeviceInfo) {
@@ -282,7 +283,7 @@ TEST_F(SyncUserSettingsTest, UserConsents) {
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsTest, AlwaysPreferredTypes_ChromeOS) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
@@ -347,7 +348,7 @@ TEST_F(SyncUserSettingsTest, AppsAreHandledByOsSettings) {
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(ARC_PACKAGE));
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(WEB_APPS));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

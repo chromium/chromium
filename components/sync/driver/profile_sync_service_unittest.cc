@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -658,7 +659,7 @@ TEST_F(ProfileSyncServiceTest, DisableAndEnableSyncTemporarily) {
 
 // Certain ProfileSyncService tests don't apply to Chrome OS, for example
 // things that deal with concepts like "signing out".
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceTest, SignOutDisablesSyncTransportAndSyncFeature) {
   // Sign-in and enable sync.
   SignIn();
@@ -749,7 +750,7 @@ TEST_F(ProfileSyncServiceTest, IdentityProvider_GetActiveAccountId) {
   EXPECT_EQ(identity_manager()->GetPrimaryAccountId(),
             identity_provider()->GetActiveAccountId());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ProfileSyncServiceTest, GetSyncTokenStatus) {
   SignIn();
@@ -962,7 +963,7 @@ TEST_F(ProfileSyncServiceTest, CredentialsRejectedByClient_DoNotStopSync) {
 }
 
 // CrOS does not support signout.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
   CoreAccountId init_account_id;
 
@@ -1277,7 +1278,7 @@ TEST_F(ProfileSyncServiceTest, DisableSyncOnClient) {
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
   service()->OnActionableError(client_cmd);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS does not support signout.
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
   EXPECT_EQ(
@@ -1531,7 +1532,7 @@ TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
 }
 
 // CrOS does not support signout.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldDectivateSyncInvalidationsServiceOnSignOut) {
   SignIn();
