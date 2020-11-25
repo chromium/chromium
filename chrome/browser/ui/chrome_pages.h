@@ -23,6 +23,10 @@
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #endif
 
+namespace signin {
+enum class ConsentLevel;
+}  // namespace signin
+
 class Browser;
 class Profile;
 
@@ -162,7 +166,8 @@ void ShowScanningApp(Profile* profile);
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 // Initiates signin in a new browser tab.
 void ShowBrowserSignin(Browser* browser,
-                       signin_metrics::AccessPoint access_point);
+                       signin_metrics::AccessPoint access_point,
+                       signin::ConsentLevel consent_level);
 
 // If the user is already signed in, shows the "Signin" portion of Settings,
 // otherwise initiates signin in a new browser tab.

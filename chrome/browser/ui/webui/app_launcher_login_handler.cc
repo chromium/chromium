@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -126,7 +127,7 @@ void AppLauncherLoginHandler::HandleShowSyncLoginUI(
       web_contents->GetURL().spec() == chrome::kChromeUIAppsURL
           ? signin_metrics::AccessPoint::ACCESS_POINT_APPS_PAGE_LINK
           : signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK;
-  chrome::ShowBrowserSignin(browser, access_point);
+  chrome::ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);
   RecordInHistogram(NTP_SIGN_IN_PROMO_CLICKED);
 }
 #endif

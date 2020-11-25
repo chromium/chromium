@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -448,7 +449,7 @@ bool SignInWithUI(Browser* browser,
 
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_MENU;
-  chrome::ShowBrowserSignin(browser, access_point);
+  chrome::ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);
   content::WebContents* active_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   DCHECK(active_contents);

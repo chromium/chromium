@@ -247,7 +247,8 @@ void EnableSyncFromPromo(
   }
 
   if (account.IsEmpty()) {
-    chrome::ShowBrowserSignin(browser, access_point);
+    chrome::ShowBrowserSignin(browser, access_point,
+                              signin::ConsentLevel::kSync);
     return;
   }
 
