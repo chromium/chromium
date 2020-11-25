@@ -114,7 +114,7 @@ class MEDIA_EXPORT SilentSinkSuspender
   // A cancelable task that is posted to switch to or from the |fake_sink_|
   // after a period of silence or first non-silent audio respective. We do this
   // on Android to save battery consumption.
-  base::CancelableCallback<void(bool)> sink_transition_callback_;
+  base::CancelableRepeatingCallback<void(bool)> sink_transition_callback_;
 
   // Audio output delay at the moment when transition to |fake_sink_| starts.
   base::TimeDelta latest_output_delay_;

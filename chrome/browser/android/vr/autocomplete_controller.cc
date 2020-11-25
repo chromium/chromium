@@ -96,7 +96,7 @@ void AutocompleteController::OnResultChanged(
   suggestions_timeout_.Cancel();
 
   if (suggestions.size() < kMaxNumberOfSuggestions) {
-    suggestions_timeout_.Reset(base::BindRepeating(
+    suggestions_timeout_.Reset(base::BindOnce(
         suggestion_callback_, base::Passed(std::move(suggestions))));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, suggestions_timeout_.callback(),

@@ -352,7 +352,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   // To detect tasks that are causing slow deletions, record running sub tasks
   // after a delay.
-  slow_pending_tasks_closure_.Reset(base::BindRepeating(
+  slow_pending_tasks_closure_.Reset(base::BindOnce(
       &ChromeBrowsingDataRemoverDelegate::RecordUnfinishedSubTasks,
       weak_ptr_factory_.GetWeakPtr()));
   content::GetUIThreadTaskRunner({})->PostDelayedTask(

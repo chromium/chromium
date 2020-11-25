@@ -1571,7 +1571,7 @@ void DisplayManager::UpdateZoomFactor(int64_t display_id, float zoom_factor) {
   if (Display::IsInternalDisplayId(display_id)) {
     on_display_zoom_modify_timeout_.Cancel();
     on_display_zoom_modify_timeout_.Reset(
-        base::BindRepeating(&OnInternalDisplayZoomChanged, zoom_factor));
+        base::BindOnce(&OnInternalDisplayZoomChanged, zoom_factor));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, on_display_zoom_modify_timeout_.callback(),
         base::TimeDelta::FromSeconds(kDisplayZoomModifyTimeoutSec));

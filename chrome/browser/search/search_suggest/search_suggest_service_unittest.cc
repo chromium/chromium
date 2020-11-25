@@ -125,7 +125,7 @@ class SearchSuggestServiceTest : public BrowserWithTestWindowTest {
 
   void RunFor(base::TimeDelta time_period) {
     base::RunLoop run_loop;
-    base::CancelableCallback<void()> callback(run_loop.QuitWhenIdleClosure());
+    base::CancelableOnceClosure callback(run_loop.QuitWhenIdleClosure());
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, callback.callback(), time_period);
     run_loop.Run();

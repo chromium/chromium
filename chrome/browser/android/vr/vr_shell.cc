@@ -863,8 +863,8 @@ void VrShell::RequestRecordAudioPermissionResult(
 }
 
 void VrShell::PollCapturingState() {
-  poll_capturing_state_task_.Reset(base::BindRepeating(
-      &VrShell::PollCapturingState, base::Unretained(this)));
+  poll_capturing_state_task_.Reset(
+      base::BindOnce(&VrShell::PollCapturingState, base::Unretained(this)));
   main_thread_task_runner_->PostDelayedTask(
       FROM_HERE, poll_capturing_state_task_.callback(),
       kPollCapturingStateInterval);

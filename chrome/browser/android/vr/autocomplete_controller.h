@@ -56,7 +56,7 @@ class AutocompleteController : public ::AutocompleteController::Observer {
   // will wait for a period of time after the receipt of each suggestion and
   // batch incoming suggestions that arrive before that period of time has been
   // exceeded.
-  base::CancelableCallback<void()> suggestions_timeout_;
+  base::CancelableOnceClosure suggestions_timeout_;
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteController);
 };

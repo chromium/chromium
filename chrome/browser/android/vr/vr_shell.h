@@ -346,7 +346,7 @@ class VrShell : VoiceResultDelegate,
 
   mojo::Remote<device::mojom::GeolocationConfig> geolocation_config_;
 
-  base::CancelableClosure poll_capturing_state_task_;
+  base::CancelableOnceClosure poll_capturing_state_task_;
   CapturingStateModel active_capturing_;
   CapturingStateModel background_capturing_;
   CapturingStateModel potential_capturing_;

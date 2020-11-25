@@ -57,7 +57,7 @@ class FakeAudioWorker::Worker
   int64_t frames_elapsed_;
 
   // Used to cancel any delayed tasks still inside the worker loop's queue.
-  base::CancelableClosure worker_task_cb_;
+  base::CancelableRepeatingClosure worker_task_cb_;
 
   THREAD_CHECKER(thread_checker_);
 

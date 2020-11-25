@@ -305,7 +305,7 @@ class ChromeBrowsingDataRemoverDelegate
 
   // Fires after some time to track slow tasks. Cancelled when all tasks
   // are finished.
-  base::CancelableClosure slow_pending_tasks_closure_;
+  base::CancelableOnceClosure slow_pending_tasks_closure_;
 
   DomainReliabilityClearer domain_reliability_clearer_;
 

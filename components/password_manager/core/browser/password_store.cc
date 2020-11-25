@@ -1015,7 +1015,7 @@ void PasswordStore::RemoveLoginsByURLAndTimeInternal(
   if (sync_completion) {
     deletions_have_synced_callbacks_.push_back(std::move(sync_completion));
     // Start a timeout for sync, or restart it if it was already running.
-    deletions_have_synced_timeout_.Reset(base::BindRepeating(
+    deletions_have_synced_timeout_.Reset(base::BindOnce(
         &PasswordStore::NotifyDeletionsHaveSynced, this, /*success=*/false));
     background_task_runner_->PostDelayedTask(
         FROM_HERE, deletions_have_synced_timeout_.callback(),

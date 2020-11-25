@@ -700,7 +700,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // to record UMA metrics for changes to the display zoom that are temporary.
   // Temporary changes may include things like the user trying out different
   // zoom levels before making the final decision.
-  base::CancelableCallback<void()> on_display_zoom_modify_timeout_;
+  base::CancelableOnceClosure on_display_zoom_modify_timeout_;
 #endif
 
   base::WeakPtrFactory<DisplayManager> weak_ptr_factory_{this};

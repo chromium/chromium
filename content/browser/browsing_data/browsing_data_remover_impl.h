@@ -230,7 +230,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // Fires after some time to track slow tasks. Cancelled when all tasks
   // are finished.
-  base::CancelableClosure slow_pending_tasks_closure_;
+  base::CancelableOnceClosure slow_pending_tasks_closure_;
 
   // Observers of the global state and individual tasks.
   base::ObserverList<Observer, true>::Unchecked observer_list_;

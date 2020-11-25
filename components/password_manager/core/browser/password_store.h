@@ -893,7 +893,7 @@ class PasswordStore : protected PasswordStoreSync,
   // background thread, but the callbacks must be run on the main thread!
   std::vector<base::OnceCallback<void(bool)>> deletions_have_synced_callbacks_;
   // Timeout closure that runs if sync takes too long to propagate deletions.
-  base::CancelableClosure deletions_have_synced_timeout_;
+  base::CancelableOnceClosure deletions_have_synced_timeout_;
 
   bool shutdown_called_ = false;
 

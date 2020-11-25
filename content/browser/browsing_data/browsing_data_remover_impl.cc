@@ -245,7 +245,7 @@ void BrowsingDataRemoverImpl::RunNextTask() {
 
   // To detect tasks that are causing slow deletions, record running sub tasks
   // after a delay.
-  slow_pending_tasks_closure_.Reset(base::BindRepeating(
+  slow_pending_tasks_closure_.Reset(base::BindOnce(
       &BrowsingDataRemoverImpl::RecordUnfinishedSubTasks, GetWeakPtr()));
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, slow_pending_tasks_closure_.callback(), kSlowTaskTimeout);

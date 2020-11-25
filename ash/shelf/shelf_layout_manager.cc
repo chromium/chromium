@@ -1151,7 +1151,7 @@ void ShelfLayoutManager::OnShelfConfigUpdated() {
 
 void ShelfLayoutManager::OnCenterVisibilityChanged(
     message_center::Visibility visibility) {
-  // Uses base::CancelableClosure to handle two edge cases: (1)
+  // Uses base::CancelableOnceClosure to handle two edge cases: (1)
   // ShelfLayoutManager is destructed before the callback runs. (2) The previous
   // callback is still pending.
   visibility_update_for_tray_callback_.Reset(base::BindOnce(

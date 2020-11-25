@@ -518,7 +518,7 @@ void RendererImpl::OnAudioRendererFlushDone() {
 
   // If we had a deferred video renderer underflow prior to the flush, it should
   // have been cleared by the audio renderer changing to BUFFERING_HAVE_NOTHING.
-  DCHECK(deferred_video_underflow_cb_.IsCancelled());
+  DCHECK(!has_deferred_buffering_state_change_);
   DCHECK_EQ(audio_buffering_state_, BUFFERING_HAVE_NOTHING);
   audio_ended_ = false;
   audio_playing_ = false;
@@ -719,11 +719,12 @@ void RendererImpl::OnBufferingStateChange(DemuxerStream::Type type,
     if (video_buffering_state_ == BUFFERING_HAVE_ENOUGH &&
         audio_buffering_state_ == BUFFERING_HAVE_ENOUGH &&
         new_buffering_state == BUFFERING_HAVE_NOTHING &&
-        deferred_video_underflow_cb_.IsCancelled()) {
+        !has_deferred_buffering_state_change_) {
       DVLOG(4) << __func__ << " Deferring HAVE_NOTHING for video stream.";
       deferred_video_underflow_cb_.Reset(
-          base::BindRepeating(&RendererImpl::OnBufferingStateChange, weak_this_,
-                              type, new_buffering_state, reason));
+          base::BindOnce(&RendererImpl::OnBufferingStateChange, weak_this_,
+                         type, new_buffering_state, reason));
+      has_deferred_buffering_state_change_ = true;
       task_runner_->PostDelayedTask(FROM_HERE,
                                     deferred_video_underflow_cb_.callback(),
                                     video_underflow_threshold_.value());
@@ -732,12 +733,14 @@ void RendererImpl::OnBufferingStateChange(DemuxerStream::Type type,
 
     DVLOG(4) << "deferred_video_underflow_cb_.Cancel()";
     deferred_video_underflow_cb_.Cancel();
-  } else if (!deferred_video_underflow_cb_.IsCancelled() &&
+    has_deferred_buffering_state_change_ = false;
+  } else if (has_deferred_buffering_state_change_ &&
              type == DemuxerStream::AUDIO &&
              new_buffering_state == BUFFERING_HAVE_NOTHING) {
     // If audio underflows while we have a deferred video underflow in progress
     // we want to mark video as underflowed immediately and cancel the deferral.
     deferred_video_underflow_cb_.Cancel();
+    has_deferred_buffering_state_change_ = false;
     video_buffering_state_ = BUFFERING_HAVE_NOTHING;
   }
 

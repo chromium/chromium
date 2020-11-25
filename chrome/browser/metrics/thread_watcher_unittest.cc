@@ -184,10 +184,10 @@ class CustomThreadWatcher : public ThreadWatcher {
             quit_closure.Run();
         },
         base::Unretained(this), quit_closure, expected_state);
-    base::CancelableClosure timeout_closure(base::BindRepeating(
-        [](base::RepeatingClosure quit_closure) {
+    base::CancelableOnceClosure timeout_closure(base::BindOnce(
+        [](base::OnceClosure quit_closure) {
           ADD_FAILURE() << "WaitForWaitStateChange timed out";
-          quit_closure.Run();
+          std::move(quit_closure).Run();
         },
         quit_closure));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -237,8 +237,8 @@ class CustomThreadWatcher : public ThreadWatcher {
         },
         base::Unretained(this), quit_closure, expected_state,
         base::Unretained(&exit_state));
-    base::CancelableClosure timeout_closure(base::BindRepeating(
-        [](base::RepeatingClosure quit_closure) { quit_closure.Run(); },
+    base::CancelableOnceClosure timeout_closure(base::BindOnce(
+        [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
         quit_closure));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout_closure.callback(),
@@ -270,8 +270,8 @@ class CustomThreadWatcher : public ThreadWatcher {
         },
         base::Unretained(this), quit_closure, expected_state,
         base::Unretained(&exit_state));
-    base::CancelableClosure timeout_closure(base::BindRepeating(
-        [](base::RepeatingClosure quit_closure) { quit_closure.Run(); },
+    base::CancelableOnceClosure timeout_closure(base::BindOnce(
+        [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
         quit_closure));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout_closure.callback(),

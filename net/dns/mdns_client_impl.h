@@ -283,7 +283,7 @@ class MDnsListenerImpl : public MDnsListener,
   bool started_;
   bool active_refresh_;
 
-  base::CancelableClosure next_refresh_;
+  base::CancelableRepeatingClosure next_refresh_;
   DISALLOW_COPY_AND_ASSIGN(MDnsListenerImpl);
 };
 

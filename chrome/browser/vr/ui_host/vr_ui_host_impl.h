@@ -99,7 +99,7 @@ class VRUiHostImpl : public content::VrUiHost,
   permissions::PermissionRequestManager* permission_request_manager_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
-  base::CancelableClosure external_prompt_timeout_task_;
+  base::CancelableOnceClosure external_prompt_timeout_task_;
   bool is_external_prompt_showing_in_headset_ = false;
 
   CapturingStateModel active_capturing_;
@@ -114,7 +114,7 @@ class VRUiHostImpl : public content::VrUiHost,
   bool frames_throttled_ = false;
 
   mojo::Remote<device::mojom::GeolocationConfig> geolocation_config_;
-  base::CancelableClosure poll_capturing_state_task_;
+  base::CancelableOnceClosure poll_capturing_state_task_;
 
   THREAD_CHECKER(thread_checker_);
 

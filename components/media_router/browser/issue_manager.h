@@ -64,9 +64,10 @@ class IssueManager {
 
  private:
   // Issues tracked internally by the IssueManager.
-  // TODO(imcheng): Rather than holding a base::CancelableClosure, it might be a
-  // bit simpler to use a CancelableTaskTracker and track TaskIds here. This
-  // will require adding support for delayed tasks to CancelableTaskTracker.
+  // TODO(imcheng): Rather than holding a base::CancelableOnceClosure, it might
+  // be a bit simpler to use a CancelableTaskTracker and track TaskIds here.
+  // This will require adding support for delayed tasks to
+  // CancelableTaskTracker.
   struct Entry {
     Entry(const Issue& issue,
           std::unique_ptr<base::CancelableOnceClosure>

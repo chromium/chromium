@@ -237,8 +237,8 @@ net::CancelableCompletionRepeatingCallback*
 AppCacheQuotaClient::GetServiceDeleteCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Lazily created due to base::CancelableCallback's threading restrictions,
-  // there is no way to detach from the thread created on.
+  // Lazily created due to base::CancelableRepeatingCallback's threading
+  // restrictions, there is no way to detach from the thread created on.
   if (!service_delete_callback_) {
     service_delete_callback_ =
         std::make_unique<net::CancelableCompletionRepeatingCallback>(

@@ -66,7 +66,7 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
   RenderCallback* callback_;
 
   // Manages cancellation of periodic Render() callback task.
-  base::CancelableClosure cancelable_worker_;
+  base::CancelableRepeatingClosure cancelable_worker_;
 
   // Used to determine when a new frame is received.
   scoped_refptr<VideoFrame> last_frame_;

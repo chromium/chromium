@@ -324,8 +324,8 @@ void VRUiHostImpl::ShowExternalNotificationPrompt() {
 
   is_external_prompt_showing_in_headset_ = true;
   external_prompt_timeout_task_.Reset(
-      base::BindRepeating(&VRUiHostImpl::RemoveHeadsetNotificationPrompt,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&VRUiHostImpl::RemoveHeadsetNotificationPrompt,
+                     weak_ptr_factory_.GetWeakPtr()));
   main_thread_task_runner_->PostDelayedTask(
       FROM_HERE, external_prompt_timeout_task_.callback(),
       kPermissionPromptTimeout);
@@ -382,7 +382,7 @@ void VRUiHostImpl::InitCapturingStates() {
 }
 
 void VRUiHostImpl::PollCapturingState() {
-  poll_capturing_state_task_.Reset(base::BindRepeating(
+  poll_capturing_state_task_.Reset(base::BindOnce(
       &VRUiHostImpl::PollCapturingState, base::Unretained(this)));
   main_thread_task_runner_->PostDelayedTask(
       FROM_HERE, poll_capturing_state_task_.callback(),
