@@ -40,6 +40,7 @@ test("cast_accessibility_unittests") {
     "//base/test:run_all_unittests",
     "//chromecast:cast_shell_lib",
     "//chromecast/browser",
+    "//content/test:test_support",
     "//extensions/browser/api",
     "//skia",
     "//testing/gmock",
