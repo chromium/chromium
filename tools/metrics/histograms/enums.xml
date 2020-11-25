@@ -49429,7 +49429,7 @@ Called by update_use_counter_css.py.-->
   </int>
 </enum>
 
-<enum name="ModuleBlacklistCacheReadResult">
+<enum name="ModuleBlocklistCacheReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open the file"/>
   <int value="2" label="Failed to read the metadata"/>
@@ -49440,8 +49440,8 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Invalid MD5 digest"/>
 </enum>
 
-<enum name="ModuleBlacklistStatus">
-  <int value="0" label="Newly blacklisted"/>
+<enum name="ModuleBlocklistStatus">
+  <int value="0" label="Newly blocklisted"/>
   <int value="1" label="Blocked"/>
 </enum>
 
@@ -73203,7 +73203,7 @@ Full version information for the fingerprint enum values:
   <int value="27" label="kSettingsResetPromptLastTriggeredForStartupUrls"/>
   <int value="28" label="kSettingsResetPromptLastTriggeredForHomepage"/>
   <int value="29" label="kMediaStorageIdSalt"/>
-  <int value="30" label="kModuleBlacklistCacheMD5Digest"/>
+  <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
 </enum>
 
 <enum name="TranslateAssistContentResult">

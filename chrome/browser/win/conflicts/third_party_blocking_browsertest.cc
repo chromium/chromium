@@ -15,8 +15,8 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
-#include "chrome/browser/win/conflicts/module_blacklist_cache_updater.h"
-#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/proto/module_list.pb.h"
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
@@ -83,15 +83,15 @@ class ThirdPartyRegistryKeyObserver {
 // directory and returns its path.
 void CreateModuleList(base::FilePath* module_list_path) {
   chrome::conflicts::ModuleList module_list;
-  // Include an empty blacklist and whitelist.
-  module_list.mutable_blacklist();
-  module_list.mutable_whitelist();
+  // Include an empty blocklist and allowlist.
+  module_list.mutable_blocklist();
+  module_list.mutable_allowlist();
 
   std::string contents;
   ASSERT_TRUE(module_list.SerializeToString(&contents));
 
-  // Put the module list beside the module blacklist cache.
-  *module_list_path = ModuleBlacklistCacheUpdater::GetModuleBlacklistCachePath()
+  // Put the module list beside the module blocklist cache.
+  *module_list_path = ModuleBlocklistCacheUpdater::GetModuleBlocklistCachePath()
                           .DirName()
                           .Append(FILE_PATH_LITERAL("ModuleList.bin"));
 
@@ -123,7 +123,7 @@ class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
   // Creates a copy of a test DLL into a temp directory that will act as the
   // third-party module and return its path. It can't be located in the output
   // directory because modules in the same directory as chrome.exe are
-  // whitelisted in non-official builds.
+  // allowlisted in non-official builds.
   void CreateThirdPartyModule(base::FilePath* third_party_module_path) {
     base::FilePath test_dll_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_dll_path));
@@ -151,13 +151,13 @@ class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
 // This is an integration test for the blocking of third-party modules.
 //
 // This test makes sure that all the different classes interact together
-// correctly to produce a valid module blacklist cache and to write its path in
+// correctly to produce a valid module blocklist cache and to write its path in
 // the registry.
 //
 // Note: This doesn't test that the modules are actually blocked on the next
 //       browser launch.
 IN_PROC_BROWSER_TEST_F(ThirdPartyBlockingBrowserTest,
-                       CreateModuleBlacklistCache) {
+                       CreateModuleBlocklistCache) {
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
@@ -195,22 +195,22 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyBlockingBrowserTest,
   base::ScopedNativeLibrary dll(third_party_module_path);
   ASSERT_TRUE(dll.is_valid());
 
-  // Now the module blacklist cache will eventually be created and its path
+  // Now the module blocklist cache will eventually be created and its path
   // written in the registry.
   third_party_registry_key_observer.WaitForCachePathWritten();
 
-  base::FilePath module_blacklist_cache_path =
-      ModuleBlacklistCacheUpdater::GetModuleBlacklistCachePath();
-  ASSERT_FALSE(module_blacklist_cache_path.empty());
-  ASSERT_TRUE(base::PathExists(module_blacklist_cache_path));
+  base::FilePath module_blocklist_cache_path =
+      ModuleBlocklistCacheUpdater::GetModuleBlocklistCachePath();
+  ASSERT_FALSE(module_blocklist_cache_path.empty());
+  ASSERT_TRUE(base::PathExists(module_blocklist_cache_path));
 
-  // Now check that the third-party DLL was added to the module blacklist cache.
+  // Now check that the third-party DLL was added to the module blocklist cache.
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
   base::MD5Digest md5_digest;
   ASSERT_EQ(ReadResult::kSuccess,
-            ReadModuleBlacklistCache(module_blacklist_cache_path, &metadata,
-                                     &blacklisted_modules, &md5_digest));
+            ReadModuleBlocklistCache(module_blocklist_cache_path, &metadata,
+                                     &blocklisted_modules, &md5_digest));
 
-  EXPECT_GE(blacklisted_modules.size(), 1u);
+  EXPECT_GE(blocklisted_modules.size(), 1u);
 }
