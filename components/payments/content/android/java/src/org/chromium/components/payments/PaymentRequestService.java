@@ -909,6 +909,7 @@ public class PaymentRequestService
         if (methodDataList.length == 0) return null;
         Map<String, PaymentMethodData> result = new ArrayMap<>();
         for (PaymentMethodData methodData : methodDataList) {
+            if (methodData == null) return null;
             String methodName = methodData.supportedMethod;
             if (TextUtils.isEmpty(methodName)) return null;
             result.put(methodName, methodData);
