@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/UpdatePasswordInfoBar_jni.h"
 #include "chrome/browser/password_manager/android/update_password_infobar_delegate_android.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
@@ -18,8 +19,11 @@
 using base::android::JavaParamRef;
 
 UpdatePasswordInfoBar::UpdatePasswordInfoBar(
-    std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate,
+    base::Optional<AccountInfo> account_info)
+    : ChromeConfirmInfoBar(std::move(delegate)) {
+  account_info_ = account_info;
+}
 
 UpdatePasswordInfoBar::~UpdatePasswordInfoBar() {}
 
@@ -40,7 +44,10 @@ UpdatePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
       ConvertUTF16ToJavaString(env, update_password_delegate->GetMessageText());
   ScopedJavaLocalRef<jstring> details_message_text = ConvertUTF16ToJavaString(
       env, update_password_delegate->GetDetailsMessageText());
-
+  ScopedJavaLocalRef<jobject> account_info =
+      account_info_.has_value()
+          ? ConvertToJavaAccountInfo(env, account_info_.value())
+          : nullptr;
   std::vector<base::string16> usernames;
   unsigned int selected_username =
       update_password_delegate->GetDisplayUsernames(&usernames);
@@ -50,7 +57,7 @@ UpdatePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_UpdatePasswordInfoBar_show(
       env, GetJavaIconId(), display_usernames, selected_username, message_text,
-      details_message_text, ok_button_text));
+      details_message_text, ok_button_text, account_info));
 
   java_infobar_.Reset(env, infobar.obj());
   return infobar;

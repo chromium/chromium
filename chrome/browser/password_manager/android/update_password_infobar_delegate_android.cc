@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -27,6 +28,10 @@
 void UpdatePasswordInfoBarDelegate::Create(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  // is_smartlock_branding_enabled indicates whether the user is syncing
+  // passwords to their Google Account.
   const bool is_smartlock_branding_enabled =
       password_bubble_experiment::IsSmartLockUser(
           ProfileSyncServiceFactory::GetForProfile(
@@ -35,7 +40,9 @@ void UpdatePasswordInfoBarDelegate::Create(
       ->AddInfoBar(std::make_unique<UpdatePasswordInfoBar>(
           base::WrapUnique(new UpdatePasswordInfoBarDelegate(
               web_contents, std::move(form_to_save),
-              is_smartlock_branding_enabled))));
+              is_smartlock_branding_enabled)),
+          password_manager::GetAccountInfoForPasswordInfobars(
+              profile, /*is_syncing=*/is_smartlock_branding_enabled)));
 }
 
 UpdatePasswordInfoBarDelegate::~UpdatePasswordInfoBarDelegate() {
