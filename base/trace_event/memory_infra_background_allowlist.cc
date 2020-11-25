@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/allocator/buildflags.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -136,6 +137,10 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "malloc",
     "malloc/allocated_objects",
     "malloc/metadata_fragmentation_caches",
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    "malloc/thread_cache",
+    "malloc/thread_cache/main_thread",
+#endif
     "media/webmediaplayer/audio/player_0x?",
     "media/webmediaplayer/data_source/player_0x?",
     "media/webmediaplayer/demuxer/player_0x?",
@@ -285,6 +290,10 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "partition_alloc/partitions/array_buffer",
     "partition_alloc/partitions/buffer",
     "partition_alloc/partitions/fast_malloc",
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    "partition_alloc/partitions/fast_malloc/thread_cache",
+    "partition_alloc/partitions/fast_malloc/thread_cache/main_thread",
+#endif
     "partition_alloc/partitions/layout",
     "skia/gpu_resources/context_0x?",
     "skia/sk_glyph_cache",

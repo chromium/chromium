@@ -65,10 +65,10 @@ void WinHeapMemoryDumpImpl(WinHeapInfo* crt_heap_info) {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-void ReportDetailedPartitionAllocStats(ProcessMemoryDump* pmd) {
+void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
   SimplePartitionStatsDumper allocator_dumper;
-  internal::PartitionAllocMalloc::Allocator()->DumpStats("malloc", false,
-                                                         &allocator_dumper);
+  internal::PartitionAllocMalloc::Allocator()->DumpStats(
+      "malloc", !detailed /* is_light_dump */, &allocator_dumper);
 
   if (allocator_dumper.stats().has_thread_cache) {
     const auto& stats = allocator_dumper.stats().all_thread_caches_stats;
@@ -113,9 +113,8 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t allocated_objects_size = 0;
   size_t allocated_objects_count = 0;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::DETAILED) {
-    ReportDetailedPartitionAllocStats(pmd);
-  }
+  ReportPartitionAllocStats(
+      pmd, args.level_of_detail == MemoryDumpLevelOfDetail::DETAILED);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(USE_TCMALLOC)
