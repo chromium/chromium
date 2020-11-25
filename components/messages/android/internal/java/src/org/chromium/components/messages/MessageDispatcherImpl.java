@@ -41,6 +41,11 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     }
 
     @Override
+    public void dismissAllMessages() {
+        mMessageQueueManager.dismissAllMessages();
+    }
+
+    @Override
     public int suspend() {
         return mMessageQueueManager.suspend();
     }

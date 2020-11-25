@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.ui.util.TokenHolder;
 
@@ -98,5 +99,31 @@ class MessageQueueManager {
                 mCurrentDisplayedMessage = null;
             });
         }
+    }
+
+    void dismissAllMessages() {
+        if (mCurrentDisplayedMessage != null) {
+            mMessageQueue.remove(mCurrentDisplayedMessage);
+            mCurrentDisplayedMessage.hide(false, () -> {
+                mMessageQueueDelegate.onFinishHiding();
+                mCurrentDisplayedMessage.dismiss();
+                mCurrentDisplayedMessage = null;
+            });
+        }
+        for (MessageStateHandler h : mMessageQueue) {
+            h.dismiss();
+        }
+        mMessageMap.clear();
+        mMessageQueue.clear();
+    }
+
+    @VisibleForTesting
+    Queue<MessageStateHandler> getMessageQueueForTesting() {
+        return mMessageQueue;
+    }
+
+    @VisibleForTesting
+    Map<Object, MessageStateHandler> getMessageMapForTesting() {
+        return mMessageMap;
     }
 }

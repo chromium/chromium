@@ -402,10 +402,10 @@ public class RootUiCoordinator
                     new MessageContainerCoordinator(container, getBrowserControlsManager());
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(
                     container, mMessageContainerCoordinator::getMessageMaxTranslation);
-            mMessageQueueMediator =
-                    new ChromeMessageQueueMediator(mActivity.getBrowserControlsManager(),
-                            mMessageContainerCoordinator, mActivity.getFullscreenManager(),
-                            mLayoutStateProviderOneShotSupplier, mMessageDispatcher);
+            mMessageQueueMediator = new ChromeMessageQueueMediator(
+                    mActivity.getBrowserControlsManager(), mMessageContainerCoordinator,
+                    mActivity.getFullscreenManager(), mLayoutStateProviderOneShotSupplier,
+                    mTabModelSelectorSupplier, mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
