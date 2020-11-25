@@ -96,6 +96,9 @@ void MessageWrapper::HandleDismissCallback(JNIEnv* env) {
   message_dismissed_ = true;
   if (!dismiss_callback_.is_null())
     std::move(dismiss_callback_).Run();
+  // Dismiss callback typically deletes the instance of MessageWrapper,
+  // invalidating |this| pointer. Don't call any methods after dismiss_callback_
+  // is invoked.
 }
 
 const base::android::JavaRef<jobject>& MessageWrapper::GetJavaMessageWrapper()

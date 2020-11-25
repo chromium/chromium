@@ -42,6 +42,7 @@
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/password_manager/android/save_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 
 class PasswordAccessoryController;
@@ -367,7 +368,9 @@ class ChromePasswordManagerClient
   // Whether a leak warning was shown. Used only for tests or when
   // kPasswordChange feature is enabled.
   bool was_leak_dialog_shown_ = false;
-#endif
+
+  SavePasswordMessageDelegate save_password_message_delegate_;
+#endif  // defined(OS_ANDROID)
 
   std::unique_ptr<ChromeBiometricAuthenticator> biometric_authenticator_;
 
