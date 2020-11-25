@@ -34,6 +34,7 @@ class FooHandler;
 class GURL;
 class InstantService;
 class KaleidoscopeDataProviderImpl;
+class KaleidoscopeIdentityManagerImpl;
 class NewTabPageHandler;
 class Profile;
 class PromoBrowserCommandHandler;
@@ -76,6 +77,13 @@ class NewTabPageUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider>
+          pending_receiver);
+
+  // Instantiates the implementor of the
+  // media::mojom::KaleidoscopeIdentityManager mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager>
           pending_receiver);
 
   // Instantiates the implementor of the
@@ -138,6 +146,8 @@ class NewTabPageUI
 
   // Mojo implementations for modules:
   std::unique_ptr<KaleidoscopeDataProviderImpl> kaleidoscope_data_provider_;
+  std::unique_ptr<KaleidoscopeIdentityManagerImpl>
+      kaleidoscope_identity_manager_;
   std::unique_ptr<TaskModuleHandler> task_module_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

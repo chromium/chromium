@@ -18,17 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/google_api_keys.h"
 #include "media/base/media_switches.h"
 
 namespace {
@@ -42,9 +37,6 @@ constexpr int kMediaFeedsFetchedItemsMin = 4;
 
 // The maximum number of feed items to display.
 constexpr int kMediaFeedsItemsMaxCount = 20;
-
-constexpr char kChromeMediaRecommendationsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chrome-media-recommendations";
 
 // The minimum watch time needed in media history for a provider to be
 // considered high watch time.
@@ -73,70 +65,15 @@ KaleidoscopeDataProviderImpl::KaleidoscopeDataProviderImpl(
     mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider> receiver,
     Profile* profile,
     KaleidoscopeMetricsRecorder* metrics_recorder)
-    : credentials_(media::mojom::Credentials::New()),
-      profile_(profile),
+    : profile_(profile),
       metrics_recorder_(metrics_recorder),
       receiver_(this, std::move(receiver)) {
   DCHECK(profile);
 
-  // If this is Google Chrome then we should use the official API key.
-  if (google_apis::IsGoogleChromeAPIKeyUsed()) {
-    bool is_stable_channel =
-        chrome::GetChannel() == version_info::Channel::STABLE;
-    credentials_->api_key = is_stable_channel
-                                ? google_apis::GetAPIKey()
-                                : google_apis::GetNonStableAPIKey();
-  }
-
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
 }
 
 KaleidoscopeDataProviderImpl::~KaleidoscopeDataProviderImpl() = default;
-
-void KaleidoscopeDataProviderImpl::GetCredentials(GetCredentialsCallback cb) {
-  // If the profile is incognito then disable Kaleidoscope.
-  if (profile_->IsOffTheRecord()) {
-    std::move(cb).Run(nullptr,
-                      media::mojom::CredentialsResult::kFailedIncognito);
-    return;
-  }
-
-  // If the profile is a child then disable Kaleidoscope.
-  if (profile_->IsSupervised() || profile_->IsChild()) {
-    std::move(cb).Run(nullptr, media::mojom::CredentialsResult::kFailedChild);
-    return;
-  }
-
-  // If the administrator has disabled Kaleidoscope then stop.
-  auto* prefs = profile_->GetPrefs();
-  if (!prefs->GetBoolean(kaleidoscope::prefs::kKaleidoscopePolicyEnabled)) {
-    std::move(cb).Run(nullptr,
-                      media::mojom::CredentialsResult::kDisabledByPolicy);
-    return;
-  }
-
-  // If the user is not signed in, return the credentials without an access
-  // token. Sync consent is not required to use Kaleidoscope.
-  if (!identity_manager_->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired)) {
-    std::move(cb).Run(credentials_.Clone(),
-                      media::mojom::CredentialsResult::kSuccess);
-    return;
-  }
-
-  pending_callbacks_.push_back(std::move(cb));
-
-  // Get an OAuth token for the backend API. This token will be limited to just
-  // our backend scope. Destroying |token_fetcher_| will cancel the fetch so
-  // unretained is safe here.
-  signin::ScopeSet scopes = {kChromeMediaRecommendationsOAuth2Scope};
-  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "kaleidoscope_service", identity_manager_, scopes,
-      base::BindOnce(&KaleidoscopeDataProviderImpl::OnAccessTokenAvailable,
-                     base::Unretained(this)),
-      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kNotRequired);
-}
 
 void KaleidoscopeDataProviderImpl::GetShouldShowFirstRunExperience(
     GetShouldShowFirstRunExperienceCallback cb) {
@@ -278,11 +215,15 @@ void KaleidoscopeDataProviderImpl::SendFeedback() {
                            std::string() /* extra_diagnostics */);
 }
 
-void KaleidoscopeDataProviderImpl::GetCollections(const std::string& request,
-                                                  GetCollectionsCallback cb) {
-  GetCredentials(base::BindOnce(
-      &KaleidoscopeDataProviderImpl::OnGotCredentialsForCollections,
-      weak_ptr_factory.GetWeakPtr(), request, std::move(cb)));
+void KaleidoscopeDataProviderImpl::GetCollections(
+    media::mojom::CredentialsPtr credentials,
+    const std::string& request,
+    GetCollectionsCallback cb) {
+  auto account_info = identity_manager_->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kNotRequired);
+
+  kaleidoscope::KaleidoscopeService::Get(profile_)->GetCollections(
+      std::move(credentials), account_info.gaia, request, std::move(cb));
 }
 
 void KaleidoscopeDataProviderImpl::GetSignedOutProviders(
@@ -320,48 +261,10 @@ void KaleidoscopeDataProviderImpl::RecordTimeTakenToStartWatchHistogram(
                                 time);
 }
 
-void KaleidoscopeDataProviderImpl::OnGotCredentialsForCollections(
-    const std::string& request,
-    GetCollectionsCallback cb,
-    media::mojom::CredentialsPtr credentials,
-    media::mojom::CredentialsResult result) {
-  // If we have no credentials then we should return an empty response.
-  if (result != media::mojom::CredentialsResult::kSuccess) {
-    std::move(cb).Run(media::mojom::GetCollectionsResponse::New(
-        "", media::mojom::GetCollectionsResult::kFailed));
-    return;
-  }
-
-  auto account_info = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
-
-  kaleidoscope::KaleidoscopeService::Get(profile_)->GetCollections(
-      std::move(credentials), account_info.gaia, request, std::move(cb));
-}
-
 media_history::MediaHistoryKeyedService*
 KaleidoscopeDataProviderImpl::GetMediaHistoryService() {
   return media_history::MediaHistoryKeyedServiceFactory::GetForProfile(
       profile_);
-}
-
-void KaleidoscopeDataProviderImpl::OnAccessTokenAvailable(
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  DCHECK(token_fetcher_);
-  token_fetcher_.reset();
-
-  if (error.state() == GoogleServiceAuthError::State::NONE) {
-    credentials_->access_token = access_token_info.token;
-    credentials_->expiry_time = access_token_info.expiration_time;
-  }
-
-  for (auto& callback : pending_callbacks_) {
-    std::move(callback).Run(credentials_.Clone(),
-                            media::mojom::CredentialsResult::kSuccess);
-  }
-
-  pending_callbacks_.clear();
 }
 
 void KaleidoscopeDataProviderImpl::OnGotMediaFeedContents(

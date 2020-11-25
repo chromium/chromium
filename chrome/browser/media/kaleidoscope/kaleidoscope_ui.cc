@@ -12,6 +12,7 @@
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/grit/kaleidoscope_resources.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
+#include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_metrics_recorder.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_switches.h"
 #include "chrome/browser/profiles/profile.h"
@@ -246,6 +247,7 @@ KaleidoscopeUI::~KaleidoscopeUI() {
   // provider has a pointer to the metrics recorder.
   provider_.reset();
   metrics_recorder_.reset();
+  identity_manager_.reset();
 }
 
 // static
@@ -391,6 +393,13 @@ void KaleidoscopeUI::BindInterface(
   provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
       std::move(provider), Profile::FromWebUI(web_ui()),
       metrics_recorder_.get());
+}
+
+void KaleidoscopeUI::BindInterface(
+    mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager>
+        identity_manager) {
+  identity_manager_ = std::make_unique<KaleidoscopeIdentityManagerImpl>(
+      std::move(identity_manager), web_ui());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(KaleidoscopeUI)

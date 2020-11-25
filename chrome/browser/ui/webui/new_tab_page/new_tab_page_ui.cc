@@ -10,6 +10,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
+#include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
@@ -385,6 +386,14 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   kaleidoscope_data_provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
       std::move(pending_page_handler), profile_, nullptr);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager>
+        pending_page_handler) {
+  kaleidoscope_identity_manager_ =
+      std::make_unique<KaleidoscopeIdentityManagerImpl>(
+          std::move(pending_page_handler), profile_);
 }
 
 void NewTabPageUI::BindInterface(

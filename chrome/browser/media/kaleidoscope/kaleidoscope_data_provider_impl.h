@@ -19,9 +19,7 @@ class MediaHistoryKeyedService;
 }  // namespace media_history
 
 namespace signin {
-struct AccessTokenInfo;
 class IdentityManager;
-class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
 class KaleidoscopeMetricsRecorder;
@@ -34,6 +32,7 @@ class KaleidoscopeDataProviderImpl
       mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider> receiver,
       Profile* profile,
       KaleidoscopeMetricsRecorder* metrics_recorder);
+
   KaleidoscopeDataProviderImpl(const KaleidoscopeDataProviderImpl&) = delete;
   KaleidoscopeDataProviderImpl& operator=(const KaleidoscopeDataProviderImpl&) =
       delete;
@@ -48,7 +47,6 @@ class KaleidoscopeDataProviderImpl
   void GetContinueWatchingMediaFeedItems(
       media::mojom::KaleidoscopeTab tab,
       GetContinueWatchingMediaFeedItemsCallback callback) override;
-  void GetCredentials(GetCredentialsCallback cb) override;
   void GetShouldShowFirstRunExperience(
       GetShouldShowFirstRunExperienceCallback cb) override;
   void SetFirstRunExperienceStep(
@@ -63,7 +61,8 @@ class KaleidoscopeDataProviderImpl
       GetAutoSelectMediaFeedsConsentCallback cb) override;
   void GetHighWatchTimeOrigins(GetHighWatchTimeOriginsCallback cb) override;
   void SendFeedback() override;
-  void GetCollections(const std::string& request,
+  void GetCollections(media::mojom::CredentialsPtr credentials,
+                      const std::string& request,
                       GetCollectionsCallback cb) override;
   void GetSignedOutProviders(GetSignedOutProvidersCallback cb) override;
   void SetSignedOutProviders(
@@ -73,15 +72,6 @@ class KaleidoscopeDataProviderImpl
  private:
   media_history::MediaHistoryKeyedService* GetMediaHistoryService();
 
-  void OnGotCredentialsForCollections(const std::string& request,
-                                      GetCollectionsCallback cb,
-                                      media::mojom::CredentialsPtr credentials,
-                                      media::mojom::CredentialsResult result);
-
-  // Called when an access token request completes (successfully or not).
-  void OnAccessTokenAvailable(GoogleServiceAuthError error,
-                              signin::AccessTokenInfo access_token_info);
-
   void OnGotMediaFeedContents(
       GetMediaFeedContentsCallback callback,
       const int64_t feed_id,
@@ -89,16 +79,6 @@ class KaleidoscopeDataProviderImpl
   void OnGotContinueWatchingMediaFeedItems(
       GetContinueWatchingMediaFeedItemsCallback callback,
       std::vector<media_feeds::mojom::MediaFeedItemPtr> items);
-
-  // Helper for fetching OAuth2 access tokens. This is non-null iff an access
-  // token request is currently in progress.
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
-
-  // The current set of credentials.
-  media::mojom::CredentialsPtr credentials_;
-
-  // Pending credentials waiting on an access token.
-  std::vector<GetCredentialsCallback> pending_callbacks_;
 
   signin::IdentityManager* identity_manager_;
 

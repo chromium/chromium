@@ -60,9 +60,6 @@ interface KaleidoscopeDataProvider {
   // continue watching. Returned items will be appropriate for the |tab|.
   GetContinueWatchingMediaFeedItems(KaleidoscopeTab tab) => (array<media_feeds.mojom.MediaFeedItem> items);
 
-  // Retrieves the current credentials.
-  GetCredentials() => (Credentials? credentials, CredentialsResult result);
-
   // Returns true if the first run experience should be shown.
   GetShouldShowFirstRunExperience() => (bool should_show_first_run);
 
@@ -92,10 +89,11 @@ interface KaleidoscopeDataProvider {
   // Will trigger a feedback dialog to be displayed.
   SendFeedback();
 
-  // Gets the collections from the backend to be displayed. Takes a string that
-  // contains the request to be sent to the server. The request is the
-  // GetCollectionsRequest proto here: go/ks-media-proto.
-  GetCollections(string request) => (GetCollectionsResponse response);
+  // Gets the collections from the backend to be displayed. Takes a credential
+  // instance and a string that contains the request to be sent to the server.
+  // The request is the GetCollectionsRequest proto here: go/ks-media-proto.
+  GetCollections(Credentials credentials, string request)
+      => (GetCollectionsResponse response);
 
   // Gets a list of stored providers that will be used to filter the
   // recommendations on the server if the user is signed out. They are arbitary
@@ -109,6 +107,12 @@ interface KaleidoscopeDataProvider {
 
   // Records a histogram of the time taken to start a watch action.
   RecordTimeTakenToStartWatchHistogram(mojo_base.mojom.TimeDelta time);
+};
+
+// Handles identity related tasks.
+interface KaleidoscopeIdentityManager {
+  // Retrieves the current credentials.
+  GetCredentials() => (Credentials? credentials, CredentialsResult result);
 };
 
 enum GetCollectionsResult {

@@ -3601,6 +3601,8 @@ static_library("browser") {
       "media/kaleidoscope/constants.h",
       "media/kaleidoscope/kaleidoscope_data_provider_impl.cc",
       "media/kaleidoscope/kaleidoscope_data_provider_impl.h",
+      "media/kaleidoscope/kaleidoscope_identity_manager_impl.cc",
+      "media/kaleidoscope/kaleidoscope_identity_manager_impl.h",
       "media/kaleidoscope/kaleidoscope_metrics_recorder.cc",
       "media/kaleidoscope/kaleidoscope_metrics_recorder.h",
       "media/kaleidoscope/kaleidoscope_prefs.cc",

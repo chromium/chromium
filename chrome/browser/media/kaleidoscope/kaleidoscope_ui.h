@@ -24,6 +24,9 @@ class KaleidoscopeUI : public ui::MojoWebUIController {
 
   void BindInterface(
       mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider> provider);
+  void BindInterface(
+      mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager>
+          identity_manager);
 
   static content::WebUIDataSource* CreateWebUIDataSource();
 
@@ -32,6 +35,7 @@ class KaleidoscopeUI : public ui::MojoWebUIController {
  private:
   std::unique_ptr<KaleidoscopeMetricsRecorder> metrics_recorder_;
   std::unique_ptr<media::mojom::KaleidoscopeDataProvider> provider_;
+  std::unique_ptr<media::mojom::KaleidoscopeIdentityManager> identity_manager_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
