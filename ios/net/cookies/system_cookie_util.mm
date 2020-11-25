@@ -13,6 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -99,7 +100,7 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
       // When iOS begins to support 'Priority' and 'SameParty' attributes, pass
       // them through here.
       net::COOKIE_PRIORITY_DEFAULT, false /* SameParty */,
-      net::CookieSourceScheme::kUnset);
+      net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
 }
 
 void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,

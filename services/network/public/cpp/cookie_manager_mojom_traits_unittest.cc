@@ -11,9 +11,11 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_constants.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace network {
 namespace {
@@ -25,10 +27,10 @@ bool SerializeAndDeserializeEnum(NativeType in, NativeType* out) {
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
-  net::CanonicalCookie original("A", "B", "x.y", "/path", base::Time(),
-                                base::Time(), base::Time(), false, false,
-                                net::CookieSameSite::NO_RESTRICTION,
-                                net::COOKIE_PRIORITY_LOW, false);
+  net::CanonicalCookie original(
+      "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(), false,
+      false, net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW,
+      false, net::CookieSourceScheme::kSecure, 8433);
 
   net::CanonicalCookie copied;
 
@@ -47,6 +49,32 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   EXPECT_EQ(original.SameSite(), copied.SameSite());
   EXPECT_EQ(original.Priority(), copied.Priority());
   EXPECT_EQ(original.IsSameParty(), copied.IsSameParty());
+  EXPECT_EQ(original.SourceScheme(), copied.SourceScheme());
+  EXPECT_EQ(original.SourcePort(), copied.SourcePort());
+
+  // Test port edge cases: unspecified.
+  net::CanonicalCookie original_unspecified(
+      "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(), false,
+      false, net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW,
+      false, net::CookieSourceScheme::kSecure, url::PORT_UNSPECIFIED);
+  net::CanonicalCookie copied_unspecified;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
+      &original_unspecified, &copied_unspecified));
+
+  EXPECT_EQ(original_unspecified.SourcePort(), copied_unspecified.SourcePort());
+
+  // Test port edge cases: invalid.
+  net::CanonicalCookie original_invalid(
+      "A", "B", "x.y", "/path", base::Time(), base::Time(), base::Time(), false,
+      false, net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW,
+      false, net::CookieSourceScheme::kSecure, url::PORT_INVALID);
+  net::CanonicalCookie copied_invalid;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
+      &original_invalid, &copied_invalid));
+
+  EXPECT_EQ(original_invalid.SourcePort(), copied_invalid.SourcePort());
 
   // Serializer returns false if cookie is non-canonical.
   // Example is non-canonical because of newline in name.

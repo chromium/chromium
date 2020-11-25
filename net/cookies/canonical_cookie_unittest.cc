@@ -13,6 +13,7 @@
 #include "net/cookies/cookie_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace net {
 
@@ -31,13 +32,12 @@ void MatchCookieLineToVector(
 }  // namespace
 
 TEST(CanonicalCookieTest, Constructor) {
-  GURL url("http://www.example.com/test");
   base::Time current_time = base::Time::Now();
 
   std::unique_ptr<CanonicalCookie> cookie1(std::make_unique<CanonicalCookie>(
       "A", "2", "www.example.com", "/test", current_time, base::Time(),
       base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false, CookieSourceScheme::kSecure));
+      COOKIE_PRIORITY_DEFAULT, false, CookieSourceScheme::kSecure, 443));
   EXPECT_EQ("A", cookie1->Name());
   EXPECT_EQ("2", cookie1->Value());
   EXPECT_EQ("www.example.com", cookie1->Domain());
@@ -48,11 +48,12 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_EQ(CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie1->Priority());
   EXPECT_FALSE(cookie1->IsSameParty());
   EXPECT_EQ(cookie1->SourceScheme(), CookieSourceScheme::kSecure);
+  EXPECT_EQ(cookie1->SourcePort(), 443);
 
   std::unique_ptr<CanonicalCookie> cookie2(std::make_unique<CanonicalCookie>(
       "A", "2", ".www.example.com", "/", current_time, base::Time(),
       base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, true, CookieSourceScheme::kNonSecure));
+      COOKIE_PRIORITY_DEFAULT, true, CookieSourceScheme::kNonSecure, 65536));
   EXPECT_EQ("A", cookie2->Name());
   EXPECT_EQ("2", cookie2->Value());
   EXPECT_EQ(".www.example.com", cookie2->Domain());
@@ -63,14 +64,19 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_EQ(CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie2->Priority());
   EXPECT_TRUE(cookie2->IsSameParty());
   EXPECT_EQ(cookie2->SourceScheme(), CookieSourceScheme::kNonSecure);
+  // Because the port can be set explicitly in the constructor its value can be
+  // independent of the other parameters. In this case, test that an invalid
+  // port value is interpreted as such.
+  EXPECT_EQ(cookie2->SourcePort(), url::PORT_INVALID);
 
-  // Set Secure to true but don't specify source_scheme.
+  // Set Secure to true but don't specify source_scheme or port.
   auto cookie3 = std::make_unique<CanonicalCookie>(
       "A", "2", ".www.example.com", "/", current_time, base::Time(),
       base::Time(), true /* secure */, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, false);
   EXPECT_TRUE(cookie3->IsSecure());
   EXPECT_EQ(cookie3->SourceScheme(), CookieSourceScheme::kUnset);
+  EXPECT_EQ(cookie3->SourcePort(), url::PORT_UNSPECIFIED);
 
   auto cookie4 = std::make_unique<CanonicalCookie>(
       "A", "2", ".www.example.com", "/test", current_time, base::Time(),
@@ -84,6 +90,24 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_FALSE(cookie4->IsHttpOnly());
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie4->SameSite());
   EXPECT_FALSE(cookie4->IsSameParty());
+  EXPECT_EQ(cookie4->SourceScheme(), CookieSourceScheme::kUnset);
+  EXPECT_EQ(cookie4->SourcePort(), url::PORT_UNSPECIFIED);
+
+  // Test some port edge cases: unspecified.
+  auto cookie5 = std::make_unique<CanonicalCookie>(
+      "A", "2", ".www.example.com", "/", current_time, base::Time(),
+      base::Time(), true /* secure */, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false, CookieSourceScheme::kUnset,
+      url::PORT_UNSPECIFIED);
+  EXPECT_EQ(cookie5->SourcePort(), url::PORT_UNSPECIFIED);
+
+  // Test some port edge cases: invalid.
+  auto cookie6 = std::make_unique<CanonicalCookie>(
+      "A", "2", ".www.example.com", "/", current_time, base::Time(),
+      base::Time(), true /* secure */, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false, CookieSourceScheme::kUnset,
+      url::PORT_INVALID);
+  EXPECT_EQ(cookie6->SourcePort(), url::PORT_INVALID);
 }
 
 TEST(CanonicalCookie, CreationCornerCases) {
@@ -118,6 +142,7 @@ TEST(CanonicalCookieTest, Create) {
   EXPECT_EQ("/test", cookie->Path());
   EXPECT_FALSE(cookie->IsSecure());
   EXPECT_EQ(cookie->SourceScheme(), CookieSourceScheme::kNonSecure);
+  EXPECT_EQ(cookie->SourcePort(), 80);
 
   GURL url2("http://www.foo.com");
   cookie = CanonicalCookie::Create(url2, "B=1", creation_time, server_time);
@@ -127,6 +152,7 @@ TEST(CanonicalCookieTest, Create) {
   EXPECT_EQ("/", cookie->Path());
   EXPECT_FALSE(cookie->IsSecure());
   EXPECT_EQ(cookie->SourceScheme(), CookieSourceScheme::kNonSecure);
+  EXPECT_EQ(cookie->SourcePort(), 80);
 
   // Test creating secure cookies. Secure scheme is not checked upon creation,
   // so a URL of any scheme can create a Secure cookie.
@@ -179,6 +205,33 @@ TEST(CanonicalCookieTest, Create) {
   cookie = CanonicalCookie::Create(url, "A=2", creation_time, server_time);
   ASSERT_TRUE(cookie.get());
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
+
+  // Test creating cookies with different ports.
+  cookie = CanonicalCookie::Create(GURL("http://www.foo.com"), "B=1",
+                                   creation_time, server_time);
+  EXPECT_EQ(cookie->SourcePort(), 80);
+
+  cookie = CanonicalCookie::Create(GURL("http://www.foo.com:81"), "B=1",
+                                   creation_time, server_time);
+  EXPECT_EQ(cookie->SourcePort(), 81);
+
+  cookie = CanonicalCookie::Create(GURL("https://www.foo.com"), "B=1",
+                                   creation_time, server_time);
+  EXPECT_EQ(cookie->SourcePort(), 443);
+
+  cookie = CanonicalCookie::Create(GURL("https://www.foo.com:1234"), "B=1",
+                                   creation_time, server_time);
+  EXPECT_EQ(cookie->SourcePort(), 1234);
+
+  cookie = CanonicalCookie::Create(GURL("http://www.foo.com:443"), "B=1",
+                                   creation_time, server_time);
+  EXPECT_EQ(cookie->SourcePort(), 443);
+
+  // GURL's port parsing will handle any invalid ports, but let's still make
+  // sure we get the expected result anyway.
+  cookie = CanonicalCookie::Create(GURL("http://www.foo.com:70000"), "B=1",
+                                   creation_time, server_time);
+  EXPECT_EQ(cookie->SourcePort(), url::PORT_INVALID);
 }
 
 TEST(CanonicalCookieTest, CreateNonStandardSameSite) {
@@ -2247,7 +2300,7 @@ TEST(CanonicalCookieTest, FromStorage) {
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false /*same_party*/, CookieSourceScheme::kSecure);
+      false /*same_party*/, CookieSourceScheme::kSecure, 87);
   EXPECT_TRUE(cc);
   EXPECT_EQ("A", cc->Name());
   EXPECT_EQ("B", cc->Value());
@@ -2262,6 +2315,7 @@ TEST(CanonicalCookieTest, FromStorage) {
   EXPECT_EQ(COOKIE_PRIORITY_MEDIUM, cc->Priority());
   EXPECT_EQ(CookieSourceScheme::kSecure, cc->SourceScheme());
   EXPECT_FALSE(cc->IsDomainCookie());
+  EXPECT_EQ(cc->SourcePort(), 87);
 
   // Should return nullptr when the cookie is not canonical.
   // In this case the cookie is not canonical because its name attribute
@@ -2270,7 +2324,33 @@ TEST(CanonicalCookieTest, FromStorage) {
       "A\n", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
       one_hour_ago, false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false /*same_party*/, CookieSourceScheme::kSecure));
+      false /*same_party*/, CookieSourceScheme::kSecure, 80));
+
+  // If the port information gets corrupted out of the valid range
+  // FromStorage() should result in a PORT_INVALID.
+  std::unique_ptr<CanonicalCookie> cc2 = CanonicalCookie::FromStorage(
+      "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, CookieSourceScheme::kSecure, 80000);
+
+  EXPECT_EQ(cc2->SourcePort(), url::PORT_INVALID);
+
+  // Test port edge cases: unspecified.
+  std::unique_ptr<CanonicalCookie> cc3 = CanonicalCookie::FromStorage(
+      "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, CookieSourceScheme::kSecure, url::PORT_UNSPECIFIED);
+  EXPECT_EQ(cc3->SourcePort(), url::PORT_UNSPECIFIED);
+
+  // Test port edge cases: invalid.
+  std::unique_ptr<CanonicalCookie> cc4 = CanonicalCookie::FromStorage(
+      "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, CookieSourceScheme::kSecure, url::PORT_INVALID);
+  EXPECT_EQ(cc4->SourcePort(), url::PORT_INVALID);
 }
 
 TEST(CanonicalCookieTest, IsSetPermittedInContext) {
