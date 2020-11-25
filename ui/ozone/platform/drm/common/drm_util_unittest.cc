@@ -16,6 +16,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
 namespace ui {
 
@@ -178,6 +179,178 @@ TEST_F(DrmUtilTest, TestDisplayModesExtraction) {
                                         &native_mode);
   ASSERT_EQ(5u, extracted_modes.size());
   EXPECT_EQ(extracted_modes[1].get(), native_mode);
+}
+
+TEST(PathBlobParser, InvalidBlob) {
+  char data[] = "this doesn't matter";
+  drmModePropertyBlobRes blob{1, 0, data};
+  EXPECT_TRUE(ParsePathBlob(blob).empty());
+}
+
+TEST(PathBlobParser, EmptyOrNullString) {
+  {
+    char empty[] = "";
+    drmModePropertyBlobRes blob{1, sizeof(empty), empty};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char null[] = "\0";
+    drmModePropertyBlobRes blob{1, sizeof(null), null};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+}
+
+TEST(PathBlobParser, InvalidPathFormat) {
+  // Space(s)
+  {
+    char s[] = " ";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "           ";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // Missing colon
+  {
+    char s[] = "mst6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // Caps 'mst:'
+  {
+    char s[] = "MST:6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // Subset of "mst:"
+  {
+    char s[] = "ms";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // No 'mst:'
+  {
+    char s[] = "6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // Other colon-delimited prefix
+  {
+    char s[] = "path:6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // Invalid port number or format
+  {
+    char s[] = "mst:";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst::6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:-6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6-2-1-";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:c7";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6-b-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6--2";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:---";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6- -2- -1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6 -2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  {
+    char s[] = "mst:6-'2'-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+
+  // Null character
+  {
+    char s[] = "mst:6-\0-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(s), s};
+    EXPECT_TRUE(ParsePathBlob(blob).empty());
+  }
+}
+
+TEST(PathBlobParser, ValidPathFormat) {
+  std::vector<uint64_t> expected = {6u, 2u, 1u};
+
+  {
+    char valid[] = "mst:6-2-1";
+    drmModePropertyBlobRes blob{1, sizeof(valid), valid};
+    EXPECT_EQ(expected, ParsePathBlob(blob));
+  }
+
+  {
+    char valid[] = "mst:6-2-1\0";
+    drmModePropertyBlobRes blob{1, sizeof(valid), valid};
+    EXPECT_EQ(expected, ParsePathBlob(blob));
+  }
+
+  {
+    char valid[] = {'m', 's', 't', ':', '6', '-', '2', '-', '1'};
+    drmModePropertyBlobRes blob{1, sizeof(valid), valid};
+    EXPECT_EQ(expected, ParsePathBlob(blob));
+  }
 }
 
 }  // namespace ui

@@ -16,6 +16,8 @@ struct DisplaySnapshot {
   gfx.mojom.Point origin;
   gfx.mojom.Size physical_size;
   display.mojom.DisplayConnectionType type;
+  uint64 base_connector_id;
+  array<uint64> path_topology;
   bool is_aspect_preserving_scaling;
   bool has_overscan;
   display.mojom.PrivacyScreenState privacy_screen_state;

@@ -191,8 +191,9 @@ TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {
 
 TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
   FakeDisplaySnapshot display_snapshot(
-      123, gfx::Point(), gfx::Size(), DISPLAY_CONNECTION_TYPE_UNKNOWN, false,
-      false, PrivacyScreenState::kNotSupported, false, false, std::string(), {},
+      123, gfx::Point(), gfx::Size(), DISPLAY_CONNECTION_TYPE_UNKNOWN,
+      /*base_connector_id=*/1u, /*path_topology=*/{}, false, false,
+      PrivacyScreenState::kNotSupported, false, false, std::string(), {},
       nullptr, nullptr, 0, gfx::Size(), gfx::ColorSpace(),
       /*bits_per_channel=*/8u);
 

@@ -55,6 +55,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     Builder& AddMode(std::unique_ptr<DisplayMode> mode);
     Builder& SetOrigin(const gfx::Point& origin);
     Builder& SetType(DisplayConnectionType type);
+    Builder& SetBaseConnectorId(uint64_t base_connector_id);
+    Builder& SetPathTopology(const std::vector<uint64_t>& path_topology);
     Builder& SetIsAspectPerservingScaling(bool is_aspect_preserving_scaling);
     Builder& SetHasOverscan(bool has_overscan);
     Builder& SetHasColorCorrectionMatrix(bool val);
@@ -85,6 +87,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     gfx::Point origin_;
     float dpi_ = 96.0;
     DisplayConnectionType type_ = DISPLAY_CONNECTION_TYPE_UNKNOWN;
+    uint64_t base_connector_id_ = 1u;
+    std::vector<uint64_t> path_topology_ = {};
     bool is_aspect_preserving_scaling_ = false;
     bool has_overscan_ = false;
     PrivacyScreenState privacy_screen_state_ = kNotSupported;
@@ -106,6 +110,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
                       const gfx::Point& origin,
                       const gfx::Size& physical_size,
                       DisplayConnectionType type,
+                      uint64_t base_connector_id,
+                      const std::vector<uint64_t>& path_topology,
                       bool is_aspect_preserving_scaling,
                       bool has_overscan,
                       PrivacyScreenState privacy_screen_state,

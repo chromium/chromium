@@ -4,11 +4,15 @@
 
 #include "ui/display/manager/configure_displays_task.h"
 
+#include <cstddef>
+
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "ui/display/manager/display_util.h"
 #include "ui/display/types/display_configuration_params.h"
@@ -18,6 +22,13 @@
 namespace display {
 
 namespace {
+
+// Because we do not offer hardware mirroring, the maximal number of external
+// displays that can be configured is limited by the number of available CRTCs,
+// which is usually three. Since the lifetime of the UMA using this value is one
+// year (exp. Nov. 2021), five buckets are more than enough for
+// its histogram (between 0 to 4 external monitors).
+constexpr int kMaxDisplaysCount = 5;
 
 // Find the next best mode after |display_mode|. If none can be found return
 // nullptr.
@@ -199,12 +210,39 @@ void ConfigureDisplaysTask::OnConfigured(
   }
 
   // Update the final state.
+  int mst_external_displays = 0;
+  size_t total_external_displays = requests_.size();
   for (auto& request : requests_) {
+    // Is this display SST (single-stream vs. MST multi-stream).
+    bool sst_display = request.display->base_connector_id() &&
+                       request.display->path_topology().empty();
+    if (!sst_display)
+      mst_external_displays++;
+
     bool internal = request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+    if (internal)
+      total_external_displays--;
+
     base::UmaHistogramBoolean(
         internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
                  : "ConfigureDisplays.External.Modeset.FinalStatus",
         config_success);
+  }
+
+  base::UmaHistogramExactLinear(
+      "ConfigureDisplays.Modeset.TotalExternalDisplaysCount",
+      base::checked_cast<int>(total_external_displays), kMaxDisplaysCount);
+
+  base::UmaHistogramExactLinear(
+      "ConfigureDisplays.Modeset.MstExternalDisplaysCount",
+      mst_external_displays, kMaxDisplaysCount);
+
+  if (total_external_displays > 0) {
+    const int mst_displays_percentage =
+        100.0 * mst_external_displays / total_external_displays;
+    UMA_HISTOGRAM_PERCENTAGE(
+        "ConfigureDisplays.Modeset.MstExternalDisplaysPercentage",
+        mst_displays_percentage);
   }
 
   if (!config_success)

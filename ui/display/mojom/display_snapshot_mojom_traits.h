@@ -39,6 +39,16 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->type();
   }
 
+  static uint64_t base_connector_id(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->base_connector_id();
+  }
+
+  static const std::vector<uint64_t>& path_topology(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->path_topology();
+  }
+
   static display::PanelOrientation panel_orientation(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
     return snapshot->panel_orientation();

@@ -80,6 +80,8 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
   EXPECT_EQ(input.origin(), output.origin());
   EXPECT_EQ(input.physical_size(), output.physical_size());
   EXPECT_EQ(input.type(), output.type());
+  EXPECT_EQ(input.base_connector_id(), output.base_connector_id());
+  EXPECT_EQ(input.path_topology(), output.path_topology());
   EXPECT_EQ(input.is_aspect_preserving_scaling(),
             output.is_aspect_preserving_scaling());
   EXPECT_EQ(input.has_overscan(), output.has_overscan());
@@ -255,6 +257,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const gfx::Size physical_size(5, 9);
   const gfx::Size maximum_cursor_size(3, 5);
   const DisplayConnectionType type = DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
+  const uint64_t base_connector_id = 1u;
+  const std::vector<uint64_t> path_topology{};
   const bool is_aspect_preserving_scaling = true;
   const bool has_overscan = true;
   const PrivacyScreenState privacy_screen_state = kEnabled;
@@ -277,12 +281,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const std::vector<uint8_t> edid = {1};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, is_aspect_preserving_scaling,
-      has_overscan, privacy_screen_state, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      display_name, sys_path, std::move(modes), PanelOrientation::kNormal, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size);
+      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
+      has_color_correction_matrix, color_correction_in_linear_space,
+      display_color_space, bits_per_channel, display_name, sys_path,
+      std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -298,6 +302,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const gfx::Size physical_size(55, 49);
   const gfx::Size maximum_cursor_size(13, 95);
   const DisplayConnectionType type = DISPLAY_CONNECTION_TYPE_VGA;
+  const uint64_t base_connector_id = 1u;
+  const std::vector<uint64_t> path_topology{};
   const bool is_aspect_preserving_scaling = true;
   const bool has_overscan = true;
   const PrivacyScreenState privacy_screen_state = kEnabled;
@@ -320,12 +326,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const std::vector<uint8_t> edid = {1};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, is_aspect_preserving_scaling,
-      has_overscan, privacy_screen_state, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      display_name, sys_path, std::move(modes), PanelOrientation::kNormal, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size);
+      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
+      has_color_correction_matrix, color_correction_in_linear_space,
+      display_color_space, bits_per_channel, display_name, sys_path,
+      std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -341,6 +347,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const gfx::Size physical_size(520, 320);
   const gfx::Size maximum_cursor_size(4, 5);
   const DisplayConnectionType type = DISPLAY_CONNECTION_TYPE_HDMI;
+  const uint64_t base_connector_id = 1u;
+  const std::vector<uint64_t> path_topology{};
   const bool is_aspect_preserving_scaling = false;
   const bool has_overscan = false;
   const PrivacyScreenState privacy_screen_state = kDisabled;
@@ -367,12 +375,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const std::vector<uint8_t> edid = {2, 3, 4, 5};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, is_aspect_preserving_scaling,
-      has_overscan, privacy_screen_state, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      display_name, sys_path, std::move(modes), PanelOrientation::kLeftUp, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size);
+      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
+      has_color_correction_matrix, color_correction_in_linear_space,
+      display_color_space, bits_per_channel, display_name, sys_path,
+      std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -387,6 +395,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const gfx::Size physical_size(270, 180);
   const gfx::Size maximum_cursor_size(64, 64);
   const DisplayConnectionType type = DISPLAY_CONNECTION_TYPE_INTERNAL;
+  const uint64_t base_connector_id = 1u;
+  const std::vector<uint64_t> path_topology{};
   const bool is_aspect_preserving_scaling = true;
   const bool has_overscan = false;
   const PrivacyScreenState privacy_screen_state = kNotSupported;
@@ -410,12 +420,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const std::vector<uint8_t> edid = {2, 3};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, is_aspect_preserving_scaling,
-      has_overscan, privacy_screen_state, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      display_name, sys_path, std::move(modes), PanelOrientation::kRightUp,
-      edid, current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size);
+      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
+      has_color_correction_matrix, color_correction_in_linear_space,
+      display_color_space, bits_per_channel, display_name, sys_path,
+      std::move(modes), PanelOrientation::kRightUp, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

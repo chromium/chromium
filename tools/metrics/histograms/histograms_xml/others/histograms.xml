@@ -2712,6 +2712,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
+    units="count" expires_after="2021-11-20">
+  <owner>gildekel@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    Total number of external displays connected via MST and being configured.
+    This is recorded every time an external display is connected/disconnected,
+    or when the display mode of a screen is about to change.
+  </summary>
+</histogram>
+
+<histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
+    units="%" expires_after="2021-11-20">
+  <owner>gildekel@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    Percentage of external displays connected via MST and being configured. This
+    is recorded every time an external display is connected/disconnected, or
+    when the display mode of a screen is about to change.
+  </summary>
+</histogram>
+
+<histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
+    units="count" expires_after="2021-11-20">
+  <owner>gildekel@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    Total number of external displays being configured. This is recorded every
+    time an external display is connected/disconnected, or when the display mode
+    of a screen is about to change.
+  </summary>
+</histogram>
+
 <histogram name="Conflicts.ConfirmedBadModules" units="modules"
     expires_after="2018-08-30">
   <owner>chrisha@chromium.org</owner>

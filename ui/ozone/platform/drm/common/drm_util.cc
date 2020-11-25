@@ -13,16 +13,23 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
 namespace ui {
 
@@ -193,6 +200,20 @@ display::PrivacyScreenState GetPrivacyScreenState(int fd,
 
   return static_cast<display::PrivacyScreenState>(
       connector->prop_values[index]);
+}
+
+std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
+  ScopedDrmPropertyBlobPtr path_blob =
+      GetDrmPropertyBlob(fd, connector, "PATH");
+
+  if (!path_blob) {
+    DCHECK_GT(connector->connector_id, 0u);
+
+    // The topology is consisted solely of the connector id.
+    return {base::strict_cast<uint64_t>(connector->connector_id)};
+  }
+
+  return ParsePathBlob(*path_blob);
 }
 
 bool IsAspectPreserving(int fd, drmModeConnector* connector) {
@@ -437,6 +458,12 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const gfx::Size physical_size =
       gfx::Size(info->connector()->mmWidth, info->connector()->mmHeight);
   const display::DisplayConnectionType type = GetDisplayType(info->connector());
+  uint64_t base_connector_id = 0u;
+  std::vector<uint64_t> path_topology = GetPathTopology(fd, info->connector());
+  if (!path_topology.empty()) {
+    base_connector_id = path_topology.front();
+    path_topology.erase(path_topology.begin());
+  }
   const bool is_aspect_preserving_scaling =
       IsAspectPreserving(fd, info->connector());
   const display::PanelOrientation panel_orientation =
@@ -498,12 +525,12 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       ExtractDisplayModes(info, active_pixel_size, &current_mode, &native_mode);
 
   return std::make_unique<display::DisplaySnapshot>(
-      display_id, origin, physical_size, type, is_aspect_preserving_scaling,
-      has_overscan, privacy_screen_state, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      display_name, sys_path, std::move(modes), panel_orientation, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size);
+      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
+      has_color_correction_matrix, color_correction_in_linear_space,
+      display_color_space, bits_per_channel, display_name, sys_path,
+      std::move(modes), panel_orientation, edid, current_mode, native_mode,
+      product_code, year_of_manufacture, maximum_cursor_size);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
@@ -542,6 +569,66 @@ uint64_t GetEnumValueForName(int fd, int property_id, const char* str) {
   }
   NOTREACHED();
   return 0;
+}
+
+// Returns a vector that holds the path topology of the display. Returns an
+// empty vector upon failure.
+//
+// A path topology c-string is of the format:
+//    mst:{DRM_BASE_CONNECTOR_ID#}-{BRANCH_1_PORT#}-...-{BRANCH_N_PORT#}\0
+//
+// For example, the display configuration:
+//    Device <--conn6-- MST1 <--port2-- MST2 <--port1-- Display
+// may produce the following topology c-string:
+//     "mst:6-2-1"
+//
+// To see how this string is constructed in the DRM:
+// https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/drm_dp_mst_topology.c?h=v5.10-rc3#n2229
+std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
+  if (!path_blob.length) {
+    LOG(ERROR) << "PATH property blob is empty.";
+    return {};
+  }
+
+  std::string path_str(
+      static_cast<char*>(path_blob.data),
+      base::strict_cast<std::string::size_type>(path_blob.length));
+  base::StringPiece path_string_piece(path_str);
+  path_string_piece = base::TrimString(path_string_piece, std::string("\0", 1u),
+                                       base::TRIM_TRAILING);
+
+  const std::string prefix("mst:");
+  if (!base::StartsWith(path_string_piece, prefix,
+                        base::CompareCase::SENSITIVE)) {
+    LOG(ERROR) << "Invalid PATH string prefix. Does not contain '" << prefix
+               << "'. Input: '" << path_str << "'";
+    return {};
+  }
+  path_string_piece.remove_prefix(prefix.length());
+
+  std::vector<uint64_t> path;
+  for (const auto& string_port :
+       base::SplitStringPiece(path_string_piece, "-", base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_ALL)) {
+    uint64_t int_port = 0;
+    if (base::StringToUint64(string_port, &int_port) && int_port > 0) {
+      path.push_back(int_port);
+    } else {
+      LOG(ERROR)
+          << "One or more port values in the PATH string are invalid. Input: '"
+          << path_str << "'";
+      return {};
+    }
+  }
+
+  if (path.size() < 2) {
+    LOG(ERROR)
+        << "Insufficient number of ports (should be at least 2 but found "
+        << path.size() << "). Input: '" << path_str << "'";
+    return {};
+  }
+
+  return path;
 }
 
 }  // namespace ui

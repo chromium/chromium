@@ -100,6 +100,8 @@ bool ModeIsInterlaced(const drmModeModeInfo& mode);
 
 uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
 
+std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_

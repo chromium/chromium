@@ -33,6 +33,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
                   const gfx::Point& origin,
                   const gfx::Size& physical_size,
                   DisplayConnectionType type,
+                  uint64_t base_connector_id,
+                  const std::vector<uint64_t>& path_topology,
                   bool is_aspect_preserving_scaling,
                   bool has_overscan,
                   PrivacyScreenState privacy_screen_state,
@@ -57,6 +59,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   void set_origin(const gfx::Point& origin) { origin_ = origin; }
   const gfx::Size& physical_size() const { return physical_size_; }
   DisplayConnectionType type() const { return type_; }
+  uint64_t base_connector_id() const { return base_connector_id_; }
+  const std::vector<uint64_t>& path_topology() const { return path_topology_; }
   bool is_aspect_preserving_scaling() const {
     return is_aspect_preserving_scaling_;
   }
@@ -108,6 +112,53 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   const gfx::Size physical_size_;
 
   const DisplayConnectionType type_;
+
+  // The next two private members represent the connection path between the
+  // source device and this display. Consider the following three-display setup:
+  // +-------------+
+  // | Source      |    +-------------+
+  // | (Device)    |    | BranchX     |
+  // |             |    | (MST)       |
+  // |       [conn6]--->|       [port1]--->DisplayA
+  // +-------------+    |             |
+  //                    |             |    +-------------+
+  //                    |             |    | BranchY     |
+  //                    |             |    | (MST)       |
+  //                    |       [port2]--->|       [port1]----->DisplayB
+  //                    +-------------+    |             |
+  //                                       |       [port2]----->DisplayC
+  //                                       +-------------+
+  // [conn6]: is the root of the topology tree (a.k.a. the base connector),
+  // which maps to a physical connector on the device. This value can be used to
+  // determine if two or more external displays are sharing the same physical
+  // port.
+  // Important: Do not confuse this value with a display's connector ID!
+  // The base connector will be listed as disconnected when a branch device is
+  // attached to it to signal that it is not available for use, while new
+  // connector IDs are spawned for connected monitors down the path. A display's
+  // connector ID will be equal to the base connector ID only when the display
+  // is connected directly to the source device.
+  // [BranchX|port1]: is an output port to which DisplayA is connected.
+  // [BranchX|port2]: is an output port to which BranchY is connected.
+  // The ports on BranchY follow the same logic. Notice that port numbers across
+  // branch devices are NOT unique.
+  //
+  // Example 1: if |this| represents DisplayB:
+  // |base_connector_id_| == 6
+  // |path_topology_| == {2, 1}
+  // |base_connector_id_| != |this| connector id.
+  //
+  // Example 2: if |this| represents a display that is connected directly to the
+  // source device above:
+  // |base_connector_id_| == 6
+  // |path_topology_| == {}
+  // |base_connector_id_| == |this| connector id.
+  //
+  // The path is in a failed/error state if |base_connector_id_| == 0. This
+  // indicates that the display is connected to one or more branch devices, but
+  // the path could not be parsed.
+  const uint64_t base_connector_id_;
+  const std::vector<uint64_t> path_topology_;
 
   const bool is_aspect_preserving_scaling_;
 

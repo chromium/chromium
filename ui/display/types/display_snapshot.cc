@@ -65,6 +65,8 @@ DisplaySnapshot::DisplaySnapshot(int64_t display_id,
                                  const gfx::Point& origin,
                                  const gfx::Size& physical_size,
                                  DisplayConnectionType type,
+                                 uint64_t base_connector_id,
+                                 const std::vector<uint64_t>& path_topology,
                                  bool is_aspect_preserving_scaling,
                                  bool has_overscan,
                                  PrivacyScreenState privacy_screen_state,
@@ -86,6 +88,8 @@ DisplaySnapshot::DisplaySnapshot(int64_t display_id,
       origin_(origin),
       physical_size_(physical_size),
       type_(type),
+      base_connector_id_(base_connector_id),
+      path_topology_(path_topology),
       is_aspect_preserving_scaling_(is_aspect_preserving_scaling),
       has_overscan_(has_overscan),
       privacy_screen_state_(privacy_screen_state),
@@ -129,29 +133,37 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
   }
 
   return std::make_unique<DisplaySnapshot>(
-      display_id_, origin_, physical_size_, type_,
-      is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
-      has_color_correction_matrix_, color_correction_in_linear_space_,
-      color_space_, bits_per_channel_, display_name_, sys_path_,
-      std::move(clone_modes), panel_orientation_, edid_, cloned_current_mode,
-      cloned_native_mode, product_code_, year_of_manufacture_,
-      maximum_cursor_size_);
+      display_id_, origin_, physical_size_, type_, base_connector_id_,
+      path_topology_, is_aspect_preserving_scaling_, has_overscan_,
+      privacy_screen_state_, has_color_correction_matrix_,
+      color_correction_in_linear_space_, color_space_, bits_per_channel_,
+      display_name_, sys_path_, std::move(clone_modes), panel_orientation_,
+      edid_, cloned_current_mode, cloned_native_mode, product_code_,
+      year_of_manufacture_, maximum_cursor_size_);
 }
 
 std::string DisplaySnapshot::ToString() const {
+  std::string sharing_connector;
+  if (base_connector_id_) {
+    sharing_connector = path_topology_.empty() ? "NO" : "YES";
+  } else {
+    sharing_connector = "parsing_error";
+  }
+
   return base::StringPrintf(
       "id=%" PRId64
       " current_mode=%s native_mode=%s origin=%s"
       " panel_orientation=%d"
-      " physical_size=%s, type=%s name=\"%s\" (year:%d) "
-      "modes=(%s)",
+      " physical_size=%s, type=%s sharing_base_connector=%s name=\"%s\" "
+      "(year:%d) modes=(%s)",
       display_id_,
       current_mode_ ? current_mode_->ToString().c_str() : "nullptr",
       native_mode_ ? native_mode_->ToString().c_str() : "nullptr",
       origin_.ToString().c_str(), panel_orientation_,
       physical_size_.ToString().c_str(),
-      DisplayConnectionTypeString(type_).c_str(), display_name_.c_str(),
-      year_of_manufacture_, ModeListString(modes_).c_str());
+      DisplayConnectionTypeString(type_).c_str(), sharing_connector.c_str(),
+      display_name_.c_str(), year_of_manufacture_,
+      ModeListString(modes_).c_str());
 }
 
 // static
