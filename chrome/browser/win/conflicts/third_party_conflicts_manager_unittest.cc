@@ -50,9 +50,9 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
   // Writes an empty serialized ModuleList proto to |GetModuleListPath()|.
   void CreateModuleList() {
     chrome::conflicts::ModuleList module_list;
-    // Include an empty blacklist and whitelist.
-    module_list.mutable_blacklist();
-    module_list.mutable_whitelist();
+    // Include an empty blocklist and allowlist.
+    module_list.mutable_blocklist();
+    module_list.mutable_allowlist();
 
     std::string contents;
     ASSERT_TRUE(module_list.SerializeToString(&contents));

@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/win/conflicts/module_blacklist_cache_updater.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 #include "chrome/browser/win/conflicts/module_list_component_updater.h"
 #include "chrome/chrome_elf/third_party_dlls/packed_list_format.h"
@@ -37,7 +37,7 @@ class Version;
 // IncompatibleApplicationsWarning and ThirdPartyModulesBlocking features. Each
 // feature requires a set of dependencies to be initialized on a background
 // sequence because their main class can be created
-// (IncompatibleApplicationsUpdater and ModuleBlacklistCacheUpdater
+// (IncompatibleApplicationsUpdater and ModuleBlocklistCacheUpdater
 // respectively).
 //
 // Dependencies list
@@ -54,8 +54,8 @@ class Version;
 //    installed on the computer.
 //
 // For the ThirdPartyModulesBlocking feature only:
-// 4. |initial_blacklisted_modules_| contains the list of modules that were
-//    blacklisted at the time the browser was launched. Modifications to that
+// 4. |initial_blocklisted_modules_| contains the list of modules that were
+//    blocklisted at the time the browser was launched. Modifications to that
 //    list do not take effect until a restart.
 //
 class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
@@ -70,7 +70,7 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
   // Explicitely disables the third-party module blocking feature. This is
   // needed because simply turning off the feature using either the Feature List
   // API or via group policy is not sufficient. Disabling the blocking requires
-  // the deletion of the module blacklist cache. This task is executed on
+  // the deletion of the module blocklist cache. This task is executed on
   // |background_sequence|.
   static void DisableThirdPartyModuleBlocking(
       base::TaskRunner* background_sequence);
@@ -97,7 +97,7 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
   void LoadModuleList(const base::FilePath& path);
 
   // Force the initialization of the IncompatibleApplicationsUpdater and the
-  // ModuleBlacklistCacheUpdater instances by triggering an update of the module
+  // ModuleBlocklistCacheUpdater instances by triggering an update of the module
   // list component, if needed. Immediately invokes
   // |on_initialization_event_callback| if this instance is already in a final
   // state (Failed to initialize or fully initialized). This is only meant to be
@@ -130,10 +130,10 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
     return incompatible_applications_updater_.get();
   }
 
-  // Returns the ModuleBlacklistCacheUpdater instance. Returns null if the
+  // Returns the ModuleBlocklistCacheUpdater instance. Returns null if the
   // corresponding feature is disabled (ThirdPartyModulesBlocking).
-  ModuleBlacklistCacheUpdater* module_blacklist_cache_updater() {
-    return module_blacklist_cache_updater_.get();
+  ModuleBlocklistCacheUpdater* module_blocklist_cache_updater() {
+    return module_blocklist_cache_updater_.get();
   }
 
   // Disables the analysis of newly found modules.
@@ -148,20 +148,20 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
   void OnInstalledApplicationsCreated(
       std::unique_ptr<InstalledApplications> installed_applications);
 
-  // Called when |initial_blacklisted_modules_| finishes its initialization.
-  void OnInitialBlacklistedModulesRead(
+  // Called when |initial_blocklisted_modules_| finishes its initialization.
+  void OnInitialBlocklistedModulesRead(
       std::unique_ptr<std::vector<third_party_dlls::PackedListModule>>
-          initial_blacklisted_modules);
+          initial_blocklisted_modules);
 
   // Initializes either or both |incompatible_applications_updater_| and
-  // |module_blacklist_cache_updater_| when the exe_certificate_info_, the
+  // |module_blocklist_cache_updater_| when the exe_certificate_info_, the
   // module_list_filter_ and the installed_applications_ are available.
   void InitializeIfReady();
 
   // Checks if the |old_md5_digest| matches the expected one from the Local
   // State file, and updates it to |new_md5_digest|.
-  void OnModuleBlacklistCacheUpdated(
-      const ModuleBlacklistCacheUpdater::CacheUpdateResult& result);
+  void OnModuleBlocklistCacheUpdated(
+      const ModuleBlocklistCacheUpdater::CacheUpdateResult& result);
 
   // Forcibly triggers an update of the Third Party Module List component. Only
   // invoked when ForceInitialization() is called.
@@ -209,22 +209,22 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
   // thread if none is currently installed.
   ModuleListComponentUpdater::UniquePtr module_list_component_updater_;
 
-  // Filters third-party modules against a whitelist and a blacklist. This
-  // instance is ref counted because the |module_blacklist_cache_updater_| must
+  // Filters third-party modules against an allowlist and a blocklist. This
+  // instance is ref counted because the |module_blocklist_cache_updater_| must
   // use it on a background sequence.
   scoped_refptr<ModuleListFilter> module_list_filter_;
 
-  // The blacklisted modules contained in the cache used to initialize the
+  // The blocklisted modules contained in the cache used to initialize the
   // blocking in chrome_elf.
   std::unique_ptr<std::vector<third_party_dlls::PackedListModule>>
-      initial_blacklisted_modules_;
+      initial_blocklisted_modules_;
 
   // Retrieves the list of installed applications.
   std::unique_ptr<InstalledApplications> installed_applications_;
 
-  // Maintains the module blacklist cache. This member is only initialized when
+  // Maintains the module blocklist cache. This member is only initialized when
   // the ThirdPartyModuleBlocking feature is enabled.
-  std::unique_ptr<ModuleBlacklistCacheUpdater> module_blacklist_cache_updater_;
+  std::unique_ptr<ModuleBlocklistCacheUpdater> module_blocklist_cache_updater_;
 
   // Maintains the cache of incompatible applications. This member is only
   // initialized when the IncompatibleApplicationsWarning feature is enabled.

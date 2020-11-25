@@ -33,9 +33,8 @@ void CleanupDeprecatedTrackedPreferences(
   // Add deprecated previously tracked preferences below for them to be cleaned
   // up from both the pref files and the hash store.
   static const char* const kDeprecatedTrackedPreferences[] = {
-      // TODO(a-v-y): Remove in M60+,
-      "default_search_provider.search_url", "default_search_provider.name",
-      "default_search_provider.keyword"};
+      // TODO(pmonette): Remove in 2022+.
+      "module_blacklist_cache_md5_digest"};
 
   for (size_t i = 0; i < base::size(kDeprecatedTrackedPreferences); ++i) {
     const char* key = kDeprecatedTrackedPreferences[i];

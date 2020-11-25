@@ -2820,8 +2820,8 @@ const char kIncompatibleApplications[] = "incompatible_applications";
 
 // Contains the MD5 digest of the current module blacklist cache. Used to detect
 // external tampering.
-const char kModuleBlacklistCacheMD5Digest[] =
-    "module_blacklist_cache_md5_digest";
+const char kModuleBlocklistCacheMD5Digest[] =
+    "module_blocklist_cache_md5_digest";
 
 // A boolean value, controlling whether third party software is allowed to
 // inject into Chrome's processes.
