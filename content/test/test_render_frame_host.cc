@@ -601,8 +601,7 @@ TestRenderFrameHost::BuildDidCommitInterfaceParams(bool is_same_document) {
 }
 
 void TestRenderFrameHost::AbortCommit(NavigationRequest* navigation_request) {
-  OnCrossDocumentCommitProcessed(navigation_request,
-                                 blink::mojom::CommitResult::Aborted);
+  NavigationRequestCancelled(navigation_request);
 }
 
 // static

@@ -1982,8 +1982,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            NavigationCommitInIframePendingDeletionAB);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            NavigationCommitInIframePendingDeletionABC);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
-                           CommittedOriginIncompatibleWithOriginLock);
   FRIEND_TEST_ALL_PREFIXES(
       SitePerProcessBrowserTest,
       IsDetachedSubframeObservableDuringUnloadHandlerSameProcess);
@@ -2435,13 +2433,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnSameDocumentCommitProcessed(int64_t navigation_id,
                                      bool should_replace_current_entry,
                                      blink::mojom::CommitResult result);
-
-  // Called by the renderer process when it is done processing a cross-document
-  // commit request.
-  // TODO(https://crbug.com/1020175): this is only called with
-  // blink::mojom::CommitResult::Aborted.
-  void OnCrossDocumentCommitProcessed(NavigationRequest* navigation_request,
-                                      blink::mojom::CommitResult result);
 
   // Creates a TracedValue object containing the details of a committed
   // navigation, so it can be logged with the tracing system.

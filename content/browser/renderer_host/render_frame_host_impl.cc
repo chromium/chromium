@@ -7244,8 +7244,12 @@ RenderFrameHostImpl::GetNavigationClientFromInterfaceProvider() {
 
 void RenderFrameHostImpl::NavigationRequestCancelled(
     NavigationRequest* navigation_request) {
-  OnCrossDocumentCommitProcessed(navigation_request,
-                                 blink::mojom::CommitResult::Aborted);
+  // Remove the requests from the list of NavigationRequests waiting to commit.
+  // RenderDocument should obsolete the need for this, as always swapping RFHs
+  // means that it won't be necessary to clean up the list of navigation
+  // requests when the renderer aborts a navigation--instead, we'll always just
+  // throw away the entire speculative RFH.
+  navigation_requests_.erase(navigation_request);
 }
 
 NavigationRequest*
@@ -8833,27 +8837,6 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
     // DidCommitProvisionalLoad.
     same_document_navigation_request_.reset();
   }
-}
-
-void RenderFrameHostImpl::OnCrossDocumentCommitProcessed(
-    NavigationRequest* navigation_request,
-    blink::mojom::CommitResult result) {
-  DCHECK_NE(blink::mojom::CommitResult::RestartCrossDocument, result);
-  if (result == blink::mojom::CommitResult::Ok) {
-    // The navigation will soon be committed. Move it out of the map to the
-    // NavigationRequest that is about to commit.
-    auto find_request = navigation_requests_.find(navigation_request);
-    if (find_request != navigation_requests_.end()) {
-      navigation_request_ = std::move(find_request->second);
-    } else {
-      // This frame might be used for attaching an inner WebContents in which
-      // case |navigation_requests_| are deleted during attaching.
-      // TODO(ekaramad): Add a DCHECK to ensure the FrameTreeNode is attaching
-      // an inner delegate (https://crbug.com/911161).
-    }
-  }
-  // Remove the requests from the list of NavigationRequests waiting to commit.
-  navigation_requests_.erase(navigation_request);
 }
 
 std::unique_ptr<base::trace_event::TracedValue>

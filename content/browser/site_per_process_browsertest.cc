@@ -15327,75 +15327,38 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                             ->GetFrameTree()
                             ->root();
 
-  // Setup an URL which will never commit, allowing this test to send its own,
-  // malformed, commit message.
-  GURL another_url(embedded_test_server()->GetURL("b.com", "/hung"));
+  GURL another_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  const GURL bad_url = GURL("https://b.com");
 
-  // Use LoadURL, as the test shouldn't wait for navigation commit.
-  NavigationController& controller = shell()->web_contents()->GetController();
-  controller.LoadURL(another_url, Referrer(), ui::PAGE_TRANSITION_LINK,
-                     std::string());
-  EXPECT_TRUE(controller.GetPendingEntry());
-  EXPECT_EQ(another_url, controller.GetPendingEntry()->GetURL());
-  NavigationRequest* navigation_request = root->navigation_request();
-  ASSERT_TRUE(navigation_request);
-
-  RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      root->current_frame_host()->GetProcess());
-
-  // Create commit params with the same URL as the start one, so URL checks
-  // pass, but use a different origin than the origin lock of the process.
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->did_create_new_entry = false;
-  params->url = start_url;
-  params->referrer = blink::mojom::Referrer::New();
-  params->transition = ui::PAGE_TRANSITION_LINK;
-  params->should_update_history = false;
-  params->gesture = NavigationGestureAuto;
-  params->method = "GET";
-  params->page_state = blink::PageState::CreateFromURL(start_url);
-  params->navigation_token =
-      root->navigation_request()->commit_params().navigation_token;
-
-  // Use an origin mismatched with the origin lock.
-  params->origin = url::Origin::Create(another_url);
+  // Sanity check the process lock logic.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   int process_id = root->current_frame_host()->GetProcess()->GetID();
-  IsolationContext isolation_context(controller.GetBrowserContext());
+  IsolationContext isolation_context(
+      shell()->web_contents()->GetBrowserContext());
   auto start_url_lock = SiteInstanceImpl::DetermineProcessLock(
       isolation_context, UrlInfo::CreateForTesting(start_url),
       CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   auto another_url_lock = SiteInstanceImpl::DetermineProcessLock(
       isolation_context, UrlInfo::CreateForTesting(another_url),
       CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  auto bad_url_lock = SiteInstanceImpl::DetermineProcessLock(
+      isolation_context, UrlInfo::CreateForTesting(bad_url),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   EXPECT_EQ(start_url_lock, policy->GetProcessLock(process_id));
-  EXPECT_NE(another_url_lock, policy->GetProcessLock(process_id));
+  EXPECT_EQ(another_url_lock, policy->GetProcessLock(process_id));
+  EXPECT_NE(bad_url_lock, policy->GetProcessLock(process_id));
 
-  // Transfer the NavigationRequest ownership to the RenderFrameHost. The test
-  // for NavigationRequest match happens before the check of origin lock and
-  // needs to be successful.
-  root->TransferNavigationRequestOwnership(root->current_frame_host());
-  root->current_frame_host()->OnCrossDocumentCommitProcessed(
-      navigation_request, blink::mojom::CommitResult::Ok);
-
-  // Simulate a commit IPC.
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider;
-  static_cast<mojom::FrameHost*>(root->current_frame_host())
-      ->DidCommitProvisionalLoad(
-          std::move(params),
-          mojom::DidCommitProvisionalLoadInterfaceParams::New(
-              interface_provider.InitWithNewPipeAndPassReceiver(),
-              mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
-                  .InitWithNewPipeAndPassReceiver()));
-
-  // When the IPC message is received and validation fails, the process is
-  // terminated. However, the notification for that should be processed in a
-  // separate task of the message loop, so ensure that the process is still
-  // considered alive.
+  // Leave the commit URL alone, so the URL checks will pass, but change the
+  // origin to one that does not match the origin lock of the process.
+  PwnCommitIPC(shell()->web_contents(), another_url, another_url,
+               url::Origin::Create(bad_url));
   EXPECT_TRUE(
-      root->current_frame_host()->GetProcess()->IsInitializedAndNotDead());
+      BeginNavigateToURLFromRenderer(shell()->web_contents(), another_url));
 
+  // Due to the origin lock mismatch, the render process should be killed when
+  // it tries to commit.
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(
+      root->current_frame_host()->GetProcess());
   EXPECT_EQ(bad_message::RFH_INVALID_ORIGIN_ON_COMMIT, kill_waiter.Wait());
 }
 
