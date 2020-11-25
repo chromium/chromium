@@ -62,7 +62,9 @@ id<GREYMatcher> ShareMenuDismissButton() {
 
 // Tests that open in button appears when opening a PDF, and that tapping on it
 // will open the activity view.
-- (void)testOpenInPDF {
+//
+// Disabled due to flakiness: http://crbug.com/1152782
+- (void)DISABLED_testOpenInPDF {
   // Apple is hiding UIActivityViewController's content from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
