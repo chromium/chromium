@@ -16,6 +16,7 @@
 #include "components/paint_preview/browser/paint_preview_base_service_test_factory.h"
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -124,7 +125,9 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
 };
 
-class PaintPreviewBaseServiceTest : public content::RenderViewHostTestHarness {
+class PaintPreviewBaseServiceTest
+    : public content::RenderViewHostTestHarness,
+      public testing::WithParamInterface<RecordingPersistence> {
  public:
   PaintPreviewBaseServiceTest() = default;
   ~PaintPreviewBaseServiceTest() override = default;
@@ -191,7 +194,7 @@ class PaintPreviewBaseServiceTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<SimpleFactoryKey> rejection_policy_key_ = nullptr;
 };
 
-TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
+TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
@@ -200,6 +203,9 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   recorder.SetExpectedParams(std::move(params));
   auto response = mojom::PaintPreviewCaptureResponse::New();
   response->embedding_token = base::nullopt;
+  if (GetParam() == RecordingPersistence::kMemoryBuffer) {
+    response->skp.emplace(mojo_base::BigBuffer());
+  }
   recorder.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
   OverrideInterface(&recorder);
 
@@ -211,8 +217,7 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      CreateCaptureParams(web_contents(), &path,
-                          RecordingPersistence::kFileSystem,
+      CreateCaptureParams(web_contents(), &path, GetParam(),
                           gfx::Rect(0, 0, 0, 0), true, 50),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
@@ -227,19 +232,32 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
             auto token = base::UnguessableToken::Deserialize(
                 result->proto.root_frame().embedding_token_high(),
                 result->proto.root_frame().embedding_token_low());
+            switch (GetParam()) {
+              case RecordingPersistence::kFileSystem: {
 #if defined(OS_WIN)
-            base::FilePath path = base::FilePath(
-                base::UTF8ToUTF16(result->proto.root_frame().file_path()));
-            base::FilePath name(
-                base::UTF8ToUTF16(base::StrCat({token.ToString(), ".skp"})));
+                base::FilePath path = base::FilePath(
+                    base::UTF8ToUTF16(result->proto.root_frame().file_path()));
+                base::FilePath name(base::UTF8ToUTF16(
+                    base::StrCat({token.ToString(), ".skp"})));
 #else
-            base::FilePath path =
-                base::FilePath(result->proto.root_frame().file_path());
-            base::FilePath name(base::StrCat({token.ToString(), ".skp"}));
+                base::FilePath path =
+                    base::FilePath(result->proto.root_frame().file_path());
+                base::FilePath name(base::StrCat({token.ToString(), ".skp"}));
 #endif
-            EXPECT_EQ(path.DirName(), expected_path);
-            LOG(ERROR) << expected_path;
-            EXPECT_EQ(path.BaseName(), name);
+                EXPECT_EQ(path.DirName(), expected_path);
+                LOG(ERROR) << expected_path;
+                EXPECT_EQ(path.BaseName(), name);
+              } break;
+
+              case RecordingPersistence::kMemoryBuffer: {
+                EXPECT_EQ(result->serialized_skps.size(), 1u);
+                EXPECT_TRUE(result->serialized_skps.contains(token));
+              } break;
+
+              default:
+                NOTREACHED();
+                break;
+            }
             std::move(quit_closure).Run();
           },
           loop.QuitClosure(), PaintPreviewBaseService::CaptureStatus::kOk,
@@ -247,9 +265,7 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   loop.Run();
 }
 
-// TODO(crbug/1152163): Add tests for in-memory capture.
-
-TEST_F(PaintPreviewBaseServiceTest, CaptureFailed) {
+TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
@@ -269,8 +285,7 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureFailed) {
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      CreateCaptureParams(web_contents(), &path,
-                          RecordingPersistence::kFileSystem,
+      CreateCaptureParams(web_contents(), &path, GetParam(),
                           gfx::Rect(0, 0, 0, 0), true, 0),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
@@ -286,7 +301,7 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureFailed) {
   loop.Run();
 }
 
-TEST_F(PaintPreviewBaseServiceTest, CaptureDisallowed) {
+TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
   params->clip_rect = gfx::Rect(0, 0, 0, 0);
@@ -306,8 +321,7 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureDisallowed) {
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      CreateCaptureParams(web_contents(), &path,
-                          RecordingPersistence::kFileSystem,
+      CreateCaptureParams(web_contents(), &path, GetParam(),
                           gfx::Rect(0, 0, 0, 0), true, 0),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
@@ -322,5 +336,11 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureDisallowed) {
           PaintPreviewBaseService::CaptureStatus::kContentUnsupported));
   loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaintPreviewBaseServiceTest,
+                         testing::Values(RecordingPersistence::kFileSystem,
+                                         RecordingPersistence::kMemoryBuffer),
+                         PersistenceParamToString);
 
 }  // namespace paint_preview
