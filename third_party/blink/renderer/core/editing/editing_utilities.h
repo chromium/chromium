@@ -274,7 +274,8 @@ PositionWithAffinity PositionRespectingEditingBoundary(
 //  <editable>|<non-editable>abc</non-editable></editable>
 PositionWithAffinity AdjustForEditingBoundary(const PositionWithAffinity&);
 
-Position ComputePositionForNodeRemoval(const Position&, const Node&);
+CORE_EXPORT Position ComputePositionForNodeRemoval(const Position&,
+                                                   const Node&);
 
 // TODO(editing-dev): These two functions should be eliminated.
 CORE_EXPORT Position PositionBeforeNode(const Node&);

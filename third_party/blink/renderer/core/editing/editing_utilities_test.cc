@@ -12,6 +12,23 @@ namespace blink {
 
 class EditingUtilitiesTest : public EditingTestBase {};
 
+TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterChildren) {
+  SetBodyContent("<div id=a><p id=b><img id=c></p></div>");
+  const Position position = Position::LastPositionInNode(*GetElementById("c"));
+  // Simulate <p> will be removed.
+  EXPECT_EQ(Position(*GetElementById("a"), 0),
+            ComputePositionForNodeRemoval(position, *GetElementById("b")));
+}
+
+TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterNode) {
+  // "editing/deleting/delete-start-block.html" hits this case.
+  SetBodyContent("<div id=a><p id=b><img id=c></p></div>");
+  const Position position = Position::AfterNode(*GetElementById("c"));
+  // Simulate <p> will be removed.
+  EXPECT_EQ(Position(*GetElementById("a"), 0),
+            ComputePositionForNodeRemoval(position, *GetElementById("b")));
+}
+
 TEST_F(EditingUtilitiesTest, DirectionOfEnclosingBlockOf) {
   const char* body_content =
       "<p id='host'><b id='one'></b><b id='two'>22</b></p>";

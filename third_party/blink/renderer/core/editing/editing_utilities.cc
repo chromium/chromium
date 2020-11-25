@@ -1405,7 +1405,7 @@ Position ComputePositionForNodeRemoval(const Position& position,
           !node.IsShadowIncludingInclusiveAncestorOf(*container_node)) {
         return position;
       }
-      return Position::InParentAfterNode(node);
+      return Position::InParentBeforeNode(node);
     case PositionAnchorType::kOffsetInAnchor:
       container_node = position.ComputeContainerNode();
       if (container_node == node.parentNode() &&
@@ -1423,7 +1423,7 @@ Position ComputePositionForNodeRemoval(const Position& position,
       if (!anchor_node ||
           !node.IsShadowIncludingInclusiveAncestorOf(*anchor_node))
         return position;
-      return Position::InParentAfterNode(node);
+      return Position::InParentBeforeNode(node);
     case PositionAnchorType::kBeforeAnchor:
       anchor_node = position.AnchorNode();
       if (!anchor_node ||
