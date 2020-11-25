@@ -1209,7 +1209,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInProfile) {
+// Test is flaky on Win and Mac dbg: crbug.com/1121731
+#if defined(OS_WIN) || (defined(OS_MAC) && !defined(NDEBUG))
+#define MAYBE_OpenLinkInProfile DISABLED_OpenLinkInProfile
+#else
+#define MAYBE_OpenLinkInProfile OpenLinkInProfile
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
   // Create |num_profiles| extra profiles for testing.
   const int num_profiles = 8;
   // The following are the profile numbers that are omitted and need signin.
