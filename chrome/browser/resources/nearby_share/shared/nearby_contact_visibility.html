@@ -198,6 +198,13 @@
         opacity: var(--cr-disabled-opacity);
       }
 
+      .elide {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 400px;
+      }
+
       .contact-toggle {
         align-self: center;
         margin-inline-end: 12px;
@@ -404,8 +411,10 @@
                       class="padded-icon grey-icon contact-icon">
                   </iron-icon>
                   <div>
-                    <div class="cr-title-text">[[item.name]]</div>
-                    <div class="cr-secondary-text">[[item.description]]</div>
+                    <div class="cr-title-text elide">[[item.name]]</div>
+                    <div class="cr-secondary-text elide">
+                      [[item.description]]
+                    </div>
                   </div>
                   <template is="dom-if"
                       if="[[showContactCheckBoxes_(selectedVisibility)]]">
