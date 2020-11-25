@@ -784,7 +784,12 @@ class CONTENT_EXPORT NavigationRequest
 
   // Helper to determine whether an error page for the provided error code
   // should stay in the current process.
-  bool ShouldKeepErrorPageInCurrentProcess(int net_error);
+  enum ErrorPageProcess {
+    kCurrentProcess,
+    kDestinationProcess,
+    kIsolatedProcess
+  };
+  ErrorPageProcess ComputeErrorPageProcess(int net_error);
 
   // Called when the NavigationThrottles have been checked by the
   // NavigationHandle.

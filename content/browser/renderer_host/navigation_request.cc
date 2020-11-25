@@ -555,7 +555,7 @@ void RecordReadyToCommitMetrics(
 //
 // This is currently used when:
 // 1) Restarting a same-document navigation as cross-document.
-// 2) Committing an error page after blocking a same-document navigations.
+// 2) Failing a navigation and committing an error page.
 mojom::NavigationType ConvertToCrossDocumentType(mojom::NavigationType type) {
   switch (type) {
     case mojom::NavigationType::SAME_DOCUMENT:
@@ -2622,29 +2622,36 @@ void NavigationRequest::OnRequestFailedInternal(
   }
 
   RenderFrameHostImpl* render_frame_host = nullptr;
-  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-          frame_tree_node_->IsMainFrame())) {
-    // Main frame error pages must be isolated from the source or destination
-    // process.
-    //
-    // Note: Since this navigation resulted in an error, clear the expected
-    // process for the original navigation since for main frames the error page
-    // will go into a new process.
-    // TODO(nasko): Investigate whether GetFrameHostForNavigation can properly
-    // account for clearing the expected process if it clears the speculative
-    // RenderFrameHost. See https://crbug.com/793127.
-    ResetExpectedProcess();
-    render_frame_host =
-        frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
-  } else {
-    if (ShouldKeepErrorPageInCurrentProcess(status.error_code)) {
+  switch (ComputeErrorPageProcess(status.error_code)) {
+    case ErrorPageProcess::kCurrentProcess:
+      // There's no way to get here with a same-document navigation, it would
+      // need to be on a document that was not blocked but became blocked, but
+      // same document navigations don't go to the network so it wouldn't know
+      // about the change.
+      CHECK(!IsSameDocument());
       render_frame_host = frame_tree_node_->current_frame_host();
-    } else {
+      break;
+    case ErrorPageProcess::kIsolatedProcess:
+      // In this case we are isolating the error page from the source and
+      // destination process, and want it to go to a new process.
+      //
+      // TODO(nasko): Investigate whether GetFrameHostForNavigation can properly
+      // account for clearing the expected process if it clears the speculative
+      // RenderFrameHost. See https://crbug.com/793127.
+      ResetExpectedProcess();
+      FALLTHROUGH;
+    case ErrorPageProcess::kDestinationProcess:
+      // A same-document navigation would normally attempt to navigate the
+      // current document, but since we will be presenting an error instead and
+      // there will not be a document to navigate. We always make an error here
+      // into a cross-document navigation. See https://crbug.com/1018385 and
+      // https://crbug.com/1125106.
+      common_params_->navigation_type =
+          ConvertToCrossDocumentType(common_params_->navigation_type);
       render_frame_host =
           frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
-    }
+      break;
   }
-
   // Sanity check that we haven't changed the RenderFrameHost picked for the
   // error page in OnRequestFailedInternal when running the WillFailRequest
   // checks.
@@ -2675,7 +2682,15 @@ void NavigationRequest::OnRequestFailedInternal(
   }
 }
 
-bool NavigationRequest::ShouldKeepErrorPageInCurrentProcess(int net_error) {
+NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
+    int net_error) {
+  // By policy we can isolate all error pages from both the current and
+  // destination processes.
+  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          frame_tree_node_->IsMainFrame())) {
+    return ErrorPageProcess::kIsolatedProcess;
+  }
+
   // Decide whether to leave the error page in the original process.
   // * If this was a renderer-initiated navigation, and the request is blocked
   //   because the initiating document wasn't allowed to make the request,
@@ -2692,7 +2707,9 @@ bool NavigationRequest::ShouldKeepErrorPageInCurrentProcess(int net_error) {
   //   URLs should be allowed to transfer away from the current process, which
   //   didn't request the navigation and may have a higher privilege level
   //   than the blocked destination.
-  return net::IsRequestBlockedError(net_error) && !browser_initiated();
+  if (net::IsRequestBlockedError(net_error) && !browser_initiated())
+    return ErrorPageProcess::kCurrentProcess;
+  return ErrorPageProcess::kDestinationProcess;
 }
 
 void NavigationRequest::OnRequestStarted(base::TimeTicks timestamp) {
@@ -3013,29 +3030,35 @@ void NavigationRequest::OnRedirectChecksComplete(
 
 void NavigationRequest::OnFailureChecksComplete(
     NavigationThrottle::ThrottleCheckResult result) {
+  // This method is called as a result of getting to the end of
+  // OnRequestFailedInternal(), which calls WillFailRequest(), which
+  // runs the throttles, which eventually call back to this method.
   DCHECK(result.action() != NavigationThrottle::DEFER);
 
+  // The throttle may have changed the net_error_code, so we set the
+  // `net_error_` again, overriding what OnRequestFailedInternal() set.
   net::Error old_net_error = net_error_;
   net_error_ = result.net_error_code();
 
+  // Ensure that WillFailRequest() isn't changing the error code in a way that
+  // switches the destination process for the error page - see
+  // https://crbug.com/817881.
+  CHECK_EQ(ComputeErrorPageProcess(old_net_error),
+           ComputeErrorPageProcess(net_error_))
+      << " Unsupported error code change in WillFailRequest(): from "
+      << old_net_error << " to " << net_error_;
+
+  // The new `net_error_` value may mean we want to cancel the navigation.
   if (MaybeCancelFailedNavigation())
     return;
 
-  // Ensure that WillFailRequest() isn't changing the error code in a way that
-  // switches the destination process for the error page - see
-  // https://crbug.com/817881.  This is not a concern with error page
-  // isolation, where all errors will go into one process.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-          frame_tree_node_->IsMainFrame())) {
-    CHECK_EQ(ShouldKeepErrorPageInCurrentProcess(old_net_error),
-             ShouldKeepErrorPageInCurrentProcess(net_error_))
-        << " Unsupported error code change in WillFailRequest(): from "
-        << old_net_error << " to " << net_error_;
-  }
-
+  // The OnRequestFailedInternal() did not commit the error page as it
+  // defered to WillFailRequest(), which has called through to here, and
+  // now we are finally ready to commit the error page. This will be committed
+  // to the RenderFrameHost previously chosen in OnRequestFailedInternal().
   CommitErrorPage(result.error_page_content());
-  // DO NOT ADD CODE after this. The previous call to CommitErrorPage caused
-  // the destruction of the NavigationRequest.
+  // DO NOT ADD CODE after this. The previous call to CommitErrorPage()
+  // caused the destruction of the NavigationRequest.
 }
 
 void NavigationRequest::OnWillProcessResponseChecksComplete(
@@ -3138,14 +3161,9 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
 void NavigationRequest::CommitErrorPage(
     const base::Optional<std::string>& error_page_content) {
-  UpdateCommitNavigationParamsHistory();
+  DCHECK(!IsSameDocument());
 
-  // Error pages are always cross-document.
-  //
-  // This is useful when a same-document navigation is blocked and commit an
-  // error page instead. See https://crbug.com/1018385.
-  common_params_->navigation_type =
-      ConvertToCrossDocumentType(common_params_->navigation_type);
+  UpdateCommitNavigationParamsHistory();
 
   frame_tree_node_->TransferNavigationRequestOwnership(render_frame_host_);
   // Error pages commit in an opaque origin in the renderer process. If this

@@ -3277,8 +3277,11 @@ IN_PROC_BROWSER_TEST_F(NavigationUrlRewriteBrowserTest,
   }
 }
 
-// Update the fragment part of the URL while it is currently displaying an error
-// page. Regression test https://crbug.com/1018385
+// A navigation that fails to navigate due to an ERR_INVALID_URL would attempt
+// to load the error page into the destination RenderFrameHost returned from
+// GetFrameHostForNavigation(). That RenderFrameHost may not be the current
+// one. And even if it is, showing an error page is not a same-document
+// navigation. Regression test for https://crbug.com/1018385
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        SameDocumentNavigationInErrorPage) {
   NavigationHandleCommitObserver navigation_0(web_contents(),
