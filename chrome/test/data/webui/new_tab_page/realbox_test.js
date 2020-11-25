@@ -1592,6 +1592,39 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, matchEls.length);
     // Input is cleared.
     assertEquals('', realbox.$.input.value);
+
+    // Show zero-prefix matches.
+    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(''),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    assertTrue(areMatchesShowing());
+    matchEls =
+        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
+    assertEquals(2, matchEls.length);
+
+    // Pressing 'Escape' when no matches are selected closes the dropdown.
+    escapeEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'Escape',
+    });
+    realbox.$.input.dispatchEvent(escapeEvent);
+    assertTrue(escapeEvent.defaultPrevented);
+
+    // Matches are hidden.
+    assertFalse(areMatchesShowing());
+    // Force a synchronous render.
+    realbox.$.matches.$.groups.render();
+    // Matches are cleared.
+    matchEls =
+        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
+    assertEquals(0, matchEls.length);
   });
 
   test('arrow up/down moves selection / focus', async () => {

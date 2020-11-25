@@ -559,7 +559,9 @@ class RealboxElement extends PolymerElement {
       return;
     }
 
-    if (e.key === 'Escape' && this.selectedMatchIndex_ === 0) {
+    // Clear the input as well as the matches when 'Escape' is pressed if the
+    // the first match is selected or there are no selected matches.
+    if (e.key === 'Escape' && this.selectedMatchIndex_ <= 0) {
       this.updateInput_({text: '', inline: ''});
       this.clearAutocompleteMatches_();
       e.preventDefault();
