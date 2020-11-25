@@ -4374,6 +4374,8 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
   base::HistogramTester histograms;
   const char kHistogramName[] = "Cookie.Port.ReadDiffersFromSet.RemoteHost";
   const char kHistogramNameLocal[] = "Cookie.Port.ReadDiffersFromSet.Localhost";
+  const char kHistogramNameDomainSet[] =
+      "Cookie.Port.ReadDiffersFromSet.DomainSet";
 
   scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
   std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
@@ -4449,6 +4451,23 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
   histograms.ExpectTotalCount(kHistogramNameLocal, 1);
   histograms.ExpectBucketCount(kHistogramNameLocal,
                                CookieMonster::CookieSentToSamePort::kYes, 1);
+
+  // Make sure the Domain set version works.
+  EXPECT_TRUE(SetCookie(cm.get(), GURL("https://www.foo.com/withDomain"),
+                        "W=D; Domain=foo.com; Path=/withDomain"));
+
+  histograms.ExpectTotalCount(kHistogramNameDomainSet, 0);
+
+  EXPECT_EQ(GetCookies(cm.get(), GURL("https://www.foo.com/withDomain")),
+            "W=D");
+  histograms.ExpectTotalCount(kHistogramNameDomainSet, 1);
+  histograms.ExpectBucketCount(kHistogramNameDomainSet,
+                               CookieMonster::CookieSentToSamePort::kYes, 1);
+  // The RemoteHost histogram should also increase with this cookie. Domain
+  // cookies aren't special insofar as this metric is concerned.
+  histograms.ExpectTotalCount(kHistogramName, 6);
+  histograms.ExpectBucketCount(kHistogramName,
+                               CookieMonster::CookieSentToSamePort::kYes, 2);
 }
 
 }  // namespace net

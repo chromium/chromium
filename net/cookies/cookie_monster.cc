@@ -994,6 +994,13 @@ void CookieMonster::FilterCookiesWithOptions(
                                           (*it)->SourceScheme()));
     }
 
+    if ((*it)->IsDomainCookie()) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.ReadDiffersFromSet.DomainSet",
+          IsCookieSentToSamePortThatSetIt(url, (*it)->SourcePort(),
+                                          (*it)->SourceScheme()));
+    }
+
     included_cookies->push_back({**it, access_result});
   }
 }

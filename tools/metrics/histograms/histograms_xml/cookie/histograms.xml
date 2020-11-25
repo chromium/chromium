@@ -297,9 +297,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chlily@chromium.org</owner>
   <summary>
     This records if a cookie is being read by the same port value that set it
-    (the source port). See Cookie.Port.Set.{HostType} and
-    Cookie.Port.Read.{HostType} for more information on how the port value for
-    setting and reading (respectively) is obtained.
+    (the source port). See Cookie.Port.Set.* and Cookie.Port.Read.* for more
+    information on how the port value for setting and reading (respectively) is
+    obtained.
 
     If the source port is unspecified (due to a cookie already existing before
     we started to record this value) or invalid (due to corruption) then this
@@ -307,11 +307,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     The &quot;Localhost&quot; variant of this metric is recorded only for
     localhost origns. The &quot;RemoteHost&quot; variant is recorded for all
-    other origins.
+    other origins. The &quot;DomainSet&quot; variant of this metric is recorded
+    for all cookies which have the Domain attribute set (localhost and IP
+    addresses cannot set the Domain attribute and therefore will not trigger
+    this metric. Put technically, the origin must have a non-empty registrable
+    domain to set the Domain attribute).
 
     This metric is recorded once per included cookie on every read attempt.
   </summary>
   <token key="HostType">
+    <variant name="DomainSet"/>
     <variant name="Localhost"/>
     <variant name="RemoteHost"/>
   </token>
