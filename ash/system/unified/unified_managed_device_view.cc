@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -96,9 +97,11 @@ void UnifiedManagedDeviceView::Update() {
 
     base::string16 managed_string =
         enterprise_domain_manager.empty()
-            ? l10n_util::GetStringUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED)
+            ? l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED,
+                                         ui::GetChromeOSDeviceName())
             : l10n_util::GetStringFUTF16(
                   IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
+                  ui::GetChromeOSDeviceName(),
                   base::UTF8ToUTF16(enterprise_domain_manager));
     label_->SetText(managed_string);
     SetAccessibleName(managed_string);

@@ -27,6 +27,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -350,11 +351,11 @@ void EnterpriseManagedView::Update() {
              !model->enterprise_domain_manager().empty());
 
   if (model->active_directory_managed()) {
-    SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED));
+    SetTooltipText(l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED,
+                                              ui::GetChromeOSDeviceName()));
   } else if (!model->enterprise_domain_manager().empty()) {
     SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
+        IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
         base::UTF8ToUTF16(model->enterprise_domain_manager())));
   }
 }

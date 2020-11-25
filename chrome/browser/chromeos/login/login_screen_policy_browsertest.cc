@@ -41,6 +41,7 @@
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace em = enterprise_management;
 
@@ -239,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {
 
   // Text on EnterpriseManagedView tooltip in current locale.
   base::string16 expected_text = l10n_util::GetStringFUTF16(
-      IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, base::UTF8ToUTF16(kDomain));
+      IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
+      base::UTF8ToUTF16(kDomain));
 
   EXPECT_EQ(expected_text, actual_text);
 }

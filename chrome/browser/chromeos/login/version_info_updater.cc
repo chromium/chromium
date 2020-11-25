@@ -30,6 +30,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
@@ -154,9 +155,9 @@ void VersionInfoUpdater::SetEnterpriseInfo(
   // Update the notification about device status reporting.
   if (delegate_ && !enterprise_display_domain.empty()) {
     std::string enterprise_info;
-    enterprise_info =
-        l10n_util::GetStringFUTF8(IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
-                                  base::UTF8ToUTF16(enterprise_display_domain));
+    enterprise_info = l10n_util::GetStringFUTF8(
+        IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
+        base::UTF8ToUTF16(enterprise_display_domain));
     delegate_->OnEnterpriseInfoUpdated(enterprise_info, asset_id);
   }
 }
