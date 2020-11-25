@@ -112,8 +112,7 @@ PasswordProtectionRequest::PasswordProtectionRequest(
     bool password_field_exists,
     PasswordProtectionService* pps,
     int request_timeout_in_ms)
-    : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+    : web_contents_(web_contents),
       main_frame_url_(main_frame_url),
       password_form_action_(password_form_action),
       password_form_frame_url_(password_form_frame_url),
@@ -138,6 +137,9 @@ PasswordProtectionRequest::PasswordProtectionRequest(
   request_proto_->set_trigger_type(trigger_type_);
   *request_proto_->mutable_url_display_experiment() =
       pps->GetUrlDisplayExperiment();
+
+  request_canceler_ =
+      RequestCanceler::CreateRequestCanceler(GetWeakPtr(), web_contents);
 }
 
 PasswordProtectionRequest::~PasswordProtectionRequest() {
@@ -633,10 +635,6 @@ void PasswordProtectionRequest::HandleDeferredNavigations() {
       throttle->ResumeNavigation();
   }
   throttles_.clear();
-}
-
-void PasswordProtectionRequest::WebContentsDestroyed() {
-  Cancel(/*timed_out=*/false);
 }
 
 }  // namespace safe_browsing

@@ -18,8 +18,8 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/password_protection/request_canceler.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -70,7 +70,7 @@ using DeleteOnUIThread =
 class PasswordProtectionRequest
     : public base::RefCountedThreadSafe<PasswordProtectionRequest,
                                         DeleteOnUIThread>,
-      public content::WebContentsObserver {
+      public CancelableRequest {
  public:
   PasswordProtectionRequest(
       content::WebContents* web_contents,
@@ -95,9 +95,8 @@ class PasswordProtectionRequest
   // conditions.
   void Start();
 
-  // Cancels the current request. |timed_out| indicates if this cancellation is
-  // due to timeout. This function will call Finish() to destroy |this|.
-  void Cancel(bool timed_out);
+  // CancelableRequest implementation
+  void Cancel(bool timed_out) override;
 
   // Processes the received response.
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
@@ -150,9 +149,6 @@ class PasswordProtectionRequest
 
   // Cancels navigation if there is modal warning showing, resumes it otherwise.
   void HandleDeferredNavigations();
-
-  // WebContentsObserver implementation
-  void WebContentsDestroyed() override;
 
  protected:
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
@@ -306,6 +302,9 @@ class PasswordProtectionRequest
   // successfully gathering the features.
   bool dom_features_collection_complete_;
 #endif
+
+  // Cancels the request when it is no longer valid.
+  std::unique_ptr<RequestCanceler> request_canceler_;
 
   base::WeakPtrFactory<PasswordProtectionRequest> weakptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PasswordProtectionRequest);

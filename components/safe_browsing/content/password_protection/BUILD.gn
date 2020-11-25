@@ -14,6 +14,8 @@ source_set("password_protection") {
       "password_protection_request.h",
       "password_protection_service.cc",
       "password_protection_service.h",
+      "request_canceler_content.cc",
+      "request_canceler_content.h",
     ]
 
     public_deps = [ "//google_apis:google_apis" ]
@@ -36,6 +38,7 @@ source_set("password_protection") {
       "//components/safe_browsing/core/db:allowlist_checker_client",
       "//components/safe_browsing/core/db:database_manager",
       "//components/safe_browsing/core/db:v4_protocol_manager_util",
+      "//components/safe_browsing/core/password_protection",
       "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
       "//components/sessions",
       "//components/signin/public/base",
