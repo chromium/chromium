@@ -1049,9 +1049,20 @@ void SmbService::OnSuspendUnmountDone(
 }
 
 void SmbService::SuspendDone(const base::TimeDelta& sleep_duration) {
-  for (auto it = smbfs_shares_.begin(); it != smbfs_shares_.end(); ++it) {
-    SmbFsShare* share = it->second.get();
-    const std::string mount_id = share->mount_id();
+  // Don't iterate directly over the share map during the remount
+  // process as shares can be removed on failure in OnSmbfsMountDone.
+  std::vector<std::string> mount_ids;
+  for (const auto& s : smbfs_shares_)
+    mount_ids.push_back(s.first);
+
+  for (const auto& mount_id : mount_ids) {
+    auto share_it = smbfs_shares_.find(mount_id);
+    if (share_it == smbfs_shares_.end()) {
+      LOG(WARNING) << "Smbfs mount id " << mount_id
+                   << " no longer present during remount after suspend";
+      continue;
+    }
+    SmbFsShare* share = share_it->second.get();
 
     // Don't try to reconnect as we race the network stack in getting an IP
     // address.
