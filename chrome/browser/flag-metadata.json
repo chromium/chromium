@@ -1076,7 +1076,7 @@
   {
     "name": "edit-passwords-in-settings",
     "owners": [ "fhorschig", "jdoerrie" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 89
   },
   {
     "name": "elastic-overscroll-win",
