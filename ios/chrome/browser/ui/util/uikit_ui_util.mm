@@ -315,15 +315,19 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 UIResponder* GetFirstResponder() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  DCHECK(!g_first_responder);
-  [[UIApplication sharedApplication]
-      sendAction:@selector(cr_markSelfCurrentFirstResponder)
-              to:nil
-            from:nil
-        forEvent:nil];
-  UIResponder* firstResponder = g_first_responder;
-  g_first_responder = nil;
-  return firstResponder;
+  if (base::FeatureList::IsEnabled(kFirstResponderSendAction)) {
+    DCHECK_CURRENTLY_ON(web::WebThread::UI);
+    DCHECK(!g_first_responder);
+    [[UIApplication sharedApplication]
+        sendAction:@selector(cr_markSelfCurrentFirstResponder)
+                to:nil
+              from:nil
+          forEvent:nil];
+    UIResponder* firstResponder = g_first_responder;
+    g_first_responder = nil;
+    return firstResponder;
+  }
+  return GetFirstResponderSubview([UIApplication sharedApplication].keyWindow);
 }
 
 // Trigger a haptic vibration for the user selecting an action. This is a no-op
