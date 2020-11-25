@@ -8,6 +8,7 @@
 
 #include "base/system/sys_info.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -74,7 +75,7 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
 
   if (frame->format() == media::PIXEL_FORMAT_NV12 &&
       frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
-    frame = WrapMappedGpuMemoryBufferVideoFrame(frame);
+    frame = media::ConvertToMemoryMappedFrame(frame);
   if (!frame) {
     LOG(WARNING) << "Invalid video frame to encode";
     return;

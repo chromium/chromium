@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -195,38 +196,6 @@ void IsValidFrame(const media::VideoFrame& frame) {
   }
 }
 
-scoped_refptr<media::VideoFrame> WrapGmbVideoFrameForMappedMemoryAccess(
-    scoped_refptr<media::VideoFrame> source_frame) {
-  DCHECK_EQ(source_frame->natural_size(), source_frame->visible_rect().size());
-  gfx::GpuMemoryBuffer* gmb = source_frame->GetGpuMemoryBuffer();
-  if (!gmb || !gmb->Map()) {
-    return nullptr;
-  }
-  // Y and UV planes from the gmb.
-  uint8_t* plane_addresses[2] = {static_cast<uint8_t*>(gmb->memory(0)),
-                                 static_cast<uint8_t*>(gmb->memory(1))};
-  scoped_refptr<media::VideoFrame> destination_frame =
-      media::VideoFrame::WrapExternalYuvData(
-          media::VideoPixelFormat::PIXEL_FORMAT_NV12,
-          source_frame->coded_size(), source_frame->visible_rect(),
-          source_frame->natural_size(), gmb->stride(0), gmb->stride(1),
-          plane_addresses[0], plane_addresses[1], source_frame->timestamp());
-  if (!destination_frame) {
-    gmb->Unmap();
-    LOG(ERROR) << "Failed to wrap gmb buffer";
-    return nullptr;
-  }
-  destination_frame->set_color_space(source_frame->ColorSpace());
-  destination_frame->metadata()->MergeMetadataFrom(source_frame->metadata());
-  destination_frame->AddDestructionObserver(WTF::Bind(
-      [](scoped_refptr<media::VideoFrame> frame) {
-        CHECK(frame->HasGpuMemoryBuffer());
-        frame->GetGpuMemoryBuffer()->Unmap();
-      },
-      std::move(source_frame)));
-  return destination_frame;
-}
-
 scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
     scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
@@ -328,7 +297,7 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrameFromGpu(
                                     std::move(scaled_frame_pool));
   } else if (source_frame->natural_size() ==
              source_frame->visible_rect().size()) {
-    return WrapGmbVideoFrameForMappedMemoryAccess(std::move(source_frame));
+    return media::ConvertToMemoryMappedFrame(std::move(source_frame));
   } else {
     return MakeScaledNV12VideoFrame(std::move(source_frame),
                                     std::move(scaled_frame_pool));
