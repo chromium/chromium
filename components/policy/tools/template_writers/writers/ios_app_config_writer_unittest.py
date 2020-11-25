@@ -65,7 +65,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">string description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -93,7 +93,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">int description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -151,7 +151,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </option>
       </options>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -209,7 +209,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </option>
       </options>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -267,7 +267,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </option>
       </options>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -295,7 +295,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">boolean description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -323,7 +323,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">list description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -353,7 +353,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">dict description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -381,7 +381,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">string description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -409,7 +409,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         <language value="en-US">string description</language>
       </description>
     </field>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',
@@ -448,7 +448,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         </description>
       </field>
     </fieldGroup>'''
-    expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
+    expected = self._GetExpectedOutput('83', expected_configuration,
                                        expected_presentation)
     output = self.GetOutput(policy_json, {
         '_google_chrome': '1',

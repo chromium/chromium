@@ -122,7 +122,8 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
         'xsi:noNamespaceSchemaLocation'] = schema_location
 
     version = self.AddElement(self._app_config, 'version', {})
-    self.AddText(version, self.config['version'])
+    milestone = self.config['version'].split(".", 1)[0]
+    self.AddText(version, milestone)
 
     bundle_id = self.AddElement(self._app_config, 'bundleId', {})
     self.AddText(bundle_id, self.config['bundle_id'])
