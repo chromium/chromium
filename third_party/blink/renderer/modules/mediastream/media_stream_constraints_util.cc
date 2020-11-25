@@ -281,7 +281,7 @@ double StringConstraintFitnessDistance(const WebString& value,
 MediaStreamSource::Capabilities ComputeCapabilitiesForVideoSource(
     const String& device_id,
     const media::VideoCaptureFormats& formats,
-    media::VideoFacingMode facing_mode,
+    mojom::blink::FacingMode facing_mode,
     bool is_device_capture,
     const base::Optional<std::string>& group_id) {
   MediaStreamSource::Capabilities capabilities;

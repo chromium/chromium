@@ -338,10 +338,6 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.MediaDeviceInfo"
           cpp = "::blink::WebMediaDeviceInfo"
         },
-        {
-          mojom = "blink.mojom.FacingMode"
-          cpp = "::media::VideoFacingMode"
-        },
       ]
       traits_headers = [ "//third_party/blink/public/common/mediastream/media_devices_mojom_traits.h" ]
     },

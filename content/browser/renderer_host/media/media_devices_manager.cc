@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
 #if defined(OS_MAC)
 #include "base/callback_helpers.h"
@@ -933,10 +934,9 @@ void MediaDevicesManager::AudioDevicesEnumerated(
 
   blink::WebMediaDeviceInfoArray snapshot;
   for (const media::AudioDeviceDescription& description : device_descriptions) {
-    snapshot.emplace_back(description.unique_id, description.device_name,
-                          description.group_id,
-                          media::VideoCaptureControlSupport(),
-                          media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE);
+    snapshot.emplace_back(
+        description.unique_id, description.device_name, description.group_id,
+        media::VideoCaptureControlSupport(), blink::mojom::FacingMode::NONE);
   }
   DevicesEnumerated(type, snapshot);
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_media_element_capture.h"
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -63,8 +64,7 @@ bool AddVideoTrackToMediaStream(
       track_id, MediaStreamSource::kTypeVideo, track_id, is_remote);
   media_stream_source->SetPlatformSource(std::move(media_stream_video_source));
   media_stream_source->SetCapabilities(ComputeCapabilitiesForVideoSource(
-      track_id, preferred_formats,
-      media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE,
+      track_id, preferred_formats, mojom::blink::FacingMode::NONE,
       false /* is_device_capture */));
   descriptor->AddRemoteTrack(MediaStreamVideoTrack::CreateVideoTrack(
       media_stream_video_source_ptr,

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +27,8 @@ TEST(MediaDevicesTest, MediaDeviceInfoFromVideoDescriptor) {
             device_info.video_control_support.tilt);
   EXPECT_EQ(descriptor.control_support().zoom,
             device_info.video_control_support.zoom);
-  EXPECT_EQ(descriptor.facing, device_info.video_facing);
+  EXPECT_EQ(static_cast<blink::mojom::FacingMode>(descriptor.facing),
+            device_info.video_facing);
 }
 
 }  // namespace blink

@@ -5,20 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIASTREAM_MEDIA_DEVICES_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIASTREAM_MEDIA_DEVICES_MOJOM_TRAITS_H_
 
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
 namespace mojo {
-
-template <>
-struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::FacingMode, media::VideoFacingMode> {
-  static blink::mojom::FacingMode ToMojom(media::VideoFacingMode facing_mode);
-
-  static bool FromMojom(blink::mojom::FacingMode input,
-                        media::VideoFacingMode* out);
-};
 
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaDeviceInfoDataView,

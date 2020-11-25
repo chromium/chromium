@@ -9,6 +9,7 @@
 
 #include "media/base/video_facing.h"
 #include "media/capture/video_capture_types.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -339,7 +340,7 @@ MODULES_EXPORT MediaStreamSource::Capabilities
 ComputeCapabilitiesForVideoSource(
     const String& device_id,
     const media::VideoCaptureFormats& formats,
-    media::VideoFacingMode facing_mode,
+    mojom::blink::FacingMode facing_mode,
     bool is_device_capture,
     const base::Optional<std::string>& group_id = base::nullopt);
 

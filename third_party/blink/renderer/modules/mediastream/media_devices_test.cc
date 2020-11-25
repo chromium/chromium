@@ -89,13 +89,13 @@ class MockMediaDevicesDispatcherHost
             mojom::blink::VideoInputDeviceCapabilities::New();
         capabilities->device_id = kFakeVideoInputDeviceId1;
         capabilities->group_id = kFakeCommonGroupId1;
-        capabilities->facing_mode = media::MEDIA_VIDEO_FACING_NONE;
+        capabilities->facing_mode = mojom::blink::FacingMode::NONE;
         video_input_capabilities.push_back(std::move(capabilities));
 
         capabilities = mojom::blink::VideoInputDeviceCapabilities::New();
         capabilities->device_id = kFakeVideoInputDeviceId2;
         capabilities->group_id = kFakeVideoInputGroupId2;
-        capabilities->facing_mode = media::MEDIA_VIDEO_FACING_USER;
+        capabilities->facing_mode = mojom::blink::FacingMode::USER;
         video_input_capabilities.push_back(std::move(capabilities));
       }
     }

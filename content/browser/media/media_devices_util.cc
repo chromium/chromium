@@ -198,7 +198,7 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
       has_permission ? device_info.video_control_support
                      : media::VideoCaptureControlSupport(),
       has_permission ? device_info.video_facing
-                     : media::MEDIA_VIDEO_FACING_NONE);
+                     : blink::mojom::FacingMode::NONE);
 }
 
 blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(

@@ -82,7 +82,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     VideoInputDeviceCapabilities device;
     device.device_id = kDeviceID1;
     device.group_id = kGroupID1;
-    device.facing_mode = media::MEDIA_VIDEO_FACING_NONE;
+    device.facing_mode = mojom::blink::FacingMode::NONE;
     device.formats = {
         media::VideoCaptureFormat(gfx::Size(200, 200), 40.0f,
                                   media::PIXEL_FORMAT_I420),
@@ -100,7 +100,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     // A low-resolution device.
     device.device_id = kDeviceID2;
     device.group_id = kGroupID2;
-    device.facing_mode = media::MEDIA_VIDEO_FACING_ENVIRONMENT;
+    device.facing_mode = mojom::blink::FacingMode::ENVIRONMENT;
     device.formats = {
         media::VideoCaptureFormat(gfx::Size(40, 30), 20.0f,
                                   media::PIXEL_FORMAT_I420),
@@ -123,7 +123,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     // A high-resolution device.
     device.device_id = kDeviceID3;
     device.group_id = kGroupID3;
-    device.facing_mode = media::MEDIA_VIDEO_FACING_USER;
+    device.facing_mode = mojom::blink::FacingMode::USER;
     device.formats = {
         media::VideoCaptureFormat(gfx::Size(600, 400), 10.0f,
                                   media::PIXEL_FORMAT_I420),
@@ -157,7 +157,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     // A depth capture device.
     device.device_id = kDeviceID4;
     device.group_id = kGroupID4;
-    device.facing_mode = media::MEDIA_VIDEO_FACING_ENVIRONMENT;
+    device.facing_mode = mojom::blink::FacingMode::ENVIRONMENT;
     device.formats = {media::VideoCaptureFormat(gfx::Size(640, 480), 30.0f,
                                                 media::PIXEL_FORMAT_Y16)};
     device.control_support.pan = true;
@@ -169,7 +169,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     // be supported if no constraints are placed on the frame rate.
     device.device_id = kDeviceID5;
     device.group_id = kGroupID5;
-    device.facing_mode = media::MEDIA_VIDEO_FACING_NONE;
+    device.facing_mode = mojom::blink::FacingMode::NONE;
     device.formats = {
         media::VideoCaptureFormat(
             gfx::Size(MediaStreamVideoSource::kDefaultWidth,
@@ -405,7 +405,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   VideoDeviceCaptureCapabilities capabilities;
   VideoInputDeviceCapabilities device;
   device.device_id = kDeviceID1;
-  device.facing_mode = media::MEDIA_VIDEO_FACING_NONE;
+  device.facing_mode = mojom::blink::FacingMode::NONE;
   device.formats = {
       media::VideoCaptureFormat(gfx::Size(200, 200), 40.0f,
                                 media::PIXEL_FORMAT_I420),
@@ -505,7 +505,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryFacingMode) {
   // Only the low-res device supports environment facing mode. Should select
   // default settings for everything else.
   EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
-  EXPECT_EQ(media::MEDIA_VIDEO_FACING_ENVIRONMENT,
+  EXPECT_EQ(mojom::blink::FacingMode::ENVIRONMENT,
             low_res_device_->facing_mode);
   EXPECT_EQ(*low_res_closest_format_, result.Format());
   CheckTrackAdapterSettingsEqualsFormat(result);
@@ -516,7 +516,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryFacingMode) {
   // Only the high-res device supports user facing mode. Should select default
   // settings for everything else.
   EXPECT_EQ(high_res_device_->device_id.Utf8(), result.device_id());
-  EXPECT_EQ(media::MEDIA_VIDEO_FACING_USER, high_res_device_->facing_mode);
+  EXPECT_EQ(mojom::blink::FacingMode::USER, high_res_device_->facing_mode);
   EXPECT_EQ(*high_res_closest_format_, result.Format());
   CheckTrackAdapterSettingsEqualsFormat(result);
 }
@@ -1992,7 +1992,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   VideoDeviceCaptureCapabilities capabilities;
   VideoInputDeviceCapabilities device;
   device.device_id = kDeviceID1;
-  device.facing_mode = media::MEDIA_VIDEO_FACING_NONE;
+  device.facing_mode = mojom::blink::FacingMode::NONE;
   device.formats = {
       media::VideoCaptureFormat(gfx::Size(200, 200), 40.0f,
                                 media::PIXEL_FORMAT_I420),

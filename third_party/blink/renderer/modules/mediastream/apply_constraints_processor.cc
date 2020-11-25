@@ -249,8 +249,10 @@ blink::VideoCaptureSettings ApplyConstraintsProcessor::SelectVideoSettings(
   device_capabilities.device_id = current_request_->Track()->Source()->Id();
   device_capabilities.group_id = current_request_->Track()->Source()->GroupId();
   device_capabilities.facing_mode =
-      GetCurrentVideoSource() ? GetCurrentVideoSource()->device().video_facing
-                              : media::MEDIA_VIDEO_FACING_NONE;
+      GetCurrentVideoSource()
+          ? static_cast<mojom::blink::FacingMode>(
+                GetCurrentVideoSource()->device().video_facing)
+          : mojom::blink::FacingMode::NONE;
   device_capabilities.formats = std::move(formats);
 
   blink::VideoDeviceCaptureCapabilities video_capabilities;

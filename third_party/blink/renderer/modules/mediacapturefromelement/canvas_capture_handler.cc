@@ -521,8 +521,7 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
       track_id, MediaStreamSource::kTypeVideo, track_id, false);
   stream_source->SetPlatformSource(std::move(stream_video_source));
   stream_source->SetCapabilities(ComputeCapabilitiesForVideoSource(
-      track_id, preferred_formats,
-      media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE,
+      track_id, preferred_formats, mojom::blink::FacingMode::NONE,
       false /* is_device_capture */));
 
   *component = MakeGarbageCollected<MediaStreamComponent>(stream_source);

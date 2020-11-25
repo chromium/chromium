@@ -41,11 +41,11 @@ const int kNumDefaultDistanceEntries = 4;
 const char kVideoKindColor[] = "color";
 const char kVideoKindDepth[] = "depth";
 
-WebString ToWebString(media::VideoFacingMode facing_mode) {
+WebString ToWebString(mojom::blink::FacingMode facing_mode) {
   switch (facing_mode) {
-    case media::MEDIA_VIDEO_FACING_USER:
+    case mojom::blink::FacingMode::USER:
       return WebString::FromASCII("user");
-    case media::MEDIA_VIDEO_FACING_ENVIRONMENT:
+    case mojom::blink::FacingMode::ENVIRONMENT:
       return WebString::FromASCII("environment");
     default:
       return WebString();
@@ -430,7 +430,7 @@ class CandidateFormat {
 
 // Returns true if the facing mode |value| satisfies |constraints|, false
 // otherwise.
-bool FacingModeSatisfiesConstraint(media::VideoFacingMode value,
+bool FacingModeSatisfiesConstraint(mojom::blink::FacingMode value,
                                    const StringConstraint& constraint) {
   WebString string_value = ToWebString(value);
   if (string_value.IsNull())
@@ -693,7 +693,7 @@ VideoInputDeviceCapabilities::VideoInputDeviceCapabilities(
     String group_id,
     const media::VideoCaptureControlSupport& control_support,
     Vector<media::VideoCaptureFormat> formats,
-    media::VideoFacingMode facing_mode)
+    mojom::blink::FacingMode facing_mode)
     : device_id(std::move(device_id)),
       group_id(std::move(group_id)),
       control_support(control_support),
@@ -714,13 +714,13 @@ WebString GetVideoKindForFormat(const media::VideoCaptureFormat& format) {
 }
 
 MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
-    media::VideoFacingMode video_facing) {
+    mojom::blink::FacingMode video_facing) {
   switch (video_facing) {
-    case media::MEDIA_VIDEO_FACING_NONE:
+    case mojom::blink::FacingMode::NONE:
       return MediaStreamTrackPlatform::FacingMode::kNone;
-    case media::MEDIA_VIDEO_FACING_USER:
+    case mojom::blink::FacingMode::USER:
       return MediaStreamTrackPlatform::FacingMode::kUser;
-    case media::MEDIA_VIDEO_FACING_ENVIRONMENT:
+    case mojom::blink::FacingMode::ENVIRONMENT:
       return MediaStreamTrackPlatform::FacingMode::kEnvironment;
     default:
       return MediaStreamTrackPlatform::FacingMode::kNone;

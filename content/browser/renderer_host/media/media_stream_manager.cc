@@ -2630,9 +2630,9 @@ MediaStreamDevices MediaStreamManager::ConvertToMediaStreamDevices(
     const blink::WebMediaDeviceInfoArray& device_infos) {
   MediaStreamDevices devices;
   for (const auto& info : device_infos) {
-    devices.emplace_back(stream_type, info.device_id, info.label,
-                         info.video_control_support, info.video_facing,
-                         info.group_id);
+    devices.emplace_back(
+        stream_type, info.device_id, info.label, info.video_control_support,
+        static_cast<media::VideoFacingMode>(info.video_facing), info.group_id);
   }
 
   return devices;

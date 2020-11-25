@@ -192,7 +192,7 @@ class MockMediaDevicesDispatcherHost
         blink::mojom::blink::VideoInputDeviceCapabilities::New();
     device->device_id = kFakeVideoInputDeviceId1;
     device->group_id = String("dummy");
-    device->facing_mode = media::MEDIA_VIDEO_FACING_USER;
+    device->facing_mode = mojom::blink::FacingMode::USER;
     if (!video_source_ || !video_source_->IsRunning() ||
         !video_source_->GetCurrentFormat()) {
       device->formats.push_back(media::VideoCaptureFormat(
@@ -210,7 +210,7 @@ class MockMediaDevicesDispatcherHost
     device = blink::mojom::blink::VideoInputDeviceCapabilities::New();
     device->device_id = kFakeVideoInputDeviceId2;
     device->group_id = String("dummy");
-    device->facing_mode = media::MEDIA_VIDEO_FACING_ENVIRONMENT;
+    device->facing_mode = mojom::blink::FacingMode::ENVIRONMENT;
     device->formats.push_back(media::VideoCaptureFormat(
         gfx::Size(640, 480), 30.0f, media::PIXEL_FORMAT_I420));
     result.push_back(std::move(device));

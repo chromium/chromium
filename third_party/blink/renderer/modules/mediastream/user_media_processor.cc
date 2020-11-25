@@ -1277,8 +1277,8 @@ MediaStreamSource* UserMediaProcessor::InitializeVideoSourceObject(
         // operate over WTF::Vector.
         String::FromUTF8(device.id),
         ToStdVector(*current_request_info_->GetNativeVideoFormats(device_id)),
-        device.video_facing, current_request_info_->is_video_device_capture(),
-        device.group_id));
+        static_cast<mojom::blink::FacingMode>(device.video_facing),
+        current_request_info_->is_video_device_capture(), device.group_id));
     local_sources_.push_back(source);
   }
   return source;

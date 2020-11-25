@@ -672,7 +672,8 @@ void MediaStreamVideoTrack::GetSettings(
       settings.frame_rate = *computed_frame_rate_;
   }
 
-  settings.facing_mode = ToPlatformFacingMode(source_->device().video_facing);
+  settings.facing_mode = ToPlatformFacingMode(
+      static_cast<mojom::blink::FacingMode>(source_->device().video_facing));
   settings.resize_mode = WebString::FromASCII(std::string(
       adapter_settings().target_size() ? WebMediaStreamTrack::kResizeModeRescale
                                        : WebMediaStreamTrack::kResizeModeNone));
