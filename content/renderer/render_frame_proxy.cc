@@ -621,9 +621,7 @@ void RenderFrameProxy::Navigate(
   params->should_replace_current_entry = should_replace_current_entry;
   params->user_gesture = request.HasUserGesture();
   params->triggering_event_info = blink::TriggeringEventInfo::kUnknown;
-  params->blob_url_token =
-      mojo::PendingRemote<blink::mojom::BlobURLToken>(std::move(blob_url_token))
-          .PassPipe();
+  params->blob_url_token = std::move(blob_url_token);
 
   RenderFrameImpl* initiator_render_frame =
       RenderFrameImpl::FromWebFrame(initiator_frame);

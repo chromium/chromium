@@ -5771,7 +5771,7 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       info->url_request.GetReferrerPolicy());
   params->disposition = RenderViewImpl::NavigationPolicyToDisposition(policy);
   params->triggering_event_info = info->triggering_event_info;
-  params->blob_url_token = CloneBlobURLToken(info->blob_url_token).PassPipe();
+  params->blob_url_token = CloneBlobURLToken(info->blob_url_token);
   params->should_replace_current_entry =
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem &&
       render_view_->history_list_length_;

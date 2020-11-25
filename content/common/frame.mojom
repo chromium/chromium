@@ -372,7 +372,7 @@ struct OpenURLParams {
 
   // Extra information about the triggering of the OpenURL.
   TriggeringEventInfo triggering_event_info;
-  handle<message_pipe>? blob_url_token;
+  pending_remote<blink.mojom.BlobURLToken>? blob_url_token;
   string href_translate;
   Impression? impression;
   NavigationDownloadPolicy download_policy;

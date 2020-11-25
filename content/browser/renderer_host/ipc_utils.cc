@@ -31,7 +31,7 @@ bool VerifyBlobToken(
     const GURL& received_url) {
   DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id);
 
-  if (received_token) {
+  if (received_token.is_valid()) {
     if (!received_url.SchemeIsBlob()) {
       bad_message::ReceivedBadMessage(
           process_id, bad_message::BLOB_URL_TOKEN_FOR_NON_BLOB_URL);
@@ -111,18 +111,15 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
   process->FilterURL(false, out_validated_url);
 
   // Verify |params.blob_url_token| and populate |out_blob_url_loader_factory|.
-  mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token(
-      mojo::ScopedMessagePipeHandle(std::move(params->blob_url_token)),
-      blink::mojom::BlobURLToken::Version_);
-  if (!VerifyBlobToken(process_id, blob_url_token, params->url))
+  if (!VerifyBlobToken(process_id, params->blob_url_token, params->url))
     return false;
 
-  if (blob_url_token.is_valid()) {
+  if (params->blob_url_token.is_valid()) {
     *out_blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
             BrowserContext::GetStoragePartition(
                 site_instance->GetBrowserContext(), site_instance),
-            std::move(blob_url_token));
+            std::move(params->blob_url_token));
   }
 
   // Verify |params.post_body|.
