@@ -80,6 +80,10 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
+
+  // JavaScript errors are reported via CrashReportPrivate.reportError. Don't
+  // send duplicate reports via WebUI.
+  web_ui->DisableJavaScriptErrorReporting();
 }
 
 HelpAppUI::~HelpAppUI() = default;
