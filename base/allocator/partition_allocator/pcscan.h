@@ -72,6 +72,7 @@ class BASE_EXPORT PCScan final {
 
  private:
   class PCScanTask;
+  class PCScanThread;
   friend class PCScanTest;
 
   class QuarantineData final {

@@ -4,11 +4,11 @@
 
 #include "base/allocator/partition_allocator/pcscan.h"
 
-#include <map>
-#include <set>
-// TODO(bikineev): Change to base's thread.
 #include <algorithm>
+#include <map>
+#include <mutex>
 #include <numeric>
+#include <set>
 #include <thread>
 #include <vector>
 
@@ -96,6 +96,14 @@ uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
 template <bool thread_safe>
 class PCScan<thread_safe>::PCScanTask final {
  public:
+  static void* operator new(size_t size) {
+    return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size);
+  }
+
+  static void operator delete(void* ptr) {
+    PCScanMetadataAllocator().FreeNoHooks(ptr);
+  }
+
   // Creates and initializes a PCScan state.
   explicit PCScanTask(PCScan& pcscan);
 
@@ -431,6 +439,48 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
 }
 
 template <bool thread_safe>
+class PCScan<thread_safe>::PCScanThread final {
+ public:
+  using TaskHandle = std::unique_ptr<PCScanTask>;
+
+  static PCScanThread& Instance() {
+    // Lazily instantiate the scanning thread.
+    static base::NoDestructor<PCScanThread> instance;
+    return *instance;
+  }
+
+  void PostTask(TaskHandle task) {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      PA_DCHECK(!posted_task_.get());
+      posted_task_ = std::move(task);
+    }
+    condvar_.notify_all();
+  }
+
+ private:
+  friend class base::NoDestructor<PCScanThread>;
+
+  PCScanThread() { std::thread{&PCScanThread::TaskLoop, this}.detach(); }
+
+  void TaskLoop() {
+    while (true) {
+      TaskHandle current_task;
+      {
+        std::unique_lock<std::mutex> lock(mutex_);
+        condvar_.wait(lock, [this] { return posted_task_.get(); });
+        std::swap(current_task, posted_task_);
+      }
+      std::move(*current_task).RunOnce();
+    }
+  }
+
+  std::mutex mutex_;
+  std::condition_variable condvar_;
+  TaskHandle posted_task_;
+};
+
+template <bool thread_safe>
 constexpr size_t PCScan<thread_safe>::QuarantineData::kQuarantineSizeMinLimit;
 
 template <bool thread_safe>
@@ -479,22 +529,16 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   quarantine_data_.ResetAndAdvanceEpoch();
 
   // Initialize PCScan task.
-  PCScanTask task(*this);
+  auto task = std::make_unique<PCScanTask>(*this);
 
   // Post PCScan task.
   const auto callback = [](PCScanTask task) { std::move(task).RunOnce(); };
   if (UNLIKELY(invocation_mode == InvocationMode::kBlocking)) {
     // Blocking is only used for testing.
-    callback(std::move(task));
-  } else if (LIKELY(base::ThreadPoolInstance::Get())) {
-    // If available, try to use base::ThreadPool.
-    base::ThreadPool::PostTask(FROM_HERE,
-                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-                               base::BindOnce(callback, std::move(task)));
+    callback(std::move(*task));
   } else {
     PA_DCHECK(InvocationMode::kNonBlocking == invocation_mode);
-    // Otherwise, retreat to kernel threads. TODO(bikineev): Use base's threads.
-    std::thread{callback, std::move(task)}.detach();
+    PCScanThread::Instance().PostTask(std::move(task));
   }
 }
 
