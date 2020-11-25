@@ -91,8 +91,13 @@ and what to do about them:
 This is probably the most common bug. The standard procedure is to do these
 things:
 
-1. Use `got_clang_revision` property from first red and last green build to find
-   upstream regression range
+1. Open the `gclient runhooks` stdout log from the first red build.  Near the
+   top of that log you can find the range of upstream llvm revisions.  For
+   example:
+
+       From https://github.com/llvm/llvm-project
+           f917356f9ce..292e898c16d  master     -> origin/master
+
 1. File a crbug documenting the crash. Include the range, and any other bots
    displaying the same symptoms.
 1. All clang crashes on the Chromium bots are automatically uploaded to
