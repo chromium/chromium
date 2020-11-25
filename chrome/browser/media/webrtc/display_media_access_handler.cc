@@ -138,17 +138,8 @@ void DisplayMediaAccessHandler::HandleRequest(
   }
 #endif  // defined(OS_MAC)
 
-  if (request.video_type ==
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    // TODO(crbug.com/1136942): Add support for capture-this-tab instead of
-    // returning an error
-    std::move(callback).Run(
-        blink::MediaStreamDevices(),
-        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
-    return;
-  }
-
-  std::unique_ptr<DesktopMediaPicker> picker = picker_factory_->CreatePicker();
+  std::unique_ptr<DesktopMediaPicker> picker =
+      picker_factory_->CreatePicker(&request);
   if (!picker) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),

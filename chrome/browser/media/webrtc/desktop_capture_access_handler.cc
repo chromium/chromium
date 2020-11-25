@@ -470,7 +470,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
   if (!base::FeatureList::IsEnabled(
           features::kDesktopCaptureTabSharingInfobar) ||
       request.requested_video_device_id.empty()) {
-    picker = picker_factory_->CreatePicker();
+    picker = picker_factory_->CreatePicker(&request);
     if (!picker) {
       std::move(callback).Run(
           blink::MediaStreamDevices(),

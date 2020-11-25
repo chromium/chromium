@@ -40,7 +40,8 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   void SetTestFlags(TestFlags* test_flags, int tests_count);
   FakeDesktopMediaPicker* picker() const { return picker_; }
   // DesktopMediaPickerFactory implementation
-  std::unique_ptr<DesktopMediaPicker> CreatePicker() override;
+  std::unique_ptr<DesktopMediaPicker> CreatePicker(
+      const content::MediaStreamRequest* request) override;
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
       const std::vector<content::DesktopMediaID::Type>& types) override;
 
