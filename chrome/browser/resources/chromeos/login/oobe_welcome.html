@@ -290,5 +290,22 @@
             on-click="closeAdvancedOptionsSection_"></oobe-text-button>
       </div>
     </oobe-dialog>
+    <!-- Demo Mode confirmation dialog -->
+    <oobe-help-dialog id="demoModeConfirmationDialog">
+      <div slot="title">
+        [[i18nDynamic(locale, 'enableDemoModeDialogTitle')]]
+      </div>
+      <div slot="content">
+        [[i18nDynamic(locale, 'enableDemoModeDialogText')]]
+      </div>
+      <div slot="buttons">
+        <oobe-text-button id="cancelButton" border
+            on-click="onDemoModeDialogCancelTap_"
+            text-key="enableDemoModeDialogCancel"></oobe-text-button>
+        <oobe-text-button inverse on-click="onDemoModeDialogConfirmTap_"
+            id="okButton"
+            text-key="enableDemoModeDialogConfirm"></oobe-text-button>
+      </div>
+    </oobe-help-dialog>
   </template>
 </dom-module>

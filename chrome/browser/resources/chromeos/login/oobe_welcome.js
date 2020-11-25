@@ -409,22 +409,27 @@ Polymer({
   },
 
   /**
+   * On-tap event handler for demo mode confirmation dialog cancel button.
+   * @private
+   */
+  onDemoModeDialogCancelTap_() {
+    this.$.demoModeConfirmationDialog.hideDialog();
+  },
+
+  /**
+   * On-tap event handler for demo mode confirmation dialog confirm button.
+   * @private
+   */
+  onDemoModeDialogConfirmTap_() {
+    this.userActed('setupDemoMode');
+    this.$.demoModeConfirmationDialog.hideDialog();
+  },
+
+  /**
    * Shows confirmation dialog for starting Demo mode
    */
   showDemoModeConfirmationDialog() {
-    if (!this.enableDemoModeDialog_) {
-      this.enableDemoModeDialog_ =
-          new cr.ui.dialogs.ConfirmDialog(document.body);
-      this.enableDemoModeDialog_.setOkLabel(
-          loadTimeData.getString('enableDemoModeDialogConfirm'));
-      this.enableDemoModeDialog_.setCancelLabel(
-          loadTimeData.getString('enableDemoModeDialogCancel'));
-    }
-    this.enableDemoModeDialog_.showWithTitle(
-        loadTimeData.getString('enableDemoModeDialogTitle'),
-        loadTimeData.getString('enableDemoModeDialogText'), () => {
-          this.userActed('setupDemoMode');
-        });
+    this.$.demoModeConfirmationDialog.showDialog();
   },
 
   onSetupDemoModeGesture() {

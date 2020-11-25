@@ -67,10 +67,6 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kIsConfirmationDialogHiddenQuery[] =
-    "!document.querySelector('.cr-dialog-container') || "
-    "!!document.querySelector('.cr-dialog-container').hidden";
-
 constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 constexpr char kDefaultNetworkName[] = "eth1";
 
@@ -164,8 +160,14 @@ class DemoSetupTestBase : public OobeBaseTest {
     return test::OobeJS().GetBool(query);
   }
 
-  bool IsConfirmationDialogShown() {
-    return !test::OobeJS().GetBool(kIsConfirmationDialogHiddenQuery);
+  void IsConfirmationDialogShown() {
+    test::OobeJS().ExpectHasAttribute(
+      "open", {"connect", "demoModeConfirmationDialog", "helpDialog"});
+  }
+
+  void IsConfirmationDialogHidden() {
+    test::OobeJS().ExpectHasNoAttribute(
+      "open", {"connect", "demoModeConfirmationDialog", "helpDialog"});
   }
 
   // TODO(michaelpg): Replace this with IsScreenDialogElementVisible, which is
@@ -258,11 +260,11 @@ class DemoSetupTestBase : public OobeBaseTest {
   }
 
   void ClickOkOnConfirmationDialog() {
-    test::ExecuteOobeJS("document.querySelector('.cr-dialog-ok').click();");
+    test::OobeJS().TapOnPath({"connect", "okButton"});
   }
 
   void ClickCancelOnConfirmationDialog() {
-    test::ExecuteOobeJS("document.querySelector('.cr-dialog-cancel').click();");
+    test::OobeJS().TapOnPath({"connect", "cancelButton"});
   }
 
   // Simulates `button` click on a specified OOBE `screen`. Can be used for
@@ -482,14 +484,13 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        ShowConfirmationDialogAndProceed) {
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
-  EXPECT_TRUE(IsConfirmationDialogShown());
+  IsConfirmationDialogShown();
 
   ClickOkOnConfirmationDialog();
 
-  WaitForJsCondition(kIsConfirmationDialogHiddenQuery);
   EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
 }
 
@@ -502,14 +503,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 #endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        MAYBE_ShowConfirmationDialogAndCancel) {
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
-  EXPECT_TRUE(IsConfirmationDialogShown());
+  IsConfirmationDialogShown();
 
   ClickCancelOnConfirmationDialog();
+  IsConfirmationDialogHidden();
 
-  WaitForJsCondition(kIsConfirmationDialogHiddenQuery);
   EXPECT_FALSE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
 }
 
@@ -522,10 +523,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_InvokeWithTaps) {
   // Use fake time to avoid flakiness.
   SetFakeTimeForMultiTapDetector(base::Time::UnixEpoch());
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   MultiTapOobeContainer(10);
-  EXPECT_TRUE(IsConfirmationDialogShown());
+  IsConfirmationDialogShown();
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
@@ -541,10 +542,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   // Use fake time to avoid flakiness.
   const base::Time kFakeTime = base::Time::UnixEpoch();
   SetFakeTimeForMultiTapDetector(kFakeTime);
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   MultiTapOobeContainer(5);
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   // Advance time to make interval in between taps longer than expected by
   // multi-tap gesture detector.
@@ -552,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                                  base::TimeDelta::FromMilliseconds(500));
 
   MultiTapOobeContainer(5);
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
@@ -1341,19 +1342,19 @@ class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotStartWithAccelerator) {
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
 
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotInvokeWithTaps) {
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 
   InvokeDemoModeWithTaps();
 
-  EXPECT_FALSE(IsConfirmationDialogShown());
+  IsConfirmationDialogHidden();
 }
 
 // Demo setup tests related to Force Re-Enrollment.
