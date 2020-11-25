@@ -287,9 +287,9 @@ class SSLClientSocketImpl::SSLContext {
   }
 
   void SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger) {
-    DCHECK(!ssl_key_logger_);
-    ssl_key_logger_ = std::move(logger);
-    SSL_CTX_set_keylog_callback(ssl_ctx_.get(), KeyLogCallback);
+    net::SSLKeyLoggerManager::SetSSLKeyLogger(std::move(logger));
+    SSL_CTX_set_keylog_callback(ssl_ctx_.get(),
+                                SSLKeyLoggerManager::KeyLogCallback);
   }
 
   static const SSL_PRIVATE_KEY_METHOD kPrivateKeyMethod;
@@ -367,10 +367,6 @@ class SSLClientSocketImpl::SSLContext {
     return socket->PrivateKeyCompleteCallback(out, out_len, max_out);
   }
 
-  static void KeyLogCallback(const SSL* ssl, const char* line) {
-    GetInstance()->ssl_key_logger_->WriteLine(line);
-  }
-
   static void MessageCallback(int is_write,
                               int version,
                               int content_type,
@@ -387,8 +383,6 @@ class SSLClientSocketImpl::SSLContext {
   int ssl_socket_data_index_;
 
   bssl::UniquePtr<SSL_CTX> ssl_ctx_;
-
-  std::unique_ptr<SSLKeyLogger> ssl_key_logger_;
 };
 
 const SSL_PRIVATE_KEY_METHOD

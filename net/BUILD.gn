@@ -362,6 +362,7 @@ component("net") {
     "ssl/ssl_handshake_details.h",
     "ssl/ssl_info.cc",
     "ssl/ssl_info.h",
+    "ssl/ssl_key_logger.cc",
     "ssl/ssl_key_logger.h",
     "ssl/ssl_legacy_crypto_fallback.h",
     "ssl/ssl_private_key.cc",
