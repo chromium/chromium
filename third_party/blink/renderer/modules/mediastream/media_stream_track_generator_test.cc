@@ -32,8 +32,8 @@ namespace {
 ScriptValue CreateVideoFrameChunk(ScriptState* script_state) {
   const scoped_refptr<media::VideoFrame> media_frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
-  VideoFrame* video_frame =
-      MakeGarbageCollected<VideoFrame>(std::move(media_frame));
+  VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
+      std::move(media_frame), ExecutionContext::From(script_state));
   return ScriptValue(script_state->GetIsolate(),
                      ToV8(video_frame, script_state->GetContext()->Global(),
                           script_state->GetIsolate()));

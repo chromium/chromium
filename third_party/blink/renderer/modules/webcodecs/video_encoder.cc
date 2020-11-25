@@ -453,12 +453,17 @@ void VideoEncoder::encode(VideoFrame* frame,
   if (ThrowIfCodecStateUnconfigured(state_, "encode", exception_state))
     return;
 
+  auto* context = GetExecutionContext();
+  if (!context) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is destroyed.");
+    return;
+  }
+
   // This will fail if |frame| is already destroyed.
-  auto* internal_frame = frame->clone(exception_state);
+  auto* internal_frame = frame->CloneFromNative(context);
 
   if (!internal_frame) {
-    // Set a more helpful exception than the cloning error message.
-    exception_state.ClearException();
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Cannot encode destroyed frame.");
     return;

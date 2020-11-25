@@ -146,7 +146,8 @@ VideoEncoderEncodeOptions* MakeEncodeOptions(
   return options;
 }
 
-VideoFrame* MakeVideoFrame(const wc_fuzzer::VideoFrameBitmapInit& proto) {
+VideoFrame* MakeVideoFrame(ScriptState* script_state,
+                           const wc_fuzzer::VideoFrameBitmapInit& proto) {
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
       reinterpret_cast<const unsigned char*>(proto.rgb_bitmap().data()),
       proto.rgb_bitmap().size()));
@@ -164,7 +165,7 @@ VideoFrame* MakeVideoFrame(const wc_fuzzer::VideoFrameBitmapInit& proto) {
   video_frame_init->setTimestamp(proto.timestamp());
   video_frame_init->setDuration(proto.duration());
 
-  return VideoFrame::Create(image_bitmap, video_frame_init,
+  return VideoFrame::Create(script_state, image_bitmap, video_frame_init,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 

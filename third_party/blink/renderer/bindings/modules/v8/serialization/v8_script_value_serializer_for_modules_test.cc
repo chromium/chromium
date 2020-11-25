@@ -990,7 +990,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
       media::VideoFrame::CreateBlackFrame(kFrameSize);
 
   // Pass a copy the reference to the video frame.
-  auto* blink_frame = MakeGarbageCollected<VideoFrame>(media_frame);
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
 
   // Round trip the frame and make sure the size is the same.
   v8::Local<v8::Value> wrapper = ToV8(blink_frame, scope.GetScriptState());
@@ -1020,7 +1021,8 @@ TEST(V8ScriptValueSerializerForModulesTest, DestroyedVideoFrameThrows) {
       media::VideoFrame::CreateBlackFrame(kFrameSize);
 
   // Create and destroy the frame.
-  auto* blink_frame = MakeGarbageCollected<VideoFrame>(media_frame);
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
   blink_frame->destroy();
 
   // Serializing the destroyed frame should throw an error.

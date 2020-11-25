@@ -84,7 +84,8 @@ DEFINE_TEXT_PROTO_FUZZER(
                                    IGNORE_EXCEPTION_FOR_TESTING);
           break;
         case wc_fuzzer::VideoEncoderApiInvocation::kEncode: {
-          VideoFrame* frame = MakeVideoFrame(invocation.encode().frame());
+          VideoFrame* frame =
+              MakeVideoFrame(script_state, invocation.encode().frame());
           // Often the fuzzer input will be too crazy to produce a valid frame
           // (e.g. bitmap width > bitmap length). In these cases, return early
           // to discourage this sort of fuzzer input. WebIDL doesn't allow

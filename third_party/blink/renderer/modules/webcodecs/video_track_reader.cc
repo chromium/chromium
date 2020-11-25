@@ -99,8 +99,13 @@ void VideoTrackReader::ExecuteCallbackOnMainThread(
   // We may want to invalidate |media_frames| when constraints change, but it's
   // unclear whether this is a problem for now.
 
+  auto* context = GetExecutionContext();
+  if (!context)
+    return;
+
   callback_->InvokeAndReportException(
-      nullptr, MakeGarbageCollected<VideoFrame>(std::move(media_frame)));
+      nullptr,
+      MakeGarbageCollected<VideoFrame>(std::move(media_frame), context));
 }
 
 void VideoTrackReader::OnReadyStateChanged(

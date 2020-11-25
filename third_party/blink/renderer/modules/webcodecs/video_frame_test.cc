@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -17,8 +18,9 @@ namespace {
 class VideoFrameTest : public testing::Test {
  public:
   VideoFrame* CreateBlinkVideoFrame(
-      scoped_refptr<media::VideoFrame> media_frame) {
-    return MakeGarbageCollected<VideoFrame>(std::move(media_frame));
+      scoped_refptr<media::VideoFrame> media_frame,
+      ExecutionContext* context) {
+    return MakeGarbageCollected<VideoFrame>(std::move(media_frame), context);
   }
   VideoFrame* CreateBlinkVideoFrameFromHandle(
       scoped_refptr<VideoFrameHandle> handle) {
@@ -47,11 +49,14 @@ class VideoFrameTest : public testing::Test {
 };
 
 TEST_F(VideoFrameTest, ConstructorAndAttributes) {
+  V8TestingScope scope;
+
   scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
       base::TimeDelta::FromMicroseconds(1000), media::PIXEL_FORMAT_I420,
       gfx::Size(112, 208) /* coded_size */,
       gfx::Size(100, 200) /* visible_size */);
-  VideoFrame* blink_frame = CreateBlinkVideoFrame(media_frame);
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
   EXPECT_EQ(1000u, blink_frame->timestamp().value());
   EXPECT_EQ(112u, blink_frame->codedWidth());
@@ -71,9 +76,12 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
 }
 
 TEST_F(VideoFrameTest, FramesSharingHandleDestruction) {
+  V8TestingScope scope;
+
   scoped_refptr<media::VideoFrame> media_frame =
       CreateDefaultBlackMediaVideoFrame();
-  VideoFrame* blink_frame = CreateBlinkVideoFrame(media_frame);
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
   VideoFrame* frame_with_shared_handle =
       CreateBlinkVideoFrameFromHandle(blink_frame->handle());
@@ -88,12 +96,15 @@ TEST_F(VideoFrameTest, FramesSharingHandleDestruction) {
 }
 
 TEST_F(VideoFrameTest, FramesNotSharingHandleDestruction) {
+  V8TestingScope scope;
+
   scoped_refptr<media::VideoFrame> media_frame =
       CreateDefaultBlackMediaVideoFrame();
-  VideoFrame* blink_frame = CreateBlinkVideoFrame(media_frame);
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
-  auto new_handle =
-      base::MakeRefCounted<VideoFrameHandle>(blink_frame->frame());
+  auto new_handle = base::MakeRefCounted<VideoFrameHandle>(
+      blink_frame->frame(), scope.GetExecutionContext());
 
   VideoFrame* frame_with_new_handle =
       CreateBlinkVideoFrameFromHandle(std::move(new_handle));
@@ -111,9 +122,11 @@ TEST_F(VideoFrameTest, ClonedFrame) {
 
   scoped_refptr<media::VideoFrame> media_frame =
       CreateDefaultBlackMediaVideoFrame();
-  VideoFrame* blink_frame = CreateBlinkVideoFrame(media_frame);
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
-  VideoFrame* cloned_frame = blink_frame->clone(scope.GetExceptionState());
+  VideoFrame* cloned_frame =
+      blink_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
 
   // The cloned frame should be referencing the same media::VideoFrame.
   EXPECT_EQ(blink_frame->frame(), cloned_frame->frame());
@@ -131,15 +144,53 @@ TEST_F(VideoFrameTest, CloningDestroyedFrame) {
 
   scoped_refptr<media::VideoFrame> media_frame =
       CreateDefaultBlackMediaVideoFrame();
-  VideoFrame* blink_frame = CreateBlinkVideoFrame(media_frame);
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
 
   blink_frame->destroy();
 
-  VideoFrame* cloned_frame = blink_frame->clone(scope.GetExceptionState());
+  VideoFrame* cloned_frame =
+      blink_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
 
   // No frame should have been created, and there should be an exception.
   EXPECT_EQ(nullptr, cloned_frame);
   EXPECT_TRUE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(VideoFrameTest, LeakedHandlesReportLeaks) {
+  V8TestingScope scope;
+
+  // Create a handle directly instead of a video frame, to avoid dealing with
+  // the GarbageCollector.
+  scoped_refptr<media::VideoFrame> media_frame =
+      CreateDefaultBlackMediaVideoFrame();
+  auto handle = base::MakeRefCounted<VideoFrameHandle>(
+      media_frame, scope.GetExecutionContext());
+
+  // Remove the last reference to the handle without calling Invalidate().
+  handle.reset();
+
+  auto& logger = VideoFrameLogger::From(*scope.GetExecutionContext());
+
+  EXPECT_TRUE(logger.GetDestructionAuditor()->were_frames_not_destroyed());
+}
+
+TEST_F(VideoFrameTest, InvalidatedHandlesDontReportLeaks) {
+  V8TestingScope scope;
+
+  // Create a handle directly instead of a video frame, to avoid dealing with
+  // the GarbageCollector.
+  scoped_refptr<media::VideoFrame> media_frame =
+      CreateDefaultBlackMediaVideoFrame();
+  auto handle = base::MakeRefCounted<VideoFrameHandle>(
+      media_frame, scope.GetExecutionContext());
+
+  handle->Invalidate();
+  handle.reset();
+
+  auto& logger = VideoFrameLogger::From(*scope.GetExecutionContext());
+
+  EXPECT_FALSE(logger.GetDestructionAuditor()->were_frames_not_destroyed());
 }
 
 }  // namespace

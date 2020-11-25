@@ -46,9 +46,9 @@ class VideoTrackReaderWriterTest : public testing::Test {
   }
 
  protected:
-  VideoFrame* CreateBlackVideoFrame() {
+  VideoFrame* CreateBlackVideoFrame(ExecutionContext* context) {
     return MakeGarbageCollected<VideoFrame>(
-        media::VideoFrame::CreateBlackFrame(gfx::Size(100, 100)));
+        media::VideoFrame::CreateBlackFrame(gfx::Size(100, 100)), context);
   }
 
   void RunIOUntilIdle() const {
@@ -84,7 +84,7 @@ TEST_F(VideoTrackReaderWriterTest, WriteAndRead) {
 
   reader->start(GetCallback(read_output_function), ASSERT_NO_EXCEPTION);
 
-  auto* frame = CreateBlackVideoFrame();
+  auto* frame = CreateBlackVideoFrame(scope.GetExecutionContext());
   writer->writable()
       ->getWriter(script_state, ASSERT_NO_EXCEPTION)
       ->write(script_state,
@@ -125,7 +125,7 @@ TEST_F(VideoTrackReaderWriterTest, AutoRelease) {
   auto* writer =
       VideoTrackWriter::Create(script_state, &params, ASSERT_NO_EXCEPTION);
 
-  auto* frame = CreateBlackVideoFrame();
+  auto* frame = CreateBlackVideoFrame(scope.GetExecutionContext());
   writer->writable()
       ->getWriter(script_state, ASSERT_NO_EXCEPTION)
       ->write(script_state,

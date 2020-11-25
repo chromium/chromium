@@ -52,7 +52,8 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 EncodedAudioChunk* MakeEncodedAudioChunk(
     const wc_fuzzer::EncodedAudioChunk& proto);
 
-VideoFrame* MakeVideoFrame(const wc_fuzzer::VideoFrameBitmapInit& proto);
+VideoFrame* MakeVideoFrame(ScriptState* script_state,
+                           const wc_fuzzer::VideoFrameBitmapInit& proto);
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);

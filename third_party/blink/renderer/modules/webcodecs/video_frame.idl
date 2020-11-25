@@ -9,7 +9,7 @@
     Serializable,
     RuntimeEnabled=WebCodecs
 ] interface VideoFrame {
-  [RaisesException] constructor(ImageBitmap source, VideoFrameInit init);
+  [CallWith=ScriptState, RaisesException] constructor(ImageBitmap source, VideoFrameInit init);
 
   // TODO(sandersd): Provide a way to find out what pixel formats are supported.
   // TODO(sandersd): Provide a way to convert to a specific pixel format, and to
@@ -51,7 +51,7 @@
 
   // Creates of the copy of this VideoFrame, which needs to be independently
   // destroyed.
-  [RaisesException]
+  [CallWith=ScriptState, RaisesException]
   VideoFrame clone();
 
   // Create an ImageBitmap from the crop region, scaled to the display size.

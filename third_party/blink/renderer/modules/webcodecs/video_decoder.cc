@@ -75,6 +75,14 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
 }
 
 // static
+VideoDecoderTraits::OutputType* VideoDecoderTraits::MakeOutput(
+    scoped_refptr<MediaOutputType> output,
+    ExecutionContext* context) {
+  return MakeGarbageCollected<VideoDecoderTraits::OutputType>(std::move(output),
+                                                              context);
+}
+
+// static
 int VideoDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
   return decoder.GetMaxDecodeRequests();
 }

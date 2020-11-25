@@ -97,8 +97,8 @@ void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrackOnMainThread(
   if (!Controller() || Controller()->DesiredSize() < 0)
     return;
 
-  VideoFrame* video_frame =
-      MakeGarbageCollected<VideoFrame>(std::move(media_frame));
+  VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
+      std::move(media_frame), GetExecutionContext());
   Controller()->Enqueue(video_frame);
 }
 

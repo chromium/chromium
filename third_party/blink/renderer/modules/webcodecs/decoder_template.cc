@@ -586,8 +586,12 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
   if (state_.AsEnum() != V8CodecState::Enum::kConfigured)
     return;
 
+  auto* context = GetExecutionContext();
+  if (!context)
+    return;
+
   output_cb_->InvokeAndReportException(
-      nullptr, MakeGarbageCollected<OutputType>(output));
+      nullptr, Traits::MakeOutput(std::move(output), context));
 }
 
 template <typename Traits>

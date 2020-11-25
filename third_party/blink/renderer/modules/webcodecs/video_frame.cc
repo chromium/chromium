@@ -96,8 +96,10 @@ void OnYUVReadbackDone(
 
 }  // namespace
 
-VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame)
-    : handle_(base::MakeRefCounted<VideoFrameHandle>(std::move(frame))) {
+VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
+                       ExecutionContext* context)
+    : handle_(
+          base::MakeRefCounted<VideoFrameHandle>(std::move(frame), context)) {
   DCHECK(handle_->frame());
 }
 
@@ -107,7 +109,8 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
 }
 
 // static
-VideoFrame* VideoFrame::Create(ImageBitmap* source,
+VideoFrame* VideoFrame::Create(ScriptState* script_state,
+                               ImageBitmap* source,
                                VideoFrameInit* init,
                                ExceptionState& exception_state) {
   if (!source) {
@@ -213,7 +216,8 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
         gfx::ColorSpace::RangeID::LIMITED);
     frame->set_color_space(gfx_color_space);
   }
-  auto* result = MakeGarbageCollected<VideoFrame>(std::move(frame));
+  auto* result = MakeGarbageCollected<VideoFrame>(
+      std::move(frame), ExecutionContext::From(script_state));
   return result;
 }
 
@@ -341,8 +345,9 @@ void VideoFrame::destroy() {
   handle_->Invalidate();
 }
 
-VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
-  auto frame = handle_->frame();
+VideoFrame* VideoFrame::clone(ScriptState* script_state,
+                              ExceptionState& exception_state) {
+  VideoFrame* frame = CloneFromNative(ExecutionContext::From(script_state));
 
   if (!frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -350,7 +355,17 @@ VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
     return nullptr;
   }
 
-  return MakeGarbageCollected<VideoFrame>(std::move(frame));
+  return frame;
+}
+
+VideoFrame* VideoFrame::CloneFromNative(ExecutionContext* context) {
+  auto frame = handle_->frame();
+
+  // The handle was already invalidated.
+  if (!frame)
+    return nullptr;
+
+  return MakeGarbageCollected<VideoFrame>(std::move(frame), context);
 }
 
 scoped_refptr<VideoFrameHandle> VideoFrame::handle() {

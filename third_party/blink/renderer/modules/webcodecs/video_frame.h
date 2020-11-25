@@ -22,6 +22,7 @@ namespace blink {
 
 class ImageBitmap;
 class ExceptionState;
+class ExecutionContext;
 class ScriptPromise;
 class ScriptState;
 class VideoFrameInit;
@@ -32,7 +33,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
  public:
   // Creates a VideoFrame with a new VideoFrameHandle wrapping |frame|.
-  explicit VideoFrame(scoped_refptr<media::VideoFrame> frame);
+  VideoFrame(scoped_refptr<media::VideoFrame> frame, ExecutionContext*);
 
   // Creates a VideoFrame from an existing handle.
   // All frames sharing |handle| will have their |handle_| invalidated if any of
@@ -40,7 +41,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   explicit VideoFrame(scoped_refptr<VideoFrameHandle> handle);
 
   // video_frame.idl implementation.
-  static VideoFrame* Create(ImageBitmap*, VideoFrameInit*, ExceptionState&);
+  static VideoFrame* Create(ScriptState*,
+                            ImageBitmap*,
+                            VideoFrameInit*,
+                            ExceptionState&);
 
   String format() const;
   base::Optional<HeapVector<Member<Plane>>> planes();
@@ -66,7 +70,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // Creates a copy of |this|, with a new Handle, referencing the same
   // media::VideoFrame. The cloned frame will not be destroyed when |this| is,
   // and its lifetime should be independently managed.
-  VideoFrame* clone(ExceptionState&);
+  VideoFrame* clone(ScriptState*, ExceptionState&);
+  VideoFrame* CloneFromNative(ExecutionContext*);
 
   ScriptPromise createImageBitmap(ScriptState*,
                                   const ImageBitmapOptions*,
