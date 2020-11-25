@@ -263,6 +263,7 @@ component("core") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/paint_preview/common",
+    "//components/shared_highlighting/core/common",
     "//gpu/config",
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/public/cpp/system",
@@ -1620,6 +1621,7 @@ source_set("unit_tests") {
     ":unit_test_support",
     "//build:chromeos_buildflags",
     "//components/paint_preview/common:common",
+    "//components/shared_highlighting/core/common",
     "//components/ukm:test_support",
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",

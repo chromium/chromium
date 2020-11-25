@@ -8,6 +8,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
@@ -16,6 +18,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+
+using LinkGenerationError = shared_highlighting::LinkGenerationError;
 
 namespace blink {
 
@@ -26,9 +30,28 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 
-  void GenerateAndVerifySelector(Position selected_start,
-                                 Position selected_end,
-                                 String expected_selector) {
+  void VerifySelector(Position selected_start,
+                      Position selected_end,
+                      String expected_selector) {
+    String generated_selector = GenerateSelector(selected_start, selected_end);
+    EXPECT_EQ(expected_selector, generated_selector);
+
+    // Should not have logged errors in a success case.
+    histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error",
+                                       0);
+  }
+
+  void VerifySelectorFails(Position selected_start,
+                           Position selected_end,
+                           LinkGenerationError error) {
+    String generated_selector = GenerateSelector(selected_start, selected_end);
+    EXPECT_EQ("", generated_selector);
+
+    histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
+                                        error, 1);
+  }
+
+  String GenerateSelector(Position selected_start, Position selected_end) {
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
@@ -37,13 +60,14 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
                               EphemeralRange(selected_start, selected_end)));
 
     bool callback_called = false;
-    auto lambda = [](bool& callback_called, const String& expected_selector,
-                     const String& selector) {
-      EXPECT_EQ(selector, expected_selector);
+    String selector;
+    auto lambda = [](bool& callback_called, String& selector,
+                     const String& generated_selector) {
+      selector = generated_selector;
       callback_called = true;
     };
     auto callback =
-        WTF::Bind(lambda, std::ref(callback_called), expected_selector);
+        WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
@@ -51,11 +75,11 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_called);
+    return selector;
   }
 
-  void VerifySelectorFailed(Position selected_start, Position selected_end) {
-    GenerateAndVerifySelector(selected_start, selected_end, "");
-  }
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 // Basic exact selector case.
@@ -71,7 +95,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, EmptySelection) {
   const auto& selected_end = Position(first_paragraph, 6);
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelectorFailed(selected_start, selected_end);
+  VerifySelectorFails(selected_start, selected_end,
+                      LinkGenerationError::kEmptySelection);
 }
 
 // Basic exact selector case.
@@ -90,8 +115,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector) {
   ASSERT_EQ("First paragraph text that is",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20paragraph%20text%20that%20is");
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text%20that%20is");
 }
 
 // Exact selector test where selection contains nested <i> node.
@@ -111,8 +136,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithNestedTextNodes) {
   ASSERT_EQ("First paragraph text that is longer",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20paragraph%20text%20that%20is%20longer");
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text%20that%20is%20longer");
 }
 
 // Exact selector test where selection contains multiple spaces.
@@ -132,8 +157,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithExtraSpace) {
   ASSERT_EQ("Second paragraph text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "Second%20paragraph%20text");
+  VerifySelector(selected_start, selected_end, "Second%20paragraph%20text");
 }
 
 // Exact selector where selection is too short, in which case context is
@@ -154,8 +178,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("unique snippet",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "to-,unique%20snippet,-of");
+  VerifySelector(selected_start, selected_end, "to-,unique%20snippet,-of");
 }
 
 // Exact selector with context test. Case when only one word for prefix and
@@ -176,8 +199,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("paragraph text that is",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First-,paragraph%20text%20that%20is,-longer");
+  VerifySelector(selected_start, selected_end,
+                 "First-,paragraph%20text%20that%20is,-longer");
 }
 
 // Exact selector with context test. Case when multiple words for prefix and
@@ -198,9 +221,9 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20prefix%20to-,not%20unique%20snippet%20of%"
-                            "20text,-followed%20by%20suffix");
+  VerifySelector(selected_start, selected_end,
+                 "First%20prefix%20to-,not%20unique%20snippet%20of%"
+                 "20text,-followed%20by%20suffix");
 }
 
 // Exact selector with context test. Case when multiple words for prefix and
@@ -222,9 +245,9 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20prefix%20to-,not%20unique%20snippet%20of%"
-                            "20text,-followed%20by%20suffix");
+  VerifySelector(selected_start, selected_end,
+                 "First%20prefix%20to-,not%20unique%20snippet%20of%"
+                 "20text,-followed%20by%20suffix");
 }
 
 // Exact selector with context test. Case when available prefix for all the
@@ -245,9 +268,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefix) {
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "Prefix%20to-,not%20unique%20snippet%20of%20text,-"
-                            "followed%20by%20different");
+  VerifySelector(selected_start, selected_end,
+                 "Prefix%20to-,not%20unique%20snippet%20of%20text,-"
+                 "followed%20by%20different");
 }
 
 // Exact selector with context test. Case when available suffix for all the
@@ -268,15 +291,15 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SameSuffix) {
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20paragraph%20prefix%20to-,not%20unique%"
-                            "20snippet%20of%20text,-followed%20by%20suffix");
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20prefix%20to-,not%20unique%"
+                 "20snippet%20of%20text,-followed%20by%20suffix");
 }
 
 // Exact selector with context test. Case when available prefix and suffix for
 // all the occurrences of selected text are the same. In this case generation
 // should be unsuccessful.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePreffixSuffix) {
+TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefixSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -291,7 +314,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePreffixSuffix) {
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelectorFailed(selected_start, selected_end);
+  VerifySelectorFails(selected_start, selected_end,
+                      LinkGenerationError::kContextExhausted);
 }
 
 // Exact selector with context test. Case when available prefix and suffix for
@@ -315,7 +339,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelectorFailed(selected_start, selected_end);
+  VerifySelectorFails(selected_start, selected_end,
+                      LinkGenerationError::kContextLimitReached);
 }
 
 // Exact selector with context test. Case when no prefix is available.
@@ -333,9 +358,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoPrefix) {
   ASSERT_EQ("Not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(
-      selected_start, selected_end,
-      "Not%20unique%20snippet%20of%20text,-followed%20by%20first");
+  VerifySelector(selected_start, selected_end,
+                 "Not%20unique%20snippet%20of%20text,-followed%20by%20first");
 }
 
 // Exact selector with context test. Case when no suffix is available.
@@ -354,9 +378,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoSuffix) {
   ASSERT_EQ("not unique snippet of text",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "Second%20prefix%20to-,not%20unique%20snippet%20of%"
-                            "20text");
+  VerifySelector(selected_start, selected_end,
+                 "Second%20prefix%20to-,not%20unique%20snippet%20of%"
+                 "20text");
 }
 
 // Exact selector with context test. Case when available prefix is the
@@ -376,8 +400,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_PrevNodePrefix) {
   ASSERT_EQ("not unique snippet",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "snippet-,not%20unique%20snippet,-of");
+  VerifySelector(selected_start, selected_end,
+                 "snippet-,not%20unique%20snippet,-of");
 }
 
 // Exact selector with context test. Case when available prefix is the
@@ -399,8 +423,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("not unique snippet",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "text-,not%20unique%20snippet,-of");
+  VerifySelector(selected_start, selected_end,
+                 "text-,not%20unique%20snippet,-of");
 }
 
 // Exact selector with context test. Case when available suffix is the next
@@ -420,8 +444,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NextNodeSuffix) {
   ASSERT_EQ("not unique snippet",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "with-,not%20unique%20snippet,-not");
+  VerifySelector(selected_start, selected_end,
+                 "with-,not%20unique%20snippet,-not");
 }
 
 // Exact selector with context test. Case when available suffix is the next
@@ -443,8 +467,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("not unique snippet",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "with-,not%20unique%20snippet,-text");
+  VerifySelector(selected_start, selected_end,
+                 "with-,not%20unique%20snippet,-text");
 }
 
 TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
@@ -463,7 +487,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
   ASSERT_EQ("First paragraph text that is longer than 20 chars\n\nSecond",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end, "First,Second");
+  VerifySelector(selected_start, selected_end, "First,Second");
 }
 
 // It should be more than 300 characters selected from the same node so that
@@ -491,8 +515,7 @@ text text text text text text text text text text text text text \
 text text text text text text text text text and last text",
       PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20paragraph,last%20text");
+  VerifySelector(selected_start, selected_end, "First%20paragraph,last%20text");
 }
 
 // It should be more than 300 characters selected from the same node so that
@@ -523,8 +546,7 @@ text text text text text text text text text text and last text",
   ASSERT_EQ(309u,
             PlainText(EphemeralRange(selected_start, selected_end)).length());
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First%20paragraph,last%20text");
+  VerifySelector(selected_start, selected_end, "First%20paragraph,last%20text");
 
   const auto& second_selected_start = Position(first_paragraph, 6);
   const auto& second_selected_end = Position(first_paragraph, 325);
@@ -539,8 +561,8 @@ text text text text text text text text text text and last text",
                                            second_selected_end))
                       .length());
 
-  GenerateAndVerifySelector(second_selected_start, second_selected_end,
-                            "paragraph%20text,last%20text");
+  VerifySelector(second_selected_start, second_selected_end,
+                 "paragraph%20text,last%20text");
 }
 
 // When using all the selected text for the range is not enough for unique
@@ -561,8 +583,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
   ASSERT_EQ("paragraph\n\ntext",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "First-,paragraph,text,-Second");
+  VerifySelector(selected_start, selected_end, "First-,paragraph,text,-Second");
 }
 
 // When using all the selected text for the range is not enough for unique
@@ -584,8 +605,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("paragraph\n\ntext",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "Second-,paragraph,text");
+  VerifySelector(selected_start, selected_end, "Second-,paragraph,text");
 }
 
 // When no range end is available it should return empty selector.
@@ -612,7 +632,8 @@ text_text_text_text_text_text_text_text_text_text_text_text_text_\
 text_text_text_text_text_text_text_text_text_and_last_text",
       PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelectorFailed(selected_start, selected_end);
+  VerifySelectorFails(selected_start, selected_end,
+                      LinkGenerationError::kNoRange);
 }
 
 // Selection should be autocompleted to contain full words.
@@ -630,8 +651,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit) {
   ASSERT_EQ("aragraph text that is long",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "paragraph%20text%20that%20is%20longer");
+  VerifySelector(selected_start, selected_end,
+                 "paragraph%20text%20that%20is%20longer");
 }
 
 // Selection should be autocompleted to contain full words. The autocompletion
@@ -652,8 +673,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
   ASSERT_EQ("aragraph text that is long",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "paragraph%20text%20that%20is%20longer");
+  VerifySelector(selected_start, selected_end,
+                 "paragraph%20text%20that%20is%20longer");
 }
 
 // When selection starts at the end of a word, selection shouldn't be
@@ -673,8 +694,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ(" paragraph text that is longer ",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  GenerateAndVerifySelector(selected_start, selected_end,
-                            "paragraph%20text%20that%20is%20longer");
+  VerifySelector(selected_start, selected_end,
+                 "paragraph%20text%20that%20is%20longer");
 }
 
 // Check the case when selections starts with an non text node.
@@ -693,7 +714,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithImage) {
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
+  VerifySelector(start, end, "page-,First,-paragraph");
 }
 
 // Check the case when selections starts with an non text node.
@@ -714,7 +735,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
+  VerifySelector(start, end, "page-,First,-paragraph");
 }
 
 // Check the case when selections starts with a node nested in "inline-block"
@@ -751,7 +772,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("  \nFirst", PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
+  VerifySelector(start, end, "page-,First,-paragraph");
 }
 
 // Check the case when selections ends with an non text node.
@@ -771,7 +792,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
   const auto& end = Position(img, 0);
   ASSERT_EQ("chars\n\n", PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "20-,chars");
+  VerifySelector(start, end, "20-,chars");
 }
 
 // Check the case when selections starts at the end of the previous block.
@@ -789,7 +810,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
   const auto& end = Position(second_paragraph, 6);
   ASSERT_EQ("\nSecond", PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "paragraph-,Second,-paragraph");
+  VerifySelector(start, end, "paragraph-,Second,-paragraph");
 }
 
 // Check the case when selections starts at the end of the previous block.
@@ -807,7 +828,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
   const auto& end = Position(second_paragraph, 2);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "First%20paragraph,-Second");
+  VerifySelector(start, end, "First%20paragraph,-Second");
 }
 
 // Checks that for short selection that have nested block element range selector
@@ -825,7 +846,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
   ASSERT_EQ("First\nblock text\nparagraph",
             PlainText(EphemeralRange(start, end)));
 
-  GenerateAndVerifySelector(start, end, "First,paragraph");
+  VerifySelector(start, end, "First,paragraph");
 }
 
 // Basic test case for |GetNextTextBlock|.
