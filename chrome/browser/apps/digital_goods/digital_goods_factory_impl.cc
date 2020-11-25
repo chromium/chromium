@@ -48,12 +48,14 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
     std::move(callback).Run(payments::mojom::CreateDigitalGoodsResponseCode::
                                 kUnsupportedPaymentMethod,
                             /*digital_goods=*/mojo::NullRemote());
+    return;
   }
 
   if (apps::GetTwaPackageName(render_frame_host_).empty()) {
     std::move(callback).Run(
         payments::mojom::CreateDigitalGoodsResponseCode::kUnsupportedContext,
         /*digital_goods=*/mojo::NullRemote());
+    return;
   }
 
   // TODO(jshikaram): check with Android if there is a payment_method available.
