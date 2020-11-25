@@ -47,6 +47,8 @@ public class Tab {
     private static final Map<Integer, Tab> sTabMap = new HashMap<Integer, Tab>();
 
     private ITab mImpl;
+    // Remember the stack of Tab destruction.
+    private Throwable mDestroyStack;
     private final NavigationController mNavigationController;
     private final FindInPageController mFindInPageController;
     private final MediaCaptureController mMediaCaptureController;
@@ -117,7 +119,7 @@ public class Tab {
 
     private void throwIfDestroyed() {
         if (mImpl == null) {
-            throw new IllegalStateException("Tab can not be used once destroyed");
+            throw new IllegalStateException("Tab can not be used once destroyed", mDestroyStack);
         }
     }
 
@@ -831,6 +833,7 @@ public class Tab {
             if (getTabById(mId) == this) unregisterTab(this);
             mDestroyOnRemove = false;
             mImpl = null;
+            mDestroyStack = new RuntimeException("onRemovedFromBrowser");
         }
     }
 
@@ -903,6 +906,7 @@ public class Tab {
                 // Ensure that the app will fail fast if the embedder mistakenly tries to call back
                 // into the implementation via this Tab.
                 mImpl = null;
+                mDestroyStack = new RuntimeException("onTabDestroyed");
             } else {
                 // This Tab should not have been destroyed yet.
                 assert mImpl != null;
