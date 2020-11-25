@@ -31,6 +31,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
 #if defined(OS_WIN)
@@ -400,3 +401,6 @@ const ui::ThemeProvider* BrowserNonClientFrameView::GetFrameThemeProvider()
   // into the view hierarchy.
   return frame_->GetThemeProvider();
 }
+
+BEGIN_METADATA(BrowserNonClientFrameView, views::NonClientFrameView)
+END_METADATA

@@ -89,6 +89,8 @@ class PreEventDispatchHandler : public ui::EventHandler {
   explicit PreEventDispatchHandler(View* owner) : owner_(owner) {
     owner_->AddPreTargetHandler(this);
   }
+  PreEventDispatchHandler(const PreEventDispatchHandler&) = delete;
+  PreEventDispatchHandler& operator=(const PreEventDispatchHandler&) = delete;
   ~PreEventDispatchHandler() override { owner_->RemovePreTargetHandler(this); }
 
  private:
@@ -122,8 +124,6 @@ class PreEventDispatchHandler : public ui::EventHandler {
   }
 
   View* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreEventDispatchHandler);
 };
 
 // This event handler receives events in the post-target phase and takes care of
@@ -133,6 +133,8 @@ class PostEventDispatchHandler : public ui::EventHandler {
  public:
   PostEventDispatchHandler()
       : touch_dnd_enabled_(::switches::IsTouchDragDropEnabled()) {}
+  PostEventDispatchHandler(const PostEventDispatchHandler&) = delete;
+  PostEventDispatchHandler& operator=(const PostEventDispatchHandler&) = delete;
   ~PostEventDispatchHandler() override = default;
 
  private:
@@ -168,8 +170,6 @@ class PostEventDispatchHandler : public ui::EventHandler {
   }
 
   bool touch_dnd_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostEventDispatchHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,22 +179,10 @@ class PostEventDispatchHandler : public ui::EventHandler {
 
 RootView::RootView(Widget* widget)
     : widget_(widget),
-      mouse_pressed_handler_(nullptr),
-      mouse_move_handler_(nullptr),
-      last_click_handler_(nullptr),
-      explicit_mouse_handler_(false),
-      last_mouse_event_flags_(0),
-      last_mouse_event_x_(-1),
-      last_mouse_event_y_(-1),
-      gesture_handler_(nullptr),
-      gesture_handler_set_before_processing_(false),
-      pre_dispatch_handler_(new internal::PreEventDispatchHandler(this)),
-      post_dispatch_handler_(new internal::PostEventDispatchHandler),
-      focus_search_(this, false, false),
-      focus_traversable_parent_(nullptr),
-      focus_traversable_parent_view_(nullptr),
-      event_dispatch_target_(nullptr),
-      old_dispatch_target_(nullptr) {
+      pre_dispatch_handler_(
+          std::make_unique<internal::PreEventDispatchHandler>(this)),
+      post_dispatch_handler_(
+          std::make_unique<internal::PostEventDispatchHandler>()) {
   AddPostTargetHandler(post_dispatch_handler_.get());
   SetEventTargeter(
       std::unique_ptr<ViewTargeter>(new RootViewTargeter(this, this)));

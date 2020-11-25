@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -32,11 +33,15 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
                                   public ProfileAttributesStorage::Observer,
                                   public TabStripObserver {
  public:
+  METADATA_HEADER(BrowserNonClientFrameView);
   // The minimum total height users should have to use as a drag handle to move
   // the window with.
   static constexpr int kMinimumDragHeight = 8;
 
   BrowserNonClientFrameView(BrowserFrame* frame, BrowserView* browser_view);
+  BrowserNonClientFrameView(const BrowserNonClientFrameView&) = delete;
+  BrowserNonClientFrameView& operator=(const BrowserNonClientFrameView&) =
+      delete;
   ~BrowserNonClientFrameView() override;
 
   BrowserView* browser_view() const { return browser_view_; }
@@ -200,8 +205,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   base::ScopedObservation<TabStrip, TabStripObserver> tab_strip_observation_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameView);
 };
 
 namespace chrome {

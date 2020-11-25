@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/views/view_utils.h"
 
 class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
  public:
@@ -55,7 +56,7 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
-    if (frame_view->GetClassName() != GlassBrowserFrameView::kClassName)
+    if (!views::IsViewClass<GlassBrowserFrameView>(frame_view))
       return false;
     glass_frame_view_ = static_cast<GlassBrowserFrameView*>(frame_view);
 

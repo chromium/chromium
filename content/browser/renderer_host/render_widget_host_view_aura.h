@@ -92,7 +92,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver {
  public:
-  RenderWidgetHostViewAura(RenderWidgetHost* host);
+  explicit RenderWidgetHostViewAura(RenderWidgetHost* host);
+  RenderWidgetHostViewAura(const RenderWidgetHostViewAura&) = delete;
+  RenderWidgetHostViewAura& operator=(const RenderWidgetHostViewAura&) = delete;
 
   // RenderWidgetHostView implementation.
   void InitAsChild(gfx::NativeView parent_view) override;
@@ -715,8 +717,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   base::Optional<DisplayFeature> display_feature_;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAura);
 };
 
 }  // namespace content

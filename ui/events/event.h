@@ -312,15 +312,15 @@ class EVENTS_EXPORT Event {
   LatencyInfo latency_;
   int flags_;
   PlatformEvent native_event_;
-  bool delete_native_event_;
-  bool cancelable_;
-  EventTarget* target_;
-  EventPhase phase_;
-  EventResult result_;
+  bool delete_native_event_ = false;
+  bool cancelable_ = true;
+  EventTarget* target_ = nullptr;
+  EventPhase phase_ = EP_PREDISPATCH;
+  EventResult result_ = ER_UNHANDLED;
 
   // The device id the event came from, or ED_UNKNOWN_DEVICE if the information
   // is not available.
-  int source_device_id_;
+  int source_device_id_ = ED_UNKNOWN_DEVICE;
 
   std::unique_ptr<Properties> properties_;
 };
@@ -703,11 +703,11 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   // Whether the (unhandled) touch event will produce a scroll event (e.g., a
   // touchmove that exceeds the platform slop region, or a touchend that
   // causes a fling). Defaults to false.
-  bool may_cause_scrolling_;
+  bool may_cause_scrolling_ = false;
 
   // True for devices like some pens when they support hovering over
   // digitizer and they send events while hovering.
-  bool hovering_;
+  bool hovering_ = false;
 
   // Structure for holding pointer details for implementing PointerEvents API.
   PointerDetails pointer_details_;

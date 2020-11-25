@@ -42,6 +42,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/win/hwnd_util.h"
 #include "ui/views/window/client_view.h"
 
@@ -68,8 +69,6 @@ base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
 
 ///////////////////////////////////////////////////////////////////////////////
 // GlassBrowserFrameView, public:
-
-constexpr char GlassBrowserFrameView::kClassName[];
 
 SkColor GlassBrowserFrameView::GetReadableFeatureColor(
     SkColor background_color) {
@@ -390,10 +389,6 @@ bool GlassBrowserFrameView::IsWebUITabStrip() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // GlassBrowserFrameView, views::View overrides:
-
-const char* GlassBrowserFrameView::GetClassName() const {
-  return kClassName;
-}
 
 void GlassBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   TRACE_EVENT0("views.frame", "GlassBrowserFrameView::OnPaint");
@@ -818,3 +813,6 @@ void GlassBrowserFrameView::InitThrobberIcons() {
     initialized = true;
   }
 }
+
+BEGIN_METADATA(GlassBrowserFrameView, BrowserNonClientFrameView)
+END_METADATA

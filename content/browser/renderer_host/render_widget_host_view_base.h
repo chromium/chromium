@@ -74,6 +74,9 @@ class DelegatedFrameHost;
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
  public:
+  RenderWidgetHostViewBase(const RenderWidgetHostViewBase&) = delete;
+  RenderWidgetHostViewBase& operator=(const RenderWidgetHostViewBase&) = delete;
+
   float current_device_scale_factor() const {
     return current_device_scale_factor_;
   }
@@ -518,6 +521,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
+  ~RenderWidgetHostViewBase() override;
 
   void NotifyObserversAboutShutdown();
 
@@ -586,9 +590,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   bool is_currently_scrolling_viewport_ = false;
 
- protected:
-  ~RenderWidgetHostViewBase() override;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(
       BrowserSideFlingBrowserTest,
@@ -642,8 +643,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   bool is_evicted_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewBase);
 };
 
 }  // namespace content
