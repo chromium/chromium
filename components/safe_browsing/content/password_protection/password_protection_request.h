@@ -179,6 +179,9 @@ class PasswordProtectionRequest
   void FillRequestProto(bool is_sampled_ping);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // Extracts DOM features.
+  void GetDomFeatures();
+
   // Called when the DOM feature extraction is complete.
   void OnGetDomFeatures(mojom::PhishingDetectorResult result,
                         const std::string& verdict);

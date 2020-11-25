@@ -96,6 +96,15 @@ std::vector<std::string> GetMatchingDomains(
   return base::flat_set<std::string>(std::move(matching_domains)).extract();
 }
 
+bool IsClientSideDetectionEnabled() {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(
+      safe_browsing::kClientSideDetectionForAndroid);
+#endif
+}
+
 }  // namespace
 
 PasswordProtectionRequest::PasswordProtectionRequest(
@@ -330,20 +339,15 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       NOTREACHED();
   }
 
-  bool client_side_detection_enabled =
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-      true;
-#else
-      base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionForAndroid);
-#endif
-
-  if (!client_side_detection_enabled) {
+  if (IsClientSideDetectionEnabled()) {
+    GetDomFeatures();
+  } else {
     SendRequest();
-    return;
   }
+}
 
-  // Get the page DOM features.
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+void PasswordProtectionRequest::GetDomFeatures() {
   content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
   password_protection_service_->GetPhishingDetector(rfh->GetRemoteInterfaces(),
                                                     &phishing_detector_);
@@ -360,7 +364,6 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   dom_feature_start_time_ = base::TimeTicks::Now();
 }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void PasswordProtectionRequest::OnGetDomFeatures(
     mojom::PhishingDetectorResult result,
     const std::string& verdict) {
