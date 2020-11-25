@@ -39,6 +39,17 @@ function setSrcByTagName(tagName, src) {
     }
 }
 
+function videoPresentationPromise(video) {
+    return new Promise(resolve => video.requestVideoFrameCallback(resolve));
+}
+
+// This function should be called before setting video.src to guarantee that we
+// catch all new frames.
+function allVideosPresentedPromise() {
+    let videos = Array.from(document.getElementsByTagName('video'));
+    return Promise.all(videos.map(video => videoPresentationPromise(video)));
+}
+
 function setSrcById(id, src) {
     var element = document.getElementById(id);
     if (element)

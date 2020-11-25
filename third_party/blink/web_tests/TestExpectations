@@ -5033,11 +5033,6 @@ crbug.com/865432 [ Linux ] external/wpt/workers/modules/dedicated-worker-import-
 crbug.com/867532 [ Linux ] external/wpt/workers/modules/dedicated-worker-import-data-url.any.worker.html [ Timeout Pass ]
 crbug.com/867532 [ Linux ] external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Timeout Pass ]
 
-# These video tests seem to take a screenshot too early.
-crbug.com/963141 media/video-object-fit.html [ Pass Failure ]
-crbug.com/963141 media/video-object-fit-change.html [ Pass Failure ]
-crbug.com/963141 media/video-aspect-ratio.html [ Pass Failure ]
-
 # Updated by sheriff 2020-06-01: this one seem flaky on all platforms now.
 # See also: crbug.com/1083564
 crbug.com/963141 media/controls/video-overlay-cast-light-rendering.html [ Pass Failure ]
