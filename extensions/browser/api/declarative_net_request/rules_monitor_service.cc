@@ -745,13 +745,15 @@ void RulesMonitorService::OnDynamicRulesUpdated(
     base::Optional<std::string> error) {
   DCHECK_EQ(1u, load_data.rulesets.size());
 
+  const bool has_error = error.has_value();
+
   LogMetricsAndUpdateChecksumsIfNeeded(load_data);
 
   // Respond to the extension.
   std::move(callback).Run(std::move(error));
 
   RulesetInfo& dynamic_ruleset = load_data.rulesets[0];
-  DCHECK_EQ(dynamic_ruleset.did_load_successfully(), !error.has_value());
+  DCHECK_EQ(dynamic_ruleset.did_load_successfully(), !has_error);
 
   if (!dynamic_ruleset.did_load_successfully())
     return;
