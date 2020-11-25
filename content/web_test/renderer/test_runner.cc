@@ -2646,16 +2646,9 @@ void TestRunner::ResetRendererAfterWebTest(base::OnceClosure done_callback) {
   // loads can be started by the renderer.
   waiting_for_reset_navigation_to_about_blank_ = std::move(done_callback);
 
-  // TODO(danakj): Move this navigation to the browser.
-  blink::WebURLRequest request{GURL(url::kAboutBlankURL)};
-  request.SetMode(network::mojom::RequestMode::kNavigate);
-  request.SetRedirectMode(network::mojom::RedirectMode::kManual);
-  request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
-  request.SetRequestorOrigin(blink::WebSecurityOrigin::CreateUniqueOpaque());
-
   WebFrameTestProxy* main_frame = FindInProcessMainWindowMainFrame();
   DCHECK(main_frame);
-  main_frame->GetWebFrame()->StartNavigation(request);
+  main_frame->GetWebFrame()->ResetForTesting();
 }
 
 void TestRunner::DidCommitNavigationInMainFrame(WebFrameTestProxy* main_frame) {

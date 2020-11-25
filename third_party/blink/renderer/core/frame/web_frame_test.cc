@@ -4267,8 +4267,10 @@ TEST_F(WebFrameTest, ReloadWhileProvisional) {
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize();
-  WebURLRequest request(ToKURL(base_url_ + "fixed_layout.html"));
-  web_view_helper.GetWebView()->MainFrameImpl()->StartNavigation(request);
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  FrameLoadRequest frame_load_request(
+      nullptr, ResourceRequest(ToKURL(base_url_ + "fixed_layout.html")));
+  main_frame->GetFrame()->Loader().StartNavigation(frame_load_request);
   // start reload before first request is delivered.
   frame_test_helpers::ReloadFrameBypassingCache(
       web_view_helper.GetWebView()->MainFrameImpl());
@@ -7715,15 +7717,14 @@ TEST_F(WebFrameTest, CurrentHistoryItem) {
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize();
-  WebLocalFrame* frame = web_view_helper.GetWebView()->MainFrameImpl();
-  const FrameLoader& main_frame_loader =
+  FrameLoader& main_frame_loader =
       web_view_helper.LocalMainFrame()->GetFrame()->Loader();
-  WebURLRequest request(ToKURL(url));
 
   // Before navigation, there is no history item.
   EXPECT_FALSE(main_frame_loader.GetDocumentLoader()->GetHistoryItem());
 
-  frame->StartNavigation(request);
+  FrameLoadRequest frame_load_request(nullptr, ResourceRequest(ToKURL(url)));
+  main_frame_loader.StartNavigation(frame_load_request);
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       web_view_helper.LocalMainFrame());
 
@@ -13036,8 +13037,9 @@ TEST_F(WebFrameTest, FallbackForNonexistentProvisionalNavigation) {
   web_view_helper_.Initialize(&main_client);
 
   WebLocalFrameImpl* main_frame = web_view_helper_.LocalMainFrame();
-  WebURLRequest request(ToKURL(base_url_ + "fallback.html"));
-  main_frame->StartNavigation(request);
+  KURL url = ToKURL(base_url_ + "fallback.html");
+  FrameLoadRequest frame_load_request(nullptr, ResourceRequest(url));
+  main_frame->GetFrame()->Loader().StartNavigation(frame_load_request);
 
   // Because the child frame will have placeholder document loader, the main
   // frame will not finish loading, so
@@ -13054,7 +13056,7 @@ TEST_F(WebFrameTest, FallbackForNonexistentProvisionalNavigation) {
   // page.
   EXPECT_EQ(WebNavigationControl::NoLoadInProgress,
             To<WebLocalFrameImpl>(child)->MaybeRenderFallbackContent(
-                WebURLError(ResourceError::Failure(request.Url()))));
+                WebURLError(ResourceError::Failure(url))));
 }
 
 TEST_F(WebFrameTest, AltTextOnAboutBlankPage) {

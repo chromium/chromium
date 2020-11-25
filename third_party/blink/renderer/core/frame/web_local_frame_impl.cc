@@ -1032,20 +1032,19 @@ void WebLocalFrameImpl::ReloadImage(const WebNode& web_node) {
     image_element->ForceReload();
 }
 
-void WebLocalFrameImpl::StartNavigation(const WebURLRequest& request) {
-  // TODO(clamy): Remove this function once RenderFrame calls CommitNavigation
-  // for all requests.
+void WebLocalFrameImpl::ResetForTesting() {
   DCHECK(GetFrame());
-  DCHECK(!request.IsNull());
-  DCHECK(!request.Url().ProtocolIs("javascript"));
-  TRACE_EVENT0("navigation", "WebLocalFrameImpl::StartNavigation");
-
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();
-
-  FrameLoadRequest frame_load_request(nullptr, request.ToResourceRequest());
-  GetFrame()->Loader().StartNavigation(frame_load_request,
-                                       WebFrameLoadType::kStandard);
+  ResourceRequest resource_request(url::kAboutBlankURL);
+  resource_request.SetMode(network::mojom::RequestMode::kNavigate);
+  resource_request.SetRedirectMode(network::mojom::RedirectMode::kManual);
+  resource_request.SetRequestContext(
+      mojom::blink::RequestContextType::INTERNAL);
+  resource_request.SetRequestorOrigin(
+      blink::WebSecurityOrigin::CreateUniqueOpaque());
+  FrameLoadRequest request(nullptr, resource_request);
+  GetFrame()->Loader().StartNavigation(request, WebFrameLoadType::kStandard);
 }
 
 WebDocumentLoader* WebLocalFrameImpl::GetDocumentLoader() const {

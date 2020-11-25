@@ -242,9 +242,6 @@ class WebLocalFrame : public WebFrame {
   // Note: StartReload() will be deprecated, use StartNavigation() instead.
   virtual void StartReload(WebFrameLoadType) = 0;
 
-  // Start navigation to the given URL.
-  virtual void StartNavigation(const WebURLRequest&) = 0;
-
   // View-source rendering mode.  Set this before loading an URL to cause
   // it to be rendered in view-source mode.
   virtual void EnableViewSourceMode(bool) = 0;
@@ -793,6 +790,8 @@ class WebLocalFrame : public WebFrame {
   virtual void UpdateCurrentHistoryItem() = 0;
   virtual PageState CurrentHistoryItemToPageState() = 0;
   virtual const WebHistoryItem& GetCurrentHistoryItem() const = 0;
+  // Reset TextFinder state and loads about:blank.
+  virtual void ResetForTesting() = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,
