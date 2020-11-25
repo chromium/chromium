@@ -147,7 +147,7 @@ class NET_EXPORT CanonicalCookie {
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
   // for tests. This factory should NOT be used in production.
-  static CanonicalCookie CreateUnsafeCookieForTesting(
+  static std::unique_ptr<CanonicalCookie> CreateUnsafeCookieForTesting(
       const std::string& name,
       const std::string& value,
       const std::string& domain,

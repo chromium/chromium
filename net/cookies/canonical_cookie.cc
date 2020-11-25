@@ -50,6 +50,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -553,7 +554,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
 }
 
 // static
-CanonicalCookie CanonicalCookie::CreateUnsafeCookieForTesting(
+std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
     const std::string& name,
     const std::string& value,
     const std::string& domain,
@@ -568,9 +569,9 @@ CanonicalCookie CanonicalCookie::CreateUnsafeCookieForTesting(
     bool same_party,
     CookieSourceScheme source_scheme,
     int source_port) {
-  return CanonicalCookie(name, value, domain, path, creation, expiration,
-                         last_access, secure, httponly, same_site, priority,
-                         same_party, source_scheme, source_port);
+  return base::WrapUnique(new CanonicalCookie(
+      name, value, domain, path, creation, expiration, last_access, secure,
+      httponly, same_site, priority, same_party, source_scheme, source_port));
 }
 
 std::string CanonicalCookie::DomainWithoutDot() const {
