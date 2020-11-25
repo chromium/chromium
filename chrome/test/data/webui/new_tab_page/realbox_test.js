@@ -809,7 +809,7 @@ suite('NewTabPageRealboxTest', () => {
     // Input is expected to have been focused before any navigation.
     realbox.$.input.dispatchEvent(new Event('focus'));
 
-    realbox.$.input.value = 'hello';
+    realbox.$.input.value = '  hello  ';
     realbox.$.input.dispatchEvent(new CustomEvent('input'));
 
     const matches = [
@@ -860,7 +860,7 @@ suite('NewTabPageRealboxTest', () => {
         // Input is expected to have been focused before any navigation.
         realbox.$.input.dispatchEvent(new Event('focus'));
 
-        realbox.$.input.value = 'hello ';
+        realbox.$.input.value = '  hello  ';
         realbox.$.input.dispatchEvent(new CustomEvent('input'));
 
         const matches =

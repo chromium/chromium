@@ -539,7 +539,9 @@ class RealboxElement extends PolymerElement {
 
     if (e.key === 'Enter') {
       if ([this.$.matches, this.$.input].includes(e.target)) {
-        if (this.lastQueriedInput_ === decodeString16(this.result_.input)) {
+        if (this.lastQueriedInput_ !== null &&
+            this.lastQueriedInput_.trimLeft() ===
+                decodeString16(this.result_.input)) {
           if (this.selectedMatch_) {
             this.navigateToMatch_(this.selectedMatchIndex_, e);
           }
