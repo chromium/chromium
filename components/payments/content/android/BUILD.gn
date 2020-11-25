@@ -105,9 +105,7 @@ android_library("service_java") {
   ]
 }
 
-# TODO(crbug.com/1126301): Rename this back to "java" once references in //clank
-# are updated.
-android_library("all_java") {
+android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/BasicCardUtils.java",
@@ -174,13 +172,6 @@ android_library("all_java") {
     ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
-}
-
-java_group("java") {
-  deps = [
-    ":all_java",
-    ":service_java",
-  ]
 }
 
 android_aidl("payment_details_update_service_aidl") {

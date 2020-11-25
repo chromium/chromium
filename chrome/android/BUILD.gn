@@ -881,6 +881,7 @@ junit_binary("chrome_junit_tests") {
     "//components/omnibox/browser:browser_java",
     "//components/page_info/android:java",
     "//components/payments/content/android:java",
+    "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//components/policy/android:policy_java",
     "//components/prefs/android:java",
