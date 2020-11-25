@@ -617,8 +617,8 @@ class MultipartUploadRequestBase : public BatchableDelegate {
 //============================ DownloadFileRequest ===========================
 
 // Callback type for receiving the completion of DownloadFileRequest.
-typedef base::Callback<void(DriveApiErrorCode error,
-                            const base::FilePath& temp_file)>
+typedef base::OnceCallback<void(DriveApiErrorCode error,
+                                const base::FilePath& temp_file)>
     DownloadActionCallback;
 
 // This is a base class for performing the request for downloading a file.
@@ -641,13 +641,12 @@ class DownloadFileRequestBase : public UrlFetchRequestBase {
   // output_file_path:
   //   Specifies the file path to save the downloaded file.
   //
-  DownloadFileRequestBase(
-      RequestSender* sender,
-      const DownloadActionCallback& download_action_callback,
-      const GetContentCallback& get_content_callback,
-      ProgressCallback progress_callback,
-      const GURL& download_url,
-      const base::FilePath& output_file_path);
+  DownloadFileRequestBase(RequestSender* sender,
+                          DownloadActionCallback download_action_callback,
+                          const GetContentCallback& get_content_callback,
+                          ProgressCallback progress_callback,
+                          const GURL& download_url,
+                          const base::FilePath& output_file_path);
   ~DownloadFileRequestBase() override;
 
  protected:
@@ -662,7 +661,7 @@ class DownloadFileRequestBase : public UrlFetchRequestBase {
   void RunCallbackOnPrematureFailure(DriveApiErrorCode code) override;
 
  private:
-  const DownloadActionCallback download_action_callback_;
+  DownloadActionCallback download_action_callback_;
   const GetContentCallback get_content_callback_;
   const GURL download_url_;
   const base::FilePath output_file_path_;

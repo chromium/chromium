@@ -70,8 +70,8 @@ CancelCallbackOnce DummyDriveService::GetFileListInDirectory(
   return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::Search(const std::string& search_query,
-                                         FileListCallback callback) {
+CancelCallbackOnce DummyDriveService::Search(const std::string& search_query,
+                                             FileListCallback callback) {
   return CancelCallback();
 }
 
@@ -143,7 +143,7 @@ CancelCallback DummyDriveService::TrashResource(const std::string& resource_id,
 CancelCallbackOnce DummyDriveService::DownloadFile(
     const base::FilePath& local_cache_path,
     const std::string& resource_id,
-    const DownloadActionCallback& download_action_callback,
+    DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback) {
   return CancelCallback();

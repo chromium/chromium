@@ -10,6 +10,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "google_apis/drive/base_requests.h"
+#include "google_apis/drive/drive_common_callbacks.h"
 #include "google_apis/drive/dummy_auth_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -146,7 +147,7 @@ TEST_F(RequestSenderTest, StartAndFinishRequest) {
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr =
       request_ptr->GetWeakPtr();
 
-  base::Closure cancel_closure =
+  CancelCallbackOnce cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 
@@ -158,7 +159,7 @@ TEST_F(RequestSenderTest, StartAndFinishRequest) {
 
   // It is safe to run the cancel closure even after the request is finished.
   // It is just no-op. The TestRequest::Cancel method is not called.
-  cancel_closure.Run();
+  std::move(cancel_closure).Run();
   EXPECT_EQ(SUCCESS, finish_reason);
 }
 
@@ -169,12 +170,12 @@ TEST_F(RequestSenderTest, StartAndCancelRequest) {
       &request_sender_, &start_called, &finish_reason);
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr = request->GetWeakPtr();
 
-  base::Closure cancel_closure =
+  CancelCallbackOnce cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
   EXPECT_TRUE(start_called);
 
-  cancel_closure.Run();
+  std::move(cancel_closure).Run();
   EXPECT_EQ(CANCEL, finish_reason);
   EXPECT_FALSE(weak_ptr);  // The request object is deleted.
 }
@@ -189,7 +190,7 @@ TEST_F(RequestSenderTest, NoRefreshToken) {
       &request_sender_, &start_called, &finish_reason);
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr = request->GetWeakPtr();
 
-  base::Closure cancel_closure =
+  CancelCallbackOnce cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 
@@ -210,7 +211,7 @@ TEST_F(RequestSenderTest, ValidRefreshTokenAndNoAccessToken) {
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr =
       request_ptr->GetWeakPtr();
 
-  base::Closure cancel_closure =
+  CancelCallbackOnce cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 
@@ -232,7 +233,7 @@ TEST_F(RequestSenderTest, AccessTokenRejectedSeveralTimes) {
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr =
       request_ptr->GetWeakPtr();
 
-  base::Closure cancel_closure =
+  CancelCallbackOnce cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 

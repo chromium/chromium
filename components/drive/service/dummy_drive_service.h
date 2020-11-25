@@ -41,7 +41,7 @@ class DummyDriveService : public DriveServiceInterface {
   google_apis::CancelCallbackOnce GetFileListInDirectory(
       const std::string& directory_resource_id,
       google_apis::FileListCallback callback) override;
-  google_apis::CancelCallback Search(
+  google_apis::CancelCallbackOnce Search(
       const std::string& search_query,
       google_apis::FileListCallback callback) override;
   google_apis::CancelCallbackOnce SearchByTitle(
@@ -82,7 +82,7 @@ class DummyDriveService : public DriveServiceInterface {
   google_apis::CancelCallbackOnce DownloadFile(
       const base::FilePath& local_cache_path,
       const std::string& resource_id,
-      const google_apis::DownloadActionCallback& download_action_callback,
+      google_apis::DownloadActionCallback download_action_callback,
       const google_apis::GetContentCallback& get_content_callback,
       google_apis::ProgressCallback progress_callback) override;
   google_apis::CancelCallback CopyResource(

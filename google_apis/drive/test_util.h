@@ -43,10 +43,11 @@ namespace test_util {
 void RunAndQuit(base::RunLoop* run_loop, base::OnceClosure closure);
 
 // Returns callback which runs the given |callback| and then quits |run_loop|.
-template<typename CallbackType>
+template <typename CallbackType>
 CallbackType CreateQuitCallback(base::RunLoop* run_loop,
-                                const CallbackType& callback) {
-  return CreateComposedCallback(base::Bind(&RunAndQuit, run_loop), callback);
+                                CallbackType callback) {
+  return CreateComposedCallback(base::BindOnce(&RunAndQuit, run_loop),
+                                std::move(callback));
 }
 
 // Removes |prefix| from |input| and stores the result in |output|. Returns
@@ -234,35 +235,39 @@ void CopyResultCallback(
 
 }  // namespace internal
 
-template<typename T1>
-base::Callback<void(typename internal::CopyResultCallbackHelper<T1>::InType)>
+template <typename T1>
+base::OnceCallback<
+    void(typename internal::CopyResultCallbackHelper<T1>::InType)>
 CreateCopyResultCallback(T1* out1) {
-  return base::Bind(&internal::CopyResultCallback<T1>, out1);
+  return base::BindOnce(&internal::CopyResultCallback<T1>, out1);
 }
 
-template<typename T1, typename T2>
-base::Callback<void(typename internal::CopyResultCallbackHelper<T1>::InType,
-                    typename internal::CopyResultCallbackHelper<T2>::InType)>
+template <typename T1, typename T2>
+base::OnceCallback<
+    void(typename internal::CopyResultCallbackHelper<T1>::InType,
+         typename internal::CopyResultCallbackHelper<T2>::InType)>
 CreateCopyResultCallback(T1* out1, T2* out2) {
-  return base::Bind(&internal::CopyResultCallback<T1, T2>, out1, out2);
+  return base::BindOnce(&internal::CopyResultCallback<T1, T2>, out1, out2);
 }
 
-template<typename T1, typename T2, typename T3>
-base::Callback<void(typename internal::CopyResultCallbackHelper<T1>::InType,
-                    typename internal::CopyResultCallbackHelper<T2>::InType,
-                    typename internal::CopyResultCallbackHelper<T3>::InType)>
+template <typename T1, typename T2, typename T3>
+base::OnceCallback<
+    void(typename internal::CopyResultCallbackHelper<T1>::InType,
+         typename internal::CopyResultCallbackHelper<T2>::InType,
+         typename internal::CopyResultCallbackHelper<T3>::InType)>
 CreateCopyResultCallback(T1* out1, T2* out2, T3* out3) {
-  return base::Bind(
-      &internal::CopyResultCallback<T1, T2, T3>, out1, out2, out3);
+  return base::BindOnce(&internal::CopyResultCallback<T1, T2, T3>, out1, out2,
+                        out3);
 }
 
-template<typename T1, typename T2, typename T3, typename T4>
-base::Callback<void(typename internal::CopyResultCallbackHelper<T1>::InType,
-                    typename internal::CopyResultCallbackHelper<T2>::InType,
-                    typename internal::CopyResultCallbackHelper<T3>::InType,
-                    typename internal::CopyResultCallbackHelper<T4>::InType)>
+template <typename T1, typename T2, typename T3, typename T4>
+base::OnceCallback<
+    void(typename internal::CopyResultCallbackHelper<T1>::InType,
+         typename internal::CopyResultCallbackHelper<T2>::InType,
+         typename internal::CopyResultCallbackHelper<T3>::InType,
+         typename internal::CopyResultCallbackHelper<T4>::InType)>
 CreateCopyResultCallback(T1* out1, T2* out2, T3* out3, T4* out4) {
-  return base::Bind(
+  return base::BindOnce(
       &internal::CopyResultCallback<T1, T2, T3, T4>,
       internal::OutputParams<T1, T2, T3, T4>(out1, out2, out3, out4));
 }

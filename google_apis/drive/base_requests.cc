@@ -980,13 +980,13 @@ void MultipartUploadRequestBase::OnDataParsed(
 
 DownloadFileRequestBase::DownloadFileRequestBase(
     RequestSender* sender,
-    const DownloadActionCallback& download_action_callback,
+    DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback,
     const GURL& download_url,
     const base::FilePath& output_file_path)
     : UrlFetchRequestBase(sender, ProgressCallback(), progress_callback),
-      download_action_callback_(download_action_callback),
+      download_action_callback_(std::move(download_action_callback)),
       get_content_callback_(get_content_callback),
       download_url_(download_url),
       output_file_path_(output_file_path) {
@@ -1014,13 +1014,13 @@ void DownloadFileRequestBase::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
-  download_action_callback_.Run(GetErrorCode(), response_file);
+  std::move(download_action_callback_).Run(GetErrorCode(), response_file);
   OnProcessURLFetchResultsComplete();
 }
 
 void DownloadFileRequestBase::RunCallbackOnPrematureFailure(
     DriveApiErrorCode code) {
-  download_action_callback_.Run(code, base::FilePath());
+  std::move(download_action_callback_).Run(code, base::FilePath());
 }
 
 }  // namespace google_apis

@@ -143,7 +143,7 @@ class FakeDriveService : public DriveServiceInterface {
       google_apis::FileListCallback callback) override;
   // See the comment for EntryMatchWidthQuery() in .cc file for details about
   // the supported search query types.
-  google_apis::CancelCallback Search(
+  google_apis::CancelCallbackOnce Search(
       const std::string& search_query,
       google_apis::FileListCallback callback) override;
   google_apis::CancelCallbackOnce SearchByTitle(
@@ -184,7 +184,7 @@ class FakeDriveService : public DriveServiceInterface {
   google_apis::CancelCallbackOnce DownloadFile(
       const base::FilePath& local_cache_path,
       const std::string& resource_id,
-      const google_apis::DownloadActionCallback& download_action_callback,
+      google_apis::DownloadActionCallback download_action_callback,
       const google_apis::GetContentCallback& get_content_callback,
       google_apis::ProgressCallback progress_callback) override;
   google_apis::CancelCallback CopyResource(

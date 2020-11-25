@@ -344,8 +344,8 @@ CancelCallbackOnce DriveAPIService::GetFileListInDirectory(
       kFileListFields, std::move(callback));
 }
 
-CancelCallback DriveAPIService::Search(const std::string& search_query,
-                                       FileListCallback callback) {
+CancelCallbackOnce DriveAPIService::Search(const std::string& search_query,
+                                           FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!search_query.empty());
   DCHECK(!callback.is_null());
@@ -505,7 +505,7 @@ CancelCallback DriveAPIService::GetStartPageToken(
 CancelCallbackOnce DriveAPIService::DownloadFile(
     const base::FilePath& local_cache_path,
     const std::string& resource_id,
-    const DownloadActionCallback& download_action_callback,
+    DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -515,7 +515,8 @@ CancelCallbackOnce DriveAPIService::DownloadFile(
   return sender_->StartRequestWithAuthRetry(
       std::make_unique<DownloadFileRequest>(
           sender_.get(), url_generator_, resource_id, local_cache_path,
-          download_action_callback, get_content_callback, progress_callback));
+          std::move(download_action_callback), get_content_callback,
+          progress_callback));
 }
 
 CancelCallback DriveAPIService::DeleteResource(const std::string& resource_id,

@@ -1088,7 +1088,7 @@ class DownloadFileRequest : public DownloadFileRequestBase {
                       const DriveApiUrlGenerator& url_generator,
                       const std::string& resource_id,
                       const base::FilePath& output_file_path,
-                      const DownloadActionCallback& download_action_callback,
+                      DownloadActionCallback download_action_callback,
                       const GetContentCallback& get_content_callback,
                       ProgressCallback progress_callback);
   ~DownloadFileRequest() override;

@@ -23,14 +23,14 @@ FilesListRequestRunner::FilesListRequestRunner(
 FilesListRequestRunner::~FilesListRequestRunner() {
 }
 
-CancelCallback FilesListRequestRunner::CreateAndStartWithSizeBackoff(
+CancelCallbackOnce FilesListRequestRunner::CreateAndStartWithSizeBackoff(
     int max_results,
     FilesListCorpora corpora,
     const std::string& team_drive_id,
     const std::string& q,
     const std::string& fields,
     FileListCallback callback) {
-  base::Closure* const cancel_callback = new base::Closure;
+  base::OnceClosure* cancel_callback = new base::OnceClosure;
   std::unique_ptr<drive::FilesListRequest> request =
       std::make_unique<drive::FilesListRequest>(
           request_sender_, url_generator_,
@@ -46,15 +46,15 @@ CancelCallback FilesListRequestRunner::CreateAndStartWithSizeBackoff(
 
   // The cancellation callback is owned by the completion callback, so it must
   // not be used after |callback| is called.
-  return base::Bind(&FilesListRequestRunner::OnCancel,
-                    weak_ptr_factory_.GetWeakPtr(),
-                    base::Unretained(cancel_callback));
+  return base::BindOnce(&FilesListRequestRunner::OnCancel,
+                        weak_ptr_factory_.GetWeakPtr(),
+                        base::Unretained(cancel_callback));
 }
 
-void FilesListRequestRunner::OnCancel(base::Closure* cancel_callback) {
+void FilesListRequestRunner::OnCancel(CancelCallbackOnce* cancel_callback) {
   DCHECK(cancel_callback);
   DCHECK(!cancel_callback->is_null());
-  cancel_callback->Run();
+  std::move(*cancel_callback).Run();
 }
 
 void FilesListRequestRunner::OnCompleted(int max_results,
@@ -63,11 +63,11 @@ void FilesListRequestRunner::OnCompleted(int max_results,
                                          const std::string& q,
                                          const std::string& fields,
                                          FileListCallback callback,
-                                         CancelCallback* cancel_callback,
+                                         CancelCallbackOnce* cancel_callback,
                                          DriveApiErrorCode error,
                                          std::unique_ptr<FileList> entry) {
   if (!request_completed_callback_for_testing_.is_null())
-    request_completed_callback_for_testing_.Run();
+    std::move(request_completed_callback_for_testing_).Run();
 
   if (error == google_apis::DRIVE_RESPONSE_TOO_LARGE && max_results > 1) {
     CreateAndStartWithSizeBackoff(max_results / 2, corpora, team_drive_id, q,
@@ -79,8 +79,8 @@ void FilesListRequestRunner::OnCompleted(int max_results,
 }
 
 void FilesListRequestRunner::SetRequestCompletedCallbackForTesting(
-    const base::Closure& callback) {
-  request_completed_callback_for_testing_ = callback;
+    base::OnceClosure callback) {
+  request_completed_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace google_apis

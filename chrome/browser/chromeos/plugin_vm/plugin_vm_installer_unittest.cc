@@ -108,7 +108,7 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
 
   void RunDownloadActionCallback(google_apis::DriveApiErrorCode error,
                                  const base::FilePath& temp_file) {
-    download_action_callback_.Run(error, temp_file);
+    std::move(download_action_callback_).Run(error, temp_file);
   }
 
   void RunGetContentCallback(google_apis::DriveApiErrorCode error,
@@ -126,10 +126,10 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
   google_apis::CancelCallbackOnce DownloadFile(
       const base::FilePath& /*cache_path*/,
       const std::string& /*resource_id*/,
-      const DownloadActionCallback& download_action_callback,
+      DownloadActionCallback download_action_callback,
       const GetContentCallback& get_content_callback,
       ProgressCallback progress_callback) override {
-    download_action_callback_ = download_action_callback;
+    download_action_callback_ = std::move(download_action_callback);
     get_content_callback_ = get_content_callback;
     progress_callback_ = std::move(progress_callback);
 

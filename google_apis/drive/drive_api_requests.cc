@@ -988,12 +988,12 @@ DownloadFileRequest::DownloadFileRequest(
     const DriveApiUrlGenerator& url_generator,
     const std::string& resource_id,
     const base::FilePath& output_file_path,
-    const DownloadActionCallback& download_action_callback,
+    DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback)
     : DownloadFileRequestBase(
           sender,
-          download_action_callback,
+          std::move(download_action_callback),
           get_content_callback,
           progress_callback,
           url_generator.GenerateDownloadFileUrl(resource_id),

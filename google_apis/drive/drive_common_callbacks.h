@@ -25,7 +25,8 @@ typedef base::OnceCallback<void(DriveApiErrorCode error,
 // request is already finished, nothing happens.
 typedef base::OnceClosure CancelCallbackOnce;
 typedef base::RepeatingClosure CancelCallbackRepeating;
-// TODO(https://crbug.com/1007686): Remove usage of CancelCallback
+// TODO(https://crbug.com/1007686): Remove usage of CancelCallback.
+// All remaining usages are outside of google_apis/drive.
 typedef base::Closure CancelCallback;
 
 }  // namespace google_apis

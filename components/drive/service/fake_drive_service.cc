@@ -440,8 +440,8 @@ CancelCallbackOnce FakeDriveService::GetFileListInDirectory(
   return CancelCallbackOnce();
 }
 
-CancelCallback FakeDriveService::Search(const std::string& search_query,
-                                        FileListCallback callback) {
+CancelCallbackOnce FakeDriveService::Search(const std::string& search_query,
+                                            FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!search_query.empty());
 
@@ -759,7 +759,7 @@ CancelCallback FakeDriveService::TrashResource(const std::string& resource_id,
 CancelCallbackOnce FakeDriveService::DownloadFile(
     const base::FilePath& local_cache_path,
     const std::string& resource_id,
-    const DownloadActionCallback& download_action_callback,
+    DownloadActionCallback download_action_callback,
     const GetContentCallback& get_content_callback,
     ProgressCallback progress_callback) {
   base::ThreadRestrictions::ScopedAllowIO allow_io;
@@ -768,16 +768,16 @@ CancelCallbackOnce FakeDriveService::DownloadFile(
 
   if (offline_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(download_action_callback, DRIVE_NO_CONNECTION,
-                                  base::FilePath()));
+        FROM_HERE, base::BindOnce(std::move(download_action_callback),
+                                  DRIVE_NO_CONNECTION, base::FilePath()));
     return CancelCallbackOnce();
   }
 
   EntryInfo* entry = FindEntryByResourceId(resource_id);
   if (!entry || entry->change_resource.file()->IsHostedDocument()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(download_action_callback, HTTP_NOT_FOUND,
-                                  base::FilePath()));
+        FROM_HERE, base::BindOnce(std::move(download_action_callback),
+                                  HTTP_NOT_FOUND, base::FilePath()));
     return CancelCallbackOnce();
   }
 
@@ -801,8 +801,8 @@ CancelCallbackOnce FakeDriveService::DownloadFile(
   if (!test_util::WriteStringToFile(local_cache_path, content_data)) {
     // Failed to write the content.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(download_action_callback, DRIVE_FILE_ERROR,
-                                  base::FilePath()));
+        FROM_HERE, base::BindOnce(std::move(download_action_callback),
+                                  DRIVE_FILE_ERROR, base::FilePath()));
     return CancelCallbackOnce();
   }
 
@@ -816,8 +816,8 @@ CancelCallbackOnce FakeDriveService::DownloadFile(
         FROM_HERE, base::BindOnce(progress_callback, file_size, file_size));
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(download_action_callback, HTTP_SUCCESS, local_cache_path));
+      FROM_HERE, base::BindOnce(std::move(download_action_callback),
+                                HTTP_SUCCESS, local_cache_path));
   return google_apis::CancelCallbackOnce();
 }
 

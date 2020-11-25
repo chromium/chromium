@@ -241,7 +241,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   //
   // |search_query| must not be empty.
   // |callback| must not be null.
-  virtual google_apis::CancelCallback Search(
+  virtual google_apis::CancelCallbackOnce Search(
       const std::string& search_query,
       google_apis::FileListCallback callback) = 0;
 
@@ -429,7 +429,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   virtual google_apis::CancelCallbackOnce DownloadFile(
       const base::FilePath& local_cache_path,
       const std::string& resource_id,
-      const google_apis::DownloadActionCallback& download_action_callback,
+      google_apis::DownloadActionCallback download_action_callback,
       const google_apis::GetContentCallback& get_content_callback,
       google_apis::ProgressCallback progress_callback) = 0;
 

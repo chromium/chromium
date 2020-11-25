@@ -66,7 +66,7 @@ google_apis::CancelCallback DriveServiceOnWorker::DeleteResource(
 google_apis::CancelCallbackOnce DriveServiceOnWorker::DownloadFile(
     const base::FilePath& local_cache_path,
     const std::string& resource_id,
-    const google_apis::DownloadActionCallback& download_action_callback,
+    google_apis::DownloadActionCallback download_action_callback,
     const google_apis::GetContentCallback& get_content_callback,
     google_apis::ProgressCallback progress_callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -77,7 +77,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::DownloadFile(
           &DriveServiceWrapper::DownloadFile, wrapper_, local_cache_path,
           resource_id,
           RelayCallbackToTaskRunner(worker_task_runner_.get(), FROM_HERE,
-                                    download_action_callback),
+                                    std::move(download_action_callback)),
           RelayCallbackToTaskRunner(worker_task_runner_.get(), FROM_HERE,
                                     get_content_callback),
           RelayCallbackToTaskRunner(worker_task_runner_.get(), FROM_HERE,
@@ -315,7 +315,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetAllFileList(
   return google_apis::CancelCallbackOnce();
 }
 
-google_apis::CancelCallback DriveServiceOnWorker::Search(
+google_apis::CancelCallbackOnce DriveServiceOnWorker::Search(
     const std::string& search_query,
     google_apis::FileListCallback callback) {
   NOTREACHED();

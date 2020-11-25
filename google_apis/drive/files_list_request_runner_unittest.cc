@@ -122,7 +122,7 @@ class FilesListRequestRunnerTest : public testing::Test {
   }
 
   void TearDown() override {
-    on_completed_callback_ = base::Closure();
+    on_completed_callback_ = base::OnceClosure();
     http_request_.reset();
     response_error_.reset();
     response_entry_.reset();
@@ -133,7 +133,7 @@ class FilesListRequestRunnerTest : public testing::Test {
   void OnCompleted(DriveApiErrorCode error, std::unique_ptr<FileList> entry) {
     response_error_.reset(new DriveApiErrorCode(error));
     response_entry_ = std::move(entry);
-    on_completed_callback_.Run();
+    std::move(on_completed_callback_).Run();
   }
 
  protected:
@@ -166,7 +166,7 @@ class FilesListRequestRunnerTest : public testing::Test {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_loader_factory_;
-  base::Closure on_completed_callback_;
+  base::OnceClosure on_completed_callback_;
 
   // Response set by test cases to be returned from the HTTP server.
   std::unique_ptr<net::test_server::BasicHttpResponse> fake_server_response_;
