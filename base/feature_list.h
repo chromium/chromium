@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -285,7 +286,7 @@ class BASE_EXPORT FeatureList {
 
   struct OverrideEntry {
     // The overridden enable (on/off) state of the feature.
-    const OverrideState overridden_state;
+    OverrideState overridden_state;
 
     // An optional associated field trial, which will be activated when the
     // state of the feature is queried for the first time. Weak pointer to the
@@ -296,7 +297,7 @@ class BASE_EXPORT FeatureList {
     // If it's not, and |field_trial| is not null, it means it is simply an
     // associated field trial for reporting purposes (and |overridden_state|
     // came from the command-line).
-    const bool overridden_by_field_trial;
+    bool overridden_by_field_trial;
 
     // TODO(asvitkine): Expand this as more support is added.
 
@@ -356,7 +357,7 @@ class BASE_EXPORT FeatureList {
 
   // Map from feature name to an OverrideEntry struct for the feature, if it
   // exists.
-  std::map<std::string, OverrideEntry, std::less<>> overrides_;
+  base::flat_map<std::string, OverrideEntry> overrides_;
 
   // Locked map that keeps track of seen features, to ensure a single feature is
   // only defined once. This verification is only done in builds with DCHECKs
