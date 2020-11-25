@@ -351,10 +351,20 @@ class RealboxElement extends PolymerElement {
   }
 
   /**
+   * @param {!FocusEvent} e
    * @private
    */
-  onInputFocus_() {
+  onInputFocus_(e) {
     this.lastInputFocusTime_ = window.performance.now();
+    e.target.placeholder = '';
+  }
+
+  /**
+   * @param {!FocusEvent} e
+   * @private
+   */
+  onInputBlur_(e) {
+    e.target.placeholder = loadTimeData.getString('realboxHint');
   }
 
   /**

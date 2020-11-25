@@ -86,6 +86,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
           ? omnibox::kGoogleGIconResourceName
           : omnibox::kSearchIconResourceName);
+  source->AddString("realboxHint", l10n_util::GetStringUTF8(
+                                       IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));
 
   source->AddBoolean(
       "handleMostVisitedNavigationExplicitly",
