@@ -29574,8 +29574,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2968" label="SVGSMILDiscardElementParsed"/>
   <int value="2969" label="SVGSMILDiscardElementTriggered"/>
   <int value="2971" label="V8PointerEvent_GetPredictedEvents_Method"/>
-  <int value="2972" label="ScrollSnapOnViewportBreaks"/>
-  <int value="2973" label="ScrollPaddingOnViewportBreaks"/>
+  <int value="2972" label="OBSOLETE_ScrollSnapOnViewportBreaks"/>
+  <int value="2973" label="OBSOLETE_ScrollPaddingOnViewportBreaks"/>
   <int value="2974" label="DownloadInAdFrame"/>
   <int value="2975" label="DownloadInSandbox"/>
   <int value="2976" label="DownloadWithoutUserGesture"/>
