@@ -10,7 +10,7 @@ GEN_INCLUDE(['magnifier_test_common.js']);
 /**
  * Magnifier feature using accessibility common extension browser tests.
  */
-MagnifierE2ETest = class extends E2ETestBase {
+DockedMagnifierE2ETest = class extends E2ETestBase {
   constructor() {
     super();
     window.RoleType = chrome.automation.RoleType;
@@ -43,7 +43,7 @@ MagnifierE2ETest = class extends E2ETestBase {
     super.testGenPreamble();
     GEN(`
     base::Closure load_cb =
-        base::Bind(&chromeos::MagnificationManager::SetMagnifierEnabled,
+        base::Bind(&chromeos::MagnificationManager::SetDockedMagnifierEnabled,
             base::Unretained(chromeos::MagnificationManager::Get()),
             true);
     WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
@@ -51,35 +51,9 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 };
 
-TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
-  const site = `
-        <button id="apple">Apple</button><br />
-        <button id="banana" style="margin-top: 400px">Banana</button>
-      `;
-  this.runWithLoadedTree(site, async function(root) {
-    const apple = root.find({attributes: {name: 'Apple'}});
-    const banana = root.find({attributes: {name: 'Banana'}});
-
-    // Focus and move magnifier to apple.
-    apple.focus();
-
-    // Verify magnifier bounds contains apple, but not banana.
-    let bounds = await this.getNextMagnifierBounds();
-    assertTrue(RectUtil.contains(bounds, apple.location));
-    assertFalse(RectUtil.contains(bounds, banana.location));
-
-    // Focus and move magnifier to banana.
-    banana.focus();
-
-    // Verify magnifier bounds contains banana, but not apple.
-    bounds = await this.getNextMagnifierBounds();
-    assertFalse(RectUtil.contains(bounds, apple.location));
-    assertTrue(RectUtil.contains(bounds, banana.location));
-  });
-});
-
 TEST_F(
-    'MagnifierE2ETest', 'MovesScreenMagnifierToActiveDescendant', function() {
+    'DockedMagnifierE2ETest', 'MovesDockedMagnifierToActiveDescendant',
+    function() {
       this.runWithLoadedTree(ActiveDescendantSite, async function(root) {
         const top = root.find({attributes: {name: 'Top'}});
         const banana = root.find({attributes: {name: 'Banana'}});
@@ -88,8 +62,9 @@ TEST_F(
         // Focus and move magnifier to top.
         top.focus();
 
-        // Verify magnifier bounds don't contain banana.
+        // Verify magnifier contain top and not banana.
         let bounds = await this.getNextMagnifierBounds();
+        assertTrue(RectUtil.contains(bounds, top.location));
         assertFalse(RectUtil.contains(bounds, banana.location));
 
         // Click group to change active descendant to banana.
@@ -97,6 +72,7 @@ TEST_F(
 
         // Verify magnifier bounds contain banana.
         bounds = await this.getNextMagnifierBounds();
+        assertFalse(RectUtil.contains(bounds, top.location));
         assertTrue(RectUtil.contains(bounds, banana.location));
       });
     });
