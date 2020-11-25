@@ -82,8 +82,7 @@ void ComputeTableCssInlineSizes(
     const NGBoxStrut& table_border_padding,
     const MinMaxSizes& grid_min_max,
     LayoutUnit* table_css_min_inline_size,
-    base::Optional<LayoutUnit>* table_css_inline_size,
-    base::Optional<LayoutUnit>* table_css_max_inline_size) {
+    base::Optional<LayoutUnit>* table_css_inline_size) {
   const Length& table_min_length = table_style.LogicalMinWidth();
   *table_css_min_inline_size =
       table_min_length.IsSpecified()
@@ -95,24 +94,10 @@ void ComputeTableCssInlineSizes(
   // Compute standard "used width of a table".
   const Length& table_length = table_style.LogicalWidth();
   if (!table_length.IsAuto()) {
-    *table_css_inline_size = ResolveMainInlineLength(
-        constraint_space, table_style, table_border_padding,
-        [grid_min_max](MinMaxSizesType) {
-          return MinMaxSizesResult{
-              grid_min_max,
-              /* depends_on_percentage_block_size */ false};
-        },
-        table_length);
-  }
-
-  const Length& table_max_length = table_style.LogicalMaxWidth();
-  if (table_max_length.IsSpecified()) {
-    *table_css_max_inline_size =
-        ResolveMaxInlineLength<base::Optional<MinMaxSizes>>(
-            constraint_space, table_style, table_border_padding, base::nullopt,
-            table_max_length, LengthResolvePhase::kLayout);
-    *table_css_max_inline_size =
-        std::max(**table_css_max_inline_size, *table_css_min_inline_size);
+    *table_css_inline_size =
+        ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
+            constraint_space, table_style, table_border_padding, grid_min_max,
+            table_length);
   }
 }
 
@@ -156,45 +141,26 @@ LayoutUnit ComputeAssignableTableInlineSize(
     return (space.AvailableSize().inline_size - undistributable_space)
         .ClampNegativeToZero();
   }
-  MinMaxSizes grid_min_max = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
-      column_constraints, undistributable_space, is_fixed_layout,
-      /* containing_block_expects_minmax_without_percentages */ false,
-      /* skip_collapsed_columns */ false);
 
-  LayoutUnit table_css_min_inline_size;
-  base::Optional<LayoutUnit> table_css_inline_size;
-  base::Optional<LayoutUnit> table_css_max_inline_size;
-  ComputeTableCssInlineSizes(table.Style(), space, table_border_padding,
-                             grid_min_max, &table_css_min_inline_size,
-                             &table_css_inline_size,
-                             &table_css_max_inline_size);
+  const MinMaxSizes grid_min_max =
+      NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
+          column_constraints, undistributable_space, is_fixed_layout,
+          /* containing_block_expects_minmax_without_percentages */ false,
+          /* skip_collapsed_columns */ false);
 
-  LayoutUnit table_min_inline_size =
-      std::max({table_css_min_inline_size, caption_constraint.min_size,
+  LayoutUnit used_table_inline_size = ComputeUsedInlineSizeForTableFragment(
+      space, table, table_border_padding, grid_min_max);
+
+  // Don't allow the inline-size to go below the grid, or caption min-size.
+  used_table_inline_size =
+      std::max({used_table_inline_size, caption_constraint.min_size,
                 grid_min_max.min_size});
-
-  // Standard: "used width of the table".
-  LayoutUnit used_inline_size_of_the_table;
-  if (table_css_inline_size) {
-    used_inline_size_of_the_table = *table_css_inline_size;
-  } else {
-    NGBoxStrut margins = ComputeMarginsForSelf(space, table.Style());
-    used_inline_size_of_the_table =
-        std::min(grid_min_max.max_size,
-                 (space.AvailableSize().inline_size - margins.InlineSum())
-                     .ClampNegativeToZero());
-  }
-  if (table_css_max_inline_size) {
-    used_inline_size_of_the_table =
-        std::min(used_inline_size_of_the_table, *table_css_max_inline_size);
-  }
-  used_inline_size_of_the_table =
-      std::max(used_inline_size_of_the_table, table_min_inline_size);
 
   // Standard: The assignable table width is the "used width of the table"
   // minus the total horizontal border spacing.
-  LayoutUnit assignable_table_inline_size =
-      used_inline_size_of_the_table - undistributable_space;
+  const LayoutUnit assignable_table_inline_size =
+      used_table_inline_size - undistributable_space;
+  DCHECK_GE(assignable_table_inline_size, LayoutUnit());
 
   return assignable_table_inline_size;
 }
@@ -614,12 +580,11 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
   min_space_builder.SetAvailableSize({LayoutUnit(), kIndefiniteSize});
   LayoutUnit min_measure_table_css_min_inline_size;
   base::Optional<LayoutUnit> min_measure_table_css_inline_size;
-  base::Optional<LayoutUnit> measure_table_css_max_inline_size;
 
-  ComputeTableCssInlineSizes(
-      Style(), min_space_builder.ToConstraintSpace(), border_padding,
-      grid_min_max, &min_measure_table_css_min_inline_size,
-      &min_measure_table_css_inline_size, &measure_table_css_max_inline_size);
+  ComputeTableCssInlineSizes(Style(), min_space_builder.ToConstraintSpace(),
+                             border_padding, grid_min_max,
+                             &min_measure_table_css_min_inline_size,
+                             &min_measure_table_css_inline_size);
 
   // Table min/max sizes are unusual in how the specified sizes affects them.
   // If table_css_inline_size is defined:
@@ -641,10 +606,10 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
         {grid_min_max.max_size, kIndefiniteSize});
     LayoutUnit max_measure_table_css_min_inline_size;
     base::Optional<LayoutUnit> max_measure_table_css_inline_size;
-    ComputeTableCssInlineSizes(
-        Style(), max_space_builder.ToConstraintSpace(), border_padding,
-        grid_min_max, &max_measure_table_css_min_inline_size,
-        &max_measure_table_css_inline_size, &measure_table_css_max_inline_size);
+    ComputeTableCssInlineSizes(Style(), max_space_builder.ToConstraintSpace(),
+                               border_padding, grid_min_max,
+                               &max_measure_table_css_min_inline_size,
+                               &max_measure_table_css_inline_size);
     // Compute minimum.
     min_max.min_size =
         std::max({min_max.min_size, min_measure_table_css_min_inline_size,

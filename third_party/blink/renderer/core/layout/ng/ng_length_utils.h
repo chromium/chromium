@@ -370,6 +370,15 @@ CORE_EXPORT LayoutUnit ComputeInlineSizeForFragment(
     const NGBoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes_for_test = nullptr);
 
+// Similar to |ComputeInlineSizeForFragment| but for determining the "used"
+// inline-size for a table fragment. See:
+// https://drafts.csswg.org/css-tables-3/#used-width-of-table
+CORE_EXPORT LayoutUnit ComputeUsedInlineSizeForTableFragment(
+    const NGConstraintSpace& space,
+    NGLayoutInputNode node,
+    const NGBoxStrut& border_padding,
+    const MinMaxSizes& table_grid_min_max_sizes);
+
 // Same as ComputeInlineSizeForFragment, but uses height instead of width.
 // |inline_size| is necessary to compute the block size when an aspect ratio
 // is in use.

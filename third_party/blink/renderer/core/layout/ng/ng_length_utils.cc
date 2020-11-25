@@ -431,19 +431,16 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
                                    style.BoxSizing(), block_size);
 }
 
-LayoutUnit ComputeInlineSizeForFragment(
+namespace {
+
+LayoutUnit ComputeInlineSizeForFragmentInternal(
     const NGConstraintSpace& space,
     NGLayoutInputNode node,
     const NGBoxStrut& border_padding,
-    const MinMaxSizes* override_min_max_sizes_for_test) {
-  if (space.IsFixedInlineSize() || space.IsAnonymous())
-    return space.AvailableSize().inline_size;
-  if (node.IsNGTable())
-    return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
-
+    const MinMaxSizes* override_min_max_sizes) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
-    if (override_min_max_sizes_for_test)
-      return {*override_min_max_sizes_for_test, false};
+    if (override_min_max_sizes)
+      return {*override_min_max_sizes, false};
 
     MinMaxSizesInput input(space.PercentageResolutionBlockSize(), type);
     return node.ComputeMinMaxSizes(space.GetWritingMode(), input, &space);
@@ -493,6 +490,33 @@ LayoutUnit ComputeInlineSizeForFragment(
                              style.LogicalMaxWidth(),
                              LengthResolvePhase::kLayout)};
   return min_max.ClampSizeToMinAndMax(extent);
+}
+
+}  // namespace
+
+LayoutUnit ComputeInlineSizeForFragment(
+    const NGConstraintSpace& space,
+    NGLayoutInputNode node,
+    const NGBoxStrut& border_padding,
+    const MinMaxSizes* override_min_max_sizes_for_test) {
+  if (space.IsFixedInlineSize() || space.IsAnonymous())
+    return space.AvailableSize().inline_size;
+
+  if (node.IsNGTable())
+    return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
+
+  return ComputeInlineSizeForFragmentInternal(space, node, border_padding,
+                                              override_min_max_sizes_for_test);
+}
+
+LayoutUnit ComputeUsedInlineSizeForTableFragment(
+    const NGConstraintSpace& space,
+    NGLayoutInputNode node,
+    const NGBoxStrut& border_padding,
+    const MinMaxSizes& table_grid_min_max_sizes) {
+  DCHECK(!space.IsFixedInlineSize());
+  return ComputeInlineSizeForFragmentInternal(space, node, border_padding,
+                                              &table_grid_min_max_sizes);
 }
 
 MinMaxSizes ComputeMinMaxBlockSize(
