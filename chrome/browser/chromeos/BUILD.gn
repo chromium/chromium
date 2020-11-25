@@ -1902,6 +1902,7 @@ source_set("chromeos") {
     "login/ui/oobe_dialog_size_utils.h",
     "login/ui/oobe_ui_dialog_delegate.cc",
     "login/ui/oobe_ui_dialog_delegate.h",
+    "login/ui/signin_ui.h",
     "login/ui/simple_web_view_dialog.cc",
     "login/ui/simple_web_view_dialog.h",
     "login/ui/user_adding_screen.cc",

@@ -42,8 +42,6 @@ class LoginDisplayWebUI : public LoginDisplay,
   void ShowError(int error_msg_id,
                  int login_attempts,
                  HelpAppLauncher::HelpTopic help_topic_id) override;
-  void ShowPasswordChangedDialog(bool show_password_error,
-                                 const AccountId& account_id) override;
   void ShowAllowlistCheckFailedError() override;
 
   // SigninScreenHandlerDelegate implementation:

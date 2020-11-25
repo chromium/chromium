@@ -147,10 +147,8 @@ class EncryptionMigrationScreenTest : public testing::Test {
 
     encryption_migration_screen_ =
         std::make_unique<TestEncryptionMigrationScreen>(&mock_view_);
-    encryption_migration_screen_->SetOperationCallbacks(
+    encryption_migration_screen_->SetSkipMigrationCallback(
         base::BindOnce(&EncryptionMigrationScreenTest::OnContinueLogin,
-                       base::Unretained(this)),
-        base::BindOnce(&EncryptionMigrationScreenTest::OnRestartLogin,
                        base::Unretained(this)));
     encryption_migration_screen_->set_free_disk_space(
         arc::kMigrationMinimumAvailableStorage);
@@ -181,9 +179,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
   cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
 
   // Will be set to true in ContinueLogin.
-  bool continue_login_callback_called_ = false;
-  // Will be set to true in RestartLogin.
-  bool restart_login_callback_called_ = false;
+  bool skip_migration_callback_called_ = false;
 
   const AccountId account_id_ =
       AccountId::FromUserEmail(user_manager::kStubUserEmail);
@@ -193,23 +189,10 @@ class EncryptionMigrationScreenTest : public testing::Test {
   // This will be called by EncryptionMigrationScreen upon finished
   // minimal migration when sign-in should continue.
   void OnContinueLogin(const UserContext& user_context) {
-    EXPECT_FALSE(continue_login_callback_called_)
-        << "ContinueLogin/RestartLogin may only be called once.";
-    EXPECT_FALSE(restart_login_callback_called_)
+    EXPECT_FALSE(skip_migration_callback_called_)
         << "ContinueLogin/RestartLogin may only be called once.";
 
-    continue_login_callback_called_ = true;
-  }
-
-  // This will be called by EncryptionMigrationScreen upon finished
-  // minimal migration when the user should re-enter their password.
-  void OnRestartLogin(const UserContext& user_context) {
-    EXPECT_FALSE(continue_login_callback_called_)
-        << "ContinueLogin/RestartLogin may only be called once.";
-    EXPECT_FALSE(restart_login_callback_called_)
-        << "ContinueLogin/RestartLogin may only be called once.";
-
-    restart_login_callback_called_ = true;
+    skip_migration_callback_called_ = true;
   }
 };
 

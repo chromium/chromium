@@ -41,6 +41,7 @@
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display_host.h"
+#include "chrome/browser/chromeos/login/ui/mock_signin_ui.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -197,6 +198,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
     mock_login_display_ = std::make_unique<MockLoginDisplay>();
+    mock_signin_ui_ = std::make_unique<MockSigninUI>();
     SetUpLoginDisplay();
   }
 
@@ -204,6 +206,9 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     EXPECT_CALL(*mock_login_display_host_, GetLoginDisplay())
         .Times(AnyNumber())
         .WillRepeatedly(Return(mock_login_display_.get()));
+    EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
+        .Times(AnyNumber())
+        .WillRepeatedly(Return(mock_signin_ui_.get()));
     EXPECT_CALL(*mock_login_display_host_, OnPreferencesChanged()).Times(1);
     EXPECT_CALL(*mock_login_display_, Init(_, true, true, true)).Times(1);
   }
@@ -273,6 +278,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
+  std::unique_ptr<MockSigninUI> mock_signin_ui_;
   std::unique_ptr<MockLoginDisplay> mock_login_display_;
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
 
@@ -430,6 +436,9 @@ class ExistingUserControllerPublicSessionTest
     EXPECT_CALL(*mock_login_display_host_, GetLoginDisplay())
         .Times(AnyNumber())
         .WillRepeatedly(Return(mock_login_display_.get()));
+    EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
+        .Times(AnyNumber())
+        .WillRepeatedly(Return(mock_signin_ui_.get()));
     EXPECT_CALL(*mock_login_display_host_.get(), OnPreferencesChanged())
         .Times(AnyNumber());
     EXPECT_CALL(*mock_login_display_, Init(_, _, _, _)).Times(AnyNumber());
@@ -1001,6 +1010,9 @@ class ExistingUserControllerActiveDirectoryUserAllowlistTest
     EXPECT_CALL(*mock_login_display_host_, GetLoginDisplay())
         .Times(AnyNumber())
         .WillRepeatedly(Return(mock_login_display_.get()));
+    EXPECT_CALL(*mock_login_display_host_, GetSigninUI())
+        .Times(AnyNumber())
+        .WillRepeatedly(Return(mock_signin_ui_.get()));
     EXPECT_CALL(*mock_login_display_host_, OnPreferencesChanged()).Times(1);
     EXPECT_CALL(*mock_login_display_, Init(_, true, true, false)).Times(1);
   }

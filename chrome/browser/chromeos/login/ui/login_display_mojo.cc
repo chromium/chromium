@@ -196,11 +196,6 @@ void LoginDisplayMojo::ShowError(int error_msg_id,
                             help_topic_id);
 }
 
-void LoginDisplayMojo::ShowPasswordChangedDialog(bool show_password_error,
-                                                 const AccountId& account_id) {
-  host_->ShowPasswordChangedDialog(show_password_error, account_id);
-}
-
 void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
   host_->ShowAllowlistCheckFailedError();
 }

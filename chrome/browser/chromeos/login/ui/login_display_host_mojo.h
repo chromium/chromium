@@ -56,11 +56,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   void SetUserCount(int user_count);
 
-  // Show password changed dialog. If `show_password_error` is true, user
-  // already tried to enter old password but it turned out to be incorrect.
-  void ShowPasswordChangedDialog(bool show_password_error,
-                                 const AccountId& account_id);
-
   // Show allowlist check failed error. Happens after user completes online
   // signin but allowlist check fails.
   void ShowAllowlistCheckFailedError();
@@ -95,6 +90,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
   void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
+  void ShowPasswordChangedDialog(const AccountId& account_id,
+                                 bool show_password_error) override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 

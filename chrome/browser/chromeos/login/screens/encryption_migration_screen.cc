@@ -285,12 +285,10 @@ void EncryptionMigrationScreen::SetMode(EncryptionMigrationMode mode) {
   view_->SetIsResuming(IsStartImmediately());
 }
 
-void EncryptionMigrationScreen::SetOperationCallbacks(
-    ContinueLoginCallback continue_login_callback,
-    RestartLoginCallback restart_login_callback) {
+void EncryptionMigrationScreen::SetSkipMigrationCallback(
+    SkipMigrationCallback skip_migration_callback) {
   DCHECK(view_);
-  continue_login_callback_ = std::move(continue_login_callback);
-  restart_login_callback_ = std::move(restart_login_callback);
+  skip_migration_callback_ = std::move(skip_migration_callback);
 }
 
 void EncryptionMigrationScreen::SetupInitialView() {
@@ -375,9 +373,9 @@ void EncryptionMigrationScreen::HandleSkipMigration() {
   // previous attempt and dropping |is_forcing_dircrypto| flag in UserContext.
   // In this case, the user can not launch ARC apps in the session, and will be
   // asked to do the migration again in the next log-in attempt.
-  if (!continue_login_callback_.is_null()) {
+  if (!skip_migration_callback_.is_null()) {
     user_context_.SetIsForcingDircrypto(false);
-    std::move(continue_login_callback_).Run(user_context_);
+    std::move(skip_migration_callback_).Run(user_context_);
   }
 }
 

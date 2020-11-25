@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "chrome/browser/chromeos/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/chromeos/login/ui/signin_ui.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
@@ -30,7 +31,8 @@ class DemoAppLauncher;
 // LoginDisplayHostMojo and LoginDisplayHostWebUI.
 class LoginDisplayHostCommon : public LoginDisplayHost,
                                public BrowserListObserver,
-                               public content::NotificationObserver {
+                               public content::NotificationObserver,
+                               public SigninUI {
  public:
   LoginDisplayHostCommon();
   ~LoginDisplayHostCommon() override;
@@ -59,6 +61,16 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;
   bool HandleAccelerator(ash::LoginAcceleratorAction action) final;
+  SigninUI* GetSigninUI() final;
+
+  // SigninUI:
+  void SetAuthSessionForOnboarding(const UserContext& user_context) final;
+  void StartUserOnboarding() final;
+  void StartSupervisionTransition() final;
+  void StartEncryptionMigration(
+      const UserContext& user_context,
+      EncryptionMigrationMode migration_mode,
+      base::OnceCallback<void(const UserContext&)> on_skip_migration) final;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

@@ -146,4 +146,8 @@ void FakeLoginDisplayHost::AddObserver(LoginDisplayHost::Observer* observer) {}
 void FakeLoginDisplayHost::RemoveObserver(
     LoginDisplayHost::Observer* observer) {}
 
+SigninUI* FakeLoginDisplayHost::GetSigninUI() {
+  return nullptr;
+}
+
 }  // namespace chromeos

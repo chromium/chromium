@@ -69,6 +69,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
+  SigninUI* GetSigninUI() override;
 
  private:
   class FakeBaseScreen;

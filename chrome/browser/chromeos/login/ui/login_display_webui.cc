@@ -168,11 +168,6 @@ void LoginDisplayWebUI::ShowError(int error_msg_id,
                             help_topic_id);
 }
 
-void LoginDisplayWebUI::ShowPasswordChangedDialog(bool show_password_error,
-                                                  const AccountId& account_id) {
-  NOTIMPLEMENTED();
-}
-
 void LoginDisplayWebUI::ShowAllowlistCheckFailedError() {
   if (webui_handler_)
     webui_handler_->ShowAllowlistCheckFailedError();

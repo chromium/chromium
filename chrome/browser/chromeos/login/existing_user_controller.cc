@@ -44,7 +44,6 @@
 #include "chrome/browser/chromeos/login/quick_unlock/pin_storage_cryptohome.h"
 #include "chrome/browser/chromeos/login/reauth_stats.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
-#include "chrome/browser/chromeos/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_token_initializer.h"
 #include "chrome/browser/chromeos/login/signin_specifics.h"
@@ -760,12 +759,6 @@ void ExistingUserController::ContinuePerformLoginWithoutMigration(
   ContinuePerformLogin(auth_mode, user_context_ecryptfs);
 }
 
-void ExistingUserController::RestartLogin(const UserContext& user_context) {
-  is_login_in_progress_ = false;
-  login_performer_.reset();
-  GetLoginDisplayHost()->ShowGaiaDialog(user_context.GetAccountId());
-}
-
 void ExistingUserController::OnSigninScreenReady() {
   // Used to debug crbug.com/902315. Feel free to remove after that is fixed.
   VLOG(1) << "OnSigninScreenReady";
@@ -873,21 +866,11 @@ void ExistingUserController::ShowKioskAutolaunchScreen() {
 void ExistingUserController::ShowEncryptionMigrationScreen(
     const UserContext& user_context,
     EncryptionMigrationMode migration_mode) {
-  GetLoginDisplayHost()->StartWizard(EncryptionMigrationScreenView::kScreenId);
-
-  EncryptionMigrationScreen* migration_screen =
-      static_cast<EncryptionMigrationScreen*>(
-          WizardController::default_controller()->GetScreen(
-              EncryptionMigrationScreenView::kScreenId));
-  DCHECK(migration_screen);
-  migration_screen->SetUserContext(user_context);
-  migration_screen->SetMode(migration_mode);
-  migration_screen->SetOperationCallbacks(
+  GetLoginDisplayHost()->GetSigninUI()->StartEncryptionMigration(
+      user_context, migration_mode,
       base::BindOnce(&ExistingUserController::ContinuePerformLogin,
-                     weak_factory_.GetWeakPtr(), login_performer_->auth_mode()),
-      base::BindOnce(&ExistingUserController::RestartLogin,
-                     weak_factory_.GetWeakPtr()));
-  migration_screen->SetupInitialView();
+                     weak_factory_.GetWeakPtr(),
+                     login_performer_->auth_mode()));
 }
 
 void ExistingUserController::ShowTPMError() {
@@ -906,13 +889,8 @@ void ExistingUserController::ShowPasswordChangedDialog(
   bool show_invalid_old_password_error =
       login_performer_->password_changed_callback_count() > 1;
 
-  // Note: We allow owner using "full sync" mode which will recreate
-  // cryptohome and deal with owner private key being lost. This also allows
-  // us to recover from a lost owner password/homedir.
-  // TODO(gspencer): We shouldn't have to erase stateful data when
-  // doing this.  See http://crosbug.com/9115 http://crosbug.com/7792
-  GetLoginDisplay()->ShowPasswordChangedDialog(show_invalid_old_password_error,
-                                               user_context.GetAccountId());
+  GetLoginDisplayHost()->GetSigninUI()->ShowPasswordChangedDialog(
+      user_context.GetAccountId(), show_invalid_old_password_error);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

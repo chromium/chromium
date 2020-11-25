@@ -60,7 +60,6 @@
 #include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter.h"
 #include "chrome/browser/chromeos/login/saml/saml_offline_signin_limiter_factory.h"
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
-#include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/session/user_session_initializer.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager_factory.h"
@@ -99,10 +98,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
-#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -1258,11 +1253,10 @@ void UserSessionManager::InitProfilePreferences(
                        user_context.GetPublicSessionInputMethod());
 
     if (user_manager->GetPrimaryUser() == user &&
-        !PinSetupScreen::ShouldSkip() &&
         !user_manager->IsUserNonCryptohomeDataEphemeral(user->GetAccountId())) {
-      chromeos::DiscoverManager::Get()
-          ->GetModule<chromeos::DiscoverModulePinSetup>()
-          ->SetPrimaryUserPassword(user_context.GetPasswordKey()->GetSecret());
+      LoginDisplayHost::default_host()
+          ->GetSigninUI()
+          ->SetAuthSessionForOnboarding(user_context);
     }
   }
 
@@ -1737,12 +1731,14 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       if (!StartupUtils::IsDeviceRegistered())
         StartupUtils::MarkDeviceRegistered(base::OnceClosure());
 
-      ActivateWizard(TermsOfServiceScreenView::kScreenId);
+      LoginDisplayHost::default_host()->GetSigninUI()->StartUserOnboarding();
       return false;
     } else if (!user_manager->IsCurrentUserNew() &&
                arc::GetSupervisionTransition(profile) !=
                    arc::ArcSupervisionTransition::NO_TRANSITION) {
-      ActivateWizard(SupervisionTransitionScreenView::kScreenId);
+      LoginDisplayHost::default_host()
+          ->GetSigninUI()
+          ->StartSupervisionTransition();
       return false;
     }
   }

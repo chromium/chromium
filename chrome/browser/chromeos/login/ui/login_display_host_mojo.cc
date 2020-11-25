@@ -129,8 +129,8 @@ void LoginDisplayHostMojo::SetUserCount(int user_count) {
 }
 
 void LoginDisplayHostMojo::ShowPasswordChangedDialog(
-    bool show_password_error,
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    bool show_password_error) {
   DCHECK(GetOobeUI());
   wizard_controller_->ShowGaiaPasswordChangedScreen(account_id,
                                                     show_password_error);

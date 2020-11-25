@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/login/auth/auth_prewarmer.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
+#include "chrome/browser/chromeos/login/ui/signin_ui.h"
 #include "components/user_manager/user_type.h"
 
 #include "ui/gfx/native_widget_types.h"
@@ -218,6 +219,10 @@ class LoginDisplayHost {
   // Used to add an observer for the changes in the web dilaog login view.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Return sign-in UI instance, guaranteed to be non-null
+  // during sign-in process. Result should not be stored.
+  virtual SigninUI* GetSigninUI() = 0;
 
  protected:
   LoginDisplayHost();

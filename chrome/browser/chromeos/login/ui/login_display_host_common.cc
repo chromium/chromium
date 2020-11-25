@@ -15,7 +15,9 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/lock_screen_utils.h"
+#include "chrome/browser/chromeos/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/chromeos/login/screens/gaia_screen.h"
+#include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/webui_accelerator_mapping.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
@@ -25,7 +27,11 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -325,6 +331,44 @@ bool LoginDisplayHostCommon::HandleAccelerator(
   // to browser side.
   GetOobeUI()->ForwardAccelerator(MapToWebUIAccelerator(action));
   return true;
+}
+
+SigninUI* LoginDisplayHostCommon::GetSigninUI() {
+  return this;
+}
+
+void LoginDisplayHostCommon::StartUserOnboarding() {
+  StartWizard(TermsOfServiceScreenView::kScreenId);
+}
+
+void LoginDisplayHostCommon::StartSupervisionTransition() {
+  StartWizard(SupervisionTransitionScreenView::kScreenId);
+}
+
+void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
+    const UserContext& user_context) {
+  if (PinSetupScreen::ShouldSkip())
+    return;
+  chromeos::DiscoverManager::Get()
+      ->GetModule<chromeos::DiscoverModulePinSetup>()
+      ->SetPrimaryUserPassword(user_context.GetPasswordKey()->GetSecret());
+}
+
+void LoginDisplayHostCommon::StartEncryptionMigration(
+    const UserContext& user_context,
+    EncryptionMigrationMode migration_mode,
+    base::OnceCallback<void(const UserContext&)> on_skip_migration) {
+  StartWizard(EncryptionMigrationScreenView::kScreenId);
+
+  EncryptionMigrationScreen* migration_screen =
+      WizardController::default_controller()
+          ->GetScreen<EncryptionMigrationScreen>();
+
+  DCHECK(migration_screen);
+  migration_screen->SetUserContext(user_context);
+  migration_screen->SetMode(migration_mode);
+  migration_screen->SetSkipMigrationCallback(std::move(on_skip_migration));
+  migration_screen->SetupInitialView();
 }
 
 void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {

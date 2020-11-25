@@ -86,11 +86,6 @@ class LoginDisplay {
                          int login_attempts,
                          HelpAppLauncher::HelpTopic help_topic_id) = 0;
 
-  // Show password changed dialog. If `show_password_error` is not null
-  // user already tried to enter old password but it turned out to be incorrect.
-  virtual void ShowPasswordChangedDialog(bool show_password_error,
-                                         const AccountId& account_id) = 0;
-
   // Show allowlist check failed error. Happens after user completes online
   // signin but allowlist check fails.
   virtual void ShowAllowlistCheckFailedError() = 0;

@@ -1035,6 +1035,12 @@ void LoginDisplayHostWebUI::VerifyOwnerForKiosk(base::OnceClosure) {
   NOTREACHED();
 }
 
+void LoginDisplayHostWebUI::ShowPasswordChangedDialog(
+    const AccountId& account_id,
+    bool show_password_error) {
+  NOTREACHED();
+}
+
 void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {
   observers_.AddObserver(observer);
 }

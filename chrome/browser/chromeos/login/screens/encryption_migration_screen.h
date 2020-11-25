@@ -36,8 +36,7 @@ class EncryptionMigrationScreen : public BaseScreen,
  public:
   using TView = EncryptionMigrationScreenView;
 
-  using ContinueLoginCallback = base::OnceCallback<void(const UserContext&)>;
-  using RestartLoginCallback = base::OnceCallback<void(const UserContext&)>;
+  using SkipMigrationCallback = base::OnceCallback<void(const UserContext&)>;
 
   // Callback that can be used to check free disk space.
   using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
@@ -58,8 +57,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   // Sets continue login callback and restart log in callback, which should be
   // called when the user want to log in to the session from the migration UI
   // and when the user should re-enter their password.
-  void SetOperationCallbacks(ContinueLoginCallback continue_login_callback,
-                             RestartLoginCallback restart_login_callback);
+  void SetSkipMigrationCallback(SkipMigrationCallback skip_migration_callback);
 
   // Setup the initial view in the migration UI.
   // This should be called after other state like UserContext, etc... are set.
@@ -139,10 +137,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   UserContext user_context_;
 
   // The callback which is used to log in to the session from the migration UI.
-  ContinueLoginCallback continue_login_callback_;
-
-  // The callback which is used to require the user to re-enter their password.
-  RestartLoginCallback restart_login_callback_;
+  SkipMigrationCallback skip_migration_callback_;
 
   // The migration mode (ask user / start migration automatically / resume
   // incomplete migratoin).
