@@ -579,12 +579,16 @@ void LoginShelfView::AboutToRequestFocusFromTabTraversal(bool reverse) {
     // Focus should leave the system tray.
     Shell::Get()->system_tray_notifier()->NotifyFocusOut(reverse);
   } else {
-    // Focus goes to status area.
     StatusAreaWidget* status_area_widget =
         Shelf::ForWindow(GetWidget()->GetNativeWindow())->GetStatusAreaWidget();
-    status_area_widget->status_area_widget_delegate()
-        ->set_default_last_focusable_child(reverse);
-    Shell::Get()->focus_cycler()->FocusWidget(status_area_widget);
+    // Focus goes to status area if it is visible.
+    if (status_area_widget->IsVisible()) {
+      status_area_widget->status_area_widget_delegate()
+          ->set_default_last_focusable_child(reverse);
+      Shell::Get()->focus_cycler()->FocusWidget(status_area_widget);
+    } else {
+      Shell::Get()->system_tray_notifier()->NotifyFocusOut(reverse);
+    }
   }
 }
 
