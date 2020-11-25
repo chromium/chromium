@@ -672,7 +672,9 @@
 
   # This file is generated during the build.
   "<(SHARED_INTERMEDIATE_DIR)/devtools/devtools_resources.grd": {
-    "META": {"sizes": {"includes": [1000],}},
+    # In debug build, devtools frontend sources are not bundled and therefore
+    # includes a lot of individual resources
+    "META": {"sizes": {"includes": [2000],}},
     "includes": [3860],
   },
 
