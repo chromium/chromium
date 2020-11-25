@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './file_path.mojom-lite.js';
 import './icons.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppState} from './scanning_app_types.js';
+import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -22,9 +25,21 @@ Polymer({
 
   behaviors: [I18nBehavior],
 
+  /** @private {?ScanningBrowserProxy}*/
+  browserProxy_: null,
+
   properties: {
     /** @type {number} */
     pageNumber: Number,
+
+    /** @type {?mojoBase.mojom.FilePath} */
+    lastScannedFilePath: Object,
+  },
+
+  /** @override */
+  created() {
+    this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
+    this.browserProxy_.initialize();
   },
 
   /**
@@ -39,5 +54,10 @@ Polymer({
   /** @private */
   onDoneClick_() {
     this.fire('done-click');
+  },
+
+  /** @private */
+  showFileInLocation_() {
+    this.browserProxy_.showFileInLocation(this.lastScannedFilePath.path);
   },
 });

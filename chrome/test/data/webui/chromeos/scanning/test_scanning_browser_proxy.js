@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
+
+import {assertEquals} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 
 /**
@@ -14,10 +16,14 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
     super([
       'initialize',
       'requestScanToLocation',
+      'showFileInLocation',
     ]);
 
     /** @private {?SelectedPath} */
     this.selectedPath_ = null;
+
+    /** @private {?string} */
+    this.pathToFile_ = null;
   }
 
   /** @override */
@@ -34,8 +40,20 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
     return Promise.resolve(this.selectedPath_);
   }
 
+  /** @param {string} pathToFile */
+  showFileInLocation(pathToFile) {
+    this.methodCalled('showFileInLocation');
+    assertEquals(this.pathToFile_, pathToFile);
+    return Promise.resolve(true);
+  }
+
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {
     this.selectedPath_ = selectedPath;
+  }
+
+  /** @param {string} pathToFile */
+  setPathToFile(pathToFile) {
+    this.pathToFile_ = pathToFile;
   }
 }

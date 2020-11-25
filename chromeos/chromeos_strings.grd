@@ -573,6 +573,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_CANCEL_BUTTON_TEXT" desc="The text displayed for the button to cancel an ongoing scan job.">
         Cancel
       </message>
+      <message name="IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL" desc="The label for the button that opens the Files app. The Files app will open with the user's saved scan file highlighted.">
+        Show file location
+      </message>
 
       <!-- Diagnostics App -->
       <!-- TODO(michaelcheco): Update with finalized copies of the strings -->

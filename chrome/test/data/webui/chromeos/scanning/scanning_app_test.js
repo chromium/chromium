@@ -165,10 +165,11 @@ class FakeScanService {
 
   /**
    * @param {boolean} success
+   * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
    * @return {!Promise}
    */
-  simulateScanComplete(success) {
-    this.scanJobObserverRemote_.onScanComplete(success, {'path': ''});
+  simulateScanComplete(success, lastScannedFilePath) {
+    this.scanJobObserverRemote_.onScanComplete(success, lastScannedFilePath);
     return flushTasks();
   }
 
@@ -299,6 +300,9 @@ export function scanningAppTest() {
     let capabilities = new Map();
     capabilities.set(firstScannerId, firstCapabilities);
     capabilities.set(secondScannerId, secondCapabilities);
+
+    /** @type {!mojoBase.mojom.FilePath} */
+    const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
 
     /** @type {!HTMLSelectElement} */
     let scannerSelect;
@@ -441,7 +445,8 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Complete the scan.
-          return fakeScanService_.simulateScanComplete(true);
+          return fakeScanService_.simulateScanComplete(
+              true, lastScannedFilePath);
         })
         .then(() => {
           assertTrue(isVisible(scannedImages));
@@ -449,6 +454,9 @@ export function scanningAppTest() {
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
+          assertEquals(
+              lastScannedFilePath.path,
+              scanningApp.$$('scan-done-section').lastScannedFilePath.path);
 
           // Click the Done button to return to READY state.
           return clickDoneButton();

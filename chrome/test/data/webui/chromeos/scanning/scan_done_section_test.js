@@ -4,13 +4,24 @@
 
 import 'chrome://scanning/scan_done_section.js';
 
+import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
+
 import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
+
+import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 export function scanDoneSectionTest() {
   /** @type {?ScanDoneSectionElement} */
   let scanDoneSection = null;
 
+  /** @type {?TestScanningBrowserProxy} */
+  let scanningBrowserProxy = null;
+
   setup(() => {
+    scanningBrowserProxy = new TestScanningBrowserProxy();
+    ScanningBrowserProxyImpl.instance_ = scanningBrowserProxy;
+
     scanDoneSection = /** @type {!ScanDoneSectionElement} */ (
         document.createElement('scan-done-section'));
     assertTrue(!!scanDoneSection);
@@ -36,5 +47,15 @@ export function scanDoneSectionTest() {
     scanDoneSection.pageNumber = 2;
     assertEquals(
         'Scanned files saved!', scanDoneSection.$.title.textContent.trim());
+  });
+
+  test('showFileLocation', () => {
+    const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
+    scanningBrowserProxy.setPathToFile(lastScannedFilePath.path);
+    scanDoneSection.lastScannedFilePath = lastScannedFilePath;
+    scanDoneSection.$$('#showFileButton').click();
+    return flushTasks().then(() => {
+      assertEquals(1, scanningBrowserProxy.getCallCount('showFileInLocation'));
+    });
   });
 }

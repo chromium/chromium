@@ -28,6 +28,13 @@ export class ScanningBrowserProxy {
    * @return {!Promise<!SelectedPath>}
    */
   requestScanToLocation() {}
+
+  /**
+   * Opens the Files app with the file |pathToFile| highlighted.
+   * @param {string} pathToFile
+   * @return {!Promise<boolean>} True if the file is found and Files app opens.
+   */
+  showFileInLocation(pathToFile) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -40,6 +47,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   requestScanToLocation() {
     return sendWithPromise('requestScanToLocation');
+  }
+
+  /** @override */
+  showFileInLocation(pathToFile) {
+    return sendWithPromise('showFileInLocation', pathToFile);
   }
 }
 

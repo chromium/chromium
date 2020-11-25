@@ -1,4 +1,10 @@
 <style include="scanning-fonts">
+  .container {
+    @apply --scanning-done-page-option-font;
+    color: var(--scanning-done-page-option-text-color);
+    display: flex;
+  }
+
   #checkMarkIcon {
     margin-inline-end: 12px;
     min-width: 24px;
@@ -17,11 +23,31 @@
     color: var(--scanning-done-section-title-text-color);
     display: inline-block;
   }
+
+  .button,
+  .label {
+    flex-direction: column;
+    min-height: 32px;
+  }
+
+  .label {
+    flex-basis: 222px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-top: 5px;
+    padding-top: 8px;
+  }
 </style>
 <iron-icon id="checkMarkIcon" icon="scanning:check-mark"></iron-icon>
 <h1 id="title" >
   [[getTitleText_(pageNumber)]]
 </h1>
+<div class="container">
+  <span class="label">[[i18n('showFileLocationLabel')]]</span>
+  <cr-icon-button id="showFileButton" class="button" iron-icon="cr:open-in-new"
+      on-click="showFileInLocation_">
+  </cr-icon-button>
+</div>
 <div class="done-button-container">
   <cr-button id="doneButton" class="action-button"
       on-click="onDoneClick_">
