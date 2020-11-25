@@ -480,6 +480,8 @@ class CORE_EXPORT NGInlineCursor {
   // fragmentainers. Use following functions when moving to different
   // fragmentainers.
 
+  bool IsBlockFragmented() const { return max_fragment_index_ > 0; }
+
   // Move to the first item of the first fragmentainer.
   void MoveToFirstIncludingFragmentainer();
 

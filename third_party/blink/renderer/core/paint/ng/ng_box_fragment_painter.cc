@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
@@ -381,6 +382,35 @@ unsigned FragmentainerUniqueIdentifier(const NGPhysicalBoxFragment& fragment) {
   return 0;
 }
 
+// Returns the |ComputedStyle| to use for painting outlines. When |fragment| is
+// a block in a continuation-chain, it may need to paint outlines if its
+// ancestor inline boxes in the DOM tree has outlines.
+const ComputedStyle* StyleForContinuationOutline(
+    const NGPhysicalBoxFragment& fragment) {
+  // Fail fast if |fragment| is not a anonymous block.
+  const LayoutObject* layout_object = fragment.GetLayoutObject();
+  if (!layout_object || !layout_object->IsAnonymous() ||
+      layout_object->IsInline())
+    return nullptr;
+
+  // Check ancestors of the continuation in case nested inline boxes; e.g.
+  // <span style="outline: auto">
+  //   <span>
+  //     <div>block</div>
+  //   </span>
+  // </span>
+  for (const LayoutObject* continuation =
+           To<LayoutBoxModelObject>(layout_object)->Continuation();
+       continuation && continuation->IsLayoutInline();
+       continuation = continuation->Parent()) {
+    const ComputedStyle& style = continuation->StyleRef();
+    if (style.OutlineStyleIsAuto() &&
+        NGOutlineUtils::HasPaintedOutline(style, continuation->GetNode()))
+      return &style;
+  }
+  return nullptr;
+}
+
 }  // anonymous namespace
 
 PhysicalRect NGBoxFragmentPainter::SelfInkOverflow() const {
@@ -646,9 +676,19 @@ void NGBoxFragmentPainter::PaintObject(
     }
   }
 
-  if (is_visible && ShouldPaintSelfOutline(paint_phase)) {
-    NGFragmentPainter(fragment, GetDisplayItemClient())
-        .PaintOutline(paint_info, paint_offset);
+  if (!is_visible)
+    return;
+  if (ShouldPaintSelfOutline(paint_phase)) {
+    if (NGOutlineUtils::HasPaintedOutline(style, fragment.GetNode())) {
+      NGFragmentPainter(fragment, GetDisplayItemClient())
+          .PaintOutline(paint_info, paint_offset, style);
+    }
+  } else if (ShouldPaintDescendantOutlines(paint_phase)) {
+    if (const ComputedStyle* outline_style =
+            StyleForContinuationOutline(fragment)) {
+      NGFragmentPainter(fragment, GetDisplayItemClient())
+          .PaintOutline(paint_info, paint_offset, *outline_style);
+    }
   }
 }
 

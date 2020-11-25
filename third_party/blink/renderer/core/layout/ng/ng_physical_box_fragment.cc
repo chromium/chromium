@@ -681,33 +681,31 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
     Vector<PhysicalRect>* outline_rects) const {
+  AddOutlineRects(additional_offset, outline_type,
+                  /* container_relative */ false, outline_rects);
+}
+
+void NGPhysicalBoxFragment::AddOutlineRects(
+    const PhysicalOffset& additional_offset,
+    NGOutlineType outline_type,
+    Vector<PhysicalRect>* outline_rects) const {
+  AddOutlineRects(additional_offset, outline_type,
+                  /* container_relative */ true, outline_rects);
+}
+
+void NGPhysicalBoxFragment::AddOutlineRects(
+    const PhysicalOffset& additional_offset,
+    NGOutlineType outline_type,
+    bool inline_container_relative,
+    Vector<PhysicalRect>* outline_rects) const {
   DCHECK_EQ(PostLayout(), this);
-  if (!NGOutlineUtils::ShouldPaintOutline(*this))
-    return;
 
   if (IsInlineBox()) {
-    const LayoutObject* layout_object = GetLayoutObject();
-    DCHECK(layout_object);
-    DCHECK(layout_object->IsLayoutInline());
-    Vector<PhysicalRect> blockflow_outline_rects =
-        layout_object->OutlineRects(PhysicalOffset(), outline_type);
-    // The rectangles returned are offset from the containing block. We need the
-    // offset from this fragment.
-    if (blockflow_outline_rects.size() > 0) {
-      PhysicalOffset first_fragment_offset = blockflow_outline_rects[0].offset;
-      PhysicalOffset corrected_offset =
-          additional_offset - first_fragment_offset;
-      for (auto& outline : blockflow_outline_rects) {
-        // Skip if both width and height are zero. Containing blocks in empty
-        // linebox is one such case.
-        if (outline.size.IsZero())
-          continue;
-        outline.Move(corrected_offset);
-        outline_rects->push_back(outline);
-      }
-    }
+    AddOutlineRectsForInlineBox(additional_offset, outline_type,
+                                inline_container_relative, outline_rects);
     return;
   }
+  DCHECK(NGOutlineUtils::ShouldPaintOutline(*this));
 
   // For anonymous blocks, the children add outline rects.
   if (!IsAnonymousBlock())
@@ -735,6 +733,72 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
   }
   // TODO(kojii): Needs inline_element_continuation logic from
   // LayoutBlockFlow::AddOutlineRects?
+}
+
+void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
+    PhysicalOffset additional_offset,
+    NGOutlineType outline_type,
+    bool container_relative,
+    Vector<PhysicalRect>* rects) const {
+  DCHECK_EQ(PostLayout(), this);
+  DCHECK(IsInlineBox());
+
+  if (!NGOutlineUtils::ShouldPaintOutline(*this))
+    return;
+
+  // In order to compute united outlines, collect all rectangles of inline
+  // fragments for |LayoutInline| if |this| is the first inline fragment.
+  // Otherwise return none.
+  //
+  // When |LayoutInline| is block fragmented, unite rectangles for each block
+  // fragment.
+  DCHECK(GetLayoutObject());
+  DCHECK(GetLayoutObject()->IsLayoutInline());
+  const auto* layout_object = To<LayoutInline>(GetLayoutObject());
+  const wtf_size_t initial_rects_size = rects->size();
+  NGInlineCursor cursor;
+  cursor.MoveTo(*layout_object);
+  DCHECK(cursor);
+  wtf_size_t fragment_index = cursor.CurrentContainerFragmentIndex();
+  bool has_this_fragment = false;
+  for (;; cursor.MoveToNextForSameLayoutObject()) {
+    if (!cursor) {
+      DCHECK(has_this_fragment);
+      break;
+    }
+    if (fragment_index != cursor.CurrentContainerFragmentIndex()) {
+      // If this block fragment has |this|, exit the loop.
+      if (has_this_fragment)
+        break;
+      // Otherwise clear the result and continue to the next block fragment.
+      fragment_index = cursor.CurrentContainerFragmentIndex();
+      rects->Shrink(initial_rects_size);
+    }
+
+    const NGInlineCursorPosition& current = cursor.Current();
+    has_this_fragment = has_this_fragment || current.BoxFragment() == this;
+    if (!current.Size().IsZero())
+      rects->push_back(current.RectInContainerBlock());
+
+    // Add descendants if any, in the container-relative coordinate.
+    if (!current.HasChildren())
+      continue;
+    NGInlineCursor descendants = cursor.CursorForDescendants();
+    AddOutlineRectsForCursor(rects, PhysicalOffset(), outline_type,
+                             layout_object, &descendants);
+  }
+  DCHECK_GE(rects->size(), initial_rects_size);
+  if (rects->size() <= initial_rects_size)
+    return;
+
+  // Adjust the rectangles using |additional_offset| and |container_relative|.
+  if (!container_relative)
+    additional_offset -= (*rects)[initial_rects_size].offset;
+  if (additional_offset.IsZero())
+    return;
+  for (PhysicalRect& rect :
+       base::make_span(rects->begin() + initial_rects_size, rects->end()))
+    rect.offset += additional_offset;
 }
 
 PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(

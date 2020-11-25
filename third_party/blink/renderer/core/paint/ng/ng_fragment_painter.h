@@ -25,7 +25,12 @@ class NGFragmentPainter : public ObjectPainterBase {
                     const DisplayItemClient& display_item_client)
       : box_fragment_(box), display_item_client_(display_item_client) {}
 
-  void PaintOutline(const PaintInfo&, const PhysicalOffset& paint_offset);
+  // |style_to_use| may be from other objects than |box_fragment_|. When
+  // painting outlines for a block in a continuation chain, its style does not
+  // have the `outline` property set.
+  void PaintOutline(const PaintInfo&,
+                    const PhysicalOffset& paint_offset,
+                    const ComputedStyle& style_to_use);
 
   void AddURLRectIfNeeded(const PaintInfo&, const PhysicalOffset& paint_offset);
 

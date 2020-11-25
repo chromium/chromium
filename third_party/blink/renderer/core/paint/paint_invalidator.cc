@@ -64,8 +64,13 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
        IsLayoutNGContainingBlock(object.ContainingBlock())))
     context.painting_layer->SetNeedsPaintPhaseFloat();
 
-  if (object != context.painting_layer->GetLayoutObject() &&
-      object.StyleRef().HasOutline())
+  if (!context.painting_layer->NeedsPaintPhaseDescendantOutlines() &&
+      ((object != context.painting_layer->GetLayoutObject() &&
+        object.StyleRef().HasOutline()) ||
+       // If this is a block-in-inline, it may need to paint outline.
+       // See |StyleForContinuationOutline|.
+       (layout_block_flow && layout_block_flow->IsAnonymous() &&
+        !layout_block_flow->IsInline() && layout_block_flow->Continuation())))
     context.painting_layer->SetNeedsPaintPhaseDescendantOutlines();
 }
 

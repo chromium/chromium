@@ -1090,6 +1090,11 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
       // Issue full invalidation, in case the number of column rules have
       // changed.
       needs_full_invalidation = true;
+    } else if (block->IsAnonymous() && !block->IsInline() &&
+               block->IsLayoutBlockFlow() && block->Continuation()) {
+      // When this is a block-in-inline created by |SplineInlines|, we may need
+      // to paint outlines for this. See |NGBoxFragmentPainter|.
+      needs_full_invalidation = true;
     }
 
     block->SetNeedsOverflowRecalc(

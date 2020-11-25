@@ -140,36 +140,9 @@ void NGPhysicalContainerFragment::AddOutlineRectsForNormalChildren(
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(this)) {
     DCHECK_EQ(box->PostLayout(), box);
     if (const NGFragmentItems* items = box->Items()) {
-      for (NGInlineCursor cursor(*box, *items); cursor; cursor.MoveToNext()) {
-        DCHECK(cursor.Current().Item());
-        const NGFragmentItem& item = *cursor.Current().Item();
-        if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved()))
-          continue;
-        if (item.Type() == NGFragmentItem::kLine) {
-          AddOutlineRectsForDescendant(
-              {item.LineBoxFragment(), item.OffsetInContainerBlock()},
-              outline_rects, additional_offset, outline_type, containing_block);
-          continue;
-        }
-        if (item.IsText()) {
-          if (outline_type == NGOutlineType::kDontIncludeBlockVisualOverflow)
-            continue;
-          outline_rects->push_back(
-              PhysicalRect(additional_offset + item.OffsetInContainerBlock(),
-                           item.Size().ToLayoutSize()));
-          continue;
-        }
-        if (item.Type() == NGFragmentItem::kBox) {
-          if (const NGPhysicalBoxFragment* child_box =
-                  item.PostLayoutBoxFragment()) {
-            DCHECK(!child_box->IsOutOfFlowPositioned());
-            AddOutlineRectsForDescendant(
-                {child_box, item.OffsetInContainerBlock()}, outline_rects,
-                additional_offset, outline_type, containing_block);
-          }
-          continue;
-        }
-      }
+      NGInlineCursor cursor(*box, *items);
+      AddOutlineRectsForCursor(outline_rects, additional_offset, outline_type,
+                               containing_block, &cursor);
       // Don't add |Children()|. If |this| has |NGFragmentItems|, children are
       // either line box, which we already handled in items, or OOF, which we
       // should ignore.
@@ -202,6 +175,44 @@ void NGPhysicalContainerFragment::AddOutlineRectsForNormalChildren(
     }
     AddOutlineRectsForDescendant(child, outline_rects, additional_offset,
                                  outline_type, containing_block);
+  }
+}
+
+void NGPhysicalContainerFragment::AddOutlineRectsForCursor(
+    Vector<PhysicalRect>* outline_rects,
+    const PhysicalOffset& additional_offset,
+    NGOutlineType outline_type,
+    const LayoutBoxModelObject* containing_block,
+    NGInlineCursor* cursor) const {
+  for (; *cursor; cursor->MoveToNext()) {
+    DCHECK(cursor->Current().Item());
+    const NGFragmentItem& item = *cursor->Current().Item();
+    if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved()))
+      continue;
+    if (item.Type() == NGFragmentItem::kLine) {
+      AddOutlineRectsForDescendant(
+          {item.LineBoxFragment(), item.OffsetInContainerBlock()},
+          outline_rects, additional_offset, outline_type, containing_block);
+      continue;
+    }
+    if (item.IsText()) {
+      if (outline_type == NGOutlineType::kDontIncludeBlockVisualOverflow)
+        continue;
+      outline_rects->push_back(
+          PhysicalRect(additional_offset + item.OffsetInContainerBlock(),
+                       item.Size().ToLayoutSize()));
+      continue;
+    }
+    if (item.Type() == NGFragmentItem::kBox) {
+      if (const NGPhysicalBoxFragment* child_box =
+              item.PostLayoutBoxFragment()) {
+        DCHECK(!child_box->IsOutOfFlowPositioned());
+        AddOutlineRectsForDescendant({child_box, item.OffsetInContainerBlock()},
+                                     outline_rects, additional_offset,
+                                     outline_type, containing_block);
+      }
+      continue;
+    }
   }
 }
 
@@ -322,8 +333,8 @@ void NGPhysicalContainerFragment::AddOutlineRectsForDescendant(
     if (descendant_box->HasLayer()) {
       DCHECK(descendant_layout_object);
       Vector<PhysicalRect> layer_outline_rects;
-      descendant_box->AddSelfOutlineRects(PhysicalOffset(), outline_type,
-                                          &layer_outline_rects);
+      descendant_box->AddOutlineRects(PhysicalOffset(), outline_type,
+                                      &layer_outline_rects);
 
       // Don't pass additional_offset because LocalToAncestorRects will itself
       // apply it.
@@ -367,20 +378,6 @@ void NGPhysicalContainerFragment::AddOutlineRectsForDescendant(
     if (!descendant_line_box->Size().IsEmpty()) {
       outline_rects->emplace_back(additional_offset + descendant.Offset(),
                                   descendant_line_box->Size().ToLayoutSize());
-    } else if (descendant_line_box->Children().empty()) {
-      // Special-case for when the first continuation does not generate
-      // fragments. NGInlineLayoutAlgorithm suppresses box fragments when the
-      // line is "empty". When there is a continuation from the LayoutInline,
-      // the suppression makes such continuation not reachable. Check the
-      // continuation from LayoutInline in such case.
-      DCHECK(GetLayoutObject());
-      if (auto* first_layout_inline =
-              DynamicTo<LayoutInline>(GetLayoutObject()->SlowFirstChild())) {
-        if (!first_layout_inline->IsElementContinuation()) {
-          first_layout_inline->AddOutlineRectsForChildrenAndContinuations(
-              *outline_rects, additional_offset, outline_type);
-        }
-      }
     }
   }
 }

@@ -231,6 +231,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   void AddSelfOutlineRects(const PhysicalOffset& additional_offset,
                            NGOutlineType include_block_overflows,
                            Vector<PhysicalRect>* outline_rects) const;
+  // Same as |AddSelfOutlineRects|, except when |this.IsInlineBox()|, in which
+  // case the coordinate system is relative to the inline formatting context.
+  void AddOutlineRects(const PhysicalOffset& additional_offset,
+                       NGOutlineType include_block_overflows,
+                       Vector<PhysicalRect>* outline_rects) const;
 
   PositionWithAffinity PositionForPoint(PhysicalOffset) const;
 
@@ -342,6 +347,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return has_inflow_bounds_ ? reinterpret_cast<RareData*>(address + 1)
                               : reinterpret_cast<RareData*>(address);
   }
+
+  void AddOutlineRects(const PhysicalOffset& additional_offset,
+                       NGOutlineType include_block_overflows,
+                       bool inline_container_relative,
+                       Vector<PhysicalRect>* outline_rects) const;
+  void AddOutlineRectsForInlineBox(PhysicalOffset additional_offset,
+                                   NGOutlineType include_block_overflows,
+                                   bool inline_container_relative,
+                                   Vector<PhysicalRect>* outline_rects) const;
 
 #if DCHECK_IS_ON()
   void CheckIntegrity() const;

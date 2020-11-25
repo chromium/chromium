@@ -178,6 +178,11 @@ class CORE_EXPORT NGPhysicalContainerFragment : public NGPhysicalFragment {
       const PhysicalOffset& additional_offset,
       NGOutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;
+  void AddOutlineRectsForCursor(Vector<PhysicalRect>* outline_rects,
+                                const PhysicalOffset& additional_offset,
+                                NGOutlineType outline_type,
+                                const LayoutBoxModelObject* containing_block,
+                                NGInlineCursor* cursor) const;
   void AddOutlineRectsForDescendant(
       const NGLink& descendant,
       Vector<PhysicalRect>* rects,
