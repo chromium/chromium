@@ -1145,9 +1145,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Language.UiIsSystemLanguage" enum="BooleanMatched"
-    expires_after="2020-12-01">
+    expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
-  <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Reports whether the Chrome UI language is the same as the Android system
@@ -1156,9 +1155,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Language.WrongLanguageAfterResume" enum="Boolean"
-    expires_after="2020-12-01">
-  <owner>tiborg@chromium.org</owner>
-  <owner>heamy@chromium.org</owner>
+    expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Reports whether Chrome was started in a language other than the system

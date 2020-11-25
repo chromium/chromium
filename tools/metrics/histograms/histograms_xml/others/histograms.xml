@@ -7666,8 +7666,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageSettings.Actions" enum="LanguageSettingsActionType"
-    expires_after="2020-12-01">
-  <owner>googleo@chromium.org</owner>
+    expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The actions taken on languages settings, recorded every time they happen.
