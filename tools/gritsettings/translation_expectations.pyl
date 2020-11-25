@@ -77,6 +77,15 @@
       "weblayer/browser/java/weblayer_strings.grd",
     ],
   },
+
+  # The front_door grd is translated only into Japanese.
+  "front_door_grd": {
+    "languages":[ "ja", ],
+    "files": [
+      "chrome/android/features/shopping/front_door/java/strings/android_chrome_front_door_strings.grd",
+    ]
+  },
+
   # The policy_templates are translated only into a subset of the languages.
   "policy_templates_grds": {
     "languages": [

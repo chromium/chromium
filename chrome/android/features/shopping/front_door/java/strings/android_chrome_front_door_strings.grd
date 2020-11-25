@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file contains all strings for front door. These strings will only be translated in en-US and ja.
+-->
+<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+  <outputs>
+    <output filename="values/android_chrome_front_door_strings.xml" lang="en" type="android" />
+    <output filename="values-ja/android_chrome_front_door_strings.xml" lang="ja" type="android" />
+  </outputs>
+  <translations>
+    <file lang="ja" path="translations/android_chrome_front_door_strings_ja.xtb" />
+  </translations>
+  <release allow_pseudo="false" seq="1">
+    <messages fallback_to_english="true">
+      
+      <!-- Onboarding Categories -->
+      <message name="IDS_CATEGORY_ELECTRONICS" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Electoronics category refers to consumer and home electoronics. Example: computers/phones/tablets/cameras/TVs ">
+        Electoronics
+      </message>
+
+      <message name="IDS_CATEGORY_HEALTH_AND_BEAUTY" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Health and Beauty category refers to hair and skin care, oral care, vitamins, makeup, and more.">
+        Health &amp; Beauty
+      </message>
+
+      <message name="IDS_CATEGORY_HOME_AND_GARDEN" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Home and Garden category refers to decoration/furniture/appliances for indoor and outdoor">
+        Home &amp; Garden
+      </message>
+
+      <message name="IDS_CATEGORY_HOME_AND_TOOLS" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Home and tools category refers to home improvement products. Example: Smart Home Accessories (smart thermostat/light/door bell); House tools(Electric Drill); Bathroom Home improvement(Shower column/toilets seat/sink/bath tub)">
+        Home &amp; Tools
+      </message>
+
+      <message name="IDS_CATEGORY_TOYS_AND_GAMES" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Toys and Games category refers to kids toys, party game, video game, and more. Example: LEGO/Card game/Puzzle/board game">
+        Toys &amp; Games
+      </message>
+
+      <message name="IDS_CATEGORY_BABY_AND_KIDS" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Baby and Kids category refers to baby food/wipes/formula/body wash/shampoo and more.">
+        Baby &amp; Kids
+      </message>
+
+      <message name="IDS_CATEGORY_SPORTS_AND_OUTDOORS" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Sports and Outdoors category refers to accessories/supplies/equipment for any outdoor/exercise activity. Example: Camping equipment, exercise equipment">
+        Sports &amp; Outdoors
+      </message>
+
+      <message name="IDS_CATEGORY_TRAVEL_AND_BAGS" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Travel and Bags category refers to any travel acessroies, backpack, luggage, trolleys and more.">
+        Travel &amp; Bags
+      </message>
+
+      <message name="IDS_CATEGORY_APPAREL" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The apparel category refers to jewelry, shoes, clothing, handbag and more">
+        Apparel
+      </message>
+
+      <!-- Onbarding Strings -->
+      <message name="IDS_ONBOARDING_CARD_TITLE" desc="This is a header to the promotional card which serves as an entry point to the onboarding/personalization process.">
+        Curate your own shopping feed
+      </message>
+
+      <message name="IDS_ONBOARDING_CARD_GET_STARTED" desc="This is a call-to-action on the promotional card which serves as an entry point to the onboarding/personalization process.">
+        Get started
+      </message>
+
+      <message name="IDS_ONBOARDING_CATEGORY_PICKER_TITLE" desc="This is a direction to user during onboarding/personalization in the first step, where they pick multiple categories of brands. Note: CATEGORIES_COUNT is always greater than 2.">
+        Pick <ph name="CATEGORIES_COUNT">%1$s<ex>3</ex></ph> or more categories
+      </message>
+
+      <message name="IDS_ONBOARDING_CATEGORY_PICKER_BACK" desc="This is a button label. Upon clicking, this will skip category selection for brands.">
+        Maybe later
+      </message>
+
+      <message name="IDS_ONBOARDING_CATEGORY_PICKER_CONTINUE" desc="This is a button lable. Upon clicking, this will continue with brands selected.">
+        Continue
+      </message>
+
+      <message name="IDS_ONBOARDING_BRAND_PICKER_TITLE" desc="This is a direction to user during onboarding/personalization in the second step, where they pick multiple brands within their preselected categories. Note: BRANDS_COUNT is always greater than 2.">
+        Pick <ph name="BRANDS_COUNT">%1$s<ex>6</ex></ph> or more brands
+      </message>
+
+      <message name="IDS_ONBOARDING_BRAND_PICKER_BACK" desc="This is a button label. Upon clicking, this will return to the category selection step.">
+        Go back
+      </message>
+
+      <message name="IDS_ONBOARDING_BRAND_PICKER_DONE" desc="This is a button label. Upon clicking, this will complete user onboarding/personalization flow.">
+        Done
+      </message>
+
+      <!-- Main Surface Strings -->
+      <message name="IDS_NTP_TABLAYOUT_SHOPPING" desc="This is a header for the shopping feed in the tab-selector of the new tab page.">
+        Shopping
+      </message>
+
+      <message name="IDS_SECTION_HEADER_CARTS" desc="This is a header for a section within the shopping feed showing current shopping carts the user has across the web.">
+        Your carts
+      </message>
+
+      <message name="IDS_SECTION_HEADER_RESUME" desc="This is a header for section in the shopping feed which is focused on resuming recent shopping tasks from their recent browsing.">
+        Jump back in
+      </message>
+
+      <message name="IDS_SECTION_HEADER_BROWSING" desc="This is a header for a section in the shopping feed with personalized product recommendations (based on brands selected during the onboarding / personalization process.).">
+        Products for you
+      </message>
+
+      <message name="IDS_SECTION_HEADER_BRAND_SUGGESTION" desc="This is a subsection of the ‘products for you’ section within the shopping feed, showing related brands the user might want to include in ‘products for you’">
+        Brands you might like
+      </message>
+
+      <message name="IDS_PRODUCT_LABEL_RECENTLY_VIEW" desc="This is a label for products in the “Jump back in” section which the user has recently viewed while browsing.">
+        Recently Viewed
+      </message>
+
+      <message name="IDS_PRODUCT_LABEL_RECOMMENDED" desc="This is a label for products in the “Jump back in” section which are recommended based on the user’s recent browsing.">
+        Recommended for you
+      </message>
+
+      <message name="IDS_FEED_ENDED" desc="This is the text shown at bottom of the shopping feed to show that the user has reached the end of all suggestions.">
+        You have reached the bottom of the feed
+      </message>
+
+      <message name="IDS_VIEW_MORE" desc="This is a button label. The button gives the user the option to expand the list with more suggestions">
+        View more
+      </message>
+
+      <message name="IDS_ADD_TO_FEED" desc="This is a button label. It is a call-to-action on a merchant tile in the shopping feed, allowing a user to add that merchant to their feed for more recommendations from them.">
+        Add to feed
+      </message>
+
+      <!-- Menu Strings -->
+      <message name="IDS_MENU_ITEM_BOOKMARK" desc="This is a menu item. It is an action and it allows a user to bookmark the item in the shopping feed.">
+        Bookmark
+      </message>
+
+      <message name="IDS_MENU_ITEM_NOT_INTERESTED" desc="This is a menu item. It is a menu option for an item in the shopping feed which indicates disinterest.">
+        Not interested
+      </message>
+
+      <message name="IDS_MENU_ITEM_CUSTOMIZE_SHOPPING_FEED" desc="This is a menu item. It is an action in the feed menu returning the user to the onboarding / personalization process for the shopping feed">
+        Customize shopping feed
+      </message>
+
+    </messages>
+  </release>
+</grit>

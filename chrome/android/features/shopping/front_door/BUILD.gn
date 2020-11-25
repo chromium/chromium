@@ -1,0 +1,15 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "java/strings/android_chrome_front_door_strings.grd"
+  outputs = [ "values/android_chrome_front_door_strings.xml" ] +
+            [ "values-ja/android_chrome_front_door_strings.xml" ]
+}

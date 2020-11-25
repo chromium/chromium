@@ -191,6 +191,7 @@ android_resources("chrome_app_java_resources") {
   deps = [
     ":chrome_base_module_resources",
     ":ui_locale_string_resources",
+    "//chrome/android/features/shopping/front_door:java_strings_grd",
     "//chrome/android/webapk/libs/common:splash_resources",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/feedback/android:java_resources",
