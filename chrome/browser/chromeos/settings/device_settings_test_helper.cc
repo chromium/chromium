@@ -12,8 +12,10 @@
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -56,6 +58,7 @@ void DeviceSettingsTestBase::SetUp() {
   dbus_setter_ = DBusThreadManager::GetSetterForTesting();
   CryptohomeClient::InitializeFake();
   PowerManagerClient::InitializeFake();
+  TpmManagerClient::InitializeFake();
   OwnerSettingsServiceChromeOSFactory::SetDeviceSettingsServiceForTesting(
       device_settings_service_.get());
   OwnerSettingsServiceChromeOSFactory::GetInstance()->SetOwnerKeyUtilForTesting(
@@ -79,6 +82,7 @@ void DeviceSettingsTestBase::TearDown() {
   FlushDeviceSettings();
   device_settings_service_->UnsetSessionManager();
   device_settings_service_.reset();
+  TpmManagerClient::Shutdown();
   PowerManagerClient::Shutdown();
   CryptohomeClient::Shutdown();
   DBusThreadManager::Shutdown();

@@ -66,6 +66,7 @@
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
@@ -798,11 +799,13 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::CrasAudioHandler::InitializeForTesting();
     chromeos::CryptohomeClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
   }
 
   ~DeviceStatusCollectorTest() override {
     chromeos::LoginState::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     chromeos::CryptohomeClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
@@ -1528,6 +1531,24 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
   EXPECT_TRUE(device_status_.has_tpm_version_info());
+
+  // Expect tpm version info is still set (with an empty one) regardless of
+  // D-Bus error.
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_version_info_reply()
+      ->set_status(::tpm_manager::STATUS_DBUS_ERROR);
+  GetStatus();
+  EXPECT_TRUE(device_status_.has_browser_version());
+  EXPECT_TRUE(device_status_.has_channel());
+  EXPECT_TRUE(device_status_.has_os_version());
+  EXPECT_TRUE(device_status_.has_firmware_version());
+  EXPECT_TRUE(device_status_.has_tpm_version_info());
+  // Reset the version info reply just in case the rest of tests get affected.
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_version_info_reply()
+      ->clear_status();
 
   // When the pref to collect this data is not enabled, expect that none of
   // the fields are present in the protobuf.

@@ -103,6 +103,8 @@ class TpmManagerClientImpl : public TpmManagerClient {
   }
 
  private:
+  TestInterface* GetTestInterface() override { return nullptr; }
+
   // Calls tpm_managerd's |method_name| method, passing in |request| as input
   // with |timeout_ms|. Once the (asynchronous) call finishes, |callback| is
   // called with the response proto.

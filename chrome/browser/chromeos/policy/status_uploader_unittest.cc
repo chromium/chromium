@@ -17,8 +17,10 @@
 #include "chrome/browser/chromeos/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -85,6 +87,7 @@ class StatusUploaderTest : public testing::Test {
 
     chromeos::CryptohomeClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
     client_.SetDMToken("dm_token");
     collector_.reset(new MockDeviceStatusCollector(&prefs_));
 
@@ -95,6 +98,7 @@ class StatusUploaderTest : public testing::Test {
 
   void TearDown() override {
     content::RunAllTasksUntilIdle();
+    chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     chromeos::CryptohomeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();

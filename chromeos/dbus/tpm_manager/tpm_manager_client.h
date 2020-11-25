@@ -34,6 +34,15 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
   using ClearStoredOwnerPasswordCallback = base::OnceCallback<void(
       const ::tpm_manager::ClearStoredOwnerPasswordReply&)>;
 
+  // Interface with testing functionality. Accessed through GetTestInterface(),
+  // only implemented in the fake implementation.
+  class TestInterface {
+   public:
+    // Gets a mutable reply that is returned when `GetVersionInfo()` is called.
+    virtual ::tpm_manager::GetVersionInfoReply*
+    mutable_version_info_reply() = 0;
+  };
+
   // Not copyable or movable.
   TpmManagerClient(const TpmManagerClient&) = delete;
   TpmManagerClient& operator=(const TpmManagerClient&) = delete;
@@ -79,6 +88,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
   virtual void ClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordRequest& request,
       ClearStoredOwnerPasswordCallback callback) = 0;
+
+  // Returns an interface for testing (fake only), or returns nullptr.
+  virtual TestInterface* GetTestInterface() = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

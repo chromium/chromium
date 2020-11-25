@@ -13,7 +13,8 @@
 namespace chromeos {
 
 class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
-    : public TpmManagerClient {
+    : public TpmManagerClient,
+      public TpmManagerClient::TestInterface {
  public:
   FakeTpmManagerClient();
   ~FakeTpmManagerClient() override;
@@ -38,6 +39,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   void ClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordRequest& request,
       ClearStoredOwnerPasswordCallback callback) override;
+
+  TpmManagerClient::TestInterface* GetTestInterface() override;
+
+  // TpmManagerClient::TestInterface:
+  ::tpm_manager::GetVersionInfoReply* mutable_version_info_reply() override;
+
+ private:
+  ::tpm_manager::GetVersionInfoReply version_info_reply_;
 };
 
 }  // namespace chromeos

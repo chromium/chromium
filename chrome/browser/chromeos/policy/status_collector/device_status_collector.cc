@@ -69,6 +69,8 @@
 #include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -1484,8 +1486,10 @@ DeviceStatusCollector::DeviceStatusCollector(
       base::BindOnce(&ReadFirmwareVersion),
       base::BindOnce(&DeviceStatusCollector::OnOSFirmware,
                      weak_factory_.GetWeakPtr()));
-  chromeos::tpm_util::GetTpmVersion(base::BindOnce(
-      &DeviceStatusCollector::OnTpmVersion, weak_factory_.GetWeakPtr()));
+  chromeos::TpmManagerClient::Get()->GetVersionInfo(
+      ::tpm_manager::GetVersionInfoRequest(),
+      base::BindOnce(&DeviceStatusCollector::OnGetTpmVersion,
+                     weak_factory_.GetWeakPtr()));
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service_);
@@ -2052,12 +2056,12 @@ bool DeviceStatusCollector::GetVersionInfo(
 
   em::TpmVersionInfo* const tpm_version_info =
       status->mutable_tpm_version_info();
-  tpm_version_info->set_family(tpm_version_info_.family);
-  tpm_version_info->set_spec_level(tpm_version_info_.spec_level);
-  tpm_version_info->set_manufacturer(tpm_version_info_.manufacturer);
-  tpm_version_info->set_tpm_model(tpm_version_info_.tpm_model);
-  tpm_version_info->set_firmware_version(tpm_version_info_.firmware_version);
-  tpm_version_info->set_vendor_specific(tpm_version_info_.vendor_specific);
+  tpm_version_info->set_family(tpm_version_reply_.family());
+  tpm_version_info->set_spec_level(tpm_version_reply_.spec_level());
+  tpm_version_info->set_manufacturer(tpm_version_reply_.manufacturer());
+  tpm_version_info->set_tpm_model(tpm_version_reply_.tpm_model());
+  tpm_version_info->set_firmware_version(tpm_version_reply_.firmware_version());
+  tpm_version_info->set_vendor_specific(tpm_version_reply_.vendor_specific());
 
   return true;
 }
@@ -2708,9 +2712,12 @@ void DeviceStatusCollector::OnOSFirmware(
   firmware_fetch_error_ = version.second;
 }
 
-void DeviceStatusCollector::OnTpmVersion(
-    const chromeos::CryptohomeClient::TpmVersionInfo& tpm_version_info) {
-  tpm_version_info_ = tpm_version_info;
+void DeviceStatusCollector::OnGetTpmVersion(
+    const ::tpm_manager::GetVersionInfoReply& reply) {
+  if (reply.status() != ::tpm_manager::STATUS_SUCCESS) {
+    LOG(WARNING) << "Failed to get tpm version; status: " << reply.status();
+  }
+  tpm_version_reply_ = reply;
 }
 
 }  // namespace policy

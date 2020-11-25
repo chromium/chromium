@@ -17,12 +17,12 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/time/default_clock.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/policy/status_collector/app_info_generator.h"
@@ -30,6 +30,7 @@
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_member.h"
@@ -256,8 +257,9 @@ class DeviceStatusCollector : public StatusCollector,
   // Callbacks from chromeos::VersionLoader.
   void OnOSVersion(const std::string& version);
   void OnOSFirmware(std::pair<const std::string&, const std::string&> version);
-  void OnTpmVersion(
-      const chromeos::CryptohomeClient::TpmVersionInfo& tpm_version_info);
+
+  // Callbacks from `chromeos::TpmManagerClient`.
+  void OnGetTpmVersion(const ::tpm_manager::GetVersionInfoReply& reply);
 
   void GetDeviceStatus(scoped_refptr<DeviceStatusCollectorState> state);
   void GetSessionStatus(scoped_refptr<DeviceStatusCollectorState> state);
@@ -379,7 +381,7 @@ class DeviceStatusCollector : public StatusCollector,
   std::string os_version_;
   std::string firmware_version_;
   std::string firmware_fetch_error_;
-  chromeos::CryptohomeClient::TpmVersionInfo tpm_version_info_;
+  ::tpm_manager::GetVersionInfoReply tpm_version_reply_;
 
   struct ResourceUsage {
     // Sample of percentage-of-CPU-used.
