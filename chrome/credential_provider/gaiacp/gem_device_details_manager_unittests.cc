@@ -62,8 +62,7 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
   }
 
   base::Value expected_response_value(base::Value::Type::DICTIONARY);
-  expected_response_value.SetStringKey("deviceResourceId",
-                                       std::move(device_resource_id));
+  expected_response_value.SetStringKey("deviceResourceId", device_resource_id);
   std::string expected_response;
   base::JSONWriter::Write(expected_response_value, &expected_response);
 
