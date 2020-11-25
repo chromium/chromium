@@ -752,6 +752,15 @@ void NearbySharingServiceImpl::Reject(
 void NearbySharingServiceImpl::Cancel(
     const ShareTarget& share_target,
     StatusCodesCallback status_codes_callback) {
+  NS_LOG(INFO) << __func__ << ": User canceled transfer";
+  DoCancel(share_target, std::move(status_codes_callback),
+           /*write_cancel_frame=*/true);
+}
+
+void NearbySharingServiceImpl::DoCancel(
+    const ShareTarget& share_target,
+    StatusCodesCallback status_codes_callback,
+    bool write_cancel_frame) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
 
   if (!info || !info->connection() || !info->endpoint_id()) {
@@ -759,7 +768,7 @@ void NearbySharingServiceImpl::Cancel(
                   << ": Cancel invoked for unknown share target, returning "
                      "kOutOfOrderApiCall";
     // Make sure to clean up files just in case.
-    OnPayloadsFailed(share_target);
+    RemoveIncomingPayloads(share_target);
     std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
     return;
   }
@@ -774,11 +783,9 @@ void NearbySharingServiceImpl::Cancel(
       base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
                      weak_ptr_factory_.GetWeakPtr(), share_target));
 
-  NS_LOG(INFO) << __func__
-               << ": User canceled transfer, write cancel frame and generating "
-                  "local status update.";
-
-  WriteCancel(*info->connection());
+  if (write_cancel_frame) {
+    WriteCancel(*info->connection());
+  }
 
   if (info->transfer_update_callback()) {
     info->transfer_update_callback()->OnTransferUpdate(
@@ -787,8 +794,6 @@ void NearbySharingServiceImpl::Cancel(
                           .build());
   }
 
-  // Make sure to clean up files if necessary
-  OnPayloadsFailed(share_target);
   std::move(status_codes_callback).Run(StatusCodes::kOk);
 }
 
@@ -2262,6 +2267,8 @@ void NearbySharingServiceImpl::WriteResponse(
 }
 
 void NearbySharingServiceImpl::WriteCancel(NearbyConnection& connection) {
+  NS_LOG(INFO) << __func__ << ": Writing cancel frame.";
+
   sharing::nearby::Frame frame;
   frame.set_version(sharing::nearby::Frame::V1);
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
@@ -2372,6 +2379,11 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
     RecordNearbyShareTransferCompletionStatusMetric(
         /*is_incoming=*/true, share_target.type, metadata.status());
     OnTransferComplete();
+    if (metadata.status() != TransferMetadata::Status::kComplete) {
+      // For any type of failure, lets make sure any pending files get cleaned
+      // up.
+      RemoveIncomingPayloads(share_target);
+    }
   } else if (metadata.status() ==
              TransferMetadata::Status::kAwaitingLocalConfirmation) {
     OnTransferStarted(/*is_incoming=*/true);
@@ -2999,9 +3011,8 @@ void NearbySharingServiceImpl::OnFrameRead(
   sharing::mojom::V1FramePtr v1_frame = std::move(*frame);
   switch (v1_frame->which()) {
     case sharing::mojom::V1Frame::Tag::CANCEL_FRAME:
-      NS_LOG(VERBOSE) << __func__
-                      << ": Read the cancel frame, closing connection";
-      Cancel(share_target, base::DoNothing());
+      NS_LOG(INFO) << __func__ << ": Read the cancel frame, closing connection";
+      DoCancel(share_target, base::DoNothing(), /*write_cancel_frame=*/false);
       break;
 
     case sharing::mojom::V1Frame::Tag::CERTIFICATE_INFO:
@@ -3170,9 +3181,6 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     info->transfer_update_callback()->OnTransferUpdate(share_target, metadata);
 
   if (TransferMetadata::IsFinalStatus(metadata.status())) {
-    if (metadata.status() != TransferMetadata::Status::kComplete)
-      OnPayloadsFailed(share_target);
-
     Disconnect(share_target, metadata);
   }
 }
@@ -3250,9 +3258,12 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
   return true;
 }
 
-void NearbySharingServiceImpl::OnPayloadsFailed(ShareTarget share_target) {
+void NearbySharingServiceImpl::RemoveIncomingPayloads(
+    ShareTarget share_target) {
   if (!share_target.is_incoming)
     return;
+
+  NS_LOG(INFO) << __func__ << ": Cleaning up payloads due to transfer failure";
 
   nearby_connections_manager_->ClearIncomingPayloads();
   std::vector<base::FilePath> files_for_deletion;
