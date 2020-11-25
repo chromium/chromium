@@ -9,7 +9,7 @@
 ##
 
 {% block application_name %}
-{%- if definitions_in_split -%}
+{%- if enable_isolated_splits -%}
 org.chromium.chrome.browser.base.SplitMonochromeApplication
 {%- else -%}
 org.chromium.chrome.browser.MonochromeApplication

@@ -18,6 +18,7 @@ import org.chromium.base.annotations.IdentifierNameString;
 
 /** Utils for compatibility with isolated splits. */
 public class SplitCompatUtils {
+    private static final String CHROME_SPLIT_NAME = "chrome";
     private static final ArraySet<ClassLoader> sInflationClassLoaders = new ArraySet<>();
 
     private SplitCompatUtils() {}
@@ -33,7 +34,10 @@ public class SplitCompatUtils {
 
     /** Creates a context which can be used to load code and resources in the chrome split. */
     public static Context createChromeContext(Context base) {
-        return BundleUtils.createIsolatedSplitContext(base, "chrome");
+        if (!BundleUtils.isIsolatedSplitInstalled(base, CHROME_SPLIT_NAME)) {
+            return base;
+        }
+        return BundleUtils.createIsolatedSplitContext(base, CHROME_SPLIT_NAME);
     }
 
     /**

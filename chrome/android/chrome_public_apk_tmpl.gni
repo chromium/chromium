@@ -526,11 +526,13 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         }
       }
 
+      # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
+      if (_is_bundle_module) {
+        isolated_splits_enabled = enable_isolated_splits
+      }
+
       # Add all loadable modules and shared libraries from DFMs.
       if (_enable_chrome_module) {
-        # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
-        isolated_splits_enabled = true
-
         # The arcore manifest needs to be merged into the base module because the Play
         # Store verifies the com.google.ar.core.min_apk_version meta-data tag is in
         # the base manifest.
