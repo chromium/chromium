@@ -52,6 +52,8 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
     init_rlz_impl_closure_for_testing_ = std::move(closure);
   }
 
+  bool get_inited_for_testing() { return inited_for_testing_; }
+
  private:
   // Initialize RLZ.
   void InitRlz(Profile* profile);
@@ -76,6 +78,7 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
 
   Profile* primary_profile_ = nullptr;
 
+  bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;
 
   // Clipboard html image generator for the primary user.

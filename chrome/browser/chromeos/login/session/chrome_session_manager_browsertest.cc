@@ -278,12 +278,14 @@ class GuestSessionRlzTest : public InProcessBrowserTest,
   DISALLOW_COPY_AND_ASSIGN(GuestSessionRlzTest);
 };
 
-// TODO(crbug.com/1151851) flaky test
-IN_PROC_BROWSER_TEST_P(GuestSessionRlzTest, DISABLED_DeviceIsLocked) {
-  base::RunLoop loop;
-  UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
-      loop.QuitClosure());
-  loop.Run();
+IN_PROC_BROWSER_TEST_P(GuestSessionRlzTest, DeviceIsLocked) {
+  if (!UserSessionInitializer::Get()->get_inited_for_testing()) {
+    // Wait for initialization.
+    base::RunLoop loop;
+    UserSessionInitializer::Get()->set_init_rlz_impl_closure_for_testing(
+        loop.QuitClosure());
+    loop.Run();
+  }
   const char* const expected_brand =
       stub_install_attributes()->IsDeviceLocked() ? "TEST" : "";
   EXPECT_EQ(expected_brand, google_brand::chromeos::GetBrand());

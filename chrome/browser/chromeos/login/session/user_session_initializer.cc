@@ -266,6 +266,7 @@ void UserSessionInitializer::InitRlzImpl(Profile* profile,
 #endif
   if (init_rlz_impl_closure_for_testing_)
     std::move(init_rlz_impl_closure_for_testing_).Run();
+  inited_for_testing_ = true;
 }
 
 }  // namespace chromeos
