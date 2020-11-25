@@ -78,12 +78,26 @@ class ExportNotifierTest(LoggingTestCase):
                 "conclusion": "failure",
                 "name": "wpt-firefox-nightly-stability"
             },
+            {
+                "id": "3",
+                "conclusion": "failure",
+                "name": "lint"
+            },
+            {
+                "id": "4",
+                "conclusion": "failure",
+                "name": "infrastructure/ tests"
+            },
         ]
         expected = {
             'wpt-chrome-dev-stability':
             'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=1',
             'wpt-firefox-nightly-stability':
-            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=2'
+            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=2',
+            'lint':
+            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=3',
+            'infrastructure/ tests':
+            'https://github.com/web-platform-tests/wpt/pull/123/checks?check_run_id=4',
         }
 
         self.assertEqual(
@@ -294,7 +308,8 @@ class ExportNotifierTest(LoggingTestCase):
         self.assertEqual(self.notifier.gerrit.request_posted, [])
         self.assertLog([
             'INFO: Processing 1 CLs with failed Taskcluster checks.\n',
-            'ERROR: Could not process Gerrit CL abc: Error from query_cl\n'
+            'INFO: Change-Id: abc\n',
+            'ERROR: Could not process Gerrit CL abc: Error from query_cl\n',
         ])
 
     def test_export_notifier_success(self):
