@@ -67,9 +67,12 @@ chrome.test.runTests([
       const expectationTop = updateEnabled ?
           Math.min(2.25, expectation.top - 21) :
           expectation.top;
+      const expectationBottom = updateEnabled ?
+          Math.max(-412.5, expectation.bottom + 18) :
+          expectation.bottom;
       chrome.test.assertEq(expectationTop, actual.top);
       chrome.test.assertEq(expectation.left, actual.left);
-      chrome.test.assertEq(expectation.bottom, actual.bottom);
+      chrome.test.assertEq(expectationBottom, actual.bottom);
       chrome.test.assertEq(expectation.right, actual.right);
     }
     chrome.test.succeed();
