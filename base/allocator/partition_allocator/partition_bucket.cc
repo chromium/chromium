@@ -265,7 +265,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* quarantine_bitmaps = super_page + PartitionPageSize();
   size_t quarantine_bitmaps_reserved_size = 0;
   size_t quarantine_bitmaps_size_to_commit = 0;
-  if (root->scannable) {
+  if (root->IsScannable()) {
     quarantine_bitmaps_reserved_size = ReservedQuarantineBitmapsSize();
     quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
   }
@@ -276,7 +276,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* ret = quarantine_bitmaps + quarantine_bitmaps_reserved_size;
   root->next_partition_page = ret + slot_span_reserved_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
-  PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->scannable));
+  PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->IsScannable()));
   PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
   // The first slot span is accessible. The given slot_span_committed_size is
@@ -306,8 +306,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // unused part of partition page, if any. If PCScan isn't used, release the
   // entire reserved region (PartitionRoot::EnablePCScan will be responsible
   // for committing it when enabling PCScan).
-  if (root->pcscan.has_value()) {
-    PA_DCHECK(root->scannable);
+  if (root->IsScanEnabled()) {
+    PA_DCHECK(root->IsScannable());
     if (quarantine_bitmaps_reserved_size > quarantine_bitmaps_size_to_commit) {
       SetSystemPagesAccess(
           quarantine_bitmaps + quarantine_bitmaps_size_to_commit,
@@ -317,7 +317,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   } else {
     // If partition isn't scannable, no quarantine bitmaps were reserved, hence
     // nothing to decommit.
-    if (root->scannable) {
+    if (root->IsScannable()) {
       PA_DCHECK(quarantine_bitmaps_reserved_size > 0);
       SetSystemPagesAccess(quarantine_bitmaps, quarantine_bitmaps_reserved_size,
                            PageInaccessible);

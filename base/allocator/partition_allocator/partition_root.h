@@ -129,14 +129,19 @@ struct BASE_EXPORT PartitionRoot {
       internal::PartitionSuperPageExtentEntry<thread_safe>;
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
-  using PCScan = base::Optional<internal::PCScan<thread_safe>>;
+  using PCScan = internal::PCScan<thread_safe>;
 
   internal::MaybeSpinLock<thread_safe> lock_;
+
+  enum class PCScanMode : uint8_t {
+    kNonScannable,
+    kDisabled,
+    kEnabled,
+  } pcscan_mode = PCScanMode::kNonScannable;
 
   // Flags accessed on fast paths.
   bool with_thread_cache = false;
   const bool is_thread_safe = thread_safe;
-  bool scannable = false;
   bool initialized = false;
 
   bool allow_extras;
@@ -171,7 +176,6 @@ struct BASE_EXPORT PartitionRoot {
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
-  PCScan pcscan;
 
   // The bucket lookup table lets us map a size_t to a bucket quickly.
   // The trailing +1 caters for the overflow case for very large allocation
@@ -203,6 +207,8 @@ struct BASE_EXPORT PartitionRoot {
 
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
+  ALWAYS_INLINE static PartitionRoot* FromSuperPage(char* super_page);
+  ALWAYS_INLINE static PartitionRoot* FromPointerInNormalBucketPool(char* ptr);
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
@@ -284,14 +290,21 @@ struct BASE_EXPORT PartitionRoot {
     return features::IsPartitionAllocGigaCageEnabled() && allow_extras;
   }
 
+  ALWAYS_INLINE bool IsScannable() const {
+    return pcscan_mode != PCScanMode::kNonScannable;
+  }
+
+  ALWAYS_INLINE bool IsScanEnabled() const {
+    return pcscan_mode == PCScanMode::kEnabled;
+  }
+
+  // Enables PCScan for this root.
   void EnablePCScan() {
     PA_CHECK(thread_safe);
-    PA_CHECK(scannable && !pcscan.has_value());
-    // Setting |pcscan| and committing bitmaps has to be done under the lock to
-    // avoid racing with PartitionBucket::AllocNewSlotSpan and avoid racing on
-    // |pcscan| ifself during free calls.
-    internal::ScopedGuard<thread_safe> guard{lock_};
-    pcscan.emplace(this);
+    PA_CHECK(IsScannable() && !IsScanEnabled());
+    ScopedGuard guard{lock_};
+    PCScan::Instance().RegisterRoot(this);
+    pcscan_mode = PCScanMode::kEnabled;
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
@@ -576,9 +589,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 
   // TODO(bikineev): Change the first condition to LIKELY once PCScan is enabled
   // by default.
-  if (UNLIKELY(root->pcscan) &&
+  if (UNLIKELY(root->IsScanEnabled()) &&
       LIKELY(!slot_span->bucket->is_direct_mapped())) {
-    root->pcscan->MoveToQuarantine(ptr, slot_span);
+    PCScan::Instance().MoveToQuarantine(ptr, slot_span);
     return;
   }
 
@@ -721,6 +734,25 @@ PartitionRoot<thread_safe>::FromSlotSpan(SlotSpan* slot_span) {
   auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
       reinterpret_cast<uintptr_t>(slot_span) & SystemPageBaseMask());
   return extent_entry->root;
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE PartitionRoot<thread_safe>*
+PartitionRoot<thread_safe>::FromSuperPage(char* super_page) {
+  auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
+      internal::PartitionSuperPageToMetadataArea(super_page));
+  PartitionRoot* root = extent_entry->root;
+  PA_DCHECK(root->inverted_self == ~reinterpret_cast<uintptr_t>(root));
+  return root;
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE PartitionRoot<thread_safe>*
+PartitionRoot<thread_safe>::FromPointerInNormalBucketPool(char* ptr) {
+  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
+  char* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
+                                             kSuperPageBaseMask);
+  return FromSuperPage(super_page);
 }
 
 template <bool thread_safe>

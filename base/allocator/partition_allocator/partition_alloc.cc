@@ -20,6 +20,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
+#include "base/allocator/partition_allocator/pcscan.h"
 
 namespace base {
 
@@ -75,6 +76,8 @@ void PartitionAllocGlobalUninitForTesting() {
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
   }
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::PCScan<internal::ThreadSafe>::Instance()
+      .ClearRootsForTesting();  // IN-TEST
   internal::g_oom_handling_function = nullptr;
 }
 

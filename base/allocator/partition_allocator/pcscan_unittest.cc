@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/partition_allocator/partition_root.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include "base/allocator/partition_allocator/pcscan.h"
@@ -27,13 +28,14 @@ class PCScanTest : public testing::Test {
   }
 
   void RunPCScan() {
-    root().pcscan->PerformScan(PCScan<ThreadSafe>::InvocationMode::kBlocking);
+    PCScan<true>::Instance().PerformScan(
+        PCScan<ThreadSafe>::InvocationMode::kBlocking);
   }
 
   bool IsInQuarantine(void* ptr) const {
-    return QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
-                                       root().pcscan->quarantine_data_.epoch(),
-                                       ptr)
+    return QuarantineBitmapFromPointer(
+               QuarantineBitmapType::kMutator,
+               PCScan<true>::Instance().quarantine_data_.epoch(), ptr)
         ->CheckBit(reinterpret_cast<uintptr_t>(ptr));
   }
 
@@ -162,10 +164,13 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  auto& root = test.root();
+  auto* source_root = ThreadSafePartitionRoot::FromPointerInNormalBucketPool(
+      reinterpret_cast<char*>(source));
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBucketPool(
+      reinterpret_cast<char*>(value));
   {
     // Free |value| and leave the dangling reference in |source|.
-    ValueList::Destroy(root, value);
+    ValueList::Destroy(*source_root, value);
     // Check that |value| is in the quarantine now.
     EXPECT_TRUE(test.IsInQuarantine(value));
     // Run PCScan.
@@ -182,7 +187,8 @@ void TestDanglingReference(PCScanTest& test,
     // Check that the object is no longer in the quarantine.
     EXPECT_FALSE(test.IsInQuarantine(value));
     // Check that the object is in the freelist now.
-    EXPECT_TRUE(IsInFreeList(root.AdjustPointerForExtrasSubtract(value)));
+    EXPECT_TRUE(
+        IsInFreeList(value_root->AdjustPointerForExtrasSubtract(value)));
   }
 }
 
@@ -296,6 +302,26 @@ TEST_F(PCScanTest, DanglingInnerReference) {
   auto* source = SourceList::Create(root());
   auto* value = ValueList::Create(root());
   source->next = value->buffer2;
+
+  TestDanglingReference(*this, source, value);
+}
+
+TEST_F(PCScanTest, DanglingInterPartitionReference) {
+  using SourceList = List<64>;
+  using ValueList = SourceList;
+
+  ThreadSafePartitionRoot source_root(
+      {PartitionOptions::Alignment::kRegular,
+       PartitionOptions::ThreadCache::kDisabled,
+       PartitionOptions::PCScan::kForcedEnabledForTesting});
+  ThreadSafePartitionRoot value_root(
+      {PartitionOptions::Alignment::kRegular,
+       PartitionOptions::ThreadCache::kDisabled,
+       PartitionOptions::PCScan::kForcedEnabledForTesting});
+
+  auto* source = SourceList::Create(source_root);
+  auto* value = ValueList::Create(value_root);
+  source->next = value;
 
   TestDanglingReference(*this, source, value);
 }

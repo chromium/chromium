@@ -14,6 +14,14 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/base_export.h"
 
+#if defined(__has_attribute)
+#if __has_attribute(require_constant_initialization)
+#define PA_CONSTINIT __attribute__((require_constant_initialization))
+#else
+#define PA_CONSTINIT
+#endif
+#endif
+
 namespace base {
 namespace internal {
 
@@ -30,9 +38,6 @@ namespace internal {
 // The driver class encapsulates the entire PCScan infrastructure. It provides
 // a single function MoveToQuarantine() that posts a concurrent task if the
 // limit is reached.
-//
-// TODO: PCScan should work for all partitions in the PartitionAlloc heap, not
-// on a per-PartitionRoot basis.
 template <bool thread_safe>
 class BASE_EXPORT PCScan final {
  public:
@@ -44,16 +49,26 @@ class BASE_EXPORT PCScan final {
     kNonBlocking,
   };
 
-  explicit PCScan(Root* root);
+  static PCScan& Instance() {
+    // The instance is declared as a static member, not static local. The reason
+    // is that we want to use the require_constant_initialization attribute to
+    // avoid double-checked-locking which would otherwise have been introduced
+    // by the compiler for thread-safe dynamic initialization (see constinit
+    // from C++20).
+    return instance_;
+  }
 
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
 
-  ~PCScan();
+  // Registers a root for scanning.
+  void RegisterRoot(Root* root);
 
   ALWAYS_INLINE void MoveToQuarantine(void* ptr, SlotSpan* slot_span);
 
   void PerformScanIfNeeded(InvocationMode invocation_mode);
+
+  void ClearRootsForTesting();
 
  private:
   class PCScanTask;
@@ -86,10 +101,45 @@ class BASE_EXPORT PCScan final {
     size_t last_size_ = 0;
   };
 
+  static constexpr size_t kMaxNumberOfPartitions = 8u;
+
+  // A custom constexpr container class that avoids dynamic initialization.
+  // Constexprness is required to const-initialize the global PCScan.
+  class Roots final : private std::array<Root*, kMaxNumberOfPartitions> {
+    using Base = std::array<Root*, kMaxNumberOfPartitions>;
+
+   public:
+    using typename Base::const_iterator;
+    using typename Base::iterator;
+
+    // Explicitly value-initialize Base{} as otherwise the default
+    // (aggregate) initialization won't be considered as constexpr.
+    constexpr Roots() : Base{} {}
+
+    iterator begin() { return Base::begin(); }
+    const_iterator begin() const { return Base::begin(); }
+
+    iterator end() { return begin() + current_; }
+    const_iterator end() const { return begin() + current_; }
+
+    void Add(Root* root);
+
+    size_t size() const { return current_; }
+
+    void ClearForTesting();
+
+   private:
+    size_t current_ = 0u;
+  };
+
+  constexpr PCScan() = default;
+
   void PerformScan(InvocationMode invocation_mode);
 
-  Root* root_;
-  QuarantineData quarantine_data_;
+  static PCScan instance_ PA_CONSTINIT;
+
+  Roots roots_{};
+  QuarantineData quarantine_data_{};
   std::atomic<bool> in_progress_{false};
 };
 

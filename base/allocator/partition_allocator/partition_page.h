@@ -291,8 +291,8 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
       reinterpret_cast<uintptr_t>(maybe_inner_ptr) & kSuperPageBaseMask);
   auto* extent = reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
       PartitionSuperPageToMetadataArea(super_page_ptr));
-  PA_DCHECK(IsWithinSuperPagePayload(maybe_inner_ptr,
-                                     extent->root->pcscan.has_value()));
+  PA_DCHECK(
+      IsWithinSuperPagePayload(maybe_inner_ptr, extent->root->IsScanEnabled()));
   auto* slot_span = SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(
       maybe_inner_ptr);
   // Check if the slot span is actually used and valid.
