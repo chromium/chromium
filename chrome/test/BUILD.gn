@@ -7008,6 +7008,7 @@ if (!is_fuchsia) {
     deps = [
       ":test_support",
       "//base",
+      "//build:chromeos_buildflags",
       "//components/bookmarks/browser:test_support",
       "//components/invalidation/impl",
       "//components/invalidation/impl:test_support",
@@ -7135,6 +7136,7 @@ if (!is_fuchsia && !is_android) {
       ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
+      "//build:chromeos_buildflags",
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -23,7 +24,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -32,7 +33,7 @@ namespace sync_ui_util {
 namespace {
 
 StatusLabels GetStatusForUnrecoverableError(bool is_user_signout_allowed) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   int status_label_string_id =
       is_user_signout_allowed
           ? IDS_SYNC_STATUS_UNRECOVERABLE_ERROR
@@ -189,12 +190,12 @@ void OpenTabForSyncKeyRetrievalWithURL(Browser* browser, const GURL& url) {
 bool HasUserOptedInToSync(const syncer::SyncUserSettings* settings) {
   if (settings->IsFirstSetupComplete())
     return true;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsSplitSettingsSyncEnabled() &&
       settings->IsOsSyncFeatureEnabled()) {
     return true;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 }
 

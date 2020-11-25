@@ -9,6 +9,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -28,7 +29,7 @@ namespace secondary_account_helper {
 base::CallbackListSubscription SetUpSigninClient(
     network::TestURLLoaderFactory* test_url_loader_factory);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets up necessary fakes for fake network responses to work. Meant to be
 // called from SetUpOnMainThread.
 // TODO(crbug.com/882770): On ChromeOS, we need to set up a fake
@@ -37,7 +38,7 @@ base::CallbackListSubscription SetUpSigninClient(
 // the ListAccounts requests (i.e. getting cookie accounts) will never make it
 // far enough to even request our fake response.
 void InitNetwork();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Makes a non-primary account available with both a refresh token and cookie.
 AccountInfo SignInSecondaryAccount(
@@ -51,11 +52,11 @@ void SignOutSecondaryAccount(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const CoreAccountId& account_id);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Makes the given account Chrome's primary one. The account must already be
 // signed in (per SignInSecondaryAccount).
 void MakeAccountPrimary(Profile* profile, const std::string& email);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace secondary_account_helper
 

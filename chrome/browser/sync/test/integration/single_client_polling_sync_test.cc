@@ -5,6 +5,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
@@ -127,11 +128,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                        ShouldPollWhenIntervalExpiredAcrossRestarts) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
   // to get a non-empty refresh token on startup.
   GetClient(0)->SignInPrimaryAccount();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   SyncPrefs remote_prefs(GetProfile(0)->GetPrefs());

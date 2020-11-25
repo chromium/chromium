@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/buildflags.h"
@@ -26,7 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -41,9 +42,9 @@
 class ProfileSyncServiceFactoryTest : public testing::Test {
  public:
   void SetUp() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     TestingProfile::Builder builder;
     builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
                               FaviconServiceFactory::GetDefaultFactory());
@@ -55,14 +56,14 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
   }
 
   void TearDown() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     base::ThreadPoolInstance::Get()->FlushForTesting();
   }
 
  protected:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ProfileSyncServiceFactoryTest() {
     // Fake network stack is required for WIFI_CONFIGURATIONS datatype.
     chromeos::NetworkHandler::Initialize();
@@ -111,7 +112,7 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
     datatypes.push_back(syncer::DICTIONARY);
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     datatypes.push_back(syncer::APP_LIST);
     if (arc::IsArcAllowedForProfile(profile()))
       datatypes.push_back(syncer::ARC_PACKAGE);
@@ -123,7 +124,7 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations)) {
       datatypes.push_back(syncer::WIFI_CONFIGURATIONS);
     }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Common types. This excludes PASSWORDS because the password store factory
     // is null for testing and hence no controller gets instantiated.
@@ -178,7 +179,7 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sets up  and  tears down the Chrome OS networking mojo service as needed
   // for the WIFI_CONFIGURATIONS sync service.
   chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;

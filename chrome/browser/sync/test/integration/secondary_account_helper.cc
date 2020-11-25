@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -13,13 +14,13 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace secondary_account_helper {
 
@@ -42,7 +43,7 @@ base::CallbackListSubscription SetUpSigninClient(
           &OnWillCreateBrowserContextServices, test_url_loader_factory));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void InitNetwork() {
   auto* portal_detector = new chromeos::NetworkPortalDetectorTestImpl();
 
@@ -60,7 +61,7 @@ void InitNetwork() {
   // Takes ownership.
   chromeos::network_portal_detector::InitializeForTesting(portal_detector);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 AccountInfo SignInSecondaryAccount(
     Profile* profile,
@@ -85,7 +86,7 @@ void SignOutSecondaryAccount(
   signin::RemoveRefreshTokenForAccount(identity_manager, account_id);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void MakeAccountPrimary(Profile* profile, const std::string& email) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -97,6 +98,6 @@ void MakeAccountPrimary(Profile* profile, const std::string& email) {
   auto* primary_account_mutator = identity_manager->GetPrimaryAccountMutator();
   primary_account_mutator->SetPrimaryAccount(maybe_account->account_id);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace secondary_account_helper

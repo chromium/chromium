@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -120,12 +121,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        CommitLocalDevice_TransportOnly) {
   ASSERT_TRUE(SetupClients());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, Sync-the-feature gets started automatically once a primary
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -149,12 +150,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
   ASSERT_TRUE(SetupClients());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, Sync-the-feature gets started automatically once a primary
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).

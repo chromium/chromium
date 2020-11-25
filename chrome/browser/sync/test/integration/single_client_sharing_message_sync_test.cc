@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
 
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldSubmitInTransportMode) {
   // We avoid calling SetupSync(), because we don't want to turn on full sync,
@@ -270,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
   EXPECT_TRUE(WaitForSharingMessage({specifics}));
   EXPECT_TRUE(callback_checker.Wait());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldPropagateCommitFailure) {

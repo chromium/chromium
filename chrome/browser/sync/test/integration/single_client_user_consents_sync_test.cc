@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
 
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
                        ShouldSubmitIfSignedInAlthoughFullSyncNotEnabled) {
   // We avoid calling SetupSync(), because we don't want to turn on full sync,
@@ -208,6 +209,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest,
   specifics.set_account_id(GetAccountId().ToString());
   EXPECT_TRUE(ExpectUserConsents({specifics}));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

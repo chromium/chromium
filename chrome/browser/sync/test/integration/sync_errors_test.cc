@@ -5,6 +5,7 @@
 #include "base/macros.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
 // This test verifies that sync keeps retrying if it encounters error during
 // setup.
 // crbug.com/689662
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ErrorWhileSettingUp DISABLED_ErrorWhileSettingUp
 #else
 #define MAYBE_ErrorWhileSettingUp ErrorWhileSettingUp
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
   ASSERT_TRUE(SetupClients());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // On non auto start enabled environments if the setup sync fails then
   // the setup would fail. So setup sync normally.
   // In contrast on auto start enabled platforms like chrome os we should be
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::TRANSIENT_ERROR);
   EXPECT_TRUE(GetFakeServer()->EnableAlternatingTriggeredErrors());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Now setup sync and it should succeed.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 #else

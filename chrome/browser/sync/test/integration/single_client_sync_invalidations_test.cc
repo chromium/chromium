@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
@@ -265,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // ChromeOS doesn't have the concept of sign-out.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(
     SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
     SignoutAndSignin) {

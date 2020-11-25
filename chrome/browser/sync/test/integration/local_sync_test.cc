@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -67,7 +68,11 @@ class LocalSyncTest : public InProcessBrowserTest {
 };
 
 // The local sync backend is currently only supported on Windows, Mac and Linux.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// TODO(crbug.com/1052397): Reassess whether the following block needs to be
+// included in lacros-chrome once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   ProfileSyncService* service =
       ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(
@@ -97,7 +102,12 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::NIGORI);
 
   // The dictionary is currently only synced on Windows and Linux.
-#if defined(OS_WIN) || defined(OS_LINUX)
+  // TODO(crbug.com/1052397): Reassess whether the following block needs to be
+  // included
+  // in lacros-chrome once build flag switch of lacros-chrome is
+  // complete.
+
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
 
@@ -111,6 +121,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
   EXPECT_FALSE(send_tab_to_self::IsUserSyncTypeActive(browser()->profile()));
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 }  // namespace

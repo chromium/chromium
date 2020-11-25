@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -69,7 +70,7 @@ const char kExamplePslHostname[] = "psl.example.com";
 
 // Note: This helper applies to ChromeOS too, but is currently unused there. So
 // define it out to prevent a compile error due to the unused function.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void GetNewTab(Browser* browser, content::WebContents** web_contents) {
   PasswordManagerBrowserTestBase::GetNewTab(browser, web_contents);
 }
@@ -108,7 +109,7 @@ class PathDeletionWaiter {
   base::RunLoop run_loop_;
 };
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This test fixture is similar to SingleClientPasswordsSyncTest, but it also
 // sets up all the necessary test hooks etc for PasswordManager code (like
@@ -368,7 +369,7 @@ class PasswordManagerSyncTest : public SyncTest {
   AccountInfo signed_in_account_;
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   content::WebContents* web_contents = nullptr;
@@ -968,6 +969,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerTurnAccountStorageOffSyncTest,
   EXPECT_TRUE(waiter.WaitForPathToBeDeleted());
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

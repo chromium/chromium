@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -81,7 +82,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sync/test/integration/printers_helper.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
@@ -91,7 +92,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
@@ -124,13 +125,13 @@ void SetURLLoaderFactoryForTest(
       ChromeSigninClientFactory::GetForProfile(profile));
   signin_client->SetURLLoaderFactoryForTest(url_loader_factory);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::AccountManagerFactory* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
   chromeos::AccountManager* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 class FakePerUserTopicSubscriptionManager
@@ -388,7 +389,7 @@ void SyncTest::PostRunTestOnMainThread() {
 void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
   AddTestSwitches(cl);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   cl->AppendSwitch(chromeos::switches::kIgnoreUserProfileMappingForTests);
   cl->AppendSwitch(chromeos::switches::kDisableArcOptInVerification);
   arc::SetArcAvailableCommandLineForTesting(cl);
@@ -645,7 +646,7 @@ bool SyncTest::SetupClients() {
     cl->AppendSwitchASCII(switches::kSyncDeferredStartupTimeoutSeconds, "1");
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ARC_PACKAGE do not support supervised users, switches::kSupervisedUserId
   // need to be set in SetUpCommandLine() when a test will use supervise users.
   if (!cl->HasSwitch(switches::kSupervisedUserId)) {
@@ -691,7 +692,7 @@ bool SyncTest::SetupClients() {
     WaitForDataModels(verifier());
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // SplitSettingsSync makes several types (e.g. APPS, APP_LIST, PRINTERS) into
   // OS sync types. OS sync is on-by-default, so enable it here.
   if (chromeos::features::IsSplitSettingsSyncEnabled()) {
@@ -1200,7 +1201,7 @@ void SyncTest::WaitForDataModels(Profile* profile) {
   bookmarks::test::WaitForBookmarkModelToLoad(
       BookmarkModelFactory::GetForBrowserContext(profile));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   printers_helper::WaitForPrinterStoreToLoad(profile);
 #endif
 }
@@ -1332,7 +1333,7 @@ void SyncTest::StopConfigurationRefresher() {
 }
 
 arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return arc::SyncArcPackageHelper::GetInstance();
 #else
   return nullptr;

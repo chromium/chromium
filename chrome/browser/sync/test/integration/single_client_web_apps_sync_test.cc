@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -10,7 +11,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
@@ -20,7 +21,7 @@ using syncer::UserSelectableTypeSet;
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // These tests test the new Web Apps system with next generation sync.
 //
@@ -46,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 }
 
-#else   // !defined(OS_CHROMEOS)
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // These tests test the new Web Apps system with next generation sync.
 class SingleClientWebAppsSyncTest : public SyncTest {
@@ -67,6 +68,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_FALSE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
