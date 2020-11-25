@@ -121,6 +121,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
       const ppapi::PdfAccessibilityPageObjects& page_objects,
       content::RenderAccessibility* render_accessibility);
 
+  // Clears the local cache of node data used to create the tree so that
+  // replacement node data can be introduced.
+  void ClearAccessibilityNodes();
+
   content::RenderAccessibility* GetRenderAccessibility();
   std::unique_ptr<gfx::Transform> MakeTransformFromViewInfo() const;
 
@@ -163,6 +167,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   // object to which an action can be passed.
   std::map<int32_t, AnnotationInfo> node_id_to_annotation_info_;
   bool invalid_plugin_message_received_ = false;
+
+  // Index of the next expected PDF accessibility page info, used to ignore
+  // outdated calls of SetAccessibilityPageInfo().
+  uint32_t next_page_index_ = 0;
 };
 
 }  // namespace pdf

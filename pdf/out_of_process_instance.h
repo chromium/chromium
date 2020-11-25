@@ -523,6 +523,10 @@ class OutOfProcessInstance : public PdfViewPluginBase,
     ACCESSIBILITY_STATE_LOADED
   } accessibility_state_ = ACCESSIBILITY_STATE_OFF;
 
+  // The next accessibility page index, used to track interprocess calls when
+  // reconstructing the tree for new document layouts.
+  int32_t next_accessibility_page_index_ = 0;
+
   base::WeakPtrFactory<OutOfProcessInstance> weak_factory_{this};
 };
 
