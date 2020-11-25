@@ -149,6 +149,8 @@ class CORE_EXPORT HitTestResult {
   const HitTestRequest& GetHitTestRequest() const { return hit_test_request_; }
 
   void SetInnerNode(Node*);
+  void SetInnerNodeAndBoxFragment(Node*,
+                                  scoped_refptr<const NGPhysicalBoxFragment>);
   void SetInertNode(Node*);
   HTMLAreaElement* ImageAreaForImage() const;
   void SetURLElement(Element*);

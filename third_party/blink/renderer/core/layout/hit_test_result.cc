@@ -147,8 +147,8 @@ void HitTestResult::SetNodeAndPosition(
     Node* node,
     scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
     const PhysicalOffset& position) {
-  SetBoxFragment(std::move(box_fragment));
-  SetNodeAndPosition(node, position);
+  local_point_ = position;
+  SetInnerNodeAndBoxFragment(node, std::move(box_fragment));
 }
 
 void HitTestResult::OverrideNodeAndPosition(Node* node,
@@ -285,10 +285,17 @@ HTMLAreaElement* HitTestResult::ImageAreaForImage() const {
 }
 
 void HitTestResult::SetInnerNode(Node* n) {
+  SetInnerNodeAndBoxFragment(n, /* box_fragment */ nullptr);
+}
+
+void HitTestResult::SetInnerNodeAndBoxFragment(
+    Node* n,
+    scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
   if (!n) {
     inner_possibly_pseudo_node_ = nullptr;
     inner_node_ = nullptr;
     inner_element_ = nullptr;
+    DCHECK(!box_fragment);
     box_fragment_ = nullptr;
     return;
   }
@@ -309,7 +316,9 @@ void HitTestResult::SetInnerNode(Node* n) {
     }
   }
 
-  if (RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
+  if (box_fragment) {
+    SetBoxFragment(std::move(box_fragment));
+  } else if (RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
     if (const LayoutBox* layout_box = n->GetLayoutBox()) {
       // Fragmentation-aware code will set the correct box fragment on its own,
       // but sometimes we enter legacy layout code when hit-testing, e.g. for
