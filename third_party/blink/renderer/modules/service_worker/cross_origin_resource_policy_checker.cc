@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/cross_origin_resource_policy_checker.h"
 
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 
 namespace blink {
@@ -15,11 +16,7 @@ CrossOriginResourcePolicyChecker::CrossOriginResourcePolicyChecker(
         network::mojom::blink::CrossOriginEmbedderPolicyReporter> reporter)
     : policy_(std::move(policy)) {
   if (reporter) {
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        pending_reporter_non_blink{
-            reporter.PassPipe(),
-            network::mojom::CrossOriginEmbedderPolicyReporter::Version_};
-    reporter_.Bind(std::move(pending_reporter_non_blink));
+    reporter_.Bind(ToCrossVariantMojoType(std::move(reporter)));
   }
 }
 

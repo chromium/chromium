@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-blink.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -148,24 +149,19 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
       case HTTPBodyElementType::kTypeBlob: {
         DCHECK(element.optional_blob);
         mojo::Remote<mojom::blink::Blob> blob_remote(
-            mojo::PendingRemote<mojom::blink::Blob>(
-                std::move(element.optional_blob)));
+            std::move(element.optional_blob));
 
         mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
             data_pipe_getter_remote;
         blob_remote->AsDataPipeGetter(
             data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
         request_body->AppendDataPipe(
-            mojo::PendingRemote<network::mojom::DataPipeGetter>(
-                data_pipe_getter_remote.PassPipe(), 0u));
+            ToCrossVariantMojoType(std::move(data_pipe_getter_remote)));
         break;
       }
       case HTTPBodyElementType::kTypeDataPipe: {
-        // Convert the raw message pipe to
-        // mojo::Remote<network::mojom::DataPipeGetter> data_pipe_getter.
         mojo::Remote<network::mojom::blink::DataPipeGetter> data_pipe_getter(
-            mojo::PendingRemote<network::mojom::blink::DataPipeGetter>(
-                std::move(element.data_pipe_getter)));
+            std::move(element.data_pipe_getter));
 
         // Set the cloned DataPipeGetter to the output |request_body|, while
         // keeping the original message pipe back in the input |httpBody|. This
@@ -175,8 +171,7 @@ scoped_refptr<network::ResourceRequestBody> GetRequestBodyForWebHTTPBody(
             cloned_getter;
         data_pipe_getter->Clone(cloned_getter.InitWithNewPipeAndPassReceiver());
         request_body->AppendDataPipe(
-            mojo::PendingRemote<network::mojom::DataPipeGetter>(
-                cloned_getter.PassPipe(), 0u));
+            ToCrossVariantMojoType(std::move(cloned_getter)));
         element.data_pipe_getter = data_pipe_getter.Unbind();
         break;
       }

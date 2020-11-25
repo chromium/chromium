@@ -134,12 +134,9 @@ void SharedWorkerClientHolder::Connect(
   connector_->Connect(
       std::move(info), std::move(client),
       worker->GetExecutionContext()->IsSecureContext()
-          ? mojom::SharedWorkerCreationContextType::kSecure
-          : mojom::SharedWorkerCreationContextType::kNonsecure,
-      port.ReleaseHandle(),
-      mojo::PendingRemote<mojom::blink::BlobURLToken>(
-          blob_url_token.PassPipe(), mojom::blink::BlobURLToken::Version_),
-      client_ukm_source_id);
+          ? mojom::blink::SharedWorkerCreationContextType::kSecure
+          : mojom::blink::SharedWorkerCreationContextType::kNonsecure,
+      port.ReleaseHandle(), std::move(blob_url_token), client_ukm_source_id);
 }
 
 void SharedWorkerClientHolder::Trace(Visitor* visitor) const {

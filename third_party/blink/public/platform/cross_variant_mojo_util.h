@@ -3,25 +3,30 @@
 // found in the LICENSE file.
 //
 // This header defines utilities for converting between Mojo interface variant
-// types. This is useful for maintaining type safety when message pipes need to
-// be passed across the Blink public API boundary.
+// types. Any code that needs to convert interface endpoints between
+// blink::mojom::MyInterface and blink::mojom::blink::MyInterface (such as the
+// Blink public API) should use these helpers to eliminate boilerplate code and
+// improve type safety.
+//
+// Background: Mojo generates two C++ interface classes for a given interface:
+// one using STL types and another using Blink's WTF types. The two are not
+// related to each other in any way. Converting between them previously meant
+// decomposing an interface endpoint into an untyped ScopedMessagePipeHandle,
+// with only comments to document the interface type.
 //
 // Example conversion from the Blink variant into a cross-variant handle:
 //
 // namespace blink {
 //
 // void WebLocalFrameImpl::PassGoatTeleporter() {
+//   // The fully-qualified type of the Blink variant is
+//   // blink::mojom::blink::GoatTeleporter.
 //   mojo::PendingRemote<mojom::blink::GoatTeleporter> remote =
 //       ProcureGoatTeleporter();
 //
-//   // CrossVariantMojoReceiver and CrossVariantMojoRemote may created from
-//   // any interface variant. Note the use of the unrelated *InterfaceBase
-//   // class as the cross-variant handle's template parameter. This is an empty
-//   // helper class defined by the .mojom-shared.h header that is common to all
-//   // variants of a Mojo interface and is useful for implementing type safety
-//   // checks such as this one.
-//   web_local_frame_client->PassGoatTeleporter(
-//       ToCrossVariantMojoRemote(std::move(cross_variant_remote)));
+//   // `PassGoatTeleporter()`'s argument is a `CrossVariantMojoRemote<>`; see
+//   // below example for the other part of this example.
+//   web_local_frame_client->PassGoatTeleporter(std::move(remote)));
 // }
 //
 // }  // namespace blink
@@ -30,12 +35,17 @@
 //
 // namespace content {
 //
+//   // Note the use of the *InterfaceBase class as the cross-variant handle's
+//   // template parameter. This is an empty helper class defined by the
+//   // .mojom-shared.h header that is shared as a nested type alias by all
+//   // generated C++ interface class variants. The cross-variant types key off
+//   // this shared type to provide type safety.
 // void RenderFrameImpl::PassGoatTeleporter(
 //     blink::CrossVariantMojoRemote<GoatTeleporterInterfaceBase>
 //     cross_variant_remote) {
-//   mojo::PendingRemote<blink::mojom::GoatTeleporter> remote =
-//       cross_variant_remote
-//           .PassAsPendingRemote<blink::mojom::GoatTeleporter>();
+//   // Non-Blink code uses the regular variant, so the `SetGoatTeleporter`
+//   // argument has  type `blink::mojom::GoatTeleporter`.
+//   frame_host_remote_->SetGoatTeleporter(std::move(cross_variant_remote));
 // }
 //
 // }  // namespace content
@@ -55,7 +65,8 @@
 
 namespace blink {
 
-// Non-associated helpers
+// Helpers for passing a variant-less non-associated interface across the Blink
+// public API.
 
 template <typename Interface>
 class CrossVariantMojoReceiver {
@@ -122,7 +133,8 @@ class CrossVariantMojoRemote {
   mojo::ScopedMessagePipeHandle pipe_;
 };
 
-// Associated helpers
+// Helpers for passing a variant-less associated interface across the Blink
+// public API.
 
 template <typename Interface>
 class CrossVariantMojoAssociatedReceiver {
@@ -197,10 +209,40 @@ class CrossVariantMojoAssociatedRemote {
   mojo::ScopedInterfaceEndpointHandle handle_;
 };
 
+// The `ToCrossVariantMojoType` helpers are more convenient to use when there
+// isn't already an explicit CrossVariant{Associated,}{Receiver,Remote} type,
+// e.g. Blink code already has the Blink interface variant but wants to share
+// common code that requires the regular interface variant.
+template <typename VariantBase>
+auto ToCrossVariantMojoType(mojo::PendingReceiver<VariantBase>&& in) {
+  return blink::CrossVariantMojoReceiver<typename VariantBase::Base_>(
+      std::move(in));
+}
+
+template <typename VariantBase>
+auto ToCrossVariantMojoType(mojo::PendingRemote<VariantBase>&& in) {
+  return blink::CrossVariantMojoRemote<typename VariantBase::Base_>(
+      std::move(in));
+}
+
+template <typename VariantBase>
+auto ToCrossVariantMojoType(mojo::PendingAssociatedReceiver<VariantBase>&& in) {
+  return blink::CrossVariantMojoAssociatedReceiver<typename VariantBase::Base_>(
+      std::move(in));
+}
+
+template <typename VariantBase>
+auto ToCrossVariantMojoType(mojo::PendingAssociatedRemote<VariantBase>&& in) {
+  return blink::CrossVariantMojoAssociatedRemote<typename VariantBase::Base_>(
+      std::move(in));
+}
+
 }  // namespace blink
 
 namespace mojo {
 
+// Template specializations so //mojo understands how to convert between
+// Pending{Associated,}{Receiver,Remote} and the cross-variant types.
 template <typename CrossVariantBase>
 struct PendingReceiverConverter<
     blink::CrossVariantMojoReceiver<CrossVariantBase>> {

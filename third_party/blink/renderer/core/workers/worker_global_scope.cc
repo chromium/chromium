@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -563,10 +564,9 @@ WorkerGlobalScope::WorkerGlobalScope(
   // once all worker types provide a valid
   // |creation_params->browser_interface_broker|.
   if (creation_params->browser_interface_broker.is_valid()) {
-    auto pipe = creation_params->browser_interface_broker.PassPipe();
     browser_interface_broker_proxy_.Bind(
-        mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>(
-            std::move(pipe), blink::mojom::BrowserInterfaceBroker::Version_),
+        ToCrossVariantMojoType(
+            std::move(creation_params->browser_interface_broker)),
         GetTaskRunner(TaskType::kInternalDefault));
   }
 

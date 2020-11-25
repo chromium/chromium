@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
@@ -90,14 +91,12 @@ class DeviceOrientationEventPumpTest : public testing::Test {
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
 
-    mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
-    sensor_provider_.Bind(sensor_provider.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider;
+    sensor_provider_.Bind(ToCrossVariantMojoType(
+        sensor_provider.InitWithNewPipeAndPassReceiver()));
     auto* orientation_pump = MakeGarbageCollected<DeviceOrientationEventPump>(
         page_holder_->GetFrame(), false /* absolute */);
-    orientation_pump->SetSensorProviderForTesting(
-        mojo::PendingRemote<device::mojom::blink::SensorProvider>(
-            sensor_provider.PassPipe(),
-            device::mojom::SensorProvider::Version_));
+    orientation_pump->SetSensorProviderForTesting(std::move(sensor_provider));
 
     controller_ = MakeGarbageCollected<MockDeviceOrientationController>(
         orientation_pump, *page_holder_->GetFrame().DomWindow());
@@ -497,15 +496,14 @@ class DeviceAbsoluteOrientationEventPumpTest : public testing::Test {
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
 
-    mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
-    sensor_provider_.Bind(sensor_provider.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider;
+    sensor_provider_.Bind(ToCrossVariantMojoType(
+        sensor_provider.InitWithNewPipeAndPassReceiver()));
     auto* absolute_orientation_pump =
         MakeGarbageCollected<DeviceOrientationEventPump>(
             page_holder_->GetFrame(), true /* absolute */);
     absolute_orientation_pump->SetSensorProviderForTesting(
-        mojo::PendingRemote<device::mojom::blink::SensorProvider>(
-            sensor_provider.PassPipe(),
-            device::mojom::SensorProvider::Version_));
+        std::move(sensor_provider));
 
     controller_ = MakeGarbageCollected<MockDeviceOrientationController>(
         absolute_orientation_pump, *page_holder_->GetFrame().DomWindow());

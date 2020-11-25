@@ -8,13 +8,13 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/web/web_dom_message_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-
-#include "third_party/blink/public/web/web_dom_message_event.h"
 
 namespace blink {
 
@@ -51,9 +51,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
         blob.value->Uuid(),
         BlobDataHandle::Create(blob.value->Uuid(), blob.value->GetType(),
                                blob.value->size(),
-                               mojo::PendingRemote<mojom::blink::Blob>(
-                                   blob.value->CloneBlobRemote().PassPipe(),
-                                   mojom::blink::Blob::Version_)));
+                               blob.value->CloneBlobRemote()));
   }
 
   // Stream channels.
@@ -112,11 +110,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
 
   // Native file system transfer tokens.
   for (auto& token : serialized_script_value->NativeFileSystemTokens()) {
-    uint32_t token_version = token.version();
-    mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>
-        converted_token(token.PassPipe(), token_version);
-    result.message->NativeFileSystemTokens().push_back(
-        std::move(converted_token));
+    result.message->NativeFileSystemTokens().push_back(std::move(token));
   }
 
   return result;
@@ -132,11 +126,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
   for (auto& blob : message.blobs) {
     result.message->BlobDataHandles().Set(
         String::FromUTF8(blob->uuid),
-        BlobDataHandle::Create(
-            String::FromUTF8(blob->uuid), String::FromUTF8(blob->content_type),
-            blob->size,
-            mojo::PendingRemote<mojom::blink::Blob>(blob->blob.PassPipe(),
-                                                    mojom::Blob::Version_)));
+        BlobDataHandle::Create(String::FromUTF8(blob->uuid),
+                               String::FromUTF8(blob->content_type), blob->size,
+                               ToCrossVariantMojoType(std::move(blob->blob))));
   }
   if (message.sender_origin) {
     result.sender_origin =
@@ -199,12 +191,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
 
   // Convert the PendingRemote<NativeFileSystemTransferToken> from the
   // blink::mojom namespace to the blink::mojom::blink namespace.
-  for (auto& native_file_system_token : message.native_file_system_tokens) {
-    uint32_t token_version = native_file_system_token.version();
-    mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>
-        converted_token(native_file_system_token.PassPipe(), token_version);
+  for (auto& token : message.native_file_system_tokens) {
     result.message->NativeFileSystemTokens().push_back(
-        std::move(converted_token));
+        ToCrossVariantMojoType(std::move(token)));
   }
   return result;
 }

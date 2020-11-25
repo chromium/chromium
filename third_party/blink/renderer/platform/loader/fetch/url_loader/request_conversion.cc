@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -216,26 +217,23 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
         break;
       case FormDataElement::kEncodedBlob: {
         DCHECK(element.optional_blob_data_handle_);
-        mojo::Remote<mojom::Blob> blob_remote(mojo::PendingRemote<mojom::Blob>(
-            element.optional_blob_data_handle_->CloneBlobRemote().PassPipe(),
-            mojom::Blob::Version_));
-        mojo::PendingRemote<network::mojom::DataPipeGetter>
+        mojo::Remote<mojom::blink::Blob> blob_remote(
+            element.optional_blob_data_handle_->CloneBlobRemote());
+        mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
             data_pipe_getter_remote;
         blob_remote->AsDataPipeGetter(
             data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
-        dest->AppendDataPipe(std::move(data_pipe_getter_remote));
+        dest->AppendDataPipe(
+            ToCrossVariantMojoType(std::move(data_pipe_getter_remote)));
         break;
       }
       case FormDataElement::kDataPipe: {
-        // Convert network::mojom::blink::DataPipeGetter to
-        // network::mojom::DataPipeGetter through a raw message pipe.
         mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
             pending_data_pipe_getter;
         element.data_pipe_getter_->GetDataPipeGetter()->Clone(
             pending_data_pipe_getter.InitWithNewPipeAndPassReceiver());
         dest->AppendDataPipe(
-            mojo::PendingRemote<network::mojom::DataPipeGetter>(
-                pending_data_pipe_getter.PassPipe(), 0u));
+            ToCrossVariantMojoType(std::move(pending_data_pipe_getter)));
         break;
       }
     }
@@ -363,9 +361,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
         stream_body = src_body.TakeStreamBody();
     dest->request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-    mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
-        network_stream_body(stream_body.PassPipe(), 0u);
-    dest->request_body->SetToReadOnceStream(std::move(network_stream_body));
+    dest->request_body->SetToReadOnceStream(
+        ToCrossVariantMojoType(std::move(stream_body)));
     dest->request_body->SetAllowHTTP1ForStreamingUpload(
         src.AllowHTTP1ForStreamingUpload());
   }

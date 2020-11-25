@@ -58,10 +58,7 @@ StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
         out->length = element.optional_blob_data_handle_->size();
 
         mojo::Remote<blink::mojom::blink::Blob> blob_remote(
-            mojo::PendingRemote<blink::mojom::blink::Blob>(
-                element.optional_blob_data_handle_->CloneBlobRemote()
-                    .PassPipe(),
-                blink::mojom::blink::Blob::Version_));
+            element.optional_blob_data_handle_->CloneBlobRemote());
         blob_remote->AsDataPipeGetter(
             out->data_pipe_getter.InitWithNewPipeAndPassReceiver());
         break;
