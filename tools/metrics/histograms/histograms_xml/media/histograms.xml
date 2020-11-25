@@ -3031,6 +3031,103 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Video width while remoting content.</summary>
 </histogram>
 
+<histogram name="Media.RtcLowLatencyVideoRenderer.AverageQueueLengthX10"
+    units="frames" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    10 times the average queue length when Render() is called in the RTC
+    low-latency video renderer. Repeatedly measured with a period of 100 s for
+    as long as the stream is active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.DrainedFramesPermille"
+    units="permille" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Per mille of frames drained in the RTC low-latency video renderer.
+    Repeatedly measured with a period of 100 s for as long as the stream is
+    active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.DroppedFramesPermille"
+    units="permille" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Per mille of frames dropped in the RTC low-latency video renderer.
+    Repeatedly measured with a period of 100 s for as long as the stream is
+    active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.EnterDrainModeCount"
+    units="count" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Number of times drain mode is entered. Repeatedly measured with a period of
+    100 s for as long as the stream is active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.MaxSizeDropQueueCount"
+    units="count" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Number of times the maximum queue size is exceeded and the entire queue is
+    dropped. Repeatedly measured with a period of 100 s for as long as the
+    stream is active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.NoNewFrameToRenderPermille"
+    units="permille" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Per mille of render times where the queue is empty and there is no new frame
+    to render. Repeatedly measured with a period of 100 s for as long as the
+    stream is active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.ReduceSteadyStateCount"
+    units="count" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Number of times the reduce steady state queue feature is activated.
+    Repeatedly measured with a period of 100 s for as long as the stream is
+    active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.TotalFrames" units="frames"
+    expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Total number of frames enqueued to the RTC low-latency video renderer.
+    Repeatedly measured with a period of 100 s for as long as the stream is
+    active.
+  </summary>
+</histogram>
+
+<histogram name="Media.RtcLowLatencyVideoRenderer.TryToRenderFrameCount"
+    units="count" expires_after="2021-05-31">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Number of times we try to render a new frame. Repeatedly measured with a
+    period of 100 s for as long as the stream is active.
+  </summary>
+</histogram>
+
 <histogram name="Media.RTCVideoDecoderError" enum="VideoDecodeAcceleratorError"
     expires_after="M82">
   <owner>posciak@chromium.org</owner>
