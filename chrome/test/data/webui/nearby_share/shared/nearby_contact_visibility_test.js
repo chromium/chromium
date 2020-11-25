@@ -93,6 +93,14 @@ suite('nearby-contact-visibility', () => {
   }
 
   /**
+   * @return {boolean} true when the unreachable contacts message is visibile
+   */
+  function isUnreachableMessageVisible() {
+    return test_util.isChildVisible(
+        visibilityElement, '#unreachableMessage', false);
+  }
+
+  /**
    * Checks the state of the contacts toggle button group
    * @param {boolean} all is allContacts checked?
    * @param {boolean} some is someContacts checked?
@@ -228,5 +236,50 @@ suite('nearby-contact-visibility', () => {
         assertFalse(isZeroStateVisible());
         assertFalse(areContactCheckBoxesVisible());
         assertTrue(isNoContactsSectionVisible());
+      });
+
+  test(
+      'Unreachable message appears for 1 unreachable contact',
+      async function() {
+        fakeContactManager.setupContactRecords();
+        fakeContactManager.setNumUnreachable(1);
+        fakeContactManager.completeDownload();
+        visibilityElement.set(
+            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+
+        // need to wait for the next render to see results
+        await test_util.waitAfterNextRender(visibilityElement);
+
+        assertTrue(isUnreachableMessageVisible());
+      });
+
+  test(
+      'Unreachable message appears for more than 1 unreachable contact',
+      async function() {
+        fakeContactManager.setupContactRecords();
+        fakeContactManager.setNumUnreachable(3);
+        fakeContactManager.completeDownload();
+        visibilityElement.set(
+            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+
+        // need to wait for the next render to see results
+        await test_util.waitAfterNextRender(visibilityElement);
+
+        assertTrue(isUnreachableMessageVisible());
+      });
+
+  test(
+      'Unreachable message hidden for 0 unreachable contacts',
+      async function() {
+        fakeContactManager.setupContactRecords();
+        fakeContactManager.setNumUnreachable(0);
+        fakeContactManager.completeDownload();
+        visibilityElement.set(
+            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+
+        // need to wait for the next render to see results
+        await test_util.waitAfterNextRender(visibilityElement);
+
+        assertFalse(isUnreachableMessageVisible());
       });
 });

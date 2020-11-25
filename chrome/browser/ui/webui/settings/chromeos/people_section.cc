@@ -21,7 +21,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/chromeos/sync/os_sync_handler.h"
-#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/fingerprint_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/kerberos_accounts_handler.h"
@@ -848,16 +847,6 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::PeopleHandler>(profile()));
   web_ui->AddMessageHandler(
       std::make_unique<::settings::ProfileInfoHandler>(profile()));
-
-  auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
-    plural_string_handler->AddLocalizedString("profileLabel",
-                                              IDS_OS_SETTINGS_PROFILE_LABEL_V2);
-  } else {
-    plural_string_handler->AddLocalizedString("profileLabel",
-                                              IDS_OS_SETTINGS_PROFILE_LABEL);
-  }
-  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   if (account_manager_) {
     web_ui->AddMessageHandler(

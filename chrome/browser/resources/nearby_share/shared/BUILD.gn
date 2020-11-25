@@ -104,7 +104,9 @@ js_library("nearby_contact_visibility") {
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group",
     "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
   ]
 }
 
@@ -196,7 +198,9 @@ js_library("nearby_contact_visibility.m") {
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":nearby_contact_visibility_module" ]
 }

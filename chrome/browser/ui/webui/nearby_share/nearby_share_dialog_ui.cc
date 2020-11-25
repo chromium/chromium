@@ -17,6 +17,7 @@
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -65,6 +66,12 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&NearbyShareDialogUI::HandleClose,
                                    base::Unretained(this)));
+
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString(
+      "nearbyShareContactVisibilityNumUnreachable",
+      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   content::WebUIDataSource::Add(profile, html_source);
 

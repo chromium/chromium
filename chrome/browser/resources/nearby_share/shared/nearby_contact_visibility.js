@@ -108,6 +108,20 @@ Polymer({
       value: null,
     },
 
+    /** @private */
+    numUnreachable_: {
+      type: Number,
+      value: 0,
+      observer: 'updateNumUnreachableMessage_',
+    },
+
+    /** @private */
+    numUnreachableMessage_: {
+      type: String,
+      value: '',
+      notify: true,
+    },
+
     isVisibilitySelected: {
       type: Boolean,
       computed: 'isVisibilitySelected_(selectedVisibility)',
@@ -241,8 +255,12 @@ Polymer({
    *     the user so they can see who can see their device for visibility
    *     kAllContacts and so they can choose which contacts are
    *     |allowedContacts| for kSelectedContacts visibility.
+   * @param {number} numUnreachableExcluded the number of contact records that
+   *     are not reachable for Nearby Share. These are not included in the list
+   *     of contact records.
    */
-  onContactsDownloaded(allowedContacts, contactRecords) {
+  onContactsDownloaded(
+      allowedContacts, contactRecords, numUnreachableExcluded) {
     clearTimeout(this.downloadTimeoutId_);
 
     // TODO(vecore): Do a smart two-way merge that only splices actual changes.
@@ -257,6 +275,7 @@ Polymer({
     this.contacts = items;
     this.contactsState = items.length > 0 ? ContactsState.HAS_CONTACTS :
                                             ContactsState.ZERO_CONTACTS;
+    this.numUnreachable_ = numUnreachableExcluded;
   },
 
   /**
@@ -440,6 +459,33 @@ Polymer({
       event.preventDefault();
       this.downloadContacts_();
     });
+  },
+
+  /**
+   * @return {boolean} true if the unreachable contacts message should be shown
+   * @private
+   */
+  showUnreachableContactsMessage_() {
+    return this.numUnreachable_ > 0;
+  },
+
+  /** @private */
+  updateNumUnreachableMessage_() {
+    if (this.numUnreachable_ === 0) {
+      this.numUnreachableMessage_ = '';
+      return;
+    }
+
+    // Template: "# contacts are not available." with correct plural of
+    // "contact".
+    const labelTemplate =
+        cr.sendWithPromise(
+              'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
+              this.numUnreachable_)
+            .then((labelTemplate) => {
+              this.numUnreachableMessage_ = loadTimeData.substituteString(
+                  labelTemplate, this.numUnreachable_);
+            });
   },
 });
 })();

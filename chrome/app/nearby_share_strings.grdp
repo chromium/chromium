@@ -25,6 +25,12 @@
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_TITLE" desc="Title text shown when there are no reachable contacts with a Google Account to select from.">
     No reachable contacts
   </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE" desc="Informational message indicating that there are contacts that are not connectable for sharing with the Nearby Share feature.">
+    {COUNT, plural,
+      =1 {# contact is not available. To use Nearby Share with them, add the email address associated with their Google Account to your contacts.}
+      other {# contacts are not available. To use Nearby Share with them, add the email address associated with their Google Account to your contacts.}
+    }
+  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OTHERS" desc="Describes when nearby devices are visible to this user when using the Nearby Share feature.">
     People who have chosen to be visible to you when their screen is unlocked and devices near you when Nearby Share is open
   </message>

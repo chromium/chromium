@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
@@ -186,6 +187,8 @@ void MainSection::AddHandlers(content::WebUI* web_ui) {
 
   web_ui->AddMessageHandler(
       std::make_unique<::settings::BrowserLifetimeHandler>());
+
+  web_ui->AddMessageHandler(CreatePluralStringHandler());
 }
 
 int MainSection::GetSectionNameMessageId() const {
@@ -237,6 +240,21 @@ void MainSection::AddChromeOSUserStrings(
       "secondaryUserBannerText",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SECONDARY_USER_BANNER,
                                  base::ASCIIToUTF16(primary_user_email)));
+}
+
+std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    plural_string_handler->AddLocalizedString("profileLabel",
+                                              IDS_OS_SETTINGS_PROFILE_LABEL_V2);
+  } else {
+    plural_string_handler->AddLocalizedString("profileLabel",
+                                              IDS_OS_SETTINGS_PROFILE_LABEL);
+  }
+  plural_string_handler->AddLocalizedString(
+      "nearbyShareContactVisibilityNumUnreachable",
+      IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+  return plural_string_handler;
 }
 
 }  // namespace settings

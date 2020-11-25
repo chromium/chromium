@@ -6,7 +6,9 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="nearby_contact_manager.html">
@@ -25,7 +27,11 @@
       }
 
       .grey-icon {
-        color: var(--google-grey-refresh-700);
+        fill: var(--google-grey-refresh-700);
+      }
+
+      .light-grey-icon {
+        fill: var(--google-grey-refresh-500);
       }
 
       #main {
@@ -173,6 +179,12 @@
 
       #contactsHeading {
         font-size: 1.2rem;
+      }
+
+      #unreachableMessage {
+        color: var(--google-grey-refresh-500);
+        font-size: 11px;
+        line-height: 16px;
       }
 
       .contact-item {
@@ -370,6 +382,18 @@
               if="[[showContactList_(selectedVisibility,
                   contactsState)]]">
             <div id="contactList">
+              <template is="dom-if"
+                  if="[[showUnreachableContactsMessage_(
+                      numUnreachable_)]]">
+                <div class="explanation-section">
+                  <iron-icon icon="nearby20:info"
+                      class="padded-icon light-grey-icon">
+                  </iron-icon>
+                  <div id="unreachableMessage">
+                    [[numUnreachableMessage_]]
+                  </div>
+                </div>
+              </template>
               <template is="dom-repeat" items="[[contacts]]">
                 <div class="contact-item"
                     disabled$="[[isVisibility_(selectedVisibility,'none')]]">

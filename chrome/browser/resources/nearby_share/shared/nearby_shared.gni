@@ -7,6 +7,7 @@ nearby_shared_auto_imports = [
   "chrome/browser/resources/nearby_share/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings",
   "chrome/browser/resources/nearby_share/shared/nearby_contact_manager.html|getContactManager,observeContactManager",
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
+  "ui/webui/resources/html/cr.html|sendWithPromise",
 ]
 
 nearby_shared_namespace_rewrites = [

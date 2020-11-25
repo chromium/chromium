@@ -8,6 +8,8 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
+class PluralStringHandler;
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
@@ -35,6 +37,7 @@ class MainSection : public OsSettingsSection {
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   void AddChromeOSUserStrings(content::WebUIDataSource* html_source);
+  std::unique_ptr<PluralStringHandler> CreatePluralStringHandler();
 };
 
 }  // namespace settings
