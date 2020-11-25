@@ -631,7 +631,7 @@ const PiexLoader = {};
  * the caller should initiate failure recovery steps.
  *
  * @param {!ArrayBuffer|!File|string} source
- * @param {function()} onPiexModuleFailed
+ * @param {!function()} onPiexModuleFailed
  * @return {!Promise<!PiexLoaderResponse>}
  */
 PiexLoader.load = function(source, onPiexModuleFailed) {
