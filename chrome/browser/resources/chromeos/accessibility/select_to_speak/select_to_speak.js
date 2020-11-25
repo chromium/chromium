@@ -595,12 +595,39 @@ class SelectToSpeak {
       return;
     }
     switch (panelAction) {
+      case SelectToSpeakPanelAction.NEXT_PARAGRAPH:
+        this.navigateToNextParagraph_(constants.Dir.FORWARD);
+        break;
+      case SelectToSpeakPanelAction.PREVIOUS_PARAGRAPH:
+        this.navigateToNextParagraph_(constants.Dir.BACKWARD);
+        break;
       case SelectToSpeakPanelAction.EXIT:
         this.stopAll_();
         break;
       default:
         // TODO(crbug.com/1140216): Implement other actions.
     }
+  }
+
+  /**
+   * Navigates to the next text block in the given direction.
+   * @param {constants.Dir} direction
+   * @private
+   */
+  navigateToNextParagraph_(direction) {
+    if (this.currentBlockParent_ === null) {
+      return;
+    }
+    // Retrieve the nodes that make up the next/prev paragraph.
+    const nextParagraphNodes =
+        NodeUtils.getNextParagraph(this.currentBlockParent_, direction);
+    if (nextParagraphNodes.length === 0) {
+      return;
+    }
+    // Ensure the first node in the paragraph is visible.
+    nextParagraphNodes[0].makeVisible();
+
+    this.startSpeechQueue_(nextParagraphNodes);
   }
 
   /**

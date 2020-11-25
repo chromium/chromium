@@ -17,23 +17,6 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   }
 
   /**
-   * Function to trigger select-to-speak to read selected text at a
-   * keystroke.
-   */
-  triggerReadSelectedText() {
-    assertFalse(this.mockTts.currentlySpeaking());
-    assertEquals(this.mockTts.pendingUtterances().length, 0);
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
-    assertTrue(selectToSpeak.inputHandler_.isSelectionKeyDown_);
-    selectToSpeak.fireMockKeyUpEvent(
-        {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
-    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
-  }
-
-  /**
    * Function to load a simple webpage, select some of the single text
    * node, and trigger Select-to-Speak to read that partial node. Tests
    * that the selected region creates tts output that matches the expected

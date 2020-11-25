@@ -15,8 +15,10 @@ SelectToSpeakNodeUtilsUnitTest.prototype.extraLibraries = [
   'word_utils.js',
   '../common/closure_shim.js',
   '../common/constants.js',
+  '../common/automation_predicate.js',
   '../common/automation_util.js',
   '../common/rect_util.js',
+  '../common/tree_walker.js',
 ];
 
 
@@ -487,3 +489,94 @@ TEST_F(
       assertEquals(nodes[5].name, 'SVG 2 Node 2');
       assertEquals(nodes[6].name, 'Text Node 3');
     });
+
+TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraph', function() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph1 =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 = createMockNode(
+      {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+  const text2 = createMockNode(
+      {role: 'staticText', parent: paragraph1, root, name: 'Line 2'});
+  const paragraph2 =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text3 = createMockNode(
+      {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+
+  // Forward from first text node of paragraph 1 gives paragraph 2 nodes.
+  let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text3);
+
+  // Forward from second text node of paragraph 1 gives paragraph 2 nodes.
+  result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text3);
+
+  // Forward from paragraph 1 node gives paragraph 2 nodes.
+  result = NodeUtils.getNextParagraph(paragraph1, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text3);
+
+  // Forward from text node of paragraph 2 returns no nodes.
+  result = NodeUtils.getNextParagraph(text3, constants.Dir.FORWARD);
+  assertEquals(result.length, 0);
+
+  // Forward from paragraph 2 returns no nodes.
+  result = NodeUtils.getNextParagraph(paragraph2, constants.Dir.FORWARD);
+  assertEquals(result.length, 0);
+
+  // Backward from text node of paragraph 2 returns paragraph 1 nodes.
+  result = NodeUtils.getNextParagraph(text3, constants.Dir.BACKWARD);
+  assertEquals(result.length, 2);
+  assertEquals(result[0], text1);
+  assertEquals(result[1], text2);
+
+  // Backward from paragraph 2 node returns paragraph 1 nodes.
+  result = NodeUtils.getNextParagraph(paragraph2, constants.Dir.BACKWARD);
+  assertEquals(result.length, 2);
+  assertEquals(result[0], text1);
+  assertEquals(result[1], text2);
+
+  // Backward from text node of paragraph 1 returns no nodes.
+  result = NodeUtils.getNextParagraph(text2, constants.Dir.BACKWARD);
+  assertEquals(result.length, 0);
+
+  // Backward from text node of paragraph 1 returns no nodes.
+  result = NodeUtils.getNextParagraph(text1, constants.Dir.BACKWARD);
+  assertEquals(result.length, 0);
+
+  // Backward from paragraph 1 node returns no nodes.
+  result = NodeUtils.getNextParagraph(paragraph1, constants.Dir.BACKWARD);
+  assertEquals(result.length, 0);
+});
+
+/**
+ * Creates a AutomationNode-like object.
+ * @param {!Object} properties
+ */
+function createMockNode(properties) {
+  const node = Object.assign(
+      {
+        htmlAttributes: [],
+        state: {},
+        children: [],
+        location: {},
+      },
+      properties);
+
+  if (node.parent) {
+    // Update children of parent and sibling properties.
+    const parent = node.parent;
+    if (parent.children.length === 0) {
+      parent.children = [];
+      parent.firstChild = node;
+    } else {
+      node.previousSibling = parent.children[parent.children.length - 1];
+      node.previousSibling.nextSibling = node;
+    }
+    parent.children.push(node);
+    parent.lastChild = node;
+  }
+  return node;
+}

@@ -20,6 +20,7 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
     `);
   }
 
@@ -57,5 +58,21 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
    */
   findTextNode(root, text) {
     return root.find({role: 'staticText', attributes: {name: text}});
+  }
+
+  /**
+   * Triggers select-to-speak to read selected text at a keystroke.
+   */
+  triggerReadSelectedText() {
+    assertFalse(this.mockTts.currentlySpeaking());
+    assertEquals(this.mockTts.pendingUtterances().length, 0);
+    selectToSpeak.fireMockKeyDownEvent(
+        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
+    selectToSpeak.fireMockKeyDownEvent(
+        {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
+    assertTrue(selectToSpeak.inputHandler_.isSelectionKeyDown_);
+    selectToSpeak.fireMockKeyUpEvent(
+        {keyCode: SelectToSpeak.READ_SELECTION_KEY_CODE});
+    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
   }
 };

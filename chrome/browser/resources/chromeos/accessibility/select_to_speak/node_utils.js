@@ -458,6 +458,45 @@ class NodeUtils {
       NodeUtils.sortNodeRangeByReadingOrder(nodes, startIndex, nodes.length);
     }
   }
+
+  /**
+   * @param {!AutomationNode} node Node to traverse from.
+   * @param {constants.Dir} direction Direction to traverse.
+   * @return {!Array<!AutomationNode>} Returns all selectable leaf text nodes
+   *     within the paragraph adjacent to the given node.
+   */
+  static getNextParagraph(node, direction) {
+    let nextNode = AutomationUtil.findNextNode(
+        node, direction, AutomationPredicate.leafWithText,
+        {skipInitialSubtree: true});
+    while (
+        nextNode !== null &&
+        (NodeUtils.shouldIgnoreNode(nextNode, /* includeOffscreen= */ true) ||
+         NodeUtils.isNotSelectable(nextNode) ||
+         ParagraphUtils.inSameParagraph(node, nextNode))) {
+      nextNode = AutomationUtil.findNextNode(
+          nextNode, direction, AutomationPredicate.leafWithText);
+    }
+    if (nextNode === null) {
+      return [];
+    }
+
+    // Now construct an array with all leaf nodes within the block.
+    const nodes = [];
+    do {
+      if (!NodeUtils.shouldIgnoreNode(nextNode, /* includeOffscreen= */ true) &&
+          !NodeUtils.isNotSelectable(nextNode)) {
+        nodes.push(nextNode);
+      }
+      nextNode = AutomationUtil.findNextNode(
+          nextNode, direction, AutomationPredicate.leafWithText);
+    } while (nextNode !== null &&
+             ParagraphUtils.inSameParagraph(nodes[0], nextNode));
+
+    // Reverse the nodes if we were traversing backward, so the returned result
+    // is in natural DOM order.
+    return direction === constants.Dir.BACKWARD ? nodes.reverse() : nodes;
+  }
 }
 
 /**

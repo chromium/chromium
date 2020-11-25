@@ -156,8 +156,10 @@ js2gtest("misc_unit_tests_js") {
   extra_js_files = [
     "braille_ime/braille_ime.js",
     "common/constants.js",
+    "common/automation_predicate.js",
     "common/automation_util.js",
     "common/rect_util.js",
+    "common/tree_walker.js",
     "select_to_speak/paragraph_utils.js",
     "select_to_speak/select_to_speak.js",
     "select_to_speak/test_support.js",
