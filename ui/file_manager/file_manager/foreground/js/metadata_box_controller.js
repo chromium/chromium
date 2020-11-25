@@ -28,7 +28,7 @@ class MetadataBoxController {
     this.quickViewModel_ = quickViewModel;
 
     /**
-     * @type {FilesMetadataBox} metadataBox
+     * @type {FilesMetadataBoxElement} metadataBox
      * @private
      */
     this.metadataBox_ = null;

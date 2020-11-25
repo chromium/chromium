@@ -55,6 +55,7 @@ js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   deps = [
     ":files_icon_button.m",
+    ":files_metadata_box.m",
     ":files_metadata_entry.m",
     ":files_ripple.m",
     ":files_toggle_ripple.m",
@@ -124,6 +125,21 @@ js_unittest("files_message_unittest") {
 
 js_library("files_metadata_box") {
   externs_list = [ "$externs_path/pending_polymer.js" ]
+}
+
+polymer_modulizer("files_metadata_box") {
+  js_file = "files_metadata_box.js"
+  html_file = "files_metadata_box.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+}
+
+js_library("files_metadata_box.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_metadata_box.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":files_metadata_box_module" ]
 }
 
 js_library("files_metadata_entry") {
