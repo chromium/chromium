@@ -12,6 +12,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
+#include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -187,6 +188,12 @@ bool VerifyBeginNavigationCommonParams(
         process, bad_message::RFH_BASE_URL_FOR_DATA_URL_SPECIFIED);
     return false;
   }
+
+  // Asynchronous (browser-controlled, but) renderer-initiated navigations can
+  // not be same-document. Allowing this incorrectly could have us try to
+  // navigate an existing document to a different site.
+  if (NavigationTypeUtils::IsSameDocument(common_params->navigation_type))
+    return false;
 
   // Verification succeeded.
   return true;

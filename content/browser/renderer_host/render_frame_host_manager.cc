@@ -688,13 +688,30 @@ bool RenderFrameHostManager::HasPendingCommitForCrossDocumentNavigation()
 
 void RenderFrameHostManager::DidCreateNavigationRequest(
     NavigationRequest* request) {
-  if (request->IsServedFromBackForwardCache()) {
+  const bool force_use_current_render_frame_host =
+      // Since the frame from the back-forward cache is being committed to the
+      // SiteInstance we already have, it is treated as current.
+      request->IsServedFromBackForwardCache();
+
+  if (force_use_current_render_frame_host) {
+    // This method should generally be calling GetFrameHostForNavigation() in
+    // order to choose the correct RenderFrameHost, and choose a speculative
+    // RenderFrameHost when the navigation can not be performed in the current
+    // frame. Getting this wrong has security consequences as it could allow a
+    // document from a different security context to be loaded in the current
+    // frame and gain access to things in-process that it should not.
+    // However, there are some situations where we know that we want to perform
+    // the navigation in the current frame. In that case we must be sure that
+    // the renderer is not *controlling* the navigation. The BeginNavigation()
+    // path allows the renderer to specify all the parameters of the
+    // NavigationRequest, so we should never allow it to specify that the
+    // navigation be performed in the current RenderFrameHost.
+    CHECK(!request->from_begin_navigation());
+
     // Cleanup existing pending RenderFrameHost. This corresponds to what is
-    // done inside GetFrameHostForNavigation(request), but this isn't called
-    // with the back-forward cache.
+    // done inside GetFrameHostForNavigation(request), but we avoid calling that
+    // method for navigations which will be forced into the current document.
     CleanUpNavigation();
-    // Since the frame from the back-forward cache is being committed to the
-    // SiteInstance we already have, it is treated as current.
     request->set_associated_site_instance_type(
         NavigationRequest::AssociatedSiteInstanceType::CURRENT);
   } else {
