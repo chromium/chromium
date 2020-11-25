@@ -659,9 +659,7 @@ public final class ChildProcessLauncherHelperImpl {
         assert sLinkerInitialized;
         if (sLinkerLoadAddress == 0) return null;
 
-        // Always wait for the shared RELROs in service processes.
-        final boolean waitForSharedRelros = true;
-        return new ChromiumLinkerParams(sLinkerLoadAddress, waitForSharedRelros);
+        return new ChromiumLinkerParams(sLinkerLoadAddress);
     }
 
     private static Bundle populateServiceBundle(Bundle bundle) {

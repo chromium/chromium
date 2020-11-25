@@ -108,12 +108,8 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         if (LibraryLoader.getInstance().useChromiumLinker()) {
             assert mLinkerParams != null;
             linker = getLinker();
-            if (mLinkerParams.mWaitForSharedRelro) {
-                requestedSharedRelro = true;
-                linker.initServiceProcess(mLinkerParams.mBaseLoadAddress);
-            } else {
-                linker.disableSharedRelros();
-            }
+            requestedSharedRelro = true;
+            linker.initServiceProcess(mLinkerParams.mBaseLoadAddress);
         }
         try {
             LibraryLoader.getInstance().loadNowOverrideApplicationContext(hostContext);

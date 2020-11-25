@@ -108,7 +108,7 @@ class LegacyLinker extends Linker {
      * Native method used to add a zip archive or APK to the search path
      * for native libraries. Allows loading directly from it.
      *
-     * @param zipfilePath Path of the zip file containing the libraries.
+     * @param zipFilePath Path of the zip file containing the libraries.
      * @return true for success, false otherwise.
      */
     private static native boolean nativeAddZipArchivePath(String zipFilePath);

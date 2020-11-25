@@ -98,7 +98,7 @@ import javax.annotation.concurrent.GuardedBy;
  *
  *  - The browser is in charge of deciding where in memory each library should
  *    be loaded. This address must be passed to each service process (see
- *    ChromiumLinkerParams.java in //content for a helper class to do so).
+ *    {@link org.chromium.content.app.ChromiumLinkerParams} for a helper class to do so).
  *
  *  - The browser will also generate shared RELRO for the loaded library.
  *
