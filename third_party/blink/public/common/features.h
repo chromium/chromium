@@ -341,6 +341,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kTargetBlankImpliesNoOpener;
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kMediaStreamTrackUseConfigMaxFrameRate;
+
+BLINK_COMMON_EXPORT extern const base::Feature kCloneSessionStorageForNoOpener;
 }  // namespace features
 }  // namespace blink
 

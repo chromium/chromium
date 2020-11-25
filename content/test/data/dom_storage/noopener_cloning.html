@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Open a new window with noopener</title>
+</head>
+<body>
+<script>
+    var storage = window.sessionStorage;
+    storage.clear();
+
+    storage.setItem('setBy', 'firstTab');
+
+    let channel = new BroadcastChannel('storage_session_window_noopener');
+    channel.addEventListener('message', function(e) {
+        document.location.hash = '#'+e.data.setBy;
+    });
+
+    var win = window.open('session_storage_popup.html', '_blank', 'noopener');
+</script>
+</body>
+</html>

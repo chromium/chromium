@@ -829,5 +829,11 @@ const base::Feature kTargetBlankImpliesNoOpener{
 // TODO(crbug.com/1152307): Remove in M91.
 const base::Feature kMediaStreamTrackUseConfigMaxFrameRate{
     "MediaStreamTrackUseConfigMaxFrameRate", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Kill switch for the new behavior whereby noopener windows no longer get their
+// sessionStorage cloned from their originator. TODO(crbug.com/1151381): Remove
+// in Chrome 92.
+const base::Feature kCloneSessionStorageForNoOpener{
+    "CloneSessionStorageForNoOpener", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

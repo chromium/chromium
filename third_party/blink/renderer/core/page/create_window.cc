@@ -297,11 +297,11 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
       AllocateSessionStorageNamespaceId();
 
   Page* old_page = opener_frame.GetPage();
-  // TODO(dmurph): Don't copy session storage when features.noopener is true:
-  // https://html.spec.whatwg.org/C/#copy-session-storage
-  // https://crbug.com/771959
-  CoreInitializer::GetInstance().CloneSessionStorage(old_page,
-                                                     new_namespace_id);
+  if (!features.noopener ||
+      base::FeatureList::IsEnabled(features::kCloneSessionStorageForNoOpener)) {
+    CoreInitializer::GetInstance().CloneSessionStorage(old_page,
+                                                       new_namespace_id);
+  }
 
   bool consumed_user_gesture = false;
   Page* page = old_page->GetChromeClient().CreateWindow(

@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
@@ -197,6 +198,30 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DataMigrates) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_FALSE(base::PathExists(db_path));
   }
+}
+
+// Verify that when kCloneSessionStorageForNoOpener is enabled, sessionStorage
+// is cloned for popups even when |noopener| is specified.
+// TODO(crbug.com/1151381): Remove in Chrome 92.
+class DOMStorageCloningBrowserTest : public ContentBrowserTest {
+ public:
+  DOMStorageCloningBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kCloneSessionStorageForNoOpener);
+  }
+
+  void PopupTest(const GURL& test_url, const std::string& expected) {
+    NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
+    std::string result = shell()->web_contents()->GetLastCommittedURL().ref();
+    EXPECT_EQ(result, expected);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DOMStorageCloningBrowserTest, NoOpenerTest) {
+  PopupTest(GetTestUrl("dom_storage", "noopener_cloning.html"), "firstTab");
 }
 
 }  // namespace content

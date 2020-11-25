@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Second page</title>
+</head>
+<body>
+<script>
+var storage = window.sessionStorage;
+let channel = new BroadcastChannel('storage_session_window_noopener');
+channel.postMessage({'setBy': storage.getItem('setBy')}, '*');
+window.close();
+</script>
+</body>
+</html>
