@@ -257,8 +257,6 @@ class InputMethodManagerImpl : public InputMethodManager,
                const content::NotificationDetails& details) override;
 
  private:
-  friend class InputMethodManagerImplTest;
-
   // CandidateWindowController::Observer overrides:
   void CandidateClicked(int index) override;
   void CandidateWindowOpened() override;
