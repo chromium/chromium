@@ -90,6 +90,7 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
       {"logTypePrinterText", IDS_DEVICE_LOG_TYPE_PRINTER},
       {"logTypeFidoText", IDS_DEVICE_LOG_TYPE_FIDO},
       {"logTypeSerialText", IDS_DEVICE_LOG_TYPE_SERIAL},
+      {"logTypeCameraText", IDS_DEVICE_LOG_TYPE_CAMERA},
       {"logEntryFormat", IDS_DEVICE_LOG_ENTRY},
   };
   AddLocalizedStringsBulk(html, kStrings);
