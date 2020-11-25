@@ -15,6 +15,33 @@
   const cancelButton = '#cancel-selection-button[has-tooltip]';
 
   /**
+   * $i18n{} labels used when template replacement is disabled.
+   */
+  const i18nLabels = {
+    'SEARCH_TEXT_LABEL': 'Search',
+    'READONLY_INDICATOR_TOOLTIP':
+        'The contents of this folder are read-only. ' +
+        'Some activities are not supported.',
+    'CANCEL_SELECTION_BUTTON_LABEL': 'Cancel selection',
+  };
+
+  /**
+   * Returns $i18n{} label if devtools code coverage is active, otherwise the
+   * replaced contents.
+   *
+   * @param {string} key $i18n{} key of replacement text
+   */
+  async function getExpectedLabelText(key) {
+    const isDevtoolsCoverageActive =
+        await sendTestMessage({name: 'isDevtoolsCoverageActive'});
+    if (isDevtoolsCoverageActive === 'true') {
+      return '$i18n{' + key + '}';
+    }
+
+    return i18nLabels[key];
+  }
+
+  /**
    * Tests that tooltip is displayed when focusing an element with tooltip.
    */
   testcase.filesTooltipFocus = async () => {
@@ -27,10 +54,11 @@
         await remoteCall.callRemoteTestUtil('focus', appId, [searchButton]));
 
     // The tooltip should be visible.
+    let expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
     tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     let label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq('Search', label.text);
+    chrome.test.assertEq(expectedLabelText, label.text);
 
     // Focus another button with tooltip.
     chrome.test.assertTrue(
@@ -58,10 +86,12 @@
         await remoteCall.callRemoteTestUtil('focus', appId, [cancelButton]));
 
     // The tooltip should be visible.
+    expectedLabelText =
+        await getExpectedLabelText('CANCEL_SELECTION_BUTTON_LABEL');
     tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq('Cancel selection', label.text);
+    chrome.test.assertEq(expectedLabelText, label.text);
   };
 
   /**
@@ -77,10 +107,11 @@
         'fakeMouseOver', appId, [searchButton]));
 
     // The tooltip should be visible.
+    let expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
     tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     let label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq('Search', label.text);
+    chrome.test.assertEq(expectedLabelText, label.text);
 
     // Hover another button with tooltip.
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -101,13 +132,12 @@
         'fakeMouseOver', appId, [readonlyIndicator]));
 
     // The tooltip should be visible.
+    expectedLabelText =
+        await getExpectedLabelText('READONLY_INDICATOR_TOOLTIP');
     tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(
-        'The contents of this folder are read-only.' +
-        ' Some activities are not supported.',
-        label.text);
+    chrome.test.assertEq(expectedLabelText, label.text);
     chrome.test.assertEq('card-tooltip', tooltip.attributes['class']);
     chrome.test.assertEq('card-label', label.attributes['class']);
 
@@ -124,10 +154,11 @@
         'fakeMouseOver', appId, [searchButton]));
 
     // The tooltip should be visible.
+    expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
     tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq('Search', label.text);
+    chrome.test.assertEq(expectedLabelText, label.text);
 
     // Tooltip class should be cleared as ordinary tooltip shown.
     chrome.test.assertEq('', label.attributes['class']);
@@ -147,10 +178,11 @@
         'fakeMouseOver', appId, [searchButton]));
 
     // The tooltip should be visible.
+    const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
     tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     const label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq('Search', label.text);
+    chrome.test.assertEq(expectedLabelText, label.text);
 
     // Hover an element with tooltip.
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
