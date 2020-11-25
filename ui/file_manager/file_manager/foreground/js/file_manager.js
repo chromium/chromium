@@ -1226,6 +1226,19 @@ class FileManager extends cr.EventTarget {
       case chrome.fileManagerPrivate.CrostiniEventType.DISABLE:
         this.crostini_.setEnabled(event.vmName, false);
         return this.crostiniController_.redraw();
+
+      // Event is sent when a user drops an unshared file on Plugin VM.
+      // We show the move dialog so the user can move the file or share the
+      // directory.
+      case chrome.fileManagerPrivate.CrostiniEventType
+          .DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
+        if (this.ui_.dragInProcess) {
+          FileTasks.showPluginVmMoveDialog(
+              this.selectionHandler.selection.entries, this.volumeManager_,
+              assert(this.ui_), 'Windows', this.fileTransferController_,
+              assert(this.directoryModel_));
+        }
+        break;
     }
   }
 

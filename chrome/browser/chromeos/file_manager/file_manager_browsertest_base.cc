@@ -40,6 +40,8 @@
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/drive/drivefs_test_support.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
@@ -2682,6 +2684,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "onDropFailedPluginVmDirectoryNotShared") {
+    EventRouterFactory::GetForProfile(profile())
+        ->DropFailedPluginVmDirectoryNotShared();
+    return;
+  }
   FAIL() << "Unknown test message: " << name;
 }
 

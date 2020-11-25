@@ -252,7 +252,8 @@ enum CrostiniEventType {
   enable,
   disable,
   share,
-  unshare
+  unshare,
+  drop_failed_plugin_vm_directory_not_shared
 };
 
 enum ProviderSource {

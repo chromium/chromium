@@ -158,6 +158,10 @@ class EventRouter
   void OnUnshare(const std::string& vm_name,
                  const base::FilePath& path) override;
 
+  // Notifies FilesApp that file drop to Plugin VM was not in a shared directory
+  // and failed FilesApp will show the "Move to Windows files" dialog.
+  void DropFailedPluginVmDirectoryNotShared();
+
   // Returns a weak pointer for the event router.
   base::WeakPtr<EventRouter> GetWeakPtr();
 

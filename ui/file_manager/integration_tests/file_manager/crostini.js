@@ -211,3 +211,26 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   // TODO(crbug.com/1049453): Test file is moved. This can only be tested when
   // tests allow creating /MyFiles/PvmDefault.
 };
+
+/**
+ * Tests that when drag from Files app and dropping in the Plugin VM a
+ * dialog is displayed if the containing folder isn't shared with Plugin VM.
+ */
+testcase.pluginVmFileDropFailErrorDialog = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Select 'hello.txt' file.
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId, ['[id^="listitem-"][file-name="hello.txt"]']);
+
+  // Send 'dragstart'.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['body', 'dragstart', {bubbles: true}]));
+
+  // Send CrostiniEvent 'drop_failed_plugin_vm_directory_not_shared'.
+  await sendTestMessage({name: 'onDropFailedPluginVmDirectoryNotShared'});
+
+  // Wait for error dialog.
+  await remoteCall.waitForElement(
+      appId, '.cr-dialog-frame:not(#default-task-dialog):not([hidden])');
+};

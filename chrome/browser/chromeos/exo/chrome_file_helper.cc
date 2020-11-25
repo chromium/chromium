@@ -18,6 +18,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -216,13 +218,25 @@ void ShareAndSend(aura::Window* target,
   std::string joined = base::JoinString(lines_to_send, kUriListSeparator);
   auto data = base::RefCountedString::TakeString(&joined);
   if (!paths_to_share.empty()) {
-    share_path->SharePaths(
-        vm_name, std::move(paths_to_share),
-        /*persist=*/false,
-        base::BindOnce(&SendAfterShare, std::move(callback), std::move(data)));
-  } else {
-    std::move(callback).Run(std::move(data));
+    if (!is_plugin_vm) {
+      share_path->SharePaths(
+          vm_name, std::move(paths_to_share),
+          /*persist=*/false,
+          base::BindOnce(&SendAfterShare, std::move(callback),
+                         std::move(data)));
+      return;
+    }
+
+    // Show FilesApp move-to-windows-files dialog when Plugin VM is not shared.
+    if (auto* event_router =
+            file_manager::EventRouterFactory::GetForProfile(primary_profile)) {
+      event_router->DropFailedPluginVmDirectoryNotShared();
+    }
+    std::string empty;
+    data = base::RefCountedString::TakeString(&empty);
   }
+
+  std::move(callback).Run(std::move(data));
 }
 
 }  // namespace

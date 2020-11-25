@@ -413,6 +413,16 @@ class FileManagerUI {
         e.stopPropagation();
       });
     }
+
+    /**
+     * True while FilesApp is in the process of a drag and drop. Set to true on
+     * 'dragstart', set to false on 'dragend'. If CrostiniEvent
+     * 'drop_failed_plugin_vm_directory_not_shared' is received during drag, we
+     * show the move-to-windows-files dialog.
+     *
+     * @public {boolean}
+     */
+    this.dragInProcess = false;
   }
 
   /**
@@ -485,6 +495,13 @@ class FileManagerUI {
           activeDropTarget = null;
         }
       });
+    });
+
+    document.addEventListener('dragstart', () => {
+      this.dragInProcess = true;
+    });
+    document.addEventListener('dragend', () => {
+      this.dragInProcess = false;
     });
   }
 

@@ -212,6 +212,10 @@ TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
   ChromeFileHelper file_helper;
   ui::FileInfo file1(myfiles_dir_.Append("file1"), base::FilePath());
   ui::FileInfo file2(myfiles_dir_.Append("file2"), base::FilePath());
+  auto* guest_os_share_path =
+      guest_os::GuestOsSharePath::GetForProfile(profile());
+  guest_os_share_path->RegisterSharedPath(plugin_vm::kPluginVmName,
+                                          myfiles_dir_);
 
   // Arc should convert path to UTF16 URL.
   std::string data;
@@ -286,7 +290,7 @@ TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
   EXPECT_EQ("", data);
 }
 
-TEST_F(ChromeFileHelperTest, SendFileInfoSharePaths) {
+TEST_F(ChromeFileHelperTest, SendFileInfoSharePathsCrostini) {
   ChromeFileHelper file_helper;
 
   // A path which is already shared should not be shared again.
@@ -311,6 +315,19 @@ TEST_F(ChromeFileHelperTest, SendFileInfoSharePaths) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file", data);
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+}
+
+TEST_F(ChromeFileHelperTest, SendFileInfoSharePathsPluginVm) {
+  ChromeFileHelper file_helper;
+
+  // Plugin VM should send empty data and not share path if not already shared.
+  ui::FileInfo file(myfiles_dir_.Append("file"), base::FilePath());
+  std::string data;
+  file_helper.SendFileInfo(plugin_vm_window_, {file},
+                           base::BindOnce(&Capture, &data));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ("", data);
+  EXPECT_FALSE(fake_seneschal_client_->share_path_called());
 }
 
 TEST_F(ChromeFileHelperTest, HasUrlsInPickle) {

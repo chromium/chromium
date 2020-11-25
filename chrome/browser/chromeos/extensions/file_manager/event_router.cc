@@ -29,6 +29,7 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -951,6 +952,21 @@ void EventRouter::NotifyDriveConnectionStatusChanged() {
           FILE_MANAGER_PRIVATE_ON_DRIVE_CONNECTION_STATUS_CHANGED,
       file_manager_private::OnDriveConnectionStatusChanged::kEventName,
       file_manager_private::OnDriveConnectionStatusChanged::Create());
+}
+
+void EventRouter::DropFailedPluginVmDirectoryNotShared() {
+  for (const auto& extension_id : GetEventListenerExtensionIds(
+           profile_, file_manager_private::OnCrostiniChanged::kEventName)) {
+    file_manager_private::CrostiniEvent event;
+    event.vm_name = plugin_vm::kPluginVmName;
+    event.event_type = file_manager_private::
+        CROSTINI_EVENT_TYPE_DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
+    DispatchEventToExtension(
+        profile_, extension_id,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
+        file_manager_private::OnCrostiniChanged::kEventName,
+        file_manager_private::OnCrostiniChanged::Create(event));
+  }
 }
 
 base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {

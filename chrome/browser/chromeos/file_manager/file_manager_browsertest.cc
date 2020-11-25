@@ -966,7 +966,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("enableDisableCrostini"),
                       TestCase("sharePathWithCrostini"),
                       TestCase("pluginVmDirectoryNotSharedErrorDialog"),
-                      TestCase("pluginVmFileOnExternalDriveErrorDialog")));
+                      TestCase("pluginVmFileOnExternalDriveErrorDialog"),
+                      TestCase("pluginVmFileDropFailErrorDialog")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.js */
