@@ -6,15 +6,15 @@
 
 #include "base/memory/singleton.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/api/vpn_provider/vpn_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace chromeos {
-
-// This file is a dummy stub for use in appshell.
 
 // static
 VpnService* VpnServiceFactory::GetForBrowserContext(
@@ -31,11 +31,9 @@ VpnServiceFactory* VpnServiceFactory::GetInstance() {
 VpnServiceFactory::VpnServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "VpnService",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
-VpnServiceFactory::~VpnServiceFactory() {
-}
+VpnServiceFactory::~VpnServiceFactory() = default;
 
 bool VpnServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
@@ -47,8 +45,17 @@ bool VpnServiceFactory::ServiceIsNULLWhileTesting() const {
 
 KeyedService* VpnServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  std::string context_user_hash =
+      extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
+          context);
+
+  if (!LoginState::IsInitialized() ||
+      context_user_hash != LoginState::Get()->primary_user_hash()) {
+    return nullptr;
+  }
+
   return new VpnService(
-      context, "testuser", extensions::ExtensionRegistry::Get(context),
+      context, context_user_hash, extensions::ExtensionRegistry::Get(context),
       extensions::EventRouter::Get(context),
       DBusThreadManager::Get()->GetShillThirdPartyVpnDriverClient(),
       NetworkHandler::Get()->network_configuration_handler(),

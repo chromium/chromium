@@ -1002,7 +1002,6 @@ static_library("extensions") {
       "api/terminal/terminal_private_api.h",
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.cc",
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h",
-      "api/vpn_provider/vpn_service_factory.cc",
       "chrome_kiosk_delegate_chromeos.cc",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",

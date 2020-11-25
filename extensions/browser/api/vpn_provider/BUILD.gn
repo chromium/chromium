@@ -16,10 +16,17 @@ source_set("vpn_provider") {
     "vpn_provider_api.h",
     "vpn_service.cc",
     "vpn_service.h",
+    "vpn_service_factory.cc",
     "vpn_service_factory.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus",
+    "//chromeos/login/login_state",
+    "//chromeos/network",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }
