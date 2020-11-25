@@ -528,6 +528,19 @@ const FeatureEntry::FeatureVariation
          base::size(kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing),
          nullptr}};
 
+const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};
+const FeatureEntry::FeatureParam kMBIModeEnabledPerRenderProcessHost[] = {
+    {"mode", "per_render_process_host"}};
+const FeatureEntry::FeatureParam kMBIModeEnabledPerSiteInstance[] = {
+    {"mode", "per_site_instance"}};
+
+const FeatureEntry::FeatureVariation kMBIModeVariations[] = {
+    {"legacy mode", kMBIModeLegacy, base::size(kMBIModeLegacy), nullptr},
+    {"per render process host", kMBIModeEnabledPerRenderProcessHost,
+     base::size(kMBIModeEnabledPerRenderProcessHost), nullptr},
+    {"per site instance", kMBIModeEnabledPerSiteInstance,
+     base::size(kMBIModeEnabledPerSiteInstance), nullptr}};
+
 const FeatureEntry::FeatureParam
     kDelayCompetingLowPriorityRequestsAggressiveFirstPaint[] = {
         {"until", "first_paint"},
@@ -4288,6 +4301,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kDelayAsyncScriptExecution,
                                     kDelayAsyncScriptExecutionFeatureVariations,
                                     "DelayAsyncScriptExecution")},
+
+    {"mbi-mode", flag_descriptions::kMBIModeName,
+     flag_descriptions::kMBIModeDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMBIMode,
+                                    kMBIModeVariations,
+                                    "MBIMode")},
 
     {"delay-competing-low-priority-requests",
      flag_descriptions::kDelayCompetingLowPriorityRequestsName,

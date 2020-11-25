@@ -34,9 +34,16 @@ using ::mojo::Remote;
 using PassKey = ::base::PassKey<AgentSchedulingGroup>;
 
 namespace {
+
 RenderThreadImpl& ToImpl(RenderThread& render_thread) {
   DCHECK(RenderThreadImpl::current());
   return static_cast<RenderThreadImpl&>(render_thread);
+}
+
+static features::MBIMode GetMBIMode() {
+  return base::FeatureList::IsEnabled(features::kMBIMode)
+             ? features::kMBIModeParam.Get()
+             : features::MBIMode::kLegacy;
 }
 
 }  // namespace
@@ -45,16 +52,14 @@ RenderThreadImpl& ToImpl(RenderThread& render_thread) {
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
     mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap)
-    : association_mode_(IPCAssociationMode::kUnassociated),
-      agent_group_scheduler_(
+    : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
       render_thread_(render_thread),
       // `receiver_` will be bound by `OnAssociatedInterfaceRequest()`.
       receiver_(this) {
   DCHECK(agent_group_scheduler_);
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kMbiDetachAgentSchedulingGroupFromChannel));
+  DCHECK_NE(GetMBIMode(), features::MBIMode::kLegacy);
 
   channel_ = SyncChannel::Create(
       /*listener=*/this, /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
@@ -78,8 +83,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
     PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
-    : association_mode_(IPCAssociationMode::kAssociatedWithProcess),
-      agent_group_scheduler_(
+    : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
       render_thread_(render_thread),
@@ -87,8 +91,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
                 std::move(receiver),
                 agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
-  DCHECK(!base::FeatureList::IsEnabled(
-      features::kMbiDetachAgentSchedulingGroupFromChannel));
+  DCHECK_EQ(GetMBIMode(), features::MBIMode::kLegacy);
 }
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
@@ -125,13 +128,15 @@ void AgentSchedulingGroup::OnAssociatedInterfaceRequest(
 bool AgentSchedulingGroup::Send(IPC::Message* message) {
   std::unique_ptr<IPC::Message> msg(message);
 
-  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess)
+  if (GetMBIMode() == features::MBIMode::kLegacy)
     return render_thread_.Send(msg.release());
 
   // This DCHECK is too idealistic for now - messages that are handled by
   // filters are sent control messages since they are intercepted before
   // routing. It is put here as documentation for now, since this code would not
-  // be reached until we activate `kUnassociated`.
+  // be reached until we activate
+  // `features::MBIMode::kEnabledPerRenderProcessHost` or
+  // `features::MBIMode::kEnabledPerSiteInstance`.
   DCHECK_NE(message->routing_id(), MSG_ROUTING_CONTROL);
 
   DCHECK(channel_);

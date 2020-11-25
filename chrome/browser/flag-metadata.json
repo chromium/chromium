@@ -3135,6 +3135,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "mbi-mode",
+    "owners": [ "dom", "blink-isolation-dev@chromium.org" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "media-app",
     "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
     "expiry_milestone": 90

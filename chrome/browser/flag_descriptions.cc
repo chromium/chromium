@@ -1951,6 +1951,11 @@ const char kDelayAsyncScriptExecutionName[] = "Delay Async Script Execution";
 const char kDelayAsyncScriptExecutionDescription[] =
     "The execution of async scripts will be delayed.";
 
+const char kMBIModeName[] = "MBI Scheduling Mode";
+const char kMBIModeDescription[] =
+    "Enables independent agent cluster scheduling, via the "
+    "AgentSchedulingGroup infrastructure.";
+
 const char kDelayCompetingLowPriorityRequestsName[] =
     "Delay Competing Low Priority Requests";
 const char kDelayCompetingLowPriorityRequestsDescription[] =

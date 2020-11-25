@@ -6189,7 +6189,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderProcessHost* process_a =
       root->render_manager()->current_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group_a =
-      AgentSchedulingGroupHost::Get(*site_instance_a, *process_a);
+      AgentSchedulingGroupHost::GetOrCreate(*site_instance_a, *process_a);
   int new_routing_id = process_a->GetNextRoutingID();
   int view_routing_id =
       root->frame_tree()->GetRenderViewHost(site_instance_a)->GetRoutingID();
@@ -6250,7 +6250,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderProcessHost* process =
       node->render_manager()->speculative_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group =
-      AgentSchedulingGroupHost::Get(
+      AgentSchedulingGroupHost::GetOrCreate(
           *node->render_manager()->speculative_frame_host()->GetSiteInstance(),
           *process);
   RenderProcessHostWatcher watcher(
@@ -6325,7 +6325,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
   // attempted.
   RenderProcessHost* process = node->current_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group =
-      AgentSchedulingGroupHost::Get(
+      AgentSchedulingGroupHost::GetOrCreate(
           *node->current_frame_host()->GetSiteInstance(), *process);
   RenderProcessHostWatcher watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);

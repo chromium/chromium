@@ -9,6 +9,7 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
+#include "content/public/common/content_features.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -102,21 +103,9 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   IPC::Listener* GetListener(int32_t routing_id);
 
-  enum class IPCAssociationMode {
-    // In this mode, the AgentSchedulingGroup will use the process-wide legacy
-    // IPC channel for communication with the renderer process and to associate
-    // its interfaces with.
-    kAssociatedWithProcess = 0,
-
-    // In this mode, each AgentSchedulingGroup will have its own legacy IPC
-    // channel for communication with the renderer process and to associate its
-    // interfaces with.
-    kUnassociated = 1,
-  };
-  const IPCAssociationMode association_mode_;
-
   // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
-  // `kUnassociated` mode.
+  // `features::MBIMode::kEnabledPerRenderProcessHost` or
+  // `features::MBIMode::kEnabledPerSiteInstance` mode.
   std::unique_ptr<IPC::SyncChannel> channel_;
 
   // Map of registered IPC listeners.

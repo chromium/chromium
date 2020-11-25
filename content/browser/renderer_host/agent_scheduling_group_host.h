@@ -14,6 +14,7 @@
 #include "content/common/renderer.mojom-forward.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/content_features.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -47,14 +48,15 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
  public:
-  // Get the appropriate AgentSchedulingGroupHost for the given |instance| and
-  // |process|. For now, each RenderProcessHost has a single
-  // AgentSchedulingGroupHost, though future policies will allow multiple groups
-  // in a process.
-  static AgentSchedulingGroupHost* Get(const SiteInstance& instance,
-                                       RenderProcessHost& process);
+  // Get the appropriate AgentSchedulingGroupHost for the given `instance` and
+  // `process`. Depending on the value of `features::kMBIModeParam`, there may
+  // be a single AgentSchedulingGroupHost per RenderProcessHost, or a single one
+  // per SiteInstance, which may lead to multiple AgentSchedulingGroupHosts per
+  // RenderProcessHost. This method will never return null.
+  static AgentSchedulingGroupHost* GetOrCreate(const SiteInstance& instance,
+                                               RenderProcessHost& process);
 
-  // Should not be called explicitly. Use `Get()` instead.
+  // Should not be called explicitly. Use `CreateIfNeeded()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
 
@@ -143,23 +145,11 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
 
-  enum class IPCAssociationMode {
-    // In this mode, the AgentSchedulingGroup will use the process-wide legacy
-    // IPC channel for communication with the renderer process and to associate
-    // its interfaces with.
-    kAssociatedWithProcess = 0,
-
-    // In this mode, each AgentSchedulingGroup will have its own legacy IPC
-    // channel for communication with the renderer process and to associate its
-    // interfaces with.
-    kUnassociated = 1,
-  };
-  const IPCAssociationMode association_mode_;
-
   int32_t id_for_debugging_{GetNextID()};
 
   // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
-  // `kUnassociated` mode.
+  // `features::MBIMode::kEnabledPerRenderProcessHost` or
+  // `features::MBIMode::kEnabledPerSiteInstance` mode.
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
   // Map of registered IPC listeners.

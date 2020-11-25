@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -15,7 +16,6 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/content_features.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
 
@@ -35,41 +35,92 @@ using ::mojo::PendingRemote;
 using ::mojo::Receiver;
 using ::mojo::Remote;
 
-static constexpr char kAgentGroupHostDataKey[] =
+static constexpr char kAgentSchedulingGroupHostDataKey[] =
     "AgentSchedulingGroupHostUserDataKey";
 
-class AgentGroupHostUserData : public base::SupportsUserData::Data {
+// This is a struct that is owned by RenderProcessHost. It carries data
+// structures that store the AgentSchedulingGroups associated with a
+// RenderProcessHost.
+struct AgentSchedulingGroupHostUserData : public base::SupportsUserData::Data {
  public:
-  explicit AgentGroupHostUserData(
-      std::unique_ptr<AgentSchedulingGroupHost> agent_group)
-      : agent_group_(std::move(agent_group)) {
-    DCHECK(agent_group_);
-  }
-  ~AgentGroupHostUserData() override = default;
+  AgentSchedulingGroupHostUserData() = default;
+  ~AgentSchedulingGroupHostUserData() override = default;
 
-  AgentSchedulingGroupHost* agent_group() { return agent_group_.get(); }
-
- private:
-  std::unique_ptr<AgentSchedulingGroupHost> agent_group_;
+  std::set<std::unique_ptr<AgentSchedulingGroupHost>, base::UniquePtrComparator>
+      owned_host_set;
+  // This is used solely to DCHECK the invariant that a SiteInstance cannot
+  // request an AgentSchedulingGroup twice from the same RenderProcessHost.
+#if DCHECK_IS_ON()
+  std::set<const SiteInstance*> site_instances;
+#endif
 };
+
+static features::MBIMode GetMBIMode() {
+  return base::FeatureList::IsEnabled(features::kMBIMode)
+             ? features::kMBIModeParam.Get()
+             : features::MBIMode::kLegacy;
+}
 
 }  // namespace
 
 // static
-AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
+AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
     const SiteInstance& instance,
     RenderProcessHost& process) {
-  AgentGroupHostUserData* data = static_cast<AgentGroupHostUserData*>(
-      process.GetUserData(kAgentGroupHostDataKey));
-  if (data != nullptr)
-    return data->agent_group();
+  AgentSchedulingGroupHostUserData* data =
+      static_cast<AgentSchedulingGroupHostUserData*>(
+          process.GetUserData(kAgentSchedulingGroupHostDataKey));
 
-  auto agent_group_data = std::make_unique<AgentGroupHostUserData>(
-      std::make_unique<AgentSchedulingGroupHost>(process));
-  AgentSchedulingGroupHost* agent_group = agent_group_data->agent_group();
-  process.SetUserData(kAgentGroupHostDataKey, std::move(agent_group_data));
+  if (!data) {
+    process.SetUserData(kAgentSchedulingGroupHostDataKey,
+                        std::make_unique<AgentSchedulingGroupHostUserData>());
+    data = static_cast<AgentSchedulingGroupHostUserData*>(
+        process.GetUserData(kAgentSchedulingGroupHostDataKey));
+  }
 
-  return agent_group;
+  DCHECK(data);
+
+  if (GetMBIMode() == features::MBIMode::kLegacy ||
+      GetMBIMode() == features::MBIMode::kEnabledPerRenderProcessHost) {
+    // We don't use |data->site_instances| at all when AgentSchedulingGroupHost
+    // is 1:1 with RenderProcessHost.
+#if DCHECK_IS_ON()
+    DCHECK(data->site_instances.empty());
+#endif
+
+    if (data->owned_host_set.empty()) {
+      data->owned_host_set.insert(
+          std::make_unique<AgentSchedulingGroupHost>(process));
+    }
+
+    // When we are in an MBI mode that creates AgentSchedulingGroups 1:1 with
+    // RenderProcessHosts, we expect to know about at most one
+    // AgentSchedulingGroupHost, since it should be the only one associated
+    // with the RenderProcessHost.
+    DCHECK_EQ(data->owned_host_set.size(), 1ul);
+    return data->owned_host_set.begin()->get();
+  }
+
+  DCHECK_EQ(GetMBIMode(), features::MBIMode::kEnabledPerSiteInstance);
+
+  // If we're in an MBI mode that creates multiple AgentSchedulingGroupHosts
+  // per RenderProcessHost, then this will be called whenever SiteInstance needs
+  // a newly-created AgentSchedulingGroupHost, so we create it here.
+  std::unique_ptr<AgentSchedulingGroupHost> host =
+      std::make_unique<AgentSchedulingGroupHost>(process);
+  AgentSchedulingGroupHost* return_host = host.get();
+
+  // In the MBI mode where we AgentSchedulingGroupHosts are 1:1 with
+  // SiteInstances, a SiteInstance may see different RenderProcessHosts
+  // throughout its lifetime, but it should only ever see a single
+  // AgentSchedulingGroupHost for a given RenderProcessHost.
+#if DCHECK_IS_ON()
+  DCHECK(!base::Contains(data->site_instances, &instance));
+  data->site_instances.insert(&instance);
+#endif
+
+  data->owned_host_set.insert(std::move(host));
+  return return_host;
 }
 
 int32_t AgentSchedulingGroupHost::GetNextID() {
@@ -79,10 +130,6 @@ int32_t AgentSchedulingGroupHost::GetNextID() {
 
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
     : process_(process),
-      association_mode_(base::FeatureList::IsEnabled(
-                            features::kMbiDetachAgentSchedulingGroupFromChannel)
-                            ? IPCAssociationMode::kUnassociated
-                            : IPCAssociationMode::kAssociatedWithProcess),
       receiver_(this) {
   process_.AddObserver(this);
 
@@ -196,7 +243,7 @@ bool AgentSchedulingGroupHost::Init() {
 ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
   DCHECK_EQ(state_, LifecycleState::kBound);
 
-  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess)
+  if (GetMBIMode() == features::MBIMode::kLegacy)
     return process_.GetChannel();
 
   DCHECK(channel_);
@@ -208,13 +255,15 @@ bool AgentSchedulingGroupHost::Send(IPC::Message* message) {
 
   std::unique_ptr<IPC::Message> msg(message);
 
-  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess)
+  if (GetMBIMode() == features::MBIMode::kLegacy)
     return process_.Send(msg.release());
 
   // This DCHECK is too idealistic for now - messages that are handled by
   // filters are sent as control messages since they are intercepted before
   // routing. It is put here as documentation for now, since this code would not
-  // be reached until we activate `kUnassociated`.
+  // be reached until we activate
+  // `features::MBIMode::kEnabledPerRenderProcessHost` or
+  // `features::MBIMode::kEnabledPerSiteInstance`.
   DCHECK_NE(message->routing_id(), MSG_ROUTING_CONTROL);
 
   DCHECK(channel_);
@@ -329,21 +378,23 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   DCHECK(!route_provider_receiver_.is_bound());
 
   // After this function returns, all of `this`'s associated mojo interfaces
-  // need to be bound, and associated "properly" - in `kUnassociated` mode that
-  // means they are associated with the ASG's channel, and in
-  // `kAssociatedWithProcess` mode with the process-global channel. This
-  // initialization is done in a number of steps:
-  // 1. If we're in `kUnassociated` mode, create an IPC Channel (i.e.,
-  //    initialize `channel_`). After this, regardless of which mode we're in,
-  //    the ASGH would have a channel.
-  // 2. Initialize `mojo_remote_`. In `kAssociatedWithProcess` mode, this can be
-  //    done via the `mojom::Renderer` interface, but in `kUnassociated` mode
-  //    this *has* to be done via the just-created channel (so the interface is
-  //    associated with the correct pipe).
+  // need to be bound, and associated "properly" - in
+  // `features::MBIMode::kEnabledPerRenderProcessHost` and
+  // `features::MBIMode::kEnabledPerSiteInstance` mode that means they are
+  // associated with the ASG's legacy IPC channel, and in
+  // `features::MBIMode::kLegacy` mode, with the process-global legacy IPC
+  // channel. This initialization is done in a number of steps:
+  // 1. If we're not in `kLegacy` mode, create an IPC Channel (i.e., initialize
+  //    `channel_`). After this, regardless of which mode we're in, the
+  //    ASGH would have a channel.
+  // 2. Initialize `mojo_remote_`. In `kLegacy` mode, this can be done via the
+  //    `mojom::Renderer` interface, but otherwise this *has* to be done via the
+  //     just-created channel (so the interface is associated with the correct
+  //     pipe).
   // 3. All the ASGH's other associated interfaces can now be initialized via
   //    `mojo_remote_`, and will be transitively associated with the appropriate
   //    IPC channel/pipe.
-  if (association_mode_ == IPCAssociationMode::kAssociatedWithProcess) {
+  if (GetMBIMode() == features::MBIMode::kLegacy) {
     process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
         mojo_remote_.BindNewEndpointAndPassReceiver());
   } else {

@@ -85,8 +85,28 @@ CONTENT_EXPORT extern const base::Feature kLazyImageVisibleLoadTimeMetrics;
 CONTENT_EXPORT extern const base::Feature kLazyInitializeMediaControls;
 CONTENT_EXPORT extern const base::Feature kLegacyWindowsDWriteFontFallback;
 CONTENT_EXPORT extern const base::Feature kLogJsConsoleMessages;
-CONTENT_EXPORT extern const base::Feature
-    kMbiDetachAgentSchedulingGroupFromChannel;
+CONTENT_EXPORT extern const base::Feature kMBIMode;
+enum class MBIMode {
+  // In this mode, the AgentSchedulingGroup will use the process-wide legacy IPC
+  // channel for communication with the renderer process and to associate its
+  // interfaces with. AgentSchedulingGroup will effectively be a pass-through,
+  // enabling legacy IPC and mojo behavior.
+  kLegacy,
+
+  // In this mode, each AgentSchedulingGroup will have its own legacy IPC
+  // channel for communication with the renderer process and to associate its
+  // interfaces with. Communication over that channel will not be ordered with
+  // respect to the process-global legacy IPC channel. There will only be a
+  // single AgentSchedulingGroup per RenderProcessHost.
+  kEnabledPerRenderProcessHost,
+
+  // This is just like the above state, however there will be a single
+  // AgentSchedulingGroup per SiteInstance, and therefore potentially multiple
+  // AgentSchedulingGroups per RenderProcessHost. Ordering between the
+  // AgentSchedulingGroups in the same render process is not preserved.
+  kEnabledPerSiteInstance,
+};
+CONTENT_EXPORT extern const base::FeatureParam<MBIMode> kMBIModeParam;
 CONTENT_EXPORT extern const base::Feature kMediaDevicesSystemMonitorCache;
 CONTENT_EXPORT extern const base::Feature kMojoDedicatedThread;
 CONTENT_EXPORT extern const base::Feature kMojoVideoCapture;

@@ -579,8 +579,9 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   CHECK(process);
   process_ = process;
   process_->AddObserver(this);
-  DCHECK(!agent_scheduling_group_);
-  agent_scheduling_group_ = AgentSchedulingGroupHost::Get(*this, *process_);
+  CHECK(!agent_scheduling_group_);
+  agent_scheduling_group_ =
+      AgentSchedulingGroupHost::GetOrCreate(*this, *process_);
 
   MaybeSetBrowsingInstanceDefaultProcess();
 

@@ -1142,6 +1142,9 @@ extern const char kRestrictGamepadAccessDescription[];
 extern const char kDelayAsyncScriptExecutionName[];
 extern const char kDelayAsyncScriptExecutionDescription[];
 
+extern const char kMBIModeName[];
+extern const char kMBIModeDescription[];
+
 extern const char kDelayCompetingLowPriorityRequestsName[];
 extern const char kDelayCompetingLowPriorityRequestsDescription[];
 
