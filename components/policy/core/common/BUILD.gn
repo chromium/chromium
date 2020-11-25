@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -170,6 +171,7 @@ source_set("internal") {
   deps = [
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",
     "//components/prefs",
@@ -251,7 +253,7 @@ source_set("internal") {
     ]
     deps += [ "//components/policy/android:jni_headers" ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
     sources += [
       "policy_scheduler.cc",
@@ -338,7 +340,7 @@ static_library("test_support") {
     "remote_commands/testing_remote_commands_server.h",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources -= [
       "cloud/mock_user_cloud_policy_store.cc",
       "cloud/mock_user_cloud_policy_store.h",
@@ -372,11 +374,16 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  deps = [ "//build:chromeos_buildflags" ]
 }
 
 source_set("common_constants") {
   configs += [ "//components/policy:component_implementation" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
   sources = [
     "../../policy_export.h",
     "cloud/cloud_policy_constants.cc",
@@ -433,7 +440,7 @@ source_set("unit_tests") {
       "registry_dict_unittest.cc",
     ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "policy_scheduler_unittest.cc",
       "proxy_policy_provider_unittest.cc",
@@ -504,6 +511,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/account_id",
     "//components/policy:generated",
     "//components/prefs:test_support",
@@ -517,7 +525,7 @@ source_set("unit_tests") {
     "//third_party/libxml:xml_reader",
     "//ui/base",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
   }
   if (is_android) {

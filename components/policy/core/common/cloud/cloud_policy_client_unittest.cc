@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -37,7 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
 #endif
 
@@ -80,7 +81,7 @@ const char kEnrollmentCertificate[] = "fake-enrollment-certificate";
 const char kEnrollmentId[] = "fake-enrollment-id";
 
 #if defined(OS_WIN) || defined(OS_APPLE) || \
-    defined(OS_LINUX) && !defined(OS_CHROMEOS)
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const char kEnrollmentToken[] = "enrollment_token";
 #endif
 
@@ -225,7 +226,7 @@ class CloudPolicyClientTest : public testing::Test {
         ->set_device_management_token(kDMToken2);
 
 #if defined(OS_WIN) || defined(OS_APPLE) || \
-    defined(OS_LINUX) && !defined(OS_CHROMEOS)
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     em::RegisterBrowserRequest* enrollment_request =
         enrollment_token_request_.mutable_register_browser_request();
     enrollment_request->set_machine_name(policy::GetMachineName());
@@ -312,7 +313,7 @@ class CloudPolicyClientTest : public testing::Test {
         robot_auth_code_fetch_response_.mutable_service_api_access_response();
     api_response->set_auth_code(kRobotAuthCode);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
 #endif
@@ -650,7 +651,7 @@ class CloudPolicyClientTest : public testing::Test {
   std::unique_ptr<CloudPolicyClient> client_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 };
@@ -706,7 +707,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
 }
 
 #if defined(OS_WIN) || defined(OS_APPLE) || \
-    defined(OS_LINUX) && !defined(OS_CHROMEOS)
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
   ExpectEnrollmentTokenBasedRegistration();
   EXPECT_CALL(observer_, OnRegistrationStateChanged(_));

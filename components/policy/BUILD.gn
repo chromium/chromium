@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/mac/base_rules.gni")
 import("//build/config/python.gni")
@@ -23,7 +24,7 @@ gen_policy_templates_win = is_win
 gen_policy_templates_linux = is_linux || is_chromeos
 gen_policy_templates_android = is_android
 gen_policy_templates_mac = is_mac
-gen_policy_templates_chromeos = is_chromeos
+gen_policy_templates_chromeos = is_chromeos_ash
 gen_policy_templates_ios = is_ios
 
 # The zip file is grabbed from the Windows build right now.

@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
@@ -86,7 +87,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Returns policies for Chrome extensions.
   virtual base::Value GetExtensionPolicies(PolicyDomain policy_domain) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns policies for ChromeOS device.
   virtual base::Value GetDeviceLocalAccountPolicies() = 0;
   // Returns device specific information if this device is enterprise managed.

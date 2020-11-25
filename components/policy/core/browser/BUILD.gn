@@ -49,6 +49,7 @@ source_set("internal") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/pref_registry",
@@ -99,6 +100,7 @@ static_library("test_support") {
   ]
   deps = [
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//testing/gtest",
     "//url",

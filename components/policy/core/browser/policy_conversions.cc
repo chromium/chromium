@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
@@ -110,22 +111,22 @@ Value DictionaryPolicyConversions::ToValue() {
     all_policies.SetKey("updaterPolicies", client()->GetUpdaterPolicies());
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
   all_policies.SetKey("loginScreenExtensionPolicies",
                       GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-#endif  //  BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   all_policies.SetKey("deviceLocalAccountPolicies",
                       GetDeviceLocalAccountPolicies());
   Value identity_fields = client()->GetIdentityFields();
   if (!identity_fields.is_none())
     all_policies.MergeDictionary(&identity_fields);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return all_policies;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 Value DictionaryPolicyConversions::GetDeviceLocalAccountPolicies() {
   Value policies = client()->GetDeviceLocalAccountPolicies();
   Value device_values(Value::Type::DICTIONARY);
@@ -176,16 +177,16 @@ Value ArrayPolicyConversions::ToValue() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& policy :
        client()
            ->GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS)
            .TakeList()) {
     all_policies.Append(std::move(policy));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& device_policy :
        client()->GetDeviceLocalAccountPolicies().TakeList())
     all_policies.Append(std::move(device_policy));
@@ -193,7 +194,7 @@ Value ArrayPolicyConversions::ToValue() {
   Value identity_fields = client()->GetIdentityFields();
   if (!identity_fields.is_none())
     all_policies.Append(std::move(identity_fields));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return all_policies;
 }

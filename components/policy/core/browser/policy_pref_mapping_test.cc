@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
@@ -280,9 +281,9 @@ class PolicyTestCase {
     const std::string os("ios");
 #elif defined(OS_APPLE)
     const std::string os("mac");
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
     const std::string os("chromeos");
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     const std::string os("linux");
 #else
 #error "Unknown platform"
