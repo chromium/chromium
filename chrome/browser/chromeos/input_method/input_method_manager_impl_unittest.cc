@@ -159,6 +159,8 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     // Needs ash::Shell keyboard to be created first.
     chrome_keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeForAsh();
+
+    InitComponentExtension();
   }
 
   void TearDown() override {
@@ -173,7 +175,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     manager_.reset();
   }
 
- protected:
+ private:
   // Helper function to initialize component extension stuff for testing.
   void InitComponentExtension() {
     // CreateNewState(nullptr) returns state with non-empty
@@ -201,7 +203,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     manager_->InitializeComponentExtensionForTesting(std::move(delegate));
   }
 
- private:
   void InitImeList() {
     ime_list_.clear();
 
@@ -387,7 +388,6 @@ TEST_F(InputMethodManagerImplTest, TestObserver) {
   keyboard_layouts.emplace_back("xkb:us::eng");
 
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   menu_manager_->AddObserver(&observer);
   EXPECT_EQ(0, observer.input_method_changed_count_);
@@ -436,7 +436,6 @@ TEST_F(InputMethodManagerImplTest, TestObserver) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestGetSupportedInputMethods) {
-  InitComponentExtension();
   InputMethodDescriptors methods;
   methods = manager_->GetComponentExtensionIMEManager()
                 ->GetXkbIMEAsInputMethodDescriptor();
@@ -461,7 +460,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayouts) {
   // ibus_input_method.txt.
   std::vector<std::string> keyboard_layouts;
 
-  InitComponentExtension();
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   EXPECT_EQ(8U, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
 
@@ -477,7 +475,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsAndCurrentInputMethod) {
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:se::swe"));
 
-  InitComponentExtension();
   manager_->GetActiveIMEState()->EnableLoginLayouts("en-US", keyboard_layouts);
   const std::string im_id =
       manager_->GetActiveIMEState()->GetCurrentInputMethod().id();
@@ -485,7 +482,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsAndCurrentInputMethod) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
-  InitComponentExtension();
   // The physical layout is French.
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:fr::fra");
@@ -515,7 +511,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableMultipleHardwareKeyboardLayout) {
-  InitComponentExtension();
   // The physical layouts are French and Hungarian.
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:fr::fra,xkb:hu::hun");
@@ -528,7 +523,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableMultipleHardwareKeyboardLayout) {
 
 TEST_F(InputMethodManagerImplTest,
        TestEnableMultipleHardwareKeyboardLayout_NoLoginKeyboard) {
-  InitComponentExtension();
   // The physical layouts are English (US) and Russian.
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
       "xkb:us::eng,xkb:ru::rus");
@@ -539,7 +533,6 @@ TEST_F(InputMethodManagerImplTest,
 }
 
 TEST_F(InputMethodManagerImplTest, TestActiveInputMethods) {
-  InitComponentExtension();
   std::vector<std::string> keyboard_layouts;
   manager_->GetActiveIMEState()->EnableLoginLayouts(
       "ja", keyboard_layouts);  // Japanese
@@ -560,7 +553,6 @@ TEST_F(InputMethodManagerImplTest, TestActiveInputMethods) {
 TEST_F(InputMethodManagerImplTest, TestEnableTwoLayouts) {
   // For http://crbug.com/19655#c11 - (8), step 6.
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -587,7 +579,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableTwoLayouts) {
 TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
   // For http://crbug.com/19655#c11 - (9).
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
@@ -619,7 +610,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableThreeLayouts) {
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme) {
   // For http://crbug.com/19655#c11 - (10).
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -647,7 +637,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme) {
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme2) {
   // For http://crbug.com/19655#c11 - (11).
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -670,7 +659,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutAndIme2) {
 
 TEST_F(InputMethodManagerImplTest, TestEnableImes) {
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId(kExt2Engine1Id));
@@ -685,7 +673,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableImes) {
 
 TEST_F(InputMethodManagerImplTest, TestEnableUnknownIds) {
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.emplace_back("xkb:tl::tlh");  // Klingon, which is not supported.
@@ -702,7 +689,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableUnknownIds) {
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   // For http://crbug.com/19655#c11 - (14).
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
@@ -751,7 +737,6 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
 TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
   // For http://crbug.com/19655#c11 - (15).
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -802,9 +787,7 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
-  EXPECT_EQ(0, keyboard_->set_current_keyboard_layout_by_name_count_);
   // For http://crbug.com/19655#c11 - (8), step 7-11.
-  InitComponentExtension();
   EXPECT_EQ(1, keyboard_->set_current_keyboard_layout_by_name_count_);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -852,7 +835,6 @@ TEST_F(InputMethodManagerImplTest, TestActivateInputMethodMenuItem) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodProperties) {
-  InitComponentExtension();
   EXPECT_TRUE(menu_manager_->GetCurrentInputMethodMenuItemList().empty());
 
   std::vector<std::string> ids;
@@ -879,7 +861,6 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodProperties) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
-  InitComponentExtension();
   EXPECT_TRUE(menu_manager_->GetCurrentInputMethodMenuItemList().empty());
 
   std::vector<std::string> ids;
@@ -917,7 +898,6 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
 
 TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:us::eng"));
@@ -973,7 +953,6 @@ TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
 
 TEST_F(InputMethodManagerImplTest, TestLastUsedInputMethod) {
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
 
   std::vector<std::string> keyboard_layouts;
@@ -1028,8 +1007,6 @@ TEST_F(InputMethodManagerImplTest, TestLastUsedInputMethod) {
 }
 
 TEST_F(InputMethodManagerImplTest, CycleInputMethodForOneActiveInputMethod) {
-  InitComponentExtension();
-
   // Simulate a single input method.
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
@@ -1049,7 +1026,6 @@ TEST_F(InputMethodManagerImplTest, CycleInputMethodForOneActiveInputMethod) {
 
 TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
@@ -1136,7 +1112,6 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
 
 TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   TestObserver observer;
-  InitComponentExtension();
   manager_->AddObserver(&observer);
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
@@ -1217,7 +1192,6 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
 }
 
 TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionOneIME) {
-  InitComponentExtension();
   const std::string ext_id = extension_ime_util::GetComponentInputMethodID(
       ime_list_[1].id,
       ime_list_[1].engines[0].engine_id);
@@ -1230,7 +1204,6 @@ TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionOneIME) {
 }
 
 TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionTwoIME) {
-  InitComponentExtension();
   const std::string ext_id1 = extension_ime_util::GetComponentInputMethodID(
       ime_list_[1].id,
       ime_list_[1].engines[0].engine_id);
@@ -1271,8 +1244,6 @@ TEST_F(InputMethodManagerImplTest, MigrateInputMethodTest) {
 }
 
 TEST_F(InputMethodManagerImplTest, OverrideKeyboardUrlRefWithKeyset) {
-  InitComponentExtension();
-
   // Create an input method with a input view URL for testing.
   const GURL inputview_url(
       "chrome-extension://"
@@ -1327,8 +1298,6 @@ TEST_F(InputMethodManagerImplTest, OverrideKeyboardUrlRefWithKeyset) {
 }
 
 TEST_F(InputMethodManagerImplTest, OverrideDefaultKeyboardUrlRef) {
-  InitComponentExtension();
-
   const GURL default_url("chrome://inputview.html");
 
   const auto ime_id =
@@ -1351,8 +1320,6 @@ TEST_F(InputMethodManagerImplTest, OverrideDefaultKeyboardUrlRef) {
 }
 
 TEST_F(InputMethodManagerImplTest, DoesNotResetInputViewUrlWhenOverridden) {
-  InitComponentExtension();
-
   // Create an input method with a input view URL for testing.
   const GURL inputview_url(
       "chrome-extension://"
@@ -1389,8 +1356,6 @@ TEST_F(InputMethodManagerImplTest, DoesNotResetInputViewUrlWhenOverridden) {
 }
 
 TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsValid) {
-  InitComponentExtension();
-
   // First, setup xkb:fr::fra input method
   std::string original_input_method(ImeIdFromEngineId("xkb:fr::fra"));
   ASSERT_TRUE(
@@ -1413,8 +1378,6 @@ TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsValid) {
 }
 
 TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsInvalid) {
-  InitComponentExtension();
-
   // First, setup xkb:fr::fra input method
   std::string original_input_method(ImeIdFromEngineId("xkb:fr::fra"));
   ASSERT_TRUE(
@@ -1435,8 +1398,6 @@ TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsInvalid) {
 }
 
 TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsValidAndInvalid) {
-  InitComponentExtension();
-
   // First, enable xkb:fr::fra and xkb:de::ger
   std::string original_input_method_1(ImeIdFromEngineId("xkb:fr::fra"));
   std::string original_input_method_2(ImeIdFromEngineId("xkb:de::ger"));
@@ -1464,8 +1425,6 @@ TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsValidAndInvalid) {
 }
 
 TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsAndExtensions) {
-  InitComponentExtension();
-
   EXPECT_TRUE(manager_->GetActiveIMEState()->EnableInputMethod(
       ImeIdFromEngineId(kNaclMozcJpId)));
   EXPECT_TRUE(manager_->GetActiveIMEState()->EnableInputMethod(
@@ -1484,8 +1443,6 @@ TEST_F(InputMethodManagerImplTest, AllowedKeyboardLayoutsAndExtensions) {
 }
 
 TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedKeyboardLayouts) {
-  InitComponentExtension();
-
   std::vector<std::string> allowed = {"xkb:us::eng", "xkb:de::ger",
                                       "xkb:fr::fra"};
   EXPECT_TRUE(
@@ -1505,7 +1462,6 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
   ime_controller_client.Init();
 
   // Setup 3 IMEs.
-  InitComponentExtension();
   std::vector<std::string> ids;
   ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
   ids.push_back(ImeIdFromEngineId(kExt2Engine2Id));
@@ -1580,8 +1536,6 @@ TEST_F(InputMethodManagerImplTest, SetFeaturesDisabled) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
-  InitComponentExtension();
-
   // There is one default IME
   EXPECT_EQ(1u, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
 
