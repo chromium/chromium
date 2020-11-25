@@ -181,9 +181,13 @@ PositionWithAffinity HitTestResult::GetPosition() const {
     return PositionWithAffinity(
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
+  // TODO(crbug.com/1152696): We have to use PostLayout() here, but maybe it
+  // should rather be illegal to call GetPosition() on a HitTestResult after
+  // relayout?
   if (box_fragment_ &&
-      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled())
-    return box_fragment_->PositionForPoint(LocalPoint());
+      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
+      !box_fragment_->IsLayoutObjectDestroyedOrMoved())
+    return box_fragment_->PostLayout()->PositionForPoint(LocalPoint());
   return layout_object->PositionForPoint(LocalPoint());
 }
 
