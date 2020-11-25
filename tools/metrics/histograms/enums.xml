@@ -956,7 +956,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="DismissedBack">
     User has dismissed the promo by tapping back button.
   </int>
-  <int value="2" label="AddAccount">
+  <int value="2" label="AddAccountStarted">
     User has tapped |Add account to device| from expanded account list.
   </int>
   <int value="3" label="StartedIncognitoSession">
@@ -996,6 +996,10 @@ Unknown properties are collapsed to zero. -->
   <int value="14" label="DismissedButton">
     User has dismissed the promo by tapping on the dismissal button in the
     bottom sheet.
+  </int>
+  <int value="15" label="AddAccountCompleted">
+    User has completed the account addition flow triggered from the bottom
+    sheet.
   </int>
 </enum>
 
