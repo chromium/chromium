@@ -41,7 +41,6 @@ class LanguagePickerView {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mModel, mView, LanguagePickerView::bind);
         RecyclerView recyclerView = mView.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(mView.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
