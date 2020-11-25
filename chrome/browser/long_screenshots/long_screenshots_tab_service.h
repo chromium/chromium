@@ -33,8 +33,7 @@ class LongScreenshotsTabService
     : public paint_preview::PaintPreviewBaseService {
  public:
   LongScreenshotsTabService(
-      const base::FilePath& profile_dir,
-      base::StringPiece ascii_feature_name,
+      std::unique_ptr<paint_preview::PaintPreviewFileMixin> file_mixin,
       std::unique_ptr<paint_preview::PaintPreviewPolicy> policy,
       bool is_off_the_record);
   ~LongScreenshotsTabService() override;

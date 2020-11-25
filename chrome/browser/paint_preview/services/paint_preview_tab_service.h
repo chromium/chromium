@@ -38,8 +38,7 @@ namespace paint_preview {
 // browser is restarted.
 class PaintPreviewTabService : public PaintPreviewBaseService {
  public:
-  PaintPreviewTabService(const base::FilePath& profile_dir,
-                         base::StringPiece ascii_feature_name,
+  PaintPreviewTabService(std::unique_ptr<PaintPreviewFileMixin> file_mixin,
                          std::unique_ptr<PaintPreviewPolicy> policy,
                          bool is_off_the_record);
   ~PaintPreviewTabService() override;
@@ -77,14 +76,6 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // is required as TabClosed could have been interrupted or an accounting error
   // occurred.
   void AuditArtifacts(const std::vector<int>& active_tab_ids);
-
-  // Override for GetCapturedPaintPreviewProto. Defaults expiry horizon to 72
-  // hrs if not specified.
-  void GetCapturedPaintPreviewProto(
-      const DirectoryKey& key,
-      base::Optional<base::TimeDelta> expiry_horizon,
-      PaintPreviewBaseService::OnReadProtoCallback on_read_proto_callback)
-      override;
 
 #if defined(OS_ANDROID)
   // JNI wrapped versions of the above methods

@@ -40,7 +40,8 @@ void PaintPreviewBaseServiceTestFactory::Destroy(SimpleFactoryKey* key) {
 std::unique_ptr<KeyedService> PaintPreviewBaseServiceTestFactory::Build(
     SimpleFactoryKey* key) {
   return std::make_unique<PaintPreviewBaseService>(
-      key->GetPath(), kTestFeatureDir, nullptr, key->IsOffTheRecord());
+      std::make_unique<PaintPreviewFileMixin>(key->GetPath(), kTestFeatureDir),
+      nullptr, key->IsOffTheRecord());
 }
 
 PaintPreviewBaseServiceTestFactory::~PaintPreviewBaseServiceTestFactory() =

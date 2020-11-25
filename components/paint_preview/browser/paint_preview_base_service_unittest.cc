@@ -4,6 +4,9 @@
 
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
@@ -11,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service_test_factory.h"
+#include "components/paint_preview/browser/paint_preview_file_mixin.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "content/public/browser/render_process_host.h"
@@ -46,7 +50,7 @@ class RejectionPaintPreviewPolicy : public PaintPreviewPolicy {
 std::unique_ptr<KeyedService> BuildServiceWithRejectionPolicy(
     SimpleFactoryKey* key) {
   return std::make_unique<PaintPreviewBaseService>(
-      key->GetPath(), kTestFeatureDir,
+      std::make_unique<PaintPreviewFileMixin>(key->GetPath(), kTestFeatureDir),
       std::make_unique<RejectionPaintPreviewPolicy>(), key->IsOffTheRecord());
 }
 
@@ -165,6 +169,23 @@ class PaintPreviewBaseServiceTest : public content::RenderViewHostTestHarness {
         rejection_policy_key_.get());
   }
 
+  PaintPreviewBaseService::CaptureParams CreateCaptureParams(
+      content::WebContents* web_contents,
+      base::FilePath* root_dir,
+      RecordingPersistence persistence,
+      gfx::Rect clip_rect,
+      bool capture_links,
+      size_t max_per_capture_size) {
+    PaintPreviewBaseService::CaptureParams capture_params;
+    capture_params.web_contents = web_contents;
+    capture_params.root_dir = root_dir;
+    capture_params.persistence = persistence;
+    capture_params.clip_rect = clip_rect;
+    capture_params.capture_links = capture_links;
+    capture_params.max_per_capture_size = max_per_capture_size;
+    return capture_params;
+  }
+
  private:
   std::unique_ptr<SimpleFactoryKey> key_ = nullptr;
   std::unique_ptr<SimpleFactoryKey> rejection_policy_key_ = nullptr;
@@ -184,13 +205,15 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
 
   auto* service = GetService();
   EXPECT_FALSE(service->IsOffTheRecord());
-  auto manager = service->GetFileManager();
+  auto manager = service->GetFileMixin()->GetFileManager();
   base::FilePath path = CreateDir(
       manager, manager->CreateKey(web_contents()->GetLastCommittedURL()));
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      web_contents(), path, gfx::Rect(0, 0, 0, 0), true, 50,
+      CreateCaptureParams(web_contents(), &path,
+                          RecordingPersistence::kFileSystem,
+                          gfx::Rect(0, 0, 0, 0), true, 50),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,
@@ -224,6 +247,8 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   loop.Run();
 }
 
+// TODO(crbug/1152163): Add tests for in-memory capture.
+
 TEST_F(PaintPreviewBaseServiceTest, CaptureFailed) {
   MockPaintPreviewRecorder recorder;
   auto params = mojom::PaintPreviewCaptureParams::New();
@@ -238,13 +263,15 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureFailed) {
 
   auto* service = GetService();
   EXPECT_FALSE(service->IsOffTheRecord());
-  auto manager = service->GetFileManager();
+  auto manager = service->GetFileMixin()->GetFileManager();
   base::FilePath path = CreateDir(
       manager, manager->CreateKey(web_contents()->GetLastCommittedURL()));
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      web_contents(), path, gfx::Rect(0, 0, 0, 0), true, 0,
+      CreateCaptureParams(web_contents(), &path,
+                          RecordingPersistence::kFileSystem,
+                          gfx::Rect(0, 0, 0, 0), true, 0),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,
@@ -273,13 +300,15 @@ TEST_F(PaintPreviewBaseServiceTest, CaptureDisallowed) {
 
   auto* service = GetServiceWithRejectionPolicy();
   EXPECT_FALSE(service->IsOffTheRecord());
-  auto manager = service->GetFileManager();
+  auto manager = service->GetFileMixin()->GetFileManager();
   base::FilePath path = CreateDir(
       manager, manager->CreateKey(web_contents()->GetLastCommittedURL()));
 
   base::RunLoop loop;
   service->CapturePaintPreview(
-      web_contents(), path, gfx::Rect(0, 0, 0, 0), true, 0,
+      CreateCaptureParams(web_contents(), &path,
+                          RecordingPersistence::kFileSystem,
+                          gfx::Rect(0, 0, 0, 0), true, 0),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              PaintPreviewBaseService::CaptureStatus expected_status,

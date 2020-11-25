@@ -220,7 +220,8 @@ class PlayerCompositorDelegateTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     service_ = std::make_unique<PaintPreviewBaseService>(
-        temp_dir.GetPath(), "test", nullptr, false);
+        std::make_unique<PaintPreviewFileMixin>(temp_dir.GetPath(), "test"),
+        nullptr, false);
   }
 
   PaintPreviewBaseService* GetBaseService() { return service_.get(); }
@@ -251,7 +252,7 @@ class PlayerCompositorDelegateTest : public testing::Test {
 
   void SerializeProtoAndCreateRootSkp(PaintPreviewProto* proto,
                                       const DirectoryKey& key) {
-    auto file_manager = GetBaseService()->GetFileManager();
+    auto file_manager = GetBaseService()->GetFileMixin()->GetFileManager();
     base::RunLoop loop;
     file_manager->GetTaskRunner()->PostTask(
         FROM_HERE,
@@ -283,7 +284,7 @@ class PlayerCompositorDelegateTest : public testing::Test {
 
 TEST_F(PlayerCompositorDelegateTest, OnClick) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
 
   GURL url("www.example.com");
@@ -371,7 +372,7 @@ TEST_F(PlayerCompositorDelegateTest, OnClick) {
 
 TEST_F(PlayerCompositorDelegateTest, BadProto) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   base::RunLoop loop;
   file_manager->GetTaskRunner()->PostTask(
@@ -401,7 +402,7 @@ TEST_F(PlayerCompositorDelegateTest, BadProto) {
 
 TEST_F(PlayerCompositorDelegateTest, OldVersion) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -422,7 +423,7 @@ TEST_F(PlayerCompositorDelegateTest, OldVersion) {
 
 TEST_F(PlayerCompositorDelegateTest, URLMismatch) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -442,7 +443,7 @@ TEST_F(PlayerCompositorDelegateTest, URLMismatch) {
 
 TEST_F(PlayerCompositorDelegateTest, ServiceDisconnect) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -474,7 +475,7 @@ TEST_F(PlayerCompositorDelegateTest, ServiceDisconnect) {
 
 TEST_F(PlayerCompositorDelegateTest, ClientDisconnect) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -505,7 +506,7 @@ TEST_F(PlayerCompositorDelegateTest, ClientDisconnect) {
 
 TEST_F(PlayerCompositorDelegateTest, InvalidCompositeRequest) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -536,7 +537,7 @@ TEST_F(PlayerCompositorDelegateTest, InvalidCompositeRequest) {
 
 TEST_F(PlayerCompositorDelegateTest, CompositorDeserializationError) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -560,7 +561,7 @@ TEST_F(PlayerCompositorDelegateTest, CompositorDeserializationError) {
 
 TEST_F(PlayerCompositorDelegateTest, InvalidRootSkp) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   GURL url("https://www.chromium.org/");
   auto proto = CreateValidProto(url);
@@ -584,7 +585,7 @@ TEST_F(PlayerCompositorDelegateTest, InvalidRootSkp) {
 
 TEST_F(PlayerCompositorDelegateTest, CompressOnClose) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   base::FilePath dir;
   file_manager->GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -616,7 +617,7 @@ TEST_F(PlayerCompositorDelegateTest, CompressOnClose) {
 
 TEST_F(PlayerCompositorDelegateTest, RequestBitmapWithCancel) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   {
     // This test skips setting up files as the fakes don't use them. In normal
@@ -687,7 +688,7 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapWithCancel) {
 
 TEST_F(PlayerCompositorDelegateTest, RequestBitmapWithCancelAll) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   {
     // This test skips setting up files as the fakes don't use them. In normal
@@ -739,7 +740,7 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapWithCancelAll) {
 
 TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccessQueued) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   {
     // This test skips setting up files as the fakes don't use them. In normal
@@ -772,7 +773,7 @@ TEST_F(PlayerCompositorDelegateTest, RequestBitmapSuccessQueued) {
 
 TEST_F(PlayerCompositorDelegateTest, Timeout) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   {
     PlayerCompositorDelegateImpl player_compositor_delegate;
@@ -798,7 +799,7 @@ TEST_F(PlayerCompositorDelegateTest, Timeout) {
 
 TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressure) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   {
     // This test skips setting up files as the fakes don't use them. In normal
@@ -831,7 +832,7 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressure) {
 
 TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
   auto* service = GetBaseService();
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(1U);
   {
     // This test skips setting up files as the fakes don't use them. In normal

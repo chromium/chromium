@@ -24,6 +24,8 @@ source_set("browser") {
     "paint_preview_compositor_client_impl.h",
     "paint_preview_compositor_service_impl.cc",
     "paint_preview_compositor_service_impl.h",
+    "paint_preview_file_mixin.cc",
+    "paint_preview_file_mixin.h",
     "paint_preview_policy.h",
     "service_sandbox_type.h",
     "warm_compositor.cc",

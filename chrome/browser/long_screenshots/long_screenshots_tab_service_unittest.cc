@@ -86,7 +86,9 @@ class LongScreenshotsTabServiceTest : public ChromeRenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     service_ = std::make_unique<LongScreenshotsTabService>(
-        temp_dir_.GetPath(), kFeatureName, nullptr, false);
+        std::make_unique<paint_preview::PaintPreviewFileMixin>(
+            temp_dir_.GetPath(), kFeatureName),
+        nullptr, false);
     task_environment()->RunUntilIdle();
   }
 
@@ -126,9 +128,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
       }));
   task_environment()->RunUntilIdle();
 
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(kTabId);
-  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&paint_preview::FileManager::DirectoryExists, file_manager,
                      key),
@@ -137,7 +139,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
 
   service->DeleteAllLongScreenshotFiles();
   task_environment()->RunUntilIdle();
-  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
       base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));
@@ -160,9 +162,9 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
       }));
   task_environment()->RunUntilIdle();
 
-  auto file_manager = service->GetFileManager();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(kTabId);
-  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
       base::BindOnce([](bool exists) { EXPECT_TRUE(exists); }));
@@ -170,7 +172,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
 
   service->DeleteAllLongScreenshotFiles();
   task_environment()->RunUntilIdle();
-  service->GetTaskRunner()->PostTaskAndReplyWithResult(
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
       base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));

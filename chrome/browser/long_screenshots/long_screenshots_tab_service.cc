@@ -4,6 +4,8 @@
 
 #include "chrome/browser/long_screenshots/long_screenshots_tab_service.h"
 
+#include <utility>
+
 #include "base/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -20,12 +22,10 @@ constexpr size_t kMaxPerCaptureSizeBytes = 5 * 1000L * 1000L;  // 5 MB.
 }  // namespace
 
 LongScreenshotsTabService::LongScreenshotsTabService(
-    const base::FilePath& profile_dir,
-    base::StringPiece ascii_feature_name,
+    std::unique_ptr<paint_preview::PaintPreviewFileMixin> file_mixin,
     std::unique_ptr<paint_preview::PaintPreviewPolicy> policy,
     bool is_off_the_record)
-    : PaintPreviewBaseService(profile_dir,
-                              ascii_feature_name,
+    : PaintPreviewBaseService(std::move(file_mixin),
                               std::move(policy),
                               is_off_the_record) {
   // TODO(tgupta): Populate this.
@@ -52,12 +52,12 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
   // to ensure the renderer doesn't go away while that happens.
   contents->IncrementCapturerCount(gfx::Size(), true);
 
-  auto file_manager = GetFileManager();
+  auto file_manager = GetFileMixin()->GetFileManager();
   auto key = file_manager->CreateKey(tab_id);
-  GetTaskRunner()->PostTaskAndReplyWithResult(
+  GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&paint_preview::FileManager::CreateOrGetDirectory,
-                     GetFileManager(), key, true),
+                     GetFileMixin()->GetFileManager(), key, true),
       // TODO(tgupta): Check for AMP pages here and get the right node id.
       base::BindOnce(&LongScreenshotsTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
@@ -93,8 +93,15 @@ void LongScreenshotsTabService::CaptureTabInternal(
   }
   // TODO(tgupta): Modify this call to specify the size of the capture rather
   // than the whole area.
+  CaptureParams capture_params;
+  capture_params.web_contents = contents;
+  capture_params.root_dir = &file_path.value();
+  capture_params.persistence = paint_preview::RecordingPersistence::kFileSystem;
+  capture_params.clip_rect = gfx::Rect();
+  capture_params.capture_links = true;
+  capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   CapturePaintPreview(
-      contents, file_path.value(), gfx::Rect(), true, kMaxPerCaptureSizeBytes,
+      capture_params,
       base::BindOnce(&LongScreenshotsTabService::OnCaptured,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
                      frame_tree_node_id, std::move(callback)));
@@ -118,11 +125,12 @@ void LongScreenshotsTabService::OnCaptured(
     return;
   }
 
-  auto file_manager = GetFileManager();
-  GetTaskRunner()->PostTaskAndReplyWithResult(
+  auto file_manager = GetFileMixin()->GetFileManager();
+  GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&FileManager::SerializePaintPreviewProto, GetFileManager(),
-                     key, result->proto, true),
+      base::BindOnce(&FileManager::SerializePaintPreviewProto,
+                     GetFileMixin()->GetFileManager(), key, result->proto,
+                     true),
       base::BindOnce(&LongScreenshotsTabService::OnFinished,
                      weak_ptr_factory_.GetWeakPtr(), tab_id,
                      std::move(callback)));
@@ -136,8 +144,9 @@ void LongScreenshotsTabService::OnFinished(int tab_id,
 }
 
 void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
-  GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&FileManager::DeleteAll, GetFileManager()));
+  GetFileMixin()->GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&FileManager::DeleteAll,
+                                GetFileMixin()->GetFileManager()));
 }
 
 }  // namespace long_screenshots

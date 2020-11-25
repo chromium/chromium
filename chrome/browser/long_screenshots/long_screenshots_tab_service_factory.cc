@@ -4,6 +4,8 @@
 
 #include "chrome/browser/long_screenshots/long_screenshots_tab_service_factory.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "chrome/browser/long_screenshots/long_screenshots_tab_service.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
@@ -44,7 +46,9 @@ LongScreenshotsTabServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   return std::make_unique<LongScreenshotsTabService>(
-      key->GetPath(), kFeatureDirname, nullptr, key->IsOffTheRecord());
+      std::make_unique<paint_preview::PaintPreviewFileMixin>(key->GetPath(),
+                                                             kFeatureDirname),
+      nullptr, key->IsOffTheRecord());
 }
 
 SimpleFactoryKey* LongScreenshotsTabServiceFactory::GetKeyToUse(
