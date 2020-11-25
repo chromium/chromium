@@ -29,12 +29,9 @@ class LanguageCode
   explicit LanguageCode(std::string&& s) : BaseClass(std::move(s)) { Check(); }
   explicit LanguageCode(const std::string& s) : BaseClass(s) { Check(); }
 
-  size_t length() const { return value().length(); }
-  bool empty() const { return value().empty(); }
-
  private:
   void Check() {
-    DCHECK((length() <= 3 && base::ranges::all_of(value(), &islower)) ||
+    DCHECK(((*this)->size() <= 3 && base::ranges::all_of(value(), &islower)) ||
            value() == "zh-CN" || value() == "zh-TW")
         << "Unexpected language code '" << value() << "'";
   }
