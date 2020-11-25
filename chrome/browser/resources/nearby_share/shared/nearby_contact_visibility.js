@@ -143,26 +143,8 @@ Polymer({
     'selectedVisibilityChanged_(selectedVisibility)',
   ],
 
-  /** @type {ResizeObserver} used to observer size changes to this element */
-  resizeObserver_: null,
-
   /** @override */
   attached() {
-    // This is a required work around to get the iron-list to display on first
-    // view. Currently iron-list won't generate item elements on attach if the
-    // element is not visible. Because we are hosted in a cr-view-manager for
-    // on-boarding, this component is not visible when the items are bound. To
-    // fix this issue, we listen for resize events (which happen when display is
-    // switched from none to block by the view manager) and manually call
-    // notifyResize on the iron-list
-    this.resizeObserver_ = new ResizeObserver(entries => {
-      const contactList =
-          /** @type {IronListElement} */ (this.$$('#contactList'));
-      if (contactList) {
-        contactList.notifyResize();
-      }
-    });
-    this.resizeObserver_.observe(this);
     this.contactManager_ = nearby_share.getContactManager();
     this.downloadContactsObserverReceiver_ = nearby_share.observeContactManager(
         /** @type {!nearbyShare.mojom.DownloadContactsObserverInterface} */ (
@@ -174,8 +156,6 @@ Polymer({
 
   /** @override */
   detached() {
-    this.resizeObserver_.disconnect();
-
     if (this.downloadContactsObserverReceiver_) {
       this.downloadContactsObserverReceiver_.$.close();
     }
