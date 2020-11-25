@@ -128,8 +128,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
   ExtensionInstallPrompt install_prompt(profile(), nullptr);
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
+  const extensions::Extension* const extension = prompt->extension();
   install_prompt.ShowDialog(
-      helper.GetCallback(), prompt->extension(), nullptr, std::move(prompt),
+      helper.GetCallback(), extension, nullptr, std::move(prompt),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
@@ -202,8 +203,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
   ExtensionInstallPrompt install_prompt(profile(), nullptr);
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
+  const extensions::Extension* const extension = prompt->extension();
   install_prompt.ShowDialog(
-      helper.GetCallback(), prompt->extension(), nullptr, std::move(prompt),
+      helper.GetCallback(), extension, nullptr, std::move(prompt),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::USER_CANCELED, helper.result());
