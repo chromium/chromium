@@ -444,7 +444,8 @@ TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_ErrorResponse) {
 #define MAYBE_SignedIn_DefaultSearchProviderChanged \
   SignedIn_DefaultSearchProviderChanged
 #endif
-TEST_F(RepeatableQueriesServiceTest, SignedIn_DefaultSearchProviderChanged) {
+TEST_F(RepeatableQueriesServiceTest,
+       MAYBE_SignedIn_DefaultSearchProviderChanged) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
