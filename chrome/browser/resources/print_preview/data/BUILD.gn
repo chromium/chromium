@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
@@ -100,7 +101,7 @@ js_library("destination") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       ":destination_policies",
       "..:native_layer_cros",

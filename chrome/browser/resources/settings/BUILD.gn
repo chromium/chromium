@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -131,7 +132,7 @@ preprocess_grit("preprocess") {
     "site_settings/website_usage_browser_proxy.js",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     in_files += [
       "autofill_page/blocking_request_manager.js",
       "languages_page/languages_metrics_proxy.js",
@@ -314,7 +315,7 @@ preprocess_grit("preprocess_generated") {
     in_files += [ "languages_page/edit_dictionary_page.js" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     in_files += [ "people_page/account_manager_browser_proxy.m.js" ]
   } else {
     in_files += [
@@ -358,7 +359,7 @@ group("closure_compile") {
     "settings_page:closure_compile",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "../../../test/data/webui/settings/chromeos:closure_compile",
       "chromeos:closure_compile",
@@ -451,7 +452,7 @@ group("closure_compile_module") {
     "site_settings:closure_compile_module",
     "site_settings_page:closure_compile_module",
   ]
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     deps += [
       "default_browser_page:closure_compile_module",
       "system_page:closure_compile_module",
@@ -465,7 +466,7 @@ group("closure_compile_module") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "chromeos:closure_compile_module" ]
   }
 }
@@ -662,7 +663,7 @@ group("polymer3_elements") {
     ":web_components_local",
   ]
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     public_deps += [
       "default_browser_page:web_components",
       "system_page:web_components",

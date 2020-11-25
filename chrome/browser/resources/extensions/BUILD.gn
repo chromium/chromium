@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -74,7 +75,7 @@ preprocess_grit("preprocess") {
     "shortcut_util.js",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     in_files += [ "kiosk_browser_proxy.js" ]
   }
 }
@@ -116,7 +117,7 @@ preprocess_grit("preprocess_generated") {
     "toolbar.js",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     in_files += [ "kiosk_dialog.js" ]
   }
 }
@@ -163,7 +164,7 @@ html_to_js("web_components_local") {
     "toolbar.js",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     js_files += [ "kiosk_dialog.js" ]
   }
 }
@@ -218,7 +219,7 @@ js_type_check("extensions_module_resources") {
     ":toggle_row",
     ":toolbar",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ ":kiosk_dialog" ]
   }
 }
@@ -356,7 +357,7 @@ js_library("kiosk_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("kiosk_dialog") {
     deps = [
       ":item_behavior",

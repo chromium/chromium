@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chromecast/chromecast.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-assert(is_chromeos || is_chromecast)
+assert(is_chromeos_ash || is_chromecast)
 
 copy("braille_ime_manifest") {
   sources = [ "manifest.json" ]

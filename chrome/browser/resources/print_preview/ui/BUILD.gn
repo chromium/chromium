@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
@@ -50,7 +51,7 @@ js_type_check("closure_compile_module") {
     ":sidebar",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       ":destination_dialog_cros",
       ":destination_dropdown_cros",
@@ -125,7 +126,7 @@ js_library("button_strip") {
     "//ui/webui/resources/js:plural_string_proxy",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ ":pin_settings" ]
   }
 }
@@ -156,7 +157,7 @@ js_library("destination_settings") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       ":destination_dialog_cros",
       ":destination_select_cros",
@@ -169,7 +170,7 @@ js_library("destination_settings") {
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("destination_select_cros") {
     deps = [
       ":destination_dropdown_cros",
@@ -448,7 +449,7 @@ js_library("invitation_promo") {
   ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   js_library("destination_dialog_cros") {
     deps = [
       ":destination_list",
@@ -599,7 +600,7 @@ html_to_js("web_components") {
     "sidebar.js",
     "throbber_css.js",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     js_files += [
       "destination_dialog_cros.js",
       "destination_dropdown_cros.js",

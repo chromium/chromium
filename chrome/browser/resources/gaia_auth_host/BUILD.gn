@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -10,7 +11,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 # Since js2gtest()s don't compile in some scenarios when include_js_tests is
 # false, and since this file may be loaded even when it's false, we need to make
 # sure the js2gtest() target only exists in this file when it works.
-if (is_chromeos && include_js_tests) {
+if (is_chromeos_ash && include_js_tests) {
   js2gtest("login_unitjs_tests") {
     # These could be unit tests, except they need a browser context in order
     # to construct a DOMParser object - so they are webui tests.

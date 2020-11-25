@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//tools/polymer/html_to_js.gni")
 
 group("closure_compile") {
   deps = [ "sync_confirmation:closure_compile" ]
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     deps += [
       "dice_web_signin_intercept:closure_compile",
       "profile_customization:closure_compile",
@@ -23,7 +24,7 @@ group("web_components") {
     ":web_components_local",
     "sync_confirmation:web_components",
   ]
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     public_deps += [
       "dice_web_signin_intercept:web_components",
       "profile_customization:web_components",

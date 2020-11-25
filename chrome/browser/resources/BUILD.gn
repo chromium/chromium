@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
@@ -65,7 +66,7 @@ if (enable_js_type_check) {
     if (is_linux || is_chromeos) {
       deps += [ "webui_js_error:closure_compile" ]
     }
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",
         "nearby_share:closure_compile",
@@ -94,7 +95,7 @@ if (enable_js_type_check) {
         "webapks:closure_compile",
       ]
     }
-    if (is_win || is_mac || is_linux) {
+    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
       deps += [ "browser_switch:closure_compile" ]
     }
 
@@ -203,7 +204,7 @@ if (!is_android) {
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   grit("multidevice_internals_resources") {
     source =
         "chromeos/multidevice_internals/multidevice_internals_resources.grd"
