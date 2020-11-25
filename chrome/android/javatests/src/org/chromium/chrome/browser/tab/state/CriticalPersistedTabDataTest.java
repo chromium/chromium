@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -15,9 +19,12 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
@@ -50,11 +57,12 @@ public class CriticalPersistedTabDataTest {
     }
 
     private CriticalPersistedTabData mCriticalPersistedTabData;
-
     private MockPersistedTabDataStorage mStorage;
 
     private static Tab mockTab(int id, boolean isEncrypted) {
-        return new MockTab(id, isEncrypted);
+        Tab tab = MockTab.createAndInitialize(id, isEncrypted);
+        tab.setIsTabSaveEnabled(true);
+        return tab;
     }
 
     @Before
@@ -96,6 +104,9 @@ public class CriticalPersistedTabDataTest {
                             ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
                             OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
             mStorage.setSemaphore(saveSemaphore);
+            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+            supplier.set(true);
+            criticalPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
             criticalPersistedTabData.saveForTesting();
             acquireSemaphore(saveSemaphore);
             CriticalPersistedTabData.from(mockTab(TAB_ID, isEncrypted), callback);
@@ -139,5 +150,28 @@ public class CriticalPersistedTabDataTest {
             // Throw Runtime exception to make catching InterruptedException unnecessary
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testTabSaving() throws Throwable {
+        TabImpl tab = new MockTab(1, false);
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(tab));
+        tab = MockTab.initializeWithCriticalPersistedTabData(tab, spyCriticalPersistedTabData);
+        tab.registerTabSaving();
+
+        tab.setIsTabSaveEnabled(true);
+        verify(spyCriticalPersistedTabData, times(1)).save();
+        verify(spyCriticalPersistedTabData, times(0)).delete();
+
+        tab.setIsTabSaveEnabled(false);
+        verify(spyCriticalPersistedTabData, times(1)).save();
+        verify(spyCriticalPersistedTabData, times(1)).delete();
+
+        tab.setIsTabSaveEnabled(true);
+        verify(spyCriticalPersistedTabData, times(2)).save();
+        verify(spyCriticalPersistedTabData, times(1)).delete();
     }
 }

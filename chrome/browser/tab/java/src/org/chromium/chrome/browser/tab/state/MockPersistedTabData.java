@@ -72,9 +72,6 @@ public class MockPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public void destroy() {}
-
-    @Override
     public String getUmaTag() {
         return "MockCritical";
     }

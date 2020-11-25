@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -34,12 +35,15 @@ public class PersistedTabDataTest {
     @UiThreadTest
     @Test
     public void testCacheCallbacks() throws InterruptedException {
-        Tab tab = new MockTab(1, false);
+        Tab tab = MockTab.createAndInitialize(1, false);
+        tab.setIsTabSaveEnabled(true);
         MockPersistedTabData mockPersistedTabData = new MockPersistedTabData(tab, INITIAL_VALUE);
+        registerObserverSupplier(mockPersistedTabData);
         mockPersistedTabData.save();
         // 1
         MockPersistedTabData.from(tab, (res) -> {
             Assert.assertEquals(INITIAL_VALUE, res.getField());
+            registerObserverSupplier(tab.getUserDataHost().getUserData(MockPersistedTabData.class));
             tab.getUserDataHost().getUserData(MockPersistedTabData.class).setField(CHANGED_VALUE);
             // Caching callbacks means 2) shouldn't overwrite CHANGED_VALUE
             // back to INITIAL_VALUE in the callback.
@@ -51,5 +55,11 @@ public class PersistedTabDataTest {
             Assert.assertEquals(CHANGED_VALUE, res.getField());
             mockPersistedTabData.delete();
         });
+    }
+
+    private static void registerObserverSupplier(MockPersistedTabData mockPersistedTabData) {
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(true);
+        mockPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
     }
 }

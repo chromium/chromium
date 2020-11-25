@@ -290,9 +290,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @Override
-    public void destroy() {}
-
-    @Override
     public String getUmaTag() {
         return "SPTD";
     }
