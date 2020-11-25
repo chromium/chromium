@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -90,8 +91,11 @@ class NewTabPageCoordinatorTest : public PlatformTest {
 // Tests that the coordinator vends a content suggestions VC on the record.
 TEST_F(NewTabPageCoordinatorTest, StartOnTheRecord) {
   CreateCoordinator(/*off_the_record=*/false);
-  id snackbarCommandsHandlerMock =
-      [OCMockObject mockForProtocol:@protocol(SnackbarCommands)];
+  id omniboxCommandsHandlerMock = OCMProtocolMock(@protocol(OmniboxCommands));
+  id snackbarCommandsHandlerMock = OCMProtocolMock(@protocol(SnackbarCommands));
+  [browser_.get()->GetCommandDispatcher()
+      startDispatchingToTarget:omniboxCommandsHandlerMock
+                   forProtocol:@protocol(OmniboxCommands)];
   [browser_.get()->GetCommandDispatcher()
       startDispatchingToTarget:snackbarCommandsHandlerMock
                    forProtocol:@protocol(SnackbarCommands)];
