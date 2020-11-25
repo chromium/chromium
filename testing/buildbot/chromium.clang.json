@@ -41184,9 +41184,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "absl_hardening_tests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41229,9 +41226,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41274,9 +41268,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_crypto_tests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41319,9 +41310,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_ssl_tests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41364,9 +41352,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41409,9 +41394,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "crypto_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41454,9 +41436,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41499,9 +41478,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "google_apis_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41544,9 +41520,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41589,9 +41562,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_net_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41634,9 +41604,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41679,9 +41646,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41724,9 +41688,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41769,9 +41730,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "net_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41814,9 +41772,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41859,9 +41814,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "sql_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41904,9 +41856,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -41949,9 +41898,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "url_unittests_iPhone 6s 13.6",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42014,9 +41960,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "absl_hardening_tests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42058,9 +42001,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "base_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42102,9 +42042,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_crypto_tests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42146,9 +42083,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "boringssl_ssl_tests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42190,9 +42124,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "components_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42234,9 +42165,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "crypto_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42278,9 +42206,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "gfx_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42322,9 +42247,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "google_apis_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42366,9 +42288,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_chrome_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42410,9 +42329,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_net_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42454,9 +42370,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_inttests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42498,9 +42411,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42542,9 +42452,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ios_web_view_inttests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42586,9 +42493,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "net_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42630,9 +42534,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "skia_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42674,9 +42575,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "sql_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42718,9 +42616,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "ui_base_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -42762,9 +42657,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "url_unittests_iPhone 6S 12.3.1",
-        "resultdb": {
-          "enable": false
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
