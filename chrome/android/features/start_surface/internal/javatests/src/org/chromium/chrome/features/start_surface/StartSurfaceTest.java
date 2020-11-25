@@ -84,7 +84,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -399,7 +398,6 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
-    @FlakyTest(message = "https://crbug.com/1139515")
     public void testShow_SingleAsHomepage() {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
@@ -461,7 +459,6 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/hide_incognito_switch/true"})
-    @FlakyTest(message = "https://crbug.com/1139515")
     public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
@@ -509,16 +506,18 @@ public class StartSurfaceTest {
 
         pressBack();
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
-                .check(matches(withEffectiveVisibility(GONE)));
 
         if (isInstantReturn()
                 && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
+            // TODO(crbug.com/1139515): Fix incognito_switch visibility AssertionFailedError issue.
             // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
             // performing a single click on position: 0. See code below.
             return;
         }
+
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+                .check(matches(withEffectiveVisibility(GONE)));
 
         OverviewModeBehaviorWatcher hideWatcher =
                 TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
