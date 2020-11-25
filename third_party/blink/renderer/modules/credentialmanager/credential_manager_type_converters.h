@@ -106,8 +106,10 @@ struct TypeConverter<blink::mojom::blink::AuthenticatorAttachment,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::LargeBlobSupport, String> {
-  static blink::mojom::blink::LargeBlobSupport Convert(const String&);
+struct TypeConverter<blink::mojom::blink::LargeBlobSupport,
+                     base::Optional<String>> {
+  static blink::mojom::blink::LargeBlobSupport Convert(
+      const base::Optional<String>&);
 };
 
 template <>

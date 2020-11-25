@@ -321,12 +321,15 @@ TypeConverter<AuthenticatorAttachment, base::Optional<String>>::Convert(
 }
 
 // static
-LargeBlobSupport TypeConverter<LargeBlobSupport, String>::Convert(
-    const String& large_blob_support) {
-  if (large_blob_support == "required")
-    return LargeBlobSupport::REQUIRED;
-  if (large_blob_support == "preferred")
-    return LargeBlobSupport::PREFERRED;
+LargeBlobSupport
+TypeConverter<LargeBlobSupport, base::Optional<String>>::Convert(
+    const base::Optional<String>& large_blob_support) {
+  if (large_blob_support) {
+    if (*large_blob_support == "required")
+      return LargeBlobSupport::REQUIRED;
+    if (*large_blob_support == "preferred")
+      return LargeBlobSupport::PREFERRED;
+  }
 
   // Unknown values are treated as preferred.
   return LargeBlobSupport::PREFERRED;
@@ -570,9 +573,12 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
                  WebAuthenticationResidentKeyRequirementEnabled());
       mojo_options->cred_props = true;
     }
-    if (extensions->largeBlob()) {
-      mojo_options->large_blob_enable =
-          ConvertTo<LargeBlobSupport>(extensions->largeBlob()->support());
+    if (extensions->hasLargeBlob()) {
+      base::Optional<WTF::String> support;
+      if (extensions->largeBlob()->hasSupport()) {
+        support = extensions->largeBlob()->support();
+      }
+      mojo_options->large_blob_enable = ConvertTo<LargeBlobSupport>(support);
     }
   }
 
