@@ -82,8 +82,10 @@ double ComputeElementOffsetThreshold(const CSSValue* value) {
 ScrollTimelineElementBasedOffset* ComputeElementBasedOffset(
     Document& document,
     const cssvalue::CSSElementOffsetValue* value) {
-  auto* offset = MakeGarbageCollected<ScrollTimelineElementBasedOffset>();
-  offset->setTarget(ComputeElementOffsetTarget(document, value->Target()));
+  auto* offset = ScrollTimelineElementBasedOffset::Create();
+  Element* target = ComputeElementOffsetTarget(document, value->Target());
+  if (target)
+    offset->setTarget(target);
   offset->setEdge(ComputeElementOffsetEdge(value->Edge()));
   offset->setThreshold(ComputeElementOffsetThreshold(value->Threshold()));
   return offset;
