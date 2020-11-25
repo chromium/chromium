@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/widget/input/cursor_control_handler.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller.h"
 #include "third_party/blink/renderer/platform/widget/input/event_with_callback.h"
+#include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
 #include "third_party/blink/renderer/platform/widget/input/momentum_scroll_jank_tracker.h"
 #include "third_party/blink/renderer/platform/widget/input/scroll_predictor.h"
 #include "ui/events/types/scroll_input_type.h"
@@ -791,11 +792,6 @@ WebInputEventAttribution InputHandlerProxy::PerformEventAttribution(
 void InputHandlerProxy::RecordMainThreadScrollingReasons(
     WebGestureDevice device,
     uint32_t reasons) {
-  static const char* kGestureHistogramName =
-      "Renderer4.MainThreadGestureScrollReason";
-  static const char* kWheelHistogramName =
-      "Renderer4.MainThreadWheelScrollReason";
-
   if (device != WebGestureDevice::kTouchpad &&
       device != WebGestureDevice::kScrollbar &&
       device != WebGestureDevice::kTouchscreen) {
@@ -842,27 +838,23 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
   const bool is_unblocked_compositor_scroll =
       reasons == cc::MainThreadScrollingReason::kNotScrollingOnMain;
 
-  // UMA_HISTOGRAM_ENUMERATION requires that the enum_max must be strictly
-  // greater than the sample value. kMainThreadScrollingReasonCount doesn't
-  // include the NotScrollingOnMain enum but the histograms do so adding
-  // the +1 is necessary.
-  // TODO(dcheng): Fix https://crbug.com/705169 so this isn't needed.
-  constexpr uint32_t kMainThreadScrollingReasonEnumMax =
-      cc::MainThreadScrollingReason::kMainThreadScrollingReasonCount + 1;
   if (is_unblocked_compositor_scroll) {
-    if (device == WebGestureDevice::kTouchscreen) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kGestureHistogramName,
-          cc::MainThreadScrollingReason::kNotScrollingOnMain,
-          kMainThreadScrollingReasonEnumMax);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          kWheelHistogramName,
-          cc::MainThreadScrollingReason::kNotScrollingOnMain,
-          kMainThreadScrollingReasonEnumMax);
-    }
+    RecordScrollReasonMetric(
+        device, cc::MainThreadScrollingReason::kNotScrollingOnMain);
   }
 
+  // The enum in cc::MainThreadScrollingReason simultaneously defines actual
+  // bitmask values and indices into the bitmask, making this loop a bit
+  // confusing.
+  //
+  // This stems from the fact that kNotScrollingOnMain is recorded in the
+  // histograms as value 0. However, the 0th bit is not actually reserved and
+  // has a separate, well-defined meaning. kNotScrollingOnMain is only recorded
+  // when *no* bits are set.
+  //
+  // As such, when recording any reason that's not kNotScrollingOnMain (i.e.
+  // recording the index of a set bit), the index must be incremented by 1 to be
+  // recorded properly.
   for (uint32_t i = 0;
        i < cc::MainThreadScrollingReason::kMainThreadScrollingReasonCount;
        ++i) {
@@ -876,13 +868,7 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
         if (reasons & ~val)
           continue;
       }
-      if (device == WebGestureDevice::kTouchscreen) {
-        UMA_HISTOGRAM_ENUMERATION(kGestureHistogramName, i + 1,
-                                  kMainThreadScrollingReasonEnumMax);
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(kWheelHistogramName, i + 1,
-                                  kMainThreadScrollingReasonEnumMax);
-      }
+      RecordScrollReasonMetric(device, i + 1);
     }
   }
 }

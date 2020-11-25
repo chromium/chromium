@@ -1489,6 +1489,8 @@ component("platform") {
     "widget/input/input_event_prediction.cc",
     "widget/input/input_event_prediction.h",
     "widget/input/input_handler_proxy.cc",
+    "widget/input/input_metrics.cc",
+    "widget/input/input_metrics.h",
     "widget/input/main_thread_event_queue.cc",
     "widget/input/main_thread_event_queue.h",
     "widget/input/main_thread_event_queue_task.h",

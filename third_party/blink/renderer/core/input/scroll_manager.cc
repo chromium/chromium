@@ -33,8 +33,8 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
 
 namespace blink {
 namespace {
@@ -422,23 +422,23 @@ void ScrollManager::RecordScrollRelatedMetrics(const WebGestureDevice device) {
   if (non_composited_main_thread_scrolling_reasons) {
     DCHECK(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
         non_composited_main_thread_scrolling_reasons));
-    uint32_t main_thread_scrolling_reason_enum_max =
-        cc::MainThreadScrollingReason::kMainThreadScrollingReasonCount + 1;
+    // The enum in cc::MainThreadScrollingReason simultaneously defines actual
+    // bitmask values and indices into the bitmask, making this loop a bit
+    // confusing.
+    //
+    // This stems from the fact that kNotScrollingOnMain is recorded in the
+    // histograms as value 0. However, the 0th bit is not actually reserved and
+    // has a separate, well-defined meaning. kNotScrollingOnMain is only
+    // recorded when *no* bits are set.
+    //
+    // As such, when recording any reason that's not kNotScrollingOnMain (i.e.
+    // recording the index of a set bit), the index must be incremented by 1 to
+    // be recorded properly.
     for (uint32_t i = cc::MainThreadScrollingReason::kNonCompositedReasonsFirst;
          i <= cc::MainThreadScrollingReason::kNonCompositedReasonsLast; ++i) {
       unsigned val = 1 << i;
       if (non_composited_main_thread_scrolling_reasons & val) {
-        if (device == WebGestureDevice::kTouchscreen) {
-          DEFINE_STATIC_LOCAL(EnumerationHistogram, touch_histogram,
-                              ("Renderer4.MainThreadGestureScrollReason",
-                               main_thread_scrolling_reason_enum_max));
-          touch_histogram.Count(i + 1);
-        } else {
-          DEFINE_STATIC_LOCAL(EnumerationHistogram, wheel_histogram,
-                              ("Renderer4.MainThreadWheelScrollReason",
-                               main_thread_scrolling_reason_enum_max));
-          wheel_histogram.Count(i + 1);
-        }
+        RecordScrollReasonMetric(device, i + 1);
       }
     }
   }
