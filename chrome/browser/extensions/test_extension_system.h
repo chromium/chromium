@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "base/one_shot_event.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_system.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 #endif
 
@@ -111,7 +112,7 @@ class TestExtensionSystem : public ExtensionSystem {
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
 #endif
 };

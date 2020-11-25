@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/url_constants.h"
@@ -22,9 +23,9 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/login/login_state/login_state.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extension_test_util::LoadManifestUnchecked;
 using extensions::Extension;
@@ -244,7 +245,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
           WebRequestPermissions::REQUIRE_ALL_URLS, initiator, kWebRequestType));
 
   // Public Sessions tests.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const GURL org_url("http://example.org");
 
   // com_extension_ doesn't have host permission for .org URLs.

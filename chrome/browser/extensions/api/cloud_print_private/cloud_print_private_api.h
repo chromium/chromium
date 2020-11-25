@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
 #include "printing/buildflags/buildflags.h"
 
-#if !BUILDFLAG(ENABLE_PRINT_PREVIEW) || defined(OS_CHROMEOS)
+#if !BUILDFLAG(ENABLE_PRINT_PREVIEW) || BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Print Preview must be enabled / Not supported on ChromeOS"
 #endif
 

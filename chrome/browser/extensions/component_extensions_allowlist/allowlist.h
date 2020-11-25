@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
+
 namespace extensions {
 
 // =============================================================================
@@ -42,7 +44,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id);
 // Checks using resource ID of manifest.
 bool IsComponentExtensionAllowlisted(int manifest_resource_id);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks using extension id for sign in profile.
 bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id);

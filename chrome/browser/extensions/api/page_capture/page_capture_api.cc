@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -29,7 +30,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #endif
@@ -50,7 +51,7 @@ const char kTemporaryFileError[] = "Failed to create a temporary file.";
 const char kTabClosedError[] = "Cannot find the tab for this request.";
 const char kPageCaptureNotAllowed[] =
     "Don't have permissions required to capture this page.";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kUserDenied[] = "User denied request.";
 #endif
 constexpr base::TaskTraits kCreateTemporaryFileTaskTraits = {
@@ -101,7 +102,7 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   if (is_from_service_worker())
     AddWorkerResponseTarget();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In Public Sessions, extensions (and apps) are force-installed by admin
   // policy so the user does not get a chance to review the permissions for
   // these extensions. This is not acceptable from a security/privacy
@@ -195,7 +196,7 @@ void PageCaptureSaveAsMHTMLFunction::OnServiceWorkerAck() {
   Release();  // Balanced in Run()
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest(
     const PermissionIDSet& allowed_permissions) {
   if (allowed_permissions.ContainsID(APIPermission::kPageCapture)) {

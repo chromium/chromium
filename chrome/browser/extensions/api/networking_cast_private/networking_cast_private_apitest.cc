@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/networking_cast_private/chrome_networking_cast_private_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -19,7 +20,7 @@
 #include "extensions/browser/api/networking_private/networking_cast_private_delegate.h"
 #include "extensions/common/switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -95,7 +96,7 @@ class NetworkingCastPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::DBusThreadManager* dbus_manager =
         chromeos::DBusThreadManager::Get();
     chromeos::ShillDeviceClient::TestInterface* device_test =
@@ -110,7 +111,7 @@ class NetworkingCastPrivateApiTest : public ExtensionApiTest {
     service_test->AddService("stub_wifi", "stub_wifi_guid", "wifi",
                              shill::kTypeWifi, shill::kStateOnline,
                              true /* add_to_visible */);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void TearDown() override {

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "extensions/browser/extension_registry.h"
@@ -15,7 +16,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #endif
 
@@ -79,7 +80,7 @@ void ChromeAppIcon::ApplyEffects(int resource_size_in_dip,
         gfx::ImageSkiaOperations::CreateHSLShiftedImage(*image_skia, shift);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Badge should be added after graying out the icon to have a crisp look.
   if (badge_type != Badge::kNone)
     util::ApplyBadge(image_skia, badge_type);
@@ -144,7 +145,7 @@ void ChromeAppIcon::UpdateIcon() {
 
   Badge badge_type = Badge::kNone;
   bool app_launchable = util::IsAppLaunchable(app_id_, browser_context_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   has_chrome_badge_ = util::ShouldApplyChromeBadge(browser_context_, app_id_);
   if (!app_launchable) {
     badge_type = Badge::kBlocked;

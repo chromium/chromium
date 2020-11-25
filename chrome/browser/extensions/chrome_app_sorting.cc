@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,7 +30,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/extensions/default_app_order.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #endif
@@ -693,7 +694,7 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
   default_ordinals_created_ = true;
 
   // The following defines the default order of apps.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::string> app_ids;
   chromeos::default_app_order::Get(&app_ids);
 #else
@@ -713,7 +714,7 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
     default_ordinals_[extension_id].page_ordinal = page_ordinal;
     default_ordinals_[extension_id].app_launch_ordinal = app_launch_ordinal;
     app_launch_ordinal = app_launch_ordinal.CreateAfter();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Default page breaks are installed by default for first-time users so that
     // we can make default apps span multiple pages in the Launcher without
     // fully filling those pages. If |extension_id| is of a default page break,
@@ -721,7 +722,7 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
     // ordinal.
     if (app_list::IsDefaultPageBreakItem(extension_id))
       page_ordinal = page_ordinal.CreateAfter();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 

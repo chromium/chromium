@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install_stage.h"
@@ -19,9 +20,9 @@
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
 
@@ -273,7 +274,7 @@ class InstallStageTracker : public KeyedService {
     kMaxValue = kBandwidthLimit,
   };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Contains information about the current user.
   struct UserInfo {
     UserInfo(const UserInfo&);
@@ -282,7 +283,7 @@ class InstallStageTracker : public KeyedService {
     user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR;
     bool is_new_user = false;
   };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Contains information about extension installation: failure reason, if any
   // reported, specific details in case of CRX install error, current
@@ -397,12 +398,12 @@ class InstallStageTracker : public KeyedService {
   // Convenience function to get the InstallStageTracker for a BrowserContext.
   static InstallStageTracker* Get(content::BrowserContext* context);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns user type of the user associated with the |profile| and whether the
   // user is new or not. This method should be used only if there is a user
   // associated with the profile.
   static UserInfo GetUserInfo(Profile* profile);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void ReportInfoOnNoUpdatesFailure(const ExtensionId& id,
                                     const std::string& info);

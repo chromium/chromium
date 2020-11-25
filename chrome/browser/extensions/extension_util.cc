@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
@@ -44,7 +45,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
@@ -91,7 +92,7 @@ bool HasIsolatedStorage(const std::string& extension_id,
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_policy_extension =
       extension && Manifest::IsPolicyLocation(extension->location());
   Profile* profile = Profile::FromBrowserContext(context);
@@ -122,7 +123,7 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
       // by sync, for syncable component extensions.
       // See http://crbug.com/112290 and associated CLs for the sordid history.
       bool syncable = sync_helper::IsSyncableComponentExtension(extension);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // For some users, the file manager app somehow ended up being synced even
       // though it's supposed to be unsyncable; see crbug.com/576964. If the bad
       // data ever gets cleaned up, this hack should be removed.

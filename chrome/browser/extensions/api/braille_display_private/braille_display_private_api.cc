@@ -8,11 +8,12 @@
 
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -85,12 +86,12 @@ void BrailleDisplayPrivateAPI::OnBrailleKeyEvent(const KeyEvent& key_event) {
 }
 
 bool BrailleDisplayPrivateAPI::IsProfileActive() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Since we are creating one instance per profile / user, we should be fine
   // comparing against the active user. That said - if we ever change that,
   // this code will need to be changed.
   return profile_->IsSameOrParent(ProfileManager::GetActiveUserProfile());
-#else  // !defined(OS_CHROMEOS)
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #endif
 }
@@ -180,7 +181,7 @@ bool BrailleDisplayPrivateWriteDotsFunction::Respond() {
 
 ExtensionFunction::ResponseAction
 BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
   return RespondNow(Error("Unsupported on this platform."));
 #else

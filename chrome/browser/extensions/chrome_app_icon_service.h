@@ -13,11 +13,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/launcher/launcher_extension_app_updater.h"
 #endif
 
@@ -41,7 +42,7 @@ class ChromeAppIconDelegate;
 // is bound to content::BrowserContext.
 // Usage: ChromeAppIconService::Get(context)->CreateIcon().
 class ChromeAppIconService : public KeyedService,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                              public LauncherAppUpdater::Delegate,
 #endif
                              public ExtensionRegistryObserver {
@@ -95,7 +96,7 @@ class ChromeAppIconService : public KeyedService,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // LauncherAppUpdater::Delegate:
   void OnAppUpdated(content::BrowserContext* browser_context,
                     const std::string& app_id) override;
@@ -104,7 +105,7 @@ class ChromeAppIconService : public KeyedService,
   // Unowned pointer.
   content::BrowserContext* context_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS this handles Chrome app life-cycle events that may change how
   // extension based app icon looks like.
   std::unique_ptr<LauncherExtensionAppUpdater> app_updater_;

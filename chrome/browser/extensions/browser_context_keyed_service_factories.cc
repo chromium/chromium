@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
@@ -57,7 +58,7 @@
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
@@ -103,7 +104,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::IdentityAPI::GetFactoryInstance();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::InputImeAPI::GetFactoryInstance();
 #endif
   extensions::LanguageSettingsPrivateDelegateFactory::GetInstance();
@@ -111,7 +112,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::MDnsAPI::GetFactoryInstance();
 #endif
   extensions::MenuManagerFactory::GetInstance();
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
   auto networking_private_ui_delegate_factory =
       std::make_unique<extensions::NetworkingPrivateUIDelegateFactoryImpl>();
   extensions::NetworkingPrivateDelegateFactory::GetInstance()
@@ -135,11 +136,11 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::SystemIndicatorManagerFactory::GetInstance();
   extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::TerminalPrivateAPI::GetFactoryInstance();
 #endif
   extensions::TtsAPI::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::VerifyTrustAPI::GetFactoryInstance();
 #endif
   extensions::WarningBadgeServiceFactory::GetInstance();

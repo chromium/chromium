@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate_factory.h"
@@ -45,7 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
@@ -58,7 +59,7 @@ namespace extensions {
 
 namespace language_settings_private = api::language_settings_private;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using chromeos::input_method::InputMethodDescriptor;
 using chromeos::input_method::InputMethodDescriptors;
 using chromeos::input_method::InputMethodManager;
@@ -202,7 +203,7 @@ std::vector<std::string> GetInputMethodTags(
 }
 
 }  // namespace
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 LanguageSettingsPrivateGetLanguageListFunction::
     LanguageSettingsPrivateGetLanguageListFunction()
@@ -232,10 +233,10 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
 
   // Build the language list.
   language_list_->Clear();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::unordered_set<std::string> allowed_ui_locales(
       GetAllowedLanguages(chrome_details_.GetProfile()->GetPrefs()));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (const auto& entry : languages) {
     language_settings_private::Language language;
 
@@ -255,17 +256,17 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     if (language::ConvertToActualUILocale(&temp_locale)) {
       language.supports_ui.reset(new bool(true));
     }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!allowed_ui_locales.empty() &&
         allowed_ui_locales.count(language.code) == 0) {
       language.is_prohibited_language.reset(new bool(true));
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     language_list_->Append(language.ToValue());
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Send the display name of the fake language for ARC IMEs to the JS side.
   // |native_display_name| does't have to be set because the language selection
   // drop-down menu doesn't list the fake language.
@@ -276,7 +277,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
         l10n_util::GetStringUTF8(IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS);
     language_list_->Append(language.ToValue());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
@@ -613,7 +614,7 @@ LanguageSettingsPrivateGetTranslateTargetLanguageFunction::Run() {
       profile->GetPrefs(), language_model))));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Populates the vector of input methods using information in the list of
 // descriptors. Used for languageSettingsPrivate.getInputMethodLists().
 void PopulateInputMethodListFromDescriptors(
@@ -677,7 +678,7 @@ LanguageSettingsPrivateGetInputMethodListsFunction::
 
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXTENSION_FUNCTION_VALIDATE(false);
   return RespondNow(NoArguments());
 #else
@@ -713,7 +714,7 @@ LanguageSettingsPrivateAddInputMethodFunction::
 
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateAddInputMethodFunction::Run() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   const auto params =
@@ -768,7 +769,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::
 
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   const auto params =

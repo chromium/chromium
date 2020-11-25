@@ -7,8 +7,9 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #endif
 
@@ -22,7 +23,7 @@ NetworkingPrivateUIDelegateFactoryImpl::
 
 std::unique_ptr<NetworkingPrivateDelegate::UIDelegate>
 NetworkingPrivateUIDelegateFactoryImpl::CreateDelegate() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<
       chromeos::extensions::NetworkingPrivateUIDelegateChromeOS>();
 #else

@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -42,7 +43,7 @@
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
@@ -59,7 +60,7 @@ const char kExportInProgress[] = "in-progress";
 // The error message returned to the UI when the user fails to reauthenticate.
 const char kReauthenticationFailed[] = "reauth-failed";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::TimeDelta kShowPasswordAuthTokenLifetime =
     password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod;
 constexpr base::TimeDelta kExportPasswordsAuthTokenLifetime =
@@ -331,7 +332,7 @@ bool PasswordsPrivateDelegateImpl::OsReauthCall(
       web_contents_->GetTopLevelNativeWindow(), purpose);
 #elif defined(OS_MAC)
   return password_manager_util_mac::AuthenticateUser(purpose);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   const bool user_cannot_manually_enter_password =
       !chromeos::password_visibility::AccountHasUserFacingPassword(
           chromeos::ProfileHelper::Get()

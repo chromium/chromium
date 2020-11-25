@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources_map.h"
@@ -22,7 +23,7 @@
 #include "pdf/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
@@ -70,7 +71,7 @@ class ChromeComponentExtensionResourceManager::Data {
 
 ChromeComponentExtensionResourceManager::Data::Data() {
   static const GritResourceMap kExtraComponentExtensionResources[] = {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"web_store/webstore_icon_128.png", IDR_WEBSTORE_APP_ICON_128},
     {"web_store/webstore_icon_16.png", IDR_WEBSTORE_APP_ICON_16},
 #else
@@ -78,7 +79,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
     {"web_store/webstore_icon_16.png", IDR_WEBSTORE_ICON_16},
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"chrome_app/chrome_app_icon_32.png", IDR_CHROME_APP_ICON_32},
     {"chrome_app/chrome_app_icon_192.png", IDR_CHROME_APP_ICON_192},
     {"pdf/ink/ink_lib_binary.js", IDR_INK_LIB_BINARY_JS},
@@ -92,7 +93,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
                               kComponentExtensionResourcesSize);
   AddComponentResourceEntries(kExtraComponentExtensionResources,
                               base::size(kExtraComponentExtensionResources));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add Files app JS modules resources.
   AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
   AddComponentResourceEntries(kFileManagerGenResources,

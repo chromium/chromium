@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/policy_extension_reinstaller.h"
@@ -39,7 +40,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/escape.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #endif
 
@@ -309,7 +310,7 @@ ChromeContentVerifierDelegate::GetVerifyInfo(const Extension& extension) const {
                        management_policy->ShouldRepairIfCorrupted(&extension);
   bool is_from_webstore = IsFromWebstore(extension);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ExtensionAssetsManagerChromeOS::IsSharedInstall(&extension)) {
     return VerifyInfo(VerifyInfo::Mode::ENFORCE_STRICT, is_from_webstore,
                       should_repair);

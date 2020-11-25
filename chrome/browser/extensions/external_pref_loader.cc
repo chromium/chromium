@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -27,7 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -52,7 +53,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 // is a bit complicated.
 // TODO(crbug.com/1023268) This is a temporary measure and should be replaced.
 bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!chromeos::switches::IsTabletFormFactor())
     return false;
 
@@ -112,7 +113,7 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
 
 namespace extensions {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper class to wait for priority pref sync to be ready.
 class ExternalPrefLoader::PrioritySyncReadyWaiter
     : public sync_preferences::PrefServiceSyncableObserver,
@@ -238,7 +239,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   DISALLOW_COPY_AND_ASSIGN(PrioritySyncReadyWaiter);
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ExternalPrefLoader::ExternalPrefLoader(int base_path_id,
                                        int options,
@@ -262,7 +263,7 @@ const base::FilePath ExternalPrefLoader::GetBaseCrxFilePath() {
 
 void ExternalPrefLoader::StartLoading() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if ((options_ & DELAY_LOAD_UNTIL_PRIORITY_SYNC) &&
       (profile_ && ProfileSyncServiceFactory::IsSyncAllowed(profile_))) {
     pending_waiter_list_.push_back(
@@ -272,13 +273,13 @@ void ExternalPrefLoader::StartLoading() {
                                      this, waiter_ptr));
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadOnFileThread, this));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ExternalPrefLoader::OnPrioritySyncReady(
     ExternalPrefLoader::PrioritySyncReadyWaiter* waiter) {
   // Delete |waiter| from |pending_waiter_list_|.
@@ -291,7 +292,7 @@ void ExternalPrefLoader::OnPrioritySyncReady(
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadOnFileThread, this));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static.
 std::unique_ptr<base::DictionaryValue>

@@ -14,6 +14,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace extensions {
@@ -79,7 +80,9 @@ bool NativeProcessLauncher::LaunchNativeProcess(
 
   options.current_directory = command_line.GetProgram().DirName();
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Don't use no_new_privs mode, e.g. in case the host needs to use sudo.
   options.allow_new_privs = true;
 #endif

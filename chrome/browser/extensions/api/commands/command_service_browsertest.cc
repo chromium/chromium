@@ -8,6 +8,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/pref_names.h"
@@ -31,9 +32,9 @@ std::string GetAnotherCommandPlatform() {
   return extensions::manifest_values::kKeybindingPlatformMac;
 #elif defined(OS_MAC)
   return extensions::manifest_values::kKeybindingPlatformChromeOs;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return extensions::manifest_values::kKeybindingPlatformLinux;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return extensions::manifest_values::kKeybindingPlatformWin;
 #else
   return "";

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,9 +62,9 @@ LanguageSettingsPrivateDelegate::LanguageSettingsPrivateDelegate(
       GetPrefs());
 
   StartOrStopListeningForSpellcheckChanges();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   StartOrStopListeningForInputMethodChanges();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 LanguageSettingsPrivateDelegate::~LanguageSettingsPrivateDelegate() {
@@ -111,7 +112,7 @@ void LanguageSettingsPrivateDelegate::Shutdown() {
     listening_spellcheck_ = false;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (listening_input_method_) {
     auto* input_method_manager =
         chromeos::input_method::InputMethodManager::Get();
@@ -119,7 +120,7 @@ void LanguageSettingsPrivateDelegate::Shutdown() {
       input_method_manager->RemoveObserver(this);
     listening_input_method_ = false;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void LanguageSettingsPrivateDelegate::OnListenerAdded(
@@ -132,7 +133,7 @@ void LanguageSettingsPrivateDelegate::OnListenerAdded(
     StartOrStopListeningForSpellcheckChanges();
     return;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (details.event_name ==
           language_settings_private::OnInputMethodAdded::kEventName ||
       details.event_name ==
@@ -140,16 +141,16 @@ void LanguageSettingsPrivateDelegate::OnListenerAdded(
     StartOrStopListeningForInputMethodChanges();
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void LanguageSettingsPrivateDelegate::OnListenerRemoved(
     const EventListenerInfo& details) {
   // Stop listening to events if there are no more listeners.
   StartOrStopListeningForSpellcheckChanges();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   StartOrStopListeningForInputMethodChanges();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void LanguageSettingsPrivateDelegate::Observe(
@@ -160,7 +161,7 @@ void LanguageSettingsPrivateDelegate::Observe(
   StartOrStopListeningForSpellcheckChanges();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void LanguageSettingsPrivateDelegate::InputMethodChanged(
     chromeos::input_method::InputMethodManager* manager,
     Profile* profile,
@@ -189,7 +190,7 @@ void LanguageSettingsPrivateDelegate::OnInputMethodExtensionRemoved(
       std::move(args)));
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void LanguageSettingsPrivateDelegate::OnHunspellDictionaryInitialized(
     const std::string& language) {
@@ -292,7 +293,7 @@ void LanguageSettingsPrivateDelegate::
   listening_spellcheck_ = should_listen;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void LanguageSettingsPrivateDelegate::
     StartOrStopListeningForInputMethodChanges() {
   EventRouter* event_router = EventRouter::Get(context_);
@@ -313,7 +314,7 @@ void LanguageSettingsPrivateDelegate::
 
   listening_input_method_ = should_listen;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void LanguageSettingsPrivateDelegate::RetryDownloadHunspellDictionary(
     const std::string& language) {

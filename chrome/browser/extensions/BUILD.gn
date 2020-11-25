@@ -934,10 +934,10 @@ static_library("extensions") {
     deps += [ "//components/autofill_assistant/browser" ]
   }
 
-  if (chromeos_is_browser_only || is_chromeos) {
+  if (is_chromeos_lacros || is_chromeos_ash) {
     sources += [ "api/enterprise_platform_keys/enterprise_platform_keys_api.h" ]
     deps += [ "//chromeos/crosapi/mojom" ]
-    if (chromeos_is_browser_only) {
+    if (is_chromeos_lacros) {
       sources += [
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.cc",
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h",
@@ -946,7 +946,7 @@ static_library("extensions") {
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "api/certificate_provider/certificate_provider_api.cc",
       "api/certificate_provider/certificate_provider_api.h",
@@ -1087,7 +1087,7 @@ static_library("extensions") {
       ]
     }
   } else {
-    assert(!is_chromeos)
+    assert(!is_chromeos_ash)
     sources += [
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
@@ -1181,7 +1181,7 @@ static_library("extensions") {
     deps += [ "//components/wifi" ]
   }
 
-  if (is_win || is_mac || is_chromeos) {
+  if (is_win || is_mac || is_chromeos_ash) {
     sources += [
       "api/networking_private/networking_private_crypto.cc",
       "api/networking_private/networking_private_crypto.h",
@@ -1212,7 +1212,7 @@ static_library("extensions") {
       "setupapi.lib",
       "propsys.lib",
     ]
-  } else if (use_aura && !is_chromeos) {
+  } else if (use_aura && !is_chromeos_ash) {
     sources += [
       "system_display/display_info_provider_aura.cc",
       "system_display/display_info_provider_aura.h",
@@ -1226,7 +1226,7 @@ static_library("extensions") {
     ]
   }
 
-  if (enable_print_preview && !is_chromeos) {
+  if (enable_print_preview && !is_chromeos_ash) {
     sources += [
       "api/cloud_print_private/cloud_print_private_api.cc",
       "api/cloud_print_private/cloud_print_private_api.h",

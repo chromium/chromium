@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -46,7 +47,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
@@ -61,7 +62,7 @@
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kActiveDirectoryPolicyClientDescription[] = "an Active Directory";
 const char kPolicyClientDescription[] = "any";
 const char kUserPolicyClientDescription[] = "a user";
@@ -812,7 +813,7 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
   policy::CloudPolicyClient* client = nullptr;
   std::string policy_client_desc;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy_client_desc = kPolicyClientDescription;
   auto* user = GetChromeOSUser();
   if (user) {
@@ -973,7 +974,7 @@ std::string SafeBrowsingPrivateEventRouter::GetProfileUserName() const {
   return safe_browsing::GetProfileEmail(identity_manager_);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 const user_manager::User* SafeBrowsingPrivateEventRouter::GetChromeOSUser() {
   return user_manager::UserManager::IsInitialized()
@@ -984,7 +985,7 @@ const user_manager::User* SafeBrowsingPrivateEventRouter::GetChromeOSUser() {
 #endif
 
 bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingAvailable() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The device must be managed.
   if (!g_browser_process->platform_part()
            ->browser_policy_connector_chromeos()

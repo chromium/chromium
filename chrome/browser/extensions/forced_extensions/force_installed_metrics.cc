@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -18,9 +19,9 @@
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -45,7 +46,7 @@ constexpr char kCrxFetchFailedHttpErrorCode[] =
 constexpr char kCrxFetchFailedFetchTries[] =
     "Extensions.ForceInstalledFetchTries";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper method to convert user_manager::UserType to
 // InstallStageTracker::UserType for histogram purposes.
 ForceInstalledMetrics::UserType ConvertUserType(
@@ -77,7 +78,7 @@ ForceInstalledMetrics::UserType ConvertUserType(
   }
   return ForceInstalledMetrics::UserType::kMaxValue;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Reports time taken for force installed extension during different
 // installation stages.
@@ -380,7 +381,7 @@ void ForceInstalledMetrics::ReportMetrics() {
           "Extensions.OffStore_ForceInstalledFailureReason3", failure_reason);
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Report type of user in case Force Installed Extensions fail to
     // install only if there is a user corresponding to given profile. There can
     // be extensions on the login screen. There is no user on the login screen
@@ -392,7 +393,7 @@ void ForceInstalledMetrics::ReportMetrics() {
           "Extensions.ForceInstalledFailureSessionType",
           ConvertUserType(user_info));
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     VLOG(2) << "Forced extension " << extension_id
             << " failed to install with data="
             << InstallStageTracker::GetFormattedInstallationData(installation);

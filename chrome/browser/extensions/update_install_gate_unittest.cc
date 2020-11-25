@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,7 +28,7 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
@@ -114,7 +115,7 @@ class UpdateInstallGateTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
 
     const char kUserProfile[] = "profile1@example.com";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const AccountId account_id(AccountId::FromUserEmail(kUserProfile));
     // Needed to allow ChromeProcessManagerDelegate to allow background pages.
     fake_user_manager_ = new chromeos::FakeChromeUserManager();
@@ -216,7 +217,7 @@ class UpdateInstallGateTest : public testing::Test {
   ExtensionRegistry* registry_ = nullptr;
   EventRouter* event_router_ = nullptr;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Needed for creating ExtensionService.
   chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;

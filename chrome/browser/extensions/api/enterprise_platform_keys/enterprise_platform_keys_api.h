@@ -11,7 +11,7 @@
 
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h"
 #else
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_ash.h"

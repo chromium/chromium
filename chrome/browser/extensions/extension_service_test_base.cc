@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -47,7 +48,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
 #endif
 
@@ -386,7 +387,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
   service_->RegisterInstallGate(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
                                 service_->shared_module_service());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   InstallLimiter::Get(profile_.get())->DisableForTest();
 #endif
 }

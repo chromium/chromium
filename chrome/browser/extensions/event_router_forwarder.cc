@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -128,7 +129,7 @@ void EventRouterForwarder::CallEventRouter(
     std::unique_ptr<base::ListValue> event_args,
     Profile* restrict_to_profile,
     const GURL& event_url) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Extension does not exist for chromeos login.  This needs to be
   // removed once we have an extension service for login screen.
   // crosbug.com/12856.

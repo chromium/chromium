@@ -1201,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, FileExistenceCheckAfterSearch) {
       .WaitForEvent();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadsShowFunction) {
   platform_util::internal::DisableShellOperationsForTesting();
@@ -4455,6 +4455,7 @@ TEST(DownloadInterruptReasonEnumsSynced,
   EXPECT_EQ(                                                                   \
       InterruptReasonExtensionToComponent(downloads::INTERRUPT_REASON_##name), \
       download::DOWNLOAD_INTERRUPT_REASON_##name);
+#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_interrupt_reason_values.h"
 #undef INTERRUPT_REASON
 }

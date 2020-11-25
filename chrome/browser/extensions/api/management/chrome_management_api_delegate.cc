@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -57,7 +58,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -65,7 +66,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
@@ -76,11 +77,11 @@
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPlayIntentPrefix[] =
     "https://play.google.com/store/apps/details?id=";
 const char kChromeWebStoreReferrer[] = "&referrer=chrome_web_store";
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using InstallAndroidAppCallback =
     extensions::ManagementAPIDelegate::InstallAndroidAppCallback;
@@ -92,7 +93,7 @@ using InstallOrLaunchWebAppResult =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppResult;
 using InstallableCheckResult = web_app::InstallManager::InstallableCheckResult;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnDidCheckForIntentToPlayStore(const std::string& intent,
                                     InstallAndroidAppCallback callback,
                                     bool installable) {
@@ -117,7 +118,7 @@ void OnDidCheckForIntentToPlayStore(const std::string& intent,
   instance->HandleUrl(intent, arc::kPlayStorePackage);
   std::move(callback).Run(true);
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ManagementSetEnabledFunctionInstallPromptDelegate
     : public extensions::InstallPromptDelegate {
@@ -405,7 +406,7 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
           apps::mojom::AppLaunchSource::kSourceManagementApi));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::DemoSession::RecordAppLaunchSourceIfInDemoMode(
       chromeos::DemoSession::AppLaunchSource::kExtensionApi);
 #endif
@@ -532,17 +533,17 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
 
 bool ChromeManagementAPIDelegate::CanContextInstallAndroidApps(
     content::BrowserContext* context) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return arc::IsArcAllowedForProfile(Profile::FromBrowserContext(context));
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeManagementAPIDelegate::CheckAndroidAppInstallStatus(
     const std::string& package_name,
     AndroidAppInstallStatusCallback callback) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager) {
     std::move(callback).Run(false);
@@ -559,13 +560,13 @@ void ChromeManagementAPIDelegate::CheckAndroidAppInstallStatus(
   instance->IsInstallable(package_name, std::move(callback));
 #else
   std::move(callback).Run(false);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeManagementAPIDelegate::InstallReplacementAndroidApp(
     const std::string& package_name,
     InstallAndroidAppCallback callback) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string intent =
       base::StrCat({kPlayIntentPrefix, package_name, kChromeWebStoreReferrer});
 
@@ -587,7 +588,7 @@ void ChromeManagementAPIDelegate::InstallReplacementAndroidApp(
                                    std::move(callback)));
 #else
   std::move(callback).Run(false);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeManagementAPIDelegate::EnableExtension(

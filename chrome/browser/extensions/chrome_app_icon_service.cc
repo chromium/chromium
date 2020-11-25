@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 
@@ -20,7 +21,7 @@ ChromeAppIconService* ChromeAppIconService::Get(
 
 ChromeAppIconService::ChromeAppIconService(content::BrowserContext* context)
     : context_(context) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   app_updater_ = std::make_unique<LauncherExtensionAppUpdater>(
       this, context, false /* extensions_only */);
 #endif
@@ -31,7 +32,7 @@ ChromeAppIconService::ChromeAppIconService(content::BrowserContext* context)
 ChromeAppIconService::~ChromeAppIconService() = default;
 
 void ChromeAppIconService::Shutdown() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   app_updater_.reset();
 #endif
 }
@@ -71,7 +72,7 @@ void ChromeAppIconService::OnExtensionUnloaded(
   OnAppUpdated(extension->id());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeAppIconService::OnAppUpdated(
     content::BrowserContext* browser_context,
     const std::string& app_id) {

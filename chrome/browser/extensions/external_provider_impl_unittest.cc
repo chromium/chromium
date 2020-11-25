@@ -20,6 +20,7 @@
 #include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -42,7 +43,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -97,7 +98,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   ~ExternalProviderImplTest() override {}
 
   void InitService() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager::ScopedUserManager scoped_user_manager(
         std::make_unique<chromeos::FakeChromeUserManager>());
 #endif
@@ -235,7 +236,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   std::unique_ptr<base::ScopedPathOverride> external_externsions_overrides_;
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
   // extensions::ExternalLoader and depends on a functioning StatisticsProvider.
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

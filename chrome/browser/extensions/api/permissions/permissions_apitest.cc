@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -117,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
 // Test functions and APIs that are always allowed (even if you ask for no
 // permissions).
 // Flaky on MacOS and Linux (see crbug/1064929, crbug/1101043).
-#if (defined(OS_MAC) || defined(OS_CHROMEOS))
+#if (defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH))
 #define MAYBE_AlwaysAllowed DISABLED_AlwaysAllowed
 #else
 #define MAYBE_AlwaysAllowed AlwaysAllowed

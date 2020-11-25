@@ -6,6 +6,7 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -16,7 +17,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
@@ -35,7 +36,7 @@ void ExternalComponentLoader::StartLoading() {
   AddExternalExtension(extension_misc::kInAppPaymentsSupportAppId, prefs.get());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   {
     // Only load the Assessment Assistant if the current session is managed.
     if (profile_->GetProfilePolicyConnector()->IsManaged())

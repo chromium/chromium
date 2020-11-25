@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -22,7 +23,7 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
@@ -71,7 +72,7 @@ std::unique_ptr<base::DictionaryValue> MakePackagedAppManifest() {
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Extra environment state required for ChromeOS.
 class TestExtensionEnvironment::ChromeOSEnv {
  public:
@@ -83,7 +84,7 @@ class TestExtensionEnvironment::ChromeOSEnv {
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOSEnv);
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 ExtensionService* TestExtensionEnvironment::CreateExtensionServiceForProfile(
@@ -99,7 +100,7 @@ TestExtensionEnvironment::TestExtensionEnvironment(Type type)
           type == Type::kWithTaskEnvironment
               ? std::make_unique<content::BrowserTaskEnvironment>()
               : nullptr),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       chromeos_env_(chromeos::DeviceSettingsService::IsInitialized()
                         ? nullptr
                         : std::make_unique<ChromeOSEnv>()),

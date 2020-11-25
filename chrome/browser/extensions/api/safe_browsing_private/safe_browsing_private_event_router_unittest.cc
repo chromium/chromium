@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -37,7 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
@@ -254,9 +255,9 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
   extensions::TestEventRouter* event_router_ = nullptr;
 
  private:
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateEventRouterTest);
 };
@@ -958,7 +959,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
     }
 
     // In chrome branded desktop builds, the browser is always manageable.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
     if (is_manageable_) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           switches::kEnableChromeBrowserCloudManagement);
@@ -972,7 +973,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
           kConnectorsPrefValue);
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
     const AccountId account_id(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
@@ -1001,7 +1002,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
   }
 
   bool should_init() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
     return is_feature_flag_enabled_;
 #else
     return is_feature_flag_enabled_ && is_manageable_;
@@ -1035,7 +1036,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
   const bool is_policy_enabled_;
   const bool is_authorized_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
  private:
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
@@ -1057,7 +1058,7 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
       api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
   bool should_report =
       is_feature_flag_enabled_ && is_policy_enabled_ && is_authorized_;
 #else

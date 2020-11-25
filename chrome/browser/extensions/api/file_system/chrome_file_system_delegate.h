@@ -11,10 +11,11 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace extensions {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace file_system_api {
 
 // Dispatches an event about a mounted or unmounted volume in the system to
@@ -22,7 +23,7 @@ namespace file_system_api {
 void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context);
 
 }  // namespace file_system_api
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ChromeFileSystemDelegate : public FileSystemDelegate {
  public:
@@ -44,7 +45,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                                        base::OnceClosure on_accept,
                                        base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   FileSystemDelegate::GrantVolumesMode GetGrantVolumesMode(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
@@ -60,7 +61,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                      const Extension& extension,
                      VolumeListCallback success_callback,
                      ErrorCallback error_callback) override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
 

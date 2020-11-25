@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -66,7 +67,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
@@ -159,7 +160,7 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetOriginalContext(
   return static_cast<Profile*>(context)->GetOriginalProfile();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   return chromeos::ProfileHelper::GetUserIdHashFromProfile(
@@ -291,7 +292,7 @@ void ChromeExtensionsBrowserClient::PermitExternalProtocolHandler() {
 }
 
 bool ChromeExtensionsBrowserClient::IsInDemoMode() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const chromeos::DemoSession* const demo_session =
       chromeos::DemoSession::Get();
   return demo_session && demo_session->started();
@@ -302,7 +303,7 @@ bool ChromeExtensionsBrowserClient::IsInDemoMode() {
 
 bool ChromeExtensionsBrowserClient::IsScreensaverInDemoMode(
     const std::string& app_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return app_id == chromeos::DemoSession::GetScreensaverAppId() &&
          IsInDemoMode();
 #endif
@@ -319,7 +320,7 @@ bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
 #else
   return false;
@@ -364,7 +365,7 @@ void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
 
 ExtensionCache* ChromeExtensionsBrowserClient::GetExtensionCache() {
   if (!extension_cache_.get()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1012892): Replace this with just BEST_EFFORT, since the
     // sign-in profile extensions use a different caching mechanism now.
     base::TaskPriority task_priority =
@@ -502,7 +503,7 @@ KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
 
 bool ChromeExtensionsBrowserClient::IsLockScreenContext(
     content::BrowserContext* context) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::ProfileHelper::IsLockScreenAppProfile(
       Profile::FromBrowserContext(context));
 #else

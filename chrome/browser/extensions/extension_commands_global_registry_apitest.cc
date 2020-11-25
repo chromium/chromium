@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -30,7 +31,7 @@ typedef ExtensionApiTest GlobalCommandsApiTest;
 // extension.
 //
 // Doesn't work in CrOS builds, http://crbug.com/619784
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_GlobalCommand DISABLED_GlobalCommand
 #else
 #define MAYBE_GlobalCommand GlobalCommand

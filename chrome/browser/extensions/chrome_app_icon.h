@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -74,7 +75,7 @@ class ChromeAppIcon : public IconImage::Observer {
 
   const gfx::ImageSkia& image_skia() const { return image_skia_; }
   const std::string& app_id() const { return app_id_; }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns whether the icon is badged because it's an extension app that has
   // its Android analog installed.
   bool has_chrome_badge() const { return has_chrome_badge_; }
@@ -99,7 +100,7 @@ class ChromeAppIcon : public IconImage::Observer {
   // it is updated each time when |icon_| is updated.
   gfx::ImageSkia image_skia_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Whether the icon got badged because it's an extension app that has its
   // Android analog installed.
   bool has_chrome_badge_ = false;

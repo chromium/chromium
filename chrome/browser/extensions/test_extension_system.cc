@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -32,7 +33,7 @@
 #include "extensions/browser/value_store/test_value_store_factory.h"
 #include "extensions/browser/value_store/testing_value_store.h"
 #include "services/data_decoder/data_decoder_service.h"
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -50,7 +51,7 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
       info_map_(new InfoMap()),
       quota_service_(new QuotaService()),
       app_sorting_(new ChromeAppSorting(profile_)) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized())
     test_user_manager_.reset(new chromeos::ScopedTestUserManager);
 #endif

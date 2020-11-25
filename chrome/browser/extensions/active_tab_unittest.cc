@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -46,7 +47,7 @@
 #include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
@@ -150,7 +151,7 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::KioskAppManager::Shutdown();
 #endif
     ChromeRenderViewHostTestHarness::TearDown();
@@ -518,7 +519,7 @@ TEST_F(ActiveTabDelegateTest, DelegateUsedOnlyWhenNeeded) {
   EXPECT_EQ(0, test_delegate_->should_grant_call_count());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class ActiveTabManagedSessionTest : public ActiveTabTest {
  protected:
   ActiveTabManagedSessionTest() {}
@@ -647,7 +648,7 @@ TEST_F(ActiveTabManagedSessionTest,
   ActiveTabPermissionGranterDelegateChromeOS::
       SetRequestResolvedCallbackForTesting(nullptr);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // An active tab test that includes an ExtensionService.
 class ActiveTabWithServiceTest : public ExtensionServiceTestBase {

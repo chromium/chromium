@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
@@ -90,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, UserLevelNativeMessaging) {
   ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestProcessManagerObserver : public ProcessManagerObserver {
  public:
@@ -444,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace extensions

@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -56,7 +57,7 @@ class ExtensionCloudPrintPrivateApiTest : public extensions::ExtensionApiTest {
   }
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extensions::api::cloud_print_private::UserSettings;
 
@@ -122,4 +123,4 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloudPrintPrivateApiTest,
   ASSERT_TRUE(RunPageTest(page_url.spec(), kFlagNone, kFlagUseIncognito));
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

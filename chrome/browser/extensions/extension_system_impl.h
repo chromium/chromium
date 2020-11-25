@@ -10,17 +10,18 @@
 #include "base/macros.h"
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 
 class Profile;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 class DeviceLocalAccountManagementPolicyProvider;
 class SigninScreenPolicyProvider;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -151,7 +152,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
 
     std::unique_ptr<UninstallPingSender> uninstall_ping_sender_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<chromeos::DeviceLocalAccountManagementPolicyProvider>
         device_local_account_management_policy_provider_;
     std::unique_ptr<chromeos::SigninScreenPolicyProvider>

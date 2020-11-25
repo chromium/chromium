@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowFeedbackFromAssistant) {
   EXPECT_TRUE(bool_result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Ensures that when triggered from a Google account and a Bluetooth related
 // string is entered into the description, that we provide the option for
 // uploading Bluetooth logs as well.

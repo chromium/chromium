@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
@@ -26,7 +27,7 @@
 #include "extensions/browser/notification_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #endif
 
@@ -68,7 +69,7 @@ void OperationManager::StartWriteFromUrl(
     const std::string& hash,
     const std::string& device_path,
     Operation::StartWriteCallback callback) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS can only support a single operation at a time.
   if (operations_.size() > 0) {
 #else
@@ -102,7 +103,7 @@ void OperationManager::StartWriteFromFile(
     const base::FilePath& path,
     const std::string& device_path,
     Operation::StartWriteCallback callback) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS can only support a single operation at a time.
   if (operations_.size() > 0) {
 #else
@@ -214,7 +215,7 @@ void OperationManager::OnError(const ExtensionId& extension_id,
 }
 
 base::FilePath OperationManager::GetAssociatedDownloadFolder() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   return file_manager::util::GetDownloadsFolderForProfile(profile);
 #endif

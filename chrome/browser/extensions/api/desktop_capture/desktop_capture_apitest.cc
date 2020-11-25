@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
@@ -75,7 +76,7 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 // Flaky on Windows: http://crbug.com/301887
 // Fails on Chrome OS: http://crbug.com/718512
 // Flaky on macOS: http://crbug.com/804897
-#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 #define MAYBE_ChooseDesktopMedia DISABLED_ChooseDesktopMedia
 #else
 #define MAYBE_ChooseDesktopMedia ChooseDesktopMedia

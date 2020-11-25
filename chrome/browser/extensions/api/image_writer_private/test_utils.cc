@@ -14,9 +14,10 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_image_burner_client.h"
 #include "chromeos/disks/disk.h"
@@ -25,7 +26,7 @@
 namespace extensions {
 namespace image_writer {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 class ImageWriterFakeImageBurnerClient
@@ -69,7 +70,7 @@ MockOperationManager::MockOperationManager(content::BrowserContext* context)
     : OperationManager(context) {}
 MockOperationManager::~MockOperationManager() {}
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 FakeDiskMountManager::FakeDiskMountManager() {}
 FakeDiskMountManager::~FakeDiskMountManager() {}
 
@@ -185,17 +186,17 @@ void FakeImageWriterClient::Cancel() {
     cancel_callback_.Run();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 scoped_refptr<ImageWriterUtilityClient> CreateFakeImageWriterUtilityClient(
     ImageWriterTestUtils* utils) {
   auto* client = new FakeImageWriterClient();
   utils->OnUtilityClientCreated(client);
   return base::WrapRefCounted(client);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 ImageWriterTestUtils::ImageWriterTestUtils()
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     : utility_client_factory_(
           base::Bind(&CreateFakeImageWriterUtilityClient, this))
 #endif
@@ -204,7 +205,7 @@ ImageWriterTestUtils::ImageWriterTestUtils()
 ImageWriterTestUtils::~ImageWriterTestUtils() {
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ImageWriterTestUtils::OnUtilityClientCreated(
     FakeImageWriterClient* client) {
   DCHECK(!client_.get())
@@ -215,7 +216,7 @@ void ImageWriterTestUtils::OnUtilityClientCreated(
 }
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ImageWriterTestUtils::RunOnUtilityClientCreation(
     base::OnceCallback<void(FakeImageWriterClient*)> closure) {
   client_creation_callback_ = std::move(closure);
@@ -236,7 +237,7 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
   ASSERT_TRUE(FillFile(test_image_path_, kImagePattern, kTestFileSize));
   ASSERT_TRUE(FillFile(test_device_path_, kDevicePattern, kTestFileSize));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!chromeos::DBusThreadManager::IsInitialized()) {
     std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
         chromeos::DBusThreadManager::GetSetterForTesting();
@@ -263,7 +264,7 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
 }
 
 void ImageWriterTestUtils::TearDown() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::DBusThreadManager::IsInitialized()) {
     chromeos::DBusThreadManager::Shutdown();
   }

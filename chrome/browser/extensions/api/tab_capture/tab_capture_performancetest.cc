@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_performance_test_base.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -334,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(TabCapturePerformanceTest, Performance) {
       PrintFailRateResults(analyzer.get(), kEventCapture));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On ChromeOS, software compositing is not an option, and using MSAN on
 // ChromeOS causes problems due to its hardware OpenGL library.
@@ -355,4 +356,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          kTestThroughWebRTC,
                                          kTestThroughWebRTC | kUseGpu));
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

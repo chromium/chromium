@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenTwoPagesWithManifest) {
 }
 
 // TODO(https://crbug.com/1124033): Fails on LaCrOS bot.
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OpenPopupFromBGPage DISABLED_OpenPopupFromBGPage
 #else
 #define MAYBE_OpenPopupFromBGPage OpenPopupFromBGPage

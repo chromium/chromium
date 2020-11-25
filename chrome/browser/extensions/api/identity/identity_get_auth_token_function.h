@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 #include "chrome/browser/extensions/api/identity/gaia_web_auth_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
@@ -53,7 +54,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
                                      public GaiaRemoteConsentFlow::Delegate,
                                      public IdentityMintRequestQueue::Request,
                                      public signin::IdentityManager::Observer,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                      public OAuth2AccessTokenManager::Consumer,
 #endif
                                      public OAuth2MintTokenFlow::Delegate {
@@ -91,7 +92,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 // TODO(blundell): Investigate feasibility of moving the ChromeOS use case
 // to use the Identity Service instead of being an
 // OAuth2AccessTokenManager::Consumer.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnGetTokenSuccess(
       const OAuth2AccessTokenManager::Request* request,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
@@ -202,7 +203,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Starts a login access token request for device robot account. This method
   // will be called only in Chrome OS for:
   // 1. Enterprise kiosk mode.

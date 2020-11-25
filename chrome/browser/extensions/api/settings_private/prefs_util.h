@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "chrome/common/extensions/api/settings_private.h"
 
@@ -69,7 +70,7 @@ class PrefsUtil {
   // Returns whether |pref_name| corresponds to a pref whose type is URL.
   bool IsPrefTypeURL(const std::string& pref_name);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns whether |pref_name| corresponds to a pref that is enterprise
   // managed.
   bool IsPrefEnterpriseManaged(const std::string& pref_name);

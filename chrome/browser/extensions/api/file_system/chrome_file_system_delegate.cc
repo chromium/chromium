@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,7 +48,7 @@
 #include "base/mac/foundation_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider.h"
 #include "extensions/browser/event_router.h"
@@ -62,7 +63,7 @@ namespace extensions {
 
 namespace file_system = api::file_system;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using file_system_api::ConsentProvider;
 using file_system_api::ConsentProviderDelegate;
 
@@ -240,7 +241,7 @@ void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context) {
 }
 
 }  // namespace file_system_api
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ChromeFileSystemDelegate::ChromeFileSystemDelegate() {}
 
@@ -316,7 +317,7 @@ int ChromeFileSystemDelegate::GetDescriptionIdForAcceptType(
   return 0;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 FileSystemDelegate::GrantVolumesMode
 ChromeFileSystemDelegate::GetGrantVolumesMode(
     content::BrowserContext* browser_context,
@@ -412,7 +413,7 @@ void ChromeFileSystemDelegate::GetVolumeList(
   std::move(success_callback).Run(result_volume_list);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 SavedFilesServiceInterface* ChromeFileSystemDelegate::GetSavedFilesService(
     content::BrowserContext* browser_context) {

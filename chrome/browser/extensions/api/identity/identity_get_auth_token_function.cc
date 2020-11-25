@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
@@ -41,7 +42,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -55,7 +56,7 @@ namespace extensions {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The list of apps that are allowed to use the Identity API to retrieve the
 // token from the device robot account in a public session.
 const char* const kPublicSessionAllowedOrigins[] = {
@@ -104,7 +105,7 @@ bool IsSelectedUserIdInGetAuthTokenEnabled() {
 }  // namespace
 
 IdentityGetAuthTokenFunction::IdentityGetAuthTokenFunction()
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     : OAuth2AccessTokenManager::Consumer(
           kExtensionsIdentityAPIOAuthConsumerName)
 #endif
@@ -253,7 +254,7 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
     const CoreAccountInfo* account_info) {
   token_key_.account_info = account_info ? *account_info : CoreAccountInfo();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
@@ -386,7 +387,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   // If the signin flow fails, don't display the login prompt again.
   should_prompt_for_signin_ = false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In normal mode (i.e. non-kiosk mode), the user has to log out to
   // re-establish credentials. Let the global error popup handle everything.
   // In kiosk mode, interactive sign-in is not supported.
@@ -424,7 +425,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
 
 void IdentityGetAuthTokenFunction::StartMintTokenFlow(
     IdentityMintRequestQueue::MintType type) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS in kiosk mode may start the mint token flow without account.
   DCHECK(!token_key_.account_info.IsEmpty());
   DCHECK(IdentityManagerFactory::GetForProfile(GetProfile())
@@ -488,7 +489,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
   if (type == IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE) {
     switch (cache_status) {
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         // Always force minting token for ChromeOS kiosk app and public session.
         if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
             !IsOriginAllowlistedInPublicSession()) {
@@ -893,7 +894,7 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void IdentityGetAuthTokenFunction::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
@@ -938,7 +939,7 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
       IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::kCanceled));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Even though the DeviceOAuth2TokenService may be available on non-ChromeOS
 // platforms, its robot account is not made available because it should only be
 // used for very specific policy-related things. In fact, the device account on
@@ -970,7 +971,7 @@ void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "GetAccessToken", this);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chrome::IsRunningInForcedAppMode()) {
     std::string app_client_id;
     std::string app_client_secret;

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
@@ -25,13 +26,13 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -161,7 +162,7 @@ bool AreEqual(const gfx::ImageSkia& image1, const gfx::ImageSkia& image2) {
   return gfx::test::AreImagesEqual(gfx::Image(image1), gfx::Image(image2));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if |res| image is the |src| image with badge identified by
 // |badge_type| resource. If |grayscale| is true applies HSL shift for the
 // comparison.
@@ -235,7 +236,7 @@ TEST_F(ChromeAppIconTest, IconLifeCycle) {
   const size_t update_count_after_disable = reference_icon.icon_update_count();
   EXPECT_NE(2U, update_count_after_disable);
   EXPECT_FALSE(IsBlankImage(reference_icon.image_skia()));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(IsBadgeApplied(image_before_disable, reference_icon.image_skia(),
                              ChromeAppIcon::Badge::kBlocked,
                              true /* grayscale */));
@@ -266,7 +267,7 @@ TEST_F(ChromeAppIconTest, IconRelease) {
   test_icon2.Reset();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ChromeAppIconTest, ChromeBadging) {
   ArcAppTest arc_test;
@@ -304,6 +305,6 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   EXPECT_TRUE(AreEqual(reference_icon.image_skia(), image_before_badging));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

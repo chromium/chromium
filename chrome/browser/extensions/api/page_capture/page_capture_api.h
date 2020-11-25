@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/page_capture.h"
 #include "extensions/browser/extension_function.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -24,7 +25,7 @@ class WebContents;
 
 namespace extensions {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PermissionIDSet;
 #endif
 
@@ -50,7 +51,7 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool OnMessageReceived(const IPC::Message& message) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Resolves the API permission request in Public Sessions.
   void ResolvePermissionRequest(const PermissionIDSet& allowed_permissions);
 #endif

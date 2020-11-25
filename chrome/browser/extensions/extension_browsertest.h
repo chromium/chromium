@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -352,7 +353,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   bool ExecuteScriptInBackgroundPageNoWait(const std::string& extension_id,
                                            const std::string& script);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the command line should be tweaked as if ChromeOS user is
   // already logged in.
   bool set_chromeos_user_;

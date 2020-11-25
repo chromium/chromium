@@ -7,10 +7,11 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #endif
 
@@ -56,12 +57,12 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
 
 // static
 ExtensionAssetsManager* ExtensionAssetsManager::GetInstance() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ExtensionAssetsManagerChromeOS::GetInstance();
 #else
   // If not Chrome OS, use trivial implementation that doesn't share anything.
   return ExtensionAssetsManagerImpl::GetInstance();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace extensions

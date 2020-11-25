@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -162,7 +163,7 @@ void GaiaRemoteConsentFlow::OnEndBatchOfRefreshTokenStateChanges() {
 // this partition's cookie jar. An extra update triggered from here might change
 // cookies order in the middle of the flow. This may lead to a bug like
 // https://crbug.com/1112343.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetAccountsInCookie();
 #endif
 }

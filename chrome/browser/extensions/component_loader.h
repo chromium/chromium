@@ -20,6 +20,7 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 
 class Profile;
@@ -91,7 +92,7 @@ class ComponentLoader {
   // Return ids of all registered extensions.
   std::vector<std::string> GetRegisteredComponentExtensionsIds() const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a component extension from a specific directory. Assumes that the
   // extension uses a different manifest file when this is a guest session
   // and that the manifest file lives in |root_directory|. Calls |done_cb|
@@ -183,7 +184,7 @@ class ComponentLoader {
                                  const std::string& description_string);
   void AddWebStoreApp();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddChromeApp();
   void AddFileManagerExtension();
   void AddVideoPlayerExtension();
@@ -193,7 +194,7 @@ class ComponentLoader {
   void AddKeyboardApp();
   void AddChromeCameraApp();
   void AddZipArchiverExtension();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   scoped_refptr<const Extension> CreateExtension(
       const ComponentExtensionInfo& info, std::string* utf8_error);
@@ -201,7 +202,7 @@ class ComponentLoader {
   // Unloads |component| from the memory.
   void UnloadComponent(ComponentExtensionInfo* component);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Used as a reply callback by |AddComponentFromDir|.
   // Called with a |root_directory| and parsed |manifest| and invokes
   // |done_cb| after adding the extension.

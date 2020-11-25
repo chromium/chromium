@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
@@ -31,7 +32,7 @@ using testing::AtLeast;
 using testing::Gt;
 using testing::Lt;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetUpUtilityClientProgressOnVerifyWrite(
     const std::vector<int>& progress_list,
@@ -40,7 +41,7 @@ void SetUpUtilityClientProgressOnVerifyWrite(
   client->SimulateProgressOnVerifyWrite(progress_list, will_succeed);
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -168,7 +169,7 @@ TEST_F(ImageWriterOperationTest, UnzipZipFile) {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   auto set_up_utility_client_progress =
       [](const std::vector<int>& progress_list, bool will_succeed,
          FakeImageWriterClient* client) {
@@ -197,7 +198,7 @@ TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS doesn't support verification in the ImageBurner, so these two tests
 // are skipped.
 
@@ -259,7 +260,7 @@ TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
   operation_->VerifyWrite(base::DoNothing());
   content::RunAllTasksUntilIdle();
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that on creation the operation_ has the expected state.
 TEST_F(ImageWriterOperationTest, Creation) {

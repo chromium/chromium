@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/page_capture/page_capture_api.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -30,9 +31,9 @@
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/login/login_state/login_state.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -151,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
   WaitForFileCleanup(&delegate);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
                        PublicSessionRequestAllowed) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -173,6 +174,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   ASSERT_TRUE(RunTestWithArg("page_capture", "REQUEST_DENIED")) << message_;
   EXPECT_EQ(0, delegate.temp_file_count());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

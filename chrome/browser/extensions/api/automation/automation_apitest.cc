@@ -13,6 +13,7 @@
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -42,7 +43,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/display/display_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accelerators.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #endif
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_Desktop) {
       << message_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(https://crbug.com/754870): Flaky on CrOS sanitizers.
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopInitialFocus) {
   ASSERT_TRUE(
@@ -291,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
       << message_;
 }
 
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
 // TODO(http://crbug.com/1113853): flaky on ChromeOS.
 #define MAYBE_LocationInWebView DISABLED_LocationInWebView
 #else
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
                                   "desktop_not_requested.html")) << message_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(https://crbug.com/894016): flaky.
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopActions) {
   AutomationManagerAura::GetInstance()->Enable();
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopLoadTabs) {
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/desktop", "load_tabs.html"))
       << message_;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #else  // !defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/desktop",
@@ -448,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, Intents) {
       << message_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class AutomationApiTestWithDeviceScaleFactor : public AutomationApiTest {
  protected:
@@ -550,6 +551,6 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TextareaAppendPerf) {
   ASSERT_LT(automation_total_dur, renderer_total_dur * 2);
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

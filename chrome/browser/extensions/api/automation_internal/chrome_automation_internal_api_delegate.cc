@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -24,7 +25,7 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
 #endif
 
@@ -80,7 +81,7 @@ content::WebContents* ChromeAutomationInternalApiDelegate::GetActiveWebContents(
 
 bool ChromeAutomationInternalApiDelegate::EnableTree(
     const ui::AXTreeID& tree_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   arc::ArcAccessibilityHelperBridge* bridge =
       arc::ArcAccessibilityHelperBridge::GetForBrowserContext(
           GetActiveUserContext());

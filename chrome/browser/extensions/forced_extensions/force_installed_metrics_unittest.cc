@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
@@ -32,13 +33,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/arc/arc_prefs.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -82,10 +83,10 @@ constexpr char kFetchRetriesManifestFetchFailedStats[] =
     "Extensions.ForceInstalledManifestFetchFailedFetchTries";
 constexpr char kSandboxUnpackFailureReason[] =
     "Extensions.ForceInstalledFailureSandboxUnpackFailureReason";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFailureSessionStats[] =
     "Extensions.ForceInstalledFailureSessionType";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kPossibleNonMisconfigurationFailures[] =
     "Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured";
 constexpr char kDisableReason[] =
@@ -795,7 +796,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionStuckInCreatedStage) {
       1);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ForceInstalledMetricsTest, ReportManagedGuestSessionOnExtensionFailure) {
   chromeos::FakeChromeUserManager* fake_user_manager =
       new chromeos::FakeChromeUserManager();
@@ -850,7 +851,7 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
       kFailureSessionStats, ForceInstalledMetrics::UserType::USER_TYPE_GUEST,
       2);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ForceInstalledMetricsTest, ExtensionsAreDownloading) {
   SetupForceList(true /*is_from_store */);
@@ -1079,7 +1080,7 @@ TEST_F(ForceInstalledMetricsTest, NonMisconfigurationFailurePresent) {
                                       1);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Session in which either all the extensions installed successfully, or all
 // failures are admin-side misconfigurations. This test verifies that failure
 // REPLACED_BY_ARC_APP is not considered as misconfiguration when ARC++ is
@@ -1122,7 +1123,7 @@ TEST_F(ForceInstalledMetricsTest,
   histogram_tester_.ExpectBucketCount(kPossibleNonMisconfigurationFailures, 1,
                                       1);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Session in which either all the extensions installed successfully, or all
 // failures are admin-side misconfigurations. This test verifies that failure

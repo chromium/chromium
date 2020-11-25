@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -40,7 +41,7 @@ class DefaultAppsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS has different way of installing default apps.
 // Android does not currently support installing apps via Chrome.
 TEST_F(DefaultAppsTest, Install) {

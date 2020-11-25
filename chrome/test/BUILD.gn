@@ -469,6 +469,7 @@ static_library("test_support") {
     ]
 
     deps += [
+      "//build:chromeos_buildflags",
       "//chrome/browser/web_applications:web_applications_on_extensions_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
     ]
@@ -2164,6 +2165,7 @@ if (!is_android) {
       }
 
       deps += [
+        "//build:chromeos_buildflags",
         "//chrome/browser/devtools:test_support",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",

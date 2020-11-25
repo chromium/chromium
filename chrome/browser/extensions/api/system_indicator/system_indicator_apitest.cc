@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -49,7 +50,7 @@ class SystemIndicatorApiTest : public ExtensionApiTest {
 };
 
 // https://crbug.com/960363: Test crashes on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SystemIndicatorBasic DISABLED_SystemIndicatorBasic
 #else
 #define MAYBE_SystemIndicatorBasic SystemIndicatorBasic

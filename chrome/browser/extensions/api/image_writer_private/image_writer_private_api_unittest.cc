@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
@@ -17,7 +18,7 @@
 #include "extensions/browser/api_unittest.h"
 
 namespace extensions {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using api::image_writer_private::RemovableStorageDevice;
 class ImageWriterPrivateApiUnittest : public ExtensionApiUnittest {
  public:
@@ -65,6 +66,6 @@ TEST_F(ImageWriterPrivateApiUnittest,
                          image_writer::error::kDeviceWriteError));
 }
 
-#endif  // if defined(OS_CHROMEOS)
+#endif  // if BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
