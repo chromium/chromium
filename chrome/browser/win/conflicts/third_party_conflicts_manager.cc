@@ -25,8 +25,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
 #include "chrome/browser/win/conflicts/installed_applications.h"
-#include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
-#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_blacklist_cache_updater.h"
+#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "chrome/browser/win/conflicts/module_list_filter.h"
@@ -51,23 +51,23 @@ scoped_refptr<ModuleListFilter> CreateModuleListFilter(
 }
 
 std::unique_ptr<std::vector<third_party_dlls::PackedListModule>>
-ReadInitialBlocklistedModules() {
+ReadInitialBlacklistedModules() {
   base::FilePath path =
-      ModuleBlocklistCacheUpdater::GetModuleBlocklistCachePath();
+      ModuleBlacklistCacheUpdater::GetModuleBlacklistCachePath();
 
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
   base::MD5Digest md5_digest;
-  ReadResult read_result = ReadModuleBlocklistCache(
-      path, &metadata, &blocklisted_modules, &md5_digest);
+  ReadResult read_result = ReadModuleBlacklistCache(
+      path, &metadata, &blacklisted_modules, &md5_digest);
 
   // Return an empty vector on failure.
-  auto initial_blocklisted_modules =
+  auto initial_blacklisted_modules =
       std::make_unique<std::vector<third_party_dlls::PackedListModule>>();
   if (read_result == ReadResult::kSuccess)
-    *initial_blocklisted_modules = std::move(blocklisted_modules);
+    *initial_blacklisted_modules = std::move(blacklisted_modules);
 
-  return initial_blocklisted_modules;
+  return initial_blacklisted_modules;
 }
 
 // Log the initialization status of the chrome_elf component that is responsible
@@ -117,16 +117,16 @@ void LogChromeElfThirdPartyStatus() {
     UMA_HISTOGRAM_ENUMERATION("ChromeElf.ThirdPartyStatus", status);
 }
 
-// Updates the current value of the kModuleBlocklistCacheMD5Digest pref.
-void UpdateModuleBlocklistCacheMD5Digest(
-    const ModuleBlocklistCacheUpdater::CacheUpdateResult& result) {
+// Updates the current value of the kModuleBlacklistCacheMD5Digest pref.
+void UpdateModuleBlacklistCacheMD5Digest(
+    const ModuleBlacklistCacheUpdater::CacheUpdateResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Check that the MD5 digest of the old cache matches what was expected. Only
   // used for reporting a metric.
   const PrefService::Preference* preference =
       g_browser_process->local_state()->FindPreference(
-          prefs::kModuleBlocklistCacheMD5Digest);
+          prefs::kModuleBlacklistCacheMD5Digest);
   DCHECK(preference);
 
   // The first time this is executed, the pref doesn't yet hold a valid MD5
@@ -135,21 +135,21 @@ void UpdateModuleBlocklistCacheMD5Digest(
     const std::string old_md5_string =
         base::MD5DigestToBase16(result.old_md5_digest);
     const std::string& current_md5_string = preference->GetValue()->GetString();
-    UMA_HISTOGRAM_BOOLEAN("ModuleBlocklistCache.ExpectedMD5Digest",
+    UMA_HISTOGRAM_BOOLEAN("ModuleBlacklistCache.ExpectedMD5Digest",
                           old_md5_string == current_md5_string);
   }
 
   // Set the expected MD5 digest for the next time the cache is updated.
   g_browser_process->local_state()->Set(
-      prefs::kModuleBlocklistCacheMD5Digest,
+      prefs::kModuleBlacklistCacheMD5Digest,
       base::Value(base::MD5DigestToBase16(result.new_md5_digest)));
 }
 
-void ClearModuleBlocklistCacheMD5Digest() {
+void ClearModuleBlacklistCacheMD5Digest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   g_browser_process->local_state()->ClearPref(
-      prefs::kModuleBlocklistCacheMD5Digest);
+      prefs::kModuleBlacklistCacheMD5Digest);
 }
 
 }  // namespace
@@ -192,8 +192,8 @@ ThirdPartyConflictsManager::~ThirdPartyConflictsManager() {
 void ThirdPartyConflictsManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   // Register the pref that remembers the MD5 digest for the current module
-  // blocklist cache. The default value is an invalid MD5 digest.
-  registry->RegisterStringPref(prefs::kModuleBlocklistCacheMD5Digest, "");
+  // blacklist cache. The default value is an invalid MD5 digest.
+  registry->RegisterStringPref(prefs::kModuleBlacklistCacheMD5Digest, "");
 }
 
 // static
@@ -201,17 +201,17 @@ void ThirdPartyConflictsManager::DisableThirdPartyModuleBlocking(
     base::TaskRunner* background_sequence) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Delete the module blocklist cache. Since the NtMapViewOfSection hook only
+  // Delete the module blacklist cache. Since the NtMapViewOfSection hook only
   // blocks if the file is present, this will deactivate third-party modules
   // blocking for the next browser launch.
   background_sequence->PostTask(
       FROM_HERE,
-      base::BindOnce(&ModuleBlocklistCacheUpdater::DeleteModuleBlocklistCache));
+      base::BindOnce(&ModuleBlacklistCacheUpdater::DeleteModuleBlacklistCache));
 
   // Also clear the MD5 digest since there will no longer be a current module
-  // blocklist cache.
+  // blacklist cache.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ClearModuleBlocklistCacheMD5Digest));
+      FROM_HERE, base::BindOnce(&ClearModuleBlacklistCacheMD5Digest));
 }
 
 // static
@@ -263,14 +263,14 @@ void ThirdPartyConflictsManager::OnModuleDatabaseIdle() {
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  // And the initial blocklisted modules are only needed for the third-party
+  // And the initial blacklisted modules are only needed for the third-party
   // modules blocking.
-  if (ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
+  if (ModuleBlacklistCacheUpdater::IsBlockingEnabled()) {
     base::PostTaskAndReplyWithResult(
         background_sequence_.get(), FROM_HERE,
-        base::BindOnce(&ReadInitialBlocklistedModules),
+        base::BindOnce(&ReadInitialBlacklistedModules),
         base::BindOnce(
-            &ThirdPartyConflictsManager::OnInitialBlocklistedModulesRead,
+            &ThirdPartyConflictsManager::OnInitialBlacklistedModulesRead,
             weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -347,8 +347,8 @@ void ThirdPartyConflictsManager::DisableModuleAnalysis() {
   module_analysis_disabled_ = true;
   if (incompatible_applications_updater_)
     incompatible_applications_updater_->DisableModuleAnalysis();
-  if (module_blocklist_cache_updater_)
-    module_blocklist_cache_updater_->DisableModuleAnalysis();
+  if (module_blacklist_cache_updater_)
+    module_blacklist_cache_updater_->DisableModuleAnalysis();
 }
 
 void ThirdPartyConflictsManager::OnModuleListFilterCreated(
@@ -382,12 +382,12 @@ void ThirdPartyConflictsManager::OnInstalledApplicationsCreated(
   InitializeIfReady();
 }
 
-void ThirdPartyConflictsManager::OnInitialBlocklistedModulesRead(
+void ThirdPartyConflictsManager::OnInitialBlacklistedModulesRead(
     std::unique_ptr<std::vector<third_party_dlls::PackedListModule>>
-        initial_blocklisted_modules) {
+        initial_blacklisted_modules) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  initial_blocklisted_modules_ = std::move(initial_blocklisted_modules);
+  initial_blacklisted_modules_ = std::move(initial_blacklisted_modules);
   InitializeIfReady();
 }
 
@@ -407,29 +407,29 @@ void ThirdPartyConflictsManager::InitializeIfReady() {
   }
 
   // And the dependency needed only for the ThirdPartyModulesBlocking feature.
-  if (ModuleBlocklistCacheUpdater::IsBlockingEnabled() &&
-      !initial_blocklisted_modules_) {
+  if (ModuleBlacklistCacheUpdater::IsBlockingEnabled() &&
+      !initial_blacklisted_modules_) {
     return;
   }
 
   // Now both features are ready to be initialized.
-  if (ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
+  if (ModuleBlacklistCacheUpdater::IsBlockingEnabled()) {
     // It is safe to use base::Unretained() since the callback will not be
     // invoked if the updater is freed.
-    module_blocklist_cache_updater_ =
-        std::make_unique<ModuleBlocklistCacheUpdater>(
+    module_blacklist_cache_updater_ =
+        std::make_unique<ModuleBlacklistCacheUpdater>(
             module_database_event_source_, *exe_certificate_info_,
-            module_list_filter_, *initial_blocklisted_modules_,
+            module_list_filter_, *initial_blacklisted_modules_,
             base::BindRepeating(
-                &ThirdPartyConflictsManager::OnModuleBlocklistCacheUpdated,
+                &ThirdPartyConflictsManager::OnModuleBlacklistCacheUpdated,
                 base::Unretained(this)),
             module_analysis_disabled_);
   }
 
   // The |incompatible_applications_updater_| instance must be created last so
   // that it is registered to the Module Database observer's API after the
-  // ModuleBlocklistCacheUpdater instance. This way, it knows about which
-  // modules were added to the module blocklist cache so that it's possible to
+  // ModuleBlacklistCacheUpdater instance. This way, it knows about which
+  // modules were added to the module blacklist cache so that it's possible to
   // not warn about them.
   if (IncompatibleApplicationsUpdater::IsWarningEnabled()) {
     incompatible_applications_updater_ =
@@ -441,19 +441,19 @@ void ThirdPartyConflictsManager::InitializeIfReady() {
 
   if (!incompatible_applications_updater_) {
     SetTerminalState(State::kBlockingInitialized);
-  } else if (!module_blocklist_cache_updater_) {
+  } else if (!module_blacklist_cache_updater_) {
     SetTerminalState(State::kWarningInitialized);
   } else {
     SetTerminalState(State::kWarningAndBlockingInitialized);
   }
 }
 
-void ThirdPartyConflictsManager::OnModuleBlocklistCacheUpdated(
-    const ModuleBlocklistCacheUpdater::CacheUpdateResult& result) {
+void ThirdPartyConflictsManager::OnModuleBlacklistCacheUpdated(
+    const ModuleBlacklistCacheUpdater::CacheUpdateResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateModuleBlocklistCacheMD5Digest, result));
+      FROM_HERE, base::BindOnce(&UpdateModuleBlacklistCacheMD5Digest, result));
 }
 
 void ThirdPartyConflictsManager::ForceModuleListComponentUpdate() {

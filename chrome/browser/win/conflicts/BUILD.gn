@@ -66,8 +66,8 @@ source_set("unit_tests") {
     sources += [
       "incompatible_applications_updater_unittest.cc",
       "installed_applications_unittest.cc",
-      "module_blocklist_cache_updater_unittest.cc",
-      "module_blocklist_cache_util_unittest.cc",
+      "module_blacklist_cache_updater_unittest.cc",
+      "module_blacklist_cache_util_unittest.cc",
       "module_list_filter_unittest.cc",
       "module_load_attempt_log_listener_unittest.cc",
       "registry_key_watcher_unittest.cc",

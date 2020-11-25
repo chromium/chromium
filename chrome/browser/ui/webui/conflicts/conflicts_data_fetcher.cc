@@ -16,7 +16,7 @@
 #if defined(GOOGLE_CHROME_BUILD)
 #include "base/win/win_util.h"
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
-#include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
+#include "chrome/browser/win/conflicts/module_blacklist_cache_updater.h"
 #endif
 
 namespace {
@@ -73,7 +73,7 @@ void AppendString(base::StringPiece input, std::string* output) {
 // Returns a string describing the current module blocking status: loaded or
 // not, blocked or not, was in blocklist cache or not, bypassed blocking or not.
 std::string GetBlockingStatusString(
-    const ModuleBlocklistCacheUpdater::ModuleBlockingState& blocking_state) {
+    const ModuleBlacklistCacheUpdater::ModuleBlockingState& blocking_state) {
   std::string status;
 
   // Output status regarding the blocklist cache, current blocking, and
@@ -82,9 +82,9 @@ std::string GetBlockingStatusString(
     status = "Blocked";
   if (!blocking_state.was_loaded)
     AppendString(kNotLoaded, &status);
-  else if (blocking_state.was_in_blocklist_cache)
+  else if (blocking_state.was_in_blacklist_cache)
     AppendString("Bypassed blocking", &status);
-  if (blocking_state.was_in_blocklist_cache)
+  if (blocking_state.was_in_blacklist_cache)
     AppendString("In blocklist cache", &status);
 
   return status;
@@ -94,9 +94,9 @@ std::string GetBlockingStatusString(
 // returns the empty string to indicate that the warning decision description
 // should be used instead.
 std::string GetBlockingDecisionString(
-    const ModuleBlocklistCacheUpdater::ModuleBlockingState& blocking_state,
+    const ModuleBlacklistCacheUpdater::ModuleBlockingState& blocking_state,
     IncompatibleApplicationsUpdater* incompatible_applications_updater) {
-  using BlockingDecision = ModuleBlocklistCacheUpdater::ModuleBlockingDecision;
+  using BlockingDecision = ModuleBlacklistCacheUpdater::ModuleBlockingDecision;
 
   // Append status regarding the logic that will be applied during the next
   // startup.
@@ -171,7 +171,7 @@ std::string GetModuleWarningDecisionString(
       return "Tolerated - Could not tie to an installed application";
     case WarningDecision::kIncompatible:
       return "Incompatible";
-    case WarningDecision::kAddedToBlocklist:
+    case WarningDecision::kAddedToBlacklist:
     case WarningDecision::kUnknown:
       NOTREACHED();
       break;
@@ -183,7 +183,7 @@ std::string GetModuleWarningDecisionString(
 std::string GetModuleStatusString(
     const ModuleInfoKey& module_key,
     IncompatibleApplicationsUpdater* incompatible_applications_updater,
-    ModuleBlocklistCacheUpdater* module_blocklist_cache_updater) {
+    ModuleBlacklistCacheUpdater* module_blocklist_cache_updater) {
   if (!incompatible_applications_updater && !module_blocklist_cache_updater)
     return std::string();
 
@@ -191,7 +191,7 @@ std::string GetModuleStatusString(
 
   // The blocking status is shown over the warning status.
   if (module_blocklist_cache_updater) {
-    const ModuleBlocklistCacheUpdater::ModuleBlockingState& blocking_state =
+    const ModuleBlacklistCacheUpdater::ModuleBlockingState& blocking_state =
         module_blocklist_cache_updater->GetModuleBlockingState(module_key);
 
     status = GetBlockingStatusString(blocking_state);
@@ -272,7 +272,7 @@ ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
     return kPolicyDisabled;
 
   if (!IncompatibleApplicationsUpdater::IsWarningEnabled() &&
-      !ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
+      !ModuleBlacklistCacheUpdater::IsBlockingEnabled()) {
     return kFeatureDisabled;
   }
 
@@ -443,7 +443,7 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
     auto* module_blocklist_cache_updater =
         ModuleDatabase::GetInstance()
             ->third_party_conflicts_manager()
-            ->module_blocklist_cache_updater();
+            ->module_blacklist_cache_updater();
 
     data->SetString(
         "third_party_module_status",

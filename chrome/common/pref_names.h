@@ -960,7 +960,7 @@ extern const char kWebShareVisitedTargets[];
 #if defined(OS_WIN)
 // Only used in branded builds.
 extern const char kIncompatibleApplications[];
-extern const char kModuleBlocklistCacheMD5Digest[];
+extern const char kModuleBlacklistCacheMD5Digest[];
 extern const char kThirdPartyBlockingEnabled[];
 #endif  // defined(OS_WIN)
 

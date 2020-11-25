@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
+#include "chrome/browser/win/conflicts/module_blacklist_cache_updater.h"
 
 #include <windows.h>
 
@@ -26,7 +26,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/pe_image.h"
 #include "base/win/registry.h"
-#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_list_filter.h"
 #include "chrome/common/chrome_paths.h"
@@ -93,35 +93,35 @@ bool RegistryKeyExists() {
 
 }  // namespace
 
-class ModuleBlocklistCacheUpdaterTest : public testing::Test,
+class ModuleBlacklistCacheUpdaterTest : public testing::Test,
                                         public ModuleDatabaseEventSource {
  protected:
-  ModuleBlocklistCacheUpdaterTest()
+  ModuleBlacklistCacheUpdaterTest()
       : dll1_(kDllPath1),
         dll2_(kDllPath2),
         task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         user_data_dir_override_(chrome::DIR_USER_DATA),
         module_list_filter_(CreateModuleListFilter()),
-        module_blocklist_cache_path_(
-            ModuleBlocklistCacheUpdater::GetModuleBlocklistCachePath()) {
+        module_blacklist_cache_path_(
+            ModuleBlacklistCacheUpdater::GetModuleBlacklistCachePath()) {
     exe_certificate_info_.type = CertificateInfo::Type::CERTIFICATE_IN_FILE;
     exe_certificate_info_.path = base::FilePath(kCertificatePath);
     exe_certificate_info_.subject = kCertificateSubject;
   }
 
   void SetUp() override {
-    ASSERT_TRUE(base::CreateDirectory(module_blocklist_cache_path().DirName()));
+    ASSERT_TRUE(base::CreateDirectory(module_blacklist_cache_path().DirName()));
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
   }
 
-  std::unique_ptr<ModuleBlocklistCacheUpdater>
-  CreateModuleBlocklistCacheUpdater() {
-    return std::make_unique<ModuleBlocklistCacheUpdater>(
+  std::unique_ptr<ModuleBlacklistCacheUpdater>
+  CreateModuleBlacklistCacheUpdater() {
+    return std::make_unique<ModuleBlacklistCacheUpdater>(
         this, exe_certificate_info_, module_list_filter_,
-        initial_blocklisted_modules_,
+        initial_blacklisted_modules_,
         base::BindRepeating(
-            &ModuleBlocklistCacheUpdaterTest::OnModuleBlocklistCacheUpdated,
+            &ModuleBlacklistCacheUpdaterTest::OnModuleBlacklistCacheUpdated,
             base::Unretained(this)),
         false);
   }
@@ -134,8 +134,8 @@ class ModuleBlocklistCacheUpdaterTest : public testing::Test,
     task_environment_.RunUntilIdle();
   }
 
-  base::FilePath& module_blocklist_cache_path() {
-    return module_blocklist_cache_path_;
+  base::FilePath& module_blacklist_cache_path() {
+    return module_blacklist_cache_path_;
   }
 
   bool on_cache_updated_callback_invoked() {
@@ -152,9 +152,9 @@ class ModuleBlocklistCacheUpdaterTest : public testing::Test,
  private:
   scoped_refptr<ModuleListFilter> CreateModuleListFilter() {
     chrome::conflicts::ModuleList module_list;
-    // Include an empty blocklist and allowlist.
-    module_list.mutable_blocklist();
-    module_list.mutable_allowlist();
+    // Include an empty blacklist and whitelist.
+    module_list.mutable_blacklist();
+    module_list.mutable_whitelist();
 
     // Serialize the module list to the user data directory.
     base::FilePath module_list_path;
@@ -177,8 +177,8 @@ class ModuleBlocklistCacheUpdaterTest : public testing::Test,
     return module_list_filter;
   }
 
-  void OnModuleBlocklistCacheUpdated(
-      const ModuleBlocklistCacheUpdater::CacheUpdateResult& result) {
+  void OnModuleBlacklistCacheUpdated(
+      const ModuleBlacklistCacheUpdater::CacheUpdateResult& result) {
     on_cache_updated_callback_invoked_ = true;
   }
 
@@ -188,51 +188,51 @@ class ModuleBlocklistCacheUpdaterTest : public testing::Test,
 
   CertificateInfo exe_certificate_info_;
   scoped_refptr<ModuleListFilter> module_list_filter_;
-  std::vector<third_party_dlls::PackedListModule> initial_blocklisted_modules_;
+  std::vector<third_party_dlls::PackedListModule> initial_blacklisted_modules_;
 
-  base::FilePath module_blocklist_cache_path_;
+  base::FilePath module_blacklist_cache_path_;
 
   bool on_cache_updated_callback_invoked_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(ModuleBlocklistCacheUpdaterTest);
+  DISALLOW_COPY_AND_ASSIGN(ModuleBlacklistCacheUpdaterTest);
 };
 
-TEST_F(ModuleBlocklistCacheUpdaterTest, OneThirdPartyModule) {
-  EXPECT_FALSE(base::PathExists(module_blocklist_cache_path()));
+TEST_F(ModuleBlacklistCacheUpdaterTest, OneThirdPartyModule) {
+  EXPECT_FALSE(base::PathExists(module_blacklist_cache_path()));
 
-  auto module_blocklist_cache_updater = CreateModuleBlocklistCacheUpdater();
+  auto module_blacklist_cache_updater = CreateModuleBlacklistCacheUpdater();
 
   // Simulate some arbitrary module loading into the process.
   ModuleInfoKey module_key(dll1_, 0, 0);
-  module_blocklist_cache_updater->OnNewModuleFound(
+  module_blacklist_cache_updater->OnNewModuleFound(
       module_key, CreateLoadedModuleInfoData());
-  module_blocklist_cache_updater->OnModuleDatabaseIdle();
+  module_blacklist_cache_updater->OnModuleDatabaseIdle();
 
   RunUntilIdle();
-  EXPECT_TRUE(base::PathExists(module_blocklist_cache_path()));
+  EXPECT_TRUE(base::PathExists(module_blacklist_cache_path()));
   EXPECT_TRUE(on_cache_updated_callback_invoked());
   EXPECT_TRUE(RegistryKeyExists());
 
   // Check the cache.
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
   base::MD5Digest md5_digest;
   EXPECT_EQ(ReadResult::kSuccess,
-            ReadModuleBlocklistCache(module_blocklist_cache_path(), &metadata,
-                                     &blocklisted_modules, &md5_digest));
+            ReadModuleBlacklistCache(module_blacklist_cache_path(), &metadata,
+                                     &blacklisted_modules, &md5_digest));
 
-  EXPECT_EQ(1u, blocklisted_modules.size());
+  EXPECT_EQ(1u, blacklisted_modules.size());
   ASSERT_EQ(
-      ModuleBlocklistCacheUpdater::ModuleBlockingDecision::kDisallowedImplicit,
-      module_blocklist_cache_updater->GetModuleBlockingState(module_key)
+      ModuleBlacklistCacheUpdater::ModuleBlockingDecision::kDisallowedImplicit,
+      module_blacklist_cache_updater->GetModuleBlockingState(module_key)
           .blocking_decision);
 }
 
-TEST_F(ModuleBlocklistCacheUpdaterTest, IgnoreMicrosoftModules) {
-  EXPECT_FALSE(base::PathExists(module_blocklist_cache_path()));
+TEST_F(ModuleBlacklistCacheUpdaterTest, IgnoreMicrosoftModules) {
+  EXPECT_FALSE(base::PathExists(module_blacklist_cache_path()));
 
   // base::RunLoop run_loop;
-  auto module_blocklist_cache_updater = CreateModuleBlocklistCacheUpdater();
+  auto module_blacklist_cache_updater = CreateModuleBlacklistCacheUpdater();
 
   // Simulate a Microsoft module loading into the process.
   base::win::PEImage kernel32_image(::GetModuleHandle(L"kernel32.dll"));
@@ -250,66 +250,66 @@ TEST_F(ModuleBlocklistCacheUpdaterTest, IgnoreMicrosoftModules) {
   ModuleInfoData module_data = CreateLoadedModuleInfoData();
   module_data.inspection_result = InspectModule(module_key.module_path);
 
-  module_blocklist_cache_updater->OnNewModuleFound(module_key, module_data);
-  module_blocklist_cache_updater->OnModuleDatabaseIdle();
+  module_blacklist_cache_updater->OnNewModuleFound(module_key, module_data);
+  module_blacklist_cache_updater->OnModuleDatabaseIdle();
 
   RunUntilIdle();
-  EXPECT_TRUE(base::PathExists(module_blocklist_cache_path()));
+  EXPECT_TRUE(base::PathExists(module_blacklist_cache_path()));
   EXPECT_TRUE(on_cache_updated_callback_invoked());
   EXPECT_TRUE(RegistryKeyExists());
 
   // Check the cache.
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
   base::MD5Digest md5_digest;
   EXPECT_EQ(ReadResult::kSuccess,
-            ReadModuleBlocklistCache(module_blocklist_cache_path(), &metadata,
-                                     &blocklisted_modules, &md5_digest));
+            ReadModuleBlacklistCache(module_blacklist_cache_path(), &metadata,
+                                     &blacklisted_modules, &md5_digest));
 
-  EXPECT_EQ(0u, blocklisted_modules.size());
+  EXPECT_EQ(0u, blacklisted_modules.size());
   ASSERT_EQ(
-      ModuleBlocklistCacheUpdater::ModuleBlockingDecision::kAllowedMicrosoft,
-      module_blocklist_cache_updater->GetModuleBlockingState(module_key)
+      ModuleBlacklistCacheUpdater::ModuleBlockingDecision::kAllowedMicrosoft,
+      module_blacklist_cache_updater->GetModuleBlockingState(module_key)
           .blocking_decision);
 }
 
-// Tests that modules with a matching certificate subject are allowlisted.
-TEST_F(ModuleBlocklistCacheUpdaterTest, allowlistMatchingCertificateSubject) {
-  EXPECT_FALSE(base::PathExists(module_blocklist_cache_path()));
+// Tests that modules with a matching certificate subject are whitelisted.
+TEST_F(ModuleBlacklistCacheUpdaterTest, WhitelistMatchingCertificateSubject) {
+  EXPECT_FALSE(base::PathExists(module_blacklist_cache_path()));
 
-  auto module_blocklist_cache_updater = CreateModuleBlocklistCacheUpdater();
+  auto module_blacklist_cache_updater = CreateModuleBlacklistCacheUpdater();
 
   // Simulate the module loading into the process.
   ModuleInfoKey module_key(dll1_, 0, 0);
-  module_blocklist_cache_updater->OnNewModuleFound(
+  module_blacklist_cache_updater->OnNewModuleFound(
       module_key, CreateSignedLoadedModuleInfoData());
-  module_blocklist_cache_updater->OnModuleDatabaseIdle();
+  module_blacklist_cache_updater->OnModuleDatabaseIdle();
 
   RunUntilIdle();
-  EXPECT_TRUE(base::PathExists(module_blocklist_cache_path()));
+  EXPECT_TRUE(base::PathExists(module_blacklist_cache_path()));
   EXPECT_TRUE(on_cache_updated_callback_invoked());
   EXPECT_TRUE(RegistryKeyExists());
 
   // Check the cache.
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
   base::MD5Digest md5_digest;
   EXPECT_EQ(ReadResult::kSuccess,
-            ReadModuleBlocklistCache(module_blocklist_cache_path(), &metadata,
-                                     &blocklisted_modules, &md5_digest));
+            ReadModuleBlacklistCache(module_blacklist_cache_path(), &metadata,
+                                     &blacklisted_modules, &md5_digest));
 
-  EXPECT_EQ(0u, blocklisted_modules.size());
-  ASSERT_EQ(ModuleBlocklistCacheUpdater::ModuleBlockingDecision::
+  EXPECT_EQ(0u, blacklisted_modules.size());
+  ASSERT_EQ(ModuleBlacklistCacheUpdater::ModuleBlockingDecision::
                 kAllowedSameCertificate,
-            module_blocklist_cache_updater->GetModuleBlockingState(module_key)
+            module_blacklist_cache_updater->GetModuleBlockingState(module_key)
                 .blocking_decision);
 }
 
-// Make sure IMEs are allowed while shell extensions are blocklisted.
-TEST_F(ModuleBlocklistCacheUpdaterTest, RegisteredModules) {
-  EXPECT_FALSE(base::PathExists(module_blocklist_cache_path()));
+// Make sure IMEs are allowed while shell extensions are blacklisted.
+TEST_F(ModuleBlacklistCacheUpdaterTest, RegisteredModules) {
+  EXPECT_FALSE(base::PathExists(module_blacklist_cache_path()));
 
-  auto module_blocklist_cache_updater = CreateModuleBlocklistCacheUpdater();
+  auto module_blacklist_cache_updater = CreateModuleBlacklistCacheUpdater();
 
   // Set the respective bit for registered modules.
   ModuleInfoKey module_key1(dll1_, 123u, 456u);
@@ -321,31 +321,31 @@ TEST_F(ModuleBlocklistCacheUpdaterTest, RegisteredModules) {
   module_data2.module_properties |= ModuleInfoData::kPropertyShellExtension;
 
   // Simulate the modules loading into the process.
-  module_blocklist_cache_updater->OnNewModuleFound(module_key1, module_data1);
-  module_blocklist_cache_updater->OnNewModuleFound(module_key2, module_data2);
-  module_blocklist_cache_updater->OnModuleDatabaseIdle();
+  module_blacklist_cache_updater->OnNewModuleFound(module_key1, module_data1);
+  module_blacklist_cache_updater->OnNewModuleFound(module_key2, module_data2);
+  module_blacklist_cache_updater->OnModuleDatabaseIdle();
 
   RunUntilIdle();
-  EXPECT_TRUE(base::PathExists(module_blocklist_cache_path()));
+  EXPECT_TRUE(base::PathExists(module_blacklist_cache_path()));
   EXPECT_TRUE(on_cache_updated_callback_invoked());
   EXPECT_TRUE(RegistryKeyExists());
 
   // Check the cache.
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
   base::MD5Digest md5_digest;
   EXPECT_EQ(ReadResult::kSuccess,
-            ReadModuleBlocklistCache(module_blocklist_cache_path(), &metadata,
-                                     &blocklisted_modules, &md5_digest));
+            ReadModuleBlacklistCache(module_blacklist_cache_path(), &metadata,
+                                     &blacklisted_modules, &md5_digest));
 
-  // Make sure the only blocklisted module is the shell extension.
-  ASSERT_EQ(1u, blocklisted_modules.size());
-  ASSERT_EQ(ModuleBlocklistCacheUpdater::ModuleBlockingDecision::kAllowedIME,
-            module_blocklist_cache_updater->GetModuleBlockingState(module_key1)
+  // Make sure the only blacklisted module is the shell extension.
+  ASSERT_EQ(1u, blacklisted_modules.size());
+  ASSERT_EQ(ModuleBlacklistCacheUpdater::ModuleBlockingDecision::kAllowedIME,
+            module_blacklist_cache_updater->GetModuleBlockingState(module_key1)
                 .blocking_decision);
   ASSERT_EQ(
-      ModuleBlocklistCacheUpdater::ModuleBlockingDecision::kDisallowedImplicit,
-      module_blocklist_cache_updater->GetModuleBlockingState(module_key2)
+      ModuleBlacklistCacheUpdater::ModuleBlockingDecision::kDisallowedImplicit,
+      module_blacklist_cache_updater->GetModuleBlockingState(module_key2)
           .blocking_decision);
 
   third_party_dlls::PackedListModule expected;
@@ -357,37 +357,37 @@ TEST_F(ModuleBlocklistCacheUpdaterTest, RegisteredModules) {
   base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_code_id.data()),
                       module_code_id.length(), &expected.code_id_hash[0]);
 
-  EXPECT_TRUE(internal::ModuleEqual()(expected, blocklisted_modules[0]));
+  EXPECT_TRUE(internal::ModuleEqual()(expected, blacklisted_modules[0]));
 }
 
-TEST_F(ModuleBlocklistCacheUpdaterTest, DisableModuleAnalysis) {
-  EXPECT_FALSE(base::PathExists(module_blocklist_cache_path()));
+TEST_F(ModuleBlacklistCacheUpdaterTest, DisableModuleAnalysis) {
+  EXPECT_FALSE(base::PathExists(module_blacklist_cache_path()));
 
-  auto module_blocklist_cache_updater = CreateModuleBlocklistCacheUpdater();
-  module_blocklist_cache_updater->DisableModuleAnalysis();
+  auto module_blacklist_cache_updater = CreateModuleBlacklistCacheUpdater();
+  module_blacklist_cache_updater->DisableModuleAnalysis();
 
   // Simulate some arbitrary module loading into the process.
   ModuleInfoKey module_key(dll1_, 0, 0);
-  module_blocklist_cache_updater->OnNewModuleFound(
+  module_blacklist_cache_updater->OnNewModuleFound(
       module_key, CreateLoadedModuleInfoData());
-  module_blocklist_cache_updater->OnModuleDatabaseIdle();
+  module_blacklist_cache_updater->OnModuleDatabaseIdle();
 
   RunUntilIdle();
-  EXPECT_TRUE(base::PathExists(module_blocklist_cache_path()));
+  EXPECT_TRUE(base::PathExists(module_blacklist_cache_path()));
   EXPECT_TRUE(on_cache_updated_callback_invoked());
   EXPECT_TRUE(RegistryKeyExists());
 
   // Check the cache.
   third_party_dlls::PackedListMetadata metadata;
-  std::vector<third_party_dlls::PackedListModule> blocklisted_modules;
+  std::vector<third_party_dlls::PackedListModule> blacklisted_modules;
   base::MD5Digest md5_digest;
   EXPECT_EQ(ReadResult::kSuccess,
-            ReadModuleBlocklistCache(module_blocklist_cache_path(), &metadata,
-                                     &blocklisted_modules, &md5_digest));
+            ReadModuleBlacklistCache(module_blacklist_cache_path(), &metadata,
+                                     &blacklisted_modules, &md5_digest));
 
-  // The module is not added to the blocklist.
-  EXPECT_EQ(0u, blocklisted_modules.size());
-  ASSERT_EQ(ModuleBlocklistCacheUpdater::ModuleBlockingDecision::kNotAnalyzed,
-            module_blocklist_cache_updater->GetModuleBlockingState(module_key)
+  // The module is not added to the blacklist.
+  EXPECT_EQ(0u, blacklisted_modules.size());
+  ASSERT_EQ(ModuleBlacklistCacheUpdater::ModuleBlockingDecision::kNotAnalyzed,
+            module_blacklist_cache_updater->GetModuleBlockingState(module_key)
                 .blocking_decision);
 }

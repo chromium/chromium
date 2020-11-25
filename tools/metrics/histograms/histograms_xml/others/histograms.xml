@@ -8751,12 +8751,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ModuleBlacklistCache.BlacklistPathUpdated"
     enum="BooleanSuccess" expires_after="M85">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.BlocklistPathUpdated.
-  </obsolete>
   <owner>pmonette@chromium.org</owner>
   <summary>
-    Records the result of writing the path of the module blocklist cache to the
+    Records the result of writing the path of the module blacklist cache to the
     registry so that chrome_elf.dll can use it. A value is emitted every time
     the cache is updated because another instance of Chrome with a different
     User Data directory could have overwritten the path to point to their own
@@ -8765,25 +8762,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ModuleBlacklistCache.BlacklistStatus"
-    enum="ModuleBlocklistStatus" expires_after="M85">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.BlocklistStatus.
-  </obsolete>
+    enum="ModuleBlacklistStatus" expires_after="M85">
   <owner>pmonette@chromium.org</owner>
   <summary>
-    The status of a blocklisted module in the process. Recorded when the cache
+    The status of a blacklisted module in the process. Recorded when the cache
     is updated.
   </summary>
 </histogram>
 
 <histogram name="ModuleBlacklistCache.DeleteResult" enum="BooleanSuccess"
     expires_after="M82">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.DeleteResult.
-  </obsolete>
   <owner>pmonette@chromium.org</owner>
   <summary>
-    The result of deleting the module blocklist cache when third-party module
+    The result of deleting the module blacklist cache when third-party module
     blocking is disabled. Attempting to delete an empty file is considered a
     success.
   </summary>
@@ -8791,109 +8782,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ModuleBlacklistCache.ExpectedMD5Digest" enum="Boolean"
     expires_after="M85">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.ExpectedMD5Digest.
-  </obsolete>
   <owner>pmonette@chromium.org</owner>
   <summary>
-    Records whether the MD5 digest of the module blocklist cache matched the one
+    Records whether the MD5 digest of the module blacklist cache matched the one
     recorded in the Local State file.
   </summary>
 </histogram>
 
 <histogram name="ModuleBlacklistCache.ModuleCount" units="modules"
     expires_after="M85">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.ModuleCount.
-  </obsolete>
   <owner>pmonette@chromium.org</owner>
   <summary>
-    Records the number of modules in the module blocklist cache at the time it
+    Records the number of modules in the module blacklist cache at the time it
     was written to disk.
   </summary>
 </histogram>
 
 <histogram name="ModuleBlacklistCache.ReadResult"
-    enum="ModuleBlocklistCacheReadResult" expires_after="M85">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.ReadResult.
-  </obsolete>
+    enum="ModuleBlacklistCacheReadResult" expires_after="M85">
   <owner>pmonette@chromium.org</owner>
   <summary>
-    The result of reading the current module blocklist cache while updating it.
+    The result of reading the current module blacklist cache while updating it.
   </summary>
 </histogram>
 
 <histogram name="ModuleBlacklistCache.WriteResult" enum="BooleanSuccess"
     expires_after="M85">
-  <obsolete>
-    Renamed to ModuleBlocklistCache.WriteResult.
-  </obsolete>
   <owner>pmonette@chromium.org</owner>
-  <summary>The result of writing the updated module blocklist cache.</summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.BlocklistPathUpdated"
-    enum="BooleanSuccess" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Records the result of writing the path of the module blocklist cache to the
-    registry so that chrome_elf.dll can use it. A value is emitted every time
-    the cache is updated because another instance of Chrome with a different
-    User Data directory could have overwritten the path to point to their own
-    version of the cache.
-  </summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.BlocklistStatus"
-    enum="ModuleBlocklistStatus" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The status of a blocklisted module in the process. Recorded when the cache
-    is updated.
-  </summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.DeleteResult" enum="BooleanSuccess"
-    expires_after="M82">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The result of deleting the module blocklist cache when third-party module
-    blocking is disabled. Attempting to delete an empty file is considered a
-    success.
-  </summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.ExpectedMD5Digest" enum="Boolean"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Records whether the MD5 digest of the module blocklist cache matched the one
-    recorded in the Local State file.
-  </summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.ModuleCount" units="modules"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Records the number of modules in the module blocklist cache at the time it
-    was written to disk.
-  </summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.ReadResult"
-    enum="ModuleBlocklistCacheReadResult" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The result of reading the current module blocklist cache while updating it.
-  </summary>
-</histogram>
-
-<histogram name="ModuleBlocklistCache.WriteResult" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>The result of writing the updated module blocklist cache.</summary>
+  <summary>The result of writing the updated module blacklist cache.</summary>
 </histogram>
 
 <histogram name="ModuleIntegrityVerification.BytesModified" units="bytes"
