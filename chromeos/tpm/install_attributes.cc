@@ -297,8 +297,7 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
   }
 
   // Clearing the TPM password seems to be always a good deal.
-  if (tpm_util::TpmIsEnabled() && !tpm_util::TpmIsBeingOwned() &&
-      tpm_util::TpmIsOwned()) {
+  if (tpm_util::TpmIsEnabled() && tpm_util::TpmIsOwned()) {
     cryptohome_client_->CallTpmClearStoredPasswordAndBlock();
   }
 
