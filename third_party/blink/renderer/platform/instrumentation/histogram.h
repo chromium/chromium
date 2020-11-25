@@ -39,13 +39,6 @@ class PLATFORM_EXPORT CustomCountHistogram {
   base::HistogramBase* histogram_;
 };
 
-class PLATFORM_EXPORT EnumerationHistogram : public CustomCountHistogram {
- public:
-  // |boundaryValue| must be strictly greater than samples passed to |count|.
-  EnumerationHistogram(const char* name,
-                       base::HistogramBase::Sample boundary_value);
-};
-
 class PLATFORM_EXPORT LinearHistogram : public CustomCountHistogram {
  public:
   explicit LinearHistogram(const char* name,

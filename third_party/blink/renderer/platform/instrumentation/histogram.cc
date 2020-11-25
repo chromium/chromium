@@ -41,16 +41,6 @@ void CustomCountHistogram::CountMilliseconds(base::TimeDelta delta) {
       delta.InMilliseconds()));
 }
 
-EnumerationHistogram::EnumerationHistogram(
-    const char* name,
-    base::HistogramBase::Sample boundary_value)
-    : CustomCountHistogram(base::LinearHistogram::FactoryGet(
-          name,
-          1,
-          boundary_value,
-          boundary_value + 1,
-          base::HistogramBase::kUmaTargetedHistogramFlag)) {}
-
 LinearHistogram::LinearHistogram(const char* name,
                                  base::HistogramBase::Sample min,
                                  base::HistogramBase::Sample max,
