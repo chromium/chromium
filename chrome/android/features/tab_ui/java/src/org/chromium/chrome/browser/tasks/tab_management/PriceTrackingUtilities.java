@@ -28,8 +28,8 @@ public class PriceTrackingUtilities {
      * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.
      */
     public static void flipTrackPricesOnTabs() {
-        final boolean enableTrackPricesOnTabs =
-                SHARED_PREFERENCES_MANAGER.readBoolean(TRACK_PRICES_ON_TABS, false);
+        final boolean enableTrackPricesOnTabs = SHARED_PREFERENCES_MANAGER.readBoolean(
+                TRACK_PRICES_ON_TABS, TabUiFeatureUtilities.isPriceTrackingEnabled());
         SHARED_PREFERENCES_MANAGER.writeBoolean(TRACK_PRICES_ON_TABS, !enableTrackPricesOnTabs);
     }
 
@@ -37,6 +37,7 @@ public class PriceTrackingUtilities {
      * @return Whether the track prices on tabs is turned on by users.
      */
     public static boolean isTrackPricesOnTabsEnabled() {
-        return SHARED_PREFERENCES_MANAGER.readBoolean(TRACK_PRICES_ON_TABS, false);
+        return SHARED_PREFERENCES_MANAGER.readBoolean(
+                TRACK_PRICES_ON_TABS, TabUiFeatureUtilities.isPriceTrackingEnabled());
     }
 }
