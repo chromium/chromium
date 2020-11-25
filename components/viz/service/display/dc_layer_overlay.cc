@@ -74,12 +74,12 @@ gfx::RectF GetExpandedRectWithPixelMovingFilter(
     const AggregatedRenderPassDrawQuad* rpdq,
     float max_pixel_movement) {
   const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
-  gfx::Rect expanded_rect = rpdq->rect;
+  gfx::RectF expanded_rect(rpdq->rect);
   expanded_rect.Inset(-max_pixel_movement, -max_pixel_movement);
 
   // expanded_rect in the target space
   return cc::MathUtil::MapClippedRect(
-      shared_quad_state->quad_to_target_transform, gfx::RectF(expanded_rect));
+      shared_quad_state->quad_to_target_transform, expanded_rect);
 }
 
 DCLayerResult ValidateYUVQuad(

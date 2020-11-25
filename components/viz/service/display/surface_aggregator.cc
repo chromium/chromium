@@ -85,8 +85,9 @@ gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
     const CompositorRenderPass& child_render_pass) {
   const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
   float max_pixel_movement = child_render_pass.filters.MaximumPixelMovement();
-  gfx::Rect expanded_rect = rpdq->rect;
-  expanded_rect.Inset(-max_pixel_movement, -max_pixel_movement);
+  gfx::RectF rect(rpdq->rect);
+  rect.Inset(-max_pixel_movement, -max_pixel_movement);
+  gfx::Rect expanded_rect = gfx::ToEnclosingRect(rect);
 
   // expanded_rect in the target space
   return cc::MathUtil::MapEnclosingClippedRect(
@@ -277,7 +278,9 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
   gfx::Rect damage_rect = source_pass->output_rect;
   if (source_pass->filters.HasFilterThatMovesPixels()) {
     float max_pixel_movement = source_pass->filters.MaximumPixelMovement();
-    damage_rect.Inset(-max_pixel_movement, -max_pixel_movement);
+    gfx::RectF damage_rect_f(damage_rect);
+    damage_rect_f.Inset(-max_pixel_movement, -max_pixel_movement);
+    damage_rect = gfx::ToEnclosingRect(damage_rect_f);
   }
 
   gfx::Rect damage_rect_in_root_target_space =
@@ -288,6 +291,8 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
   // backdrop filters is considered damaged if it intersects with the other
   // damages.
   if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
+    // Transform will be performed again in AddSurfaceDamageToDamageList()
+    // Just pass in damage_rect instead of damage_rect_in_root_target_space.
     AddSurfaceDamageToDamageList(damage_rect, gfx::Transform(), {}, source_pass,
                                  dest_pass, /*surface=*/nullptr);
   }
