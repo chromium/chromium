@@ -651,10 +651,10 @@ void ChromeBrowserMainPartsWin::PostProfileInit() {
   // is enabled or not.
   //
   // What truly controls if the blocking is enabled is the presence of the
-  // module blocklist cache file. This means that to disable the feature, the
+  // module blacklist cache file. This means that to disable the feature, the
   // cache must be deleted and the browser relaunched.
   if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled() ||
-      !ModuleBlocklistCacheUpdater::IsBlockingEnabled())
+      !ModuleBlacklistCacheUpdater::IsBlockingEnabled())
     ThirdPartyConflictsManager::DisableThirdPartyModuleBlocking(
         base::ThreadPool::CreateTaskRunner(
             {base::TaskPriority::BEST_EFFORT,

@@ -176,7 +176,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {30, prefs::kModuleBlocklistCacheMD5Digest,
+    {30, prefs::kModuleBlacklistCacheMD5Digest,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
 #endif
