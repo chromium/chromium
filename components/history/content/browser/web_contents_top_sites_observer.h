@@ -21,9 +21,6 @@ class WebContentsTopSitesObserver
  public:
   ~WebContentsTopSitesObserver() override;
 
-  static void CreateForWebContents(content::WebContents* web_contents,
-                                   TopSites* top_sites);
-
  private:
   friend class content::WebContentsUserData<WebContentsTopSitesObserver>;
 

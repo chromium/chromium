@@ -25,9 +25,6 @@ class SafeBrowsingSubresourceHelper
  public:
   ~SafeBrowsingSubresourceHelper() override;
 
-  static void CreateForWebContents(content::WebContents* web_contents,
-                                   SafeBrowsingUIManager* ui_manager);
-
   // WebContentsObserver::
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;

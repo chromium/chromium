@@ -18,18 +18,6 @@
 
 namespace sync_sessions {
 
-// static
-void SyncSessionsRouterTabHelper::CreateForWebContents(
-    content::WebContents* web_contents,
-    SyncSessionsWebContentsRouter* router) {
-  DCHECK(web_contents);
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(UserDataKey(),
-                              base::WrapUnique(new SyncSessionsRouterTabHelper(
-                                  web_contents, router)));
-  }
-}
-
 SyncSessionsRouterTabHelper::SyncSessionsRouterTabHelper(
     content::WebContents* web_contents,
     SyncSessionsWebContentsRouter* router)

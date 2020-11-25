@@ -26,9 +26,6 @@ class SESSIONS_EXPORT SessionTabHelper
 
   ~SessionTabHelper() override;
 
-  static void CreateForWebContents(content::WebContents* contents,
-                                   DelegateLookup lookup);
-
   // Returns the identifier used by session restore for this tab.
   const SessionID& session_id() const { return session_id_; }
 

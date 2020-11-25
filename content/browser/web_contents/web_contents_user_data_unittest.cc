@@ -111,4 +111,56 @@ TEST_F(WebContentsUserDataTest, Idempotence) {
   ASSERT_EQ(clazz, class_again);
 }
 
+class NonCopyableNonMovableClass {
+ public:
+  explicit NonCopyableNonMovableClass(int value) : value_(value) {}
+
+  NonCopyableNonMovableClass(const NonCopyableNonMovableClass&) = delete;
+  NonCopyableNonMovableClass& operator=(const NonCopyableNonMovableClass&) =
+      delete;
+  NonCopyableNonMovableClass(NonCopyableNonMovableClass&&) = delete;
+  NonCopyableNonMovableClass& operator=(NonCopyableNonMovableClass&&) = delete;
+
+  int value() const { return value_; }
+
+ private:
+  int value_;
+};
+
+class AttachedClassWithParams
+    : public WebContentsUserData<AttachedClassWithParams> {
+ public:
+  ~AttachedClassWithParams() override = default;
+
+  int param1() const { return param1_; }
+  int param2() const { return param2_; }
+
+ private:
+  friend class WebContentsUserData<AttachedClassWithParams>;
+
+  explicit AttachedClassWithParams(WebContents* contents,
+                                   int param1,
+                                   NonCopyableNonMovableClass&& param2)
+      : param1_(param1), param2_(param2.value()) {}
+
+  int param1_;
+  int param2_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AttachedClassWithParams)
+
+TEST_F(WebContentsUserDataTest, CreateWithParameters) {
+  ASSERT_EQ(nullptr, AttachedClassWithParams::FromWebContents(web_contents()));
+
+  AttachedClassWithParams::CreateForWebContents(web_contents(), 1,
+                                                NonCopyableNonMovableClass(42));
+  auto* instance = AttachedClassWithParams::FromWebContents(web_contents());
+  ASSERT_NE(nullptr, instance);
+
+  EXPECT_EQ(1, instance->param1());
+  EXPECT_EQ(42, instance->param2());
+}
+
 }  // namespace content

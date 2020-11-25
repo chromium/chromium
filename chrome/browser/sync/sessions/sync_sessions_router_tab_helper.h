@@ -34,10 +34,6 @@ class SyncSessionsRouterTabHelper
  public:
   ~SyncSessionsRouterTabHelper() override;
 
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      SyncSessionsWebContentsRouter* session_router);
-
   // WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;

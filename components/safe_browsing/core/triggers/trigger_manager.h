@@ -202,11 +202,6 @@ class TriggerManagerWebContentsHelper
  public:
   ~TriggerManagerWebContentsHelper() override;
 
-  // Creates a TriggerManagerWebContentsHelper and scopes its lifetime to the
-  // specified |web_contents|.
-  static void CreateForWebContents(content::WebContents* web_contents,
-                                   TriggerManager* trigger_manager);
-
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override;
 

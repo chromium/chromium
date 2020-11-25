@@ -59,20 +59,6 @@ class AdRedirectTrigger
  public:
   ~AdRedirectTrigger() override;
 
-  // |web_contents| is the WebContent of the page that a redirect event took
-  // place on. |trigger_manager| ensures the trigger is only fired when
-  // appropriate and keeps track of how often the trigger is fired. |prefs|
-  // allows us to check that the user has opted in to Extended Reporting.
-  // |url_loader_factory| allows us to access mojom::URLLoaderFactory.
-  // |history_service| records page titles, visit times, and favicons, as well
-  // as information about downloads.
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      TriggerManager* trigger_manager,
-      PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service);
-
   // This method is called on the browser thread when a frame tries to navigate
   // its top level frame from the |initiator_url| without ever having received a
   // user gesture. If the frame causing the redirect navigation is a Google Ad
@@ -83,6 +69,13 @@ class AdRedirectTrigger
   friend class AdRedirectTriggerBrowserTest;
   friend class content::WebContentsUserData<AdRedirectTrigger>;
 
+  // |web_contents| is the WebContent of the page that a redirect event took
+  // place on. |trigger_manager| ensures the trigger is only fired when
+  // appropriate and keeps track of how often the trigger is fired. |prefs|
+  // allows us to check that the user has opted in to Extended Reporting.
+  // |url_loader_factory| allows us to access mojom::URLLoaderFactory.
+  // |history_service| records page titles, visit times, and favicons, as well
+  // as information about downloads.
   AdRedirectTrigger(
       content::WebContents* web_contents,
       TriggerManager* trigger_manager,

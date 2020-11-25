@@ -12,18 +12,6 @@
 
 namespace history {
 
-// static
-void WebContentsTopSitesObserver::CreateForWebContents(
-    content::WebContents* web_contents,
-    TopSites* top_sites) {
-  DCHECK(web_contents);
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(UserDataKey(),
-                              base::WrapUnique(new WebContentsTopSitesObserver(
-                                  web_contents, top_sites)));
-  }
-}
-
 WebContentsTopSitesObserver::WebContentsTopSitesObserver(
     content::WebContents* web_contents,
     TopSites* top_sites)

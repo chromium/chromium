@@ -61,13 +61,6 @@ class AdSamplerTrigger : public content::WebContentsObserver,
  public:
   ~AdSamplerTrigger() override;
 
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      TriggerManager* trigger_manager,
-      PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service);
-
   // content::WebContentsObserver implementation.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;

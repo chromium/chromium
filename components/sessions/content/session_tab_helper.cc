@@ -28,15 +28,6 @@ SessionTabHelper::SessionTabHelper(content::WebContents* contents,
 
 SessionTabHelper::~SessionTabHelper() = default;
 
-void SessionTabHelper::CreateForWebContents(content::WebContents* contents,
-                                            DelegateLookup lookup) {
-  DCHECK(contents);
-  if (!FromWebContents(contents)) {
-    contents->SetUserData(UserDataKey(), base::WrapUnique(new SessionTabHelper(
-                                             contents, std::move(lookup))));
-  }
-}
-
 void SessionTabHelper::SetWindowID(const SessionID& id) {
   window_id_ = id;
 

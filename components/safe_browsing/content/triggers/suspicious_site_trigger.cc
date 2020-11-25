@@ -71,22 +71,6 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
 
 SuspiciousSiteTrigger::~SuspiciousSiteTrigger() {}
 
-// static
-void SuspiciousSiteTrigger::CreateForWebContents(
-    content::WebContents* web_contents,
-    TriggerManager* trigger_manager,
-    PrefService* prefs,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    history::HistoryService* history_service,
-    bool monitor_mode) {
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(
-        UserDataKey(), base::WrapUnique(new SuspiciousSiteTrigger(
-                           web_contents, trigger_manager, prefs,
-                           url_loader_factory, history_service, monitor_mode)));
-  }
-}
-
 bool SuspiciousSiteTrigger::MaybeStartReport() {
   SBErrorOptions error_options =
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());

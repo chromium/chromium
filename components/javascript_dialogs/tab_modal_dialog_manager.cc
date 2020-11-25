@@ -111,17 +111,6 @@ DialogOriginRelationship GetDialogOriginRelationship(
 
 }  // namespace
 
-// static
-void TabModalDialogManager::CreateForWebContents(
-    content::WebContents* web_contents,
-    std::unique_ptr<TabModalDialogManagerDelegate> delegate) {
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(UserDataKey(),
-                              base::WrapUnique(new TabModalDialogManager(
-                                  web_contents, std::move(delegate))));
-  }
-}
-
 TabModalDialogManager::~TabModalDialogManager() {
   CloseDialog(DismissalCause::kTabHelperDestroyed, false, base::string16());
 }

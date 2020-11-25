@@ -26,27 +26,6 @@
 
 namespace password_manager {
 
-namespace {
-
-const char kContentPasswordManagerDriverFactoryWebContentsUserDataKey[] =
-    "web_contents_password_manager_driver_factory";
-
-}  // namespace
-
-void ContentPasswordManagerDriverFactory::CreateForWebContents(
-    content::WebContents* web_contents,
-    PasswordManagerClient* password_client,
-    autofill::AutofillClient* autofill_client) {
-  if (FromWebContents(web_contents))
-    return;
-
-  // NOTE: Can't use |std::make_unique| due to private constructor.
-  web_contents->SetUserData(
-      kContentPasswordManagerDriverFactoryWebContentsUserDataKey,
-      base::WrapUnique(new ContentPasswordManagerDriverFactory(
-          web_contents, password_client, autofill_client)));
-}
-
 ContentPasswordManagerDriverFactory::ContentPasswordManagerDriverFactory(
     content::WebContents* web_contents,
     PasswordManagerClient* password_client,
@@ -57,15 +36,6 @@ ContentPasswordManagerDriverFactory::ContentPasswordManagerDriverFactory(
 
 ContentPasswordManagerDriverFactory::~ContentPasswordManagerDriverFactory() =
     default;
-
-// static
-ContentPasswordManagerDriverFactory*
-ContentPasswordManagerDriverFactory::FromWebContents(
-    content::WebContents* contents) {
-  return static_cast<ContentPasswordManagerDriverFactory*>(
-      contents->GetUserData(
-          kContentPasswordManagerDriverFactoryWebContentsUserDataKey));
-}
 
 // static
 void ContentPasswordManagerDriverFactory::BindPasswordManagerDriver(
@@ -135,5 +105,7 @@ void ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() {
   for (auto& frame_and_driver : frame_driver_map_)
     frame_and_driver.second.SendLoggingAvailability();
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentPasswordManagerDriverFactory)
 
 }  // namespace password_manager

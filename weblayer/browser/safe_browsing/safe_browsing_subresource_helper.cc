@@ -14,18 +14,6 @@
 
 namespace weblayer {
 
-// static
-void SafeBrowsingSubresourceHelper::CreateForWebContents(
-    content::WebContents* web_contents,
-    SafeBrowsingUIManager* ui_manager) {
-  if (FromWebContents(web_contents))
-    return;
-
-  web_contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new SafeBrowsingSubresourceHelper(
-                                web_contents, ui_manager)));
-}
-
 SafeBrowsingSubresourceHelper::~SafeBrowsingSubresourceHelper() = default;
 
 void SafeBrowsingSubresourceHelper::ReadyToCommitNavigation(

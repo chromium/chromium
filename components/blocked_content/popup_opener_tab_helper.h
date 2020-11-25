@@ -36,12 +36,6 @@ class PopupOpenerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PopupOpenerTabHelper> {
  public:
-  // |tick_clock| overrides the internal time for testing. This doesn't take
-  // ownership of |tick_clock| or |settings_map|, and they both must outlive the
-  // PopupOpenerTabHelper instance.
-  static void CreateForWebContents(content::WebContents* contents,
-                                   const base::TickClock* tick_clock,
-                                   HostContentSettingsMap* settings_map);
   ~PopupOpenerTabHelper() override;
 
   void OnOpenedPopup(PopupTracker* popup_tracker);
@@ -58,6 +52,9 @@ class PopupOpenerTabHelper
  private:
   friend class content::WebContentsUserData<PopupOpenerTabHelper>;
 
+  // |tick_clock| overrides the internal time for testing. This doesn't take
+  // ownership of |tick_clock| or |settings_map|, and they both must outlive the
+  // PopupOpenerTabHelper instance.
   PopupOpenerTabHelper(content::WebContents* web_contents,
                        const base::TickClock* tick_clock,
                        HostContentSettingsMap* settings_map);

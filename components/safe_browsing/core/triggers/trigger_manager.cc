@@ -241,17 +241,6 @@ TriggerManagerWebContentsHelper::TriggerManagerWebContentsHelper(
 
 TriggerManagerWebContentsHelper::~TriggerManagerWebContentsHelper() {}
 
-void TriggerManagerWebContentsHelper::CreateForWebContents(
-    content::WebContents* web_contents,
-    TriggerManager* trigger_manager) {
-  DCHECK(web_contents);
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(
-        UserDataKey(), base::WrapUnique(new TriggerManagerWebContentsHelper(
-                           web_contents, trigger_manager)));
-  }
-}
-
 void TriggerManagerWebContentsHelper::WebContentsDestroyed() {
   trigger_manager_->WebContentsDestroyed(web_contents());
 }

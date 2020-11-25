@@ -24,11 +24,6 @@ class View;
 class ChromeWebContentsViewFocusHelper
     : public content::WebContentsUserData<ChromeWebContentsViewFocusHelper> {
  public:
-  // Creates a ChromeWebContentsViewFocusHelper for the given
-  // WebContents. If a ChromeWebContentsViewFocusHelper is already
-  // associated with the WebContents, this method is a no-op.
-  static void CreateForWebContents(content::WebContents* web_contents);
-
   void StoreFocus();
   bool RestoreFocus();
   void ResetStoredFocus();

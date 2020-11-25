@@ -18,20 +18,6 @@
 
 namespace captive_portal {
 
-// static
-void CaptivePortalTabHelper::CreateForWebContents(
-    content::WebContents* contents,
-    CaptivePortalService* captive_portal_service,
-    const CaptivePortalTabReloader::OpenLoginTabCallback&
-        open_login_tab_callback) {
-  if (FromWebContents(contents))
-    return;
-  contents->SetUserData(
-      UserDataKey(),
-      base::WrapUnique(new CaptivePortalTabHelper(
-          contents, captive_portal_service, open_login_tab_callback)));
-}
-
 CaptivePortalTabHelper::CaptivePortalTabHelper(
     content::WebContents* web_contents,
     CaptivePortalService* captive_portal_service,

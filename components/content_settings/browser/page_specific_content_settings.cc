@@ -109,22 +109,6 @@ void PageSpecificContentSettings::SiteDataObserver::WebContentsDestroyed() {
   web_contents_ = nullptr;
 }
 
-// static
-void PageSpecificContentSettings::WebContentsHandler::CreateForWebContents(
-    content::WebContents* web_contents,
-    std::unique_ptr<Delegate> delegate) {
-  DCHECK(web_contents);
-  if (PageSpecificContentSettings::WebContentsHandler::FromWebContents(
-          web_contents)) {
-    return;
-  }
-
-  web_contents->SetUserData(
-      PageSpecificContentSettings::WebContentsHandler::UserDataKey(),
-      base::WrapUnique(new PageSpecificContentSettings::WebContentsHandler(
-          web_contents, std::move(delegate))));
-}
-
 PageSpecificContentSettings::WebContentsHandler::WebContentsHandler(
     content::WebContents* web_contents,
     std::unique_ptr<Delegate> delegate)

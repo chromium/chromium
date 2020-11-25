@@ -81,12 +81,6 @@ class CaptivePortalTabHelper
   bool is_captive_portal_window() const { return is_captive_portal_window_; }
   void set_is_captive_portal_window() { is_captive_portal_window_ = true; }
 
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      CaptivePortalService* captive_portal_service,
-      const CaptivePortalTabReloader::OpenLoginTabCallback&
-          open_login_tab_callback);
-
  private:
   friend class ::CaptivePortalBrowserTest;
   friend class CaptivePortalTabHelperTest;

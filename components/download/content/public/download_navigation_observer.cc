@@ -8,18 +8,6 @@
 
 namespace download {
 
-// static
-void DownloadNavigationObserver::CreateForWebContents(
-    content::WebContents* web_contents,
-    NavigationMonitor* navigation_monitor) {
-  DCHECK(web_contents);
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(UserDataKey(),
-                              std::make_unique<DownloadNavigationObserver>(
-                                  web_contents, navigation_monitor));
-  }
-}
-
 DownloadNavigationObserver::DownloadNavigationObserver(
     content::WebContents* web_contents,
     NavigationMonitor* navigation_monitor)

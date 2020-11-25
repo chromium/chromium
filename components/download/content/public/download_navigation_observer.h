@@ -18,9 +18,6 @@ class DownloadNavigationObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<DownloadNavigationObserver> {
  public:
-  static void CreateForWebContents(content::WebContents* web_contents,
-                                   NavigationMonitor* navigation_monitor);
-
   DownloadNavigationObserver(content::WebContents* web_contents,
                              NavigationMonitor* navigation_monitor);
   ~DownloadNavigationObserver() override;

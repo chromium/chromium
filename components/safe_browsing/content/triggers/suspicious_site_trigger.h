@@ -109,14 +109,6 @@ class SuspiciousSiteTrigger
 
   ~SuspiciousSiteTrigger() override;
 
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      TriggerManager* trigger_manager,
-      PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service,
-      bool monitor_mode);
-
   // content::WebContentsObserver implementations.
   void DidStartLoading() override;
   void DidStopLoading() override;

@@ -54,11 +54,6 @@ class SourceUrlRecorderWebContentsObserver
       public content::WebContentsUserData<
           SourceUrlRecorderWebContentsObserver> {
  public:
-  // Creates a SourceUrlRecorderWebContentsObserver for the given
-  // WebContents. If a SourceUrlRecorderWebContentsObserver is already
-  // associated with the WebContents, this method is a no-op.
-  static void CreateForWebContents(content::WebContents* web_contents);
-
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -342,17 +337,6 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
   const ukm::SourceId source_id = ukm::ConvertToSourceId(
       navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
   ukm_recorder->RecordNavigation(source_id, navigation_data);
-}
-
-// static
-void SourceUrlRecorderWebContentsObserver::CreateForWebContents(
-    content::WebContents* web_contents) {
-  if (!SourceUrlRecorderWebContentsObserver::FromWebContents(web_contents)) {
-    web_contents->SetUserData(
-        SourceUrlRecorderWebContentsObserver::UserDataKey(),
-        base::WrapUnique(
-            new SourceUrlRecorderWebContentsObserver(web_contents)));
-  }
 }
 
 }  // namespace internal

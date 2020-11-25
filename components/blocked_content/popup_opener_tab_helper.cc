@@ -23,19 +23,6 @@
 
 namespace blocked_content {
 
-// static
-void PopupOpenerTabHelper::CreateForWebContents(
-    content::WebContents* contents,
-    const base::TickClock* tick_clock,
-    HostContentSettingsMap* settings_map) {
-  DCHECK(contents);
-  if (!FromWebContents(contents)) {
-    contents->SetUserData(UserDataKey(),
-                          base::WrapUnique(new PopupOpenerTabHelper(
-                              contents, tick_clock, settings_map)));
-  }
-}
-
 PopupOpenerTabHelper::~PopupOpenerTabHelper() {
   DCHECK(visibility_tracker_);
   base::TimeDelta total_visible_time =

@@ -71,22 +71,6 @@ AdPopupTrigger::AdPopupTrigger(
 
 AdPopupTrigger::~AdPopupTrigger() {}
 
-// static
-void AdPopupTrigger::CreateForWebContents(
-    content::WebContents* web_contents,
-    TriggerManager* trigger_manager,
-    PrefService* prefs,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    history::HistoryService* history_service) {
-  DCHECK(web_contents);
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(UserDataKey(),
-                              base::WrapUnique(new AdPopupTrigger(
-                                  web_contents, trigger_manager, prefs,
-                                  url_loader_factory, history_service)));
-  }
-}
-
 void AdPopupTrigger::CreateAdPopupReport() {
   SBErrorOptions error_options =
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents_);

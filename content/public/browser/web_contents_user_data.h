@@ -34,10 +34,14 @@ class WebContentsUserData : public base::SupportsUserData::Data {
  public:
   // Creates an object of type T, and attaches it to the specified WebContents.
   // If an instance is already attached, does nothing.
-  static void CreateForWebContents(WebContents* contents) {
+  template <typename... Args>
+  static void CreateForWebContents(WebContents* contents, Args&&... args) {
     DCHECK(contents);
-    if (!FromWebContents(contents))
-      contents->SetUserData(UserDataKey(), base::WrapUnique(new T(contents)));
+    if (!FromWebContents(contents)) {
+      contents->SetUserData(
+          UserDataKey(),
+          base::WrapUnique(new T(contents, std::forward<Args>(args)...)));
+    }
   }
 
   // Retrieves the instance of type T that was attached to the specified

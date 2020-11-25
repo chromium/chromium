@@ -393,9 +393,6 @@ class PageSpecificContentSettings
       : public content::WebContentsObserver,
         public content::WebContentsUserData<WebContentsHandler> {
    public:
-    static void CreateForWebContents(content::WebContents* web_contents,
-                                     std::unique_ptr<Delegate> delegate);
-
     explicit WebContentsHandler(content::WebContents* web_contents,
                                 std::unique_ptr<Delegate> delegate);
     ~WebContentsHandler() override;

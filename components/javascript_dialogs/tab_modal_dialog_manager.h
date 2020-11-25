@@ -91,10 +91,6 @@ class TabModalDialogManager
     kMaxValue = kDialogClosed,
   };
 
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      std::unique_ptr<TabModalDialogManagerDelegate> delegate);
-
   ~TabModalDialogManager() override;
 
   void BrowserActiveStateChanged();
@@ -132,10 +128,6 @@ class TabModalDialogManager
 
  private:
   friend class content::WebContentsUserData<TabModalDialogManager>;
-
-  // This is here to hide the normal WebContentsUserData factory function in
-  // favor of that which takes a delegate.
-  static void CreateForWebContents(content::WebContents* web_contents);
 
   TabModalDialogManager(
       content::WebContents* web_contents,

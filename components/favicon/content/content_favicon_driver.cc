@@ -20,18 +20,6 @@
 
 namespace favicon {
 
-// static
-void ContentFaviconDriver::CreateForWebContents(
-    content::WebContents* web_contents,
-    CoreFaviconService* favicon_service) {
-  if (FromWebContents(web_contents))
-    return;
-
-  web_contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new ContentFaviconDriver(
-                                web_contents, favicon_service)));
-}
-
 gfx::Image ContentFaviconDriver::GetFavicon() const {
   // Like GetTitle(), we also want to use the favicon for the last committed
   // entry rather than a pending navigation entry.

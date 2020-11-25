@@ -50,13 +50,6 @@ class AdPopupTrigger : public content::WebContentsUserData<AdPopupTrigger> {
  public:
   ~AdPopupTrigger() override;
 
-  static void CreateForWebContents(
-      content::WebContents* web_contents,
-      TriggerManager* trigger_manager,
-      PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service);
-
   void PopupWasBlocked(content::RenderFrameHost* render_frame);
 
  private:
