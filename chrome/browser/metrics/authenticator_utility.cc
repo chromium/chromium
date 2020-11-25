@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -86,7 +87,7 @@ void ReportUVPlatformAuthenticatorAvailability() {
   ReportAvailability(
       win_webauthn_api &&
       content::IsUVPlatformAuthenticatorAvailable(win_webauthn_api));
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   ReportAvailability(content::IsUVPlatformAuthenticatorAvailable());
 #endif
 }

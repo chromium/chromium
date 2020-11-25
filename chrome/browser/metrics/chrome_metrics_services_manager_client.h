@@ -10,9 +10,10 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "build/chromeos_buildflags.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 #endif
 
@@ -61,7 +62,7 @@ class ChromeMetricsServicesManagerClient
   // eligible for sampling.
   static bool GetSamplingRatePerMille(int* rate);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnCrosSettingsCreated();
 #endif
 
@@ -103,7 +104,7 @@ class ChromeMetricsServicesManagerClient
   // Weak pointer to the local state prefs store.
   PrefService* const local_state_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription reporting_setting_subscription_;
 #endif
 

@@ -22,6 +22,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/metrics/thread_watcher_report_hang.h"
 #include "chrome/common/channel_info.h"
@@ -286,7 +287,7 @@ void ThreadWatcher::OnPongMessage(uint64_t ping_sequence_number) {
   base::TimeDelta response_time = now - ping_time_;
   response_time_histogram_->AddTime(response_time);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, we log when the response time is long on the UI thread as part
   // of an effort to debug extreme jank reported by some users. This log message
   // can be used to correlate the period of jank with other system logs.

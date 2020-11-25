@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -32,7 +33,7 @@
 #include "extensions/common/extension_builder.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #endif
@@ -55,20 +56,20 @@ class ChromeMetricsServiceClientTest : public testing::Test {
             &ChromeMetricsServiceClientTest::LoadFakeClientInfoBackup,
             base::Unretained(this)));
     ASSERT_TRUE(profile_manager_.SetUp());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitAndEnableFeature(features::kUmaStorageDimensions);
     // ChromeOs Metrics Provider require g_login_state and power manager client
     // initialized before they can be instantiated.
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void TearDown() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // ChromeMetricsServiceClient::Initialize() initializes
     // IdentifiabilityStudySettings as part of creating the
     // PrivacyBudgetUkmEntryFilter. Reset them after the test.
@@ -135,9 +136,9 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // and ScreenInfoMetricsProvider.
   size_t expected_providers = 5;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   expected_providers++;  // ChromeOSMetricsProvider
-#endif                   // defined(OS_CHROMEOS)
+#endif                   // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
@@ -179,34 +180,36 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers++;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
   // SigninStatusMetricsProviderChromeOS, PrinterMetricsProvider,
   // HashedLoggingMetricsProvider, FamilyUserMetricsProvider, and
   // FamilyLinkUserMetricsProvider.
   expected_providers += 9;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeSigninStatusMetricsProvider (for non ChromeOS).
   // AccessibilityMetricsProvider
   expected_providers += 2;
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   expected_providers++;  // UpgradeMetricsProvider
-#endif                   //! defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif                   //! defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
   expected_providers++;  // PowerMetricsProvider
 #endif                   // defined(OS_MAC)
 
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_providers++;  // DesktopPlatformFeaturesMetricsProvider
-#endif                   //  defined(OS_WIN) || defined(OS_MAC) || \
-                         // (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS))
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());

@@ -13,6 +13,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//components/signin/public/identity_manager",
     "//components/sync/test/fake_server",

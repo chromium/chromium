@@ -535,6 +535,7 @@ if (is_android) {
       ":test_support",
       ":test_support_java",
       ":test_support_ui_android",
+      "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
       "//chrome/browser/metrics:test_support",

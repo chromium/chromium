@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -13,17 +14,17 @@
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC)
 #include "base/enterprise_util.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/tpm/install_attributes.h"
 #endif
 
@@ -32,12 +33,12 @@ namespace {
 // Gets the version number to use for variations seed simulation. Must be called
 // on a thread where IO is allowed.
 base::Version GetVersionForSimulation() {
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   const base::Version installed_version =
       UpgradeDetectorImpl::GetCurrentlyInstalledVersion();
   if (installed_version.IsValid())
     return installed_version;
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // TODO(asvitkine): Get the version that will be used on restart instead of
   // the current version on Android, iOS and ChromeOS.
@@ -68,7 +69,7 @@ ChromeVariationsServiceClient::GetNetworkTimeTracker() {
 
 bool ChromeVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CrosSettings::Get()->GetString(
       chromeos::kVariationsRestrictParameter, parameter);
   return true;
@@ -80,7 +81,7 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
 bool ChromeVariationsServiceClient::IsEnterprise() {
 #if defined(OS_WIN) || defined(OS_MAC)
   return base::IsMachineExternallyManaged();
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
 #else
   return false;
