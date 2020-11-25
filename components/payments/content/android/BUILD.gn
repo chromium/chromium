@@ -153,6 +153,7 @@ android_library("all_java") {
     "//base:base_java",
     "//base:jni_java",
     "//components/autofill/android:autofill_java",
+    "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",

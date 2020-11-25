@@ -13,6 +13,7 @@ import androidx.collection.ArrayMap;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.payments.BrowserPaymentRequest.Factory;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -45,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link PaymentRequestService}, {@link MojoPaymentRequestGateKeeper} and
@@ -974,6 +976,83 @@ public class PaymentRequestService
             return null;
         }
         return mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable(mIsUserGestureShow);
+    }
+
+    /**
+     * @param options The payment options specified in the payment request.
+     * @param allApps All available payment apps.
+     * @return true when there is exactly one available payment app which can provide all requested
+     * information including shipping address and payer's contact information whenever needed.
+     */
+    private static boolean onlySingleAppCanProvideAllRequiredInformation(
+            PaymentOptions options, List<PaymentApp> allApps) {
+        if (!PaymentOptionsUtils.requestAnyInformation(options)) {
+            return allApps.size() == 1 && !((PaymentApp) allApps.get(0)).isAutofillInstrument();
+        }
+
+        boolean anAppCanProvideAllInfo = false;
+        for (int i = 0; i < allApps.size(); i++) {
+            PaymentApp app = (PaymentApp) allApps.get(i);
+            if ((!options.requestShipping || app.handlesShippingAddress())
+                    && (!options.requestPayerName || app.handlesPayerName())
+                    && (!options.requestPayerPhone || app.handlesPayerPhone())
+                    && (!options.requestPayerEmail || app.handlesPayerEmail())) {
+                // There is more than one available app that can provide all merchant requested
+                // information information.
+                if (anAppCanProvideAllInfo) return false;
+
+                anAppCanProvideAllInfo = true;
+            }
+        }
+        return anAppCanProvideAllInfo;
+    }
+
+    /**
+     * @param methods The payment methods supported by the payment request.
+     * @return True when at least one url payment method identifier is specified in payment
+     *         request.
+     */
+    private static boolean isUrlPaymentMethodIdentifiersSupported(Set<String> methods) {
+        for (String methodName : methods) {
+            if (methodName.startsWith(UrlConstants.HTTPS_URL_PREFIX)
+                    || methodName.startsWith(UrlConstants.HTTP_URL_PREFIX)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
+     * @param skipUiForNonUrlPaymentMethodIdentifiers True when skip UI is available for non-url
+     *         based payment method identifiers (e.g., basic-card).
+     * @param options The payment options specified in the payment request.
+     * @param paymentMethods The payment methods supported by this request.
+     * @param selectedApp The selected payment apps.
+     * @param allApps All available payment apps.
+     * @return Whether the browser payment sheet should be skipped directly into the payment app.
+     */
+    public static boolean shouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
+            boolean skipUiForNonUrlPaymentMethodIdentifiers, PaymentOptions options,
+            Set<String> paymentMethods, PaymentApp selectedApp, List<PaymentApp> allApps) {
+        boolean urlPaymentMethodIdentifiersSupported =
+                isUrlPaymentMethodIdentifiersSupported(paymentMethods);
+
+        // If there is only a single payment app which can provide all merchant requested
+        // information, we can safely go directly to the payment app instead of showing Payment
+        // Request UI.
+        return PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP)
+                // Only allowing payment apps that own their own UIs.
+                // This excludes AutofillPaymentInstrument as its UI is rendered inline in
+                // the payment request UI, thus can't be skipped.
+                && (urlPaymentMethodIdentifiersSupported || skipUiForNonUrlPaymentMethodIdentifiers)
+                && allApps.size() >= 1
+                && onlySingleAppCanProvideAllRequiredInformation(options, allApps)
+                // Skip to payment app only if it can be pre-selected.
+                && selectedApp != null
+                // Skip to payment app only if user gesture is provided when it is required to
+                // skip-UI.
+                && (isUserGestureShow || !selectedApp.isUserGestureRequiredToSkipUi());
     }
 
     // Implements PaymentDetailsConverter.MethodChecker:
