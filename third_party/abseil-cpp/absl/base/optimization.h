@@ -179,7 +179,7 @@
 #endif
 
 // ABSL_INTERNAL_ASSUME(cond)
-// Informs the compiler than a condition is always true and that it can assume
+// Informs the compiler that a condition is always true and that it can assume
 // it to be true for optimization purposes. The call has undefined behavior if
 // the condition is false.
 // In !NDEBUG mode, the condition is checked with an assert().

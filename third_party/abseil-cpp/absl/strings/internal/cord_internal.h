@@ -116,10 +116,16 @@ enum CordRepKind {
   CONCAT        = 0,
   EXTERNAL      = 1,
   SUBSTRING     = 2,
+  RING          = 3,
 
   // We have different tags for different sized flat arrays,
-  // starting with FLAT
-  FLAT          = 3,
+  // starting with FLAT, and limited to MAX_FLAT_TAG. The 224 value is based on
+  // the current 'size to tag' encoding of 8 / 32 bytes. If a new tag is needed
+  // in the future, then 'FLAT' and 'MAX_FLAT_TAG' should be adjusted as well
+  // as the Tag <---> Size logic so that FLAT stil represents the minimum flat
+  // allocation size. (32 bytes as of now).
+  FLAT = 4,
+  MAX_FLAT_TAG = 224,
 };
 
 struct CordRep {

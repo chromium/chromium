@@ -41,6 +41,7 @@
 #include "absl/base/internal/endian.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
+#include "absl/hash/internal/wyhash.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/string_view.h"
@@ -712,9 +713,8 @@ template <typename T>
 struct is_hashable
     : std::integral_constant<bool, HashSelect::template Apply<T>::value> {};
 
-// CityHashState
-class ABSL_DLL CityHashState
-    : public HashStateBase<CityHashState> {
+// HashState
+class ABSL_DLL HashState : public HashStateBase<HashState> {
   // absl::uint128 is not an alias or a thin wrapper around the intrinsic.
   // We use the intrinsic when available to improve performance.
 #ifdef ABSL_HAVE_INTRINSIC_INT128
@@ -733,23 +733,22 @@ class ABSL_DLL CityHashState
 
  public:
   // Move only
-  CityHashState(CityHashState&&) = default;
-  CityHashState& operator=(CityHashState&&) = default;
+  HashState(HashState&&) = default;
+  HashState& operator=(HashState&&) = default;
 
-  // CityHashState::combine_contiguous()
+  // HashState::combine_contiguous()
   //
   // Fundamental base case for hash recursion: mixes the given range of bytes
   // into the hash state.
-  static CityHashState combine_contiguous(CityHashState hash_state,
-                                          const unsigned char* first,
-                                          size_t size) {
-    return CityHashState(
+  static HashState combine_contiguous(HashState hash_state,
+                                      const unsigned char* first, size_t size) {
+    return HashState(
         CombineContiguousImpl(hash_state.state_, first, size,
                               std::integral_constant<int, sizeof(size_t)>{}));
   }
-  using CityHashState::HashStateBase::combine_contiguous;
+  using HashState::HashStateBase::combine_contiguous;
 
-  // CityHashState::hash()
+  // HashState::hash()
   //
   // For performance reasons in non-opt mode, we specialize this for
   // integral types.
@@ -761,24 +760,24 @@ class ABSL_DLL CityHashState
     return static_cast<size_t>(Mix(Seed(), static_cast<uint64_t>(value)));
   }
 
-  // Overload of CityHashState::hash()
+  // Overload of HashState::hash()
   template <typename T, absl::enable_if_t<!IntegralFastPath<T>::value, int> = 0>
   static size_t hash(const T& value) {
-    return static_cast<size_t>(combine(CityHashState{}, value).state_);
+    return static_cast<size_t>(combine(HashState{}, value).state_);
   }
 
  private:
   // Invoked only once for a given argument; that plus the fact that this is
   // move-only ensures that there is only one non-moved-from object.
-  CityHashState() : state_(Seed()) {}
+  HashState() : state_(Seed()) {}
 
   // Workaround for MSVC bug.
   // We make the type copyable to fix the calling convention, even though we
   // never actually copy it. Keep it private to not affect the public API of the
   // type.
-  CityHashState(const CityHashState&) = default;
+  HashState(const HashState&) = default;
 
-  explicit CityHashState(uint64_t state) : state_(state) {}
+  explicit HashState(uint64_t state) : state_(state) {}
 
   // Implementation of the base case for combine_contiguous where we actually
   // mix the bytes into the state.
@@ -791,7 +790,8 @@ class ABSL_DLL CityHashState
   static uint64_t CombineContiguousImpl(uint64_t state,
                                         const unsigned char* first, size_t len,
                                         std::integral_constant<int, 8>
-                                        /* sizeof_size_t*/);
+                                        /* sizeof_size_t */);
+
 
   // Slow dispatch path for calls to CombineContiguousImpl with a size argument
   // larger than PiecewiseChunkSize().  Has the same effect as calling
@@ -838,6 +838,19 @@ class ABSL_DLL CityHashState
     return static_cast<uint64_t>(m ^ (m >> (sizeof(m) * 8 / 2)));
   }
 
+  // An extern to avoid bloat on a direct call to Wyhash() with fixed values for
+  // both the seed and salt parameters.
+  static uint64_t WyhashImpl(const unsigned char* data, size_t len);
+
+  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Hash64(const unsigned char* data,
+                                                      size_t len) {
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+    return WyhashImpl(data, len);
+#else
+    return absl::hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
+#endif
+  }
+
   // Seed()
   //
   // A non-deterministic seed.
@@ -869,8 +882,8 @@ class ABSL_DLL CityHashState
   uint64_t state_;
 };
 
-// CityHashState::CombineContiguousImpl()
-inline uint64_t CityHashState::CombineContiguousImpl(
+// HashState::CombineContiguousImpl()
+inline uint64_t HashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 4> /* sizeof_size_t */) {
   // For large values we use CityHash, for small ones we just use a
@@ -892,18 +905,18 @@ inline uint64_t CityHashState::CombineContiguousImpl(
   return Mix(state, v);
 }
 
-// Overload of CityHashState::CombineContiguousImpl()
-inline uint64_t CityHashState::CombineContiguousImpl(
+// Overload of HashState::CombineContiguousImpl()
+inline uint64_t HashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 8> /* sizeof_size_t */) {
-  // For large values we use CityHash, for small ones we just use a
-  // multiplicative hash.
+  // For large values we use Wyhash or CityHash depending on the platform, for
+  // small ones we just use a multiplicative hash.
   uint64_t v;
   if (len > 16) {
     if (ABSL_PREDICT_FALSE(len > PiecewiseChunkSize())) {
       return CombineLargeContiguousImpl64(state, first, len);
     }
-    v = absl::hash_internal::CityHash64(reinterpret_cast<const char*>(first), len);
+    v = Hash64(first, len);
   } else if (len > 8) {
     auto p = Read9To16(first, len);
     state = Mix(state, p.first);
@@ -934,7 +947,7 @@ struct PoisonedHash : private AggregateBarrier {
 
 template <typename T>
 struct HashImpl {
-  size_t operator()(const T& value) const { return CityHashState::hash(value); }
+  size_t operator()(const T& value) const { return HashState::hash(value); }
 };
 
 template <typename T>

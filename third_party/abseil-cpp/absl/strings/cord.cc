@@ -53,6 +53,7 @@ using ::absl::cord_internal::CordRepSubstring;
 using ::absl::cord_internal::CONCAT;
 using ::absl::cord_internal::EXTERNAL;
 using ::absl::cord_internal::FLAT;
+using ::absl::cord_internal::MAX_FLAT_TAG;
 using ::absl::cord_internal::SUBSTRING;
 
 namespace cord_internal {
@@ -95,9 +96,21 @@ static const size_t kFlatOverhead = offsetof(CordRep, data);
 // Flat allocation size is stored in tag, which currently can encode sizes up
 // to 4K, encoded as multiple of either 8 or 32 bytes.
 // If we allow for larger sizes, we need to change this to 8/64, 16/128, etc.
+// kMinFlatSize is bounded by tag needing to be at least FLAT * 8 bytes, and
+// ideally a 'nice' size aligning with allocation and cacheline sizes like 32.
+// kMaxFlatSize is bounded by the size resulting in a computed tag no greater
+// than MAX_FLAT_TAG. MAX_FLAT_TAG provides for additional 'high' tag values.
+static constexpr size_t kMinFlatSize = 32;
 static constexpr size_t kMaxFlatSize = 4096;
 static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
-static constexpr size_t kMinFlatLength = 32 - kFlatOverhead;
+static constexpr size_t kMinFlatLength = kMinFlatSize - kFlatOverhead;
+
+static constexpr size_t AllocatedSizeToTagUnchecked(size_t size) {
+  return (size <= 1024) ? size / 8 : 128 + size / 32 - 1024 / 32;
+}
+
+static_assert(kMinFlatSize / 8 >= FLAT, "");
+static_assert(AllocatedSizeToTagUnchecked(kMaxFlatSize) <= MAX_FLAT_TAG, "");
 
 // Prefer copying blocks of at most this size, otherwise reference count.
 static const size_t kMaxBytesToCopy = 511;
@@ -117,7 +130,7 @@ static size_t RoundUpForTag(size_t size) {
 // undefined if the size exceeds the maximum size that can be encoded in
 // a tag, i.e., if size is larger than TagToAllocatedSize(<max tag>).
 static uint8_t AllocatedSizeToTag(size_t size) {
-  const size_t tag = (size <= 1024) ? size / 8 : 128 + size / 32 - 1024 / 32;
+  const size_t tag = AllocatedSizeToTagUnchecked(size);
   assert(tag <= std::numeric_limits<uint8_t>::max());
   return tag;
 }

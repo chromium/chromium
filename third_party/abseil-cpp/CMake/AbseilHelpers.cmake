@@ -260,6 +260,8 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
     if(ABSL_ENABLE_INSTALL)
       set_target_properties(${_NAME} PROPERTIES
         OUTPUT_NAME "absl_${_NAME}"
+        # TODO(b/173696973): Figure out how to set SOVERSION for LTS releases.
+        SOVERSION 0
       )
     endif()
   else()

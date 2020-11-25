@@ -23,7 +23,7 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
-// RANDen = RANDom generator or beetroots in Swiss German.
+// RANDen = RANDom generator or beetroots in Swiss High German.
 // RandenSlow implements the basic state manipulation methods for
 // architectures lacking AES hardware acceleration intrinsics.
 class RandenSlow {

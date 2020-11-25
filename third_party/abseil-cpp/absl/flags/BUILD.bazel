@@ -416,6 +416,7 @@ cc_test(
         ":flag",
         ":parse",
         ":reflection",
+        ":usage_internal",
         "//absl/base:raw_logging_internal",
         "//absl/base:scoped_set_env",
         "//absl/strings",

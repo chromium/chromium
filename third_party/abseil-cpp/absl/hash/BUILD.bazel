@@ -37,6 +37,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":city",
+        ":wyhash",
         "//absl/base:core_headers",
         "//absl/base:endian",
         "//absl/container:fixed_array",
@@ -117,6 +118,33 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":city",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "wyhash",
+    srcs = ["internal/wyhash.cc"],
+    hdrs = ["internal/wyhash.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        "//absl/base:config",
+        "//absl/base:endian",
+        "//absl/numeric:int128",
+    ],
+)
+
+cc_test(
+    name = "wyhash_test",
+    srcs = ["internal/wyhash_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":wyhash",
+        "//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],
 )

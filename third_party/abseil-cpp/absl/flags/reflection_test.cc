@@ -32,8 +32,6 @@ ABSL_FLAG(int, int_flag, 1, "int_flag help");
 ABSL_FLAG(std::string, string_flag, "dflt", "string_flag help");
 ABSL_RETIRED_FLAG(bool, bool_retired_flag, false, "bool_retired_flag help");
 
-ABSL_DECLARE_FLAG(bool, help);
-
 namespace {
 
 namespace flags = absl::flags_internal;
@@ -66,12 +64,9 @@ TEST_F(ReflectionTest, TestFindCommandLineFlag) {
 // --------------------------------------------------------------------
 
 TEST_F(ReflectionTest, TestGetAllFlags) {
-  (void)absl::GetFlag(FLAGS_help);  // Force linking of usage flags.
-
   auto all_flags = absl::GetAllFlags();
   EXPECT_NE(all_flags.find("int_flag"), all_flags.end());
   EXPECT_EQ(all_flags.find("bool_retired_flag"), all_flags.end());
-  EXPECT_NE(all_flags.find("help"), all_flags.end());
   EXPECT_EQ(all_flags.find("some_undefined_flag"), all_flags.end());
 
   std::vector<absl::string_view> flag_names_first_attempt;

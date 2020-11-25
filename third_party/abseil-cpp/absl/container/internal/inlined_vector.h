@@ -462,6 +462,9 @@ class Storage {
     Inlined inlined;
   };
 
+  template <typename... Args>
+  ABSL_ATTRIBUTE_NOINLINE reference EmplaceBackSlow(Args&&... args);
+
   Metadata metadata_;
   Data data_;
 };
@@ -542,48 +545,42 @@ template <typename T, size_t N, typename A>
 template <typename ValueAdapter>
 auto Storage<T, N, A>::Resize(ValueAdapter values, size_type new_size) -> void {
   StorageView storage_view = MakeStorageView();
-
-  IteratorValueAdapter<MoveIterator> move_values(
-      MoveIterator(storage_view.data));
-
-  AllocationTransaction allocation_tx(GetAllocPtr());
-  ConstructionTransaction construction_tx(GetAllocPtr());
-
-  absl::Span<value_type> construct_loop;
-  absl::Span<value_type> move_construct_loop;
-  absl::Span<value_type> destroy_loop;
-
-  if (new_size > storage_view.capacity) {
+  auto* const base = storage_view.data;
+  const size_type size = storage_view.size;
+  auto* alloc = GetAllocPtr();
+  if (new_size <= size) {
+    // Destroy extra old elements.
+    inlined_vector_internal::DestroyElements(alloc, base + new_size,
+                                             size - new_size);
+  } else if (new_size <= storage_view.capacity) {
+    // Construct new elements in place.
+    inlined_vector_internal::ConstructElements(alloc, base + size, &values,
+                                               new_size - size);
+  } else {
+    // Steps:
+    //  a. Allocate new backing store.
+    //  b. Construct new elements in new backing store.
+    //  c. Move existing elements from old backing store to now.
+    //  d. Destroy all elements in old backing store.
+    // Use transactional wrappers for the first two steps so we can roll
+    // back if necessary due to exceptions.
+    AllocationTransaction allocation_tx(alloc);
     size_type new_capacity = ComputeCapacity(storage_view.capacity, new_size);
     pointer new_data = allocation_tx.Allocate(new_capacity);
-    construct_loop = {new_data + storage_view.size,
-                      new_size - storage_view.size};
-    move_construct_loop = {new_data, storage_view.size};
-    destroy_loop = {storage_view.data, storage_view.size};
-  } else if (new_size > storage_view.size) {
-    construct_loop = {storage_view.data + storage_view.size,
-                      new_size - storage_view.size};
-  } else {
-    destroy_loop = {storage_view.data + new_size, storage_view.size - new_size};
-  }
 
-  construction_tx.Construct(construct_loop.data(), &values,
-                            construct_loop.size());
+    ConstructionTransaction construction_tx(alloc);
+    construction_tx.Construct(new_data + size, &values, new_size - size);
 
-  inlined_vector_internal::ConstructElements(
-      GetAllocPtr(), move_construct_loop.data(), &move_values,
-      move_construct_loop.size());
+    IteratorValueAdapter<MoveIterator> move_values((MoveIterator(base)));
+    inlined_vector_internal::ConstructElements(alloc, new_data, &move_values,
+                                               size);
 
-  inlined_vector_internal::DestroyElements(GetAllocPtr(), destroy_loop.data(),
-                                           destroy_loop.size());
-
-  construction_tx.Commit();
-  if (allocation_tx.DidAllocate()) {
+    inlined_vector_internal::DestroyElements(alloc, base, size);
+    construction_tx.Commit();
     DeallocateIfAllocated();
     AcquireAllocatedData(&allocation_tx);
     SetIsAllocated();
   }
-
   SetSize(new_size);
 }
 
@@ -684,44 +681,50 @@ template <typename T, size_t N, typename A>
 template <typename... Args>
 auto Storage<T, N, A>::EmplaceBack(Args&&... args) -> reference {
   StorageView storage_view = MakeStorageView();
+  const auto n = storage_view.size;
+  if (ABSL_PREDICT_TRUE(n != storage_view.capacity)) {
+    // Fast path; new element fits.
+    pointer last_ptr = storage_view.data + n;
+    AllocatorTraits::construct(*GetAllocPtr(), last_ptr,
+                               std::forward<Args>(args)...);
+    AddSize(1);
+    return *last_ptr;
+  }
+  // TODO(b/173712035): Annotate with musttail attribute to prevent regression.
+  return EmplaceBackSlow(std::forward<Args>(args)...);
+}
 
+template <typename T, size_t N, typename A>
+template <typename... Args>
+auto Storage<T, N, A>::EmplaceBackSlow(Args&&... args) -> reference {
+  StorageView storage_view = MakeStorageView();
   AllocationTransaction allocation_tx(GetAllocPtr());
-
   IteratorValueAdapter<MoveIterator> move_values(
       MoveIterator(storage_view.data));
-
-  pointer construct_data;
-  if (storage_view.size == storage_view.capacity) {
-    size_type new_capacity = NextCapacity(storage_view.capacity);
-    construct_data = allocation_tx.Allocate(new_capacity);
-  } else {
-    construct_data = storage_view.data;
-  }
-
+  size_type new_capacity = NextCapacity(storage_view.capacity);
+  pointer construct_data = allocation_tx.Allocate(new_capacity);
   pointer last_ptr = construct_data + storage_view.size;
 
+  // Construct new element.
   AllocatorTraits::construct(*GetAllocPtr(), last_ptr,
                              std::forward<Args>(args)...);
-
-  if (allocation_tx.DidAllocate()) {
-    ABSL_INTERNAL_TRY {
-      inlined_vector_internal::ConstructElements(
-          GetAllocPtr(), allocation_tx.GetData(), &move_values,
-          storage_view.size);
-    }
-    ABSL_INTERNAL_CATCH_ANY {
-      AllocatorTraits::destroy(*GetAllocPtr(), last_ptr);
-      ABSL_INTERNAL_RETHROW;
-    }
-
-    inlined_vector_internal::DestroyElements(GetAllocPtr(), storage_view.data,
-                                             storage_view.size);
-
-    DeallocateIfAllocated();
-    AcquireAllocatedData(&allocation_tx);
-    SetIsAllocated();
+  // Move elements from old backing store to new backing store.
+  ABSL_INTERNAL_TRY {
+    inlined_vector_internal::ConstructElements(
+        GetAllocPtr(), allocation_tx.GetData(), &move_values,
+        storage_view.size);
   }
+  ABSL_INTERNAL_CATCH_ANY {
+    AllocatorTraits::destroy(*GetAllocPtr(), last_ptr);
+    ABSL_INTERNAL_RETHROW;
+  }
+  // Destroy elements in old backing store.
+  inlined_vector_internal::DestroyElements(GetAllocPtr(), storage_view.data,
+                                           storage_view.size);
 
+  DeallocateIfAllocated();
+  AcquireAllocatedData(&allocation_tx);
+  SetIsAllocated();
   AddSize(1);
   return *last_ptr;
 }

@@ -28,6 +28,7 @@
 #include "absl/flags/declare.h"
 #include "absl/flags/flag.h"
 #include "absl/flags/internal/parse.h"
+#include "absl/flags/internal/usage.h"
 #include "absl/flags/reflection.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
@@ -207,6 +208,9 @@ namespace flags = absl::flags_internal;
 using testing::ElementsAreArray;
 
 class ParseTest : public testing::Test {
+ public:
+  ~ParseTest() override { flags::SetFlagsHelpMode(flags::HelpMode::kNone); }
+
  private:
   absl::FlagSaver flag_saver_;
 };
@@ -851,7 +855,7 @@ TEST_F(ParseTest, TestIgnoreUndefinedFlags) {
 
 // --------------------------------------------------------------------
 
-TEST_F(ParseDeathTest, TestHelpFlagHandling) {
+TEST_F(ParseDeathTest, TestSimpleHelpFlagHandling) {
   const char* in_args1[] = {
       "testbin",
       "--help",
@@ -870,7 +874,34 @@ TEST_F(ParseDeathTest, TestHelpFlagHandling) {
       flags::UsageFlagsAction::kIgnoreUsage,
       flags::OnUndefinedFlag::kAbortIfUndefined);
 
+  EXPECT_EQ(flags::GetFlagsHelpMode(), flags::HelpMode::kImportant);
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 3);
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(ParseDeathTest, TestSubstringHelpFlagHandling) {
+  const char* in_args1[] = {
+      "testbin",
+      "--help=abcd",
+  };
+
+  auto out_args1 = flags::ParseCommandLineImpl(
+      2, const_cast<char**>(in_args1), flags::ArgvListAction::kRemoveParsedArgs,
+      flags::UsageFlagsAction::kIgnoreUsage,
+      flags::OnUndefinedFlag::kAbortIfUndefined);
+
+  EXPECT_EQ(flags::GetFlagsHelpMode(), flags::HelpMode::kMatch);
+  EXPECT_EQ(flags::GetFlagsHelpMatchSubstr(), "abcd");
+
+  const char* in_args2[] = {"testbin", "--help", "some_positional_arg"};
+
+  auto out_args2 = flags::ParseCommandLineImpl(
+      3, const_cast<char**>(in_args2), flags::ArgvListAction::kRemoveParsedArgs,
+      flags::UsageFlagsAction::kIgnoreUsage,
+      flags::OnUndefinedFlag::kAbortIfUndefined);
+
+  EXPECT_EQ(flags::GetFlagsHelpMode(), flags::HelpMode::kImportant);
 }
 
 // --------------------------------------------------------------------

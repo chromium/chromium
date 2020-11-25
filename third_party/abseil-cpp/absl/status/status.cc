@@ -209,11 +209,8 @@ void Status::UnrefNonInlined(uintptr_t rep) {
 
 uintptr_t Status::NewRep(absl::StatusCode code, absl::string_view msg,
                          std::unique_ptr<status_internal::Payloads> payloads) {
-  status_internal::StatusRep* rep = new status_internal::StatusRep;
-  rep->ref.store(1, std::memory_order_relaxed);
-  rep->code = code;
-  rep->message.assign(msg.data(), msg.size());
-  rep->payloads = std::move(payloads);
+  status_internal::StatusRep* rep = new status_internal::StatusRep(
+      code, std::string(msg.data(), msg.size()), std::move(payloads));
   return PointerToRep(rep);
 }
 

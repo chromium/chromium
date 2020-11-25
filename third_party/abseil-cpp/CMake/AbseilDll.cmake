@@ -122,6 +122,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "hash/internal/hash.h"
   "hash/internal/hash.cc"
   "hash/internal/spy_hash_state.h"
+  "hash/internal/wyhash.h"
+  "hash/internal/wyhash.cc"
   "memory/memory.h"
   "meta/type_traits.h"
   "numeric/int128.cc"
