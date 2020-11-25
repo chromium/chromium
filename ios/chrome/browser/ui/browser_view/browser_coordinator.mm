@@ -48,9 +48,7 @@
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
-#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
-#import "ios/chrome/browser/ui/page_info/page_info_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
@@ -678,19 +676,7 @@
 
 #pragma mark - PageInfoCommands
 
-- (void)legacyShowPageInfoForOriginPoint:(CGPoint)originPoint {
-  PageInfoLegacyCoordinator* pageInfoCoordinator =
-      [[PageInfoLegacyCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-  pageInfoCoordinator.presentationProvider = self.viewController;
-  pageInfoCoordinator.originPoint = originPoint;
-  self.pageInfoCoordinator = pageInfoCoordinator;
-  [self.pageInfoCoordinator start];
-}
-
 - (void)showPageInfo {
-  DCHECK(base::FeatureList::IsEnabled(kPageInfoRefactoring));
   PageInfoCoordinator* pageInfoCoordinator = [[PageInfoCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];

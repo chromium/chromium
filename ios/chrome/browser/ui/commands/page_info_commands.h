@@ -11,11 +11,6 @@
 // Commands related to the Page Info UI.
 @protocol PageInfoCommands
 
-// TODO(crbug.com/1038923): Remove this command.
-// Shows the page security info. |originPoint| is the midpoint of the UI element
-// which triggered this command and should be in window coordinates.
-- (void)legacyShowPageInfoForOriginPoint:(CGPoint)originPoint;
-
 // Shows the page security info.
 - (void)showPageInfo;
 

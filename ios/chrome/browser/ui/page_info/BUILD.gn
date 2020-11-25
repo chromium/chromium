@@ -5,8 +5,6 @@
 source_set("page_info") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "legacy_page_info_view_controller.h",
-    "legacy_page_info_view_controller.mm",
     "page_info_site_security_description.h",
     "page_info_site_security_description.mm",
     "page_info_view_controller.h",
@@ -29,7 +27,6 @@ source_set("page_info") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fancy_ui",
-    "//ios/chrome/browser/ui/page_info:features",
     "//ios/chrome/browser/ui/page_info/requirements",
     "//ios/chrome/browser/ui/popup_menu",
     "//ios/chrome/browser/ui/settings/cells",
@@ -58,27 +55,15 @@ source_set("constants") {
   ]
 }
 
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("coordinator") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_info_coordinator.h",
     "page_info_coordinator.mm",
-    "page_info_legacy_coordinator.h",
-    "page_info_legacy_coordinator.mm",
     "page_info_site_security_mediator.h",
     "page_info_site_security_mediator.mm",
   ]
   deps = [
-    ":features",
     ":page_info",
     "resources:page_info_bad",
     "resources:page_info_good",
@@ -112,27 +97,4 @@ source_set("coordinator") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
-  testonly = true
-  sources = [ "legacy_page_info_egtest.mm" ]
-  deps = [
-    ":constants",
-    "//ios/chrome/browser/ui/page_info:features",
-    "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
-    "//ui/base",
-  ]
-  frameworks = [
-    "UIKit.framework",
-    "XCTest.framework",
-  ]
 }

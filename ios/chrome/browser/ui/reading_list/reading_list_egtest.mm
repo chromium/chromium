@@ -15,7 +15,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
@@ -434,7 +433,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kPageInfoRefactoring);
 
   // Error page Workflow Feature is enabled by test name. This is done because
   // it is inefficient to use ensureAppLaunchedWithConfiguration for each test.

@@ -187,7 +187,6 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/ui/page_info:features",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/browser/ui/util",

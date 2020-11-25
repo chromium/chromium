@@ -353,10 +353,6 @@ const char kOmniboxOnFocusSuggestionsDescription[] =
     "before the user has typed any input. This provides overrides for the "
     "default suggestion locations.";
 
-const char kPageInfoRefactoringName[] = "New design of the page info";
-const char kPageInfoRefactoringDescription[] =
-    "Uses the new design for the page security info.";
-
 #if defined(__IPHONE_13_4)
 const char kPointerSupportName[] = "Enables pointer support on tablets";
 const char kPointerSupportDescription[] =

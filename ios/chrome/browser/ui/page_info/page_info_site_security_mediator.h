@@ -8,11 +8,10 @@
 #import <Foundation/Foundation.h>
 
 namespace web {
-struct SSLStatus;
+class WebState;
 }
 
 @class PageInfoSiteSecurityDescription;
-class GURL;
 
 // Mediator for the page info site security, extracting the data to be displayed
 // for the view controller.
@@ -21,12 +20,9 @@ class GURL;
 // For now this object only have static method.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns a configuration based on the |URL|, the SSL |status| and if the
-// current page is an |offlinePage|.
-// TODO(crbug.com/1038923): This method should take a WebState.
-+ (PageInfoSiteSecurityDescription*)configurationForURL:(const GURL&)URL
-                                              SSLStatus:(web::SSLStatus&)status
-                                            offlinePage:(BOOL)offlinePage;
+// Returns a configuration based on the given WebState.
++ (PageInfoSiteSecurityDescription*)configurationForWebState:
+    (web::WebState*)webState;
 
 @end
 

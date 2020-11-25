@@ -316,10 +316,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
 
-// Title and description for the flag to enable the new design of the page info.
-extern const char kPageInfoRefactoringName[];
-extern const char kPageInfoRefactoringDescription[];
-
 #if defined(__IPHONE_13_4)
 // Title and description for the flag to enable pointer support on tablets.
 extern const char kPointerSupportName[];

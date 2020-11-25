@@ -68,7 +68,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
-#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
@@ -455,9 +454,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardInfobarEditSupport)},
-    {"page-info-refactoring", flag_descriptions::kPageInfoRefactoringName,
-     flag_descriptions::kPageInfoRefactoringDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPageInfoRefactoring)},
     {"fullscreen-controller-browser-scoped",
      flag_descriptions::kFullscreenControllerBrowserScopedName,
      flag_descriptions::kFullscreenControllerBrowserScopedDescription,
