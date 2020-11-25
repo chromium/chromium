@@ -9379,6 +9379,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Medium.FinalPayloadStatus.{UpgradedMedium}"
+    enum="NearbyShareFinalPayloadStatus" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether a transfer succeeded, failed, or was cancelled when
+    transmitted over {UpgradedMedium}. Emitted when the payload transfer
+    finishes, independent of whether the transfer was successful.
+  </summary>
+  <token key="UpgradedMedium">
+    <variant name="NoMediumUpgrade" summary="the initial bandwidth medium"/>
+    <variant name="UnknownMediumUpgrade"
+        summary="an unknown bandwidth-upgraded medium"/>
+    <variant name="WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Medium.InitiateBandwidthUpgradeResult"
     enum="BooleanSuccess" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
@@ -9390,6 +9407,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     this metric does not capture automatic bandwidth upgrades initiated
     internally by the Nearby Connections library. Emitted when the Nearby
     Connections client explicitly requests a bandwidth upgrade.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Medium.RequestedBandwidthUpgradeResult"
+    enum="BooleanUpgraded" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records if the transfer medium was successfully upgraded after an explicit
+    bandwidth upgrade request from the client. Emitted when the transfer channel
+    is disconnected after a bandwidth upgrade request was made by the client.
   </summary>
 </histogram>
 
@@ -9488,14 +9516,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Nearby.Share.Transfer.Rate{Direction}{ShareTargetType}{PayloadStatus}"
+    name="Nearby.Share.Transfer.Rate{Direction}{ShareTargetType}{UpgradedMedium}{PayloadStatus}"
     units="KB/s" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Records the transfer rate of a Nearby Share {Direction} transfer that
-    {PayloadStatus} when sharing with {ShareTargetType}. Emitted when the
-    transfer concludes.
+    {PayloadStatus} when sharing with {ShareTargetType} over {UpgradedMedium}.
+    Emitted when the transfer concludes.
   </summary>
   <token key="Direction">
     <variant name="" summary="outgoing (send) or incoming (receive)"/>
@@ -9508,6 +9536,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name=".Phone" summary="a phone"/>
     <variant name=".Tablet" summary="a tablet"/>
     <variant name=".Unknown" summary="an unknown device type"/>
+  </token>
+  <token key="UpgradedMedium">
+    <variant name="" summary="any possible bandwidth medium"/>
+    <variant name=".NoMediumUpgrade" summary="the initial bandwidth medium"/>
+    <variant name=".UnknownMediumUpgrade"
+        summary="an unknown bandwidth-upgraded medium"/>
+    <variant name=".WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
   </token>
   <token key="PayloadStatus">
     <variant name="" summary="succeeded, failed, or was cancelled"/>
@@ -9518,14 +9553,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Nearby.Share.Transfer.TotalSize{Direction}{ShareTargetType}{PayloadStatus}"
+    name="Nearby.Share.Transfer.TotalSize{Direction}{ShareTargetType}{UpgradedMedium}{PayloadStatus}"
     units="KB" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Records the total payload size of a Nearby Share {Direction} transfer that
-    {PayloadStatus} when sharing with {ShareTargetType}. Emitted when the
-    transfer concludes.
+    {PayloadStatus} when sharing with {ShareTargetType} over {UpgradedMedium}.
+    Emitted when the transfer concludes.
   </summary>
   <token key="Direction">
     <variant name="" summary="outgoing (send) or incoming (receive)"/>
@@ -9538,6 +9573,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name=".Phone" summary="a phone"/>
     <variant name=".Tablet" summary="a tablet"/>
     <variant name=".Unknown" summary="an unknown device type"/>
+  </token>
+  <token key="UpgradedMedium">
+    <variant name="" summary="any possible bandwidth medium"/>
+    <variant name=".NoMediumUpgrade" summary="the initial bandwidth medium"/>
+    <variant name=".UnknownMediumUpgrade"
+        summary="an unknown bandwidth-upgraded medium"/>
+    <variant name=".WebRtcUpgrade" summary="an upgraded WebRTC medium"/>
   </token>
   <token key="PayloadStatus">
     <variant name="" summary="succeeded, failed, or was cancelled"/>

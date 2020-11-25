@@ -8646,6 +8646,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Received update"/>
 </enum>
 
+<enum name="BooleanUpgraded">
+  <int value="0" label="Not upgraded"/>
+  <int value="1" label="Upgraded"/>
+</enum>
+
 <enum name="BooleanUpload">
   <int value="0" label="Download"/>
   <int value="1" label="Upload"/>
@@ -50456,6 +50461,12 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Disabled and onboarded"/>
   <int value="3" label="Disabled and not onboarded"/>
   <int value="4" label="Disallowed by policy"/>
+</enum>
+
+<enum name="NearbyShareFinalPayloadStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Canceled"/>
 </enum>
 
 <enum name="NearbyShareHttpResult">

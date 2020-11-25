@@ -324,7 +324,8 @@ void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
     it->second->OnStatusUpdate(
         PayloadTransferUpdate::New(payload_id, PayloadStatus::kCanceled,
                                    /*total_bytes=*/0,
-                                   /*bytes_transferred=*/0));
+                                   /*bytes_transferred=*/0),
+        /*upgraded_medium=*/base::nullopt);
     payload_status_listeners_.erase(it);
   }
   nearby_connections_->CancelPayload(
@@ -374,6 +375,7 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
   if (!base::FeatureList::IsEnabled(features::kNearbySharingWebRtc))
     return;
 
+  requested_bwu_endpoint_ids_.emplace(endpoint_id);
   nearby_connections_->InitiateBandwidthUpgrade(
       kServiceId, endpoint_id,
       base::BindOnce(
@@ -536,14 +538,24 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
 
   connections_.erase(endpoint_id);
 
+  if (base::Contains(requested_bwu_endpoint_ids_, endpoint_id)) {
+    base::UmaHistogramBoolean(
+        "Nearby.Share.Medium.RequestedBandwidthUpgradeResult",
+        base::Contains(current_upgraded_mediums_, endpoint_id));
+  }
+  requested_bwu_endpoint_ids_.erase(endpoint_id);
+  current_upgraded_mediums_.erase(endpoint_id);
+
   // TODO(crbug/1111458): Support TransferManager.
 }
 
 void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     const std::string& endpoint_id,
     Medium medium) {
-  NS_LOG(VERBOSE) << __func__ << ": Changed to medium " << medium;
+  NS_LOG(VERBOSE) << __func__ << ": Changed to medium=" << medium
+                  << "; endpoint_id=" << endpoint_id;
   base::UmaHistogramEnumeration("Nearby.Share.Medium.ChangedToMedium", medium);
+  current_upgraded_mediums_.insert_or_assign(endpoint_id, medium);
   // TODO(crbug/1111458): Support TransferManager.
 }
 
@@ -571,7 +583,7 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
         payload_status_listeners_.erase(listener_it);
         break;
     }
-    listener->OnStatusUpdate(std::move(update));
+    listener->OnStatusUpdate(std::move(update), GetUpgradedMedium(endpoint_id));
     return;
   }
 
@@ -629,9 +641,21 @@ void NearbyConnectionsManagerImpl::Reset() {
   incoming_connection_listener_ = nullptr;
   endpoint_discovery_listener_.reset();
   connect_timeout_timers_.clear();
+  requested_bwu_endpoint_ids_.clear();
+  current_upgraded_mediums_.clear();
 
   for (auto& entry : pending_outgoing_connections_)
     std::move(entry.second).Run(/*connection=*/nullptr);
 
   pending_outgoing_connections_.clear();
+}
+
+base::Optional<location::nearby::connections::mojom::Medium>
+NearbyConnectionsManagerImpl::GetUpgradedMedium(
+    const std::string& endpoint_id) const {
+  const auto it = current_upgraded_mediums_.find(endpoint_id);
+  if (it == current_upgraded_mediums_.end())
+    return base::nullopt;
+
+  return it->second;
 }

@@ -27,7 +27,8 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   ~PayloadTracker() override;
 
   // NearbyConnectionsManager::PayloadStatusListener:
-  void OnStatusUpdate(PayloadTransferUpdatePtr update) override;
+  void OnStatusUpdate(PayloadTransferUpdatePtr update,
+                      base::Optional<Medium> upgraded_medium) override;
 
  private:
   struct State {
@@ -68,6 +69,7 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   size_t num_file_attachments_ = 0;
   uint64_t num_first_update_bytes_ = 0;
   base::Optional<base::TimeTicks> first_update_timestamp_;
+  base::Optional<Medium> last_upgraded_medium_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_
