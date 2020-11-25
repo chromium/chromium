@@ -98,7 +98,10 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DispatchDidCommitLoad(
       HistoryItem*,
       WebHistoryCommitType,
-      bool should_reset_browser_interface_broker) override;
+      bool should_reset_browser_interface_broker,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const blink::ParsedFeaturePolicy& feature_policy_header,
+      const blink::DocumentPolicyFeatureState& document_policy_header) override;
   void DispatchDidFailLoad(const ResourceError&, WebHistoryCommitType) override;
   void DispatchDidFinishDocumentLoad() override;
   void DispatchDidFinishLoad() override;
@@ -190,10 +193,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   bool AllowContentInitiatedDataUrlNavigations(const KURL&) override;
 
   void DidChangeName(const String&) override;
-  void DidSetFramePolicyHeaders(
-      network::mojom::blink::WebSandboxFlags,
-      const ParsedFeaturePolicy& fp_header,
-      const blink::DocumentPolicyFeatureState& dp_header) override;
 
   std::unique_ptr<WebServiceWorkerProvider> CreateServiceWorkerProvider()
       override;

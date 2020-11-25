@@ -201,13 +201,15 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                                      blink::mojom::FeaturePolicyFeature feature,
                                      const std::vector<std::string>& origins) {
     content::RenderFrameHost* current = *rfh;
-    SimulateNavigation(&current, current->GetLastCommittedURL());
+    auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+        current->GetLastCommittedURL(), current);
     std::vector<url::Origin> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.push_back(url::Origin::Create(GURL(origin)));
-    content::RenderFrameHostTester::For(current)->SimulateFeaturePolicyHeader(
-        feature, parsed_origins);
-    *rfh = current;
+    navigation->SetFeaturePolicyHeader(
+        {{feature, parsed_origins, false, false}});
+    navigation->Commit();
+    *rfh = navigation->GetFinalRenderFrameHost();
   }
 
   content::RenderFrameHost* AddChildRFH(

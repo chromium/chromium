@@ -4224,7 +4224,12 @@ class ClearScrollStateOnCommitWebFrameClient
   ~ClearScrollStateOnCommitWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(WebHistoryCommitType, bool) override {
+  void DidCommitNavigation(
+      WebHistoryCommitType commit_type,
+      bool should_reset_browser_interface_broker,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const ParsedFeaturePolicy& feature_policy_header,
+      const DocumentPolicyFeatureState& document_policy_header) override {
     Frame()->View()->ResetScrollAndScaleState();
   }
 };
@@ -6388,15 +6393,23 @@ TEST_F(CompositedSelectionBoundsTest, InputScrolled) {
 class TestWillInsertBodyWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  TestWillInsertBodyWebFrameClient() : did_load_(false) {}
-  ~TestWillInsertBodyWebFrameClient() override = default;
+  TestWillInsertBodyWebFrameClient() = default;
+  ~TestWillInsertBodyWebFrameClient() final = default;
+
+  bool did_load() const { return did_load_; }
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(WebHistoryCommitType, bool) override {
+  void DidCommitNavigation(
+      WebHistoryCommitType commit_type,
+      bool should_reset_browser_interface_broker,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const ParsedFeaturePolicy& feature_policy_header,
+      const DocumentPolicyFeatureState& document_policy_header) final {
     did_load_ = true;
   }
 
-  bool did_load_;
+ private:
+  bool did_load_ = false;
 };
 
 TEST_F(WebFrameTest, HTMLDocument) {
@@ -6407,7 +6420,7 @@ TEST_F(WebFrameTest, HTMLDocument) {
   web_view_helper.InitializeAndLoad(base_url_ + "clipped-body.html",
                                     &web_frame_client);
 
-  EXPECT_TRUE(web_frame_client.did_load_);
+  EXPECT_TRUE(web_frame_client.did_load());
 }
 
 TEST_F(WebFrameTest, EmptyDocument) {
@@ -6417,7 +6430,7 @@ TEST_F(WebFrameTest, EmptyDocument) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize(&web_frame_client);
 
-  EXPECT_FALSE(web_frame_client.did_load_);
+  EXPECT_FALSE(web_frame_client.did_load());
 }
 
 TEST_F(WebFrameTest, MoveCaretSelectionTowardsWindowPointWithNoSelection) {
@@ -9490,8 +9503,12 @@ class RemoteToLocalSwapWebFrameClient
   ~RemoteToLocalSwapWebFrameClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(WebHistoryCommitType history_commit_type,
-                           bool) override {
+  void DidCommitNavigation(
+      WebHistoryCommitType history_commit_type,
+      bool should_reset_browser_interface_broker,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const ParsedFeaturePolicy& feature_policy_header,
+      const DocumentPolicyFeatureState& document_policy_header) override {
     history_commit_type_ = history_commit_type;
     remote_frame_->Swap(Frame());
   }
@@ -9743,21 +9760,25 @@ TEST_F(WebFrameTest, SwapWithOpenerCycle) {
 
 class CommitTypeWebFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
-  CommitTypeWebFrameClient() : history_commit_type_(kWebHistoryInertCommit) {}
-  ~CommitTypeWebFrameClient() override = default;
-
-  // frame_test_helpers::TestWebFrameClient:
-  void DidCommitNavigation(WebHistoryCommitType history_commit_type,
-                           bool) override {
-    history_commit_type_ = history_commit_type;
-  }
+  CommitTypeWebFrameClient() = default;
+  ~CommitTypeWebFrameClient() final = default;
 
   WebHistoryCommitType HistoryCommitType() const {
     return history_commit_type_;
   }
 
+  // frame_test_helpers::TestWebFrameClient:
+  void DidCommitNavigation(
+      WebHistoryCommitType history_commit_type,
+      bool should_reset_browser_interface_broker,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const ParsedFeaturePolicy& feature_policy_header,
+      const DocumentPolicyFeatureState& document_policy_header) final {
+    history_commit_type_ = history_commit_type;
+  }
+
  private:
-  WebHistoryCommitType history_commit_type_;
+  WebHistoryCommitType history_commit_type_ = kWebHistoryInertCommit;
 };
 
 TEST_F(WebFrameTest, RemoteFrameInitialCommitType) {

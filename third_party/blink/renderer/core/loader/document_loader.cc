@@ -1829,7 +1829,9 @@ void DocumentLoader::CommitNavigation() {
     } else {
       GetLocalFrameClient().DispatchDidCommitLoad(
           history_item_.Get(), LoadTypeToCommitType(load_type_),
-          previous_window != frame_->DomWindow());
+          previous_window != frame_->DomWindow(),
+          frame_->DomWindow()->GetSandboxFlags(),
+          security_init.FeaturePolicyHeader(), document_policy_.feature_state);
     }
     // TODO(dgozman): make DidCreateScriptContext notification call currently
     // triggered by installing new document happen here, after commit.
@@ -1842,13 +1844,6 @@ void DocumentLoader::CommitNavigation() {
     if (Page* page = frame_->GetPage())
       page->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
   }
-
-  // FeaturePolicy is reset in the browser process on commit, so this needs to
-  // be initialized and replicated to the browser process after commit messages
-  // are sent.
-  GetLocalFrameClient().DidSetFramePolicyHeaders(
-      frame_->DomWindow()->GetSandboxFlags(),
-      security_init.FeaturePolicyHeader(), document_policy_.feature_state);
 
   // Load the document if needed.
   StartLoadingResponse();

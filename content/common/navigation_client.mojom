@@ -11,7 +11,12 @@ import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
+import "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom";
+import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
+import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom";
+import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
@@ -123,6 +128,19 @@ struct DidCommitProvisionalLoadParams {
   // Origin of the frame.  This will be replicated to any associated
   // RenderFrameProxies.
   url.mojom.Origin origin;
+
+  // TODO(https://crbug.com/1041376): Remove this, once we trust the value
+  // computed by the browser process.
+  network.mojom.WebSandboxFlags sandbox_flags;
+
+  // The 'Feature-Policy' headers applied to the document.
+  // https://w3c.github.io/webappsec-permissions-policy/#feature-policy-http-header-field
+  array<blink.mojom.ParsedFeaturePolicyDeclaration> feature_policy_header;
+
+  // The 'Document-Policy' headers applied to the document.
+  // https://w3c.github.io/webappsec-permissions-policy/document-policy.html
+  map<blink.mojom.DocumentPolicyFeature, blink.mojom.PolicyValue>
+    document_policy_header;
 
   // The insecure request policy the document for the load is enforcing.
   blink.mojom.InsecureRequestPolicy insecure_request_policy;

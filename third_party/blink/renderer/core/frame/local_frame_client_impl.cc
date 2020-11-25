@@ -535,7 +535,10 @@ void LocalFrameClientImpl::DispatchDidReceiveTitle(const String& title) {
 void LocalFrameClientImpl::DispatchDidCommitLoad(
     HistoryItem* item,
     WebHistoryCommitType commit_type,
-    bool should_reset_browser_interface_broker) {
+    bool should_reset_browser_interface_broker,
+    network::mojom::WebSandboxFlags sandbox_flags,
+    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (!web_frame_->Parent()) {
     web_frame_->ViewImpl()->DidCommitLoad(commit_type == kWebStandardCommit,
                                           false);
@@ -543,8 +546,8 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
 
   if (web_frame_->Client()) {
     web_frame_->Client()->DidCommitNavigation(
-        commit_type, should_reset_browser_interface_broker);
-
+        commit_type, should_reset_browser_interface_broker, sandbox_flags,
+        feature_policy_header, document_policy_header);
     if (web_frame_->GetFrame()->IsLocalRoot()) {
       // This update should be sent as soon as loading the new document begins
       // so that the browser and compositor could reset their states. However,
@@ -979,17 +982,6 @@ void LocalFrameClientImpl::DidChangeName(const String& name) {
   if (!web_frame_->Client())
     return;
   web_frame_->Client()->DidChangeName(name);
-}
-
-void LocalFrameClientImpl::DidSetFramePolicyHeaders(
-    network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const ParsedFeaturePolicy& feature_policy_header,
-    const DocumentPolicyFeatureState& document_policy_header) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidSetFramePolicyHeaders(
-        static_cast<network::mojom::blink::WebSandboxFlags>(sandbox_flags),
-        feature_policy_header, document_policy_header);
-  }
 }
 
 std::unique_ptr<WebServiceWorkerProvider>

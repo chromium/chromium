@@ -75,7 +75,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   RenderFrameHost* GetFinalRenderFrameHost() override;
   void Wait() override;
   bool IsDeferred() override;
-
   void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) override;
   void SetTransition(ui::PageTransition transition) override;
   void SetHasUserGesture(bool has_user_gesture) override;
@@ -87,6 +86,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetWasFetchedViaCache(bool was_fetched_via_cache) override;
   void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) override;
+  void SetFeaturePolicyHeader(
+      blink::ParsedFeaturePolicy feature_policy_header) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
@@ -293,6 +294,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  blink::ParsedFeaturePolicy feature_policy_header_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =

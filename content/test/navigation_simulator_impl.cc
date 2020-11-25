@@ -913,6 +913,13 @@ void NavigationSimulatorImpl::SetIsSignedExchangeInnerResponse(
   is_signed_exchange_inner_response_ = is_signed_exchange_inner_response;
 }
 
+void NavigationSimulatorImpl::SetFeaturePolicyHeader(
+    blink::ParsedFeaturePolicy feature_policy_header) {
+  CHECK_LE(state_, STARTED) << "The Feature-Policy headers cannot be set after "
+                               "the navigation has committed or failed";
+  feature_policy_header_ = std::move(feature_policy_header);
+}
+
 void NavigationSimulatorImpl::SetContentsMimeType(
     const std::string& contents_mime_type) {
   CHECK_LE(state_, STARTED) << "The contents mime type cannot be set after the "
@@ -1327,6 +1334,8 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   }
 
   CHECK(same_document || request_);
+
+  params->feature_policy_header = std::move(feature_policy_header_);
 
   // Simulate Blink assigning a item sequence number and document sequence
   // number to the navigation.

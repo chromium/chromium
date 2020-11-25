@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,13 +81,15 @@ class PermissionContextBaseFeaturePolicyTest
                                      blink::mojom::FeaturePolicyFeature feature,
                                      const std::vector<std::string>& origins) {
     content::RenderFrameHost* current = *rfh;
-    SimulateNavigation(&current, current->GetLastCommittedURL());
+    auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+        current->GetLastCommittedURL(), current);
     std::vector<url::Origin> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.push_back(url::Origin::Create(GURL(origin)));
-    content::RenderFrameHostTester::For(current)->SimulateFeaturePolicyHeader(
-        feature, parsed_origins);
-    *rfh = current;
+    navigation->SetFeaturePolicyHeader(
+        {{feature, parsed_origins, false, false}});
+    navigation->Commit();
+    *rfh = navigation->GetFinalRenderFrameHost();
   }
 
   ContentSetting GetPermissionForFrame(permissions::PermissionContextBase* pcb,

@@ -17,7 +17,6 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
-import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
@@ -29,10 +28,6 @@ import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
-import "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom";
-import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
-import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom";
-import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
@@ -508,19 +503,6 @@ interface FrameHost {
 
   // Sent when the frame changes its window.name.
   DidChangeName(string name, string unique_name);
-
-  // Notifies the browser process that HTTP headers which affect the frame
-  // polices were delivered with the document being loaded into the frame. This
-  // can be any or all of 'Feature-Policy' or 'Content-Security-Policy' (
-  // which can set sandbox flags) or 'Document-Policy'.
-  //
-  // |feature_policy_header| is a list of an origin whitelist for each feature
-  // in the policy.
-  DidSetFramePolicyHeaders(
-      network.mojom.WebSandboxFlags sandbox_flags,
-      array<blink.mojom.ParsedFeaturePolicyDeclaration> feature_policy_header,
-      map<blink.mojom.DocumentPolicyFeature, blink.mojom.PolicyValue>
-        document_policy_header);
 
   // If a cross-process navigation was started for the initial history load in
   // this subframe, this tries to cancel it to allow a client redirect to happen

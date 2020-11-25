@@ -87,9 +87,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                                   ui::PageTransition transition);
   void SimulateBeforeUnloadCompleted(bool proceed) override;
   void SimulateUnloadACK() override;
-  void SimulateFeaturePolicyHeader(
-      blink::mojom::FeaturePolicyFeature feature,
-      const std::vector<url::Origin>& allowlist) override;
   void SimulateUserActivation() override;
   const std::vector<std::string>& GetConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
@@ -161,11 +158,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       bool same_document);
-
-  // Send a message with the sandbox flags and feature policy
-  void SendFramePolicy(network::mojom::WebSandboxFlags sandbox_flags,
-                       const blink::ParsedFeaturePolicy& fp_header,
-                       const blink::DocumentPolicyFeatureState& dp_header);
 
   // Creates a WebBluetooth Service with a dummy InterfaceRequest.
   WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting();

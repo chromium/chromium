@@ -54,11 +54,11 @@ class RenderFrameHostFeaturePolicyTest
                                      blink::mojom::FeaturePolicyFeature feature,
                                      const std::vector<std::string>& origins) {
     RenderFrameHost* current = *rfh;
-    SimulateNavigation(&current, current->GetLastCommittedURL());
-    static_cast<TestRenderFrameHost*>(current)->DidSetFramePolicyHeaders(
-        network::mojom::WebSandboxFlags::kNone,
-        CreateFPHeader(feature, origins), {} /* document_policy_header */);
-    *rfh = current;
+    auto navigation = NavigationSimulator::CreateRendererInitiated(
+        current->GetLastCommittedURL(), current);
+    navigation->SetFeaturePolicyHeader(CreateFPHeader(feature, origins));
+    navigation->Commit();
+    *rfh = navigation->GetFinalRenderFrameHost();
   }
 
   void SetContainerPolicy(RenderFrameHost* parent,

@@ -192,20 +192,6 @@ void TestRenderFrameHost::SimulateUnloadACK() {
   OnUnloadACK();
 }
 
-void TestRenderFrameHost::SimulateFeaturePolicyHeader(
-    blink::mojom::FeaturePolicyFeature feature,
-    const std::vector<url::Origin>& allowlist) {
-  blink::ParsedFeaturePolicy header(1);
-  header[0].feature = feature;
-  header[0].matches_all_origins = false;
-  header[0].matches_opaque_src = false;
-  for (const auto& origin : allowlist) {
-    header[0].allowed_origins.push_back(origin);
-  }
-  DidSetFramePolicyHeaders(network::mojom::WebSandboxFlags::kNone, header,
-                           {} /* dp_header */);
-}
-
 void TestRenderFrameHost::SimulateUserActivation() {
   frame_tree_node()->UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
@@ -473,13 +459,6 @@ TestRenderFrameHost::CreateWebBluetoothServiceForTesting() {
   RenderFrameHostImpl::CreateWebBluetoothService(
       dummy_web_bluetooth_service_remote_.InitWithNewPipeAndPassReceiver());
   return RenderFrameHostImpl::GetWebBluetoothServiceForTesting();
-}
-
-void TestRenderFrameHost::SendFramePolicy(
-    network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& fp_header,
-    const blink::DocumentPolicyFeatureState& dp_header) {
-  DidSetFramePolicyHeaders(sandbox_flags, fp_header, dp_header);
 }
 
 void TestRenderFrameHost::SendCommitNavigation(

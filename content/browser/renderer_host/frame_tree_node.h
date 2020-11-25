@@ -93,19 +93,13 @@ class CONTENT_EXPORT FrameTreeNode {
 
   bool IsMainFrame() const;
 
-  struct ResetForNavigationResult {
-    bool changed_frame_policy = false;
-  };
-
-  // Clears any state in this node which was set by the document itself (CSP
-  // Headers, Feature Policy Headers, and CSP-set sandbox flags), and notifies
-  // proxies as appropriate. Invoked after committing navigation to a new
-  // document (since the new document comes with a fresh set of CSP and
-  // Feature-Policy HTTP headers).
-  // Returns the details of the reset result — whether any important state (e.g.
-  // frame policy headers) was lost during the update.
-  ResetForNavigationResult ResetForNavigation(
-      bool was_served_from_back_forward_cache);
+  // Clears any state in this node which was set by the document itself (CSP &
+  // UserActivationState) and notifies proxies as appropriate. Invoked after
+  // committing navigation to a new document (since the new document comes with
+  // a fresh set of CSP).
+  // TODO(arthursonzogni): Remove this function. The frame/document must not be
+  // left temporarily with lax state.
+  void ResetForNavigation(bool was_served_from_back_forward_cache);
 
   FrameTree* frame_tree() const { return frame_tree_; }
   Navigator& navigator() { return frame_tree()->navigator(); }

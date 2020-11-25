@@ -335,18 +335,8 @@ void Navigator::DidNavigate(
     if (!navigation_request->IsServedFromBackForwardCache())
       render_frame_host->ResetContentSecurityPolicies();
 
-    auto reset_result = frame_tree_node->ResetForNavigation(
+    frame_tree_node->ResetForNavigation(
         navigation_request->IsServedFromBackForwardCache());
-
-    // |old_frame_host| might get immediately deleted after the DidNavigateFrame
-    // call above, so use weak pointer here.
-    if (old_frame_host && old_frame_host->IsInBackForwardCache()) {
-      if (reset_result.changed_frame_policy) {
-        old_frame_host->EvictFromBackForwardCacheWithReason(
-            BackForwardCacheMetrics::NotRestoredReason::
-                kFrameTreeNodeStateReset);
-      }
-    }
   }
 
   // Update the site of the SiteInstance if it doesn't have one yet, unless

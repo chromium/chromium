@@ -2658,6 +2658,27 @@ void RenderFrameHostImpl::DidNavigate(
 
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
+
+  // When the frame hosts a different document, its state must be replicated
+  // via its proxies to the other processes where it appears as remote.
+  //
+  // This includes new documents. It also includes documents restored from the
+  // BackForwardCache. This is because the cached state in
+  // FrameTreeNode::replication_state_ needs to be refreshed with the actual
+  // values.
+  if (!navigation_request->IsSameDocument()) {
+    // Feature policy's inheritance from parent frame's feature policy is
+    // through accessing parent frame's security context(either remote or local)
+    // when initializing child's security context, so the update to proxies is
+    // needed.
+    frame_tree_node()->UpdateFramePolicyHeaders(active_sandbox_flags_,
+                                                feature_policy_header_);
+    // Document policy's inheritance from parent frame's required document
+    // policy is done at |HTMLFrameOwnerElement::UpdateRequiredPolicy|. Parent
+    // frame owns both parent's required document policy and child frame's frame
+    // owner element which contains child's required document policy, so there
+    // is no need to store required document policy in proxies.
+  }
 }
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
@@ -4023,67 +4044,6 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
   if (old_name.empty() && !name.empty())
     frame_tree_node_->render_manager()->CreateProxiesForNewNamedFrame();
   delegate_->DidChangeName(this, name);
-}
-
-void RenderFrameHostImpl::DidSetFramePolicyHeaders(
-    network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedFeaturePolicy& feature_policy_header,
-    const blink::DocumentPolicyFeatureState& document_policy_header) {
-  // TODO(https://crbug.com/1093268): Investigate why this IPC can be received
-  // before the navigation commit. This can be triggered when loading an error
-  // page using the test:
-  // CrossOriginOpenerPolicyBrowserTest.NetworkErrorOnSandboxedPopups.
-  if (lifecycle_state() == LifecycleState::kSpeculative)
-    return;
-
-  // We should not be updating policy headers when the RenderFrameHost is in
-  // BackForwardCache. If this is called when the RenderFrameHost is in
-  // BackForwardCache, evict the document.
-  if (IsInactiveAndDisallowReactivation())
-    return;
-
-  // We shouldn't update policy headers for non-current frames.
-  DCHECK(IsCurrent());
-
-  // Rebuild |feature_policy_| for this frame.
-  ResetFeaturePolicy();
-  feature_policy_->SetHeaderPolicy(feature_policy_header);
-
-  // Rebuild |document_policy_| for this frame.
-  // Note: document_policy_header is the document policy state used to
-  // initialize |document_policy_| in SecurityContext on renderer side. It is
-  // supposed to be compatible with required_document_policy. If not, kill the
-  // renderer.
-  if (blink::DocumentPolicy::IsPolicyCompatible(
-          frame_tree_node()->effective_frame_policy().required_document_policy,
-          document_policy_header)) {
-    document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy(
-        {document_policy_header, {} /* endpoint_map */});
-  } else {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_BAD_DOCUMENT_POLICY_HEADER);
-    return;
-  }
-
-  // Update the feature policy and sandbox flags in the frame tree. This will
-  // send any updates to proxies if necessary.
-  //
-  // Feature policy's inheritance from parent frame's feature policy is through
-  // accessing parent frame's security context(either remote or local) when
-  // initializing child's security context, so the update to proxies is needed.
-  //
-  // Document policy's inheritance from parent frame's required document policy
-  // is done at |HTMLFrameOwnerElement::UpdateRequiredPolicy|. Parent frame owns
-  // both parent required document policy and child frame's frame owner element
-  // which contains child's required document policy, so there is no need to
-  // store required document policy in proxies.
-  frame_tree_node()->UpdateFramePolicyHeaders(sandbox_flags,
-                                              feature_policy_header);
-
-  // Save a copy of the now-active sandbox flags on this RFHI.
-  active_sandbox_flags_ = frame_tree_node()->active_sandbox_flags();
-
-  CheckSandboxFlags();
 }
 
 void RenderFrameHostImpl::EnforceInsecureRequestPolicy(
@@ -8486,6 +8446,18 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     }
   }
 
+  // Note: document_policy_header is the document policy state used to
+  // initialize |document_policy_| in SecurityContext on renderer side. It is
+  // supposed to be compatible with required_document_policy. If not, kill the
+  // renderer.
+  if (!blink::DocumentPolicy::IsPolicyCompatible(
+          frame_tree_node()->effective_frame_policy().required_document_policy,
+          params->document_policy_header)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_BAD_DOCUMENT_POLICY_HEADER);
+    return false;
+  }
+
   return true;
 }
 
@@ -8699,12 +8671,14 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // new ones.
   DCHECK(!navigation_request->IsServedFromBackForwardCache());
 
-  // After setting the last committed origin, reset the feature policy and
-  // sandbox flags in the RenderFrameHost to a blank policy based on the
-  // parent frame or opener frame.
   ResetFeaturePolicy();
-  active_sandbox_flags_ = frame_tree_node()->active_sandbox_flags();
-  document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({});
+  active_sandbox_flags_ = params.sandbox_flags;
+  feature_policy_header_ = params.feature_policy_header;
+  feature_policy_->SetHeaderPolicy(params.feature_policy_header);
+  document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
+      params.document_policy_header,  // document_policy_header
+      {},                             // endpoint_map
+  });
 
   // Since we're changing documents, we should reset the event handler
   // trackers.
@@ -8744,21 +8718,13 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
 
-  // Keep track of the sandbox policy of the document that has just committed.
-  // It will be compared with the value computed from the renderer. The latter
-  // is expected to be received in DidSetFramePolicyHeaders(..).
+  // TODO(https://crbug.com/1041376): The sandbox flags computed from the
+  // browser must match with the ones computed from the renderer process.
+  // Ultimately, the one from the browser process should supersede the
+  // renderer one. The browser will just "push" the correct value.
   if (navigation_request->state() >=
       NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE) {
-    active_sandbox_flags_control_ = navigation_request->SandboxFlagsToCommit();
-  } else {
-    // Navigations that are known by the browser only at DidCommit time will
-    // have their state set to WILL_START_REQUEST and won't have sandbox flags
-    // that are calculated by the browser before commit.
-    // TODO(https://crbug.com/1133115): Remove this once all the cross-document
-    // cases of those navigations have been removed.
-    DCHECK_EQ(navigation_request->state(),
-              NavigationRequest::NavigationState::WILL_START_REQUEST);
-    active_sandbox_flags_control_.reset();
+    DCHECK_EQ(params.sandbox_flags, navigation_request->SandboxFlagsToCommit());
   }
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
@@ -9716,16 +9682,6 @@ void RenderFrameHostImpl::OnCookiesAccessed(
     delegate_->OnCookiesAccessed(this, allowed);
   if (!blocked.cookie_list.empty())
     delegate_->OnCookiesAccessed(this, blocked);
-}
-
-void RenderFrameHostImpl::CheckSandboxFlags() {
-  if (!active_sandbox_flags_control_)
-    return;
-
-  if (active_sandbox_flags_ == *active_sandbox_flags_control_)
-    return;
-
-  DCHECK(false);
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(

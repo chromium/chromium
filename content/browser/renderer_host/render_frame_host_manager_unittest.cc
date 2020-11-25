@@ -3300,33 +3300,6 @@ TEST_P(RenderFrameHostManagerTestWithBackForwardCache,
   EXPECT_FALSE(main_test_rfh()->frame_tree_node()->navigation_request());
 }
 
-// Tests that sandbox flags received after a navigation away has started do not
-// affect the document being navigated to.
-TEST_P(RenderFrameHostManagerTest, ReceivedFramePolicyAfterNavigationStarted) {
-  // The RFH should start out with an fully permissive sandbox policy.
-  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
-            main_test_rfh()->frame_tree_node()->active_sandbox_flags());
-
-  // Navigate, but don't commit the navigation.
-  auto navigation = NavigationSimulator::CreateBrowserInitiated(
-      GURL("http://a.com"), contents());
-  navigation->ReadyToCommit();
-
-  // Now send the frame policy for the initial page.
-  main_test_rfh()->SendFramePolicy(network::mojom::WebSandboxFlags::kAll,
-                                   {} /* feature_policy_header */,
-                                   {} /* document_policy_header */);
-
-  // Check 'SendFramePolicy' updated the active sandbox flags.
-  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
-            main_test_rfh()->frame_tree_node()->active_sandbox_flags());
-
-  // Commit the navigation. The new frame should have a clear frame policy.
-  navigation->Commit();
-  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
-            main_test_rfh()->frame_tree_node()->active_sandbox_flags());
-}
-
 // Check that after a navigation, the final SiteInstance has the correct
 // original URL that was used to determine its site URL.
 TEST_P(RenderFrameHostManagerTest,

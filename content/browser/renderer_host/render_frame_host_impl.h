@@ -2090,10 +2090,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ResourceLoadInfoPtr resource_load_info) override;
   void DidChangeName(const std::string& name,
                      const std::string& unique_name) override;
-  void DidSetFramePolicyHeaders(
-      network::mojom::WebSandboxFlags sandbox_flags,
-      const blink::ParsedFeaturePolicy& feature_policy_header,
-      const blink::DocumentPolicyFeatureState& document_policy_header) override;
   void CancelInitialHistoryLoad() override;
   void UpdateEncoding(const std::string& encoding) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
@@ -2934,9 +2930,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See BindingsPolicy for details.
   int enabled_bindings_ = 0;
 
-  // Tracks the feature policy which has been set on this frame.
-  std::unique_ptr<blink::FeaturePolicy> feature_policy_;
-
   // Tracks the sandbox flags which are in effect on this frame. This includes
   // any flags which have been set by a Content-Security-Policy header, in
   // addition to those which are set by the embedding frame. This is initially a
@@ -2946,15 +2939,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   network::mojom::WebSandboxFlags active_sandbox_flags_ =
       network::mojom::WebSandboxFlags::kNone;
 
-  // Same as |active_sandbox_flags_|, except this is computed:
-  // - outside of the renderer process.
-  // - before loading the document.
-  //
-  // For now, this is simply used to double check this matches the renderer
-  // computation. Later this will be used as the source of truth.
-  //
-  // [OutOfBlinkSandbox](https://crbug.com/1041376)
-  base::Optional<network::mojom::WebSandboxFlags> active_sandbox_flags_control_;
+  // Parsed feature policy header. It is parsed from blink, received during
+  // DidCommitProvisionalLoad. This is constant during the whole lifetime of
+  // this document.
+  blink::ParsedFeaturePolicy feature_policy_header_;
+
+  // Tracks the feature policy which has been set on this frame.
+  std::unique_ptr<blink::FeaturePolicy> feature_policy_;
 
   // Tracks the document policy which has been set on this frame.
   std::unique_ptr<blink::DocumentPolicy> document_policy_;

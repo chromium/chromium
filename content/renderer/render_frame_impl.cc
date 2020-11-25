@@ -4104,18 +4104,6 @@ void RenderFrameImpl::DidChangeName(const blink::WebString& name) {
   GetFrameHost()->DidChangeName(name.Utf8(), unique_name_helper_.value());
 }
 
-void RenderFrameImpl::DidSetFramePolicyHeaders(
-    network::mojom::WebSandboxFlags flags,
-    const blink::ParsedFeaturePolicy& fp_header,
-    const blink::DocumentPolicyFeatureState& dp_header) {
-  // If any of Feature Policy or Sandbox Flags or Document Policy are different
-  // from the default (empty) values, then send them to the browser.
-  if (!dp_header.empty() || !fp_header.empty() ||
-      flags != network::mojom::WebSandboxFlags::kNone) {
-    GetFrameHost()->DidSetFramePolicyHeaders(flags, fp_header, dp_header);
-  }
-}
-
 void RenderFrameImpl::DidMatchCSS(
     const blink::WebVector<blink::WebString>& newly_matching_selectors,
     const blink::WebVector<blink::WebString>& stopped_matching_selectors) {
@@ -4166,7 +4154,10 @@ void RenderFrameImpl::DidCreateDocumentLoader(
 
 void RenderFrameImpl::DidCommitNavigation(
     blink::WebHistoryCommitType commit_type,
-    bool should_reset_browser_interface_broker) {
+    bool should_reset_browser_interface_broker,
+    network::mojom::WebSandboxFlags sandbox_flags,
+    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::DocumentPolicyFeatureState& document_policy_header) {
   CHECK_EQ(NavigationCommitState::kWillCommit, navigation_commit_state_);
   navigation_commit_state_ = NavigationCommitState::kDidCommit;
 
@@ -4307,6 +4298,7 @@ void RenderFrameImpl::DidCommitNavigation(
 
   DidCommitNavigationInternal(
       commit_type, false /* was_within_same_document */, transition,
+      sandbox_flags, feature_policy_header, document_policy_header,
       should_reset_browser_interface_broker
           ? mojom::DidCommitProvisionalLoadInterfaceParams::New(
                 std::move(remote_interface_provider_receiver),
@@ -4461,12 +4453,15 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
 
   ui::PageTransition transition =
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
-  DidCommitNavigationInternal(commit_type,
-                              // was_within_same_document
-                              true, transition,
-                              // interface_params
-                              nullptr,
-                              /*embedding_token=*/base::nullopt);
+  DidCommitNavigationInternal(
+      commit_type,
+      true,  // was_within_same_document
+      transition, network::mojom::WebSandboxFlags(),
+      blink::ParsedFeaturePolicy(),         // feature_policy_header
+      blink::DocumentPolicyFeatureState(),  // document_policy_header
+      nullptr,                              // interface_params
+      base::nullopt                         // embedding_token
+  );
 
   // If we end up reusing this WebRequest (for example, due to a #ref click),
   // we don't want the transition type to persist.  Just clear it.
@@ -4976,6 +4971,9 @@ mojom::DidCommitProvisionalLoadParamsPtr
 RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
+    network::mojom::WebSandboxFlags sandbox_flags,
+    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::DocumentPolicyFeatureState& document_policy_header,
     const base::Optional<base::UnguessableToken>& embedding_token) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   const WebURLResponse& response = document_loader->GetResponse();
@@ -5023,6 +5021,10 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // RenderFrameProxies in other processes.
   WebSecurityOrigin frame_origin = frame_document.GetSecurityOrigin();
   params->origin = frame_origin;
+
+  params->sandbox_flags = sandbox_flags;
+  params->feature_policy_header = feature_policy_header;
+  params->document_policy_header = document_policy_header;
 
   params->insecure_request_policy = frame_->GetInsecureRequestPolicy();
   params->insecure_navigations_set =
@@ -5243,6 +5245,9 @@ void RenderFrameImpl::DidCommitNavigationInternal(
     blink::WebHistoryCommitType commit_type,
     bool was_within_same_document,
     ui::PageTransition transition,
+    network::mojom::WebSandboxFlags sandbox_flags,
+    const blink::ParsedFeaturePolicy& feature_policy_header,
+    const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     const base::Optional<base::UnguessableToken>& embedding_token) {
   DCHECK(!(was_within_same_document && interface_params));
@@ -5256,8 +5261,10 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // call chrome::ContentSettingsManager::OnContentBlocked, those calls arrive
   // after the browser process has already been informed of the provisional
   // load committing.
-  auto params = MakeDidCommitProvisionalLoadParams(commit_type, transition,
-                                                   embedding_token);
+  auto params = MakeDidCommitProvisionalLoadParams(
+      commit_type, transition, sandbox_flags, feature_policy_header,
+      document_policy_header, embedding_token);
+
   if (was_within_same_document) {
     GetFrameHost()->DidCommitSameDocumentNavigation(std::move(params));
   } else {

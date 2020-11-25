@@ -122,14 +122,6 @@ class RenderFrameHostTester {
   // navigation without making any network requests.
   virtual void SimulateUnloadACK() = 0;
 
-  // Set the feature policy header for the RenderFrameHost for test. Currently
-  // this is limited to setting an allowlist for a single feature. This function
-  // can be generalized as needed. Setting a header policy should only be done
-  // once per navigation of the RFH.
-  virtual void SimulateFeaturePolicyHeader(
-      blink::mojom::FeaturePolicyFeature feature,
-      const std::vector<url::Origin>& allowlist) = 0;
-
   // Simulates the frame receiving a user activation.
   virtual void SimulateUserActivation() = 0;
 

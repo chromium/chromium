@@ -10,6 +10,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -49,12 +50,13 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
   // page to simulate that.
   void RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature feature,
                                      bool enabled) {
-    NavigateAndCommit(origin_.GetURL());
+    auto navigation = NavigationSimulator::CreateBrowserInitiated(
+        origin_.GetURL(), web_contents());
     std::vector<url::Origin> allowlist;
     if (enabled)
       allowlist.push_back(origin_);
-    RenderFrameHostTester::For(main_rfh())
-        ->SimulateFeaturePolicyHeader(feature, allowlist);
+    navigation->SetFeaturePolicyHeader({{feature, allowlist, false, false}});
+    navigation->Commit();
   }
 
   bool CheckPermission(MediaDeviceType device_type) {
