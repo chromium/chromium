@@ -261,6 +261,11 @@ void KaleidoscopeDataProviderImpl::RecordTimeTakenToStartWatchHistogram(
                                 time);
 }
 
+void KaleidoscopeDataProviderImpl::RecordDialogClosedHistogram(bool value) {
+  // If |value| is true then the user opened a watch action from this dialog.
+  base::UmaHistogramBoolean("Media.Kaleidoscope.DialogClosed", value);
+}
+
 media_history::MediaHistoryKeyedService*
 KaleidoscopeDataProviderImpl::GetMediaHistoryService() {
   return media_history::MediaHistoryKeyedServiceFactory::GetForProfile(

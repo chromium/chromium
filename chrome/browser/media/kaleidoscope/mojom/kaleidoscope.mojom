@@ -107,6 +107,10 @@ interface KaleidoscopeDataProvider {
 
   // Records a histogram of the time taken to start a watch action.
   RecordTimeTakenToStartWatchHistogram(mojo_base.mojom.TimeDelta time);
+
+  // Records a histogram when the dialog was closed of whether the user selected
+  // a link from the dialog.
+  RecordDialogClosedHistogram(bool value);
 };
 
 // Handles identity related tasks.

@@ -2140,6 +2140,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Kaleidoscope.DialogClosed"
+    enum="KaleidoscopeDialogClosedBoolean" expires_after="2021-08-19">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded each time a user closes a dialog inside Kaleidoscope with whether
+    the user opened a watch action from that dialog.
+  </summary>
+</histogram>
+
 <histogram name="Media.Kaleidoscope.FirstRunProgress"
     enum="KaleidoscopeFirstRunProgress" expires_after="2021-08-19">
   <owner>steimel@chromium.org</owner>
