@@ -132,19 +132,14 @@ class TestCandidateWindowObserver
 
 class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  public:
-  InputMethodManagerImplTest()
-      : delegate_(nullptr),
-        candidate_window_controller_(nullptr),
-        keyboard_(nullptr) {}
-
+  InputMethodManagerImplTest() = default;
   ~InputMethodManagerImplTest() override = default;
 
   void SetUp() override {
     ui::InitializeInputMethodForTesting();
 
-    delegate_ = new FakeInputMethodDelegate();
-    manager_.reset(new InputMethodManagerImpl(
-        std::unique_ptr<InputMethodDelegate>(delegate_), false));
+    manager_ = std::make_unique<InputMethodManagerImpl>(
+        std::make_unique<FakeInputMethodDelegate>(), false);
     manager_->GetInputMethodUtil()->UpdateHardwareLayoutCache();
     candidate_window_controller_ = new MockCandidateWindowController;
     manager_->SetCandidateWindowControllerForTesting(
@@ -171,10 +166,8 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     chrome_keyboard_controller_client_test_helper_.reset();
 
     BrowserWithTestWindowTest::TearDown();
-
     ui::ShutdownInputMethodForTesting();
 
-    delegate_ = nullptr;
     candidate_window_controller_ = nullptr;
     keyboard_ = nullptr;
     manager_.reset();
@@ -188,11 +181,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  protected:
   // Helper function to initialize component extension stuff for testing.
   void InitComponentExtension() {
-    mock_delegate_ = new MockComponentExtensionIMEManagerDelegate();
-    mock_delegate_->set_ime_list(ime_list_);
-    std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate(
-        mock_delegate_);
-
     // CreateNewState(nullptr) returns state with non-empty
     // current_input_method. So SetState() triggers ChangeInputMethod().
     InputMethodDescriptors descriptors;
@@ -206,10 +194,11 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
                                    descriptors, mock_engine_handler_.get());
     manager_->SetState(state);
 
-    std::vector<std::string> layouts;
-    layouts.emplace_back("us");
-    std::vector<std::string> languages;
-    languages.emplace_back("en-US");
+    MockComponentExtensionIMEManagerDelegate* mock_delegate =
+        new MockComponentExtensionIMEManagerDelegate();
+    mock_delegate->set_ime_list(ime_list_);
+    std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate(
+        mock_delegate);
 
     // Note, for production, these SetEngineHandler are called when
     // IMEEngineHandlerInterface is initialized via
@@ -217,6 +206,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     manager_->InitializeComponentExtensionForTesting(std::move(delegate));
   }
 
+ private:
   void InitImeList() {
     ime_list_.clear();
 
@@ -361,14 +351,13 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ime_list_.push_back(ext2);
   }
 
+ protected:
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
   std::unique_ptr<InputMethodManagerImpl> manager_;
-  FakeInputMethodDelegate* delegate_;
-  MockCandidateWindowController* candidate_window_controller_;
+  MockCandidateWindowController* candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
-  FakeImeKeyboard* keyboard_;
-  MockComponentExtensionIMEManagerDelegate* mock_delegate_;
+  FakeImeKeyboard* keyboard_ = nullptr;
   std::vector<ComponentExtensionIME> ime_list_;
   ui::ime::InputMethodMenuManager* menu_manager_;
 
@@ -1232,8 +1221,7 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   manager_->RemoveObserver(&observer);
 }
 
-TEST_F(InputMethodManagerImplTest,
-       ChangeInputMethod_ComponenteExtensionOneIME) {
+TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionOneIME) {
   InitComponentExtension();
   const std::string ext_id = extension_ime_util::GetComponentInputMethodID(
       ime_list_[1].id,
@@ -1246,8 +1234,7 @@ TEST_F(InputMethodManagerImplTest,
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
 }
 
-TEST_F(InputMethodManagerImplTest,
-       ChangeInputMethod_ComponenteExtensionTwoIME) {
+TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionTwoIME) {
   InitComponentExtension();
   const std::string ext_id1 = extension_ime_util::GetComponentInputMethodID(
       ime_list_[1].id,
