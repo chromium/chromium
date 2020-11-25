@@ -4573,6 +4573,7 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/ui/frame",
+      "//components/account_manager_core",
     ]
   }
 

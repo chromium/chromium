@@ -130,6 +130,10 @@ source_set("unit_tests") {
   if (is_ios) {
     deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
   }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//components/account_manager_core" ]
+  }
 }
 
 source_set("test_support") {
@@ -160,4 +164,8 @@ source_set("test_support") {
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//components/account_manager_core" ]
+  }
 }
