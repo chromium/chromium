@@ -32,6 +32,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_session.h"
@@ -270,9 +271,12 @@ class ArcVmClientAdapterTest : public testing::Test,
         base::TimeDelta::FromMilliseconds(100),
         // connect_sleep_duration_initial
         base::TimeDelta::FromMilliseconds(20));
+
+    chromeos::SessionManagerClient::InitializeFake();
   }
 
   void TearDown() override {
+    chromeos::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
     adapter_.reset();
     run_loop_.reset();
@@ -805,6 +809,26 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoUserId) {
   SetUserInfo(std::string(), kSerialNumber);
   StartMiniArc();
 
+  UpgradeArc(false);
+  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_FALSE(arc_instance_stopped_called());
+
+  // Try to stop the VM. No VM is running so StopVm() shouldn't be called.
+  adapter()->StopArcInstance(/*on_shutdown=*/false,
+                             /*should_backup_log=*/false);
+  run_loop()->Run();
+  EXPECT_FALSE(GetTestConciergeClient()->stop_vm_called());
+  EXPECT_TRUE(arc_instance_stopped_called());
+}
+
+// Tests that an "invalid Adb Sideload response" case is handled properly.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoValidAdbResponse) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  // Ask the Fake Session Manager to return a failed Adb Sideload response.
+  chromeos::FakeSessionManagerClient::Get()
+      ->set_force_query_adb_sideload_failure(true);
   UpgradeArc(false);
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());

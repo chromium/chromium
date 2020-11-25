@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -46,6 +47,7 @@
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/arc/arc_features.h"
@@ -717,6 +719,32 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_START,
                 std::move(environment)},
     };
+
+    VLOG(2) << "Checking adb sideload status";
+    chromeos::SessionManagerClient::Get()->QueryAdbSideload(base::BindOnce(
+        &ArcVmClientAdapter::OnCallQueryAdbSideloadAllowed,
+        weak_factory_.GetWeakPtr(), std::move(params), std::move(jobs),
+        std::move(file_system_status), std::move(callback)));
+  }
+
+  void OnCallQueryAdbSideloadAllowed(
+      UpgradeParams params,
+      std::deque<JobDesc> jobs,
+      FileSystemStatus file_system_status,
+      chromeos::VoidDBusMethodCallback callback,
+      chromeos::SessionManagerClient::AdbSideloadResponseCode response_code,
+      bool enabled) {
+    VLOG(1) << "IsAdbSideloadAllowed, response_code="
+            << static_cast<int>(response_code) << ", enabled=" << enabled;
+
+    if (response_code !=
+        chromeos::SessionManagerClient::AdbSideloadResponseCode::SUCCESS) {
+      LOG(ERROR) << "Unsuccessful response from QueryAdbSideload";
+      std::move(callback).Run(false);
+      return;
+    }
+    params.is_adb_sideloading_enabled = enabled;
+
     ConfigureUpstartJobs(
         std::move(jobs),
         base::BindOnce(&ArcVmClientAdapter::OnConfigureUpstartJobsOnUpgradeArc,
@@ -909,6 +937,8 @@ std::vector<std::string> GenerateUpgradeProps(
   std::vector<std::string> result = {
       base::StringPrintf("%s.disable_boot_completed=%d", prefix.c_str(),
                          upgrade_params.skip_boot_completed_broadcast),
+      base::StringPrintf("%s.enable_adb_sideloading=%d", prefix.c_str(),
+                         upgrade_params.is_adb_sideloading_enabled),
       base::StringPrintf("%s.copy_packages_cache=%d", prefix.c_str(),
                          static_cast<int>(upgrade_params.packages_cache_mode)),
       base::StringPrintf("%s.skip_gms_core_cache=%d", prefix.c_str(),
