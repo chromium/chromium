@@ -71,7 +71,7 @@ int WebFaviconDriver::DownloadImage(const GURL& url,
         std::vector<SkBitmap> frames;
         std::vector<gfx::Size> sizes;
         if (data) {
-          frames = skia::ImageDataToSkBitmaps(data);
+          frames = skia::ImageDataToSkBitmapsWithMaxSize(data, max_image_size);
           for (const auto& frame : frames) {
             sizes.push_back(gfx::Size(frame.width(), frame.height()));
           }

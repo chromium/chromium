@@ -91,6 +91,11 @@ UIImage* SkBitmapToUIImageWithColorSpace(const SkBitmap& skia_bitmap,
 }
 
 std::vector<SkBitmap> ImageDataToSkBitmaps(NSData* image_data) {
+  return ImageDataToSkBitmapsWithMaxSize(image_data, CGFLOAT_MAX);
+}
+
+std::vector<SkBitmap> ImageDataToSkBitmapsWithMaxSize(NSData* image_data,
+                                                      CGFloat max_size) {
   DCHECK(image_data);
 
   // On iOS 8.1.1 |CGContextDrawImage| crashes when processing images included
@@ -112,6 +117,8 @@ std::vector<SkBitmap> ImageDataToSkBitmaps(NSData* image_data) {
 
     CGSize size = CGSizeMake(CGImageGetWidth(cg_image),
                              CGImageGetHeight(cg_image));
+    if (size.width > max_size || size.width >= max_size)
+      continue;
     if (size.width >= 88 && size.height >= 88 && skip_images_88x88_or_larger)
       continue;
 
