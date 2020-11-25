@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 
 # This target forms the core of the IdentityManager implementation
@@ -56,6 +57,7 @@ source_set("identity_manager") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/webdata",
@@ -84,7 +86,7 @@ source_set("identity_manager") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "profile_oauth2_token_service_delegate_chromeos.cc",
       "profile_oauth2_token_service_delegate_chromeos.h",
@@ -149,6 +151,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/os_crypt:test_support",
@@ -174,7 +177,7 @@ source_set("unit_tests") {
     sources += [ "profile_oauth2_token_service_delegate_android_unittest.cc" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "profile_oauth2_token_service_delegate_chromeos_unittest.cc" ]
 
     deps += [ "//chromeos/components/account_manager" ]
@@ -206,7 +209,7 @@ static_library("test_support") {
     "fake_profile_oauth2_token_service_delegate.h",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "test_profile_oauth2_token_service_delegate_chromeos.cc",
       "test_profile_oauth2_token_service_delegate_chromeos.h",

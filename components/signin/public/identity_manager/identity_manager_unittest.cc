@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -58,7 +59,7 @@
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
@@ -83,7 +84,7 @@ const char kTestGivenName[] = "given_name";
 const char kTestLocale[] = "locale";
 const char kTestPictureUrl[] = "http://picture.example.com/picture.jpg";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kTestEmailWithPeriod[] = "m.e@gmail.com";
 #endif
 
@@ -306,7 +307,7 @@ class IdentityManagerTest : public testing::Test {
                          std::string gaia_id,
                          std::string email,
                          std::string token) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     identity_manager()->GetChromeOSAccountManager()->UpsertAccount(
         ::account_manager::AccountKey{gaia_id,
                                       account_manager::AccountType::kGaia},
@@ -317,7 +318,7 @@ class IdentityManagerTest : public testing::Test {
   }
 
   void RevokeCredentials(const CoreAccountId& account_id, std::string gaia_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     identity_manager()->GetChromeOSAccountManager()->RemoveAccount(
         ::account_manager::AccountKey{gaia_id,
                                       account_manager::AccountType::kGaia});
@@ -360,7 +361,7 @@ class IdentityManagerTest : public testing::Test {
     account_tracker_service->Initialize(&pref_service_,
                                         temp_profile_dir_.GetPath());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::AccountManager::RegisterPrefs(pref_service_.registry());
     chromeos::AccountManager* chromeos_account_manager =
         GetAccountManagerFactory()->GetAccountManager(
@@ -391,7 +392,7 @@ class IdentityManagerTest : public testing::Test {
     DCHECK_EQ(account_consistency, AccountConsistencyMethod::kDisabled)
         << "AccountConsistency is not used by PrimaryAccountManager";
     std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     policy_manager =
         std::make_unique<PrimaryAccountPolicyManagerImpl>(&signin_client_);
 #endif
@@ -438,7 +439,7 @@ class IdentityManagerTest : public testing::Test {
         token_service.get(), account_tracker_service.get(),
         primary_account_manager.get(), &pref_service_);
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     init_params.chromeos_account_manager = chromeos_account_manager;
 #endif
 
@@ -489,7 +490,7 @@ class IdentityManagerTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::AccountManagerFactory* GetAccountManagerFactory() {
     return &account_manager_factory_;
   }
@@ -498,7 +499,7 @@ class IdentityManagerTest : public testing::Test {
  private:
   base::ScopedTempDir temp_profile_dir_;
   base::test::TaskEnvironment task_environment_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::AccountManagerFactory account_manager_factory_;
 #endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
@@ -530,7 +531,7 @@ TEST_F(IdentityManagerTest, Construct) {
   EXPECT_NE(identity_manager()->GetAccountsMutator(), nullptr);
   EXPECT_EQ(identity_manager()->GetDeviceAccountsSynchronizer(), nullptr);
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_NE(identity_manager()->GetChromeOSAccountManager(), nullptr);
 #endif
 }
@@ -551,7 +552,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAtStartup) {
 
 // Signin/signout tests aren't relevant and cannot build on ChromeOS, which
 // doesn't support signin/signout.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that the user signing in results in firing of the IdentityManager
 // observer callback and the IdentityManager's state being updated.
 TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
@@ -650,7 +651,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(primary_account_id, identity_manager()->GetPrimaryAccountId(
                                     ConsentLevel::kNotRequired));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(IdentityManagerTest, HasPrimaryAccount) {
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
@@ -664,7 +665,7 @@ TEST_F(IdentityManagerTest, HasPrimaryAccount) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Signing out should cause IdentityManager to recognize that there is no
   // longer a primary account.
   ClearPrimaryAccount(identity_manager(), ClearPrimaryAccountPolicy::DEFAULT);
@@ -1473,7 +1474,7 @@ TEST_F(IdentityManagerTest, GetAccountsCookieMutator) {
   EXPECT_TRUE(mutator);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS, AccountTrackerService first receives the normalized email
 // address from GAIA and then later has it updated with the user's
 // originally-specified version of their email address (at the time of that
@@ -1576,7 +1577,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnSecondaryAccountRefreshTokenRemoval) {
       identity_manager_observer()->AccountIdFromRefreshTokenRemovedCallback());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(
     IdentityManagerTest,
     CallbackSentOnSecondaryAccountRefreshTokenUpdateWithValidTokenWhenNoPrimaryAccount) {

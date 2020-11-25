@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -24,7 +25,7 @@ namespace {
 
 // Constants used by the different tests.
 const char kPrimaryAccountEmail[] = "primary.account@example.com";
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAnotherAccountEmail[] = "another.account@example.com";
 const char kUnknownAccountId[] = "{unknown account id}";
 
@@ -211,7 +212,7 @@ void RunClearPrimaryAccountTest(
       break;
   }
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -247,7 +248,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount) {
 // ChromeOS, where those preconditions do not exist.
 // TODO(https://crbug.com/983124): Run these tests on ChromeOS if/once we
 // enable those preconditions on that platform
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks that setting the primary account fails if the account is not known by
 // the identity system.
 TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_NoAccount) {
@@ -351,14 +352,14 @@ TEST_F(PrimaryAccountMutatorTest,
   EXPECT_FALSE(primary_account_mutator->SetPrimaryAccount(
       primary_account_info.account_id));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // End of tests of preconditions not being satisfied causing the setting of
 // the primary account to fail.
 
 // Tests of clearing the primary account. Not run on ChromeOS, which does not
 // support clearing the primary account.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
   base::test::TaskEnvironment task_environment;
   signin::IdentityTestEnvironment environment;
@@ -506,9 +507,9 @@ TEST_F(PrimaryAccountMutatorTest,
       RemoveAccountExpectation::kRemovePrimary, AuthExpectation::kAuthError);
 }
 #endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent) {
   base::test::TaskEnvironment task_environment;
   signin::IdentityTestEnvironment environment;
@@ -535,4 +536,4 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent) {
 
   identity_manager->RemoveObserver(&observer);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

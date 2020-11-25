@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 class AccountTrackerService;
@@ -27,10 +28,10 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
   // PrimaryAccountMutator implementation.
   bool SetPrimaryAccount(const CoreAccountId& account_id) override;
   void SetUnconsentedPrimaryAccount(const CoreAccountId& account_id) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void RevokeSyncConsent() override;
 #endif
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   bool ClearPrimaryAccount(
       ClearAccountsAction action,
       signin_metrics::ProfileSignout source_metric,

@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 #if !defined(OS_ANDROID)
@@ -40,7 +41,7 @@ namespace network {
 class NetworkConnectionTracker;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 class AccountManager;
 }
@@ -68,7 +69,7 @@ struct IdentityManagerBuildParams {
   scoped_refptr<TokenWebData> token_web_data;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::AccountManager* account_manager;
   bool is_regular_profile;
 #endif

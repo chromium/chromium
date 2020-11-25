@@ -4,9 +4,11 @@
 
 #include "components/signin/public/base/signin_pref_names.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace prefs {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A boolean pref - should unauthenticated user should be logged out
 // automatically. Default value is false.
 const char kForceLogoutUnauthenticatedUserEnabled[] =

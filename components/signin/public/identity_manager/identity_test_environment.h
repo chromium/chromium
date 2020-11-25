@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -366,7 +367,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
   void Initialize();
 
   // Create an IdentityManager instance for tests.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
       SigninClient* signin_client,
       PrefService* pref_service,

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace signin_metrics {
 enum ProfileSignout : int;
@@ -66,7 +67,7 @@ class PrimaryAccountMutator {
   virtual void SetUnconsentedPrimaryAccount(
       const CoreAccountId& account_id) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Revokes sync consent from the primary account. The primary account must
   // have sync consent. After the call a primary account will remain but it will
   // not have sync consent.
@@ -74,7 +75,7 @@ class PrimaryAccountMutator {
   virtual void RevokeSyncConsent() = 0;
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Clears the primary account, and returns whether the operation
   // succeeded or not. Depending on |action|, the other accounts
   // known to the IdentityManager may be deleted.

@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -138,7 +139,7 @@ TEST(SigninErrorControllerTest, UnconsentedPrimaryAccount) {
 
 // This test exercises behavior on signin/signout, which is not relevant on
 // ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(SigninErrorControllerTest, AccountTransitionPrimaryAccount) {
   base::test::TaskEnvironment task_environment;
   signin::IdentityTestEnvironment identity_test_env;

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -34,7 +35,7 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
     const CoreAccountId& account_id) {
   AccountInfo account_info = account_tracker_->GetAccountInfo(account_id);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!pref_service_->GetBoolean(prefs::kSigninAllowed))
     return false;
 
@@ -53,7 +54,7 @@ bool PrimaryAccountMutatorImpl::SetPrimaryAccount(
 
 void PrimaryAccountMutatorImpl::SetUnconsentedPrimaryAccount(
     const CoreAccountId& account_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS the UPA can only be set once and never removed or changed.
   DCHECK(!account_id.empty());
   DCHECK(
@@ -68,13 +69,13 @@ void PrimaryAccountMutatorImpl::SetUnconsentedPrimaryAccount(
   primary_account_manager_->SetUnconsentedPrimaryAccountInfo(account_info);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrimaryAccountMutatorImpl::RevokeSyncConsent() {
   primary_account_manager_->RevokeSyncConsent();
 }
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     ClearAccountsAction action,
     signin_metrics::ProfileSignout source_metric,

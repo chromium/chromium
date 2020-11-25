@@ -16,6 +16,7 @@
 #include "base/time/time_to_iso8601.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -669,7 +670,7 @@ AboutSigninInternals::SigninStatus::ToValue(
   AddSectionEntry(basic_info, "Account Reconcilor blocked",
                   account_reconcilor->IsReconcileBlocked() ? "True" : "False");
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Time and status information of the possible sign in types.
   base::ListValue* detailed_info =
       AddSection(signin_info.get(), "Last Signin Details");
@@ -707,7 +708,7 @@ AboutSigninInternals::SigninStatus::ToValue(
     AddSectionEntry(detailed_info, "Token Service Next Retry",
                     base::TimeToISO8601(next_retry_time), "");
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   signin_status->Set("signin_info", std::move(signin_info));
 
   // Token information for all services.

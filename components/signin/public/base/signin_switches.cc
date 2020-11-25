@@ -4,6 +4,8 @@
 
 #include "components/signin/public/base/signin_switches.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace switches {
 
 // Clears the token service before using it. This allows simulating the
@@ -13,7 +15,7 @@ const char kClearTokenService[] = "clear-token-service";
 // Disables sending signin scoped device id to LSO with refresh token request.
 const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAccountIdMigration{"AccountIdMigration",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

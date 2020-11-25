@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
@@ -83,7 +84,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
       token_service_->GetDelegate()->GetJavaObject());
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos_account_manager_ = parameters.chromeos_account_manager;
 #endif
 }
@@ -455,7 +456,7 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
   return gaia_cookie_manager_service_.get();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 chromeos::AccountManager* IdentityManager::GetChromeOSAccountManager() const {
   return chromeos_account_manager_;
 }

@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -33,7 +34,7 @@ PrimaryAccountManager::PrimaryAccountManager(
       token_service_(token_service),
       account_tracker_service_(account_tracker_service),
       initialized_(false),
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       account_consistency_(account_consistency),
 #endif
       policy_manager_(std::move(policy_manager)) {
@@ -271,7 +272,7 @@ void PrimaryAccountManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PrimaryAccountManager::SignOut(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric) {
@@ -295,9 +296,9 @@ void PrimaryAccountManager::SignOutAndKeepAllAccounts(
   StartSignOut(signout_source_metric, signout_delete_metric,
                RemoveAccountsOption::kKeepAllAccounts);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrimaryAccountManager::RevokeSyncConsent() {
   DCHECK(HasPrimaryAccount(signin::ConsentLevel::kSync));
   // TODO(https://crbug.com/1046746): Don't record metrics here.
@@ -306,7 +307,7 @@ void PrimaryAccountManager::RevokeSyncConsent() {
                RemoveAccountsOption::kKeepAllAccounts,
                /*assert_signout_allowed=*/true);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PrimaryAccountManager::StartSignOut(
     signin_metrics::ProfileSignout signout_source_metric,

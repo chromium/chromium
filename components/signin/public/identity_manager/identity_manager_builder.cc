@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -40,7 +41,7 @@
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #endif
 
@@ -64,7 +65,7 @@ std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     PrefService* local_state) {
   std::unique_ptr<PrimaryAccountManager> primary_account_manager;
   std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy_manager = std::make_unique<PrimaryAccountPolicyManagerImpl>(client);
 #endif
   primary_account_manager = std::make_unique<PrimaryAccountManager>(
@@ -114,7 +115,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       BuildProfileOAuth2TokenService(
           params->pref_service, account_tracker_service.get(),
           params->network_connection_tracker, params->account_consistency,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
           params->account_manager, params->is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)
@@ -171,7 +172,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       std::move(gaia_cookie_manager_service);
   init_params.primary_account_manager = std::move(primary_account_manager);
   init_params.token_service = std::move(token_service);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   init_params.chromeos_account_manager = params->account_manager;
 #endif
 

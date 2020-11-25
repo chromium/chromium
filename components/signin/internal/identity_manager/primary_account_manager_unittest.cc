@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -30,7 +31,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #endif
 
@@ -89,7 +90,7 @@ class PrimaryAccountManagerTest : public testing::Test,
     // production usage: null on ChromeOS, a PrimaryAccountPolicyManagerImpl on
     // other platforms.
     std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     policy_manager =
         std::make_unique<PrimaryAccountPolicyManagerImpl>(&test_signin_client_);
     policy_manager_ =
@@ -137,7 +138,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   ProfileOAuth2TokenService token_service_;
   AccountTrackerService account_tracker_;
   AccountFetcherService account_fetcher_;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   PrimaryAccountPolicyManagerImpl* policy_manager_;
 #endif
   std::unique_ptr<PrimaryAccountManager> manager_;
@@ -148,7 +149,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   int num_unconsented_account_changed_;
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountManagerTest, SignOut) {
   CreatePrimaryAccountManager();
   CoreAccountId main_account_id =
@@ -347,7 +348,7 @@ TEST_F(PrimaryAccountManagerTest,
   EXPECT_EQ(account_id, manager_->GetAuthenticatedAccountId());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountManagerTest, SigninNotAllowed) {
   std::string user("user@google.com");
   CoreAccountId account_id = AddToAccountTracker("gaia_id", user);
@@ -512,7 +513,7 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
@@ -525,4 +526,4 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   EXPECT_EQ(account_id,
             manager_->GetUnconsentedPrimaryAccountInfo().account_id);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,6 +9,7 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -21,7 +22,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
 #endif
@@ -57,7 +58,7 @@ void WaitForLoadCredentialsToComplete(IdentityManager* identity_manager) {
 void UpdateRefreshTokenForAccount(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::AccountManager* account_manager,
 #endif
     IdentityManager* identity_manager,
@@ -79,7 +80,7 @@ void UpdateRefreshTokenForAccount(
   token_updated_observer.SetOnRefreshTokenUpdatedCallback(
       run_loop.QuitClosure());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const AccountInfo& account_info =
       account_tracker_service->GetAccountInfo(account_id);
 
@@ -191,7 +192,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 
 void ClearPrimaryAccount(IdentityManager* identity_manager,
                          ClearPrimaryAccountPolicy policy) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(blundell): If we ever need this functionality on ChromeOS (which seems
   // unlikely), plumb this through to just clear the primary account info
   // synchronously with IdentityManager.
@@ -300,12 +301,12 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
   UpdateRefreshTokenForAccount(
       identity_manager->GetTokenService(),
       identity_manager->GetAccountTrackerService(),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       identity_manager->GetChromeOSAccountManager(),
 #endif
       identity_manager, account_id,
-      token_value.empty() ? "refresh_token_for_" + account_id.ToString()
-                                + "_" + base::GenerateGUID()
+      token_value.empty() ? "refresh_token_for_" + account_id.ToString() + "_" +
+                                base::GenerateGUID()
                           : token_value);
 }
 
@@ -314,7 +315,7 @@ void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
   UpdateRefreshTokenForAccount(identity_manager->GetTokenService(),
 
                                identity_manager->GetAccountTrackerService(),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                identity_manager->GetChromeOSAccountManager(),
 #endif
                                identity_manager, account_id,
@@ -331,7 +332,7 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   token_updated_observer.SetOnRefreshTokenRemovedCallback(
       run_loop.QuitClosure());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const AccountInfo& account_info =
       identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
 

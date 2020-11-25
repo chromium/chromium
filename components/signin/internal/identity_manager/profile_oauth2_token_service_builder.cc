@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -23,11 +24,11 @@
 #include "components/signin/public/webdata/token_web_data.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
 #include "components/user_manager/user_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_IOS)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
@@ -58,7 +59,7 @@ std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
       signin_client, std::move(device_accounts_provider),
       account_tracker_service);
 }
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<signin::ProfileOAuth2TokenServiceDelegateChromeOS>
 CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
@@ -106,7 +107,7 @@ CreateOAuth2TokenServiceDelegate(
     AccountTrackerService* account_tracker_service,
     signin::AccountConsistencyMethod account_consistency,
     SigninClient* signin_client,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::AccountManager* account_manager,
     bool is_regular_profile,
 #endif
@@ -128,7 +129,7 @@ CreateOAuth2TokenServiceDelegate(
   return CreateIOSOAuthDelegate(signin_client,
                                 std::move(device_accounts_provider),
                                 account_tracker_service);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return CreateCrOsOAuthDelegate(account_tracker_service,
                                  network_connection_tracker, account_manager,
                                  is_regular_profile);
@@ -155,7 +156,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     signin::AccountConsistencyMethod account_consistency,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::AccountManager* account_manager,
     bool is_regular_profile,
 #endif
@@ -172,7 +173,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #endif
     SigninClient* signin_client) {
 // On ChromeOS the device ID is not managed by the token service.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Ensure the device ID is not empty. This is important for Dice, because the
   // device ID is needed on the network thread, but can only be generated on the
   // main thread.
@@ -184,7 +185,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
       pref_service,
       CreateOAuth2TokenServiceDelegate(
           account_tracker_service, account_consistency, signin_client,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
           account_manager, is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)

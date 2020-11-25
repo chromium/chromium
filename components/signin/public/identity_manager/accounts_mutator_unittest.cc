@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -21,7 +22,7 @@
 namespace {
 
 const char kTestEmail[] = "test_user@test.com";
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kTestGaiaId[] = "gaia-id-test_user-test.com";
 const char kTestGaiaId2[] = "gaia-id-test_user-2-test.com";
 const char kTestEmail2[] = "test_user@test-2.com";
@@ -212,7 +213,7 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   EXPECT_FALSE(reset_account_info.is_under_advanced_protection);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that a new account gets added to the AccountTrackerService when calling
 // AddOrUpdateAccount() and that a new refresh token becomes available for the
 // passed account_id when adding an account for the first time.
@@ -617,7 +618,7 @@ TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
   EXPECT_EQ("Settings::Signout",
             identity_manager_diagnostics_observer()->token_remover_source());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(AccountsMutatorTest, MoveAccount) {
