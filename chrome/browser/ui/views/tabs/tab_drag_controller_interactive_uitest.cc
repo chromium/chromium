@@ -556,7 +556,7 @@ class DetachToBrowserTabDragControllerTest
 #endif
   }
 
-  void ReleaseInputAfterWindowDetached() {
+  void ReleaseInputAfterWindowDetached(int first_dragged_tab_width) {
     // On macOS, we want to avoid generating the input event [which requires an
     // associated window] until the window has been detached. Failure to do so
     // causes odd behavior [e.g. on macOS 10.10, the mouse-up will reactivate
@@ -566,10 +566,15 @@ class DetachToBrowserTabDragControllerTest
           FROM_HERE,
           base::BindOnce(&DetachToBrowserTabDragControllerTest::
                              ReleaseInputAfterWindowDetached,
-                         base::Unretained(this)),
+                         base::Unretained(this), first_dragged_tab_width),
           base::TimeDelta::FromMilliseconds(1));
       return;
     }
+
+    // The tab getting dragged into the new browser should have the same width
+    // as before it was dragged.
+    EXPECT_EQ(first_dragged_tab_width,
+              GetTabStripForBrowser(browser_list->get(1))->tab_at(0)->width());
 
     // Windows hangs if you use a sync mouse event here.
     ASSERT_TRUE(ReleaseInput(0, true));
@@ -1556,10 +1561,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                       ReleaseInputAfterWindowDetached,
-                                  base::Unretained(this)));
+                                  base::Unretained(this), tab_0_width));
 
   // Should no longer be dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -1622,10 +1628,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                       ReleaseInputAfterWindowDetached,
-                                  base::Unretained(this)));
+                                  base::Unretained(this), tab_0_width));
 
   // Should no longer be dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -1672,10 +1679,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                       ReleaseInputAfterWindowDetached,
-                                  base::Unretained(this)));
+                                  base::Unretained(this), tab_0_width));
 
   // Should no longer be dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -1729,10 +1737,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                       ReleaseInputAfterWindowDetached,
-                                  base::Unretained(this)));
+                                  base::Unretained(this), tab_0_width));
 
   // Should no longer be dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -3417,11 +3426,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   AddTabsAndResetBrowser(browser(), 1, GetAppUrl());
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
-  // Drag tab to create a new browser.
+  // Move to the first tab and drag it enough so that it detaches.
+  int tab_0_width = tab_strip->tab_at(0)->width();
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                       ReleaseInputAfterWindowDetached,
-                                  base::Unretained(this)));
+                                  base::Unretained(this), tab_0_width));
 
   // New browser should be TYPE_APP.
   ASSERT_EQ(2u, browser_list->size());
