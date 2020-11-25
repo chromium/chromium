@@ -28,6 +28,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/cache_stats_recorder.mojom.h"
 #include "chrome/common/child_process_logging.h"
 #include "chrome/common/chrome_paths.h"
@@ -58,7 +59,7 @@
 #include "chrome/renderer/extensions/extension_localization_peer.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/renderer/chromeos_merge_session_loader_throttle.h"
 #endif
 
@@ -118,7 +119,7 @@ class RendererResourceDelegate : public content::ResourceDispatcherDelegate {
   DISALLOW_COPY_AND_ASSIGN(RendererResourceDelegate);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
   content::ChildThread* child_thread = content::ChildThread::Get();
   if (child_thread)
@@ -127,13 +128,13 @@ scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
   // This will happen when running via tests.
   return base::SequencedTaskRunnerHandle::Get();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
 bool ChromeRenderThreadObserver::is_incognito_process_ = false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
 ChromeRenderThreadObserver::ChromeOSListener::Create(
@@ -180,7 +181,7 @@ void ChromeRenderThreadObserver::ChromeOSListener::BindOnIOThread(
         chromeos_listener_receiver) {
   receiver_.Bind(std::move(chromeos_listener_receiver));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 chrome::mojom::DynamicParams* GetDynamicConfigParams() {
   static base::NoDestructor<chrome::mojom::DynamicParams> dynamic_params;
@@ -224,12 +225,12 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
     mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
         chromeos_listener_receiver) {
   is_incognito_process_ = is_incognito_process;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos_listener_receiver) {
     chromeos_listener_ =
         ChromeOSListener::Create(std::move(chromeos_listener_receiver));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeRenderThreadObserver::SetConfiguration(

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/renderer/render_thread_observer.h"
@@ -18,9 +19,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 class ResourceDispatcherDelegate;
@@ -37,7 +38,7 @@ class VisitedLinkReader;
 class ChromeRenderThreadObserver : public content::RenderThreadObserver,
                                    public chrome::mojom::RendererConfiguration {
  public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // A helper class to handle Mojo calls that need to be dispatched to the IO
   // thread instead of the main thread as is the norm.
   // This class is thread-safe.
@@ -75,7 +76,7 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
 
     DISALLOW_COPY_AND_ASSIGN(ChromeOSListener);
   };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ChromeRenderThreadObserver();
   ~ChromeRenderThreadObserver() override;
@@ -94,11 +95,11 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
     return visited_link_reader_.get();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<ChromeOSListener> chromeos_listener() const {
     return chromeos_listener_;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   // content::RenderThreadObserver:
@@ -128,11 +129,11 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   mojo::AssociatedReceiverSet<chrome::mojom::RendererConfiguration>
       renderer_configuration_receivers_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only set if the Chrome OS merge session was running when the renderer
   // was started.
   scoped_refptr<ChromeOSListener> chromeos_listener_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_COPY_AND_ASSIGN(ChromeRenderThreadObserver);
 };

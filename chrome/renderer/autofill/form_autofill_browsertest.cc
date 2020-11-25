@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
@@ -3069,7 +3070,7 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
 }
 
 // TODO(crbug.com/616730) Flaky.
-#if defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 #define MAYBE_WebFormElementToFormDataTooManyFields \
   DISABLED_WebFormElementToFormDataTooManyFields
 #else

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
@@ -21,13 +22,13 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
 #if BUILDFLAG(USE_TCMALLOC)
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "chrome/renderer/performance_manager/mechanisms/tcmalloc_tunables_impl.h"
 #endif  // BUILDFLAG(USE_TCMALLOC)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -62,14 +63,14 @@ void ExposeChromeRendererInterfacesToBrowser(
   binders->Add(base::BindRepeating(&BindWebRTCLoggingAgent, client),
                base::SequencedTaskRunnerHandle::Get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_TCMALLOC)
   binders->Add(
       base::BindRepeating(
           &performance_manager::mechanism::TcmallocTunablesImpl::Create),
       base::SequencedTaskRunnerHandle::Get());
 #endif  // BUILDFLAG(USE_TCMALLOC)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   binders->Add(base::BindRepeating(&BindSpellChecker, client),

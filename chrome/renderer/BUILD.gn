@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/buildflags_paint_preview.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
@@ -36,7 +37,7 @@ grit("resources") {
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/components/remote_apps/mojom:mojom_js",
       "//chromeos/services/ime/public/mojom:mojom_js",
@@ -137,6 +138,7 @@ static_library("renderer") {
 
   deps = [
     "//base/allocator:buildflags",
+    "//build:chromeos_buildflags",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/common",
@@ -341,7 +343,7 @@ static_library("renderer") {
     deps += [ "//third_party/wtl" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "extensions/file_browser_handler_custom_bindings.cc",
       "extensions/file_browser_handler_custom_bindings.h",
@@ -387,7 +389,7 @@ static_library("renderer") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "chromeos_delayed_callback_group.cc",
       "chromeos_delayed_callback_group.h",
@@ -396,7 +398,7 @@ static_library("renderer") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "performance_manager/mechanisms/tcmalloc_tunables_impl.cc",
       "performance_manager/mechanisms/tcmalloc_tunables_impl.h",

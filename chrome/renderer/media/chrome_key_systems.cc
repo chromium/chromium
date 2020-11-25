@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "components/cdm/renderer/external_clear_key_key_system_properties.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
@@ -201,7 +202,7 @@ static EmeSessionTypeSupport GetPersistentLicenseSupport(
   }
 
 // On ChromeOS, platform verification is similar to CDM host verification.
-#if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool cdm_host_verification_potentially_supported = true;
 #else
   bool cdm_host_verification_potentially_supported = false;
@@ -214,7 +215,7 @@ static EmeSessionTypeSupport GetPersistentLicenseSupport(
     return EmeSessionTypeSupport::NOT_SUPPORTED;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, platform verification (similar to CDM host verification)
   // requires identifier to be allowed.
   // TODO(jrummell): Currently the ChromeOS CDM does not require storage ID
@@ -228,7 +229,7 @@ static EmeSessionTypeSupport GetPersistentLicenseSupport(
   // Storage ID not implemented, so no support for persistent license.
   DVLOG(2) << __func__ << ": Not supported without CDM storage ID.";
   return EmeSessionTypeSupport::NOT_SUPPORTED;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 static void AddWidevine(
@@ -263,7 +264,7 @@ static void AddWidevine(
   auto max_audio_robustness = Robustness::SW_SECURE_CRYPTO;
   auto max_video_robustness = Robustness::SW_SECURE_DECODE;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, we support HW_SECURE_ALL even without hardware secure codecs.
   // See WidevineKeySystemProperties::GetRobustnessConfigRule().
   max_audio_robustness = Robustness::HW_SECURE_ALL;
@@ -298,7 +299,7 @@ static void AddWidevine(
   // Others.
   auto persistent_state_support = EmeFeatureSupport::REQUESTABLE;
   auto distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   distinctive_identifier_support = EmeFeatureSupport::REQUESTABLE;
 #endif
 

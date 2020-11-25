@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_content_client.h"
@@ -907,7 +908,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                 blink::mojom::ConsoleMessageLevel::kError, error_message));
             placeholder = create_blocked_plugin(
                 IDR_BLOCKED_PLUGIN_HTML,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                 l10n_util::GetStringUTF16(IDS_NACL_PLUGIN_BLOCKED));
 #else
                 l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name));
@@ -1466,10 +1467,10 @@ void ChromeContentRendererClient::
   // Web Share is conditionally enabled here in chrome/, to avoid it being
   // made available in other clients of content/ that do not have a Web Share
   // Mojo implementation (e.g. WebView).  Web Share is shipped on Android.
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
   if (base::FeatureList::IsEnabled(features::kWebShare))
 #endif
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebShare(true);
 #endif
 
@@ -1616,7 +1617,7 @@ bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
            // TODO(crbug.com/1110954): Remove when migrated away from HTML
            // imports.
            host_piece == chrome::kChromeUIBluetoothInternalsHost ||
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
            // TODO(crbug.com/1111430): Remove when migrated to Polymer3.
            host_piece == chrome::kChromeUIAccountManagerErrorHost ||
            host_piece == chrome::kChromeUIAccountManagerWelcomeHost ||
