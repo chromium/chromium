@@ -133,8 +133,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   if (self.tableView.editing) {
     // If password or username value was changed show confirmation dialog before
     // saving password. Editing mode will be exited only if user confirm saving.
-    if (self.password.password != self.passwordTextItem.textFieldValue ||
-        self.password.username != self.usernameTextItem.textFieldValue) {
+    if (![self.password.password
+            isEqualToString:self.passwordTextItem.textFieldValue] ||
+        ![self.password.username
+            isEqualToString:self.usernameTextItem.textFieldValue]) {
       [self.handler showPasswordEditDialogWithOrigin:self.password.origin];
     } else {
       [self passwordEditingConfirmed];
@@ -183,6 +185,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     [model addItem:[self federationItem]
         toSectionWithIdentifier:SectionIdentifierPassword];
   }
+}
+
+- (BOOL)showCancelDuringEditing {
+  return YES;
 }
 
 #pragma mark - Items

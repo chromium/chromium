@@ -61,6 +61,10 @@
 // editing mode of this controller.
 - (void)editButtonPressed;
 
+// Returns NO. Subclasses should overload this if the cancel button should be
+// shown during editing.
+- (BOOL)showCancelDuringEditing;
+
 // Called when this ViewController toolbar's delete item has been tapped.
 // |indexPaths| is the index paths of the currently selected item to be deleted.
 // Default implementation removes the items.

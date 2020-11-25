@@ -51,6 +51,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 // store the item while the interaction is prevented.
 @property(nonatomic, strong) UIBarButtonItem* savedBarButtonItem;
 
+// Back button on navigation panel. This is used to store back button while it
+// is replaced with Cancel during editing.
+@property(nonatomic, strong) UIBarButtonItem* backButtonItem;
+
 // Veil preventing interactions with the TableView.
 @property(nonatomic, strong) UIView* veil;
 
@@ -78,6 +82,13 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     self.navigationItem.rightBarButtonItem = [self createEditButton];
   } else {
     self.navigationItem.rightBarButtonItem = [self doneButtonIfNeeded];
+  }
+
+  // Update Cancel/Back button.
+  if (self.showCancelDuringEditing) {
+    self.navigationItem.leftBarButtonItem =
+        self.tableView.editing ? [self createEditModeCancelButton]
+                               : self.backButtonItem;
   }
 }
 
@@ -127,6 +138,8 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
+
+  self.backButtonItem = self.navigationItem.leftBarButtonItem;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -253,6 +266,21 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
              action:@selector(editButtonPressed)];
 }
 
+- (UIBarButtonItem*)createEditModeCancelButton {
+  // Create a custom Cancel bar button item.
+  return [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelEditing)];
+}
+
+// Quits editing mode and reloads data to the state before editing.
+- (void)cancelEditing {
+  [self setEditing:!self.tableView.editing animated:YES];
+  [self updateUIForEditState];
+  [self reloadData];
+}
+
 #pragma mark - Subclassing
 
 - (BOOL)shouldHideToolbar {
@@ -264,6 +292,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 }
 
 - (BOOL)editButtonEnabled {
+  return NO;
+}
+
+- (BOOL)showCancelDuringEditing {
   return NO;
 }
 
