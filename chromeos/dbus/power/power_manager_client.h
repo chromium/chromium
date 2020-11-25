@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -228,6 +229,9 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // Requests an updated copy of the power status. Observer::PowerChanged()
   // will be called asynchronously.
   virtual void RequestStatusUpdate() = 0;
+
+  // Requests the current thermal state.
+  virtual void RequestThermalState() = 0;
 
   // Requests suspend of the system.
   virtual void RequestSuspend() = 0;

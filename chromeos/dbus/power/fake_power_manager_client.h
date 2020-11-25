@@ -102,6 +102,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   const base::Optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override;
   void RequestStatusUpdate() override;
+  void RequestThermalState() override;
   void RequestSuspend() override;
   void RequestRestart(power_manager::RequestRestartReason reason,
                       const std::string& description) override;

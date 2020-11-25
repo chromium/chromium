@@ -270,6 +270,10 @@ class PowerManagerClientTest : public testing::Test {
                      _, _))
         .WillRepeatedly(
             Invoke(this, &PowerManagerClientTest::RegisterSuspendDelay));
+    // Init should request the current thermal state
+    EXPECT_CALL(
+        *proxy_,
+        DoCallMethod(HasMember(power_manager::kGetThermalStateMethod), _, _));
     // Init should also request a fresh power status.
     EXPECT_CALL(
         *proxy_,

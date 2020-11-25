@@ -175,6 +175,8 @@ void FakePowerManagerClient::RequestStatusUpdate() {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
+void FakePowerManagerClient::RequestThermalState() {}
+
 void FakePowerManagerClient::RequestSuspend() {}
 
 void FakePowerManagerClient::RequestRestart(

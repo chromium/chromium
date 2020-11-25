@@ -49,6 +49,11 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   static void HandleSystemSuspending();
   static void HandleSystemResumed();
   static void ThermalEventReceived(PowerObserver::DeviceThermalState state);
+
+  // These two methods is used for handling thermal state update requests, such
+  // as asking for initial state when starting lisitening to thermal change.
+  PowerObserver::DeviceThermalState GetCurrentThermalState() override;
+  void SetCurrentThermalState(PowerObserver::DeviceThermalState state) override;
 #endif
 
  private:
@@ -125,6 +130,10 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   PowerMessageWindow power_message_window_;
 #endif
 
+#if defined(OS_CHROMEOS)
+  PowerObserver::DeviceThermalState current_thermal_state_ =
+      PowerObserver::DeviceThermalState::kUnknown;
+#endif
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorDeviceSource);
 };
 

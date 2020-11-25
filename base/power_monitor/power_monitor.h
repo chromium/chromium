@@ -61,6 +61,9 @@ class BASE_EXPORT PowerMonitor {
   // May only be called if the PowerMonitor has been initialized.
   static PowerObserver::DeviceThermalState GetCurrentThermalState();
 
+  // Update the result of thermal state.
+  static void SetCurrentThermalState(PowerObserver::DeviceThermalState state);
+
 #if defined(OS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
   // Only supported with a device power source (i.e. not in child processes in

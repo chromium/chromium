@@ -36,6 +36,9 @@ class BASE_EXPORT PowerMonitorSource {
   // Otherwise, returns kUnknown.
   virtual PowerObserver::DeviceThermalState GetCurrentThermalState();
 
+  // Update the result of thermal state.
+  virtual void SetCurrentThermalState(PowerObserver::DeviceThermalState state);
+
 #if defined(OS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
   virtual int GetRemainingBatteryCapacity();

@@ -21,6 +21,9 @@ PowerObserver::DeviceThermalState PowerMonitorSource::GetCurrentThermalState() {
   return PowerObserver::DeviceThermalState::kUnknown;
 }
 
+void PowerMonitorSource::SetCurrentThermalState(
+    PowerObserver::DeviceThermalState state) {}
+
 #if defined(OS_ANDROID)
 int PowerMonitorSource::GetRemainingBatteryCapacity() {
   return 0;

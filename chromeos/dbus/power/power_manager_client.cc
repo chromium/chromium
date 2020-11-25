@@ -18,8 +18,8 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
-#include "base/power_monitor/power_observer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -238,6 +238,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
 
     RegisterSuspendDelays();
     RequestStatusUpdate();
+    RequestThermalState();
     CheckAmbientColorSupport();
   }
 
@@ -346,6 +347,16 @@ class PowerManagerClientImpl : public PowerManagerClient {
         base::BindOnce(
             &PowerManagerClientImpl::OnGetPowerSupplyPropertiesMethod,
             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void RequestThermalState() override {
+    POWER_LOG(USER) << "RequestThermalState";
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kGetThermalStateMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetCurrentThermalStateMethod,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void RequestSuspend() override {
@@ -743,6 +754,29 @@ class PowerManagerClientImpl : public PowerManagerClient {
       POWER_LOG(ERROR) << "Unable to decode "
                        << power_manager::kPowerSupplyPollSignal << " signal";
     }
+  }
+
+  void OnGetCurrentThermalStateMethod(dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kGetThermalStateMethod;
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    power_manager::ThermalEvent protobuf;
+    if (!reader.PopArrayOfBytesAsProto(&protobuf)) {
+      POWER_LOG(ERROR) << "Unable to decode "
+                       << power_manager::kGetThermalStateMethod << " response";
+      return;
+    }
+
+    POWER_LOG(USER) << "Got " << power_manager::kGetThermalStateMethod
+                    << " response:"
+                    << " thermal_state=" << protobuf.thermal_state()
+                    << " timestamp=" << protobuf.timestamp();
+    base::PowerMonitorDeviceSource::ThermalEventReceived(
+        GetThermalStateFromProtoEnum(protobuf.thermal_state()));
   }
 
   void OnGetPowerSupplyPropertiesMethod(dbus::Response* response) {

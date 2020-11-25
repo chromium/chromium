@@ -53,9 +53,17 @@ bool PowerMonitor::IsProcessSuspended() {
   return g_is_process_suspended.load(std::memory_order_relaxed);
 }
 
+// static
 PowerObserver::DeviceThermalState PowerMonitor::GetCurrentThermalState() {
   DCHECK(IsInitialized());
   return GetInstance()->source_->GetCurrentThermalState();
+}
+
+// static
+void PowerMonitor::SetCurrentThermalState(
+    PowerObserver::DeviceThermalState state) {
+  DCHECK(IsInitialized());
+  GetInstance()->source_->SetCurrentThermalState(state);
 }
 
 #if defined(OS_ANDROID)
