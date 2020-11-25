@@ -130,6 +130,13 @@ _COVERAGE_FORCE_LIST_MAP = {
     # be linked in. Therefore we force coverage for this file to ensure that
     # any target that includes it will also get the profiling runtime.
     'win': [r'..\..\base\test\clang_profiling.cc'],
+    # TODO(crbug.com/1141727) We're seeing runtime LLVM errors in mac-rel when
+    # no files are changed, so we suspect that this is similar to the other
+    # problem with clang_profiling.cc on Windows. The TODO here is to force
+    # coverage for this specific file on ALL platforms, if it turns out to fix
+    # this issue on Mac as well. It's the only file that directly calls
+    # `__llvm_profile_dump` so it warrants some special treatment.
+    'mac': ['../../base/test/clang_profiling.cc'],
 }
 
 
@@ -157,7 +164,6 @@ def _remove_flags_from_command(command):
 
 
 def main():
-  # TODO(crbug.com/898695): Make this wrapper work on Windows platform.
   arg_parser = argparse.ArgumentParser()
   arg_parser.usage = __doc__
   arg_parser.add_argument(
