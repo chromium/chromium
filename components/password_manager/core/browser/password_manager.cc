@@ -1238,7 +1238,9 @@ void PasswordManager::OnPasswordFormCleared(
     return;
   }
   // If a password form was cleared, login is successful.
-  if (form_data.is_form_tag) {
+  if (form_data.is_form_tag &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kDetectFormSubmissionOnFormClear)) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();
@@ -1250,7 +1252,9 @@ void PasswordManager::OnPasswordFormCleared(
       manager->GetSubmittedForm()->new_password_element_renderer_id;
   auto it = base::ranges::find(form_data.fields, new_password_field_id,
                                &autofill::FormFieldData::unique_renderer_id);
-  if (it != form_data.fields.end() && it->value.empty()) {
+  if (it != form_data.fields.end() && it->value.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kDetectFormSubmissionOnFormClear)) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();

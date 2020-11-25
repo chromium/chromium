@@ -1375,11 +1375,8 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
 
 void PasswordAutofillAgent::InformAboutFormClearing(
     const WebFormElement& form) {
-  if (!FrameCanAccessPasswordManager() ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kDetectFormSubmissionOnFormClear)) {
+  if (!FrameCanAccessPasswordManager())
     return;
-  }
   for (const auto& element : form.GetFormControlElements()) {
     FieldRendererId element_id(element.UniqueRendererFormControlId());
     // Notify PasswordManager if |form| has password fields that have user typed
@@ -1396,10 +1393,6 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   if (!FrameCanAccessPasswordManager())
     return;
   DCHECK(cleared_element.Value().IsEmpty());
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kDetectFormSubmissionOnFormClear)) {
-    return;
-  }
   FieldRendererId field_id(cleared_element.UniqueRendererFormControlId());
   // Ignore fields that had no user input or autofill on user trigger.
   if (!field_data_manager_->DidUserType(field_id) &&
