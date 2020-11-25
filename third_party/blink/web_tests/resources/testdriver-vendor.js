@@ -101,6 +101,7 @@
         for(var i = 0; i < keys.length; ++i) {
           let eventSenderKeys = keys[i];
           let charCode = keys.charCodeAt(i);
+          let modifierValue;
           // See https://w3c.github.io/webdriver/#keyboard-actions and
           // EventSender::KeyDown().
           if (charCode == 0xE004) {
@@ -117,11 +118,24 @@
             eventSenderKeys = "ArrowDown";
           } else if (charCode == 0xE00C) {
             eventSenderKeys = "Escape";
+          } else if (charCode == 0xE009) {
+            eventSenderKeys = "ControlLeft";
+            modifierValue = "ctrlKey";
+          } else if (charCode == 0xE00A) {
+            eventSenderKeys = "AltLeft";
+            modifierValue = "altKey";
+          } else if (charCode == 0xE03D) {
+            eventSenderKeys = "MetaLeft";
+            modifierValue = "metaKey";
+          } else if (charCode == 0xE008) {
+            eventSenderKeys = "ShiftLeft";
+            modifierValue = "shiftKey";
           } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
             reject(new Error("No support for this code: U+" + charCode.toString(16)));
             return;
           }
-          window.eventSender.keyDown(eventSenderKeys);
+
+          window.eventSender.keyDown(eventSenderKeys, modifierValue);
         }
         resolve();
       });

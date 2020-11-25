@@ -7,6 +7,9 @@
   <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo" />
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <style>
     :focus-visible {
       outline: 0;
@@ -48,9 +51,14 @@
           t.done();
         }));
 
-        window.setTimeout(t.step_func_done(()=> {
+        t.step_timeout(() => {
           assert_true(false, "timeout");
-        }), 1000);
+        }, 1000);
+
+        const ctrl_key = '\uE009';
+        test_driver.click(el).then(() => {
+          return test_driver.send_keys(el, ctrl_key);
+        });
 
   </script>
 </body>
