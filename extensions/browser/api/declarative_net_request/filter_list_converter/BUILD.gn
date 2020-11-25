@@ -18,6 +18,7 @@ source_set("support") {
     "//extensions/browser",
     "//extensions/common",
     "//extensions/common:test_support",
+    "//extensions/common/api:api",
     "//url",
   ]
 }
