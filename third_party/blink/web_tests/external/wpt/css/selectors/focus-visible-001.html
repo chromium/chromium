@@ -7,6 +7,9 @@
   <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo" />
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <style>
     :focus-visible {
       outline: darkgreen dotted 1px; /* fallback for Edge */
@@ -34,6 +37,9 @@
         assert_equals(getComputedStyle(el).outlineColor, "rgb(0, 100, 0)");
         t.done();
       }));
+      const tab_key = '\ue004';
+      test_driver.send_keys(el, tab_key)
+        .catch(e => t.step_func(() => assert_unreached("Actions sequence failed " + e)));
     }, "Keyboard focus should match :focus-visible");
   </script>
 </body>
