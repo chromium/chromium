@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -71,6 +72,7 @@ FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
 void NGFieldsetPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
+  GraphicsContext& graphics_context = paint_info.context;
   PhysicalSize fieldset_size(fieldset_.Size());
   PhysicalRect paint_rect(paint_offset, fieldset_size);
   BoxDecorationData box_decoration_data(paint_info, fieldset_);
@@ -80,7 +82,7 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
     return;
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, *fieldset_.GetLayoutObject(), paint_info.phase))
+          graphics_context, *fieldset_.GetLayoutObject(), paint_info.phase))
     return;
 
   const ComputedStyle& style = fieldset_.Style();
@@ -89,13 +91,30 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
   contracted_rect.Contract(fieldset_paint_info.border_outsets);
 
   DrawingRecorder recorder(
-      paint_info.context, *fieldset_.GetLayoutObject(), paint_info.phase,
+      graphics_context, *fieldset_.GetLayoutObject(), paint_info.phase,
       NGBoxFragmentPainter(fieldset_).VisualRect(paint_offset));
 
   NGBoxFragmentPainter fragment_painter(fieldset_);
   if (box_decoration_data.ShouldPaintShadow()) {
     fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style);
   }
+
+  GraphicsContextStateSaver state_saver(graphics_context, false);
+  bool needs_end_layer = false;
+  if (BleedAvoidanceIsClipping(
+          box_decoration_data.GetBackgroundBleedAvoidance())) {
+    state_saver.Save();
+    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
+        style, paint_rect, fieldset_.SidesToInclude());
+    graphics_context.ClipRoundedRect(border);
+
+    if (box_decoration_data.GetBackgroundBleedAvoidance() ==
+        kBackgroundBleedClipLayer) {
+      graphics_context.BeginLayer();
+      needs_end_layer = true;
+    }
+  }
+
   if (box_decoration_data.ShouldPaintBackground()) {
     // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
     BackgroundImageGeometry geometry(
@@ -111,9 +130,6 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
   if (box_decoration_data.ShouldPaintBorder()) {
     // Create a clipping region around the legend and paint the border as
     // normal.
-    GraphicsContext& graphics_context = paint_info.context;
-    GraphicsContextStateSaver state_saver(graphics_context);
-
     PhysicalRect legend_cutout_rect = fieldset_paint_info.legend_cutout_rect;
     legend_cutout_rect.Move(paint_rect.offset);
     graphics_context.ClipOut(PixelSnappedIntRect(legend_cutout_rect));
@@ -126,6 +142,9 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
         box_decoration_data.GetBackgroundBleedAvoidance(),
         fieldset_.SidesToInclude());
   }
+
+  if (needs_end_layer)
+    graphics_context.EndLayer();
 }
 
 void NGFieldsetPainter::PaintMask(const PaintInfo& paint_info,
