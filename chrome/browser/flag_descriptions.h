@@ -1853,6 +1853,9 @@ extern const char kAndroidDarkSearchDescription[];
 extern const char kAndroidNightModeTabReparentingName[];
 extern const char kAndroidNightModeTabReparentingDescription[];
 
+extern const char kSwipeToMoveCursorName[];
+extern const char kSwipeToMoveCursorDescription[];
+
 extern const char kTabbedAppOverflowMenuIconsName[];
 extern const char kTabbedAppOverflowMenuIconsDescription[];
 

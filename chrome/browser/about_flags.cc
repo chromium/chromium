@@ -6754,6 +6754,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPermissionPredictionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPermissionPredictions)},
 
+#if defined(OS_ANDROID)
+    {"enable-swipe-to-move-cursor", flag_descriptions::kSwipeToMoveCursorName,
+     flag_descriptions::kSwipeToMoveCursorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
+#endif  // defined(OS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
