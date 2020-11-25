@@ -136,8 +136,11 @@ void PermissionChip::Show(permissions::PermissionPrompt::Delegate* delegate) {
   SetVisible(true);
   // TODO(olesiamarukhno): Add tests for animation logic.
   animation_->Reset();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed())
+  is_collapsed_ = true;
+  if (!delegate_->WasCurrentRequestAlreadyDisplayed()) {
     animation_->Show();
+    is_collapsed_ = false;
+  }
   requested_time_ = base::TimeTicks::Now();
   PreferredSizeChanged();
 }
@@ -188,13 +191,10 @@ void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
   animation_->Hide();
+  is_collapsed_ = true;
 }
 
-bool PermissionChip::IsBubbleShowing() const {
-  return prompt_bubble_ != nullptr;
-}
-
-void PermissionChip::ChipButtonPressed() {
+void PermissionChip::OpenBubble() {
   // The prompt bubble is either not opened yet or already closed on
   // deactivation.
   DCHECK(!prompt_bubble_);
@@ -203,6 +203,14 @@ void PermissionChip::ChipButtonPressed() {
       browser_, delegate_, requested_time_, PermissionPromptStyle::kChip);
   prompt_bubble_->Show();
   prompt_bubble_->GetWidget()->AddObserver(this);
+}
+
+bool PermissionChip::IsBubbleShowing() const {
+  return prompt_bubble_ != nullptr;
+}
+
+void PermissionChip::ChipButtonPressed() {
+  OpenBubble();
   // Restart the timer after user clicks on the chip to open the bubble.
   StartCollapseTimer();
   if (!already_recorded_interaction_) {
@@ -217,6 +225,7 @@ void PermissionChip::Collapse() {
     StartCollapseTimer();
   } else {
     animation_->Hide();
+    is_collapsed_ = true;
   }
 }
 

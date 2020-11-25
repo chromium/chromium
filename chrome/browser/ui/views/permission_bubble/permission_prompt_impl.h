@@ -50,6 +50,10 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
 
   void ShowBubble();
 
+  void ShowChipUI();
+
+  bool ShouldCurrentRequestUseChipUI();
+
   // The popup bubble. Not owned by this class; it will delete itself when a
   // decision is made.
   PermissionPromptBubbleView* prompt_bubble_;

@@ -47,16 +47,8 @@ PermissionPromptImpl::PermissionPromptImpl(Browser* browser,
     content_settings::UpdateLocationBarUiForWebContents(web_contents_);
   } else {
     LocationBarView* lbv = GetLocationBarView();
-    std::vector<permissions::PermissionRequest*> requests =
-        delegate->Requests();
-    const bool should_use_chip_ui = std::all_of(
-        requests.begin(), requests.end(),
-        [](auto* request) { return request->GetChipText().has_value(); });
-    if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip) &&
-        lbv && lbv->IsDrawn() && should_use_chip_ui) {
-      permission_chip_ = lbv->permission_chip();
-      permission_chip_->Show(delegate);
-      prompt_style_ = PermissionPromptStyle::kChip;
+    if (lbv && lbv->IsDrawn() && ShouldCurrentRequestUseChipUI()) {
+      ShowChipUI();
     } else {
       ShowBubble();
     }
@@ -70,30 +62,74 @@ void PermissionPromptImpl::OnWidgetClosing(views::Widget* widget) {
 }
 
 PermissionPromptImpl::~PermissionPromptImpl() {
-  if (prompt_bubble_)
-    prompt_bubble_->GetWidget()->Close();
-
-  if (prompt_style_ == PermissionPromptStyle::kQuiet) {
-    // Hides the quiet prompt.
-    content_settings::UpdateLocationBarUiForWebContents(web_contents_);
+  switch (prompt_style_) {
+    case PermissionPromptStyle::kBubbleOnly:
+      DCHECK(!permission_chip_);
+      if (prompt_bubble_)
+        prompt_bubble_->GetWidget()->Close();
+      break;
+    case PermissionPromptStyle::kChip:
+      DCHECK(!prompt_bubble_);
+      DCHECK(permission_chip_);
+      permission_chip_->Hide();
+      permission_chip_ = nullptr;
+      break;
+    case PermissionPromptStyle::kQuiet:
+      DCHECK(!prompt_bubble_);
+      DCHECK(!permission_chip_);
+      content_settings::UpdateLocationBarUiForWebContents(web_contents_);
+      break;
   }
 
-  if (prompt_style_ == PermissionPromptStyle::kChip && permission_chip_) {
-    permission_chip_->Hide();
-  }
   CHECK(!IsInObserverList());
 }
 
 void PermissionPromptImpl::UpdateAnchorPosition() {
-  // TODO(olesiamarukhno): Figure out if we need to switch UI styles (chip to
-  // bubble and vice versa) here.
-  if (prompt_bubble_)
-    prompt_bubble_->UpdateAnchorPosition();
+  LocationBarView* lbv = GetLocationBarView();
+  const bool is_location_bar_drawn = lbv && lbv->IsDrawn();
+  switch (prompt_style_) {
+    case PermissionPromptStyle::kBubbleOnly:
+      DCHECK(prompt_bubble_);
+      DCHECK(!permission_chip_);
+      if (ShouldCurrentRequestUseChipUI() && is_location_bar_drawn) {
+        // Change prompt style to chip to avoid dismissing request while
+        // switching UI style.
+        prompt_bubble_->SetPromptStyle(PermissionPromptStyle::kChip);
+        prompt_bubble_->GetWidget()->Close();
+        ShowChipUI();
+        permission_chip_->OpenBubble();
+      } else {
+        prompt_bubble_->UpdateAnchorPosition();
+      }
+      break;
+    case PermissionPromptStyle::kChip:
+      DCHECK(!prompt_bubble_);
+      DCHECK(permission_chip_);
+      // If there is fresh pending request shown as chip UI and location bar
+      // isn't visible anymore, show bubble UI instead.
+      if (!permission_chip_->is_collapsed() && !is_location_bar_drawn) {
+        permission_chip_->Hide();
+        permission_chip_ = nullptr;
+        ShowBubble();
+      }
+      break;
+    case PermissionPromptStyle::kQuiet:
+      break;
+  }
 }
 
 LocationBarView* PermissionPromptImpl::GetLocationBarView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   return browser_view ? browser_view->GetLocationBarView() : nullptr;
+}
+
+void PermissionPromptImpl::ShowChipUI() {
+  LocationBarView* lbv = GetLocationBarView();
+  DCHECK(lbv);
+
+  permission_chip_ = lbv->permission_chip();
+  permission_chip_->Show(delegate_);
+  prompt_style_ = PermissionPromptStyle::kChip;
 }
 
 void PermissionPromptImpl::ShowBubble() {
@@ -102,6 +138,16 @@ void PermissionPromptImpl::ShowBubble() {
       browser_, delegate_, base::TimeTicks::Now(), prompt_style_);
   prompt_bubble_->Show();
   prompt_bubble_->GetWidget()->AddObserver(this);
+}
+
+bool PermissionPromptImpl::ShouldCurrentRequestUseChipUI() {
+  if (!base::FeatureList::IsEnabled(permissions::features::kPermissionChip))
+    return false;
+
+  std::vector<permissions::PermissionRequest*> requests = delegate_->Requests();
+  return std::all_of(requests.begin(), requests.end(), [](auto* request) {
+    return request->GetChipText().has_value();
+  });
 }
 
 permissions::PermissionPrompt::TabSwitchingBehavior

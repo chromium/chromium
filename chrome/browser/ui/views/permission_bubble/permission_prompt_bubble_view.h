@@ -29,6 +29,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   // bubble_anchor_util::GetPageInfoAnchorConfiguration.
   void UpdateAnchorPosition();
 
+  void SetPromptStyle(PermissionPromptStyle prompt_style);
+
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
   bool ShouldShowCloseButton() const override;

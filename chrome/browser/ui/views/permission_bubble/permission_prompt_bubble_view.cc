@@ -96,16 +96,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   SetCancelCallback(base::BindOnce(&PermissionPromptBubbleView::DenyPermission,
                                    base::Unretained(this)));
 
-  // If bubble hanging off the padlock icon, with no chip showing, it shouldn't
-  // close on deactivate and it should stick until user makes a decision.
-  // Otherwise, the chip is indicating the pending permission request and so the
-  // bubble can be opened and closed repeatedly.
-  if (prompt_style == PermissionPromptStyle::kBubbleOnly) {
-    set_close_on_deactivate(false);
-    DialogDelegate::SetCloseCallback(
-        base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
-                       base::Unretained(this)));
-  }
+  SetPromptStyle(prompt_style);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -215,6 +206,23 @@ void PermissionPromptBubbleView::UpdateAnchorPosition() {
   if (!configuration.anchor_view)
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));
   SetArrow(configuration.bubble_arrow);
+}
+
+void PermissionPromptBubbleView::SetPromptStyle(
+    PermissionPromptStyle prompt_style) {
+  // If bubble hanging off the padlock icon, with no chip showing, it shouldn't
+  // close on deactivate and it should stick until user makes a decision.
+  // Otherwise, the chip is indicating the pending permission request and so the
+  // bubble can be opened and closed repeatedly.
+  if (prompt_style == PermissionPromptStyle::kBubbleOnly) {
+    set_close_on_deactivate(false);
+    DialogDelegate::SetCloseCallback(
+        base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
+                       base::Unretained(this)));
+  } else {
+    set_close_on_deactivate(true);
+    DialogDelegate::SetCloseCallback(base::OnceClosure());
+  }
 }
 
 void PermissionPromptBubbleView::AddedToWidget() {
