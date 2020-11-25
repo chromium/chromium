@@ -194,6 +194,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     tester.ExpectTotalCount(kManifestRulesCountHistogram, 0u);
   }
 
+  // void Update
+
   enum class RulesetScope { kDynamic, kSession };
 
   // Runs the updateDynamicRules/updateSessionRules extension function based on
@@ -2184,6 +2186,48 @@ TEST_P(MultipleRulesetsGlobalRulesTest, ReclaimAllocationOnUnload) {
   CheckExtensionAllocationInPrefs(second_extension_id, ext_2_allocation);
 }
 
+using MultipleRulesetsGlobalRulesTest_Unpacked =
+    MultipleRulesetsGlobalRulesTest;
+
+// Test that reloading an unpacked extension is functionally identical to
+// uninstalling then reinstalling it for the purpose of global rule allocation,
+// and the allocation should reflect changes made to the extension.
+TEST_P(MultipleRulesetsGlobalRulesTest_Unpacked, UpdateAllocationOnReload) {
+  AddRuleset(CreateRuleset(kId1, 250, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess(250);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+  ExtensionId extension_id = extension()->id();
+
+  // The 150 rules that contribute to the global pool should be
+  // tracked.
+  GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+  EXPECT_EQ(150u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+
+  // An entry for these 150 rules should be persisted for the extension in
+  // prefs.
+  CheckExtensionAllocationInPrefs(extension_id, 150);
+
+  // Replace ruleset |kId1| with a smaller ruleset |kId2| and persist the
+  // ruleset to the extension's directory via WriteExtensionData().
+  ClearRulesets();
+  AddRuleset(CreateRuleset(kId2, 150, 0, true));
+  WriteExtensionData();
+
+  // Reload the extension. For unpacked extensions this is functionally
+  // equivalent to uninstalling the extension then installing it again based on
+  // the contents of the extension's directory.
+  service()->ReloadExtension(extension_id);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // File changes to the extension's ruleset should take effect after it is
+  // reloaded.
+  EXPECT_EQ(50u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension_id, 50);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SingleRulesetTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
@@ -2203,6 +2247,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          MultipleRulesetsGlobalRulesTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MultipleRulesetsGlobalRulesTest_Unpacked,
+                         ::testing::Values(ExtensionLoadType::UNPACKED));
 
 }  // namespace
 }  // namespace declarative_net_request
