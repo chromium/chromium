@@ -363,20 +363,6 @@ void LacrosChromeServiceImpl::BindReceiver(
                        ToMojo(delegate_->GetChromeVersion())));
   }
 
-  if (IsAccountManagerAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::AccountManager>
-        account_manager_receiver =
-            account_manager_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindAccountManagerReceiver,
-            weak_sequenced_state_, std::move(account_manager_receiver)));
-  } else {
-    LOG(WARNING) << "Connected to an older version of ash. Account consistency "
-                    "will not be available";
-  }
-
   if (IsFileManagerAvailable()) {
     mojo::PendingReceiver<crosapi::mojom::FileManager> pending_receiver =
         file_manager_remote_.BindNewPipeAndPassReceiver();
@@ -432,6 +418,16 @@ bool LacrosChromeServiceImpl::IsAccountManagerAvailable() {
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindAccountManagerMinVersion;
+}
+
+void LacrosChromeServiceImpl::BindAccountManagerReceiver(
+    mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver) {
+  DCHECK(IsAccountManagerAvailable());
+  never_blocking_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceNeverBlockingState::BindAccountManagerReceiver,
+          weak_sequenced_state_, std::move(pending_receiver)));
 }
 
 bool LacrosChromeServiceImpl::IsFileManagerAvailable() {

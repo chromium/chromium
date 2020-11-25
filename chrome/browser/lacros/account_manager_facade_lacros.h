@@ -11,10 +11,7 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-
-namespace chromeos {
-class LacrosChromeServiceImpl;
-}  // namespace chromeos
+#include "mojo/public/cpp/bindings/remote.h"
 
 // Lacros specific implementation of |AccountManagerFacade| that talks to
 // |chromeos::AccountManager|, residing in ash-chrome, over Mojo.
@@ -22,7 +19,8 @@ class AccountManagerFacadeLacros
     : public account_manager::AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {
  public:
-  AccountManagerFacadeLacros();
+  explicit AccountManagerFacadeLacros(
+      mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote);
   AccountManagerFacadeLacros(const AccountManagerFacadeLacros&) = delete;
   AccountManagerFacadeLacros& operator=(const AccountManagerFacadeLacros&) =
       delete;
@@ -42,7 +40,7 @@ class AccountManagerFacadeLacros
   void OnInitialized(bool is_initialized);
 
   bool is_initialized_ = false;
-  chromeos::LacrosChromeServiceImpl* const lacros_chrome_service_impl_;
+  mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
       receiver_;
 

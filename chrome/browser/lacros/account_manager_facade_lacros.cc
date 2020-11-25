@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
 
 namespace {
 
@@ -18,14 +17,14 @@ constexpr uint32_t kMinVersionWithObserver = 1;
 
 }  // namespace
 
-AccountManagerFacadeLacros::AccountManagerFacadeLacros()
-    : lacros_chrome_service_impl_(chromeos::LacrosChromeServiceImpl::Get()) {
-  if (!lacros_chrome_service_impl_->IsAccountManagerAvailable())
+AccountManagerFacadeLacros::AccountManagerFacadeLacros(
+    mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote)
+    : account_manager_remote_(std::move(account_manager_remote)) {
+  if (!account_manager_remote_)
     return;
 
-  lacros_chrome_service_impl_->account_manager_remote().QueryVersion(
-      base::BindOnce(&AccountManagerFacadeLacros::OnVersionCheck,
-                     weak_factory_.GetWeakPtr()));
+  account_manager_remote_.QueryVersion(base::BindOnce(
+      &AccountManagerFacadeLacros::OnVersionCheck, weak_factory_.GetWeakPtr()));
 }
 
 AccountManagerFacadeLacros::~AccountManagerFacadeLacros() = default;
@@ -38,7 +37,7 @@ void AccountManagerFacadeLacros::OnVersionCheck(uint32_t version) {
   if (version < kMinVersionWithObserver)
     return;
 
-  lacros_chrome_service_impl_->account_manager_remote()->AddObserver(
+  account_manager_remote_->AddObserver(
       base::BindOnce(&AccountManagerFacadeLacros::OnReceiverReceived,
                      weak_factory_.GetWeakPtr()));
 }
@@ -50,9 +49,8 @@ void AccountManagerFacadeLacros::OnReceiverReceived(
           this, std::move(receiver));
   // At this point (|receiver_| exists), we are subscribed to Account Manager.
 
-  lacros_chrome_service_impl_->account_manager_remote()->IsInitialized(
-      base::BindOnce(&AccountManagerFacadeLacros::OnInitialized,
-                     weak_factory_.GetWeakPtr()));
+  account_manager_remote_->IsInitialized(base::BindOnce(
+      &AccountManagerFacadeLacros::OnInitialized, weak_factory_.GetWeakPtr()));
 }
 void AccountManagerFacadeLacros::OnInitialized(bool is_initialized) {
   if (is_initialized)

@@ -162,17 +162,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           remote);
 
-  // account_manager_remote() can only be used if this method returns true.
-  bool IsAccountManagerAvailable();
-
-  // This must be called on the affine sequence. It exposes a remote that can
-  // be used to interact with accounts in Chrome OS Account Manager.
-  mojo::Remote<crosapi::mojom::AccountManager>& account_manager_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsAccountManagerAvailable());
-    return account_manager_remote_;
-  }
-
   // file_manager_remote() can only be used if this method returns true.
   bool IsFileManagerAvailable();
 
@@ -196,6 +185,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // This may be called on any thread.
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
+
+  // BindAccountManagerReceiver() can only be used if this method returns true.
+  bool IsAccountManagerAvailable();
+
+  // This may be called on any thread.
+  void BindAccountManagerReceiver(
+      mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver);
 
   // OnLacrosStartup method of AshChromeService crosapi can only be called
   // if this method returns true.
@@ -251,7 +247,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
-  mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
 
   // This member is instantiated on the affine sequence alongside the
