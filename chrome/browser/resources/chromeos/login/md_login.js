@@ -22,7 +22,6 @@
 // <include src="oobe_screen_autolaunch.js">
 // <include src="oobe_select.js">
 
-// <include src="screen_arc_terms_of_service.js">
 // <include src="screen_error_message.js">
 // <include src="screen_discover.js">
 // <include src="screen_multidevice_setup.js">
@@ -52,7 +51,6 @@ HTMLImports.whenReady(() => {
         login.AccountPickerScreen.register();
         login.AutolaunchScreen.register();
         login.ErrorMessageScreen.register();
-        login.ArcTermsOfServiceScreen.register();
         login.DiscoverScreen.register();
         login.MultiDeviceSetupScreen.register();
 

@@ -154,7 +154,7 @@ void WaitForGaiaSignInScreen(bool arc_available) {
   if (arc_available) {
     test::OobeJS()
         .CreateHasClassWaiter(true, "arc-tos-loaded",
-                              {"arc-tos-root", "arcTosDialog"})
+                              {"arc-tos", "arcTosDialog"})
         ->Wait();
   }
 
@@ -225,17 +225,17 @@ void HandleArcTermsOfServiceScreen() {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
-      .CreateEnabledWaiter(true, {"arc-tos-root", "arcTosNextButton"})
+      .CreateEnabledWaiter(true, {"arc-tos", "arcTosNextButton"})
       ->Wait();
-  test::OobeJS().TapOnPath({"arc-tos-root", "arcTosNextButton"});
+  test::OobeJS().TapOnPath({"arc-tos", "arcTosNextButton"});
   test::OobeJS()
-      .CreateVisibilityWaiter(true, {"arc-tos-root", "arcLocationService"})
+      .CreateVisibilityWaiter(true, {"arc-tos", "arcLocationService"})
       ->Wait();
   test::OobeJS()
-      .CreateVisibilityWaiter(true, {"arc-tos-root", "arcTosAcceptButton"})
+      .CreateVisibilityWaiter(true, {"arc-tos", "arcTosAcceptButton"})
       ->Wait();
 
-  test::OobeJS().TapOnPath({"arc-tos-root", "arcTosAcceptButton"});
+  test::OobeJS().TapOnPath({"arc-tos", "arcTosAcceptButton"});
 
   OobeScreenExitWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: 'arc-tos' screen done.";

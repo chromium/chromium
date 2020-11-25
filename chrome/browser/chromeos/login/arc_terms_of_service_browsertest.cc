@@ -84,6 +84,25 @@ constexpr char kTosContent[] = "Arc TOS for test.";
 constexpr char kPrivacyPolicyPath[] = "/policies/privacy/";
 constexpr char kPrivacyPolicyContent[] = "Arc Privarcy Policy for test.";
 
+constexpr char kArcTosID[] = "arc-tos";
+
+const test::UIPath kArcEnableBackupRestore = {kArcTosID,
+                                              "arcEnableBackupRestore"};
+const test::UIPath kArcEnableLocationService = {kArcTosID,
+                                                "arcEnableLocationService"};
+const test::UIPath kArcExtraContent = {kArcTosID, "arcExtraContent"};
+const test::UIPath kArcLocationService = {kArcTosID, "arcLocationService"};
+const test::UIPath kArcPolicyLink = {kArcTosID, "arcPolicyLink"};
+const test::UIPath kArcReviewSettingsCheckbox = {kArcTosID,
+                                                 "arcReviewSettingsCheckbox"};
+const test::UIPath kArcTosAcceptButton = {kArcTosID, "arcTosAcceptButton"};
+const test::UIPath kArcTosBackButton = {kArcTosID, "arcTosBackButton"};
+const test::UIPath kArcTosDialog = {kArcTosID, "arcTosDialog"};
+const test::UIPath kArcTosNextButton = {kArcTosID, "arcTosNextButton"};
+const test::UIPath kArcTosOverlayWebview = {kArcTosID, "arcTosOverlayWebview"};
+const test::UIPath kArcTosRetryButton = {kArcTosID, "arcTosRetryButton"};
+const test::UIPath kArcTosView = {kArcTosID, "arcTosView"};
+
 ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(bool accepted) {
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(accepted ? sync_pb::UserConsentTypes::GIVEN
@@ -243,8 +262,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
   void WaitForTermsOfServiceWebViewToLoad() {
     OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
     test::OobeJS()
-        .CreateHasClassWaiter(true, "arc-tos-loaded",
-                              {"arc-tos-root", "arcTosDialog"})
+        .CreateHasClassWaiter(true, "arc-tos-loaded", kArcTosDialog)
         ->Wait();
   }
 
@@ -329,8 +347,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, TermsOfServiceContent) {
   TriggerArcTosScreen();
   ASSERT_NO_FATAL_FAILURE(WaitForTermsOfServiceWebViewToLoad());
-  EXPECT_EQ(kTosContent,
-            test::GetWebViewContents({"arc-tos-root", "arcTosView"}));
+  EXPECT_EQ(kTosContent, test::GetWebViewContents(kArcTosView));
 
   EXPECT_FALSE(screen_exit_result().has_value());
 }
@@ -341,15 +358,15 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, ClickOnMore) {
   TriggerArcTosScreen();
   ASSERT_NO_FATAL_FAILURE(WaitForTermsOfServiceWebViewToLoad());
   // By default, these paragraphs should be hidden.
-  test::OobeJS().ExpectHiddenPath({"arc-tos-root", "arcExtraContent"});
-  test::OobeJS().ExpectHiddenPath({"arc-tos-root", "arcTosAcceptButton"});
+  test::OobeJS().ExpectHiddenPath(kArcExtraContent);
+  test::OobeJS().ExpectHiddenPath(kArcTosAcceptButton);
 
   // Click on 'More' button.
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosNextButton"});
+  test::OobeJS().ClickOnPath(kArcTosNextButton);
 
   // Paragraphs should now be visible.
-  test::OobeJS().ExpectHiddenPath({"arc-tos-root", "arcTosNextButton"});
-  test::OobeJS().ExpectVisiblePath({"arc-tos-root", "arcExtraContent"});
+  test::OobeJS().ExpectHiddenPath(kArcTosNextButton);
+  test::OobeJS().ExpectVisiblePath(kArcExtraContent);
 
   EXPECT_FALSE(screen_exit_result().has_value());
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -364,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, ClickOnMore) {
 IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, LearnMoreDialogs) {
   TriggerArcTosScreen();
   ASSERT_NO_FATAL_FAILURE(WaitForTermsOfServiceWebViewToLoad());
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosNextButton"});
+  test::OobeJS().ClickOnPath(kArcTosNextButton);
 
   // List of pairs of {html element ids, html pop up dialog id}.
   std::vector<std::pair<std::string, std::string>> learn_more_links{
@@ -378,14 +395,14 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, LearnMoreDialogs) {
     std::string popup_html_element_id;
     std::tie(html_element_id, popup_html_element_id) = pair;
     test::OobeJS().ExpectHasNoAttribute(
-        "open", {"arc-tos-root", popup_html_element_id, "helpDialog"});
-    test::OobeJS().ClickOnPath({"arc-tos-root", html_element_id});
+        "open", {kArcTosID, popup_html_element_id, "helpDialog"});
+    test::OobeJS().ClickOnPath({kArcTosID, html_element_id});
     test::OobeJS().ExpectHasAttribute(
-        "open", {"arc-tos-root", popup_html_element_id, "helpDialog"});
+        "open", {kArcTosID, popup_html_element_id, "helpDialog"});
     test::OobeJS().ClickOnPath(
-        {"arc-tos-root", popup_html_element_id, "closeButton"});
+        {kArcTosID, popup_html_element_id, "closeButton"});
     test::OobeJS().ExpectHasNoAttribute(
-        "open", {"arc-tos-root", popup_html_element_id, "helpDialog"});
+        "open", {kArcTosID, popup_html_element_id, "helpDialog"});
   }
   EXPECT_FALSE(screen_exit_result().has_value());
   EXPECT_THAT(
@@ -419,9 +436,9 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, ReviewPlayOptions) {
   EXPECT_FALSE(
       profile->GetPrefs()->GetBoolean(prefs::kShowArcSettingsOnSessionStart));
 
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosNextButton"});
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcReviewSettingsCheckbox"});
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosAcceptButton"});
+  test::OobeJS().ClickOnPath(kArcTosNextButton);
+  test::OobeJS().ClickOnPath(kArcReviewSettingsCheckbox);
+  test::OobeJS().ClickOnPath(kArcTosAcceptButton);
 
   EXPECT_TRUE(
       profile->GetPrefs()->GetBoolean(prefs::kShowArcSettingsOnSessionStart));
@@ -457,11 +474,11 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, PrivacyPolicy) {
   TriggerArcTosScreen();
   ASSERT_NO_FATAL_FAILURE(WaitForTermsOfServiceWebViewToLoad());
 
-  WebViewLoadWaiter waiter({"arc-tos-root", "arcTosOverlayWebview"});
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosNextButton"});
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcPolicyLink"});
+  WebViewLoadWaiter waiter(kArcTosOverlayWebview);
+  test::OobeJS().ClickOnPath(kArcTosNextButton);
+  test::OobeJS().ClickOnPath(kArcPolicyLink);
   waiter.Wait();
-  EXPECT_EQ(test::GetWebViewContents({"arc-tos-root", "arcTosOverlayWebview"}),
+  EXPECT_EQ(test::GetWebViewContents(kArcTosOverlayWebview),
             kPrivacyPolicyContent);
 
   EXPECT_THAT(
@@ -490,8 +507,8 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, RetryAndBackButtonClicked) {
   TriggerArcTosScreen();
   WaitForTermsOfServiceWebViewToLoad();
 
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosRetryButton"});
-  test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosBackButton"});
+  test::OobeJS().ClickOnPath(kArcTosRetryButton);
+  test::OobeJS().ClickOnPath(kArcTosBackButton);
 
   WaitForScreenExitResult();
   EXPECT_EQ(screen_exit_result(), ArcTermsOfServiceScreen::Result::BACK);
@@ -544,12 +561,10 @@ class ParameterizedArcTermsOfServiceScreenTest
       ArcGoogleLocationServiceConsent location_service_consent) {
     ASSERT_NO_FATAL_FAILURE(WaitForTermsOfServiceWebViewToLoad());
 
-    test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosNextButton"});
+    test::OobeJS().ClickOnPath(kArcTosNextButton);
 
     // Wait for checkboxes to become visible.
-    test::OobeJS()
-        .CreateVisibilityWaiter(true, {"arc-tos-root", "arcLocationService"})
-        ->Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kArcLocationService)->Wait();
 
     Profile* profile = ProfileManager::GetActiveUserProfile();
     FakeConsentAuditor* auditor = static_cast<FakeConsentAuditor*>(
@@ -557,10 +572,10 @@ class ParameterizedArcTermsOfServiceScreenTest
             profile, base::BindRepeating(&BuildFakeConsentAuditor)));
 
     if (!accept_backup_restore_)
-      test::OobeJS().ClickOnPath({"arc-tos-root", "arcEnableBackupRestore"});
+      test::OobeJS().ClickOnPath(kArcEnableBackupRestore);
 
     if (!accept_location_service_) {
-      test::OobeJS().ClickOnPath({"arc-tos-root", "arcEnableLocationService"});
+      test::OobeJS().ClickOnPath(kArcEnableLocationService);
     }
 
     EXPECT_CALL(*auditor, RecordArcPlayConsent(
@@ -577,7 +592,7 @@ class ParameterizedArcTermsOfServiceScreenTest
                             location_service_consent)));
 
     if (accept)
-      test::OobeJS().ClickOnPath({"arc-tos-root", "arcTosAcceptButton"});
+      test::OobeJS().ClickOnPath(kArcTosAcceptButton);
   }
 
  protected:

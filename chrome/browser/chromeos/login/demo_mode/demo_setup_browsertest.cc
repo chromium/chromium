@@ -127,7 +127,7 @@ std::string ScreenToContentQuery(OobeScreenId screen) {
   if (screen == EulaView::kScreenId)
     return "$('oobe-eula-md')";
   if (screen == ArcTermsOfServiceScreenView::kScreenId)
-    return "$('arc-tos-root')";
+    return "$('arc-tos')";
   if (screen == DemoSetupScreenView::kScreenId)
     return "$('demo-setup')";
   NOTREACHED() << "This OOBE screen is not a part of Demo Mode setup flow";
