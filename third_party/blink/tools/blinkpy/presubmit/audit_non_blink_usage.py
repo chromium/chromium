@@ -717,7 +717,6 @@ _CONFIG = [
         'paths': ['third_party/blink/renderer/core/page/scrolling'],
         'allowed': [
             'cc::ScrollbarLayerBase',
-            'shared_highlighting::.+',
         ],
     },
     {

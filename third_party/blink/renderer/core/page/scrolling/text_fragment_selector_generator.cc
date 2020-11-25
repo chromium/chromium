@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -16,8 +15,6 @@
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
-
-using LinkGenerationError = shared_highlighting::LinkGenerationError;
 
 namespace blink {
 
@@ -267,7 +264,6 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
   pending_generate_selector_callback_ = std::move(callback);
   state_ = kNeedsNewCandidate;
-  error_.reset();
   step_ = kExact;
   max_available_prefix_ = "";
   max_available_suffix_ = "";
@@ -349,9 +345,10 @@ void TextFragmentSelectorGenerator::DidFindMatch(
 }
 
 void TextFragmentSelectorGenerator::NoMatchFound() {
-  state_ = kFailure;
-  error_ = LinkGenerationError::kIncorrectSelector;
-  ResolveSelectorState();
+  UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                            LinkGenerationError::kIncorrectSelector);
+  NotifySelectorReady(
+      TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
 }
 
 void TextFragmentSelectorGenerator::NotifySelectorReady(
@@ -382,9 +379,6 @@ void TextFragmentSelectorGenerator::NotifySelectorReady(
     UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
                         base::DefaultTickClock::GetInstance()->NowTicks() -
                             generation_start_time_);
-
-    shared_highlighting::LogLinkGenerationErrorReason(
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown);
   }
 
   std::move(pending_generate_selector_callback_).Run(selector.ToString());
@@ -418,8 +412,9 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
 
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
   if (selected_text.IsEmpty()) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kEmptySelection);
     state_ = kFailure;
-    error_ = LinkGenerationError::kEmptySelection;
     return;
   }
 
@@ -471,8 +466,9 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       // If from middle till end of selection there is no word break, then we
       // cannot use it for range end.
       if (mid_point == selection_length) {
+        UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                                  LinkGenerationError::kNoRange);
         state_ = kFailure;
-        error_ = LinkGenerationError::kNoRange;
         return;
       }
 
@@ -512,8 +508,9 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   // Give up if context is already too long.
   if (num_prefix_words_ == kMaxContextWords ||
       num_prefix_words_ == kMaxContextWords) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kContextLimitReached);
     state_ = kFailure;
-    error_ = LinkGenerationError::kContextLimitReached;
     return;
   }
 
@@ -525,8 +522,9 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   }
 
   if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kNoContext);
     state_ = kFailure;
-    error_ = LinkGenerationError::kNoContext;
     return;
   }
 
@@ -535,8 +533,9 @@ void TextFragmentSelectorGenerator::ExtendContext() {
 
   // Give up if we were unable to get new prefix and suffix.
   if (prefix == selector_->Prefix() && suffix == selector_->Suffix()) {
+    UMA_HISTOGRAM_ENUMERATION("SharedHighlights.LinkGenerated.Error",
+                              LinkGenerationError::kContextExhausted);
     state_ = kFailure;
-    error_ = LinkGenerationError::kContextExhausted;
     return;
   }
   selector_ = std::make_unique<TextFragmentSelector>(

@@ -13,7 +13,6 @@ namespace shared_highlighting {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // The type of errors that can happen during link generation.
-// Update corresponding |LinkGenerationError| in enums.xml.
 enum class LinkGenerationError {
   kIncorrectSelector = 0,
   kNoRange = 1,
