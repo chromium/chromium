@@ -2213,7 +2213,8 @@ void QuicChromiumClientSession::OnProbeSucceeded(
   connection()->SetSelfAddress(self_address);
 
   // Close streams that are not migratable to the probed |network|.
-  ResetNonMigratableStreams();
+  if (!allow_port_migration_)
+    ResetNonMigratableStreams();
 
   if (!migrate_idle_session_ && !HasActiveRequestStreams()) {
     // If idle sessions won't be migrated, close the connection.
