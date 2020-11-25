@@ -9,8 +9,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -170,6 +172,16 @@ bool ParentAccessControllerImpl::ShowWidget(
     base::Time validation_time) {
   if (PinRequestWidget::Get())
     return false;
+
+  // When there is no logged in user we should accept parent access code for any
+  // of child account added to the device.
+  const auto session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  const bool user_in_session =
+      session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE ||
+      session_state == session_manager::SessionState::ACTIVE ||
+      session_state == session_manager::SessionState::LOCKED;
+  DCHECK(user_in_session || child_account_id.empty());
 
   account_id_ = child_account_id;
   action_ = action;

@@ -182,8 +182,11 @@ void LoginScreenClient::ShowGaiaSignin(const AccountId& prefilled_account) {
           supervised_action)) {
     // Show the client native parent access widget and processed to GAIA signin
     // flow in |OnParentAccessValidation| when validation success.
+    // On login screen we want to validate parent access code for the
+    // device owner. Device owner might be different than the account that
+    // requires reauth, so we are passing an empty |account_id|.
     ash::ParentAccessController::Get()->ShowWidget(
-        prefilled_account,
+        AccountId(),
         base::BindOnce(&LoginScreenClient::OnParentAccessValidation,
                        weak_ptr_factory_.GetWeakPtr(), prefilled_account),
         supervised_action, false /* extra_dimmer */, base::Time::Now());

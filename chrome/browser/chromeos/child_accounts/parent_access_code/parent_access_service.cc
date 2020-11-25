@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "chrome/common/chrome_features.h"
@@ -26,13 +27,30 @@ using ash::SupervisedAction;
 
 // Returns true when the device owner is a child.
 bool IsDeviceOwnedByChild() {
+  // TODO(crbug.com/1143369): Owner id might not be available early after
+  // startup. Wait for it to be ready.
   AccountId owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
-  if (owner_account_id.empty())
+  if (owner_account_id.empty()) {
+    LOG(ERROR) << "Device owner could not be determined - will skip parent "
+                  "code validation";
     return false;
+  }
+
   const user_manager::User* device_owner =
       user_manager::UserManager::Get()->FindUser(owner_account_id);
-  CHECK(device_owner);
+
+  // It looks like reading users from Local State might be failing sometimes.
+  // Default to false if ownership is not known to avoid crash.
+  // TODO(agawronska): Investigate if it can be improved. Defaulting to false
+  // could sometimes lead to skipping parent code validation when child is the
+  // device owner.
+  if (!device_owner) {
+    LOG(ERROR) << "Device owner could not be determined - will skip parent "
+                  "code validation";
+    return false;
+  }
+
   return device_owner->IsChild();
 }
 
