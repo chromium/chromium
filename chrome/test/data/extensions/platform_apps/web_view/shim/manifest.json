@@ -18,6 +18,7 @@
           "child_frame.html",
           "parent_frame.html",
           "guest_with_inline_script.html",
+          "test.bmp",
           "test.pdf",
           "guest_with_select.html"
         ]
