@@ -23,7 +23,7 @@ const base::Feature kDismissPromos{"DismissNtpPromos",
 
 // If enabled, the OneGooleBar is loaded in an iframe. Otherwise, it is inlined.
 const base::Feature kIframeOneGoogleBar{"IframeOneGoogleBar",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, queries that are frequently repeated by the user (and are
 // expected to be issued again) are shown as most visited tiles.
