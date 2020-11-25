@@ -194,6 +194,12 @@ Polymer({
       this.focus();
     } else if (e.key === 'ArrowRight') {
       this.$.menuButton.focus();
+    } else if (e.key === ' ') {
+      this.dispatch(selectItem(this.itemId, this.getState(), {
+        clear: false,
+        range: false,
+        toggle: true,
+      }));
     }
   },
 
