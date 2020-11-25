@@ -380,9 +380,11 @@ public class AssistantStepProgressBar {
     }
 
     public void setSteps(List<AssistantDrawable> icons) {
-        mView.removeAllViews();
-
         assert icons.size() >= 2;
+        // NOTE: instead of immediately removing the old icons, we first add the new ones. This
+        // prevents a change of the bottom sheet height, which was the cause for animation glitches
+        // (see b/174014637).
+        int oldNumChilds = mView.getChildCount();
         mNumberOfSteps = icons.size();
         mCurrentStep = -1;
 
@@ -399,6 +401,8 @@ public class AssistantStepProgressBar {
                         Locale.getDefault(), AssistantTagsForTesting.PROGRESSBAR_LINE_TAG, i));
             }
         }
+
+        mView.removeViews(0, oldNumChilds);
     }
 
     public void setVisible(boolean visible) {

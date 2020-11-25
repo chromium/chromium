@@ -27,13 +27,19 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Checks whether the proactive help switch preference in settings is on. */
-    static boolean isProactiveHelpSwitchOn() {
+    public static boolean isProactiveHelpSwitchOn() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
             return false;
         }
 
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
+    }
+
+    /** Enables or disables the proactive help setting. */
+    public static void setProactiveHelpSwitch(boolean enabled) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, enabled);
     }
 
     /** Returns whether the user has seen a lite script before or not. */

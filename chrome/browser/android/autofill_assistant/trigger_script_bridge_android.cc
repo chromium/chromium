@@ -46,10 +46,8 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
   if (jservice_request_sender) {
     service_request_sender.reset(static_cast<ServiceRequestSender*>(
         reinterpret_cast<void*>(jservice_request_sender)));
-    ClientSettingsProto::IntegrationTestSettings test_settings;
-    test_settings.set_disable_header_animations(true);
-    test_settings.set_disable_carousel_change_animations(true);
-    client_settings_.integration_test_settings = test_settings;
+    // TODO(b/171776026): consider exposing this in proto.
+    disable_header_animations_for_testing_ = true;
   } else {
     service_request_sender = std::make_unique<ServiceRequestSenderImpl>(
         client->GetWebContents()->GetBrowserContext(),
@@ -127,8 +125,12 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
   }
   JNIEnv* env = AttachCurrentThread();
   auto jheader_model =
-      Java_AssistantTriggerScriptBridge_getHeaderModel(env, java_object_);
+      Java_AssistantTriggerScriptBridge_createHeaderAndGetModel(env,
+                                                                java_object_);
   AssistantHeaderModel header_model(jheader_model);
+  if (disable_header_animations_for_testing_) {
+    header_model.SetDisableAnimations(disable_header_animations_for_testing_);
+  }
   header_model.SetStatusMessage(proto.status_message());
   header_model.SetBubbleMessage(proto.callout_message());
   header_model.SetProgressVisible(proto.has_progress_bar());
@@ -172,12 +174,13 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
   }
 
   last_shown_trigger_script_ = proto;
-  Java_AssistantTriggerScriptBridge_showTriggerScript(
+  jboolean success = Java_AssistantTriggerScriptBridge_showTriggerScript(
       env, java_object_, ToJavaArrayOfStrings(env, cancel_popup_items),
       ToJavaIntArray(env, cancel_popup_actions), jleft_aligned_chips,
       ToJavaIntArray(env, left_aligned_chip_actions), jright_aligned_chips,
       ToJavaIntArray(env, right_aligned_chip_actions),
       proto.resize_visual_viewport());
+  trigger_script_coordinator_->OnTriggerScriptShown(success);
 }
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptHidden() {
@@ -198,6 +201,18 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptFinished(
   Java_AssistantTriggerScriptBridge_onTriggerScriptFinished(
       AttachCurrentThread(), java_object_, static_cast<int>(state));
   StopTriggerScript();
+}
+
+void TriggerScriptBridgeAndroid::OnWebContentsVisibilityChanged(bool visible) {
+  if (!visible || !trigger_script_coordinator_) {
+    return;
+  }
+
+  // Every time the tab becomes visible again we have to double-check if the
+  // proactive help settings is still enabled.
+  trigger_script_coordinator_->OnProactiveHelpSettingChanged(
+      Java_AssistantTriggerScriptBridge_isProactiveHelpEnabled(
+          AttachCurrentThread()));
 }
 
 base::Optional<TriggerScriptUIProto>

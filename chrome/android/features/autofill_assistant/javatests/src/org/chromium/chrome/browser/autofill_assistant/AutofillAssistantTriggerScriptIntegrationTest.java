@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
 import android.support.test.InstrumentationRegistry;
@@ -214,6 +218,37 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
         onView(withText("Not now")).perform(click());
         waitUntilViewMatchesCondition(withText("Returning user"), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    public void setCancelForeverFlag() {
+        TriggerScriptProto.Builder triggerScript =
+                TriggerScriptProto
+                        .newBuilder()
+                        /* no trigger condition */
+                        .setUserInterface(createDefaultUI("Hello world",
+                                /* bubbleMessage = */ "",
+                                /* withProgressBar = */ true));
+        GetTriggerScriptsResponseProto triggerScripts =
+                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
+                        .addTriggerScripts(triggerScript)
+                        .build();
+        setupTriggerScripts(triggerScripts);
+        startAutofillAssistantOnTab(TEST_PAGE);
+
+        Assert.assertTrue(AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn());
+        waitUntilViewMatchesCondition(
+                withContentDescription(R.string.autofill_assistant_overflow_options),
+                isCompletelyDisplayed());
+        onView(withContentDescription(R.string.autofill_assistant_overflow_options))
+                .perform(click());
+        waitUntilViewMatchesCondition(withText("Never show again"), isCompletelyDisplayed());
+        onView(withText("Never show again")).perform(click());
+        waitUntilViewAssertionTrue(
+                withText("Hello world"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        Assert.assertFalse(AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn());
     }
 
     @Test

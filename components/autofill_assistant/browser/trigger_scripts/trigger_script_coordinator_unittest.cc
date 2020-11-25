@@ -38,6 +38,7 @@ class MockObserver : public TriggerScriptCoordinator::Observer {
   MOCK_METHOD0(OnTriggerScriptHidden, void());
   MOCK_METHOD1(OnTriggerScriptFinished,
                void(Metrics::LiteScriptFinishedState state));
+  MOCK_METHOD1(OnWebContentsVisibilityChanged, void(bool visible));
 };
 
 const char kFakeDeepLink[] = "https://example.com/q?data=test";
@@ -144,6 +145,14 @@ TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForCorrectDomain) {
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
 }
+
+TEST_F(TriggerScriptCoordinatorTest, StartSucceedsWhileNoCommittedURL) {
+  content::WebContentsTester::For(web_contents())->SetLastCommittedURL(GURL());
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+}
+
 TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForSubDomain) {
   SimulateNavigateToUrl(GURL(kFakeSubdomainDeepLink));
   EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
@@ -330,6 +339,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   // When a tab becomes invisible, the trigger script is hidden and trigger
   // condition evaluation is suspended.
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  EXPECT_CALL(mock_observer_, OnWebContentsVisibilityChanged(false)).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_, _))
       .Times(0);
@@ -347,6 +357,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
       .WillOnce(Return(true));
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  EXPECT_CALL(mock_observer_, OnWebContentsVisibilityChanged(true)).Times(1);
   SimulateWebContentsVisibilityChanged(content::Visibility::VISIBLE);
 }
 
@@ -745,6 +756,61 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   AssertRecordedFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).WillOnce([&]() {
+    coordinator_->OnTriggerScriptShown(/* success = */ false);
+  });
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(Metrics::LiteScriptFinishedState::
+                                  LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING));
+  coordinator_->OnProactiveHelpSettingChanged(
+      /* proactive_help_enabled = */ false);
+  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+                                  LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING);
 }
 
 }  // namespace autofill_assistant

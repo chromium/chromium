@@ -46,6 +46,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
     virtual void OnTriggerScriptHidden() = 0;
     virtual void OnTriggerScriptFinished(
         Metrics::LiteScriptFinishedState state) = 0;
+    virtual void OnWebContentsVisibilityChanged(bool visible) = 0;
   };
 
   // |client| and |web_contents| must outlive this instance.
@@ -82,6 +83,14 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // Called when the keyboard was shown or hidden.
   void OnKeyboardVisibilityChanged(bool visible);
 
+  // Called when a trigger script was attempted to be shown on screen. This may
+  // have failed, for example when trying to show a trigger script after
+  // switching from CCT to regular tab.
+  void OnTriggerScriptShown(bool success);
+
+  // Called when the proactive help Chrome setting has changed.
+  void OnProactiveHelpSettingChanged(bool proactive_help_enabled);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 
@@ -102,6 +111,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void OnDynamicTriggerConditionsEvaluated(bool is_out_of_schedule);
   void OnGetTriggerScripts(int http_status, const std::string& response);
   void Stop(Metrics::LiteScriptFinishedState state);
+  GURL GetCurrentURL() const;
 
   // Can be invoked to trigger an immediate check of the trigger condition,
   // reusing the dynamic results of the last time. Does nothing if there are no
