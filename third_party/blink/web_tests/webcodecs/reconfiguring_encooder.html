@@ -99,6 +99,7 @@
       let encoder = new VideoEncoder(init);
       encoder.configure(params);
 
+      // Encode |frames_to_encode| frames with original settings
       for (let i = 0; i < frames_to_encode; i++) {
         var frame = await createFrame(original_w, original_h, next_ts++);
         encoder.encode(frame, {});
@@ -109,6 +110,7 @@
       params.height = new_h;
       params.bitrate = new_bitrate;
 
+      // Reconfigure encoder and run |frames_to_encode| frames with new settings
       encoder.configure(params);
       reconf_ts = next_ts;
 
@@ -119,6 +121,14 @@
       }
 
       await encoder.flush();
+
+      // Configure back to original config
+      params.width = original_w;
+      params.height = original_h;
+      params.bitrate = original_bitrate;
+      encoder.configure(params);
+      await encoder.flush();
+
       encoder.close();
       assert_equals(before_reconf_frames, frames_to_encode);
       assert_equals(after_reconf_frames, frames_to_encode);

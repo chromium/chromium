@@ -36,8 +36,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type) {
   auto config = VideoEncodeAccelerator::Config(
-      format, gfx::Size(opts.width, opts.height), profile,
-      opts.bitrate.value_or(opts.width * opts.height *
+      format, opts.frame_size, profile,
+      opts.bitrate.value_or(opts.frame_size.width() * opts.frame_size.height() *
                             kVEADefaultBitratePerPixel));
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -180,9 +180,16 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
     return;
   }
 
-  if (options.width <= 0 || options.height <= 0) {
+  if (options.frame_size.width() <= 0 || options.frame_size.height() <= 0) {
     auto status = Status(StatusCode::kEncoderUnsupportedConfig,
-                         "Negative width or height values");
+                         "Negative width or height values.");
+    std::move(done_cb).Run(status);
+    return;
+  }
+
+  if (!options.frame_size.GetCheckedArea().IsValid()) {
+    auto status =
+        Status(StatusCode::kEncoderUnsupportedConfig, "Frame is too large.");
     std::move(done_cb).Run(status);
     return;
   }
@@ -367,7 +374,7 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   DCHECK(pending_encodes_.empty());
   DCHECK_EQ(state_, State::kReadyToEncode);
 
-  if (options.width != options_.width || options.height != options_.height) {
+  if (options.frame_size != options_.frame_size) {
     auto status = Status(StatusCode::kEncoderInitializationError,
                          "Resolution change is not supported.");
     std::move(done_cb).Run(status);
@@ -375,7 +382,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   }
 
   uint32_t bitrate =
-      std::min(options.bitrate.value_or(options.width * options.height *
+      std::min(options.bitrate.value_or(options.frame_size.width() *
+                                        options.frame_size.height() *
                                         kVEADefaultBitratePerPixel),
                uint64_t{std::numeric_limits<uint32_t>::max()});
 

@@ -29,8 +29,8 @@ Status SetUpOpenH264Params(const VideoEncoder::Options& options,
   params->iMultipleThreadIdc = 1;
   if (options.framerate.has_value())
     params->fMaxFrameRate = options.framerate.value();
-  params->iPicHeight = options.height;
-  params->iPicWidth = options.width;
+  params->iPicHeight = options.frame_size.height();
+  params->iPicWidth = options.frame_size.width();
 
   if (options.keyframe_interval.has_value())
     params->uiIntraPeriod = options.keyframe_interval.value();
