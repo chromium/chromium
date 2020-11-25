@@ -3265,7 +3265,7 @@
     },
 
     'vulkan_ndk': {
-      'gn_args': 'android32_ndk_api_level=26 android64_ndk_api_level=26',
+      'gn_args': 'android32_ndk_api_level=29 android64_ndk_api_level=29',
     },
 
     'webview_google': {

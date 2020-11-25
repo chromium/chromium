@@ -15,8 +15,8 @@
   },
   "Android FYI 32 Vk Release (Pixel 2)": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -31,8 +31,8 @@
   },
   "Android FYI 32 dEQP Vk Release (Pixel 2)": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_deqp_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -46,8 +46,8 @@
   },
   "Android FYI 64 Vk Release (Pixel 2)": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -63,8 +63,8 @@
   },
   "Android FYI 64 dEQP Vk Release (Pixel 2)": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_deqp_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -323,8 +323,8 @@
   },
   "GPU FYI Perf Android 64 Builder": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

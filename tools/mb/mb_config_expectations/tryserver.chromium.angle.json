@@ -29,8 +29,8 @@
   },
   "android_angle_vk32_deqp_rel_ng": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_deqp_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -44,8 +44,8 @@
   },
   "android_angle_vk32_rel_ng": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -60,8 +60,8 @@
   },
   "android_angle_vk64_deqp_rel_ng": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_deqp_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -76,8 +76,8 @@
   },
   "android_angle_vk64_rel_ng": {
     "gn_args": {
-      "android32_ndk_api_level": 26,
-      "android64_ndk_api_level": 26,
+      "android32_ndk_api_level": 29,
+      "android64_ndk_api_level": 29,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
