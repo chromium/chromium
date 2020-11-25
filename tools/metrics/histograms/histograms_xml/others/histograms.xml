@@ -4532,7 +4532,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DrmUtil.GetColorSpaceFromEdid.ChecksOutcome"
-    enum="EdidColorSpaceChecksOutcome" expires_after="2021-01-03">
+    enum="EdidColorSpaceChecksOutcome" expires_after="2022-01-03">
   <owner>andrescj@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
