@@ -134,6 +134,8 @@ void WebTestContentRendererClient::DidInitializeWorkerContextOnWorkerThread(
 
 void WebTestContentRendererClient::
     SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
+  // PerformanceManager is used by measure-memory web platform tests.
+  blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
   // We always expose GC to web tests.
   std::string flags("--expose-gc");
   auto* command_line = base::CommandLine::ForCurrentProcess();
