@@ -161,6 +161,10 @@ CreateDriveFsInitiatedNativeMessageHost(
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
         extension_receiver,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kDriveFsBidirectionalNativeMessaging)) {
+    return nullptr;
+  }
   return std::make_unique<DriveFsNativeMessageHost>(
       std::move(extension_receiver), std::move(drivefs_remote));
 }
@@ -196,6 +200,11 @@ ConnectToDriveFsNativeMessageExtension(
       extensions::MessageService::Get(profile);
   auto native_message_host = CreateDriveFsInitiatedNativeMessageHost(
       std::move(extension_receiver), std::move(drivefs_remote));
+  if (!native_message_host) {
+    return drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus::
+        kExtensionNotFound;
+  }
+
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,
       std::move(native_message_host));
