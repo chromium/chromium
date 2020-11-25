@@ -329,8 +329,17 @@ public class PaymentRequestService
             return null;
         }
 
+        for (PaymentMethodData datum : methodData) {
+            if (datum == null || TextUtils.isEmpty(datum.supportedMethod)) {
+                abortBeforeInstantiation(client, journeyLogger,
+                        ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                        AbortReason.INVALID_DATA_FROM_RENDERER);
+                return null;
+            }
+        }
+
         // details has default value, so could never be null, according to payment_request.idl.
-        if (details == null) {
+        if (details == null || details.id == null || details.total == null) {
             abortBeforeInstantiation(client, journeyLogger, ErrorStrings.INVALID_PAYMENT_DETAILS,
                     AbortReason.INVALID_DATA_FROM_RENDERER);
             return null;
@@ -508,7 +517,8 @@ public class PaymentRequestService
         mQueryForQuota = new HashMap<>(methodData);
         mBrowserPaymentRequest.modifyQueryForQuotaCreatedIfNeeded(mQueryForQuota, mPaymentOptions);
 
-        if (!PaymentValidator.validatePaymentDetails(details)) {
+        if (details == null || details.id == null || details.total == null
+                || !PaymentValidator.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
@@ -1118,7 +1128,9 @@ public class PaymentRequestService
             return;
         }
 
-        if (!PaymentValidator.validatePaymentDetails(details)
+        // ID cannot be updated. Updating the total is optional.
+        if (details == null || details.id != null
+                || !PaymentValidator.validatePaymentDetails(details)
                 || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(

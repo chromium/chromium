@@ -174,15 +174,21 @@ void PaymentRequest::Init(
     return;
   }
 
-  std::string error;
-  if (!ValidatePaymentDetails(ConvertPaymentDetails(details), &error)) {
-    log_.Error(error);
+  if (!details || !details->id || !details->total) {
+    log_.Error(errors::kInvalidPaymentDetails);
     TerminateConnection();
     return;
   }
 
-  if (!details->total) {
-    log_.Error(errors::kTotalRequired);
+  if (!options) {
+    log_.Error(errors::kInvalidPaymentOptions);
+    TerminateConnection();
+    return;
+  }
+
+  std::string error;
+  if (!ValidatePaymentDetails(ConvertPaymentDetails(details), &error)) {
+    log_.Error(error);
     TerminateConnection();
     return;
   }
@@ -367,6 +373,13 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotUpdateWithoutShow);
+    TerminateConnection();
+    return;
+  }
+
+  // ID cannot be updated. Updating the total is optional.
+  if (!details || details->id) {
+    log_.Error(errors::kInvalidPaymentDetails);
     TerminateConnection();
     return;
   }
