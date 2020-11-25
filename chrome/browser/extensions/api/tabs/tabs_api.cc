@@ -1832,8 +1832,10 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
     }
     tab_indices.push_back(tab_index);
   }
-  // Sort these indices for processing in the tabstrip.
+  // Sort and dedupe these indices for processing in the tabstrip.
   std::sort(tab_indices.begin(), tab_indices.end());
+  tab_indices.erase(std::unique(tab_indices.begin(), tab_indices.end()),
+                    tab_indices.end());
 
   // Get the remaining group metadata and add the tabs to the group.
   // At this point, we assume this is a valid action due to the checks above.

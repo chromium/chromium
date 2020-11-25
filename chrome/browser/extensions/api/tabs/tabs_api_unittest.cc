@@ -594,6 +594,59 @@ TEST_F(TabsApiUnitTest, TabsGroupWithinWindow) {
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
+// Test that the tabs.group() function correctly groups tabs even when given
+// out-of-order or duplicate tab IDs.
+TEST_F(TabsApiUnitTest, TabsGroupMixedTabIds) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupMixedTabIdsTest").Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /* foreground */ true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Use the TabsGroupFunction to group tab 1 twice, along with tabs 3 and 2.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d, %d, %d]}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, tab_ids[1], tab_ids[1], tab_ids[3], tab_ids[2]);
+  ASSERT_TRUE(extension_function_test_utils::RunFunction(
+      function.get(), args, browser(), api_test_utils::NONE));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contentses[0]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contentses[1]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contentses[2]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[3]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[4]);
+
+  base::Optional<tab_groups::TabGroupId> group =
+      tab_strip_model->GetTabGroupForTab(1);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(0));
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3));
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
+
+  // Clean up.
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+
 // Test that the tabs.group() function throws an error if both createProperties
 // and groupId are specified.
 TEST_F(TabsApiUnitTest, TabsGroupParamsError) {

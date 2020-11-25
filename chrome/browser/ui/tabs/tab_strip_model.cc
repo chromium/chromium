@@ -1048,6 +1048,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int>& indices) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
+  // Ensure that the indices are sorted and unique.
+  DCHECK(base::ranges::is_sorted(indices));
+  DCHECK(std::adjacent_find(indices.begin(), indices.end()) == indices.end());
+
   // The odds of |new_group| colliding with an existing group are astronomically
   // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
   // in which case there is probably something wrong with
@@ -1062,6 +1066,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
 void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
                                        const tab_groups::TabGroupId& group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  // Ensure that the indices are sorted and unique.
+  DCHECK(base::ranges::is_sorted(indices));
+  DCHECK(std::adjacent_find(indices.begin(), indices.end()) == indices.end());
 
   AddToExistingGroupImpl(indices, group);
 }
