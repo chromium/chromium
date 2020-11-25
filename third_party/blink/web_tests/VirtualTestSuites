@@ -98,16 +98,14 @@
   {
     "prefix": "gpu-rasterization",
     "bases": ["images"],
-    "args": ["--enable-gpu-rasterization",
-             "--enable-features=DecodeLossyWebPImagesToYUV",
-             "--enable-features=DecodeJpeg420ImagesToYUV"]
+    "args": ["--enable-gpu-rasterization"]
   },
   {
     "prefix": "gpu-rasterization-disable-yuv",
     "bases": ["images/yuv-decode-eligible"],
     "args": ["--enable-gpu-rasterization",
-             "--disable-features=DecodeLossyWebPImagesToYUV",
-             "--disable-features=DecodeJpeg420ImagesToYUV"]
+             "--disable-blink-features=DecodeLossyWebPImagesToYUV",
+             "--disable-blink-features=DecodeJpeg420ImagesToYUV"]
   },
   {
     "prefix": "exotic-color-space",

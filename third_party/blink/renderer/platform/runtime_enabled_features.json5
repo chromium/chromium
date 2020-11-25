@@ -685,11 +685,11 @@
     },
     {
       name: "DecodeJpeg420ImagesToYUV",
-      status: "test",
+      status: "stable",
     },
     {
       name: "DecodeLossyWebPImagesToYUV",
-      status: "test",
+      status: "stable",
     },
     {
       name: "DelayAsyncScriptExecutionUntilFinishedParsing",
