@@ -7,13 +7,6 @@
  * the "dictionary" of custom words used for spell check.
  */
 
-// clang-format off
-// #import {GlobalScrollTargetBehavior} from '../../global_scroll_target_behavior.m.js';
-// #import {loadTimeData} from '../../i18n_setup.js';
-// #import {PrefsBehavior} from '../../prefs/prefs_behavior.m.js';
-// #import {LanguagesBrowserProxyImpl} from '../../languages_page/languages_browser_proxy.m.js';
-// clang-format on
-
 // Max valid word size, keep in sync with kMaxCustomDictionaryWordBytes in
 // //components/spellcheck/common/spellcheck_common.h
 const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {OsSettingsRoutes} from './os_settings_routes.m.js'
-
 Polymer({
   is: 'settings-multidevice-smartlock-subpage',
 

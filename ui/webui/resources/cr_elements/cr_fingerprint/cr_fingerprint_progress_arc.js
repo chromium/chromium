@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {CrLottieElement} from '../cr_lottie/cr_lottie.m.js';
-
 /** @type {string} */
 /* #export */ const FINGEPRINT_TICK_DARK_URL =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK_DARK';
