@@ -280,6 +280,17 @@ class ScopedDisableTimerTracking {
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
+- (void)openPageInfo {
+  [self openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kToolsMenuSiteInformation),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
+}
+
 #pragma mark - Private
 
 // Clears all browsing data from the device. This method needs to be called when

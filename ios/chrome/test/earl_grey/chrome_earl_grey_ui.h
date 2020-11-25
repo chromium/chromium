@@ -107,6 +107,9 @@
 // Waits for the app to idle.
 - (void)waitForAppToIdle;
 
+// Opens pageInfo via the tools menu.
+- (void)openPageInfo;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_UI_H_
