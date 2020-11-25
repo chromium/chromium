@@ -12,6 +12,12 @@
 namespace chromeos {
 namespace cros_healthd {
 
+FakeCrosHealthdService::RoutineUpdateParams::RoutineUpdateParams(
+    int32_t id,
+    mojom::DiagnosticRoutineCommandEnum command,
+    bool include_output)
+    : id(id), command(command), include_output(include_output) {}
+
 FakeCrosHealthdService::FakeCrosHealthdService() = default;
 FakeCrosHealthdService::~FakeCrosHealthdService() = default;
 
@@ -55,6 +61,8 @@ void FakeCrosHealthdService::GetRoutineUpdate(
     mojom::DiagnosticRoutineCommandEnum command,
     bool include_output,
     GetRoutineUpdateCallback callback) {
+  routine_update_params_ =
+      FakeCrosHealthdService::RoutineUpdateParams(id, command, include_output);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
@@ -383,6 +391,11 @@ void FakeCrosHealthdService::RunLanConnectivityRoutineForTesting(
     chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
         LanConnectivityCallback callback) {
   network_diagnostics_routines_->LanConnectivity(std::move(callback));
+}
+
+base::Optional<FakeCrosHealthdService::RoutineUpdateParams>
+FakeCrosHealthdService::GetRoutineUpdateParams() const {
+  return routine_update_params_;
 }
 
 }  // namespace cros_healthd

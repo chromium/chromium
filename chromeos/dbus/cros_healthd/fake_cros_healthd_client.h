@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
@@ -114,6 +115,11 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   void RunLanConnectivityRoutineForTesting(
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
           LanConnectivityCallback);
+
+  // Returns the parameters passed for the most recent call to
+  // `GetRoutineUpdate`.
+  base::Optional<FakeCrosHealthdService::RoutineUpdateParams>
+  GetRoutineUpdateParams();
 
  private:
   FakeCrosHealthdService fake_service_;

@@ -5,9 +5,11 @@
 #ifndef CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_SERVICE_H_
 #define CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_SERVICE_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -33,6 +35,16 @@ class FakeCrosHealthdService final
       public mojom::CrosHealthdEventService,
       public mojom::CrosHealthdProbeService {
  public:
+  struct RoutineUpdateParams {
+    RoutineUpdateParams(int32_t id,
+                        mojom::DiagnosticRoutineCommandEnum command,
+                        bool include_output);
+
+    int32_t id;
+    mojom::DiagnosticRoutineCommandEnum command;
+    bool include_output;
+  };
+
   FakeCrosHealthdService();
   ~FakeCrosHealthdService() override;
 
@@ -203,6 +215,10 @@ class FakeCrosHealthdService final
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
           LanConnectivityCallback callback);
 
+  // Returns the parameters passed for the most recent call to
+  // `GetRoutineUpdate`.
+  base::Optional<RoutineUpdateParams> GetRoutineUpdateParams() const;
+
  private:
   // Used as the response to any GetAvailableRoutines IPCs received.
   std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
@@ -234,6 +250,10 @@ class FakeCrosHealthdService final
   mojo::RemoteSet<mojom::CrosHealthdLidObserver> lid_observers_;
   // Collection of registered power observers.
   mojo::RemoteSet<mojom::CrosHealthdPowerObserver> power_observers_;
+
+  // Contains the most recent params passed to `GetRoutineUpdate`, if it has
+  // been called.
+  base::Optional<RoutineUpdateParams> routine_update_params_;
 
   // Allow |this| to call the methods on the NetworkDiagnosticsRoutines
   // interface.

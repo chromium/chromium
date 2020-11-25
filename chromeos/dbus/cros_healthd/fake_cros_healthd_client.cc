@@ -173,5 +173,10 @@ void FakeCrosHealthdClient::RunLanConnectivityRoutineForTesting(
   fake_service_.RunLanConnectivityRoutineForTesting(std::move(callback));
 }
 
+base::Optional<FakeCrosHealthdService::RoutineUpdateParams>
+FakeCrosHealthdClient::GetRoutineUpdateParams() {
+  return fake_service_.GetRoutineUpdateParams();
+}
+
 }  // namespace cros_healthd
 }  // namespace chromeos
