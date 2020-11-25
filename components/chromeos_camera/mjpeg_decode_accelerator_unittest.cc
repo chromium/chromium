@@ -774,7 +774,7 @@ void JpegClient::StartDecode(int32_t task_id, bool do_prepare_memory) {
             in_shm_.Duplicate());
     ASSERT_EQ(dup_region.GetSize(), image_file->data_str.size());
     media::BitstreamBuffer bitstream_buffer(task_id, std::move(dup_region),
-                                            dup_region.GetSize());
+                                            image_file->data_str.size());
     decoder_->Decode(std::move(bitstream_buffer), hw_out_frame_);
   }
 }
