@@ -171,11 +171,11 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
     DCHECK_EQ(width(), height());
     const float dsf = canvas->UndoDeviceScaleFactor();
 
-    int radius = width() * kNotificationIndicatorWidthRatio / 2.0f;
-    int padding = width() * kNotificationIndicatorPaddingRatio;
+    float radius = width() * kNotificationIndicatorWidthRatio / 2.0f;
+    float padding = width() * kNotificationIndicatorPaddingRatio;
 
-    int center_x = width() - radius - padding;
-    int center_y = padding + radius;
+    float center_x = width() - radius - padding;
+    float center_y = padding + radius;
     gfx::PointF center = gfx::PointF(center_x, center_y);
     center.Scale(dsf);
 
