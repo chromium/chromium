@@ -232,29 +232,32 @@
       <cr-radio-group id="visibilityRadioGroup"
           disabled="[[disableRadioGroup_(contactsState)]]"
           selected="{{selectedVisibility}}">
-        <cr-card-radio-button id="allContacts" class="flex" name="all">
+        <cr-card-radio-button id="allContacts" class="flex" name="all"
+            aria-labelledby="allContactsLabel">
           <div class="card-contents">
             <iron-icon icon="nearby20:contact-all" class="card-icon">
             </iron-icon>
-            <div class="card-label">
+            <div id="allContactsLabel" class="card-label" aria-hidden="true">
               $i18n{nearbyShareContactVisibilityAll}
             </div>
           </div>
         </cr-card-radio-button>
-        <cr-card-radio-button id="someContacts" class="flex" name="some">
+        <cr-card-radio-button id="someContacts" class="flex" name="some"
+            aria-labelledby="someContactsLabel">
           <div class="card-contents">
             <iron-icon icon="nearby20:contact-group" class="card-icon">
             </iron-icon>
-            <div class="card-label">
+            <div id="someContactsLabel" class="card-label" aria-hidden="true">
               $i18n{nearbyShareContactVisibilitySome}
             </div>
           </div>
         </cr-card-radio-button>
-        <cr-card-radio-button id="noContacts" class="flex" name="none">
+        <cr-card-radio-button id="noContacts" class="flex" name="none"
+            aria-labelledby="noContactsLabel">
           <div class="card-contents">
             <iron-icon icon="nearby20:visibility-off" class="card-icon">
             </iron-icon>
-            <div class="card-label">
+            <div id="noContactsLabel" class="card-label" aria-hidden="true">
               $i18n{nearbyShareContactVisibilityNone}
             </div>
           </div>
