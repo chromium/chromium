@@ -101,7 +101,7 @@ bool DataTransferDlpController::IsDataReadAllowed(
   }
 
   if (level == DlpRulesManager::Level::kBlock && notify_on_paste) {
-    helper_.NotifyBlockedPaste(data_src, data_dst);
+    DoNotifyBlockedPaste(data_src, data_dst);
   }
 
   return level == DlpRulesManager::Level::kAllow;
@@ -110,5 +110,11 @@ bool DataTransferDlpController::IsDataReadAllowed(
 DataTransferDlpController::DataTransferDlpController() = default;
 
 DataTransferDlpController::~DataTransferDlpController() = default;
+
+void DataTransferDlpController::DoNotifyBlockedPaste(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst) {
+  helper_.NotifyBlockedPaste(data_src, data_dst);
+}
 
 }  // namespace policy

@@ -34,9 +34,14 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
 
- private:
+ protected:
   DataTransferDlpController();
   ~DataTransferDlpController() override;
+
+ private:
+  virtual void DoNotifyBlockedPaste(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst);
 
   DlpClipboardNotificationHelper helper_;
 };

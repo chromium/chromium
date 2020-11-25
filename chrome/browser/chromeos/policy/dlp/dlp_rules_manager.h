@@ -98,36 +98,38 @@ class DlpRulesManager {
   // from `source`. ALLOW is returned if no restrictions should be applied.
   // Requires `restriction` to be one of the following: screenshot, printing,
   // privacy screen, screenshare.
-  Level IsRestricted(const GURL& source, Restriction restriction) const;
+  virtual Level IsRestricted(const GURL& source, Restriction restriction) const;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
   // returned if no restrictions should be applied. Requires `restriction` to be
   // clipboard.
-  Level IsRestrictedDestination(const GURL& source,
-                                const GURL& destination,
-                                Restriction restriction) const;
+  virtual Level IsRestrictedDestination(const GURL& source,
+                                        const GURL& destination,
+                                        Restriction restriction) const;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
   // returned if no restrictions should be applied. Requires `restriction` to be
   // clipboard.
-  Level IsRestrictedComponent(const GURL& source,
-                              const Component& destination,
-                              Restriction restriction) const;
+  virtual Level IsRestrictedComponent(const GURL& source,
+                                      const Component& destination,
+                                      Restriction restriction) const;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destinations`. ALLOW is
   // returned if there is not any restriction should be applied on any of the
   // `destinations`. Requires `restriction` to be clipboard.
-  Level IsRestrictedAnyOfComponents(const GURL& source,
-                                    const std::vector<Component>& destinations,
-                                    Restriction restriction) const;
+  virtual Level IsRestrictedAnyOfComponents(
+      const GURL& source,
+      const std::vector<Component>& destinations,
+      Restriction restriction) const;
+
+ protected:
+  DlpRulesManager();
+  virtual ~DlpRulesManager();
 
  private:
-  DlpRulesManager();
-  ~DlpRulesManager();
-
   void OnPolicyUpdate();
 
   // Returns the maximum level of the rules of given `restriction` joined with

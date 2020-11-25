@@ -145,8 +145,8 @@ static DlpRulesManager* g_dlp_rules_manager = nullptr;
 
 // static
 void DlpRulesManager::Init() {
-  if (!g_dlp_rules_manager)
-    g_dlp_rules_manager = new DlpRulesManager();
+  if (!IsInitialized())
+    new DlpRulesManager();
 }
 
 // static
@@ -243,7 +243,13 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedAnyOfComponents(
 }
 
 DlpRulesManager::DlpRulesManager() {
-  pref_change_registrar_.Init(g_browser_process->local_state());
+  g_dlp_rules_manager = this;
+
+  auto* local_state = g_browser_process->local_state();
+  if (!local_state)  // Sometimes it's not available in tests.
+    return;
+
+  pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
       base::BindRepeating(&DlpRulesManager::OnPolicyUpdate,
