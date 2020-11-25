@@ -165,8 +165,10 @@ bool ArcAppPerformanceTracing::StartCustomTracing() {
 
 void ArcAppPerformanceTracing::StopCustomTracing(
     ResultCallback result_callback) {
-  if (!session_ || !session_->AsCustomSession())
+  if (!session_ || !session_->AsCustomSession()) {
     std::move(result_callback).Run(false /* success */, 0, 0, 0);
+    return;
+  }
 
   session_->AsCustomSession()->StopAndAnalyze(std::move(result_callback));
 }
