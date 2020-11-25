@@ -65,14 +65,11 @@ config("grpc_config") {
 
 config("grpc_config_private") {
   cflags = [
-    "-Wno-implicit-fallthrough",
-    "-std=c99",
-    "-Wno-sign-compare",
-    "-Wno-unreachable-code",
+    "-Wno-c++98-compat-extra-semi",
     "-Wno-extra-semi",
-    "-Wno-macro-redefined",
-    "-Wno-ignored-qualifiers",
+    "-Wno-sign-compare",
     "-Wno-string-concatenation",
+    "-Wno-unreachable-code",
   ]
 }
 
