@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const FilesMetadataEntry = Polymer({
+Polymer({
   is: 'files-metadata-entry',
 
   properties: {
@@ -28,16 +28,6 @@ const FilesMetadataEntry = Polymer({
       type: Boolean,
       value: false,
     },
-
-    /**
-     * True if files-ng is enabled.
-     * @const @type {boolean}
-     * @private
-     */
-    filesNg_: {
-      type: Boolean,
-      value: util.isFilesNg(),
-    }
   },
 
   /**
@@ -45,9 +35,7 @@ const FilesMetadataEntry = Polymer({
    * specific CSS styling.
    */
   created: function() {
-    if (this.filesNg_) {
-      this.setAttribute('files-ng', '');
-    }
+    this.setAttribute('files-ng', '');
   },
 
   /**
