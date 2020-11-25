@@ -3209,7 +3209,7 @@ crbug.com/1050754 external/wpt/mediacapture-streams/idlharness.https.window.html
 crbug.com/1050754 external/wpt/mediasession/setactionhandler.html [ Failure ]
 crbug.com/1050754 external/wpt/merchant-validation/complete-method.tentative.https.html [ Failure ]
 crbug.com/1050754 external/wpt/merchant-validation/constructor.tentative.https.html [ Failure ]
-crbug.com/1050754 external/wpt/merchant-validation/constructortentative..http.html [ Failure ]
+crbug.com/1050754 external/wpt/merchant-validation/constructor.tentative.http.html [ Failure ]
 crbug.com/1050754 external/wpt/merchant-validation/onmerchantvalidation-attribute.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/mimesniff/mime-types/parsing.any.html [ Failure Pass ]
