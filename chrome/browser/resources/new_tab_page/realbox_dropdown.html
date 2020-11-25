@@ -1,19 +1,12 @@
 <style>
-  :host {
+  #selector {
     background-color: var(--search-box-results-bg, white);
-    overflow: hidden;
-  }
-
-  @media (min-width: 560px) {
-    :host {
-      width: 449px;
-    }
-  }
-
-  @media (min-width: 672px) {
-    :host {
-      width: 561px;
-    }
+    border-radius: calc(0.25 * var(--ntp-realbox-height));
+    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    display: block;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    padding-top: var(--ntp-realbox-height);
   }
 
   ntp-realbox-match {
