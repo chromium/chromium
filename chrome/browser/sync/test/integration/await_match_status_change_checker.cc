@@ -8,18 +8,14 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 
 AwaitMatchStatusChangeChecker::AwaitMatchStatusChangeChecker(
-    const ExitConditionCallback& condition,
-    const std::string& debug_message)
+    const ExitConditionCallback& condition)
     : MultiClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()),
-      condition_(condition),
-      debug_message_(debug_message) {
-}
+      condition_(condition) {}
 
 AwaitMatchStatusChangeChecker::~AwaitMatchStatusChangeChecker() {
 }
 
 bool AwaitMatchStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting for: " + debug_message_;
-  return condition_.Run();
+  return condition_.Run(os);
 }

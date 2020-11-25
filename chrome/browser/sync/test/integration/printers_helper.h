@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_PRINTERS_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_PRINTERS_HELPER_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -58,7 +59,7 @@ int GetVerifierPrinterCount();
 int GetPrinterCount(int index);
 
 // Returns true if all profiles contain the same printers as profile 0.
-bool AllProfilesContainSamePrinters();
+bool AllProfilesContainSamePrinters(std::ostream* os = nullptr);
 
 // Returns true if the verifier store and printer store |index| contain the same
 // data.

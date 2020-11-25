@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_AWAIT_MATCH_STATUS_CHANGE_CHECKER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_AWAIT_MATCH_STATUS_CHANGE_CHECKER_H_
 
-#include <string>
+#include <iosfwd>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -16,17 +16,17 @@
 // verifies the state of all the profiles involved in the test.
 class AwaitMatchStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
-  using ExitConditionCallback = base::RepeatingCallback<bool(void)>;
+  // The std::ostream allows the callback to output debug messages.
+  using ExitConditionCallback = base::RepeatingCallback<bool(std::ostream*)>;
 
-  AwaitMatchStatusChangeChecker(const ExitConditionCallback& condition,
-                                const std::string& debug_message);
+  explicit AwaitMatchStatusChangeChecker(
+      const ExitConditionCallback& condition);
   ~AwaitMatchStatusChangeChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  ExitConditionCallback condition_;
-  std::string debug_message_;
+  const ExitConditionCallback condition_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_AWAIT_MATCH_STATUS_CHANGE_CHECKER_H_
