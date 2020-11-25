@@ -63,6 +63,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_monster_netlog_params.h"
@@ -71,6 +72,8 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_values.h"
 #include "url/origin.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
 
 using base::Time;
 using base::TimeDelta;
@@ -971,6 +974,26 @@ void CookieMonster::FilterCookiesWithOptions(
     if (options.update_access_time())
       InternalUpdateCookieAccessTime(*it, current_time);
 
+    int destination_port = url.EffectiveIntPort();
+
+    if (IsLocalhost(url)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.Read.Localhost",
+          ReducePortRangeForCookieHistogram(destination_port));
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.ReadDiffersFromSet.Localhost",
+          IsCookieSentToSamePortThatSetIt(url, (*it)->SourcePort(),
+                                          (*it)->SourceScheme()));
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.Read.RemoteHost",
+          ReducePortRangeForCookieHistogram(destination_port));
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.ReadDiffersFromSet.RemoteHost",
+          IsCookieSentToSamePortThatSetIt(url, (*it)->SourcePort(),
+                                          (*it)->SourceScheme()));
+    }
+
     included_cookies->push_back({**it, access_result});
   }
 }
@@ -1216,6 +1239,8 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
                       : COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME));
       histogram_cookie_source_scheme_->Add(cookie_source_sample);
 
+      UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
+
       if (!creation_date_to_inherit.is_null()) {
         cc->SetCreationDate(creation_date_to_inherit);
       }
@@ -1232,6 +1257,16 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
     // that if a cookie was set, in the common case it will be used soon after,
     // and we will purge the expired cookies in GetCookies().
     GarbageCollect(creation_date, key);
+
+    if (IsLocalhost(source_url)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.Set.Localhost",
+          ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Cookie.Port.Set.RemoteHost",
+          ReducePortRangeForCookieHistogram(source_url.EffectiveIntPort()));
+    }
   }
 
   // TODO(chlily): Log metrics.
@@ -1837,6 +1872,46 @@ void CookieMonster::DoCookieCallbackForHostOrDomain(
   }
 
   std::move(callback).Run();
+}
+
+CookieMonster::CookieSentToSamePort
+CookieMonster::IsCookieSentToSamePortThatSetIt(
+    const GURL& destination,
+    int source_port,
+    CookieSourceScheme source_scheme) {
+  if (source_port == url::PORT_UNSPECIFIED)
+    return CookieSentToSamePort::kSourcePortUnspecified;
+
+  if (source_port == url::PORT_INVALID)
+    return CookieSentToSamePort::kInvalid;
+
+  int destination_port = destination.EffectiveIntPort();
+  if (source_port == destination_port)
+    return CookieSentToSamePort::kYes;
+
+  const std::string& destination_scheme = destination.scheme();
+  bool destination_port_is_default =
+      url::DefaultPortForScheme(destination_scheme.c_str(),
+                                destination_scheme.length()) ==
+      destination_port;
+
+  // Since the source port has to be specified if we got to this point, that
+  // means this is a newer cookie that therefore has its scheme set as well.
+  DCHECK(source_scheme != CookieSourceScheme::kUnset);
+  std::string source_scheme_string =
+      source_scheme == CookieSourceScheme::kSecure
+          ? url::kHttpsScheme
+          : url::kHttpScheme;  // wss/ws have the same default port values as
+                               // https/http, so it's ok that we use these.
+
+  bool source_port_is_default =
+      url::DefaultPortForScheme(source_scheme_string.c_str(),
+                                source_scheme_string.length()) == source_port;
+
+  if (destination_port_is_default && source_port_is_default)
+    return CookieSentToSamePort::kNoButDefault;
+
+  return CookieSentToSamePort::kNo;
 }
 
 }  // namespace net

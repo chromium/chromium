@@ -111,6 +111,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.DomainSet" enum="Boolean" expires_after="2021-11-18">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    Was a cookie set with a Domain attribute.
+
+    This metric is recorded once per included cookie on every set attempt.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ExpirationDurationMinutes" units="minutes"
     expires_after="M85">
   <obsolete>
@@ -257,6 +267,77 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     While the intent of this histogram is to inform cookie related design
     decisions, the metric itself does not depend on cookies being sent or set.
   </summary>
+</histogram>
+
+<histogram name="Cookie.Port.Read.{HostType}" enum="InterestingCookiePorts"
+    expires_after="2021-11-18">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This is the port a cookie is being read by: For network access via HTTP(S)
+    this value is the port of the origin the request is being sent to. For
+    script access via non-HTTP APIs this is the value of the port of the origin
+    of the frame the read call is made in.
+
+    The &quot;Localhost&quot; variant of this metric is recorded only for
+    localhost origns. The &quot;RemoteHost&quot; variant is recorded for all
+    other origins.
+
+    This metric is recorded once per included cookie on every read attempt.
+  </summary>
+  <token key="HostType">
+    <variant name="Localhost"/>
+    <variant name="RemoteHost"/>
+  </token>
+</histogram>
+
+<histogram name="Cookie.Port.ReadDiffersFromSet.{HostType}"
+    enum="CookieSentToSamePort" expires_after="2021-11-18">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This records if a cookie is being read by the same port value that set it
+    (the source port). See Cookie.Port.Set.{HostType} and
+    Cookie.Port.Read.{HostType} for more information on how the port value for
+    setting and reading (respectively) is obtained.
+
+    If the source port is unspecified (due to a cookie already existing before
+    we started to record this value) or invalid (due to corruption) then this
+    metric does not check for destination port equivalency.
+
+    The &quot;Localhost&quot; variant of this metric is recorded only for
+    localhost origns. The &quot;RemoteHost&quot; variant is recorded for all
+    other origins.
+
+    This metric is recorded once per included cookie on every read attempt.
+  </summary>
+  <token key="HostType">
+    <variant name="Localhost"/>
+    <variant name="RemoteHost"/>
+  </token>
+</histogram>
+
+<histogram name="Cookie.Port.Set.{HostType}" enum="InterestingCookiePorts"
+    expires_after="2021-11-18">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This is the port a cookie is being set by: For network access via HTTP(S)
+    this value is the port of the origin the response is being recieved from.
+    For script access via non-HTTP APIs this is the value of the port of the
+    origin of the frame the set call is made in.
+
+    The &quot;Localhost&quot; variant of this metric is recorded only for
+    localhost origns. The &quot;RemoteHost&quot; variant is recorded for all
+    other origins.
+
+    This metric is recorded once per included cookie on every set attempt. This
+    includes expired cookies which are immediately deleted.
+  </summary>
+  <token key="HostType">
+    <variant name="Localhost"/>
+    <variant name="RemoteHost"/>
+  </token>
 </histogram>
 
 <histogram name="Cookie.PriorityBlockingTime" units="ms"
