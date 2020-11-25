@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
@@ -2447,6 +2448,48 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(browser2_groups[0], group);
 }
 
+class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
+    : public DetachToBrowserTabDragControllerTest {
+ public:
+  DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled() {
+    scoped_feature_list_.InitWithFeatures({features::kScrollableTabStrip}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if defined(OS_LINUX)
+#define MAYBE_DraggingRightExpandsTabStripSize \
+  DISABLED_DraggingRightExpandsTabStripSize
+#else
+#define MAYBE_DraggingRightExpandsTabStripSize DraggingRightExpandsTabStripSize
+#endif
+// Creates a browser with two tabs and drags the rightmost tab. Given the
+// browser window is large enough, the tabstrip should expand to accommodate
+// this tab. Note: There must be at least two tabs because dragging a singular
+// tab will drag the window.
+// Disabled for Linux due to test dragging flakiness.
+IN_PROC_BROWSER_TEST_P(
+    DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
+    MAYBE_DraggingRightExpandsTabStripSize) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+
+  browser()->window()->SetBounds(
+      gfx::Rect(0, 0, TabStyle::GetStandardWidth() * 4, 400));
+
+  const int tab_strip_width = tab_strip->width();
+  const gfx::Point tab_1_center =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(1));
+  ASSERT_TRUE(PressInput(tab_1_center));
+  ASSERT_TRUE(DragInputTo(tab_1_center +
+                          gfx::Vector2d(TabStyle::GetStandardWidth(), 0)));
+  EXPECT_EQ(tab_strip_width + TabStyle::GetStandardWidth(), tab_strip->width());
+  ASSERT_TRUE(ReleaseInput());
+}
+
 namespace {
 
 // Invoked from the nested run loop.
@@ -4369,6 +4412,10 @@ INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
     ::testing::Values("mouse", "touch"));
+INSTANTIATE_TEST_SUITE_P(
+    TabDragging,
+    DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
+    ::testing::Values("mouse", "touch"));
 INSTANTIATE_TEST_SUITE_P(TabDragging,
                          DetachToBrowserInSeparateDisplayTabDragControllerTest,
                          ::testing::Values("mouse"));
@@ -4393,5 +4440,9 @@ INSTANTIATE_TEST_SUITE_P(TabDragging,
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
+    ::testing::Values("mouse"));
+INSTANTIATE_TEST_SUITE_P(
+    TabDragging,
+    DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
     ::testing::Values("mouse"));
 #endif
