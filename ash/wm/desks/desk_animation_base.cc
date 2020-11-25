@@ -128,6 +128,9 @@ void DeskAnimationBase::OnDeskSwitchAnimationFinished() {
   for (auto& observer : controller_->observers_)
     observer.OnDeskSwitchAnimationFinished();
 
+  if (skip_notify_controller_on_animation_finished_for_testing_)
+    return;
+
   controller_->OnAnimationFinished(this);
   // `this` is now deleted.
 }

@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_DESK_ANIMATION_IMPL_H_
 #define ASH_WM_DESKS_DESK_ANIMATION_IMPL_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
@@ -14,7 +15,7 @@ namespace ash {
 class DesksController;
 class PresentationTimeRecorder;
 
-class DeskActivationAnimation : public DeskAnimationBase {
+class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
  public:
   DeskActivationAnimation(DesksController* controller,
                           int starting_desk_index,
