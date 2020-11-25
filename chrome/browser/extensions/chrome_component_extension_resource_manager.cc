@@ -24,6 +24,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
+#include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
 #include "third_party/ink/grit/ink_resources.h"
@@ -195,6 +196,16 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   LazyInitData();
+
+#if defined(OS_CHROMEOS)
+  if (extension_id == extension_misc::kFilesManagerAppId) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    // Disable $i18n{} template JS string replacement during JS code coverage.
+    if (command_line->HasSwitch("devtools-code-coverage"))
+      return nullptr;
+  }
+#endif
+
   auto it = data_->template_replacements().find(extension_id);
   return it != data_->template_replacements().end() ? &it->second : nullptr;
 }

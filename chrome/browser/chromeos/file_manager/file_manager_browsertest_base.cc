@@ -2032,6 +2032,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "isDevtoolsCoverageActive") {
+    LOG(INFO) << "isDevtoolsCoverageActive: " << devtools_code_coverage_;
+    *output = devtools_code_coverage_ ? "true" : "false";
+    return;
+  }
+
   if (name == "launchAppOnDrive") {
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
