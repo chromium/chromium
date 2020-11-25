@@ -17,7 +17,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
-#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
 
 namespace {

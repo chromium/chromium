@@ -88,8 +88,8 @@ struct ModuleInfoData {
     kPropertyShellExtension = 1 << 1,
     // These modules are registered as an Input Method Editor.
     kPropertyIme = 1 << 2,
-    // The module was added to the module blacklist cache.
-    kPropertyAddedToBlacklist = 1 << 3,
+    // The module was added to the module blocklist cache.
+    kPropertyAddedToBlocklist = 1 << 3,
     // These modules were blocked from loading into the process.
     kPropertyBlocked = 1 << 4,
   };

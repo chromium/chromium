@@ -59,12 +59,12 @@ bool ModuleListFilter::Initialize(const base::FilePath& module_list_path) {
   return initialized_;
 }
 
-bool ModuleListFilter::IsWhitelisted(
+bool ModuleListFilter::IsAllowlisted(
     base::StringPiece module_basename_hash,
     base::StringPiece module_code_id_hash) const {
   DCHECK(initialized_);
 
-  for (const auto& module_group : module_list_.whitelist().module_groups()) {
+  for (const auto& module_group : module_list_.allowlist().module_groups()) {
     if (MatchesModuleGroup(module_group, module_basename_hash,
                            module_code_id_hash)) {
       return true;
@@ -74,7 +74,7 @@ bool ModuleListFilter::IsWhitelisted(
   return false;
 }
 
-bool ModuleListFilter::IsWhitelisted(const ModuleInfoKey& module_key,
+bool ModuleListFilter::IsAllowlisted(const ModuleInfoKey& module_key,
                                      const ModuleInfoData& module_data) const {
   // Precompute the hash of the basename and of the code id.
   const std::string module_basename_hash =
@@ -83,11 +83,11 @@ bool ModuleListFilter::IsWhitelisted(const ModuleInfoKey& module_key,
   const std::string module_code_id_hash =
       base::SHA1HashString(GenerateCodeId(module_key));
 
-  return IsWhitelisted(module_basename_hash, module_code_id_hash);
+  return IsAllowlisted(module_basename_hash, module_code_id_hash);
 }
 
-std::unique_ptr<chrome::conflicts::BlacklistAction>
-ModuleListFilter::IsBlacklisted(const ModuleInfoKey& module_key,
+std::unique_ptr<chrome::conflicts::BlocklistAction>
+ModuleListFilter::IsBlocklisted(const ModuleInfoKey& module_key,
                                 const ModuleInfoData& module_data) const {
   DCHECK(initialized_);
 
@@ -98,12 +98,12 @@ ModuleListFilter::IsBlacklisted(const ModuleInfoKey& module_key,
   const std::string module_code_id_hash =
       base::SHA1HashString(GenerateCodeId(module_key));
 
-  for (const auto& blacklist_module_group :
-       module_list_.blacklist().module_groups()) {
-    if (MatchesModuleGroup(blacklist_module_group.modules(),
+  for (const auto& blocklist_module_group :
+       module_list_.blocklist().module_groups()) {
+    if (MatchesModuleGroup(blocklist_module_group.modules(),
                            module_basename_hash, module_code_id_hash)) {
-      return std::make_unique<chrome::conflicts::BlacklistAction>(
-          blacklist_module_group.action());
+      return std::make_unique<chrome::conflicts::BlocklistAction>(
+          blocklist_module_group.action());
     }
   }
 

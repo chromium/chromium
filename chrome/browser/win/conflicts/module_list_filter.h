@@ -19,41 +19,41 @@ namespace base {
 class FilePath;
 }
 
-// This class is used to determine if a module should be blacklisted or
-// whitelisted depending on the ModuleList component (See module_list.proto).
+// This class is used to determine if a module should be blocklisted or
+// allowlisted depending on the ModuleList component (See module_list.proto).
 class ModuleListFilter : public base::RefCountedThreadSafe<ModuleListFilter> {
  public:
   ModuleListFilter();
 
   bool Initialize(const base::FilePath& module_list_path);
 
-  // Returns true if a module is whitelisted based on the hash of its basename
+  // Returns true if a module is allowlisted based on the hash of its basename
   // and code id.
   //
-  // A whitelisted module should not trigger any warning to the user, nor
+  // An allowlisted module should not trigger any warning to the user, nor
   // should it be blocked from loading into the process.
   //
   // Marked virtual to allow mocking.
-  virtual bool IsWhitelisted(base::StringPiece module_basename_hash,
+  virtual bool IsAllowlisted(base::StringPiece module_basename_hash,
                              base::StringPiece module_code_id_hash) const;
 
-  // Returns true if the module is whitelisted.
+  // Returns true if the module is allowlisted.
   //
-  // This is a convenience wrapper for IsWhitelisted() that accepts a pair of
+  // This is a convenience wrapper for IsAllowlisted() that accepts a pair of
   // ModuleInfoKey and ModuleInfoData.
-  bool IsWhitelisted(const ModuleInfoKey& module_key,
+  bool IsAllowlisted(const ModuleInfoKey& module_key,
                      const ModuleInfoData& module_data) const;
 
-  // Returns the BlacklistAction associated with a blacklisted module. Returns
-  // null if the module is not blacklisted.
+  // Returns the BlocklistAction associated with a blocklisted module. Returns
+  // null if the module is not blocklisted.
   //
-  // A blacklisted module can cause instability if allowed into the process.
+  // A blocklisted module can cause instability if allowed into the process.
   //
-  // The BlacklistAction indicates if the module should be allowed to load, and
+  // The BlocklistAction indicates if the module should be allowed to load, and
   // which kind of message should be displayed to the user, if applicable.
   //
   // Marked virtual to allow mocking.
-  virtual std::unique_ptr<chrome::conflicts::BlacklistAction> IsBlacklisted(
+  virtual std::unique_ptr<chrome::conflicts::BlocklistAction> IsBlocklisted(
       const ModuleInfoKey& module_key,
       const ModuleInfoData& module_data) const;
 

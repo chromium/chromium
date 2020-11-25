@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 

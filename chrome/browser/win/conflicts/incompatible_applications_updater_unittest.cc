@@ -26,17 +26,17 @@
 
 namespace {
 
-// Mocks an empty whitelist and blacklist.
+// Mocks an empty allowlist and blocklist.
 class MockModuleListFilter : public ModuleListFilter {
  public:
   MockModuleListFilter() = default;
 
-  bool IsWhitelisted(base::StringPiece module_basename_hash,
+  bool IsAllowlisted(base::StringPiece module_basename_hash,
                      base::StringPiece module_code_id_hash) const override {
     return false;
   }
 
-  std::unique_ptr<chrome::conflicts::BlacklistAction> IsBlacklisted(
+  std::unique_ptr<chrome::conflicts::BlocklistAction> IsBlocklisted(
       const ModuleInfoKey& module_key,
       const ModuleInfoData& module_data) const override {
     return nullptr;
@@ -404,9 +404,9 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreNotLoadedModules) {
       IncompatibleApplicationsUpdater::ModuleWarningDecision::kNotLoaded);
 }
 
-// Tests that modules with a matching certificate subject are whitelisted.
+// Tests that modules with a matching certificate subject are allowlisted.
 TEST_F(IncompatibleApplicationsUpdaterTest,
-       WhitelistMatchingCertificateSubject) {
+       allowlistMatchingCertificateSubject) {
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
@@ -475,11 +475,11 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreRegisteredModules) {
       IncompatibleApplicationsUpdater::ModuleWarningDecision::kAllowedIME);
 }
 
-TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreModulesAddedToTheBlacklist) {
+TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreModulesAddedToTheBlocklist) {
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
-  AddIncompatibleApplication(dll1_, L"Blacklisted Application",
+  AddIncompatibleApplication(dll1_, L"Blocklisted Application",
                              Option::ADD_REGISTRY_ENTRY);
 
   auto incompatible_applications_updater =
@@ -487,7 +487,7 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreModulesAddedToTheBlacklist) {
 
   // Set the respective bit for the module.
   auto module_data = CreateLoadedModuleInfoData();
-  module_data.module_properties |= ModuleInfoData::kPropertyAddedToBlacklist;
+  module_data.module_properties |= ModuleInfoData::kPropertyAddedToBlocklist;
 
   // Simulate the module loading into the process.
   incompatible_applications_updater->OnNewModuleFound(
