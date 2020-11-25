@@ -1050,7 +1050,7 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
 }
 
 // Expect minimum timeout will be used when fallback period is small.
-TEST_F(ResolveContextTest, TransactionTimeout_SmallFallbackPeriod) {
+TEST_F(ResolveContextTest, SecureTransactionTimeout_SmallFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1067,7 +1067,7 @@ TEST_F(ResolveContextTest, TransactionTimeout_SmallFallbackPeriod) {
 
 // Expect multiplier on fallback period to be used when larger than minimum
 // timeout.
-TEST_F(ResolveContextTest, TransactionTimeout_LongFallbackPeriod) {
+TEST_F(ResolveContextTest, SecureTransactionTimeout_LongFallbackPeriod) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
@@ -1087,7 +1087,7 @@ TEST_F(ResolveContextTest, TransactionTimeout_LongFallbackPeriod) {
       expected);
 }
 
-TEST_F(ResolveContextTest, TransactionTimeout_LongRtt) {
+TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
   ResolveContext context(nullptr /* url_request_context */,
                          false /* enable_caching */);
   DnsConfig config =
@@ -1121,7 +1121,7 @@ TEST_F(ResolveContextTest, TransactionTimeout_LongRtt) {
       features::kDnsMinTransactionTimeout.Get());
 }
 
-TEST_F(ResolveContextTest, TransactionTimeout_DifferentSession) {
+TEST_F(ResolveContextTest, SecureTransactionTimeout_DifferentSession) {
   const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
   DnsConfig config1 =
       CreateDnsConfig(0 /* num_servers */, 1 /* num_doh_servers */);
@@ -1147,6 +1147,103 @@ TEST_F(ResolveContextTest, TransactionTimeout_DifferentSession) {
   EXPECT_EQ(
       context.SecureTransactionTimeout(SecureDnsMode::kSecure, session2.get()),
       features::kDnsMinTransactionTimeout.Get());
+}
+
+// Expect minimum timeout will be used when fallback period is small.
+TEST_F(ResolveContextTest, ClassicTransactionTimeout_SmallFallbackPeriod) {
+  ResolveContext context(nullptr /* url_request_context */,
+                         false /* enable_caching */);
+  DnsConfig config =
+      CreateDnsConfig(1 /* num_servers */, 0 /* num_doh_servers */);
+  config.fallback_period = base::TimeDelta();
+  scoped_refptr<DnsSession> session = CreateDnsSession(config);
+  context.InvalidateCachesAndPerSessionData(session.get(),
+                                            false /* network_change */);
+
+  EXPECT_EQ(context.ClassicTransactionTimeout(session.get()),
+            features::kDnsMinTransactionTimeout.Get());
+}
+
+// Expect multiplier on fallback period to be used when larger than minimum
+// timeout.
+TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongFallbackPeriod) {
+  ResolveContext context(nullptr /* url_request_context */,
+                         false /* enable_caching */);
+  const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
+  DnsConfig config =
+      CreateDnsConfig(1 /* num_servers */, 0 /* num_doh_servers */);
+  config.fallback_period = kFallbackPeriod;
+  scoped_refptr<DnsSession> session = CreateDnsSession(config);
+  context.InvalidateCachesAndPerSessionData(session.get(),
+                                            false /* network_change */);
+
+  base::TimeDelta expected =
+      kFallbackPeriod * features::kDnsTransactionTimeoutMultiplier.Get();
+  ASSERT_GT(expected, features::kDnsMinTransactionTimeout.Get());
+
+  EXPECT_EQ(context.ClassicTransactionTimeout(session.get()), expected);
+}
+
+TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
+  ResolveContext context(nullptr /* url_request_context */,
+                         false /* enable_caching */);
+  DnsConfig config =
+      CreateDnsConfig(2 /* num_servers */, 0 /* num_doh_servers */);
+  config.fallback_period = base::TimeDelta();
+  scoped_refptr<DnsSession> session = CreateDnsSession(config);
+  context.InvalidateCachesAndPerSessionData(session.get(),
+                                            false /* network_change */);
+
+  // Record long RTTs for only 1 server.
+  for (int i = 0; i < 50; ++i) {
+    context.RecordRtt(1u /* server_index */, false /* is_doh_server */,
+                      base::TimeDelta::FromMinutes(10), OK, session.get());
+  }
+
+  // No expected change from recording RTT to single server because lowest
+  // fallback period is used.
+  EXPECT_EQ(context.ClassicTransactionTimeout(session.get()),
+            features::kDnsMinTransactionTimeout.Get());
+
+  // Record long RTTs for remaining server.
+  for (int i = 0; i < 50; ++i) {
+    context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
+                      base::TimeDelta::FromMinutes(10), OK, session.get());
+  }
+
+  // Expect longer timeouts.
+  EXPECT_GT(context.ClassicTransactionTimeout(session.get()),
+            features::kDnsMinTransactionTimeout.Get());
+}
+
+TEST_F(ResolveContextTest, ClassicTransactionTimeout_DifferentSession) {
+  const base::TimeDelta kFallbackPeriod = base::TimeDelta::FromMinutes(5);
+  DnsConfig config1 =
+      CreateDnsConfig(1 /* num_servers */, 0 /* num_doh_servers */);
+  config1.fallback_period = kFallbackPeriod;
+  scoped_refptr<DnsSession> session1 = CreateDnsSession(config1);
+
+  DnsConfig config2 =
+      CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
+  scoped_refptr<DnsSession> session2 = CreateDnsSession(config2);
+
+  ResolveContext context(nullptr /* url_request_context */,
+                         false /* enable_caching */);
+  context.InvalidateCachesAndPerSessionData(session1.get(),
+                                            true /* network_change */);
+
+  // Confirm that if session data were used, the timeout would be higher than
+  // the min. If timeout defaults are ever changed to break this assertion, then
+  // the expected wrong-session timeout could be the same as an actual
+  // from-session timeout, making this test seem to pass even if the behavior
+  // under test were broken.
+  base::TimeDelta multiplier_expected =
+      kFallbackPeriod * features::kDnsTransactionTimeoutMultiplier.Get();
+  ASSERT_GT(multiplier_expected, features::kDnsMinTransactionTimeout.Get());
+
+  // Expect timeout always minimum with wrong session.
+  EXPECT_EQ(context.ClassicTransactionTimeout(session2.get()),
+            features::kDnsMinTransactionTimeout.Get());
 }
 
 // Ensures that reported negative RTT values don't cause a crash. Regression

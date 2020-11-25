@@ -1564,13 +1564,13 @@ class DnsTransactionImpl : public DnsTransaction,
     DCHECK(!timer_.IsRunning());
     DCHECK(!callback_.is_null());
 
-    // Timeout determination not currently implemented for Classic DNS because
-    // such transactions are assumed to always use fast timeout. If that ever
-    // changes, need to implement a ResolveContext::ClassicTransactionTimeout().
-    DCHECK(secure_);
-
-    base::TimeDelta timeout = resolve_context_->SecureTransactionTimeout(
-        secure_dns_mode_, session_.get());
+    base::TimeDelta timeout;
+    if (secure_) {
+      timeout = resolve_context_->SecureTransactionTimeout(secure_dns_mode_,
+                                                           session_.get());
+    } else {
+      timeout = resolve_context_->ClassicTransactionTimeout(session_.get());
+    }
     timeout -= time_from_start_->Elapsed();
 
     timer_.Start(FROM_HERE, timeout, this, &DnsTransactionImpl::OnTimeout);

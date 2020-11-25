@@ -264,6 +264,18 @@ base::TimeDelta ResolveContext::NextDohFallbackPeriod(
       0 /* num_backoffs */);
 }
 
+base::TimeDelta ResolveContext::ClassicTransactionTimeout(
+    const DnsSession* session) {
+  if (!IsCurrentSession(session))
+    return features::kDnsMinTransactionTimeout.Get();
+
+  // Should not need to call if there are no classic servers configured.
+  DCHECK(!classic_server_stats_.empty());
+
+  return TransactionTimeoutHelper(classic_server_stats_.cbegin(),
+                                  classic_server_stats_.cend());
+}
+
 base::TimeDelta ResolveContext::SecureTransactionTimeout(
     SecureDnsMode secure_dns_mode,
     const DnsSession* session) {
@@ -272,29 +284,14 @@ base::TimeDelta ResolveContext::SecureTransactionTimeout(
   // only accounting for available DoH servers when not Secure mode.
   DCHECK_EQ(secure_dns_mode, SecureDnsMode::kSecure);
 
-  DCHECK_GE(features::kDnsMinTransactionTimeout.Get(), base::TimeDelta());
-  DCHECK_GE(features::kDnsTransactionTimeoutMultiplier.Get(), 0.0);
-
   if (!IsCurrentSession(session))
     return features::kDnsMinTransactionTimeout.Get();
 
   // Should not need to call if there are no DoH servers configured.
   DCHECK(!doh_server_stats_.empty());
 
-  base::TimeDelta shortest_fallback_period = base::TimeDelta::Max();
-  for (const ServerStats& stats : doh_server_stats_) {
-    shortest_fallback_period =
-        std::min(shortest_fallback_period,
-                 NextFallbackPeriodHelper(&stats, 0 /* num_backoffs */));
-  }
-
-  DCHECK_GE(shortest_fallback_period, base::TimeDelta());
-  base::TimeDelta ratio_based_timeout =
-      shortest_fallback_period *
-      features::kDnsTransactionTimeoutMultiplier.Get();
-
-  return std::max(features::kDnsMinTransactionTimeout.Get(),
-                  ratio_based_timeout);
+  return TransactionTimeoutHelper(doh_server_stats_.cbegin(),
+                                  doh_server_stats_.cend());
 }
 
 void ResolveContext::RegisterDohStatusObserver(DohStatusObserver* observer) {
@@ -426,6 +423,33 @@ base::TimeDelta ResolveContext::NextFallbackPeriodHelper(
   fallback_period = std::max(fallback_period, kMinFallbackPeriod);
 
   return std::min(fallback_period * (1 << num_backoffs), max_fallback_period_);
+}
+
+template <typename Iterator>
+base::TimeDelta ResolveContext::TransactionTimeoutHelper(
+    Iterator server_stats_begin,
+    Iterator server_stats_end) {
+  DCHECK_GE(features::kDnsMinTransactionTimeout.Get(), base::TimeDelta());
+  DCHECK_GE(features::kDnsTransactionTimeoutMultiplier.Get(), 0.0);
+
+  // Expect at least one configured server.
+  DCHECK(server_stats_begin != server_stats_end);
+
+  base::TimeDelta shortest_fallback_period = base::TimeDelta::Max();
+  for (Iterator server_stats = server_stats_begin;
+       server_stats != server_stats_end; ++server_stats) {
+    shortest_fallback_period = std::min(
+        shortest_fallback_period,
+        NextFallbackPeriodHelper(&*server_stats, 0 /* num_backoffs */));
+  }
+
+  DCHECK_GE(shortest_fallback_period, base::TimeDelta());
+  base::TimeDelta ratio_based_timeout =
+      shortest_fallback_period *
+      features::kDnsTransactionTimeoutMultiplier.Get();
+
+  return std::max(features::kDnsMinTransactionTimeout.Get(),
+                  ratio_based_timeout);
 }
 
 void ResolveContext::RecordRttForUma(size_t server_index,
