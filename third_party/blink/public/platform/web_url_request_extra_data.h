@@ -51,15 +51,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
     originated_from_service_worker_ = originated_from_service_worker;
   }
 
-  // Determines whether SameSite cookies will be attached to the request
-  // even when the request looks cross-site.
-  bool force_ignore_site_for_cookies() const {
-    return force_ignore_site_for_cookies_;
-  }
-  void set_force_ignore_site_for_cookies(bool attach) {
-    force_ignore_site_for_cookies_ = attach;
-  }
-
   // |custom_user_agent| is used to communicate an overriding custom user agent
   // to |RenderViewImpl::willSendRequest()|; set to a null string to indicate no
   // override and an empty string to indicate that there should be no user
@@ -102,7 +93,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   bool is_for_no_state_prefetch_ = false;
   bool originated_from_service_worker_ = false;
-  bool force_ignore_site_for_cookies_ = false;
   WebString custom_user_agent_;
   WebVector<std::unique_ptr<URLLoaderThrottle>> url_loader_throttles_;
   scoped_refptr<WebFrameRequestBlocker> frame_request_blocker_;

@@ -121,8 +121,7 @@ void ContentRendererClient::WillSendRequest(
     const blink::WebURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* initiator_origin,
-    GURL* new_url,
-    bool* force_ignore_site_for_cookies) {}
+    GURL* new_url) {}
 
 bool ContentRendererClient::IsPrefetchOnly(
     RenderFrame* render_frame,

@@ -62,11 +62,10 @@ TEST_F(ChromeContentRendererClientSearchBoxTest, RewriteThumbnailURL) {
       render_frame->GetRenderView()->GetRoutingID()));
 
   GURL result;
-  bool force_ignore_site_for_cookies;
   // Make sure the SearchBox rewrites a thumbnail request from the main frame.
   client->WillSendRequest(GetMainFrame(), ui::PAGE_TRANSITION_LINK,
                           blink::WebURL(thumbnail_url), net::SiteForCookies(),
-                          nullptr, &result, &force_ignore_site_for_cookies);
+                          nullptr, &result);
   EXPECT_NE(result, thumbnail_url);
 
   // Make sure the SearchBox rewrites a thumbnail request from the iframe.
@@ -77,7 +76,7 @@ TEST_F(ChromeContentRendererClientSearchBoxTest, RewriteThumbnailURL) {
       static_cast<blink::WebLocalFrame*>(child_frame);
   client->WillSendRequest(local_child, ui::PAGE_TRANSITION_LINK,
                           blink::WebURL(thumbnail_url), net::SiteForCookies(),
-                          nullptr, &result, &force_ignore_site_for_cookies);
+                          nullptr, &result);
   EXPECT_NE(result, thumbnail_url);
 }
 

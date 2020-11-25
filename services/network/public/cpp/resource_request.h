@@ -70,7 +70,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::string method = net::HttpRequestHeaders::kGetMethod;
   GURL url;
   net::SiteForCookies site_for_cookies;
-  bool force_ignore_site_for_cookies = false;
   bool update_first_party_url_on_redirect = false;
 
   // SECURITY NOTE: |request_initiator| is a security-sensitive field.  Please

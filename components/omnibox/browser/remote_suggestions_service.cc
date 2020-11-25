@@ -119,9 +119,6 @@ void RemoteSuggestionsService::CreateSuggestionsRequest(
   request->url = suggest_url;
   request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
   // Try to attach cookies for signed in user.
-  // TODO(crbug.com/993801): This param does not need to be set. Add tests to
-  // confirm this is unnecessary so that it can be removed.
-  request->force_ignore_site_for_cookies = true;
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   AddVariationHeaders(request.get());
   StartDownloadAndTransferLoader(std::move(request), std::string(),

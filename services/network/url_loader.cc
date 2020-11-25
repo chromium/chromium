@@ -36,6 +36,7 @@
 #include "net/base/upload_file_element_reader.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -51,6 +52,7 @@
 #include "services/network/origin_policy/origin_policy_constants.h"
 #include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
 #include "services/network/public/cpp/header_util.h"
@@ -71,6 +73,7 @@
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/operation_timing_request_helper_wrapper.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
+#include "url/origin.h"
 
 namespace network {
 
@@ -462,6 +465,7 @@ URLLoader::URLLoader(
     mojom::TrustedURLLoaderHeaderClient* url_loader_header_client,
     mojom::OriginPolicyManager* origin_policy_manager,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
+    const cors::OriginAccessList* origin_access_list,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer)
     : url_request_context_(url_request_context),
       network_service_client_(network_service_client),
@@ -501,6 +505,7 @@ URLLoader::URLLoader(
       fetch_window_id_(request.fetch_window_id),
       origin_policy_manager_(nullptr),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
+      origin_access_list_(origin_access_list),
       cookie_observer_(std::move(cookie_observer)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
@@ -532,8 +537,8 @@ URLLoader::URLLoader(
       GURL(request.url), request.priority, this, traffic_annotation);
   url_request_->set_method(request.method);
   url_request_->set_site_for_cookies(request.site_for_cookies);
-  url_request_->set_force_ignore_site_for_cookies(
-      request.force_ignore_site_for_cookies);
+  if (ShouldForceIgnoreSiteForCookies(request))
+    url_request_->set_force_ignore_site_for_cookies(true);
   url_request_->SetReferrer(request.referrer.GetAsReferrer().spec());
   url_request_->set_referrer_policy(request.referrer_policy);
   url_request_->set_upgrade_if_insecure(request.upgrade_if_insecure);
@@ -2155,6 +2160,87 @@ void URLLoader::OnOriginPolicyManagerRetrieveDone(
   response_->origin_policy = origin_policy;
 
   StartReading();
+}
+
+bool URLLoader::ShouldForceIgnoreSiteForCookies(
+    const ResourceRequest& request) {
+  // `origin_access_list_` may be null in unit tests.
+  if (!origin_access_list_)
+    return false;
+
+  // Ignore site for cookies in requests from an initiator covered by the
+  // same-origin-policy exclusions in `origin_access_list_` (typically requests
+  // initiated by Chrome Extensions).
+  if (request.request_initiator.has_value() &&
+      cors::OriginAccessList::AccessState::kAllowed ==
+          origin_access_list_->CheckAccessState(
+              request.request_initiator.value(), request.url)) {
+    return true;
+  }
+  // Try again against the `factory_bound_access_patterns` to also cover the
+  // ActiveTab permission that the extension might have been granted.
+  if (factory_params_->factory_bound_access_patterns) {
+    cors::OriginAccessList factory_bound_origin_access_list;
+    factory_bound_origin_access_list.SetAllowListForOrigin(
+        factory_params_->factory_bound_access_patterns->source_origin,
+        factory_params_->factory_bound_access_patterns->allow_patterns);
+    factory_bound_origin_access_list.SetBlockListForOrigin(
+        factory_params_->factory_bound_access_patterns->source_origin,
+        factory_params_->factory_bound_access_patterns->block_patterns);
+    if (request.request_initiator.has_value() &&
+        cors::OriginAccessList::AccessState::kAllowed ==
+            factory_bound_origin_access_list.CheckAccessState(
+                request.request_initiator.value(), request.url)) {
+      return true;
+    }
+  }
+
+  // Convert `site_for_cookies` into an origin (an opaque origin if
+  // `net::SiteForCookies::IsNull()` returns true).
+  //
+  // Note that `site_for_cookies` is a _site_ rather than an _origin_, but for
+  // Chrome Extensions the _site_ and _origin_ of a host are the same extension
+  // id.  Thanks to this, for Chrome Extensions, we can pass a _site_ into
+  // OriginAccessChecks (which normally expect an _origin_).
+  url::Origin site_origin =
+      url::Origin::Create(request.site_for_cookies.RepresentativeUrl());
+
+  // If `site_for_cookies` represents an origin that is granted access to the
+  // initiator and the target by `origin_access_list_` (typically such
+  // `site_for_cookies` represents a Chrome Extension), then we also should
+  // force ignoring of site for cookies if the initiator and the target are
+  // same-site.
+  //
+  // Ideally we would walk up the frame tree and check that each ancestor is
+  // first-party to the main frame (treating the `origin_access_list_`
+  // exceptions as "first-party").  But walking up the tree is not possible in
+  // //services/network and so we make do with just checking the direct
+  // initiator of the request.
+  //
+  // We also check same-siteness between the initiator and the requested URL,
+  // because setting `force_ignore_site_for_cookies` to true causes Strict
+  // cookies to be attached, and having the initiator be same-site to the
+  // request URL is a requirement for Strict cookies (see
+  // net::cookie_util::ComputeSameSiteContext).
+  if (!site_origin.opaque() && request.request_initiator.has_value()) {
+    bool site_can_access_target =
+        cors::OriginAccessList::AccessState::kAllowed ==
+        origin_access_list_->CheckAccessState(site_origin, request.url);
+    bool site_can_access_initiator =
+        cors::OriginAccessList::AccessState::kAllowed ==
+        origin_access_list_->CheckAccessState(
+            site_origin, request.request_initiator->GetURL());
+    net::SiteForCookies site_of_initiator =
+        net::SiteForCookies::FromOrigin(request.request_initiator.value());
+    bool are_initiator_and_target_same_site =
+        site_of_initiator.IsFirstParty(request.url);
+    if (site_can_access_initiator && site_can_access_target &&
+        are_initiator_and_target_same_site) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace network

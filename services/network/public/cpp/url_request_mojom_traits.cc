@@ -216,7 +216,6 @@ bool StructTraits<
     base::debug::DumpWithoutCrashing();
   }
 
-  out->force_ignore_site_for_cookies = data.force_ignore_site_for_cookies();
   out->update_first_party_url_on_redirect =
       data.update_first_party_url_on_redirect();
   out->load_flags = data.load_flags();

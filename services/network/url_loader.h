@@ -56,6 +56,10 @@ class URLRequestContext;
 
 namespace network {
 
+namespace cors {
+class OriginAccessList;
+}
+
 namespace mojom {
 class OriginPolicyManager;
 }
@@ -123,6 +127,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojom::OriginPolicyManager* origin_policy_manager,
       std::unique_ptr<TrustTokenRequestHelperFactory>
           trust_token_helper_factory,
+      const cors::OriginAccessList* origin_access_list,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
   ~URLLoader() override;
 
@@ -348,6 +353,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void StartReading();
   void OnOriginPolicyManagerRetrieveDone(const OriginPolicy& origin_policy);
 
+  // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
+  bool ShouldForceIgnoreSiteForCookies(const ResourceRequest& request);
+
   // Returns whether the request initiator should be allowed to make requests to
   // an endpoint in |resource_address_space|.
   //
@@ -510,6 +518,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // codes, like kFailedPrecondition (outbound) and kBadResponse (inbound) are
   // specific to one direction.
   base::Optional<mojom::TrustTokenOperationStatus> trust_token_status_;
+
+  // Outlives `this`.
+  const cors::OriginAccessList* const origin_access_list_;
 
   // Observer listening to all cookie reads and writes made by this request.
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;

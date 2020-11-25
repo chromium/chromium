@@ -301,7 +301,6 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           std::string() /* searchable_form_encoding */,
           GURL() /* client_side_redirect_url */,
           base::nullopt /* devtools_initiator_info */,
-          false /* force_ignore_site_for_cookies */,
           nullptr /* trust_token_params */, base::nullopt /* impression */,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */);

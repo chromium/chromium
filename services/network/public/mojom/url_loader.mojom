@@ -121,12 +121,6 @@ struct URLRequest {
   // landed.
   SiteForCookies site_for_cookies;
 
-  // Boolean indicating whether SameSite cookies should be indiscriminately
-  // attached to the request, bypassing the usual site_for_cookies checks.
-  // Setting this param to true causes SameSite cookies to be included on
-  // cross-site requests (or requests that "look" cross-site).
-  bool force_ignore_site_for_cookies;
-
   // First-party URL redirect policy: During server redirects, the first-party
   // URL for cookies normally doesn't change. However, if this is true, the
   // the first-party URL should be updated to the URL on every redirect.

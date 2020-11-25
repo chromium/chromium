@@ -219,6 +219,20 @@ class ExtensionSameSiteCookiesTest
     return result;
   }
 
+  // Triggers a `frame`-initiated navigation of `frame` to `host`, then returns
+  // the cookies that were sent on that navigation request.
+  std::string NavigateAndGetCookies(content::RenderFrameHost* frame,
+                                    const std::string& host) {
+    GURL cookie_url = test_server()->GetURL(host, kFetchCookiesPath);
+    url::Origin initiator = frame->GetLastCommittedOrigin();
+    content::TestNavigationObserver nav_observer(web_contents());
+    ExecuteScriptAsync(frame, content::JsReplace("location = $1", cookie_url));
+    WaitForRequestAndRespondWithCookies(initiator);
+    nav_observer.Wait();
+
+    return content::EvalJs(frame, "document.body.innerText").ExtractString();
+  }
+
   // Responds to a request with the cookies that were sent with the request.
   // We can't simply use the default handler /echoheader?Cookie here, because it
   // doesn't send the appropriate Access-Control-Allow-Origin and
@@ -343,6 +357,18 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   content::RenderFrameHost* child_frame =
       MakeChildFrame(main_frame, kPermittedHost);
   std::string cookies = FetchCookies(child_frame, kPermittedHost);
+  ExpectSameSiteCookies(cookies);
+}
+
+// Extension is site_for_cookies, initiator and requested URL are permitted,
+// initiator and requested URL are same-site => SameSite cookies are sent.
+IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
+                       OnePermittedSameSiteFrame_Navigation) {
+  SetCookies(kPermittedHost);
+  content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
+  content::RenderFrameHost* child_frame =
+      MakeChildFrame(main_frame, kPermittedHost);
+  std::string cookies = NavigateAndGetCookies(child_frame, kPermittedHost);
   ExpectSameSiteCookies(cookies);
 }
 
@@ -510,7 +536,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 // SameSite-cookies-flavoured copy of the ExtensionActiveTabTest.ActiveTab test.
 // In this test, the effective extension permissions are changing at runtime
 // - the test verifies that the changing permissions are correctly propagated
-// into the SameSite cookie decisions.
+// into the SameSite cookie decisions (e.g. in
+// network::URLLoader::ShouldForceIgnoreSiteForCookies).
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, ActiveTabPermissions) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
@@ -604,12 +631,18 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, ActiveTabPermissions) {
   ExtensionActionRunner::GetForWebContents(web_contents())
       ->RunAction(extension, true);
   {
-    // ActiveTab access shouldn't extend to the background page.
+    // ActiveTab access (just like OOR-CORS access) extends to the background
+    // page.  This is desirable, because
+    // 1) there is no security boundary between A) extension backround pages
+    //    and B) extension frames in the tab
+    // 2) it seems best to highlight #1 by simplistically granting extra
+    //    capabilities to the whole extension (rather than forcing the extension
+    //    authors to jump through extra hurdles to utilize the new capability).
     SCOPED_TRACE(
         "TEST STEP 3a: Extension background page: "
         "After granting ActiveTab access.");
     std::string cookies = FetchCookies(background_page, kActiveTabHost);
-    ExpectNoSameSiteCookies(cookies);
+    ExpectSameSiteCookies(cookies);
   }
   {
     // ActiveTab should grant access to SameSite cookies to the

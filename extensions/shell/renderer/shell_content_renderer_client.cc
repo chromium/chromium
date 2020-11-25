@@ -88,9 +88,7 @@ void ShellContentRendererClient::WillSendRequest(
     const blink::WebURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* initiator_origin,
-    GURL* new_url,
-    bool* force_ignore_site_for_cookies) {
-  *force_ignore_site_for_cookies = false;
+    GURL* new_url) {
   // TODO(jamescook): Cause an error for bad extension scheme requests?
 }
 

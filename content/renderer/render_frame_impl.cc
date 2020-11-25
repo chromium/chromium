@@ -4602,15 +4602,13 @@ void RenderFrameImpl::WillSendRequestInternal(
 
   ApplyFilePathAlias(&request);
   GURL new_url;
-  bool force_ignore_site_for_cookies = false;
   base::Optional<url::Origin> initiator_origin =
       request.RequestorOrigin().IsNull()
           ? base::Optional<url::Origin>()
           : base::Optional<url::Origin>(request.RequestorOrigin());
   GetContentClient()->renderer()->WillSendRequest(
       frame_, transition_type, request.Url(), request.SiteForCookies(),
-      base::OptionalOrNullptr(initiator_origin), &new_url,
-      &force_ignore_site_for_cookies);
+      base::OptionalOrNullptr(initiator_origin), &new_url);
   if (!new_url.is_empty())
     request.SetUrl(WebURL(new_url));
 
@@ -4646,8 +4644,6 @@ void RenderFrameImpl::WillSendRequestInternal(
       GetContentClient()->renderer()->IsPrefetchOnly(this, request);
   url_request_extra_data->set_is_for_no_state_prefetch(
       is_for_no_state_prefetch);
-  url_request_extra_data->set_force_ignore_site_for_cookies(
-      force_ignore_site_for_cookies);
   url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
   url_request_extra_data->set_allow_cross_origin_auth_prompt(
       render_view_->GetRendererPreferences().allow_cross_origin_auth_prompt);
@@ -6141,8 +6137,6 @@ void RenderFrameImpl::BeginNavigationInternal(
           searchable_form_encoding, client_side_redirect_url,
           initiator ? base::make_optional<base::Value>(std::move(*initiator))
                     : base::nullopt,
-          info->url_request.GetURLRequestExtraData()
-              ->force_ignore_site_for_cookies(),
           info->url_request.TrustTokenParams()
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,

@@ -146,13 +146,6 @@ struct BeginNavigationParams {
   // for details.
   mojo_base.mojom.DictionaryValue? devtools_initiator;
 
-  // Whether or not this navigation should unconditionally attach SameSite
-  // cookies, bypassing the usual site_for_cookies checks. Setting this to true
-  // causes SameSite cookies to be attached for cross-site requests (or requests
-  // that "look" cross-site). See the field of the same name in
-  // network::ResourceRequest.
-  bool force_ignore_site_for_cookies = false;
-
   // Specifies whether, and how, the navigation should execute a Trust Tokens
   // operation (https://github.com/wicg/trust-token-api) and attach headers
   // conveying the result of the operation. Set on some child frame navigations.

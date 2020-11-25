@@ -41,8 +41,7 @@ class ShellContentRendererClient : public content::ContentRendererClient {
                        const blink::WebURL& url,
                        const net::SiteForCookies& site_for_cookies,
                        const url::Origin* initiator_origin,
-                       GURL* new_url,
-                       bool* force_ignore_site_for_cookies) override;
+                       GURL* new_url) override;
   bool IsExternalPepperPlugin(const std::string& module_name) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;

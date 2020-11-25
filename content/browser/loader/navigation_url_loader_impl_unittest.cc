@@ -102,6 +102,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         nullptr /* keepalive_statistics_recorder */,
         nullptr /* network_usage_accumulator */, nullptr /* header_client */,
         nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
+        nullptr /* origin_access_list */,
         mojo::NullRemote() /* cookie_observer */);
   }
 
@@ -179,7 +180,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             std::string() /* searchable_form_encoding */,
             GURL() /* client_side_redirect_url */,
             base::nullopt /* devtools_initiator_info */,
-            false /* attach_same_site_cookie */,
             nullptr /* trust_token_params */, base::nullopt /* impression */,
             base::TimeTicks() /* renderer_before_unload_start */,
             base::TimeTicks() /* renderer_before_unload_end */);
