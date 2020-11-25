@@ -841,6 +841,46 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoValidAdbResponse) {
   EXPECT_TRUE(arc_instance_stopped_called());
 }
 
+// Tests that adb sideloading is disabled by default.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyDefault) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  UpgradeArc(true);
+  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_FALSE(arc_instance_stopped_called());
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.enable_adb_sideloading=0"));
+}
+
+// Tests that adb sideloading can be controlled via session_manager.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyEnabled) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
+  UpgradeArc(true);
+  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_FALSE(arc_instance_stopped_called());
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.enable_adb_sideloading=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyDisabled) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
+  UpgradeArc(true);
+  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_FALSE(arc_instance_stopped_called());
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.enable_adb_sideloading=0"));
+}
+
 // Tests that "no serial" failure is handled properly.
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoSerial) {
   // Don't set the serial number. Note that we cannot call StartArcVm() without
