@@ -34,6 +34,9 @@ class MetricsUtils {
     chrome.metricsPrivate.recordBoolean(
         MetricsUtils.BACKGROUND_SHADING_METRIC,
         prefsManager.backgroundShadingEnabled());
+    chrome.metricsPrivate.recordBoolean(
+        MetricsUtils.NAVIGATION_CONTROLS_METRIC,
+        prefsManager.navigationControlsEnabled());
   }
 
   /**
@@ -126,3 +129,10 @@ MetricsUtils.CANCEL_SPEECH_METRIC =
  */
 MetricsUtils.BACKGROUND_SHADING_METRIC =
     'Accessibility.CrosSelectToSpeak.BackgroundShading';
+
+/**
+ * The navigation controls metric name.
+ * @type {string}
+ */
+MetricsUtils.NAVIGATION_CONTROLS_METRIC =
+    'Accessibility.CrosSelectToSpeak.NavigationControls';

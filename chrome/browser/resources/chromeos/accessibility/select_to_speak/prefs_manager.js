@@ -36,6 +36,9 @@ class PrefsManager {
 
     /** @private {boolean} */
     this.backgroundShadingEnabled_ = false;
+
+    /** @private {boolean} */
+    this.navigationControlsEnabled_ = true;
   }
 
   /**
@@ -221,7 +224,7 @@ class PrefsManager {
       chrome.storage.sync.get(
           [
             'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
-            'backgroundShading'
+            'backgroundShading', 'navigationControls'
           ],
           (prefs) => {
             if (prefs['voice']) {
@@ -242,6 +245,12 @@ class PrefsManager {
             } else {
               chrome.storage.sync.set(
                   {'backgroundShading': this.backgroundShadingEnabled_});
+            }
+            if (prefs['navigationControls'] !== undefined) {
+              this.navigationControlsEnabled_ = prefs['navigationControls'];
+            } else {
+              chrome.storage.sync.set(
+                  {'navigationControls': this.navigationControlsEnabled_});
             }
             if (prefs['rate'] && prefs['pitch']) {
               // Removes 'rate' and 'pitch' prefs after migrating data to global
@@ -333,6 +342,17 @@ class PrefsManager {
    */
   backgroundShadingEnabled() {
     return this.backgroundShadingEnabled_;
+  }
+
+  /**
+   * Gets the user's preference for showing navigation controls that allow them
+   * to navigate to next/previous sentences, paragraphs, and more.
+   * @return {boolean} True if navigation controls should be shown when STS is
+   *     active.
+   * @public
+   */
+  navigationControlsEnabled() {
+    return this.navigationControlsEnabled_;
   }
 }
 

@@ -146,13 +146,22 @@ class SelectToSpeak {
      * Feature flag controlling STS navigation control.
      * @type {boolean}
      */
-    this.enableNavigationControl_ = false;
-
-    // TODO(crbug.com/1143830): Also check STS client-side setting.
+    this.navigationControlFlag_ = false;
     chrome.accessibilityPrivate.isFeatureEnabled(
         AccessibilityFeature.SELECT_TO_SPEAK_NAVIGATION_CONTROL, (result) => {
-          this.enableNavigationControl_ = result;
+          this.navigationControlFlag_ = result;
         });
+  }
+
+  /**
+   * Determines if navigation controls should be shown (and other related
+   * functionality, such as auto-dismiss and click-to-navigate to sentence,
+   * should be activated) based on feature flag and user setting.
+   * @private
+   */
+  shouldShowNavigationControls_() {
+    return this.navigationControlFlag_ &&
+        this.prefsManager_.navigationControlsEnabled();
   }
 
   /**
@@ -448,7 +457,7 @@ class SelectToSpeak {
     this.setFocusRings_([], false /* do not draw background */);
     chrome.accessibilityPrivate.setHighlights(
         [], this.prefsManager_.highlightColor());
-    if (this.enableNavigationControl_) {
+    if (this.shouldShowNavigationControls_()) {
       chrome.accessibilityPrivate.updateSelectToSpeakPanel(/* show= */ false);
     }
   }
@@ -590,7 +599,7 @@ class SelectToSpeak {
    * @private
    */
   onSelectToSpeakPanelAction_(panelAction) {
-    if (!this.enableNavigationControl_) {
+    if (!this.shouldShowNavigationControls_()) {
       // Ignore if this feature is not enabled.
       return;
     }
@@ -647,7 +656,7 @@ class SelectToSpeak {
       } else if (
           (event.type === 'end' || event.type === 'interrupted' ||
            event.type === 'cancelled') &&
-          !this.enableNavigationControl_) {
+          !this.shouldShowNavigationControls_()) {
         // Automatically dismiss when we're at the end, unless navigation
         // controled is enabled, in which case we persist STS.
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
@@ -762,7 +771,7 @@ class SelectToSpeak {
         } else if (event.type === 'interrupted' || event.type === 'cancelled') {
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
         } else if (event.type === 'end') {
-          if (isLast && !this.enableNavigationControl_) {
+          if (isLast && !this.shouldShowNavigationControls_()) {
             // Auto dismiss when we're at the end, unless navigation control
             // is enabled.
             this.onStateChanged_(SelectToSpeakState.INACTIVE);
@@ -1025,7 +1034,7 @@ class SelectToSpeak {
       focusRingRect = node.location;
     }
     this.setFocusRings_([focusRingRect], true /* draw background */);
-    if (this.enableNavigationControl_) {
+    if (this.shouldShowNavigationControls_()) {
       // TODO(crbug.com/1143817): Update paused state correctly once
       // pause/resume functionality is implemented.
       chrome.accessibilityPrivate.updateSelectToSpeakPanel(

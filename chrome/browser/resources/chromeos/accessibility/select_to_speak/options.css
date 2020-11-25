@@ -61,6 +61,10 @@ hr {
   width: 646px;
 }
 
+.option.hidden {
+  display: none;
+}
+
 .sub-option {
   background-color: #fff;
   font-size: 13px;
