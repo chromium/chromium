@@ -261,14 +261,9 @@ group("gn_all") {
     deps += [
       "//extensions:extensions_browsertests",
       "//extensions:extensions_unittests",
+      "//extensions/browser/api/declarative_net_request/filter_list_converter",
       "//extensions/shell:app_shell_unittests",
     ]
-
-    # TODO(crbug.com/981112): This target is failing to compile consistently in
-    # coverage build, remove this condition when the bug is fixed.
-    if (!use_clang_coverage) {
-      deps += [ "//extensions/browser/api/declarative_net_request/filter_list_converter" ]
-    }
   }
 
   if (enable_remoting) {
