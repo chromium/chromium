@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_SELECTOR_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_SELECTOR_GENERATOR_H_
 
+#include "base/optional.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
@@ -31,27 +33,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
       public TextFragmentFinder::Client,
       public blink::mojom::blink::TextFragmentSelectorProducer {
  public:
-  // Update corresponding |LinkGenerationError| in enums.xml.
-  enum class LinkGenerationError {
-    kIncorrectSelector,
-    kNoRange,
-    kNoContext,
-    kContextExhausted,
-    kContextLimitReached,
-    kEmptySelection,
-
-    // Recorded from browser/java side when tab or its content becomes
-    // unavailable. Added here to keep in sync with the enums.xml values.
-    kTabHidden,
-    kOmniboxNavigation,
-    kTabCrash,
-
-    kUnknown,
-
-    kIFrame,
-
-    kMaxValue = kIFrame
-  };
   explicit TextFragmentSelectorGenerator() = default;
 
   void BindTextFragmentSelectorProducer(
@@ -145,6 +126,8 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   GenerationStep step_ = kExact;
   SelectorState state_ = kNeedsNewCandidate;
+
+  base::Optional<shared_highlighting::LinkGenerationError> error_;
 
   // Fields used for keeping track of context.
 
