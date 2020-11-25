@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/chromeos/input_method/accessibility.h"
+#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_delegate_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_delegate_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_manager_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_persistence.h"
@@ -30,7 +31,8 @@ class InputMethodConfiguration {
     ui::IMEBridge::Initialize();
 
     auto* impl = new InputMethodManagerImpl(
-        std::unique_ptr<InputMethodDelegate>(new InputMethodDelegateImpl),
+        std::make_unique<InputMethodDelegateImpl>(),
+        std::make_unique<ComponentExtensionIMEManagerDelegateImpl>(),
         !g_disable_extension_loading);
     InputMethodManager::Initialize(impl);
 

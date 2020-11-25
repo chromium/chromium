@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_delegate_impl.h"
 #include "chrome/browser/chromeos/input_method/mock_candidate_window_controller.h"
 #include "chrome/browser/chromeos/input_method/mock_input_method_engine.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -139,7 +140,8 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ui::InitializeInputMethodForTesting();
 
     manager_ = std::make_unique<InputMethodManagerImpl>(
-        std::make_unique<FakeInputMethodDelegate>(), false);
+        std::make_unique<FakeInputMethodDelegate>(),
+        std::make_unique<ComponentExtensionIMEManagerDelegateImpl>(), false);
     manager_->GetInputMethodUtil()->UpdateHardwareLayoutCache();
     candidate_window_controller_ = new MockCandidateWindowController;
     manager_->SetCandidateWindowControllerForTesting(

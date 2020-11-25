@@ -31,7 +31,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_controller.h"
 #include "chrome/browser/chromeos/input_method/candidate_window_controller.h"
-#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_delegate_impl.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/chromeos/input_method/ui/input_method_menu_item.h"
 #include "chrome/browser/chromeos/input_method/ui/input_method_menu_manager.h"
@@ -956,6 +955,8 @@ InputMethodManagerImpl::GetActiveIMEState() {
 
 InputMethodManagerImpl::InputMethodManagerImpl(
     std::unique_ptr<InputMethodDelegate> delegate,
+    std::unique_ptr<ComponentExtensionIMEManagerDelegate>
+        component_extension_ime_manager_delegate,
     bool enable_extension_loading)
     : delegate_(std::move(delegate)),
       util_(delegate_.get()),
@@ -969,9 +970,8 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     keyboard_ = std::make_unique<FakeImeKeyboard>();
   }
   // Initializes the system IME list.
-  std::unique_ptr<ComponentExtensionIMEManagerDelegate> comp_delegate(
-      new ComponentExtensionIMEManagerDelegateImpl());
-  component_extension_ime_manager_->Initialize(std::move(comp_delegate));
+  component_extension_ime_manager_->Initialize(
+      std::move(component_extension_ime_manager_delegate));
   const InputMethodDescriptors& descriptors =
       component_extension_ime_manager_->GetAllIMEAsInputMethodDescriptor();
   util_.ResetInputMethods(descriptors);
