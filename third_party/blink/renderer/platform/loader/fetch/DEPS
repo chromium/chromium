@@ -1,5 +1,6 @@
 include_rules = [
   "+net/base/ip_endpoint.h",
+  "+net/base/schemeful_site.h",
   "+net/dns/public",
   "+services/network/public/cpp/fetch_api_utils.h",
   "+services/network/public/cpp/optional_trust_token_params.h",

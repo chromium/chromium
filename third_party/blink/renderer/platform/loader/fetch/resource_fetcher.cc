@@ -806,7 +806,8 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     const FetchParameters& params,
     const ResourceFactory& factory,
     bool is_static_data,
-    bool in_cached_resources_map) const {
+    bool in_cached_resources_map,
+    bool same_top_frame_site_resource_cached) const {
   if (is_static_data)
     return;
 
@@ -828,6 +829,11 @@ void ResourceFetcher::UpdateMemoryCacheStats(
   // to the document.
   if (in_cached_resources_map)
     DEFINE_RESOURCE_HISTOGRAM("PerDocument.");
+
+  // Log metrics to evaluate effectiveness of the memory cache if it was
+  // partitioned by the top-frame site.
+  if (same_top_frame_site_resource_cached)
+    DEFINE_RESOURCE_HISTOGRAM("PerTopFrameSite.");
 
   // Async (and defer) scripts may have more cache misses, track them
   // separately. See https://crbug.com/1043679 for context.
@@ -1074,6 +1080,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
   }
 
+  bool same_top_frame_site_resource_cached = false;
   if (!is_stale_revalidation && !resource) {
     resource = MatchPreload(params, resource_type);
     if (resource) {
@@ -1087,6 +1094,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
+        scoped_refptr<const SecurityOrigin> top_frame_origin =
+            resource_request.TopFrameOrigin();
+        if (top_frame_origin) {
+          same_top_frame_site_resource_cached =
+              resource->AppendTopFrameSiteForMetrics(*top_frame_origin);
+        }
       }
     }
   }
@@ -1095,7 +1108,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
 
   UpdateMemoryCacheStats(resource, policy, params, factory, is_static_data,
-                         in_cached_resources_map);
+                         in_cached_resources_map,
+                         same_top_frame_site_resource_cached);
 
   switch (policy) {
     case RevalidationPolicy::kReload:

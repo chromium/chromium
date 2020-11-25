@@ -403,6 +403,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     return CalculateOverheadSize();
   }
 
+  // Appends the top-frame site derived from |origin| to
+  // |existing_top_frame_sites_in_cache_| and returns true if the same site
+  // already exists.
+  bool AppendTopFrameSiteForMetrics(const SecurityOrigin& origin);
+
  protected:
   Resource(const ResourceRequestHead&,
            ResourceType,
@@ -540,6 +545,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   scoped_refptr<SharedBuffer> data_;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
+
+  // To compute metrics for measuring the efficacy of the
+  // memory cache if it was partitioned by top-frame site (in addition to the
+  // current origin which it is already partitioned by).
+  HashSet<String> existing_top_frame_sites_in_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(Resource);
 };
