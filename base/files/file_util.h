@@ -138,6 +138,12 @@ BASE_EXPORT bool ReplaceFile(const FilePath& from_path,
 //   read permissions. i.e. Always 0644.
 BASE_EXPORT bool CopyFile(const FilePath& from_path, const FilePath& to_path);
 
+// Copies the contents of one file into another.
+// The files are taken as is: the copy is done starting from the current offset
+// of |infile| until the end of |infile| is reached, into the current offset of
+// |outfile|.
+BASE_EXPORT bool CopyFileContents(File& infile, File& outfile);
+
 // Copies the given path, and optionally all subdirectories and their contents
 // as well.
 //

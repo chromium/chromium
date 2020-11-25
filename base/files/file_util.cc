@@ -49,6 +49,35 @@ bool Move(const FilePath& from_path, const FilePath& to_path) {
   return internal::MoveUnsafe(from_path, to_path);
 }
 
+bool CopyFileContents(File& infile, File& outfile) {
+  static constexpr size_t kBufferSize = 32768;
+  std::vector<char> buffer(kBufferSize);
+
+  for (;;) {
+    int bytes_read = infile.ReadAtCurrentPos(buffer.data(), buffer.size());
+    if (bytes_read < 0) {
+      return false;
+    }
+    if (bytes_read == 0) {
+      return true;
+    }
+    // Allow for partial writes
+    int bytes_written_per_read = 0;
+    do {
+      int bytes_written_partial = outfile.WriteAtCurrentPos(
+          &buffer[bytes_written_per_read], bytes_read - bytes_written_per_read);
+      if (bytes_written_partial < 0) {
+        return false;
+      }
+
+      bytes_written_per_read += bytes_written_partial;
+    } while (bytes_written_per_read < bytes_read);
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
   // We open the file in binary format even if they are text files because
   // we are just comparing that bytes are exactly same in both files and not
