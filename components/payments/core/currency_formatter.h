@@ -27,6 +27,10 @@ class CurrencyFormatter {
                     const std::string& locale_name);
   ~CurrencyFormatter();
 
+  // Set the maximum number of fractional digits. (kMaximumNumFractionalDigits
+  // is the default if unset)
+  void SetMaxFractionalDigits(const int maxFractionalDigits);
+
   // Formats the |amount| according to the currency code that was set. The
   // result will NOT contain the currency code, nor a subset of it. Rather, the
   // caller of this function should display the currency code separately. The

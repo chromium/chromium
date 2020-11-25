@@ -67,6 +67,9 @@ public class ShoppingPersistedTabDataTest {
     private static final long LOW_PRICE_MICROS = 100000000L;
     private static final String HIGH_PRICE_FORMATTED = "$141";
     private static final String LOW_PRICE_FORMATTED = "$100";
+    private static final String UNITED_STATES_CURRENCY_CODE = "USD";
+    private static final String GREAT_BRITAIN_CURRENCY_CODE = "GBP";
+    private static final String JAPAN_CURRENCY_CODE = "JPY";
 
     private static final String EMPTY_PRICE = "";
     private static final String ENDPOINT_RESPONSE_INITIAL =
@@ -136,6 +139,8 @@ public class ShoppingPersistedTabDataTest {
                         PRICE_MICROS, shoppingPersistedTabData.getPreviousPriceMicros());
                 Assert.assertEquals(mLastPriceChangeTimeMs,
                         shoppingPersistedTabData.getLastPriceChangeTimeMs());
+                Assert.assertEquals(
+                        UNITED_STATES_CURRENCY_CODE, shoppingPersistedTabData.getCurrencyCode());
                 semaphore.release();
             });
         });
@@ -150,6 +155,8 @@ public class ShoppingPersistedTabDataTest {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 verifyEndpointFetcherCalled(1);
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
+                Assert.assertEquals(
+                        UNITED_STATES_CURRENCY_CODE, shoppingPersistedTabData.getCurrencyCode());
                 Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
                         shoppingPersistedTabData.getPreviousPriceMicros());
                 Assert.assertEquals(ShoppingPersistedTabData.NO_TRANSITIONS_OCCURRED,
@@ -190,6 +197,8 @@ public class ShoppingPersistedTabDataTest {
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
                 Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
                         shoppingPersistedTabData.getPreviousPriceMicros());
+                Assert.assertEquals(
+                        UNITED_STATES_CURRENCY_CODE, shoppingPersistedTabData.getCurrencyCode());
                 // By setting time to live to be a negative number, an update
                 // will be forced in the subsequent call
                 initialSemaphore.release();
@@ -218,8 +227,8 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testPriceDrop() {
-        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
-        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                createShoppingPersistedTabDataWithDefaults();
         // Prices unknown is not a price drop
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
 
@@ -246,7 +255,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterSamePrice() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $10 -> $10 is not a price drop (same price)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(10_000_000L);
@@ -259,7 +268,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterNoFormattedPriceDifference() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $10.40 -> $10 (which would be displayed $10 -> $10 is not a price drop)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(10_400_000L);
@@ -272,7 +281,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAbsoluteDifferenceTooSmall() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $2 -> $1 ($1 price drop - less than $2. Not big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(1_000_000L);
@@ -285,7 +294,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterPriceIncrease() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $9.33 -> $9.66 price increase is not a price drop
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(9_330_000L);
@@ -298,7 +307,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterPercentageDropNotEnough() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $50 -> $46 (8% price drop (less than 10%) not big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(50_000_000L);
@@ -306,12 +315,27 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 
+    private ShoppingPersistedTabData createShoppingPersistedTabDataWithDefaults() {
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+        shoppingPersistedTabData.setCurrencyCode(UNITED_STATES_CURRENCY_CODE);
+        return shoppingPersistedTabData;
+    }
+
+    private ShoppingPersistedTabData createShoppingPersistedTabDataWithCurrencyCode(
+            int tabId, boolean isIncognito, String currencyCode) {
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                new ShoppingPersistedTabData(createTabOnUiThread(tabId, isIncognito));
+        shoppingPersistedTabData.setCurrencyCode(currencyCode);
+        return shoppingPersistedTabData;
+    }
+
     @UiThreadTest
     @SmallTest
     @Test
     public void testPriceDropFilterAllowedPriceDrop1() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $10 -> $7 (30% and $3 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(10_000_000L);
@@ -326,7 +350,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop2() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $15.72 -> $4.80 (70% and $10.92 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(15_720_000L);
@@ -341,7 +365,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop3() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $20 -> $10 (50% and $10 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(20_000_000L);
@@ -356,7 +380,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop4() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $30 -> $27 (10% and $3 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(30_000_000L);
@@ -371,7 +395,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop5() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $30.65 -> $25.50 (17% and $5.15 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(30_650_000L);
@@ -386,7 +410,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop6() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $9.65 -> $3.80 (40% and $5.85 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(9_650_000L);
@@ -401,7 +425,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop7() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $9.33 -> $0.90 (96% price drop and $8.43 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(9_330_000L);
@@ -416,7 +440,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop8() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $20 -> $18 (10% price drop and $2 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(20_000_000L);
@@ -431,7 +455,7 @@ public class ShoppingPersistedTabDataTest {
     @Test
     public void testPriceDropFilterAllowedPriceDrop9() {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                createShoppingPersistedTabDataWithDefaults();
 
         // $2 -> $0 ($2 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(2_000_000L);
@@ -444,9 +468,40 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
-    public void testStalePriceDrop() {
-        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
-        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+    public void testPriceDropGBP() {
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                createShoppingPersistedTabDataWithCurrencyCode(
+                        TAB_ID, IS_INCOGNITO, GREAT_BRITAIN_CURRENCY_CODE);
+
+        shoppingPersistedTabData.setPreviousPriceMicrosForTesting(15_000_000L);
+        shoppingPersistedTabData.setPriceMicrosForTesting(9_560_000L);
+        Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
+        Assert.assertEquals("£15", shoppingPersistedTabData.getPriceDrop().previousPrice);
+        Assert.assertEquals("£9.56", shoppingPersistedTabData.getPriceDrop().price);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testPriceDropJPY() {
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                createShoppingPersistedTabDataWithCurrencyCode(
+                        TAB_ID, IS_INCOGNITO, JAPAN_CURRENCY_CODE);
+
+        shoppingPersistedTabData.setPreviousPriceMicrosForTesting(3_140_000_000_000L);
+        shoppingPersistedTabData.setPriceMicrosForTesting(287_000_000_000L);
+        Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
+        Assert.assertEquals("¥3,140,000", shoppingPersistedTabData.getPriceDrop().previousPrice);
+        Assert.assertEquals("¥287,000", shoppingPersistedTabData.getPriceDrop().price);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testStalePriceDropUSD() {
+        ShoppingPersistedTabData shoppingPersistedTabData =
+                createShoppingPersistedTabDataWithCurrencyCode(
+                        TAB_ID, IS_INCOGNITO, UNITED_STATES_CURRENCY_CODE);
         // $10 -> $5 (50% and $5 price drop is big enough)
         shoppingPersistedTabData.setPreviousPriceMicrosForTesting(10000000L);
         shoppingPersistedTabData.setPriceMicrosForTesting(5000000L);

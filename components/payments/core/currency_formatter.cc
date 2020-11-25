@@ -85,6 +85,10 @@ CurrencyFormatter::CurrencyFormatter(const std::string& currency_code,
 
 CurrencyFormatter::~CurrencyFormatter() {}
 
+void CurrencyFormatter::SetMaxFractionalDigits(const int maxFractionalDigits) {
+  icu_formatter_->setMaximumFractionDigits(maxFractionalDigits);
+}
+
 base::string16 CurrencyFormatter::Format(const std::string& amount) {
   // It's possible that the ICU formatter didn't initialize properly.
   if (!icu_formatter_ || !icu_formatter_->getCurrency())

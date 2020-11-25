@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -15,11 +14,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Callback;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
+import org.chromium.components.payments.CurrencyFormatter;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -42,10 +43,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String BUYABLE_PRODUCT_ANNOTATION_KEY = "BUYABLE_PRODUCT";
     private static final String BUYABLE_PRODUCT_KEY = "buyableProduct";
     private static final String CURRENT_PRICE_KEY = "currentPrice";
+    private static final String CURRENCY_CODE_KEY = "currencyCode";
     private static final String AMOUNT_MICROS_KEY = "amountMicros";
     private static final String ACCEPT_LANGUAGE_KEY = "Accept-Language";
-    // TODO(crbug.com/1130068) support all locales
-    private static final String ACCEPT_LANGUAGE_VALUE = "en-US";
+
+    private static final int FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS = 2;
+    private static final int FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS = 0;
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
             ShoppingPersistedTabData.class;
@@ -68,6 +71,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private long mPriceMicros = NO_PRICE_KNOWN;
     private long mPreviousPriceMicros = NO_PRICE_KNOWN;
+
+    private String mCurrencyCode;
 
     /**
      * A price drop for the offer {@link ShoppingPersistedTabData}
@@ -124,7 +129,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             Profile.getLastUsedRegularProfile(),
                             String.format(ENDPOINT, tab.getUrlString()), HTTPS_METHOD, CONTENT_TYPE,
                             EMPTY_POST_DATA, TIMEOUT_MS,
-                            new String[] {ACCEPT_LANGUAGE_KEY, ACCEPT_LANGUAGE_VALUE});
+                            new String[] {
+                                    ACCEPT_LANGUAGE_KEY, LocaleUtils.getDefaultLocaleListString()});
                 },
                 ShoppingPersistedTabData.class, callback);
     }
@@ -142,6 +148,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     JSONObject priceMetadata = metadata.getJSONObject(CURRENT_PRICE_KEY);
                     res.setPriceMicros(Long.parseLong(priceMetadata.getString(AMOUNT_MICROS_KEY)),
                             previousShoppingPersistedTabData);
+                    res.setCurrencyCode(priceMetadata.getString(CURRENCY_CODE_KEY));
                     break;
                 }
             }
@@ -176,6 +183,15 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mLastPriceChangeTimeMs = previousShoppingPersistedTabData.getLastPriceChangeTimeMs();
         }
         save();
+    }
+
+    protected void setCurrencyCode(String currencyCode) {
+        mCurrencyCode = currencyCode;
+    }
+
+    @VisibleForTesting
+    protected String getCurrencyCode() {
+        return mCurrencyCode;
     }
 
     @VisibleForTesting
@@ -249,12 +265,21 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     // TODO(crbug.com/1130068) support all currencies
-    private static String formatPrice(long priceMicros) {
+    private String formatPrice(long priceMicros) {
+        CurrencyFormatter currencyFormatter =
+                new CurrencyFormatter(mCurrencyCode, Locale.getDefault());
+        String formattedPrice;
         if (priceMicros < TEN_UNITS) {
-            return String.format(Locale.US, "$%.2f", (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
+            currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS);
+            formattedPrice = String.format(
+                    Locale.getDefault(), "%.2f", (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
+        } else {
+            currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS);
+            formattedPrice = String.format(Locale.getDefault(), "%d",
+                    (long) Math.floor(
+                            (double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
         }
-        return String.format(Locale.US, "$%d",
-                (int) Math.floor((double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
+        return currencyFormatter.format(formattedPrice);
     }
 
     @Override

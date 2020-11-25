@@ -29,6 +29,9 @@ class CurrencyFormatterAndroid {
   void Destroy(JNIEnv* env,
                const base::android::JavaParamRef<jobject>& jcaller);
 
+  // Set the maximum number of fractional digits.
+  void SetMaxFractionalDigits(JNIEnv* env, jint jnum_fractional_digits);
+
   // Refer to CurrencyFormatter::Format documentation.
   base::android::ScopedJavaLocalRef<jstring> Format(
       JNIEnv* env,
