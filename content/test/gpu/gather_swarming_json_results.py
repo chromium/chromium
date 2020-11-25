@@ -26,6 +26,8 @@ def GetBuildData(method, request):
   # The Python docs are wrong. It's fine for this payload to be just
   # a JSON string.
   headers = {'content-type': 'application/json', 'accept': 'application/json'}
+  logging.debug('Making request:')
+  logging.debug('%s', request)
   url = urllib2.Request(
       'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
       request, headers)
@@ -156,7 +158,22 @@ def GatherResults(bot, build, step):
 def main():
   rest_args = sys.argv[1:]
   parser = argparse.ArgumentParser(
-      description='Gather JSON results from a run of a Swarming test.',
+      description="""
+Gather JSON results from a run of a Swarming test.
+
+Example invocation to fetch the WebGL 1.0 test runtimes from Linux FYI
+Release (NVIDIA):
+
+gather_swarming_json_results.py \
+  --step webgl_conformance_gl_passthrough_tests \
+  --output=../data/gpu/webgl_conformance_tests_output.json
+
+Example invocation to fetch the WebGL 2.0 runtimes:
+gather_swarming_json_results.py \
+  --step webgl2_conformance_gl_passthrough_tests \
+  --output=../data/gpu/webgl2_conformance_tests_output.json
+
+""",
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument(
       '-v',
@@ -173,10 +190,9 @@ def main():
       type=int,
       help='Which build to fetch. If not specified, use '
       'the latest successful build.')
-  parser.add_argument(
-      '--step',
-      default='webgl2_conformance_tests',
-      help='Which step to fetch (treated as a prefix)')
+  parser.add_argument('--step',
+                      default='webgl2_conformance_gl_passthrough_tests',
+                      help='Which step to fetch (treated as a prefix)')
   parser.add_argument(
       '--output',
       metavar='FILE',
