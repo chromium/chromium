@@ -785,6 +785,42 @@ public class Tab {
         }
     }
 
+    /**
+     * Turns on desktop user agent if enable is true, otherwise reverts back to mobile user agent.
+     * The selected user agent will be used for future navigations until this method is called
+     * again. Each navigation saves the user agent mode it was navigated with and will reuse that on
+     * back/forward navigations. The tab will be reloaded with the new user agent.
+     * @param enable if true requests desktop site, otherwise mobile site.
+     *
+     * @since 88
+     */
+    public void setDesktopUserAgentEnabled(boolean enable) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.setDesktopUserAgentEnabled(enable);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Returns true if the currently loaded page used a desktop user agent.
+     *
+     * @since 88
+     */
+    public boolean isDesktopUserAgentEnabled() {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mImpl.isDesktopUserAgentEnabled();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     // Called by Browser when removed.
     void onRemovedFromBrowser() {
         if (mDestroyOnRemove) {

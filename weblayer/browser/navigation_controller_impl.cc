@@ -9,11 +9,13 @@
 #include "base/auto_reset.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
+#include "weblayer/browser/navigation_entry_data.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_observer.h"
@@ -353,7 +355,18 @@ void NavigationControllerImpl::DidStartNavigation(
   base::AutoReset<NavigationImpl*> auto_reset(&navigation_starting_,
                                               navigation);
   navigation->set_safe_to_set_request_headers(true);
-  navigation->set_safe_to_set_user_agent(true);
+
+#if defined(OS_ANDROID)
+  // Desktop mode and per-navigation UA use the same mechanism and so don't
+  // interact well. It's not possible to support both at the same time since
+  // if there's a per-navigation UA active and desktop mode is turned on, or
+  // was on previously, the WebContent's state would have to change before
+  // navigation even though that would be wrong for the previous navigation if
+  // the new navigation didn't commit.
+  if (!TabImpl::FromWebContents(web_contents())->desktop_user_agent_enabled())
+#endif
+    navigation->set_safe_to_set_user_agent(true);
+
 #if defined(OS_ANDROID)
   NavigationUIDataImpl* navigation_ui_data = static_cast<NavigationUIDataImpl*>(
       navigation_handle->GetNavigationUIData());
@@ -416,6 +429,21 @@ void NavigationControllerImpl::DidFinishNavigation(
   DelayDeletionHelper deletion_helper(this);
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
+
+  if (navigation_handle->HasCommitted()) {
+    // Set state on NavigationEntry user data if a per-navigation user agent was
+    // specified. This can't be done earlier because a NavigationEntry might not
+    // have existed at the time that SetUserAgentString was called.
+    if (navigation->set_user_agent_string_called()) {
+      auto* entry = web_contents()->GetController().GetLastCommittedEntry();
+      if (entry) {
+        auto* entry_data = NavigationEntryData::Get(entry);
+        if (entry_data)
+          entry_data->set_per_navigation_user_agent_override(true);
+      }
+    }
+  }
+
   if (navigation_handle->GetNetErrorCode() == net::OK &&
       !navigation_handle->IsErrorPage()) {
 #if defined(OS_ANDROID)
@@ -528,10 +556,18 @@ void NavigationControllerImpl::NotifyLoadStateChanged() {
 
 void NavigationControllerImpl::DoNavigate(
     std::unique_ptr<content::NavigationController::LoadURLParams> params) {
-  // Navigations should use the default user-agent. If the embedder wants a
-  // custom user-agent, the embedder will call Navigation::SetUserAgentString().
-  params->override_user_agent =
-      content::NavigationController::UA_OVERRIDE_FALSE;
+  // Navigations should use the default user-agent (which may be overridden if
+  // desktop mode is turned on). If the embedder wants a custom user-agent, the
+  // embedder will call Navigation::SetUserAgentString() in DidStartNavigation.
+#if defined(OS_ANDROID)
+  // We need to set UA_OVERRIDE_FALSE if per navigation UA is set. However at
+  // this point we don't know if the embedder will call that later. Since we
+  // ensure that the two can't be set at the same time, it's sufficient to
+  // not enable it if desktop mode is turned on.
+  if (!TabImpl::FromWebContents(web_contents())->desktop_user_agent_enabled())
+#endif
+    params->override_user_agent =
+        content::NavigationController::UA_OVERRIDE_FALSE;
   if (navigation_starting_) {
     // DoNavigate() is being called reentrantly. Delay processing until it's
     // safe.

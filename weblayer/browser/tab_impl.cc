@@ -22,6 +22,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/embedder_support/android/util/user_agent_utils.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/js_injection/browser/js_communication_host.h"
@@ -39,6 +40,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -63,6 +65,7 @@
 #include "weblayer/browser/infobar_service.h"
 #include "weblayer/browser/js_communication/web_message_host_factory_wrapper.h"
 #include "weblayer/browser/navigation_controller_impl.h"
+#include "weblayer/browser/navigation_entry_data.h"
 #include "weblayer/browser/no_state_prefetch/prerender_tab_helper.h"
 #include "weblayer/browser/page_load_metrics_initialize.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
@@ -72,6 +75,7 @@
 #include "weblayer/browser/popup_navigation_delegate_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/translate_client_impl.h"
+#include "weblayer/browser/user_agent.h"
 #include "weblayer/browser/weblayer_features.h"
 #include "weblayer/common/isolated_world_ids.h"
 #include "weblayer/public/fullscreen_delegate.h"
@@ -281,12 +285,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
   // before |this| observes the WebContents to ensure favicons are reset before
   // notifying weblayer observers of changes.
   FaviconTabHelper::CreateForWebContents(web_contents_.get());
-
-  // By default renderer initiated navigations inherit the user-agent override
-  // of the current NavigationEntry. For WebLayer, the user-agent override is
-  // set on a per NavigationEntry entry basis.
-  web_contents_->SetRendererInitiatedUserAgentOverrideOption(
-      content::NavigationController::UA_OVERRIDE_FALSE);
 
   UpdateRendererPrefs(false);
   locale_change_subscription_ =
@@ -797,6 +795,45 @@ void TabImpl::SetTranslateTargetLanguage(
           ->GetTranslateManager();
   translate_manager->SetPredefinedTargetLanguage(
       base::android::ConvertJavaStringToUTF8(env, translate_target_lang));
+}
+
+void TabImpl::SetDesktopUserAgentEnabled(JNIEnv* env, jboolean enable) {
+  if (desktop_user_agent_enabled_ == enable)
+    return;
+
+  desktop_user_agent_enabled_ = enable;
+
+  // Reset state that an earlier call to Navigation::SetUserAgentString()
+  // could have modified.
+  embedder_support::SetDesktopUserAgentOverride(web_contents_.get(),
+                                                GetUserAgentMetadata());
+  web_contents_->SetRendererInitiatedUserAgentOverrideOption(
+      content::NavigationController::UA_OVERRIDE_INHERIT);
+
+  content::NavigationEntry* entry =
+      web_contents_->GetController().GetLastCommittedEntry();
+  if (!entry)
+    return;
+
+  entry->SetIsOverridingUserAgent(enable);
+  web_contents_->NotifyPreferencesChanged();
+  web_contents_->GetController().Reload(
+      content::ReloadType::ORIGINAL_REQUEST_URL, true);
+}
+
+jboolean TabImpl::IsDesktopUserAgentEnabled(JNIEnv* env) {
+  auto* entry = web_contents_->GetController().GetLastCommittedEntry();
+  if (!entry)
+    return false;
+
+  // The same user agent override mechanism is used for per-navigation user
+  // agent and desktop mode. Make sure not to return desktop mode for
+  // navigation entries which used a per-navigation user agent.
+  auto* entry_data = NavigationEntryData::Get(entry);
+  if (entry_data && entry_data->per_navigation_user_agent_override())
+    return false;
+
+  return entry->GetIsOverridingUserAgent();
 }
 #endif  // OS_ANDROID
 

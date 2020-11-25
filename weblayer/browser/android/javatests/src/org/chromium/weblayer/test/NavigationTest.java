@@ -577,6 +577,14 @@ public class NavigationTest {
                                                  .registerNavigationCallback(callback));
     }
 
+    private void unregisterNavigationCallback(NavigationCallback callback) {
+        runOnUiThreadBlocking(()
+                                      -> mActivityTestRule.getActivity()
+                                                 .getTab()
+                                                 .getNavigationController()
+                                                 .unregisterNavigationCallback(callback));
+    }
+
     private void navigateAndWaitForCompletion(String expectedUrl, Runnable navigateRunnable)
             throws Exception {
         int currentCallCount = mCallback.onCompletedCallback.getCallCount();
@@ -736,6 +744,7 @@ public class NavigationTest {
     // NavigationCallback implementation that sets the user-agent string in onNavigationStarted().
     private static final class UserAgentSetter extends NavigationCallback {
         private final String mValue;
+        public boolean mGotIllegalStateException;
 
         UserAgentSetter(String value) {
             mValue = value;
@@ -743,7 +752,11 @@ public class NavigationTest {
 
         @Override
         public void onNavigationStarted(Navigation navigation) {
-            navigation.setUserAgentString(mValue);
+            try {
+                navigation.setUserAgentString(mValue);
+            } catch (IllegalStateException e) {
+                mGotIllegalStateException = true;
+            }
         }
     }
 
@@ -760,6 +773,73 @@ public class NavigationTest {
         mActivityTestRule.navigateAndWait(url);
         String actualUserAgent = testServer.getLastRequest("/ok.html").headerValue("User-Agent");
         assertEquals(customUserAgent, actualUserAgent);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void testCantUsePerNavigationAndDesktopMode() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        UserAgentSetter setter = new UserAgentSetter("foo");
+        registerNavigationCallback(setter);
+        String url = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+        runOnUiThreadBlocking(() -> { activity.getTab().setDesktopUserAgentEnabled(true); });
+        mActivityTestRule.navigateAndWait(url);
+        assertTrue(setter.mGotIllegalStateException);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void testDesktopMode() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        String url = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+        runOnUiThreadBlocking(() -> { activity.getTab().setDesktopUserAgentEnabled(true); });
+        mActivityTestRule.navigateAndWait(url);
+        String actualUserAgent = testServer.getLastRequest("/ok.html").headerValue("User-Agent");
+        assertFalse(actualUserAgent.contains("Android"));
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void testDesktopModeSticks() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        String url = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+        String url2 = testServer.setResponse("/ok2.html", "<html>ok</html>", null);
+        runOnUiThreadBlocking(() -> { activity.getTab().setDesktopUserAgentEnabled(true); });
+        mActivityTestRule.navigateAndWait(url);
+        mActivityTestRule.navigateAndWait(url2);
+        String actualUserAgent = testServer.getLastRequest("/ok2.html").headerValue("User-Agent");
+        assertFalse(actualUserAgent.contains("Android"));
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void testDesktopModeGetter() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+
+        UserAgentSetter setter = new UserAgentSetter("foo");
+        registerNavigationCallback(setter);
+        mActivityTestRule.navigateAndWait(URL1);
+        unregisterNavigationCallback(setter);
+        runOnUiThreadBlocking(
+                () -> { assertFalse(activity.getTab().isDesktopUserAgentEnabled()); });
+
+        runOnUiThreadBlocking(() -> { activity.getTab().setDesktopUserAgentEnabled(true); });
+        mActivityTestRule.navigateAndWait(URL2);
+        runOnUiThreadBlocking(() -> { assertTrue(activity.getTab().isDesktopUserAgentEnabled()); });
+
+        navigateAndWaitForCompletion(
+                URL1, () -> activity.getTab().getNavigationController().goBack());
+        runOnUiThreadBlocking(
+                () -> { assertFalse(activity.getTab().isDesktopUserAgentEnabled()); });
     }
 
     @Test

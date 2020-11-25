@@ -640,6 +640,18 @@ public final class TabImpl extends ITab.Stub {
         mActionModeCallback.setOverride(actionModeItemTypes);
     }
 
+    @Override
+    public void setDesktopUserAgentEnabled(boolean enable) {
+        StrictModeWorkaround.apply();
+        TabImplJni.get().setDesktopUserAgentEnabled(mNativeTab, enable);
+    }
+
+    @Override
+    public boolean isDesktopUserAgentEnabled() {
+        StrictModeWorkaround.apply();
+        return TabImplJni.get().isDesktopUserAgentEnabled(mNativeTab);
+    }
+
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {
         mFaviconCallbackProxies.remove(proxy);
     }
@@ -1177,5 +1189,7 @@ public final class TabImpl extends ITab.Stub {
         boolean canTranslate(long nativeTabImpl);
         void showTranslateUi(long nativeTabImpl);
         void setTranslateTargetLanguage(long nativeTabImpl, String targetLanguage);
+        void setDesktopUserAgentEnabled(long nativeTabImpl, boolean enable);
+        boolean isDesktopUserAgentEnabled(long nativeTabImpl);
     }
 }

@@ -70,6 +70,8 @@ static_library("util") {
     "util/response_delegate_impl.cc",
     "util/response_delegate_impl.h",
     "util/url_utilities.cc",
+    "util/user_agent_utils.cc",
+    "util/user_agent_utils.h",
     "util/web_resource_response.cc",
     "util/web_resource_response.h",
   ]
@@ -78,6 +80,7 @@ static_library("util") {
     ":util_jni_headers",
     "//base",
     "//components/google/core/common",
+    "//components/version_info",
     "//content/public/browser",
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/public/cpp/system:system",

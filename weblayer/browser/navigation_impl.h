@@ -51,6 +51,8 @@ class NavigationImpl : public Navigation {
 
   void set_was_stopped() { was_stopped_ = true; }
 
+  bool set_user_agent_string_called() { return set_user_agent_string_called_; }
+
   void SetParamsToLoadWhenSafe(
       std::unique_ptr<content::NavigationController::LoadURLParams> params);
   std::unique_ptr<content::NavigationController::LoadURLParams>
@@ -122,6 +124,9 @@ class NavigationImpl : public Navigation {
 
   // Whether NavigationController::Stop() was called for this navigation.
   bool was_stopped_ = false;
+
+  // Whether SetUserAgentString was called.
+  bool set_user_agent_string_called_ = false;
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;

@@ -26,4 +26,8 @@
         android:title="Set translate target language to German" />
     <item android:id="@+id/clear_translate_target_lang_menu_id"
         android:title="Clear translate target language override" />
+    <item android:id="@+id/desktop_site_menu_id"
+        android:title="Request desktop site" />
+    <item android:id="@+id/no_desktop_site_menu_id"
+        android:title="Request mobile site" />
 </menu>
