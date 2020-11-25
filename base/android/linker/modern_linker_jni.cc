@@ -439,7 +439,7 @@ int LoadCreateSharedRelocations(const String& path, void* wanted_address) {
   }
 
   if (!CallJniOnLoad(handle))
-    return false;
+    return -1;
 
   return relro_fd;
 }
