@@ -301,12 +301,6 @@ if (is_chromeos_device) {
       "crostini.Restart.buster_amd64_stable",
       "crostini.Restart.buster_arm_stable",
 
-      # crbug.com/1141944
-      "crostini.LaunchBrowser.stretch_amd64_stable",
-      "crostini.LaunchBrowser.stretch_arm_stable",
-      "crostini.LaunchBrowser.buster_amd64_stable",
-      "crostini.LaunchBrowser.buster_arm_stable",
-
       # crbug.com/1098810
       "security.SELinuxFilesSystem",
 
