@@ -47,11 +47,13 @@ struct BASE_EXPORT PendingTask {
   base::TimeTicks delayed_run_time;
 
   // The time at which the task was queued. For SequenceManager tasks and
-  // ThreadPool non-delayed tasks, this happens at post time. For
-  // ThreadPool delayed tasks, this happens some time after the task's delay
-  // has expired. This is not set for SequenceManager tasks if
-  // SetAddQueueTimeToTasks(true) wasn't call. This defaults to a null TimeTicks
-  // if the task hasn't been inserted in a sequence yet.
+  // ThreadPool non-delayed tasks, this happens at post time. For ThreadPool
+  // delayed tasks, this happens some time after the task's delay has expired.
+  // For deferred non-nestable tasks, this is reset when the nested loop exits
+  // and the deferred tasks are pushed back at the front of the queue. This is
+  // not set for SequenceManager tasks if SetAddQueueTimeToTasks(true) wasn't
+  // called. This defaults to a null TimeTicks if the task hasn't been inserted
+  // in a sequence yet.
   TimeTicks queue_time;
 
   // Chain of symbols of the parent tasks which led to this one being posted.
