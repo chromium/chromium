@@ -61,6 +61,7 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
                                       const std::string& cpu_model,
                                       uint32_t total_memory_kib,
                                       uint16_t cpu_threads_count,
+                                      uint32_t cpu_max_clock_speed_khz,
                                       bool has_battery,
                                       const std::string& milestone_version) {
   // System info
@@ -82,6 +83,9 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
   // CPU info
   auto cpu_info = cros_healthd::mojom::CpuInfo::New();
   auto physical_cpu_info = cros_healthd::mojom::PhysicalCpuInfo::New();
+  auto logical_cpu_info = cros_healthd::mojom::LogicalCpuInfo::New();
+  logical_cpu_info->max_clock_speed_khz = cpu_max_clock_speed_khz;
+  physical_cpu_info->logical_cpus.push_back(std::move(logical_cpu_info));
   physical_cpu_info->model_name = cpu_model;
   cpu_info->num_total_threads = cpu_threads_count;
   cpu_info->physical_cpus.emplace_back(std::move(physical_cpu_info));
@@ -221,17 +225,24 @@ void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
                                 /*system_info=*/nullptr);
 }
 
-void SetCrosHealthdCpuResponse(const std::vector<CpuUsageData>& usage_data,
-                               const std::vector<int32_t>& cpu_temps) {
+void SetCrosHealthdCpuResponse(
+    const std::vector<CpuUsageData>& usage_data,
+    const std::vector<int32_t>& cpu_temps,
+    const std::vector<uint32_t>& scaled_cpu_clock_speed) {
   auto cpu_info_ptr = cros_healthd::mojom::CpuInfo::New();
   auto physical_cpu_info_ptr = cros_healthd::mojom::PhysicalCpuInfo::New();
 
-  for (const auto& data : usage_data) {
+  DCHECK_EQ(usage_data.size(), scaled_cpu_clock_speed.size());
+  for (size_t i = 0; i < usage_data.size(); ++i) {
+    const auto& data = usage_data[i];
     auto logical_cpu_info_ptr = cros_healthd::mojom::LogicalCpuInfo::New();
 
     logical_cpu_info_ptr->user_time_user_hz = data.GetUserTime();
     logical_cpu_info_ptr->system_time_user_hz = data.GetSystemTime();
     logical_cpu_info_ptr->idle_time_user_hz = data.GetIdleTime();
+
+    logical_cpu_info_ptr->scaling_current_frequency_khz =
+        scaled_cpu_clock_speed[i];
 
     physical_cpu_info_ptr->logical_cpus.emplace_back(
         std::move(logical_cpu_info_ptr));
@@ -256,14 +267,23 @@ void SetCrosHealthdCpuResponse(const std::vector<CpuUsageData>& usage_data,
 // entry for each logical cpu.
 void SetCrosHealthdCpuUsageResponse(
     const std::vector<CpuUsageData>& usage_data) {
-  // Use fake temp data since none was supplied.
-  SetCrosHealthdCpuResponse(usage_data, {50});
+  // Use fake temp and scaled clock speed data since none was supplied.
+  const std::vector<uint32_t> scaled_clock_speeds(usage_data.size(), 10000);
+  SetCrosHealthdCpuResponse(usage_data, {50}, scaled_clock_speeds);
 }
 
 void SetCrosHealthdCpuTemperatureResponse(
     const std::vector<int32_t>& cpu_temps) {
-  // Use fake usage_data data since none was supplied.
-  SetCrosHealthdCpuResponse({CpuUsageData(1000, 1000, 1000)}, cpu_temps);
+  // Use fake usage_data and scaled clock speed data since none was supplied.
+  SetCrosHealthdCpuResponse({CpuUsageData(1000, 1000, 1000)}, cpu_temps,
+                            {10000});
+}
+
+void SetCrosHealthdCpuScalingResponse(const std::vector<uint32_t>& cpu_speeds) {
+  // Use fake temp and usage_data data since none was supplied.
+  const std::vector<CpuUsageData> usage_data(cpu_speeds.size(),
+                                             CpuUsageData(1000, 1000, 1000));
+  SetCrosHealthdCpuResponse(usage_data, {50}, cpu_speeds);
 }
 
 bool AreValidPowerTimes(int64_t time_to_full, int64_t time_to_empty) {
@@ -398,6 +418,11 @@ void VerifyCpuTempResult(const mojom::CpuUsagePtr& update,
   EXPECT_EQ(expected_average_temp, update->average_cpu_temp_celsius);
 }
 
+void VerifyCpuScalingResult(const mojom::CpuUsagePtr& update,
+                            uint32_t expected_scaled_speed) {
+  EXPECT_EQ(expected_scaled_speed, update->scaling_current_frequency_khz);
+}
+
 }  // namespace
 
 struct FakeBatteryChargeStatusObserver
@@ -482,13 +507,15 @@ TEST_F(SystemDataProviderTest, GetSystemInfo) {
   const std::string expected_cpu_model = "cpu_model";
   const uint32_t expected_total_memory_kib = 1234;
   const uint16_t expected_cpu_threads_count = 5678;
+  const uint32_t expected_cpu_max_clock_speed_khz = 91011;
   const bool expected_has_battery = true;
   const std::string expected_milestone_version = "M99";
 
   SetCrosHealthdSystemInfoResponse(
       expected_board_name, expected_marketing_name, expected_cpu_model,
       expected_total_memory_kib, expected_cpu_threads_count,
-      expected_has_battery, expected_milestone_version);
+      expected_cpu_max_clock_speed_khz, expected_has_battery,
+      expected_milestone_version);
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(
@@ -499,6 +526,8 @@ TEST_F(SystemDataProviderTest, GetSystemInfo) {
         EXPECT_EQ(expected_cpu_model, ptr->cpu_model_name);
         EXPECT_EQ(expected_total_memory_kib, ptr->total_memory_kib);
         EXPECT_EQ(expected_cpu_threads_count, ptr->cpu_threads_count);
+        EXPECT_EQ(expected_cpu_max_clock_speed_khz,
+                  ptr->cpu_max_clock_speed_khz);
         EXPECT_EQ(expected_milestone_version,
                   ptr->version_info->milestone_version);
         EXPECT_EQ(expected_has_battery, ptr->device_capabilities->has_battery);
@@ -514,13 +543,15 @@ TEST_F(SystemDataProviderTest, NoBattery) {
   const std::string expected_cpu_model = "cpu_model";
   const uint32_t expected_total_memory_kib = 1234;
   const uint16_t expected_cpu_threads_count = 5678;
+  const uint32_t expected_cpu_max_clock_speed_khz = 91011;
   const bool expected_has_battery = false;
   const std::string expected_milestone_version = "M99";
 
   SetCrosHealthdSystemInfoResponse(
       expected_board_name, expected_marketing_name, expected_cpu_model,
       expected_total_memory_kib, expected_cpu_threads_count,
-      expected_has_battery, expected_milestone_version);
+      expected_cpu_max_clock_speed_khz, expected_has_battery,
+      expected_milestone_version);
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(
@@ -531,6 +562,8 @@ TEST_F(SystemDataProviderTest, NoBattery) {
         EXPECT_EQ(expected_cpu_model, ptr->cpu_model_name);
         EXPECT_EQ(expected_total_memory_kib, ptr->total_memory_kib);
         EXPECT_EQ(expected_cpu_threads_count, ptr->cpu_threads_count);
+        EXPECT_EQ(expected_cpu_max_clock_speed_khz,
+                  ptr->cpu_max_clock_speed_khz);
         EXPECT_EQ(expected_milestone_version,
                   ptr->version_info->milestone_version);
         EXPECT_EQ(expected_has_battery, ptr->device_capabilities->has_battery);
@@ -855,6 +888,54 @@ TEST_F(SystemDataProviderTest, CpuUsageObserverTemp) {
   // Integer division so `expected_average_temp` should still be 30.
   VerifyCpuTempResult(cpu_usage_observer.updates[2],
                       /*expected_average_temp=*/30);
+}
+
+TEST_F(SystemDataProviderTest, CpuUsageScaledClock) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  // Setup initial data
+  uint32_t core_1_speed = 4000;
+  uint32_t core_2_speed = 5000;
+
+  SetCrosHealthdCpuScalingResponse({core_1_speed, core_2_speed});
+
+  // Registering as an observer should trigger one update.
+  FakeCpuUsageObserver cpu_usage_observer;
+  system_data_provider_->ObserveCpuUsage(
+      cpu_usage_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, cpu_usage_observer.updates.size());
+  VerifyCpuScalingResult(cpu_usage_observer.updates[0],
+                         /*expected_scaled_speed=*/4500);
+
+  core_1_speed = 2000;
+  core_2_speed = 2000;
+
+  SetCrosHealthdCpuScalingResponse({core_1_speed, core_2_speed});
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, cpu_usage_observer.updates.size());
+  VerifyCpuScalingResult(cpu_usage_observer.updates[1],
+                         /*expected_scaled_speed=*/2000);
+
+  core_1_speed = 2000;
+  core_2_speed = 2001;
+
+  SetCrosHealthdCpuScalingResponse({core_1_speed, core_2_speed});
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, cpu_usage_observer.updates.size());
+  // Integer division so `expected_scaled_speed` should still be 2000.
+  VerifyCpuScalingResult(cpu_usage_observer.updates[2],
+                         /*expected_scaled_speed=*/2000);
 }
 
 }  // namespace diagnostics

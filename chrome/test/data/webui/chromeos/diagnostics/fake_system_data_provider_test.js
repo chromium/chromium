@@ -39,6 +39,7 @@ export function fakeSystemDataProviderTestSuite() {
       marketingName: 'Bestest 1000',
       totalMemoryKib: 9999,
       cpuThreadsCount: 4,
+      cpuMaxClockSpeedKhz: 1000,
       versionInfo: version,
       deviceCapabilities: capabilities,
     };

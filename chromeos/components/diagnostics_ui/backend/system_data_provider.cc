@@ -62,6 +62,17 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
   // If there is more than one physical cpu on the device, use the name of the
   // first CPU.
   out_system_info.cpu_model_name = physical_cpus[0]->model_name.value_or("");
+
+  // Calculate `max_clock_speed_khz` as the average of all logical core clock
+  // speeds until we decide the best way to consume the information in the UI.
+  uint32_t total_max_ghz = 0;
+  for (const auto& logical_cpu_ptr : physical_cpus[0]->logical_cpus) {
+    total_max_ghz += logical_cpu_ptr->max_clock_speed_khz;
+  }
+
+  // Integer division.
+  out_system_info.cpu_max_clock_speed_khz =
+      total_max_ghz / physical_cpus[0]->logical_cpus.size();
 }
 
 void PopulateVersionInfo(const healthd::SystemInfo& system_info,
@@ -183,6 +194,18 @@ void PopulateAverageCpuTemperature(const healthd::CpuInfo& cpu_info,
   // Integer divison.
   out_cpu_usage.average_cpu_temp_celsius =
       cumulative_total / cpu_info.temperature_channels.size();
+}
+
+void PopulateAverageScaledClockSpeed(const healthd::CpuInfo& cpu_info,
+                                     mojom::CpuUsage& out_cpu_usage) {
+  uint32_t total_scaled_ghz = 0;
+  for (const auto& logical_cpu_ptr : cpu_info.physical_cpus[0]->logical_cpus) {
+    total_scaled_ghz += logical_cpu_ptr->scaling_current_frequency_khz;
+  }
+
+  // Integer division.
+  out_cpu_usage.scaling_current_frequency_khz =
+      total_scaled_ghz / cpu_info.physical_cpus[0]->logical_cpus.size();
 }
 
 }  // namespace
@@ -524,6 +547,7 @@ void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
 
   ComputeAndPopulateCpuUsage(*cpu_info, *cpu_usage.get());
   PopulateAverageCpuTemperature(*cpu_info, *cpu_usage.get());
+  PopulateAverageScaledClockSpeed(*cpu_info, *cpu_usage.get());
 
   NotifyCpuUsageObservers(cpu_usage);
 }

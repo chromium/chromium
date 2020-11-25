@@ -23,6 +23,7 @@ struct SystemInfo {
   string cpu_model_name;
   uint32 total_memory_kib;
   uint16 cpu_threads_count;
+  uint32 cpu_max_clock_speed_khz;
   VersionInfo version_info;
   DeviceCapabilities device_capabilities;
 };
@@ -76,6 +77,7 @@ struct CpuUsage {
   uint8 percent_usage_system;
   uint8 percent_usage_free;
   uint16 average_cpu_temp_celsius;
+  uint32 scaling_current_frequency_khz;
 };
 
 // Implemented by clients that wish to be updated periodically about changes to

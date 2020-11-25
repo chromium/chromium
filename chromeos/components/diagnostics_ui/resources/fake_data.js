@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryRateRoutineResult, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
-import {stringToMojoString16} from './mojo_utils.js';
+import { BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryRateRoutineResult, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo } from './diagnostics_types.js'
+import { stringToMojoString16 } from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
 export const fakeBatteryChargeStatus = [
@@ -128,10 +128,11 @@ export const fakeSystemInfo = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
-  deviceCapabilities: {hasBattery: true},
+  cpuMaxClockSpeedKhz: 1000,
+  deviceCapabilities: { hasBattery: true },
   marketingName: 'Coolest Chromebook',
   totalMemoryKib: 128000,
-  versionInfo: {milestoneVersion: 'M99'},
+  versionInfo: { milestoneVersion: 'M99' },
 };
 
 /** @type {!SystemInfo} */
@@ -139,10 +140,11 @@ export const fakeSystemInfoWithoutBattery = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
-  deviceCapabilities: {hasBattery: false},
+  cpuMaxClockSpeedKhz: 1000,
+  deviceCapabilities: { hasBattery: false },
   marketingName: 'Coolest Chromebook',
   totalMemoryKib: 128000,
-  versionInfo: {milestoneVersion: 'M99'},
+  versionInfo: { milestoneVersion: 'M99' },
 };
 
 /** @type {!Map<!RoutineName, !StandardRoutineResult>} */
