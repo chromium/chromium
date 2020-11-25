@@ -69,7 +69,7 @@ scoped_refptr<const NGLayoutResult> NGPageLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGPageLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) {
+    const MinMaxSizesInput& input) const {
   NGFragmentGeometry fragment_geometry =
       CalculateInitialMinMaxFragmentGeometry(ConstraintSpace(), Node());
   NGBlockLayoutAlgorithm algorithm(

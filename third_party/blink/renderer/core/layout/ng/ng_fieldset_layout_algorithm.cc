@@ -360,7 +360,7 @@ bool NGFieldsetLayoutAlgorithm::IsFragmentainerOutOfSpace(
 }
 
 MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) {
+    const MinMaxSizesInput& input) const {
   MinMaxSizesResult result;
 
   bool apply_size_containment = Node().ShouldApplySizeContainment();

@@ -74,7 +74,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
 
   const NGGridLayoutAlgorithmTrackCollection& ColumnTrackCollection() const;
   const NGGridLayoutAlgorithmTrackCollection& RowTrackCollection() const;

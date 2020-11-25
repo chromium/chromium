@@ -52,7 +52,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) override {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override {
     NOTREACHED();
     return {MinMaxSizes(), true};
   }

@@ -25,7 +25,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       : NGLayoutAlgorithm(params) {}
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
 
   static LayoutUnit ComputeTableInlineSize(const NGTableNode& node,
                                            const NGConstraintSpace& space,

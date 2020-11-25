@@ -1453,7 +1453,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
 }
 
 MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) {
+    const MinMaxSizesInput& child_input) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

@@ -326,7 +326,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) {
+    const MinMaxSizesInput& child_input) const {
   DCHECK(IsValidMathMLScript(Node()));
 
   if (auto result = CalculateMinMaxSizesIgnoringChildren(

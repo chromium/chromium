@@ -104,7 +104,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) {
+    const MinMaxSizesInput& input) const {
   return {MinMaxSizes(), /* depends_on_percentage_block_size */ true};
 }
 

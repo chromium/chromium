@@ -230,7 +230,7 @@ void NGBlockLayoutAlgorithm::SetBoxType(NGPhysicalFragment::NGBoxType type) {
 }
 
 MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) {
+    const MinMaxSizesInput& input) const {
   if (auto result =
           CalculateMinMaxSizesIgnoringChildren(node_, BorderScrollbarPadding()))
     return *result;

@@ -154,7 +154,7 @@ scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) {
+    const MinMaxSizesInput& child_input) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

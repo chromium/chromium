@@ -19,7 +19,7 @@ class CORE_EXPORT NGMathRadicalLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() final;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const final;
 
  private:
   bool HasIndex() const;

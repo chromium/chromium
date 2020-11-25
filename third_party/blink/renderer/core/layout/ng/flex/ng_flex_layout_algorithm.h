@@ -23,7 +23,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
  public:
   NGFlexLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
   scoped_refptr<const NGLayoutResult> Layout() override;
 
  private:
