@@ -253,6 +253,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   virtual bool HasAlpha() const = 0;
 
+  virtual bool IsDesynchronized() const {
+    NOTREACHED();
+    return false;
+  }
+
   virtual bool isContextLost() const = 0;
 
   virtual void WillDrawImage(CanvasImageSource*) const {}

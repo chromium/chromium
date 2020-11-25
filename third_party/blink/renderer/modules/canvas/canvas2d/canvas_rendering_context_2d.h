@@ -278,6 +278,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IsAccelerated() const override;
   bool IsOriginTopLeft() const override;
   bool HasAlpha() const override { return CreationAttributes().alpha; }
+  bool IsDesynchronized() const override {
+    return CreationAttributes().desynchronized;
+  }
   void SetIsInHiddenPage(bool) override;
   void SetIsBeingDisplayed(bool) override;
   void Stop() final;
