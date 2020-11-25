@@ -150,8 +150,7 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
       profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
 
   if (entry->GetSigninState() == SigninState::kNotSignedIn) {
-    if (base::FeatureList::IsEnabled(features::kNewProfilePicker) &&
-        base::FeatureList::IsEnabled(features::kProfilesUIRevamp)) {
+    if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
       ProfileThemeColors colors = entry->GetProfileThemeColors();
       auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
           colors.default_avatar_fill_color, colors.default_avatar_stroke_color,

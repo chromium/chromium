@@ -56,7 +56,7 @@
         padding: var(--cr-section-vertical-padding) 0;
       }
     </style>
-    <template is="dom-if" if="[[!isProfilesUIRevamp_]]">
+    <template is="dom-if" if="[[!isNewProfilePicker_]]">
       <div class="cr-row first">
         <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
             on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
@@ -83,7 +83,7 @@
       </cr-profile-avatar-selector>
   </template>
 
-  <template is="dom-if" if="[[isProfilesUIRevamp_]]">
+  <template is="dom-if" if="[[isNewProfilePicker_]]">
     <div class="cr-row first manage-profile-section">
       <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
       <div class="content">

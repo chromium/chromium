@@ -78,12 +78,12 @@ Polymer({
     isProfileShortcutSettingVisible_: Boolean,
 
     /**
-     * True if the 'kProfilesUIRevamp' feature is enabled.
+     * True if the 'kNewProfilePicker' feature is enabled.
      * @private
      */
-    isProfilesUIRevamp_: {
+    isNewProfilePicker_: {
       type: Boolean,
-      value: () => loadTimeData.getBoolean('profilesUIRevamp')
+      value: () => loadTimeData.getBoolean('newProfilePicker')
     },
 
     /**
