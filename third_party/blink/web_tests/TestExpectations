@@ -6013,9 +6013,6 @@ crbug.com/1149987 external/wpt/websockets/Create-blocked-port.any.worker.html [ 
 crbug.com/1150518 [ Win ] virtual/gpu/fast/canvas/canvas-composite-shadow.html [ Pass Timeout ]
 crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Pass Failure ]
 
-# Skip to land change in frontend (https://crrev.com/c/2550061) before this layout test can be updated
-crbug.com/1150854 http/tests/devtools/unit/soft-context-menu.js [ Skip ]
-
 #Sheriff 2020-11-23
 crbug.com/1151861 external/wpt/workers/semantics/multiple-workers/003.html [ Timeout Crash ]
 crbug.com/1152088 [ Mac10.13 Debug ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
