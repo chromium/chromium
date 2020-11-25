@@ -116,7 +116,7 @@ public class VideoPlayerMediatorUnitTest {
         Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
         mMediator.playVideoTutorial(tutorial);
         Mockito.verify(mNavigationController).loadUrl(any());
-        assertThat(mModel.get(VideoPlayerProperties.SHOW_LOADING_SCREEN), equalTo(true));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_LOADING_SCREEN), equalTo(false));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_MEDIA_CONTROLS), equalTo(false));
 
         mMediator.onPlay();
