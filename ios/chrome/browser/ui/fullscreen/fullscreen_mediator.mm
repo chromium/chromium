@@ -146,8 +146,12 @@ void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
   // callback occurs after the model's state is reset, and updating the model
   // the with active animator's current value would overwrite the reset value.
   StopAnimating(false /* update_model */);
-  // Update observers for the reset progress value.
+  // Update observers for the reset progress value and set the inset range in
+  // case this is a new WebState.
   for (auto& observer : observers_) {
+    observer.FullscreenViewportInsetRangeChanged(
+        controller_, controller_->GetMinViewportInsets(),
+        controller_->GetMaxViewportInsets());
     observer.FullscreenProgressUpdated(controller_, model_->progress());
   }
 
