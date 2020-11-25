@@ -23,6 +23,9 @@ crbug.com/591099 editing/pasteboard/mathml-sanitizer-bypass.html [ Failure ]
 ### editing/selection/mouse/
 crbug.com/591099 editing/selection/mouse/drag_over_text_transform.html [ Crash ]
 
+### editing/selection/select-line-up-down.html
+crbug.com/591099 editing/selection/select-line-up-down.html [ Failure ]
+
 ### external/wpt/css/CSS2/abspos/
 crbug.com/591099 external/wpt/css/CSS2/abspos/hypothetical-box-dynamic.html [ Failure ]
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<div>line| 1</div>',
+      '<div><span contenteditable="false">line 2</span><br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'forward', 'line'),
+  [
+  '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div><span contenteditable="false">line 2</span>|<br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  'Down arrow selection should not cross editing boundaries.');
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<div>line| 1</div>',
+      '<div>abc<span contenteditable="false">line 2</span><br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'forward', 'line'),
+  [
+  '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div>abc|<span contenteditable="false">line 2</span><br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  'Down arrow selection should not cross editing boundaries when content is present before non-editable.');
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div><span contenteditable="false">line 2</span><br></div>',
+      '<div>line| 3</div>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'line'),
+  [
+  '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div><span contenteditable="false">line 2</span>|<br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  'Up arrow selection should not cross editing boundaries.');
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div>abc<span contenteditable="false">line 2</span><br></div>',
+      '<div>line| 3</div>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'line'),
+  [
+  '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div>abc|<span contenteditable="false">line 2</span><br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  'Up arrow selection should not cross editing boundaries when content is present before non-editable.');
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div><span contenteditable="false">line 2</span>test<br></div>',
+      '<div>line| 3</div>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'line'),
+  [
+  '<div contenteditable>',
+      '<div>line 1</div>',
+      '<div><span contenteditable="false">line 2</span>|test<br></div>',
+      '<div>line 3</div>',
+    '</div>',
+  ],
+  'Up arrow selection should not cross editing boundaries when editable content present around non-editable.');
+
+</script>
+</html>

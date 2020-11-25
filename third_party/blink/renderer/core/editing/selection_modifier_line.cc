@@ -458,8 +458,18 @@ VisiblePosition SelectionModifier::PreviousLinePosition(
         line.AbsoluteLineDirectionPointToLocalPointInBlock(
             line_direction_point);
     if (auto position =
-            line.PositionForPoint(point_in_line, IsEditablePosition(p)))
+            line.PositionForPoint(point_in_line, IsEditablePosition(p))) {
+      // If the current position is inside an editable position, then the next
+      // shouldn't end up inside non-editable as that would cross the editing
+      // boundaries which would be an invalid selection.
+      if (IsEditablePosition(p) &&
+          !IsEditablePosition(position.GetPosition())) {
+        return CreateVisiblePosition(
+            AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
+                position, visible_position.DeepEquivalent()));
+      }
       return CreateVisiblePosition(position);
+    }
   }
 
   // Could not find a previous line. This means we must already be on the first
@@ -522,8 +532,18 @@ VisiblePosition SelectionModifier::NextLinePosition(
         line.AbsoluteLineDirectionPointToLocalPointInBlock(
             line_direction_point);
     if (auto position =
-            line.PositionForPoint(point_in_line, IsEditablePosition(p)))
+            line.PositionForPoint(point_in_line, IsEditablePosition(p))) {
+      // If the current position is inside an editable position, then the next
+      // shouldn't end up inside non-editable as that would cross the editing
+      // boundaries which would be an invalid selection.
+      if (IsEditablePosition(p) &&
+          !IsEditablePosition(position.GetPosition())) {
+        return CreateVisiblePosition(
+            AdjustForwardPositionToAvoidCrossingEditingBoundaries(
+                position, visible_position.DeepEquivalent()));
+      }
       return CreateVisiblePosition(position);
+    }
   }
 
   // Could not find a next line. This means we must already be on the last line.
