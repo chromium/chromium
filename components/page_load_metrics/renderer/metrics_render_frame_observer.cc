@@ -528,6 +528,13 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
             ->first_paint_after_back_forward_cache_restore =
             ClampDelta(first_paint, navigation_start);
       }
+      for (double raf : restore_timing.request_animation_frames) {
+        if (!raf)
+          break;
+        back_forward_cache_timing
+            ->request_animation_frames_after_back_forward_cache_restore
+            .push_back(ClampDelta(raf, navigation_start));
+      }
       if (first_input_delay.has_value()) {
         back_forward_cache_timing
             ->first_input_delay_after_back_forward_cache_restore =

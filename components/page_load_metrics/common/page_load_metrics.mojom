@@ -353,6 +353,10 @@ struct BackForwardCacheTiming {
   // is restored from the back-forward cache.
   mojo_base.mojom.TimeDelta first_paint_after_back_forward_cache_restore;
 
+  // Times on requestAnimationFrame when the page is restored from the back-
+  // forward cache.
+  array<mojo_base.mojom.TimeDelta> request_animation_frames_after_back_forward_cache_restore;
+
   // Queueing Time of the first click, tap, key press, cancellable touchstart,
   // or pointer down followed by a pointer up after the time when the page is
   // restored from the back-forward cache.

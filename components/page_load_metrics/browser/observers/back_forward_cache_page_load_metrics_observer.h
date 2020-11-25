@@ -35,6 +35,8 @@ class BackForwardCachePageLoadMetricsObserver
   void OnFirstPaintAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;
+  void OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
+      const page_load_metrics::mojom::BackForwardCacheTiming& timing) override;
   void OnFirstInputAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;
