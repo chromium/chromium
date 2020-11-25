@@ -704,8 +704,6 @@ void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573() {
   // This can happen during destruction after the RFH has been cleared.
   if (!render_frame_host_)
     return;
-  if (render_frame_host_->must_be_replaced())
-    return;
   if (!speculative_render_frame_host_)
     return;
   if (speculative_render_frame_host_->GetSiteInstance() ==
@@ -722,7 +720,9 @@ void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573() {
     SCOPED_CRASH_KEY_STRING256(
         ValidateSpeculative, NewSiteInstance,
         speculative_render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
-    DCHECK(false);
+    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, MustBeReplaced,
+                          render_frame_host_->must_be_replaced());
+    NOTREACHED();
     base::debug::DumpWithoutCrashing();
   }
 }
@@ -2394,7 +2394,6 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
 
   speculative_render_frame_host_ = CreateSpeculativeRenderFrame(
       new_instance, recovering_without_early_commit);
-  ValidateSpeculativeRenderFrameHostForBug1146573();
 
   // If RenderViewHost was created along with the speculative RenderFrameHost,
   // ensure that RenderViewCreated is fired for it.  It is important to do this
