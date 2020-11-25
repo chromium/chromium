@@ -140,9 +140,12 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
       std::move(interface_provider_receiver),
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
           .InitWithNewPipeAndPassReceiver(),
-      blink::mojom::TreeScopeType::kDocument, "", "", true,
-      base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+      // Pass a null receiver for PolicyContainerHost. The PolicyContainerHost
+      // remote is sent to Blink in the CreateRenderView mojo message.
+      mojo::NullAssociatedReceiver(), blink::mojom::TreeScopeType::kDocument,
+      "", "", true, base::UnguessableToken::Create(),
+      base::UnguessableToken::Create(), blink::FramePolicy(),
+      blink::mojom::FrameOwnerProperties(), false,
       blink::mojom::FrameOwnerElementType::kPortal);
   outer_node->AddObserver(this);
 

@@ -530,6 +530,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
           interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
+      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+          policy_container_host_receiver,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,
@@ -1688,9 +1690,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) override;
   void DidChangeFramePolicy(const base::UnguessableToken& child_frame_token,
                             const blink::FramePolicy& frame_policy) override;
-  void BindPolicyContainer(
-      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-          receiver) override;
   void CapturePaintPreviewOfSubframe(
       const gfx::Rect& clip_rect,
       const base::UnguessableToken& guid) override;
@@ -2059,6 +2058,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
           interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
+      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+          policy_container_host_receiver,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,

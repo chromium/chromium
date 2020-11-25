@@ -216,13 +216,17 @@ class BLINK_EXPORT WebLocalFrameClient {
   // to prevent the new child frame from being attached. Otherwise, embedders
   // should create a new WebLocalFrame, insert it into the frame tree, and
   // return the created frame.
-  virtual WebLocalFrame* CreateChildFrame(WebLocalFrame* parent,
-                                          mojom::TreeScopeType,
-                                          const WebString& name,
-                                          const WebString& fallback_name,
-                                          const FramePolicy&,
-                                          const WebFrameOwnerProperties&,
-                                          mojom::FrameOwnerElementType) {
+  virtual WebLocalFrame* CreateChildFrame(
+      WebLocalFrame* parent,
+      mojom::TreeScopeType,
+      const WebString& name,
+      const WebString& fallback_name,
+      const FramePolicy&,
+      const WebFrameOwnerProperties&,
+      mojom::FrameOwnerElementType,
+      CrossVariantMojoAssociatedReceiver<
+          mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) {
     return nullptr;
   }
 

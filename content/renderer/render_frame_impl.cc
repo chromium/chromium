@@ -3915,7 +3915,10 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     const blink::WebString& fallback_name,
     const blink::FramePolicy& frame_policy,
     const blink::WebFrameOwnerProperties& frame_owner_properties,
-    blink::mojom::FrameOwnerElementType frame_owner_element_type) {
+    blink::mojom::FrameOwnerElementType frame_owner_element_type,
+    blink::CrossVariantMojoAssociatedReceiver<
+        blink::mojom::PolicyContainerHostInterfaceBase>
+        policy_container_host_receiver) {
   DCHECK_EQ(frame_, parent);
 
   // Allocate child routing ID. This is a synchronous call.
@@ -3957,8 +3960,9 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   GetFrameHost()->CreateChildFrame(
       child_routing_id,
       child_interface_provider.InitWithNewPipeAndPassReceiver(),
-      browser_interface_broker.InitWithNewPipeAndPassReceiver(), scope,
-      name.Utf8(), frame_unique_name, is_created_by_script, frame_policy,
+      browser_interface_broker.InitWithNewPipeAndPassReceiver(),
+      std::move(policy_container_host_receiver), scope, name.Utf8(),
+      frame_unique_name, is_created_by_script, frame_policy,
       blink::mojom::FrameOwnerProperties::From(frame_owner_properties),
       frame_owner_element_type);
 

@@ -436,10 +436,6 @@ interface LocalFrameHost {
       mojo_base.mojom.UnguessableToken child_frame_token,
       network.mojom.ContentSecurityPolicy? parsed_csp_attribute);
 
-  // Binds LocalFrame's policy container to RenderFrameHost's one.
-  BindPolicyContainer(
-      pending_associated_receiver<blink.mojom.PolicyContainerHost> receiver);
-
   // Sent by the renderer to request a paint preview of a subframe. |clip_rect|
   // is the size of the frame in it's parent. |guid| is an an identifier for
   // all the capture work (regardless of the process captures are happening in)

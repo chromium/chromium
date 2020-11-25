@@ -206,7 +206,10 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
-      mojom::blink::FrameOwnerElementType owner_type) override {
+      mojom::blink::FrameOwnerElementType owner_type,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     return CreateLocalChild(*parent, scope,
                             std::make_unique<TestPluginWebFrameClient>());
   }

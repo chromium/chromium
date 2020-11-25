@@ -101,6 +101,7 @@ class FrameTreeNodeBlameContextTest : public RenderViewHostImplTestHarness {
           node->current_frame_host(), process_id(), child_id,
           TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
           TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
+          mojo::NullAssociatedReceiver(),
           blink::mojom::TreeScopeType::kDocument, std::string(),
           base::StringPrintf("uniqueName%d", child_id), false,
           base::UnguessableToken::Create(), base::UnguessableToken::Create(),

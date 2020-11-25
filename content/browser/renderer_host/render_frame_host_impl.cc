@@ -2553,6 +2553,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
         new_interface_provider_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
+    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+        policy_container_host_receiver,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -2566,6 +2568,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   DCHECK(!frame_unique_name.empty());
   DCHECK(new_interface_provider_provider_receiver.is_valid());
   DCHECK(browser_interface_broker_receiver.is_valid());
+  DCHECK(policy_container_host_receiver.is_valid());
   if (owner_type == blink::mojom::FrameOwnerElementType::kNone) {
     // Any child frame must have a HTMLFrameOwnerElement in its parent document
     // and therefore the corresponding type of kNone (specific to main frames)
@@ -2590,7 +2593,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // process.
   frame_tree_->AddFrame(this, GetProcess()->GetID(), new_routing_id,
                         std::move(new_interface_provider_provider_receiver),
-                        std::move(browser_interface_broker_receiver), scope,
+                        std::move(browser_interface_broker_receiver),
+                        std::move(policy_container_host_receiver), scope,
                         frame_name, frame_unique_name, is_created_by_script,
                         frame_token, devtools_frame_token, frame_policy,
                         frame_owner_properties, was_discarded_, owner_type);
@@ -2602,6 +2606,8 @@ void RenderFrameHostImpl::CreateChildFrame(
         new_interface_provider_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
+    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+        policy_container_host_receiver,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -2623,7 +2629,8 @@ void RenderFrameHostImpl::CreateChildFrame(
   // match the mojo interface.
   OnCreateChildFrame(
       new_routing_id, std::move(new_interface_provider_provider_receiver),
-      std::move(browser_interface_broker_receiver), scope, frame_name,
+      std::move(browser_interface_broker_receiver),
+      std::move(policy_container_host_receiver), scope, frame_name,
       frame_unique_name, is_created_by_script, frame_token,
       devtools_frame_token, frame_policy, *frame_owner_properties, owner_type);
 }
@@ -7769,12 +7776,6 @@ void RenderFrameHostImpl::CreateNotificationService(
 void RenderFrameHostImpl::CreateInstalledAppProvider(
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
   InstalledAppProviderImpl::Create(this, std::move(receiver));
-}
-
-void RenderFrameHostImpl::BindPolicyContainer(
-    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-        receiver) {
-  policy_container_host_->Bind(std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(

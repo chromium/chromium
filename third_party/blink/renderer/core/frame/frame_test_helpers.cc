@@ -664,7 +664,10 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
     const WebString& fallback_name,
     const FramePolicy&,
     const WebFrameOwnerProperties& frame_owner_properties,
-    mojom::blink::FrameOwnerElementType owner_type) {
+    mojom::blink::FrameOwnerElementType owner_type,
+    blink::CrossVariantMojoAssociatedReceiver<
+        mojom::PolicyContainerHostInterfaceBase>
+        policy_container_host_receiver) {
   return CreateLocalChild(*parent, scope);
 }
 

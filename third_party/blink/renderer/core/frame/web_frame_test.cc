@@ -4443,7 +4443,10 @@ class ContextLifetimeTestWebFrameClient
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
-      mojom::blink::FrameOwnerElementType) override {
+      mojom::blink::FrameOwnerElementType,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     return CreateLocalChild(*parent, scope,
                             std::make_unique<ContextLifetimeTestWebFrameClient>(
                                 create_notifications_, release_notifications_));
@@ -7235,7 +7238,10 @@ class TestCachePolicyWebFrameClient
       const WebString&,
       const FramePolicy&,
       const WebFrameOwnerProperties& frame_owner_properties,
-      mojom::blink::FrameOwnerElementType) override {
+      mojom::blink::FrameOwnerElementType,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     auto child = std::make_unique<TestCachePolicyWebFrameClient>();
     auto* child_ptr = child.get();
     child_clients_.push_back(std::move(child));
@@ -7727,7 +7733,10 @@ class FailCreateChildFrame : public frame_test_helpers::TestWebFrameClient {
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties& frame_owner_properties,
-      mojom::blink::FrameOwnerElementType) override {
+      mojom::blink::FrameOwnerElementType,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     ++call_count_;
     return nullptr;
   }
@@ -8860,7 +8869,10 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
-      mojom::blink::FrameOwnerElementType) override {
+      mojom::blink::FrameOwnerElementType,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     return CreateLocalChild(*parent, scope,
                             std::make_unique<WebFrameSwapTestClient>(this));
   }
@@ -10995,7 +11007,10 @@ class WebLocalFrameVisibilityChangeTest
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
-      mojom::blink::FrameOwnerElementType) override {
+      mojom::blink::FrameOwnerElementType,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     return CreateLocalChild(*parent, scope, &child_client_);
   }
 
@@ -12696,7 +12711,10 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
         const WebString& fallback_name,
         const FramePolicy&,
         const WebFrameOwnerProperties&,
-        mojom::blink::FrameOwnerElementType) override {
+        mojom::blink::FrameOwnerElementType,
+        blink::CrossVariantMojoAssociatedReceiver<
+            blink::mojom::PolicyContainerHostInterfaceBase>
+            policy_container_host_receiver) override {
       return CreateLocalChild(*parent, scope, &child_client_);
     }
 
@@ -12968,7 +12986,10 @@ class TestFallbackWebFrameClient
       const WebString&,
       const FramePolicy&,
       const WebFrameOwnerProperties& frameOwnerProperties,
-      mojom::blink::FrameOwnerElementType) override {
+      mojom::blink::FrameOwnerElementType,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override {
     DCHECK(child_client_);
     return CreateLocalChild(*parent, scope, child_client_);
   }

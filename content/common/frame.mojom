@@ -443,6 +443,8 @@ interface FrameHost {
                      new_interface_provider,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,
+                   pending_associated_receiver<blink.mojom.PolicyContainerHost>
+                     policy_container_associated_receiver,
                    blink.mojom.TreeScopeType scope,
                    string frame_name,
                    string frame_unique_name,

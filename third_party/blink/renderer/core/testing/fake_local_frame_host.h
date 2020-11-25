@@ -126,9 +126,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
                                  parsed_csp_attribute) override;
   void DidChangeFramePolicy(const base::UnguessableToken& child_frame_token,
                             const FramePolicy& frame_policy) override;
-  void BindPolicyContainer(
-      mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
-          receiver) override;
   void CapturePaintPreviewOfSubframe(
       const gfx::Rect& clip_rect,
       const base::UnguessableToken& guid) override;

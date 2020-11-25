@@ -2030,25 +2030,28 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
       owner_element->MarginHeight(), owner_element->AllowFullscreen(),
       owner_element->AllowPaymentRequest(), owner_element->IsDisplayNone(),
       owner_element->GetColorScheme(), owner_element->RequiredCsp());
-  // FIXME: Using subResourceAttributeName as fallback is not a perfect
-  // solution. subResourceAttributeName returns just one attribute name. The
-  // element might not have the attribute, and there might be other attributes
-  // which can identify the element.
-  WebLocalFrameImpl* webframe_child = To<WebLocalFrameImpl>(
-      client_->CreateChildFrame(this, scope, name,
-                                owner_element->getAttribute(
-                                    owner_element->SubResourceAttributeName()),
-                                owner_element->GetFramePolicy(),
-                                owner_properties, owner_element->OwnerType()));
-  if (!webframe_child)
-    return nullptr;
 
-  // Inherit policy container from parent.
   mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
       policy_container_remote;
   mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
       policy_container_receiver =
           policy_container_remote.InitWithNewEndpointAndPassReceiver();
+
+  // FIXME: Using subResourceAttributeName as fallback is not a perfect
+  // solution. subResourceAttributeName returns just one attribute name. The
+  // element might not have the attribute, and there might be other attributes
+  // which can identify the element.
+  WebLocalFrameImpl* webframe_child =
+      To<WebLocalFrameImpl>(client_->CreateChildFrame(
+          this, scope, name,
+          owner_element->getAttribute(
+              owner_element->SubResourceAttributeName()),
+          owner_element->GetFramePolicy(), owner_properties,
+          owner_element->OwnerType(), std::move(policy_container_receiver)));
+  if (!webframe_child)
+    return nullptr;
+
+  // Inherit policy container from parent.
   mojom::blink::PolicyContainerDocumentPoliciesPtr policy_container_data =
       mojo::Clone(GetFrame()->GetPolicyContainer()->GetPolicies());
   std::unique_ptr<PolicyContainer> policy_container =
@@ -2062,15 +2065,6 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
           ? nullptr
           : &GetFrame()->window_agent_factory(),
       nullptr, std::move(policy_container));
-
-  // TODO(antoniosartori): Ideally, we could have sent the mojo receiver to the
-  // Browser with the CreateChildFrame IPC. Unfortunately, that's not so easy,
-  // both because that is a legacy (non-mojo) IPC sync call, and because it
-  // starts from the content layer, so it would require additional type
-  // conversions. But we should revisit this after that IPC gets reworked (see
-  // https://crbug.com/1064336).
-  webframe_child->GetFrame()->GetLocalFrameHostRemote().BindPolicyContainer(
-      std::move(policy_container_receiver));
 
   DCHECK(webframe_child->Parent());
   return webframe_child->GetFrame();

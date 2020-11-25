@@ -820,7 +820,10 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       const blink::WebString& fallback_name,
       const blink::FramePolicy& frame_policy,
       const blink::WebFrameOwnerProperties& frame_owner_properties,
-      blink::mojom::FrameOwnerElementType owner_type) override;
+      blink::mojom::FrameOwnerElementType owner_type,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override;
   void FrameDetached() override;
   std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() override;
 
@@ -1013,7 +1016,10 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
     const blink::WebString& fallback_name,
     const blink::FramePolicy& frame_policy,
     const blink::WebFrameOwnerProperties& frame_owner_properties,
-    blink::mojom::FrameOwnerElementType frame_owner_type) {
+    blink::mojom::FrameOwnerElementType frame_owner_type,
+    blink::CrossVariantMojoAssociatedReceiver<
+        blink::mojom::PolicyContainerHostInterfaceBase>
+        policy_container_host_receiver) {
   // This is called when printing a selection and when this selection contains
   // an iframe. This is not supported yet. An empty rectangle will be displayed
   // instead.

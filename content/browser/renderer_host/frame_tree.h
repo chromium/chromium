@@ -165,6 +165,8 @@ class CONTENT_EXPORT FrameTree {
           interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
+      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+          policy_container_host_receiver,
       blink::mojom::TreeScopeType scope,
       const std::string& frame_name,
       const std::string& frame_unique_name,

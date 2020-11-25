@@ -87,6 +87,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
@@ -584,7 +585,10 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebString& fallback_name,
       const blink::FramePolicy& frame_policy,
       const blink::WebFrameOwnerProperties& frame_owner_properties,
-      blink::mojom::FrameOwnerElementType frame_owner_element_type) override;
+      blink::mojom::FrameOwnerElementType frame_owner_element_type,
+      blink::CrossVariantMojoAssociatedReceiver<
+          blink::mojom::PolicyContainerHostInterfaceBase>
+          policy_container_host_receiver) override;
   std::pair<blink::WebRemoteFrame*, blink::PortalToken> CreatePortal(
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::PortalInterfaceBase> portal_endpoint,

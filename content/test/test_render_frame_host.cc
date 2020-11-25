@@ -149,6 +149,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
   OnCreateChildFrame(
       GetProcess()->GetNextRoutingID(), CreateStubInterfaceProviderReceiver(),
       CreateStubBrowserInterfaceBrokerReceiver(),
+      CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
       false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
       blink::FramePolicy(
@@ -617,6 +618,13 @@ mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
 TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver() {
   return mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
       .InitWithNewPipeAndPassReceiver();
+}
+
+// static
+mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+TestRenderFrameHost::CreateStubPolicyContainerHostReceiver() {
+  return mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>()
+      .InitWithNewEndpointAndPassReceiver();
 }
 
 void TestRenderFrameHost::SimulateLoadingCompleted(

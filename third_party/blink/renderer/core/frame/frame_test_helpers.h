@@ -441,7 +441,10 @@ class TestWebFrameClient : public WebLocalFrameClient {
                                   const WebString& fallback_name,
                                   const FramePolicy&,
                                   const WebFrameOwnerProperties&,
-                                  mojom::blink::FrameOwnerElementType) override;
+                                  mojom::blink::FrameOwnerElementType,
+                                  blink::CrossVariantMojoAssociatedReceiver<
+                                      mojom::PolicyContainerHostInterfaceBase>
+                                      policy_container_host_receiver) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
   std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory()

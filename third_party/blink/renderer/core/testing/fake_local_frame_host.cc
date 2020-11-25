@@ -196,10 +196,6 @@ void FakeLocalFrameHost::DidChangeFramePolicy(
     const base::UnguessableToken& child_frame_token,
     const FramePolicy& frame_policy) {}
 
-void FakeLocalFrameHost::BindPolicyContainer(
-    mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
-        receiver) {}
-
 void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {}
