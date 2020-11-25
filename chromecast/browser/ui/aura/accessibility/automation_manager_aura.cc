@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
@@ -156,7 +157,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
   } else {
     current_tree_serializer_ =
         std::make_unique<AuraAXTreeSerializer>(current_tree_.get());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::Shell* shell = ash::Shell::Get();
     // Windows within the overlay container get moved to the new monitor when
     // the primary display gets swapped.
@@ -164,7 +165,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
         shell->GetContainer(shell->GetPrimaryRootWindow(),
                             ash::kShellWindowId_OverlayContainer),
         views::AXAuraObjCache::GetInstance());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 

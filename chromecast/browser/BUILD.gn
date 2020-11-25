@@ -412,6 +412,8 @@ cast_source_set("browser") {
         "ui/aura/accessibility/ax_tree_source_aura.cc",
         "ui/aura/accessibility/ax_tree_source_aura.h",
       ]
+
+      deps += [ "//build:chromeos_buildflags" ]
     }
 
     deps += [
