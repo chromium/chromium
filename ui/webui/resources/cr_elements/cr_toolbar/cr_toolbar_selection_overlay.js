@@ -42,6 +42,10 @@ Polymer({
     'updateSelectionLabel_(show, selectionLabel)',
   ],
 
+  hostAttributes: {
+    'role': 'toolbar',
+  },
+
   /** @return {HTMLElement} */
   get deleteButton() {
     return /** @type {HTMLElement} */ (this.$$('#delete'));
@@ -64,6 +68,7 @@ Polymer({
     this.debounce('updateSelectionLabel_', () => {
       this.selectionLabel_ =
           this.show ? this.selectionLabel : this.selectionLabel_;
+      this.setAttribute('aria-label', this.selectionLabel_);
     });
   },
 
