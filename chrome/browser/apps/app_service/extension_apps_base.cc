@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -224,7 +225,7 @@ void ExtensionAppsBase::OnExtensionUninstalled(
 void ExtensionAppsBase::SetShowInFields(
     apps::mojom::AppPtr& app,
     const extensions::Extension* extension) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (extension->id() == extension_misc::kWallpaperManagerId) {
     // Explicitly show the Wallpaper Picker app in search only.
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
@@ -233,7 +234,7 @@ void ExtensionAppsBase::SetShowInFields(
     app->show_in_management = apps::mojom::OptionalBool::kFalse;
     return;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldShow(extension, profile_)) {
     auto show = ShouldShownInLauncher(extension)
                     ? apps::mojom::OptionalBool::kTrue

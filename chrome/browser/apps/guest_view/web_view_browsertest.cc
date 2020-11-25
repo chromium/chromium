@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -2107,7 +2108,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, IndexedDBIsolation) {
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
 // TODO(crbug.com/949923): The test is flaky (crash) on ChromeOS debug and ASan/LSan
-#if defined(OS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS_ASH) && \
+    (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
 #define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
@@ -2930,7 +2932,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
 #else
 #define MAYBE_DownloadCookieIsolation_CrossSession \
   DownloadCookieIsolation_CrossSession
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(WebViewTest,
                        MAYBE_DownloadCookieIsolation_CrossSession) {
@@ -3194,7 +3196,11 @@ class WebViewCaptureTest : public WebViewTest {
 };
 
 // https://crbug.com/1087381
-#if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_CHROMEOS) ||                                  \
+    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+     defined(ADDRESS_SANITIZER))
 #define MAYBE_Shim_TestZoomAPI DISABLED_Shim_TestZoomAPI
 #else
 #define MAYBE_Shim_TestZoomAPI Shim_TestZoomAPI
@@ -4116,7 +4122,9 @@ class ChromeSignInWebViewTest : public WebViewTest {
   }
 };
 
-#if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_MAC) || \
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_MAC) || \
     defined(OS_WIN)
 // This verifies the fix for http://crbug.com/667708.
 IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/apps/platform_apps/api/browser_context_keyed_service_factories.h"
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_api.h"
 #endif
 
@@ -12,7 +14,7 @@ namespace chrome_apps {
 namespace api {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppsPrivateAPI::GetFactoryInstance();
 #endif
 }

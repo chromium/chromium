@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/dip_px_util.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
@@ -53,7 +54,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
@@ -66,7 +67,7 @@ namespace {
 
 static const int kInvalidIconResource = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Copy from Android code, all four sides of the ARC foreground and background
 // images are padded 25% of it's width and height.
@@ -314,7 +315,7 @@ base::Optional<IconPurpose> GetIconPurpose(
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
       icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::MASKABLE},
                                    max_icon_size_in_px)) {
@@ -404,7 +405,7 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
 
   void LoadIconFromResource(int icon_resource);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For ARC icons, converts an icon png data to an ImageSkia using
   // arc::IconDecodeRequest.
   void LoadArcIconPngData(const std::vector<uint8_t>& icon_png_data);
@@ -417,7 +418,7 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
   // Loads icons for ARC activities.
   void LoadArcActivityIcons(
       const std::vector<arc::mojom::ActivityIconPtr>& icons);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class base::RefCounted<IconLoadingPipeline>;
@@ -435,7 +436,7 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<arc::IconDecodeRequest> CreateArcIconDecodeRequest(
       base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,
       const std::vector<uint8_t>& icon_png_data);
@@ -447,7 +448,7 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
 
   void OnArcActivityIconLoaded(gfx::ImageSkia* arc_activity_icon,
                                const gfx::ImageSkia& icon);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void MaybeApplyEffectsAndComplete(const gfx::ImageSkia image);
 
@@ -503,11 +504,11 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
   base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icon)>
       arc_activity_icons_callback_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<arc::IconDecodeRequest> arc_icon_decode_request_;
   std::unique_ptr<arc::IconDecodeRequest> arc_foreground_icon_decode_request_;
   std::unique_ptr<arc::IconDecodeRequest> arc_background_icon_decode_request_;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 void IconLoadingPipeline::LoadWebAppIcon(
@@ -695,7 +696,7 @@ void IconLoadingPipeline::LoadIconFromCompressedData(
 void IconLoadingPipeline::LoadIconFromResource(int icon_resource) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (icon_resource == IDR_LOGO_CROSTINI_DEFAULT_192 ||
       icon_resource == IDR_APP_DEFAULT_ICON) {
     // For the Crostini penguin icon, clear the standard icon effects, and use
@@ -762,7 +763,7 @@ void IconLoadingPipeline::LoadIconFromResource(int icon_resource) {
   MaybeLoadFallbackOrCompleteEmpty();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void IconLoadingPipeline::LoadArcIconPngData(
     const std::vector<uint8_t>& icon_png_data) {
   arc_icon_decode_request_ = CreateArcIconDecodeRequest(
@@ -874,7 +875,7 @@ void IconLoadingPipeline::OnArcActivityIconLoaded(
     std::move(arc_activity_icons_callback_).Run(arc_activity_icons_);
   }
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void IconLoadingPipeline::MaybeApplyEffectsAndComplete(
     const gfx::ImageSkia image) {
@@ -1094,7 +1095,7 @@ std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
   return image_data;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
   gfx::ImageSkia mask_image;
@@ -1199,13 +1200,13 @@ void ArcActivityIconsToImageSkias(
       base::MakeRefCounted<IconLoadingPipeline>(std::move(callback));
   icon_loader->LoadArcActivityIcons(icons);
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
                       gfx::ImageSkia* image_skia) {
   extensions::ChromeAppIcon::ResizeFunction resize_function;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (icon_effects & IconEffects::kResizeAndPad) {
     // TODO(crbug.com/826982): MD post-processing is not always applied: "See
     // legacy code:

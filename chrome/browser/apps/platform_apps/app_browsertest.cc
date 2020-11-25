@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -71,7 +72,7 @@
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -185,7 +186,7 @@ class ScopedPreviewTestDelegate : printing::PrintPreviewUI::TestDelegate {
 
 #endif  // ENABLE_PRINT_PREVIEW
 
-#if !defined(OS_CHROMEOS) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_WIN)
 bool CopyTestDataAndGetTestFilePath(const base::FilePath& test_data_file,
                                     const base::FilePath& temp_dir,
                                     const char* filename,
@@ -198,7 +199,7 @@ bool CopyTestDataAndGetTestFilePath(const base::FilePath& test_data_file,
   *file_path = path;
   return true;
 }
-#endif  // !defined(OS_CHROMEOS) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_WIN)
 
 class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
  public:
@@ -293,7 +294,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
 };
 
 const char kChromiumURL[] = "http://chromium.org";
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kTestFilePath[] = "platform_apps/launch_files/test.txt";
 #endif
 
@@ -590,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_ExtensionWindowingApis) {
 
 // ChromeOS does not support passing arguments on the command line, so the tests
 // that rely on this functionality are disabled.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that launch data is sent through if the file extension matches.
 IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest,
                        LaunchFilesWithFileExtension) {
@@ -800,9 +801,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest, LaunchNewFile) {
       << message_;
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(https://crbug.com/1000234): Re-enable this test.
 #define MAYBE_OpenLink DISABLED_OpenLink
 #else
@@ -1231,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 #endif  // ENABLE_PRINT_PREVIEW
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PlatformAppIncognitoBrowserTest : public PlatformAppBrowserTest,
                                         public AppWindowRegistry::Observer {
@@ -1258,7 +1259,7 @@ class PlatformAppIncognitoBrowserTest : public PlatformAppBrowserTest,
 };
 
 // Seen to fail repeatedly on CrOS; crbug.com/774011.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_IncognitoComponentApp IncognitoComponentApp
 #else
 #define MAYBE_IncognitoComponentApp DISABLED_IncognitoComponentApp
@@ -1364,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(RestartDeviceTest, Restart) {
   EXPECT_EQ(1, num_request_restart_calls());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test that when an application is uninstalled and re-install it does not have
 // access to the previously set data.

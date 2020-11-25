@@ -11,10 +11,11 @@
 #include <string>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "extensions/browser/app_window/app_window.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/media_router/browser/test/mock_media_router.h"
 #endif
 
@@ -130,7 +131,7 @@ class PlatformAppBrowserTest : public ExtensionApiTest {
   NativeAppWindow* GetNativeAppWindowForAppWindow(AppWindow* window);
 
  private:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
 #endif
 

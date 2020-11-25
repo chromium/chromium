@@ -11,6 +11,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome/test:test_support",
     "//skia",
   ]

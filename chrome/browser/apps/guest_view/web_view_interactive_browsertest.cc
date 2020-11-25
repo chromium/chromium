@@ -16,6 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -609,7 +610,9 @@ class DISABLED_WebViewPopupInteractiveTest : public WebViewInteractiveTest {};
 // crbug.com/341876
 
 // Timeouts flakily: crbug.com/1003345
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
                        DISABLED_PointerLock) {
   SetupTest("web_view/pointer_lock",
@@ -706,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
   ASSERT_TRUE(unlocked_listener.WaitUntilSatisfied());
 }
 
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that if a <webview> is focused before navigation then the guest starts
 // off focused.

@@ -14,6 +14,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -26,7 +27,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/borealis_apps.h"
 #include "chrome/browser/apps/app_service/built_in_chromeos_apps.h"
 #include "chrome/browser/apps/app_service/crostini_apps.h"
@@ -37,7 +38,7 @@
 #else
 #include "chrome/browser/apps/app_service/extension_apps.h"
 #include "chrome/browser/apps/app_service/web_apps.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
 
@@ -45,7 +46,7 @@ namespace apps {
 
 class AppServiceImpl;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class LacrosApps;
 class UninstallDialog;
 
@@ -78,7 +79,7 @@ class AppServiceProxy : public KeyedService,
                         public apps::mojom::Subscriber,
                         public apps::AppRegistryCache::Observer {
  public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
 #endif
 
@@ -90,7 +91,7 @@ class AppServiceProxy : public KeyedService,
   mojo::Remote<apps::mojom::AppService>& AppService();
   apps::AppRegistryCache& AppRegistryCache();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::InstanceRegistry& InstanceRegistry();
 #endif
 
@@ -180,7 +181,7 @@ class AppServiceProxy : public KeyedService,
   void UninstallSilently(const std::string& app_id,
                          apps::mojom::UninstallSource uninstall_source);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Pauses apps. |pause_data|'s key is the app_id. |pause_data|'s PauseData
   // is the time limit setting for the app, which is shown in the pause app
   // dialog. AppService sets the paused status directly. If the app is running,
@@ -217,7 +218,7 @@ class AppServiceProxy : public KeyedService,
   void FlushMojoCallsForTesting();
   apps::IconLoader* OverrideInnerIconLoaderForTesting(
       apps::IconLoader* icon_loader);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReInitializeCrostiniForTesting(Profile* profile);
   void SetDialogCreatedCallbackForTesting(base::OnceClosure callback);
   void UninstallForTesting(const std::string& app_id,
@@ -316,7 +317,7 @@ class AppServiceProxy : public KeyedService,
     apps::IconLoader* overriding_icon_loader_for_testing_;
   };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void CreateBlockDialog(const std::string& app_name,
                                 const gfx::ImageSkia& image,
                                 Profile* profile);
@@ -346,7 +347,7 @@ class AppServiceProxy : public KeyedService,
   void InitializePreferredApps(
       PreferredAppsList::PreferredApps preferred_apps) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void UninstallImpl(const std::string& app_id,
                      gfx::NativeWindow parent_window,
                      base::OnceClosure callback);
@@ -419,7 +420,7 @@ class AppServiceProxy : public KeyedService,
 
   apps::PreferredAppsList preferred_apps_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;

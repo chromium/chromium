@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -14,10 +15,10 @@
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "extensions/common/constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -209,19 +210,19 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kDocs, launch_source);
   else if (app_id == extension_misc::kDriveHostedAppId)
     RecordDefaultAppLaunch(DefaultAppName::kDrive, launch_source);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == arc::kGoogleDuoAppId)
     RecordDefaultAppLaunch(DefaultAppName::kDuo, launch_source);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == extension_misc::kFilesManagerAppId)
     RecordDefaultAppLaunch(DefaultAppName::kFiles, launch_source);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == extension_misc::kGmailAppId || app_id == arc::kGmailAppId)
     RecordDefaultAppLaunch(DefaultAppName::kGmail, launch_source);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == extension_misc::kGoogleKeepAppId)
     RecordDefaultAppLaunch(DefaultAppName::kKeep, launch_source);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == extension_misc::kGooglePhotosAppId)
     RecordDefaultAppLaunch(DefaultAppName::kPhotos, launch_source);
   else if (app_id == arc::kPlayBooksAppId)
@@ -236,7 +237,7 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kPlayMusic, launch_source);
   else if (app_id == arc::kPlayStoreAppId)
     RecordDefaultAppLaunch(DefaultAppName::kPlayStore, launch_source);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == web_app::kOsSettingsAppId)
     RecordDefaultAppLaunch(DefaultAppName::kSettings, launch_source);
   else if (app_id == extension_misc::kGoogleSheetsAppId)
@@ -245,11 +246,11 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kSlides, launch_source);
   else if (app_id == extensions::kWebStoreAppId)
     RecordDefaultAppLaunch(DefaultAppName::kWebStore, launch_source);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == extension_misc::kYoutubeAppId ||
            app_id == arc::kYoutubeAppId)
     RecordDefaultAppLaunch(DefaultAppName::kYouTube, launch_source);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == web_app::kYoutubeMusicAppId)
     RecordDefaultAppLaunch(DefaultAppName::kYouTubeMusic, launch_source);
   else if (app_id == web_app::kStadiaAppId)
@@ -264,10 +265,10 @@ void RecordAppLaunch(const std::string& app_id,
     RecordBuiltInAppLaunch(BuiltInAppName::kSettings, launch_source);
   } else if (app_id == ash::kInternalAppIdContinueReading) {
     RecordBuiltInAppLaunch(BuiltInAppName::kContinueReading, launch_source);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
     RecordBuiltInAppLaunch(BuiltInAppName::kPluginVm, launch_source);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == ash::kReleaseNotesAppId) {
     RecordBuiltInAppLaunch(BuiltInAppName::kReleaseNotes, launch_source);
   } else if (app_id == web_app::kMockSystemAppId) {
@@ -285,11 +286,11 @@ void RecordBuiltInAppSearchResult(const std::string& app_id) {
   } else if (app_id == ash::kInternalAppIdContinueReading) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
                                   BuiltInAppName::kContinueReading);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
                                   BuiltInAppName::kPluginVm);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == ash::kReleaseNotesAppId) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
                                   BuiltInAppName::kReleaseNotes);

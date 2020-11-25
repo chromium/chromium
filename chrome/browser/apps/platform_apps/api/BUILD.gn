@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/apps/platform_apps/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -43,6 +44,7 @@ source_set("api") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources_grit",
 
     # TODO(https://crbug.com/883570): It'd be nice to have more APIs here
@@ -63,7 +65,7 @@ source_set("api") {
   public_deps =
       [ "//chrome/browser/apps/platform_apps/api/music_manager_private" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",

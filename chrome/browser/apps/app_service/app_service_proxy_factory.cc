@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -16,12 +17,12 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
 
@@ -39,7 +40,7 @@ bool AppServiceProxyFactory::IsAppServiceAvailableForProfile(Profile* profile) {
   // user's browsing data from incognito to an app. Clients of the App Service
   // should explicitly decide when it is and isn't appropriate to use the
   // associated real profile and pass that to this method.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // An exception on Chrome OS is the guest profile, which is incognito, but
   // can have apps within it.
   return (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
@@ -98,11 +99,11 @@ AppServiceProxyFactory::AppServiceProxyFactory()
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(guest_os::GuestOsRegistryServiceFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(extensions::AppWindowRegistry::Factory::GetInstance());
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 AppServiceProxyFactory::~AppServiceProxyFactory() = default;
@@ -119,7 +120,7 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
@@ -129,7 +130,7 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
   if (profile->IsGuestSession()) {
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // TODO(https://crbug.com/1122463): replace this with
   // BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context) once

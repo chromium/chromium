@@ -4144,6 +4144,7 @@ static_library("browser") {
         "sharing/webrtc/sharing_mojo_service.h",
       ]
       deps += [
+        "//build:chromeos_buildflags",
         "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
         "//chrome/services/sharing/public/cpp",
         "//chrome/services/sharing/public/proto",
