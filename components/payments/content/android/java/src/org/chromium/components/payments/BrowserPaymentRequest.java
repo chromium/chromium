@@ -105,7 +105,7 @@ public interface BrowserPaymentRequest {
      * Called when the PaymentRequestSpec is validated.
      * @param spec The validated PaymentRequestSpec.
      */
-    default void onSpecValidated(PaymentRequestSpec spec) {}
+    void onSpecValidated(PaymentRequestSpec spec);
 
     /**
      * Adds the PaymentAppFactory(s) specified by the implementers to the given PaymentAppService.
@@ -121,9 +121,7 @@ public interface BrowserPaymentRequest {
      * @return Whether at least one payment app (including basic-card payment app) is available
      *         (excluding the pending apps).
      */
-    default boolean hasAvailableApps() {
-        return false;
-    }
+    boolean hasAvailableApps();
 
     /**
      * Shows the payment apps selector.
@@ -135,16 +133,14 @@ public interface BrowserPaymentRequest {
      * @return The error of the showing if any; null if success.
      */
     @Nullable
-    default String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
-            PaymentOptions paymentOptions, boolean isUserGestureShow) {
-        return null;
-    }
+    String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+            PaymentOptions paymentOptions, boolean isUserGestureShow);
 
     /**
      * Notifies the payment UI service of the payment apps pending to be handled
      * @param pendingApps The payment apps that are pending to be handled.
      */
-    default void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {}
+    void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps);
 
     /**
      * Skips the app selector UI whether it is currently opened or not, and if applicable, invokes a

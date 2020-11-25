@@ -4,16 +4,37 @@
 
 package org.chromium.weblayer_private.payments;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.payments.BrowserPaymentRequest;
+import org.chromium.components.payments.Event;
+import org.chromium.components.payments.JourneyLogger;
+import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
+import org.chromium.components.payments.PaymentRequestSpec;
+import org.chromium.components.payments.PaymentResponseHelper;
+import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentItem;
+import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** The WebLayer-specific part of the payment request service. */
 public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
+    private final List<PaymentApp> mAvailableApps = new ArrayList<>();
+    private final JourneyLogger mJourneyLogger;
+    private PaymentRequestService mPaymentRequestService;
+    private PaymentRequestSpec mSpec;
+    private boolean mHasClosed;
+    private boolean mShouldSkipShowingPaymentRequestUi;
+    private PaymentApp mSelectedApp;
+
     /**
      * Create an instance of {@link WebLayerPaymentRequestService}.
      * @param paymentRequestService The payment request service.
@@ -21,6 +42,8 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
      */
     public WebLayerPaymentRequestService(
             PaymentRequestService paymentRequestService, Delegate delegate) {
+        mPaymentRequestService = paymentRequestService;
+        mJourneyLogger = mPaymentRequestService.getJourneyLogger();
     }
 
     // Implements BrowserPaymentRequest:
@@ -37,6 +60,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     public void complete(int result, Runnable onCompleteHandled) {
+        onCompleteHandled.run();
     }
 
     // Implements BrowserPaymentRequest:
@@ -46,6 +70,34 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     public void close() {
+        if (mHasClosed) return;
+        mHasClosed = true;
+
+        if (mPaymentRequestService != null) {
+            mPaymentRequestService.close();
+            mPaymentRequestService = null;
+        }
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean hasAvailableApps() {
+        return !mAvailableApps.isEmpty();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
+        assert mAvailableApps.isEmpty()
+            : "notifyPaymentUiOfPendingApps() should be called at most once.";
+        mAvailableApps.addAll(pendingApps);
+        mSelectedApp = mAvailableApps.size() == 0 ? null : mAvailableApps.get(0);
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void onSpecValidated(PaymentRequestSpec spec) {
+        mSpec = spec;
     }
 
     // Implements BrowserPaymentRequest:
@@ -53,5 +105,46 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
         // WebLayer only adds the GPay factory, but not using this method.
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    @Nullable
+    public String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+            PaymentOptions paymentOptions, boolean isUserGestureShow) {
+        assert mAvailableApps.size() <= 1 : "Only GooglePay payment app is supported.";
+        mShouldSkipShowingPaymentRequestUi =
+                PaymentRequestService.shouldSkipShowingPaymentRequestUi(isUserGestureShow,
+                        /*skipUiForNonUrlPaymentMethodIdentifiers=*/false,
+                        mSpec.getPaymentOptions(), mSpec.getMethodData().keySet(), mSelectedApp,
+                        mAvailableApps);
+        if (!mShouldSkipShowingPaymentRequestUi) {
+            return "This request is not supported in Web Layer. Please try in Chrome, or make sure "
+                    + "that: (1) show() is triggered by user gesture, or"
+                    + "(2) do not request any contact information.";
+        }
+        return null;
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    @Nullable
+    public String triggerPaymentAppUiSkipIfApplicable(boolean isUserGestureShow) {
+        assert !mAvailableApps.isEmpty()
+            : "triggerPaymentAppUiSkipIfApplicable() should be called only when there is any "
+                + "available app.";
+        PaymentApp selectedPaymentApp = mAvailableApps.get(0);
+        if (mShouldSkipShowingPaymentRequestUi) {
+            mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
+            assert mSpec.getRawTotal() != null;
+            // The total amount in details should be finalized at this point. So it is safe to
+            // record the triggered transaction amount.
+            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
+                    mSpec.getRawTotal().amount.value, false /*completed*/);
+            PaymentResponseHelperInterface paymentResponseHelper = new PaymentResponseHelper(
+                    selectedPaymentApp.handlesShippingAddress(), mSpec.getPaymentOptions());
+            mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
+        }
+        return null;
     }
 }
