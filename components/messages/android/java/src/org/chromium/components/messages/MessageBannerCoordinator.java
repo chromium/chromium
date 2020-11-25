@@ -24,11 +24,15 @@ class MessageBannerCoordinator {
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
      *         value the message banner can have as a result of the animations or the gestures.
      * @param resources The {@link Resources}.
+     * @param messageDismissed The {@link Runnable} that will run if and when the user dismisses the
+     *         message.
      */
     MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
-            Supplier<Integer> maxTranslationSupplier, Resources resources) {
+            Supplier<Integer> maxTranslationSupplier, Resources resources,
+            Runnable messageDismissed) {
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        mMediator = new MessageBannerMediator(model, maxTranslationSupplier, resources);
+        mMediator = new MessageBannerMediator(
+                model, maxTranslationSupplier, resources, messageDismissed);
         view.setSwipeHandler(mMediator);
     }
 

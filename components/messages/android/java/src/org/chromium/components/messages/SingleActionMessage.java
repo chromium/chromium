@@ -53,14 +53,15 @@ public class SingleActionMessage implements MessageStateHandler {
         if (mMessageBanner == null) {
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
-            mMessageBanner = new MessageBannerCoordinator(
-                    mView, mModel, mMaxTranslationSupplier, mContainer.getResources());
+            mMessageBanner = new MessageBannerCoordinator(mView, mModel, mMaxTranslationSupplier,
+                    mContainer.getResources(), mDismissHandler.bind(mModel));
         }
         mContainer.addMessage(mView);
-        mMessageBanner.show(() -> {
+        final Runnable onShown = () -> {
             mMessageBanner.setOnTouchRunnable(mAutoDismissTimer::resetTimer);
             mAutoDismissTimer.startTimer(() -> { mDismissHandler.onResult(mModel); });
-        });
+        };
+        mMessageBanner.show(onShown);
     }
 
     /**
