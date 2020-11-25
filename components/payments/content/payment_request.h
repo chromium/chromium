@@ -105,8 +105,8 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   // Called when the user explicitly cancelled the flow. Will send a message
   // to the renderer which will indirectly destroy this object (through
-  // OnConnectionTerminated).
-  void UserCancelled();
+  // TerminateConnection).
+  void OnUserCancelled();
 
   // Called when the main frame attached to this PaymentRequest is navigating to
   // another document, but before the PaymentRequest is destroyed.
@@ -203,6 +203,9 @@ class PaymentRequest : public mojom::PaymentRequest,
                                            bool warn_localhost_or_file);
 
   void OnAbortResult(bool aborted);
+
+  // Show an error message in the UI (if available) and abort payment.
+  void ShowErrorMessageAndAbortPayment();
 
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
   DeveloperConsoleLogger log_;

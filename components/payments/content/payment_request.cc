@@ -479,7 +479,7 @@ void PaymentRequest::Complete(mojom::PaymentComplete result) {
   // Failed transactions show an error. Successful and unknown-state
   // transactions don't show an error.
   if (result == mojom::PaymentComplete::FAIL) {
-    delegate_->ShowErrorMessage();
+    ShowErrorMessageAndAbortPayment();
   } else {
     DCHECK(!has_recorded_completion_);
     journey_logger_.SetCompleted();
@@ -753,9 +753,7 @@ void PaymentRequest::OnPaymentResponseError(const std::string& error_message) {
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_INSTRUMENT_DETAILS_ERROR);
 
   reject_show_error_message_ = error_message;
-  delegate_->ShowErrorMessage();
-  // When the user dismisses the error message, UserCancelled() will reject
-  // PaymentRequest.show() with |reject_show_error_message_|.
+  ShowErrorMessageAndAbortPayment();
 }
 
 void PaymentRequest::OnShippingOptionIdSelected(
@@ -772,7 +770,7 @@ void PaymentRequest::OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) {
   client_->OnPayerDetailChange(std::move(payer_info));
 }
 
-void PaymentRequest::UserCancelled() {
+void PaymentRequest::OnUserCancelled() {
   // If |client_| is not bound, then the object is already being destroyed as
   // a result of a renderer event.
   if (!client_.is_bound())
@@ -951,6 +949,20 @@ void PaymentRequest::OnAbortResult(bool aborted) {
   if (aborted) {
     RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_MERCHANT);
     state_->OnAbort();
+  }
+}
+
+void PaymentRequest::ShowErrorMessageAndAbortPayment() {
+  // Note that both branches of the if-else will invoke the OnUserCancelled()
+  // method.
+  if (display_handle_ && display_handle_->was_shown()) {
+    // Will invoke OnUserCancelled() asynchronously when the user closes the
+    // error message UI.
+    delegate_->ShowErrorMessage();
+  } else {
+    // Only app store billing apps do not display any browser payment UI.
+    DCHECK(spec_->IsAppStoreBillingAlsoRequested());
+    OnUserCancelled();
   }
 }
 
