@@ -96,6 +96,10 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
 
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  // JavaScript errors are reported via CrashReportPrivate.reportError. Don't
+  // send duplicate reports via WebUI.
+  web_ui->DisableJavaScriptErrorReporting();
 }
 
 MediaAppUI::~MediaAppUI() = default;
