@@ -54,14 +54,20 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     }
 
     /**
+     * If there are no browser controls visible, the {@link MessageContainer} view should be laid
+     * out for this method to return a meaningful value.
+     *
      * @return The maximum translation Y value the message banner can have as a result of the
      *         animations or the gestures. Positive values mean the message banner can be translated
      *         upward from the top of the MessagesContainer.
      */
     public int getMessageMaxTranslation() {
-        // TODO(sinansahin): We need to account for other scenarios where there are no browser
-        // controls visible (e.g. PWAs).
-        return getContainerTopOffset();
+        final int containerTopOffset = getContainerTopOffset();
+        if (containerTopOffset == 0) {
+            return mContainer.getHeight();
+        }
+
+        return containerTopOffset;
     }
 
     @Override
@@ -77,8 +83,9 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
 
     /** @return Offset of the message container from the top of the screen. */
     private int getContainerTopOffset() {
+        if (mControlsManager.getContentOffset() == 0) return 0;
         final Resources res = mContainer.getResources();
-        return mControlsManager.getTopControlsHeight()
+        return mControlsManager.getContentOffset()
                 - res.getDimensionPixelOffset(R.dimen.message_bubble_inset)
                 - res.getDimensionPixelOffset(R.dimen.message_shadow_top_margin);
     }
