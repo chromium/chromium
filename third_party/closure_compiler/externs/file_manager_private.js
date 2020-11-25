@@ -181,9 +181,8 @@ chrome.fileManagerPrivate.TaskResult = {
   MESSAGE_SENT: 'message_sent',
   FAILED: 'failed',
   EMPTY: 'empty',
-  FAILED_PLUGIN_VM_TASK_DIRECTORY_NOT_SHARED:
-      'failed_plugin_vm_task_directory_not_shared',
-  FAILED_PLUGIN_VM_TASK_EXTERNAL_DRIVE: 'failed_plugin_vm_task_external_drive',
+  FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
+      'failed_plugin_vm_directory_not_shared',
 };
 
 /** @enum {string} */

@@ -184,10 +184,7 @@ void LaunchPluginVmApp(Profile* profile,
         !file_manager::util::ConvertFileSystemURLToPathInsideVM(
             profile, url, vm_mount, /*map_crostini_home=*/false, &file_path)) {
       return std::move(callback).Run(
-          file_manager::util::GetMyFilesFolderForProfile(profile).IsParent(
-              url.path())
-              ? LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED
-              : LaunchPluginVmAppResult::FAILED_FILE_ON_EXTERNAL_DRIVE,
+          LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED,
           "Only files in shared dirs are supported. Got: " + url.DebugString());
     }
     // Convert slashes: '/' => '\'.

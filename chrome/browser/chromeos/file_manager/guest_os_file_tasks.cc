@@ -135,9 +135,7 @@ auto ConvertLaunchPluginVmAppResultToTaskResult(
     case plugin_vm::LaunchPluginVmAppResult::SUCCESS:
       return fmp::TASK_RESULT_MESSAGE_SENT;
     case plugin_vm::LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED:
-      return fmp::TASK_RESULT_FAILED_PLUGIN_VM_TASK_DIRECTORY_NOT_SHARED;
-    case plugin_vm::LaunchPluginVmAppResult::FAILED_FILE_ON_EXTERNAL_DRIVE:
-      return fmp::TASK_RESULT_FAILED_PLUGIN_VM_TASK_EXTERNAL_DRIVE;
+      return fmp::TASK_RESULT_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
     case plugin_vm::LaunchPluginVmAppResult::FAILED:
       return fmp::TASK_RESULT_FAILED;
   }

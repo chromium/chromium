@@ -482,6 +482,60 @@ class FileTasks {
   }
 
   /**
+   * @param {!Entry} entry
+   * @param {!VolumeManager} volumeManager
+   * @return {boolean} True if the entry is from MyFiles.
+   */
+  static isMyFilesEntry(entry, volumeManager) {
+    const location = volumeManager.getLocationInfo(entry);
+    return !!location &&
+        location.rootType === VolumeManagerCommon.RootType.DOWNLOADS;
+  }
+
+  /**
+   * @param {!Array<!Entry>} entries Selected entries to be moved or copied.
+   * @param {!VolumeManager} volumeManager
+   * @param {!FileManagerUI} ui FileManager UI to show dialog.
+   * @param {string} title Dialog title.
+   * @param {?FileTransferController} fileTransferController
+   * @param {!DirectoryModel} directoryModel
+   */
+  static showPluginVmMoveDialog(
+      entries, volumeManager, ui, title, fileTransferController,
+      directoryModel) {
+    if (entries.length == 0) {
+      return;
+    }
+    const isMyFiles = FileTasks.isMyFilesEntry(entries[0], volumeManager);
+    const [messageId, buttonId, toMove] = isMyFiles ?
+        [
+          'UNABLE_TO_OPEN_WITH_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE',
+          'CONFIRM_MOVE_BUTTON_LABEL',
+          true,
+        ] :
+        [
+          'UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE',
+          'CONFIRM_COPY_BUTTON_LABEL',
+          false,
+        ];
+    const dialog = new FilesConfirmDialog(ui.element);
+    dialog.setOkLabel(strf(buttonId));
+    dialog.show(strf(messageId, title), async () => {
+      if (!fileTransferController) {
+        console.error('FileTransferController not set');
+        return;
+      }
+
+      const pvmDir = await FileTasks.getPvmSharedDir_(volumeManager);
+
+      fileTransferController.executePaste(new FileTransferController.PastePlan(
+          entries.map(e => e.toURL()), [], pvmDir,
+          assert(volumeManager.getLocationInfo(pvmDir)), toMove));
+      directoryModel.changeDirectoryEntry(pvmDir);
+    });
+  }
+
+  /**
    * Executes default task.
    *
    * @param {function(boolean, Array<!Entry>)=} opt_callback Called when the
@@ -666,38 +720,10 @@ class FileTasks {
             }
           });
           break;
-        case taskResult.FAILED_PLUGIN_VM_TASK_DIRECTORY_NOT_SHARED:
-        case taskResult.FAILED_PLUGIN_VM_TASK_EXTERNAL_DRIVE:
-          const [messageId, buttonId, toMove] =
-              result == taskResult.FAILED_PLUGIN_VM_TASK_DIRECTORY_NOT_SHARED ?
-              [
-                'UNABLE_TO_OPEN_WITH_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE',
-                'CONFIRM_MOVE_BUTTON_LABEL',
-                true,
-              ] :
-              [
-                'UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE',
-                'CONFIRM_COPY_BUTTON_LABEL',
-                false,
-              ];
-          const dialog = new FilesConfirmDialog(this.ui_.element);
-          dialog.setOkLabel(strf(buttonId));
-          dialog.show(
-              strf(messageId, task.title), async () => {
-                if (!this.fileTransferController_) {
-                  console.error('FileTransferController not set');
-                  return;
-                }
-
-                const pvmDir = await this.getPvmSharedDir_();
-
-                this.fileTransferController_.executePaste(
-                    new FileTransferController.PastePlan(
-                        this.entries_.map(e => e.toURL()), [], pvmDir,
-                        assert(this.volumeManager_.getLocationInfo(pvmDir)),
-                        toMove));
-                this.directoryModel_.changeDirectoryEntry(pvmDir);
-              });
+        case taskResult.FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
+          FileTasks.showPluginVmMoveDialog(
+              this.entries_, this.volumeManager_, this.ui_, task.title,
+              this.fileTransferController_, this.directoryModel_);
           break;
       }
     };
@@ -1280,9 +1306,12 @@ class FileTasks {
     return null;
   }
 
-  async getPvmSharedDir_() {
+  /**
+   * @param {!VolumeManager} volumeManager
+   */
+  static async getPvmSharedDir_(volumeManager) {
     return new Promise((resolve, reject) => {
-      this.volumeManager_
+      volumeManager
           .getCurrentProfileVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS)
           .fileSystem.root.getDirectory(
               'PvmDefault', {create: false},

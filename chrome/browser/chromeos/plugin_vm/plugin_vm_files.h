@@ -27,7 +27,6 @@ enum class LaunchPluginVmAppResult {
   SUCCESS,
   FAILED,
   FAILED_DIRECTORY_NOT_SHARED,
-  FAILED_FILE_ON_EXTERNAL_DRIVE,
 };
 
 using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;

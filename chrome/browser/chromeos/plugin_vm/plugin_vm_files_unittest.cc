@@ -202,7 +202,7 @@ TEST_F(PluginVmFilesTest, LaunchAppFail) {
   LaunchPluginVmApp(&profile_, app_id_, {url},
                     base::BindOnce(capture_result, &actual_result));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(LaunchPluginVmAppResult::FAILED_FILE_ON_EXTERNAL_DRIVE,
+  EXPECT_EQ(LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED,
             actual_result);
 }
 

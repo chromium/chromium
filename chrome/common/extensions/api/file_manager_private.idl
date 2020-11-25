@@ -169,10 +169,8 @@ enum TaskResult {
   failed,
   // No URL is specified.
   empty,
-  // The task was a |plugin_vm| task, and the file was in a unshared directory
-  failed_plugin_vm_task_directory_not_shared,
-  // The task was a |plugin_vm| task, and the file was in an external drive.
-  failed_plugin_vm_task_external_drive
+  // The task was a |plugin_vm| task, and the file was in an unshared directory
+  failed_plugin_vm_directory_not_shared
 };
 
 // Drive share type.
