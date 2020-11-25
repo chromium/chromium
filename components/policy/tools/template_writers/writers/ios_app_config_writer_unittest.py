@@ -54,7 +54,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'string description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string keyName="string policy"/>'''
+    expected_configuration = '''<string keyName="string policy">
+      <constraint nullable="true"/>
+    </string>'''
     expected_presentation = '''<field keyName="string policy" type="input">
       <label>
         <language value="en-US">string caption</language>
@@ -80,7 +82,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'int description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<integer keyName="IntPolicy"/>'''
+    expected_configuration = '''<integer keyName="IntPolicy">
+      <constraint nullable="true"/>
+    </integer>'''
     expected_presentation = '''<field keyName="IntPolicy" type="input">
       <label>
         <language value="en-US">int caption</language>
@@ -108,14 +112,29 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'int-enum caption',
         'desc':
         'int-enum description',
+        'schema': {
+          'type': 'integer',
+          'enum': [0, 1],
+        },
         'items': [{
+            'name': 'item0',
+            'value': 0,
+            'caption': 'item 0',
+        }, {
             'name': 'item1',
             'value': 1,
             'caption': 'item 1',
         }]
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<integer keyName="IntEnumPolicy"/>'''
+    expected_configuration = '''<integer keyName="IntEnumPolicy">
+      <constraint nullable="true">
+        <values>
+          <value>0</value>
+          <value>1</value>
+        </values>
+      </constraint>
+    </integer>'''
     expected_presentation = '''<field keyName="IntEnumPolicy" type="select">
       <label>
         <language value="en-US">int-enum caption</language>
@@ -123,6 +142,14 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
       <description>
         <language value="en-US">int-enum description</language>
       </description>
+      <options>
+        <option value="0">
+          <language value="en-US">item 0</language>
+        </option>
+        <option value="1">
+          <language value="en-US">item 1</language>
+        </option>
+      </options>
     </field>'''
     expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
                                        expected_presentation)
@@ -143,14 +170,29 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'string-enum caption',
         'desc':
         'string-enum description',
+        'schema': {
+          'type': 'string',
+          'enum': ['0', '1'],
+        },
         'items': [{
+            'name': 'item0',
+            'value': '0',
+            'caption': 'item 0',
+        }, {
             'name': 'item1',
             'value': '1',
             'caption': 'item 1',
         }]
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string keyName="StringEnumPolicy"/>'''
+    expected_configuration = '''<string keyName="StringEnumPolicy">
+      <constraint nullable="true">
+        <values>
+          <value>0</value>
+          <value>1</value>
+        </values>
+      </constraint>
+    </string>'''
     expected_presentation = '''<field keyName="StringEnumPolicy" type="select">
       <label>
         <language value="en-US">string-enum caption</language>
@@ -158,6 +200,14 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
       <description>
         <language value="en-US">string-enum description</language>
       </description>
+      <options>
+        <option value="0">
+          <language value="en-US">item 0</language>
+        </option>
+        <option value="1">
+          <language value="en-US">item 1</language>
+        </option>
+      </options>
     </field>'''
     expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
                                        expected_presentation)
@@ -178,14 +228,29 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'string-enum-list caption',
         'desc':
         'string-enum-list description',
+        'schema': {
+          'type': 'string',
+          'enum': ['0', '1'],
+        },
         'items': [{
+            'name': 'item0',
+            'value': '0',
+            'caption': 'item 0',
+        }, {
             'name': 'item1',
             'value': '1',
             'caption': 'item 1',
         }]
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<stringArray keyName="StringEnumListPolicy"/>'''
+    expected_configuration = '''<stringArray keyName="StringEnumListPolicy">
+      <constraint nullable="true">
+        <values>
+          <value>0</value>
+          <value>1</value>
+        </values>
+      </constraint>
+    </stringArray>'''
     expected_presentation = '''<field keyName="StringEnumListPolicy" type="multiselect">
       <label>
         <language value="en-US">string-enum-list caption</language>
@@ -193,6 +258,14 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
       <description>
         <language value="en-US">string-enum-list description</language>
       </description>
+      <options>
+        <option value="0">
+          <language value="en-US">item 0</language>
+        </option>
+        <option value="1">
+          <language value="en-US">item 1</language>
+        </option>
+      </options>
     </field>'''
     expected = self._GetExpectedOutput('83.0.4089.0', expected_configuration,
                                        expected_presentation)
@@ -211,7 +284,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'boolean description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<boolean keyName="BooleanPolicy"/>'''
+    expected_configuration = '''<boolean keyName="BooleanPolicy">
+      <constraint nullable="true"/>
+    </boolean>'''
     expected_presentation = '''<field keyName="BooleanPolicy" type="checkbox">
       <label>
         <language value="en-US">boolean caption</language>
@@ -237,7 +312,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'list description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<stringArray keyName="ListPolicy"/>'''
+    expected_configuration = '''<stringArray keyName="ListPolicy">
+      <constraint nullable="true"/>
+    </stringArray>'''
     expected_presentation = '''<field keyName="ListPolicy" type="list">
       <label>
         <language value="en-US">list caption</language>
@@ -265,7 +342,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
     policy_json = self._GetTestPolicyTemplate(policy_definition)
     # Dict policies are not supported by the appconfig.xml format, therefore
     # they are treated as JSON strings.
-    expected_configuration = '''<string keyName="DictPolicy"/>'''
+    expected_configuration = '''<string keyName="DictPolicy">
+      <constraint nullable="true"/>
+    </string>'''
     expected_presentation = '''<field keyName="DictPolicy" type="input">
       <label>
         <language value="en-US">dict caption</language>
@@ -291,7 +370,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'string description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string future="true" keyName="FuturePolicy"/>'''
+    expected_configuration = '''<string future="true" keyName="FuturePolicy">
+      <constraint nullable="true"/>
+    </string>'''
     expected_presentation = '''<field keyName="FuturePolicy" type="input">
       <label>
         <language value="en-US">string caption</language>
@@ -317,7 +398,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'string description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string keyName="NonFuturePolicy"/>'''
+    expected_configuration = '''<string keyName="NonFuturePolicy">
+      <constraint nullable="true"/>
+    </string>'''
     expected_presentation = '''<field keyName="NonFuturePolicy" type="input">
       <label>
         <language value="en-US">string caption</language>
@@ -349,7 +432,9 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'policies': ['PolicyInGroup']
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string keyName="PolicyInGroup"/>'''
+    expected_configuration = '''<string keyName="PolicyInGroup">
+      <constraint nullable="true"/>
+    </string>'''
     expected_presentation = '''<fieldGroup>
       <name>
         <language value="en-US">Dummy Group</language>

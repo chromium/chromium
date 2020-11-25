@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 from xml.dom import minidom
+import json
 from writers import xml_formatted_writer
 
 
@@ -27,12 +28,19 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
       self._AddLocalizedElement(field, 'label', policy['caption'])
       self._AddLocalizedElement(field, 'description', policy['desc'])
 
+      if 'enum' in policy['type']:
+        options = self.AddElement(field, 'options', {})
+        for item in policy['items']:
+          self._AddLocalizedElement(options, 'option', str(item['caption']),
+                                    {'value': str(item['value'])})
+
   def _AddLocalizedElement(self,
                            parent,
                            element_type,
                            text,
+                           attributes={},
                            localization={'value': 'en-US'}):
-    item = self.AddElement(parent, element_type, {})
+    item = self.AddElement(parent, element_type, attributes)
     localized = self.AddElement(item, 'language', localization)
     self.AddText(localized, text)
 
@@ -51,6 +59,39 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
     for policy in self._GetPoliciesForWriter(
         {'policies': policies_without_group}):
       self._WritePolicyPresentation(policy, self._presentation)
+
+  def _WritePolicyDefaultValue(self, parent, policy):
+    if 'default' in policy:
+      default_value = self.AddElement(parent, 'defaultValue', {})
+      value = self.AddElement(default_value, 'value', {})
+      if policy['type'] == 'main':
+        if policy['default'] == True:
+          self.AddText(value, 'true')
+        elif policy['default'] == False:
+          self.AddText(value, 'false')
+      elif policy['type'] in ['list', 'string-enum-list']:
+        for v in policy['default']:
+          if value == None:
+            value = self.AddElement(default_value, 'value', {})
+          self.AddText(value, v)
+        value = None
+      else:
+        self.AddText(value, policy['default'])
+
+  def _WritePolicyConstraint(self, parent, policy):
+    attrs = {'nullable': 'true'}
+    if 'schema' in policy:
+      if 'minimum' in policy['schema']:
+        attrs['min'] = policy['schema']['minimum']
+      if 'maximum' in policy['schema']:
+        attrs['max'] = policy['schema']['maximum']
+
+    constraint = self.AddElement(parent, 'constraint', attrs)
+    if 'enum' in policy['type']:
+      values_element = self.AddElement(constraint, 'values', {})
+      for v in policy['schema']['enum']:
+        value = self.AddElement(values_element, 'value', {})
+        self.AddText(value, str(v))
 
   def IsFuturePolicySupported(self, policy):
     # For now, include all future policies in appconfig.xml.
@@ -98,7 +139,9 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
         for config in policy['future_on']:
           if config['platform'] == 'ios':
             attributes['future'] = 'true'
-      self.AddElement(self._policies, element_type, attributes)
+      policy_element = self.AddElement(self._policies, element_type, attributes)
+      self._WritePolicyDefaultValue(policy_element, policy)
+      self._WritePolicyConstraint(policy_element, policy)
 
   def Init(self):
     self._doc = self.CreateDocument()
