@@ -446,6 +446,8 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop'),
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
+_FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite(
+    [_GetBenchmarkConfig('system_health.memory_desktop')])
 
 
 # Linux
@@ -563,6 +565,12 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               1,
                               'linux',
                               is_fyi=True)
+FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
+                                '',
+                                _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
+                                1,
+                                'fuchsia',
+                                is_fyi=True)
 
 ALL_PLATFORMS = {
     p for p in locals().values() if isinstance(p, PerfPlatform)

@@ -27,6 +27,7 @@ _VALID_PERF_POOLS = {
     'android-pixel4a_power-perf': {'chrome.tests.pinpoint'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
+    'fuchsia-perf-fyi': {'chrome.tests'},
 }
 
 

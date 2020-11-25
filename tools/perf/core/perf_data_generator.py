@@ -196,6 +196,23 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests.perf-fyi',
         },
     },
+    'fuchsia-perf-fyi': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite',
+            'extra_args': [
+                '--output-format=histograms',
+                '--experimental-tbmv3-metrics',
+            ],
+        }],
+        'platform':
+        'fuchsia',
+        'dimension': {
+            'device_type': 'Astro',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
     'win-10_laptop_low_end-perf_HP-Candidate': {
         'tests': [
             {
