@@ -178,8 +178,8 @@ PositionWithAffinity HitTestResult::GetPosition() const {
     return PositionWithAffinity();
   if (inner_possibly_pseudo_node_->IsPseudoElement() &&
       inner_possibly_pseudo_node_->GetPseudoId() == kPseudoIdBefore) {
-    return PositionWithAffinity(MostForwardCaretPosition(
-        Position(inner_node_, PositionAnchorType::kBeforeChildren)));
+    return PositionWithAffinity(
+        MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
   if (box_fragment_ &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled())

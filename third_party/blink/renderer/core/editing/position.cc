@@ -660,7 +660,7 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
     case PositionAnchorType::kAfterAnchor:
       return Position::AfterNode(*anchor_node);
     case PositionAnchorType::kBeforeChildren:
-      return Position(anchor_node, PositionAnchorType::kBeforeChildren);
+      return Position::FirstPositionInNode(*anchor_node);
     case PositionAnchorType::kBeforeAnchor:
       return Position::BeforeNode(*anchor_node);
     case PositionAnchorType::kOffsetInAnchor: {
@@ -671,7 +671,7 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
       if (child)
         return Position(child->parentNode(), child->NodeIndex());
       if (!position.OffsetInContainerNode())
-        return Position(anchor_node, PositionAnchorType::kBeforeChildren);
+        return Position::FirstPositionInNode(*anchor_node);
 
       // |child| is null when the position is at the end of the children.
       // <div>foo|</div>

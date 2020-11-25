@@ -44,8 +44,8 @@ class StyledMarkupSerializerTest : public EditingTestBase {
 template <typename Strategy>
 std::string StyledMarkupSerializerTest::Serialize(
     const CreateMarkupOptions& options) {
-  PositionTemplate<Strategy> start = PositionTemplate<Strategy>(
-      GetDocument().body(), PositionAnchorType::kBeforeChildren);
+  PositionTemplate<Strategy> start =
+      PositionTemplate<Strategy>::FirstPositionInNode(*GetDocument().body());
   PositionTemplate<Strategy> end = PositionTemplate<Strategy>(
       GetDocument().body(), PositionAnchorType::kAfterChildren);
   return CreateMarkup(start, end, options).Utf8();

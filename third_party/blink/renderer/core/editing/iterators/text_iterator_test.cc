@@ -337,14 +337,14 @@ TEST_P(TextIteratorTest, StartingAtNodeInShadowRoot) {
       GetDocument(), "host", shadow_content);
   Node* outer_div = GetDocument().getElementById("outer");
   Node* span_in_shadow = shadow_root->firstChild();
-  Position start(span_in_shadow, PositionAnchorType::kBeforeChildren);
+  Position start = Position::FirstPositionInNode(*span_in_shadow);
   Position end(outer_div, PositionAnchorType::kAfterChildren);
   EXPECT_EQ(
       "[ shadow][text][ iterator.]",
       IteratePartial<DOMTree>(start, end, EntersOpenShadowRootsBehavior()));
 
-  PositionInFlatTree start_in_flat_tree(span_in_shadow,
-                                        PositionAnchorType::kBeforeChildren);
+  PositionInFlatTree start_in_flat_tree =
+      PositionInFlatTree::FirstPositionInNode(*span_in_shadow);
   PositionInFlatTree end_in_flat_tree(outer_div,
                                       PositionAnchorType::kAfterChildren);
   EXPECT_EQ("[text][ shadow][ iterator.]",
@@ -362,14 +362,14 @@ TEST_P(TextIteratorTest, FinishingAtNodeInShadowRoot) {
       GetDocument(), "host", shadow_content);
   Node* outer_div = GetDocument().getElementById("outer");
   Node* span_in_shadow = shadow_root->firstChild();
-  Position start(outer_div, PositionAnchorType::kBeforeChildren);
+  Position start = Position::FirstPositionInNode(*outer_div);
   Position end(span_in_shadow, PositionAnchorType::kAfterChildren);
   EXPECT_EQ(
       "[Hello, ][ shadow]",
       IteratePartial<DOMTree>(start, end, EntersOpenShadowRootsBehavior()));
 
-  PositionInFlatTree start_in_flat_tree(outer_div,
-                                        PositionAnchorType::kBeforeChildren);
+  PositionInFlatTree start_in_flat_tree =
+      PositionInFlatTree::FirstPositionInNode(*outer_div);
   PositionInFlatTree end_in_flat_tree(span_in_shadow,
                                       PositionAnchorType::kAfterChildren);
   EXPECT_EQ("[Hello, ][text][ shadow]",

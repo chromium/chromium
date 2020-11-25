@@ -198,9 +198,8 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithShadowRoot) {
   EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kAfterChildren),
             ToPositionInFlatTree(
                 Position(shadow_root, PositionAnchorType::kAfterChildren)));
-  EXPECT_EQ(PositionInFlatTree(host, PositionAnchorType::kBeforeChildren),
-            ToPositionInFlatTree(
-                Position(shadow_root, PositionAnchorType::kBeforeChildren)));
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*host),
+            ToPositionInFlatTree(Position::FirstPositionInNode(*shadow_root)));
 }
 
 TEST_F(PositionTest,
