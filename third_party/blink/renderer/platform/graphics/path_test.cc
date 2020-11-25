@@ -17,10 +17,9 @@ TEST(PathTest, PointAtEndOfPath) {
   path.AddBezierCurveTo(FloatPoint(324, 196), FloatPoint(472, 370),
                         FloatPoint(460, 470));
 
-  FloatPoint point;
-  float angle;
-  path.PointAndNormalAtLength(path.length(), point, angle);
-  EXPECT_EQ(point, FloatPoint(460, 470));
+  PointAndTangent point_and_tangent =
+      path.PointAndNormalAtLength(path.length());
+  EXPECT_EQ(point_and_tangent.point, FloatPoint(460, 470));
 }
 
 }  // namespace blink

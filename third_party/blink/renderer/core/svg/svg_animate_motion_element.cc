@@ -219,26 +219,25 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   DCHECK(!animation_path_.IsEmpty());
 
-  float position_on_path = animation_path_.length() * percentage;
-  FloatPoint position;
-  float angle;
-  animation_path_.PointAndNormalAtLength(position_on_path, position, angle);
+  const float path_length = animation_path_.length();
+  float position_on_path = path_length * percentage;
+  PointAndTangent position =
+      animation_path_.PointAndNormalAtLength(position_on_path);
 
   // Handle accumulate="sum".
   if (repeat_count && parameters.is_cumulative) {
     FloatPoint position_at_end_of_duration =
-        animation_path_.PointAtLength(animation_path_.length());
-    position.Move(position_at_end_of_duration.X() * repeat_count,
-                  position_at_end_of_duration.Y() * repeat_count);
+        animation_path_.PointAtLength(path_length);
+    position.point.MoveBy(position_at_end_of_duration.ScaledBy(repeat_count));
   }
 
-  transform->Translate(position.X(), position.Y());
+  transform->Translate(position.point.X(), position.point.Y());
   RotateMode rotate_mode = GetRotateMode();
   if (rotate_mode != kRotateAuto && rotate_mode != kRotateAutoReverse)
     return;
   if (rotate_mode == kRotateAutoReverse)
-    angle += 180;
-  transform->Rotate(angle);
+    position.tangent_in_degrees += 180;
+  transform->Rotate(position.tangent_in_degrees);
 }
 
 void SVGAnimateMotionElement::ApplyResultsToTarget(

@@ -1265,15 +1265,16 @@ void ComputedStyle::ApplyMotionPathTransform(
   const BasicShape* path = OffsetPath();
   const StyleOffsetRotation& rotate = OffsetRotate();
 
-  FloatPoint point;
-  float angle;
+  PointAndTangent path_position;
   if (path->GetType() == BasicShape::kStyleRayType) {
     // TODO(ericwilligers): crbug.com/641245 Support <size> for ray paths.
     float float_distance = FloatValueForLength(distance, 0);
 
-    angle = To<StyleRay>(*path).Angle() - 90;
-    point.SetX(float_distance * cos(deg2rad(angle)));
-    point.SetY(float_distance * sin(deg2rad(angle)));
+    path_position.tangent_in_degrees = To<StyleRay>(*path).Angle() - 90;
+    path_position.point.SetX(float_distance *
+                             cos(deg2rad(path_position.tangent_in_degrees)));
+    path_position.point.SetY(float_distance *
+                             sin(deg2rad(path_position.tangent_in_degrees)));
   } else {
     float zoom = EffectiveZoom();
     const StylePath& motion_path = To<StylePath>(*path);
@@ -1289,14 +1290,13 @@ void ComputedStyle::ApplyMotionPathTransform(
       computed_distance = clampTo<float>(float_distance, 0, path_length);
     }
 
-    motion_path.GetPath().PointAndNormalAtLength(computed_distance, point,
-                                                 angle);
-
-    point.Scale(zoom, zoom);
+    path_position =
+        motion_path.GetPath().PointAndNormalAtLength(computed_distance);
+    path_position.point.Scale(zoom, zoom);
   }
 
   if (rotate.type == OffsetRotationType::kFixed)
-    angle = 0;
+    path_position.tangent_in_degrees = 0;
 
   float origin_shift_x = 0;
   float origin_shift_y = 0;
@@ -1312,9 +1312,10 @@ void ComputedStyle::ApplyMotionPathTransform(
     origin_shift_y = anchor_point.Y() - origin_y;
   }
 
-  transform.Translate(point.X() - anchor_point.X() + origin_shift_x,
-                      point.Y() - anchor_point.Y() + origin_shift_y);
-  transform.Rotate(angle + rotate.angle);
+  transform.Translate(
+      path_position.point.X() - anchor_point.X() + origin_shift_x,
+      path_position.point.Y() - anchor_point.Y() + origin_shift_y);
+  transform.Rotate(path_position.tangent_in_degrees + rotate.angle);
 
   if (!position.X().IsAuto() || !anchor.X().IsAuto())
     // Shift the origin back to transform-origin.

@@ -28,6 +28,8 @@
 
 namespace blink {
 
+struct PointAndTangent;
+
 // This class maps a 1D location in the "path space"; [0, path length] to a
 // (2D) point on the path and provides the normal (angle from the x-axis) for
 // said point.
@@ -44,7 +46,7 @@ class PathPositionMapper {
     kBeforePath,
     kAfterPath,
   };
-  PositionType PointAndNormalAtLength(float length, FloatPoint&, float& angle);
+  PositionType PointAndNormalAtLength(float length, PointAndTangent&);
   float length() const { return path_length_; }
   float StartOffset() const { return path_start_offset_; }
 

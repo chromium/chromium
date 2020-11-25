@@ -441,8 +441,7 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
     float spacing = spacing_layout.CalculateCSSSpacing(current_character);
 
     FloatPoint text_path_shift;
-    float angle = 0;
-    FloatPoint position;
+    PointAndTangent position;
     if (in_path_layout_) {
       float scaled_glyph_advance = glyph_advance * text_path_scaling_;
       // Setup translations that move to the glyph midpoint.
@@ -460,7 +459,7 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
                                    spacing * text_path_scaling_;
 
       PathPositionMapper::PositionType position_type =
-          text_path_->PointAndNormalAtLength(text_path_offset, position, angle);
+          text_path_->PointAndNormalAtLength(text_path_offset, position);
 
       // Skip character, if we're before the path.
       if (position_type == PathPositionMapper::kBeforePath) {
@@ -473,24 +472,26 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
       if (position_type == PathPositionMapper::kAfterPath)
         break;
 
-      text_position_ = position;
+      text_position_ = position.point;
 
       // For vertical text on path, the actual angle has to be rotated 90
       // degrees anti-clockwise, not the orientation angle!
       if (is_vertical_text_)
-        angle -= 90;
+        position.tangent_in_degrees -= 90;
     } else {
-      position = text_position_;
-      position += baseline_shift;
+      position.point = text_position_;
+      position.point += baseline_shift;
     }
 
     if (data.HasRotate())
-      angle += data.rotate;
+      position.tangent_in_degrees += data.rotate;
 
     // Determine whether we have to start a new fragment.
     bool should_start_new_fragment =
-        needs_fragment_per_glyph || has_relative_position || angle ||
-        angle != last_angle || apply_spacing_to_next_character;
+        needs_fragment_per_glyph || has_relative_position ||
+        position.tangent_in_degrees ||
+        position.tangent_in_degrees != last_angle ||
+        apply_spacing_to_next_character;
 
     // If we already started a fragment, close it now.
     if (did_start_text_fragment && should_start_new_fragment) {
@@ -508,16 +509,17 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
           visual_metrics_iterator_.CharacterOffset();
       current_text_fragment_.metrics_list_offset =
           visual_metrics_iterator_.MetricsListOffset();
-      current_text_fragment_.x = position.X();
-      current_text_fragment_.y = position.Y();
+      current_text_fragment_.x = position.point.X();
+      current_text_fragment_.y = position.point.Y();
 
       // Build fragment transformation.
-      if (angle)
-        current_text_fragment_.transform.Rotate(angle);
+      if (position.tangent_in_degrees)
+        current_text_fragment_.transform.Rotate(position.tangent_in_degrees);
 
-      if (text_path_shift.X() || text_path_shift.Y())
+      if (text_path_shift.X() || text_path_shift.Y()) {
         current_text_fragment_.transform.Translate(text_path_shift.X(),
                                                    text_path_shift.Y());
+      }
 
       // For vertical text, always rotate by 90 degrees regardless of
       // fontOrientation.
@@ -543,7 +545,7 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
 
     AdvanceToNextLogicalCharacter(logical_metrics);
     visual_metrics_iterator_.Next();
-    last_angle = angle;
+    last_angle = position.tangent_in_degrees;
   }
 
   if (!did_start_text_fragment)

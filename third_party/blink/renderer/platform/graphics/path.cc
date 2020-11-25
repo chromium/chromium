@@ -201,17 +201,13 @@ float Path::length() const {
 }
 
 FloatPoint Path::PointAtLength(float length) const {
-  FloatPoint point;
-  float normal;
-  PointAndNormalAtLength(length, point, normal);
-  return point;
+  return PointAndNormalAtLength(length).point;
 }
 
-static bool CalculatePointAndNormalOnPath(SkPathMeasure& measure,
-                                          SkScalar& contour_start,
-                                          SkScalar length,
-                                          FloatPoint& point,
-                                          float& normal_angle) {
+static base::Optional<PointAndTangent> CalculatePointAndNormalOnPath(
+    SkPathMeasure& measure,
+    SkScalar& contour_start,
+    SkScalar length) {
   do {
     SkScalar contour_end = contour_start + measure.getLength();
     if (length <= contour_end) {
@@ -220,31 +216,25 @@ static bool CalculatePointAndNormalOnPath(SkPathMeasure& measure,
 
       SkScalar pos_in_contour = length - contour_start;
       if (measure.getPosTan(pos_in_contour, &position, &tangent)) {
-        normal_angle =
+        PointAndTangent result;
+        result.point = FloatPoint(position);
+        result.tangent_in_degrees =
             rad2deg(SkScalarToFloat(SkScalarATan2(tangent.fY, tangent.fX)));
-        point = FloatPoint(SkScalarToFloat(position.fX),
-                           SkScalarToFloat(position.fY));
-        return true;
+        return result;
       }
     }
     contour_start = contour_end;
   } while (measure.nextContour());
-  return false;
+  return base::nullopt;
 }
 
-void Path::PointAndNormalAtLength(float length,
-                                  FloatPoint& point,
-                                  float& normal) const {
+PointAndTangent Path::PointAndNormalAtLength(float length) const {
   SkPathMeasure measure(path_, false);
   SkScalar start = 0;
-  if (CalculatePointAndNormalOnPath(
-          measure, start, WebCoreFloatToSkScalar(length), point, normal))
-    return;
-
-  SkPoint position = path_.getPoint(0);
-  point =
-      FloatPoint(SkScalarToFloat(position.fX), SkScalarToFloat(position.fY));
-  normal = 0;
+  if (base::Optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
+          measure, start, WebCoreFloatToSkScalar(length)))
+    return *result;
+  return {FloatPoint(path_.getPoint(0)), 0};
 }
 
 Path::PositionCalculator::PositionCalculator(const Path& path)
@@ -252,9 +242,7 @@ Path::PositionCalculator::PositionCalculator(const Path& path)
       path_measure_(path.GetSkPath(), false),
       accumulated_length_(0) {}
 
-void Path::PositionCalculator::PointAndNormalAtLength(float length,
-                                                      FloatPoint& point,
-                                                      float& normal_angle) {
+PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
   SkScalar sk_length = WebCoreFloatToSkScalar(length);
   if (sk_length >= 0) {
     if (sk_length < accumulated_length_) {
@@ -263,15 +251,12 @@ void Path::PositionCalculator::PointAndNormalAtLength(float length,
       accumulated_length_ = 0;
     }
 
-    if (CalculatePointAndNormalOnPath(path_measure_, accumulated_length_,
-                                      sk_length, point, normal_angle))
-      return;
+    base::Optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
+        path_measure_, accumulated_length_, sk_length);
+    if (result)
+      return *result;
   }
-
-  SkPoint position = path_.getPoint(0);
-  point =
-      FloatPoint(SkScalarToFloat(position.fX), SkScalarToFloat(position.fY));
-  normal_angle = 0;
+  return {FloatPoint(path_.getPoint(0)), 0};
 }
 
 void Path::Clear() {
