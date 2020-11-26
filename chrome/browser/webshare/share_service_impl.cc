@@ -177,7 +177,8 @@ void ShareServiceImpl::Share(const std::string& title,
 #elif defined(OS_WIN)
   auto share_operation = std::make_unique<webshare::ShareOperation>(
       title, text, share_url, std::move(files), web_contents);
-  share_operation->Run(base::BindOnce(
+  auto* const share_operation_ptr = share_operation.get();
+  share_operation_ptr->Run(base::BindOnce(
       [](std::unique_ptr<webshare::ShareOperation> share_operation,
          ShareCallback callback,
          blink::mojom::ShareError result) { std::move(callback).Run(result); },
