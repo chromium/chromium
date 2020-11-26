@@ -157069,6 +157069,19 @@
          {}
         ]
        ],
+       "fieldset-max-block-size.html": [
+        "170dedd6067b0d9663f5b1346a43cbeaf7d8bcf8",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-max-block-size-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "fieldset-overflow-hidden.html": [
         "cacbdbae00d0f7d6067323c68fc460149c524f35",
         [
@@ -226685,6 +226698,10 @@
         "05b8ca4770b18a91aaf2d9f3038d6fe4162f289f",
         []
        ],
+       "fieldset-max-block-size-ref.html": [
+        "07c9da85b5347bdd2b01f3b52221dc791ed8a6f0",
+        []
+       ],
        "fieldset-overflow-hidden-ref.html": [
         "9fe632f7c209c42d9f24358ad6a2a56abddf97a3",
         []
@@ -232602,8 +232619,44 @@
      "1e219ecd5bead581a7eca478bcefcdd72dc8c9be",
      []
     ],
+    "input-events-exec-command.html.ini": [
+     "cd807c3d4df96ac8c0558fad451840ef29c4d80d",
+     []
+    ],
+    "input-events-get-target-ranges-backspace.tentative.html.ini": [
+     "62a9d9068d7d3ac62354d722b211fe41f9563ba1",
+     []
+    ],
+    "input-events-get-target-ranges-deleting-in-list-items.tentative.html.ini": [
+     "287527c2ac935f40521c50e36bc4b708331bac92",
+     []
+    ],
+    "input-events-get-target-ranges-during-and-after-dispatch.tentative.html.ini": [
+     "b4a346ae68cb4726c82ff7bbdc1617164bcea293",
+     []
+    ],
+    "input-events-get-target-ranges-forwarddelete.tentative.html.ini": [
+     "93057d092c00c6d4295616b3590033c8ca17b313",
+     []
+    ],
+    "input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html.ini": [
+     "3682b5332d210f74721284474c626db0712515fc",
+     []
+    ],
+    "input-events-get-target-ranges-joining-dl-elements.tentative.html.ini": [
+     "d0038c797e84996751fbc50ae9659991d19da1c7",
+     []
+    ],
+    "input-events-get-target-ranges-non-collapsed-selection.tentative.html.ini": [
+     "a01e994f02a6c57f3e1675c0439ab338e2beb650",
+     []
+    ],
     "input-events-get-target-ranges.js": [
      "f9404e07a5564c64a2863a1329728517fedd5ca7",
+     []
+    ],
+    "input-events-typing.html.ini": [
+     "9647ef7e893fc208959f3ddbfef78e11f59c4129",
      []
     ]
    },
@@ -233309,7 +233362,7 @@
      []
     ],
     "webrtc.idl": [
-     "d82cde768f7b5f65e78570227510f2e4f0d4b7c1",
+     "db644f031836bd2dfa8d046f5c78d561186490ec",
      []
     ],
     "webusb.idl": [
@@ -237468,12 +237521,36 @@
      "22bb34a054ec5d0f1ed837b8b23d544110d78912",
      []
     ],
+    "idlharness.window.js.ini": [
+     "2c8f43716403bfd4a8bd8a7bdecaf888a2bcd697",
+     []
+    ],
+    "pointerevent_auxclick_is_a_pointerevent.html.ini": [
+     "e4f7b0ee92d0e4d3b4bdf95c83223be85ca0b0a5",
+     []
+    ],
+    "pointerevent_click_is_a_pointerevent.html.ini": [
+     "3994b407af65d66547f2820b6a72e96f99ed86a7",
+     []
+    ],
     "pointerevent_coalesced_events_attributes-expected.txt": [
      "e9ecdaa4bfe35a4e711c10c960d3d7124c389537",
      []
     ],
+    "pointerevent_iframe-touch-action-none_touch.html.ini": [
+     "bee7254d54849e87c06137d7541c0da5332155c0",
+     []
+    ],
+    "pointerevent_pointercapture-not-lost-in-chorded-buttons.html.ini": [
+     "6b81a4d1d7d37235727f321f0f07f3a4f58b1614",
+     []
+    ],
     "pointerevent_pointercapture_in_frame-expected.txt": [
      "4d3d205c84983950b3a0cdee366d51ca0427f592",
+     []
+    ],
+    "pointerevent_pointercapture_in_frame.html.ini": [
+     "42b68012c5fa1510245eb54dbf95f3db321b5d03",
      []
     ],
     "pointerevent_styles.css": [
@@ -237485,6 +237562,30 @@
      []
     ],
     "pointerlock": {
+     "pointerevent_coordinates_when_locked.html.ini": [
+      "04c0f72c7d99bc37a364e7192e7e65a1e6827f60",
+      []
+     ],
+     "pointerevent_getCoalescedEvents_when_pointerlocked.html.ini": [
+      "9e125839696524cc24cb3f91655765624854e1f8",
+      []
+     ],
+     "pointerevent_movementxy_with_pointerlock.html.ini": [
+      "d22487b5371f040fd3edb99ac345b2a38cc58705",
+      []
+     ],
+     "pointerevent_pointerlock_after_pointercapture.html.ini": [
+      "dc1a38a96f354e88d08d45bfa692583cb4dcc4ac",
+      []
+     ],
+     "pointerevent_pointermove_in_pointerlock.html.ini": [
+      "7c4043d0fa0abe2ae9d15c437aac8b617a3c5512",
+      []
+     ],
+     "pointerevent_pointermove_on_chorded_mouse_button_when_locked.html.ini": [
+      "9d0b178aa192acc5ac1428b67482728b9ee676ee",
+      []
+     ],
      "resources": {
       "pointerevent_movementxy-iframe.html": [
        "627af3b61cad74bb112558169b1e66f6a24b1129",
@@ -359964,6 +360065,15 @@
        ],
        "report-only-same-origin.https.html": [
         "ff3649fd3953f62801f724185e2a98a41685fca0",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-coop-navigated-opener.https.html": [
+        "858f31b982878b34ebce744b945a7fc7b8925aa3",
         [
          null,
          {
