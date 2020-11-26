@@ -380,7 +380,7 @@ class Banners extends cr.EventTarget {
 
         const close = this.document_.createElement('cr-button');
         close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
-        close.id = 'welcome-dismiss';
+        close.id = 'drive-space-warning-dismiss';
         close.innerHTML = str('DRIVE_WELCOME_DISMISS');
         close.className = 'banner-close text-button';
         buttonGroup.appendChild(close);
@@ -427,7 +427,7 @@ class Banners extends cr.EventTarget {
 
         const close = this.document_.createElement('button');
         close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
-        close.id = 'welcome-dismiss';
+        close.id = 'drive-space-warning-dismiss';
         close.className = 'banner-close';
         box.appendChild(close);
         const totalSize = opt_sizeStats.totalSize;
@@ -788,7 +788,7 @@ class Banners extends cr.EventTarget {
       const close = this.document_.createElement(closeType);
       close.className = 'banner-close';
       close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
-      close.id = 'welcome-dismiss';
+      close.id = 'downloads-space-warning-dismiss';
       if (util.isFilesNg()) {
         close.innerHTML = str('DRIVE_WELCOME_DISMISS');
         close.className = 'banner-close text-button';
