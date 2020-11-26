@@ -112,7 +112,8 @@ TEST_F(CoreLocationProviderTest, StartAndStopUpdating) {
   provider_.reset();
 }
 
-TEST_F(CoreLocationProviderTest, DontStartUpdatingIfPermissionDenied) {
+// crbug.com/1153412: disabled due to flakiness.
+TEST_F(CoreLocationProviderTest, DISABLED_DontStartUpdatingIfPermissionDenied) {
   InitializeProvider();
   [fake_location_manager_ fakeUpdatePermission:kCLAuthorizationStatusDenied];
   provider_->StartProvider(/*high_accuracy=*/true);
