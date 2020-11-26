@@ -47,9 +47,9 @@ void ImeLoggerBridge(int severity, const char* message) {
 }
 
 // Check whether the crucial members of an EntryPoints are loaded.
-bool isEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
-  return (entry.initOnce && entry.support && entry.activateIme &&
-          entry.process && entry.closeDecoder);
+bool IsEntryPointsLoaded(ImeDecoder::EntryPoints entry) {
+  return (entry.init_once && entry.supports && entry.activate_ime &&
+          entry.process && entry.close);
 }
 
 }  // namespace
@@ -77,28 +77,28 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
       library.GetFunctionPointer(IME_MAIN_ENTRY_CREATE_FN_NAME));
 
   // TODO(b/172527471): Create a macro to fetch function pointers.
-  entry_points_.initOnce = reinterpret_cast<ImeDecoderInitOnceFn>(
+  entry_points_.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
       library.GetFunctionPointer("ImeDecoderInitOnce"));
-  entry_points_.support = reinterpret_cast<ImeDecoderSupportsFn>(
+  entry_points_.supports = reinterpret_cast<ImeDecoderSupportsFn>(
       library.GetFunctionPointer("ImeDecoderSupports"));
-  entry_points_.activateIme = reinterpret_cast<ImeDecoderActivateImeFn>(
+  entry_points_.activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
       library.GetFunctionPointer("ImeDecoderActivateIme"));
   entry_points_.process = reinterpret_cast<ImeDecoderProcessFn>(
       library.GetFunctionPointer("ImeDecoderProcess"));
-  entry_points_.closeDecoder = reinterpret_cast<ImeDecoderCloseFn>(
+  entry_points_.close = reinterpret_cast<ImeDecoderCloseFn>(
       library.GetFunctionPointer("ImeDecoderClose"));
-  if (!isEntryPointsLoaded(entry_points_)) {
+  if (!IsEntryPointsLoaded(entry_points_)) {
     status_ = Status::kFunctionMissing;
     return;
   }
-  entry_points_.isReady = true;
+  entry_points_.is_ready = true;
 
   // Optional function pointer.
-  ImeEngineLoggerSetterFn loggerSetter =
+  ImeEngineLoggerSetterFn logger_setter =
       reinterpret_cast<ImeEngineLoggerSetterFn>(
           library.GetFunctionPointer("SetImeEngineLogger"));
-  if (loggerSetter) {
-    loggerSetter(ImeLoggerBridge);
+  if (logger_setter) {
+    logger_setter(ImeLoggerBridge);
   } else {
     LOG(WARNING) << "Failed to set a Chrome Logger for decoder DSO.";
   }

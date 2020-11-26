@@ -31,14 +31,14 @@ class ImeDecoder {
   // This contains the function pointers to the entry points for the loaded
   // decoder shared library.
   struct EntryPoints {
-    ImeDecoderInitOnceFn initOnce;
-    ImeDecoderSupportsFn support;
-    ImeDecoderActivateImeFn activateIme;
+    ImeDecoderInitOnceFn init_once;
+    ImeDecoderSupportsFn supports;
+    ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;
-    ImeDecoderCloseFn closeDecoder;
+    ImeDecoderCloseFn close;
 
     // Whether the EntryPoints is ready to use.
-    bool isReady;
+    bool is_ready = false;
   };
 
   // Gets the singleton ImeDecoder.

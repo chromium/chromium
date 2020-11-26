@@ -67,9 +67,9 @@ DecoderEngine::~DecoderEngine() {}
 bool DecoderEngine::TryLoadDecoder() {
   auto* decoder = ImeDecoder::GetInstance();
   if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
-      decoder->GetEntryPoints().isReady) {
+      decoder->GetEntryPoints().is_ready) {
     decoder_entry_points_ = decoder->GetEntryPoints();
-    decoder_entry_points_->initOnce(platform_);
+    decoder_entry_points_->init_once(platform_);
     return true;
   }
   return false;
@@ -84,7 +84,7 @@ bool DecoderEngine::BindRequest(
     // Activates an IME engine via the shared library. Passing a
     // |ClientDelegate| for engine instance created by the shared library to
     // make safe calls on the client.
-    if (decoder_entry_points_->activateIme(
+    if (decoder_entry_points_->activate_ime(
             ime_spec.c_str(),
             new ClientDelegate(ime_spec, std::move(remote)))) {
       decoder_channel_receivers_.Add(this, std::move(receiver));
@@ -101,7 +101,7 @@ bool DecoderEngine::BindRequest(
 
 bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
   if (decoder_entry_points_) {
-    return decoder_entry_points_->support(ime_spec.c_str());
+    return decoder_entry_points_->supports(ime_spec.c_str());
   }
   return false;
 }
