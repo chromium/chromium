@@ -25,6 +25,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_co_mem.h"
 #include "components/update_client/task_traits.h"
@@ -139,6 +140,9 @@ const int kMaxQueuedJobs = 10;
 
 // Retrieves the singleton instance of GIT for this process.
 HRESULT GetGit(ComPtr<IGlobalInterfaceTable>* git) {
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   return ::CoCreateInstance(CLSID_StdGlobalInterfaceTable, nullptr,
                             CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&(*git)));
 }
