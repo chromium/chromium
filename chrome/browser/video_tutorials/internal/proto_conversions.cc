@@ -61,6 +61,8 @@ void TutorialToProto(Tutorial* tutorial, TutorialProto* proto) {
   proto->set_video_url(tutorial->video_url.spec());
   proto->set_share_url(tutorial->share_url.spec());
   proto->set_poster_url(tutorial->poster_url.spec());
+  proto->set_animated_gif_url(tutorial->animated_gif_url.spec());
+  proto->set_thumbnail_url(tutorial->thumbnail_url.spec());
   proto->set_caption_url(tutorial->caption_url.spec());
   proto->set_video_length(tutorial->video_length);
 }
@@ -73,6 +75,8 @@ void TutorialFromProto(TutorialProto* proto, Tutorial* tutorial) {
   tutorial->video_url = GURL(proto->video_url());
   tutorial->share_url = GURL(proto->share_url());
   tutorial->poster_url = GURL(proto->poster_url());
+  tutorial->animated_gif_url = GURL(proto->animated_gif_url());
+  tutorial->thumbnail_url = GURL(proto->thumbnail_url());
   tutorial->caption_url = GURL(proto->caption_url());
   tutorial->video_length = proto->video_length();
 }

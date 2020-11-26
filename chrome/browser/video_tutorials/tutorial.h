@@ -36,6 +36,8 @@ struct Tutorial {
            const std::string& video_url,
            const std::string& share_url,
            const std::string& poster_url,
+           const std::string& animated_gif_url,
+           const std::string& thumbnail_url,
            const std::string& caption_url,
            int video_length);
   ~Tutorial();
@@ -55,13 +57,20 @@ struct Tutorial {
   // The URL of the video.
   GURL video_url;
 
-  // The URL of the poster image.
+  // The share URL for the video.
   GURL share_url;
 
-  // The URL of the subtitles.
+  // The URL of the poster image. Shown while the video is loading in the
+  // player.
   GURL poster_url;
 
-  // The share URL for the video.
+  // The URL of the animated gif image.
+  GURL animated_gif_url;
+
+  // The URL of the video thumbnail.
+  GURL thumbnail_url;
+
+  // The URL of the subtitles.
   GURL caption_url;
 
   // The length of the video in seconds.

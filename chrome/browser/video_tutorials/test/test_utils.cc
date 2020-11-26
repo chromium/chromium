@@ -13,6 +13,8 @@ void BuildTestEntry(Tutorial* entry) {
   *entry = Tutorial(
       FeatureType::kTest, kTestTitle, "https://www.example.com/video_url",
       "https://www.example.com/share_url", "https://www.example.com/poster_url",
+      "https://www.example.com/animated_gif_url",
+      "https://www.example.com/thumbnail_url",
       "https://www.example.com/caption_url", 60);
 }
 

@@ -23,6 +23,8 @@ ScopedJavaLocalRef<jobject> CreateJavaTutorialAndMaybeAddToList(
       ConvertUTF8ToJavaString(env, tutorial.title),
       ConvertUTF8ToJavaString(env, tutorial.video_url.spec()),
       ConvertUTF8ToJavaString(env, tutorial.poster_url.spec()),
+      ConvertUTF8ToJavaString(env, tutorial.animated_gif_url.spec()),
+      ConvertUTF8ToJavaString(env, tutorial.thumbnail_url.spec()),
       ConvertUTF8ToJavaString(env, tutorial.caption_url.spec()),
       ConvertUTF8ToJavaString(env, tutorial.share_url.spec()),
       tutorial.video_length);

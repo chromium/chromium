@@ -5,22 +5,28 @@
 package org.chromium.chrome.browser.video_tutorials.iph;
 
 import android.content.Context;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ViewStub;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
+
 /**
  * Creates and shows a video tutorial IPH. Requires a {@link ViewStub} to be passed which will
  * inflate when the IPH is shown.
  */
 public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
+    private static final String VARIATION_USE_ANIMATED_GIF_URL = "use_animated_gif_url";
+
     private final Context mContext;
     private final PropertyModel mModel;
     private final VideoIPHView mView;
@@ -71,10 +77,20 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
 
     private void fetchImage(
             Callback<Drawable> consumer, int widthPx, int heightPx, Tutorial tutorial) {
-        ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
+        boolean useAnimatedGifUrl = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_USE_ANIMATED_GIF_URL, false);
+        ImageFetcher.Params params = ImageFetcher.Params.create(
+                useAnimatedGifUrl ? tutorial.animatedGifUrl : tutorial.thumbnailUrl,
                 ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME, widthPx, heightPx);
-        mImageFetcher.fetchImage(params, bitmap -> {
-            consumer.onResult(new BitmapDrawable(mContext.getResources(), bitmap));
-        });
+        if (useAnimatedGifUrl) {
+            mImageFetcher.fetchGif(params, gifImage -> {
+                BaseGifDrawable baseGifDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
+                consumer.onResult(baseGifDrawable);
+            });
+        } else {
+            mImageFetcher.fetchImage(params, bitmap -> {
+                consumer.onResult(new BitmapDrawable(mContext.getResources(), bitmap));
+            });
+        }
     }
 }

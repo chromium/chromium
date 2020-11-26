@@ -40,10 +40,11 @@ message VideoTutorial {
   // The complete URL for the video.
   string video_url = 3;
 
-  // Youtube Video URL for sharing.
+  // The URL of the video for sharing.
   string share_url = 4;
 
-  // The complete URL of the thumbnail image.
+  // The URL of the video poster. Shown while the video is loading in the
+  // player.
   string poster_url = 5;
 
   // The URL of this video's caption.
@@ -51,6 +52,12 @@ message VideoTutorial {
 
   // Duration of the video in seconds.
   int64 video_length = 7;
+
+  // The URL of the animated thumbnail. Shown in the IPH cards.
+  string animated_gif_url = 8;
+
+  // The URL of the thumbnail image. Shown in the video list.
+  string thumbnail_url = 9;
 }
 
 // Response from the server containing tutorial groups for all languages.

@@ -117,8 +117,8 @@ public class NewTabPageVideoIPHManager {
         String summaryCardImageUrl = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_SUMMARY_CARD_POSTER_URL);
         Tutorial summary = new Tutorial(FeatureType.SUMMARY,
-                mContext.getString(R.string.video_tutorials_card_all_videos), null,
-                summaryCardImageUrl, null, null, 0);
+                mContext.getString(R.string.video_tutorials_card_all_videos), null, null,
+                summaryCardImageUrl, summaryCardImageUrl, null, null, 0);
         tutorials.add(summary);
     }
 

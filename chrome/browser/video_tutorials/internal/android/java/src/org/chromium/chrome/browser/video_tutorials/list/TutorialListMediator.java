@@ -72,7 +72,7 @@ public class TutorialListMediator {
 
     private void fetchImage(
             Callback<Drawable> consumer, int widthPx, int heightPx, Tutorial tutorial) {
-        ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
+        ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.thumbnailUrl,
                 ImageFetcher.VIDEO_TUTORIALS_LIST_UMA_CLIENT_NAME, widthPx, heightPx);
         mImageFetcher.fetchImage(params, bitmap -> {
             Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);

@@ -66,21 +66,27 @@ public class TestVideoTutorialService implements VideoTutorialService {
 
     private void initializeTutorialList() {
         mTutorials.add(new Tutorial(FeatureType.CHROME_INTRO, "Introduction to chrome",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
+                "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
                 "caption url", "share url", 25));
 
         mTutorials.add(new Tutorial(FeatureType.DOWNLOAD,
                 "How to use Google Chrome's download functionality",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
-                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
+                "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
                 "caption url", "share url", 35));
 
-        mTutorials.add(
-                new Tutorial(FeatureType.SEARCH, "How to efficiently search with Google Chrome",
-                        "https://storage.googleapis.com/stock-wizard.appspot.com/elephant.jpg ",
-                        "https://storage.googleapis.com/stock-wizard.appspot.com/elephant.jpg",
-                        "caption url", "share url", 335));
+        mTutorials.add(new Tutorial(FeatureType.SEARCH,
+                "How to efficiently search with Google Chrome",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
+                "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
+                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
+                "caption url", "share url", 335));
     }
 
     private void initializeLanguages() {
