@@ -10013,6 +10013,7 @@ histogram as enum -->
   <summary>Defines Chrome OS sharesheet actions.</summary>
   <int value="0" label="Cancelled by user"/>
   <int value="1" label="Launch ARC app"/>
+  <int value="2" label="Launch share action"/>
 </enum>
 
 <enum name="ChromeOSUICommands">
