@@ -235,9 +235,8 @@ void DockedMagnifierControllerImpl::CenterOnPoint(
   // 1- Scale the layer by |scale|.
   // 2- Translate the point of interest to the center point of the viewport
   //    widget.
-  const gfx::Rect viewport_widget_bounds =
-      GetViewportWidgetBoundsInRoot(current_source_root_window_);
-  const gfx::Point viewport_center_point = viewport_widget_bounds.CenterPoint();
+  const gfx::Point viewport_center_point =
+      GetViewportWidgetBoundsInRoot(current_source_root_window_).CenterPoint();
   gfx::Transform transform;
   transform.Translate(viewport_center_point.x() - point_in_pixels.x(),
                       viewport_center_point.y() - point_in_pixels.y());
@@ -253,29 +252,6 @@ void DockedMagnifierControllerImpl::CenterOnPoint(
   settings.SetTweenType(gfx::Tween::ZERO);
   settings.SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
   viewport_magnifier_layer_->SetTransform(transform);
-
-  // Also make sure |point_of_interest|'s y-coordinate doesn't go below
-  // the minimum height.
-  if (point_of_interest.y() < minimum_point_of_interest_height_)
-    point_of_interest.set_y(minimum_point_of_interest_height_);
-
-  // Send changed magnified region bounds to accessibility controller,
-  // triggering accessibility manager to dispatch an accessibility private
-  // OnMagnifierBoundsChanged event, which will be listened for by magnifier.js,
-  // which keeps track of the last magnified region bounds, to help when
-  // deciding where to next move the magnified region.
-  // |viewport_widget_bounds| represents the full-width docked magnifier panel
-  // at the top of the screen. Shrink this by the current magnifier |scale| to
-  // get the actual zoomed-in width and height of the magnified area.
-  const int width = viewport_widget_bounds.width() / scale;
-  const int height = viewport_widget_bounds.height() / scale;
-  const int x = point_of_interest.x() - width / 2;
-  const int y = point_of_interest.y() - height / 2;
-  gfx::Rect magnified_region_bounds(x, y, width, height);
-  ::wm::ConvertRectToScreen(root_window, &magnified_region_bounds);
-
-  Shell::Get()->accessibility_controller()->MagnifierBoundsChanged(
-      magnified_region_bounds);
 }
 
 int DockedMagnifierControllerImpl::GetMagnifierHeightForTesting() const {

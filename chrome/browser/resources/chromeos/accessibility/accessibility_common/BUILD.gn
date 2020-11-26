@@ -61,7 +61,6 @@ js2gtest("accessibility_common_extjs_tests") {
   sources = [
     "accessibility_common_test.js",
     "autoclick/autoclick_test.js",
-    "magnifier/docked_magnifier_test.js",
     "magnifier/magnifier_test.js",
   ]
   gen_include_files = [
@@ -69,7 +68,6 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
     "../common/testing/mock_accessibility_private.js",
-    "magnifier/magnifier_test_common.js",
   ]
 
   # The test base classes generate C++ code with these deps.
