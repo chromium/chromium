@@ -15,7 +15,6 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -26,10 +25,8 @@ namespace content {
 class WebContents;
 }
 
-// Base class for desktop media picker UI. It's used by Desktop Media API, and
-// by ARC to let user choose a desktop media source. It is also used by
-// getCurrentBrowsingContextMedia API to request user's permission to share the
-// current browser context.
+// Abstract interface for desktop media picker UI. It's used by Desktop Media
+// API and by ARC to let user choose a desktop media source.
 //
 // TODO(crbug.com/987001): Rename this class.
 class DesktopMediaPicker {
@@ -71,14 +68,12 @@ class DesktopMediaPicker {
     bool select_only_screen = false;
   };
 
-  // Creates a picker dialog/confirmation box depending on the value of
-  // |request|. If no request is available the default picker, namely
-  // DesktopMediaPickerViews is used.
-  static std::unique_ptr<DesktopMediaPicker> Create(
-      const content::MediaStreamRequest* request = nullptr);
+  // Creates default implementation of DesktopMediaPicker for the current
+  // platform.
+  static std::unique_ptr<DesktopMediaPicker> Create();
 
-  DesktopMediaPicker() = default;
-  virtual ~DesktopMediaPicker() = default;
+  DesktopMediaPicker() {}
+  virtual ~DesktopMediaPicker() {}
 
   // Shows dialog with list of desktop media sources (screens, windows, tabs)
   // provided by |sources_lists|.
