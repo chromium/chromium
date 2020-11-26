@@ -198,7 +198,7 @@ void DeferredUnmap::Unmap() {
   // changes, the if statement below has to be updated.
   PA_DCHECK(!IsManagedByPartitionAllocNormalBuckets(ptr));
   if (IsManagedByPartitionAllocDirectMap(ptr)) {
-    internal::AddressPoolManager::GetInstance()->Free(
+    internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         internal::GetDirectMapPool(), ptr, size);
   } else {
     FreePages(ptr, size);

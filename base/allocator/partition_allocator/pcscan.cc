@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/object_bitmap.h"
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -557,8 +558,9 @@ void PCScan<thread_safe>::RegisterRoot(Root* root) {
     for (char* super_page = super_page_extent->super_page_base;
          super_page != super_page_extent->super_pages_end;
          super_page += kSuperPageSize) {
-      SetSystemPagesAccess(internal::SuperPageQuarantineBitmaps(super_page),
-                           quarantine_bitmaps_size_to_commit, PageReadWrite);
+      RecommitSystemPages(internal::SuperPageQuarantineBitmaps(super_page),
+                          quarantine_bitmaps_size_to_commit, PageReadWrite,
+                          PageUpdatePermissions);
     }
   }
   roots_.Add(root);

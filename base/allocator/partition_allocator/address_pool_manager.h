@@ -42,8 +42,10 @@ class BASE_EXPORT AddressPoolManager {
   pool_handle Add(uintptr_t address, size_t length);
   void Remove(pool_handle handle);
 #endif
-  char* Alloc(pool_handle handle, void* requested_address, size_t length);
-  void Free(pool_handle handle, void* ptr, size_t length);
+  // Reserves address space from GigaCage.
+  char* Reserve(pool_handle handle, void* requested_address, size_t length);
+  // Frees address space back to GigaCage and decommits underlying system pages.
+  void UnreserveAndDecommit(pool_handle handle, void* ptr, size_t length);
   void ResetForTesting();
 
 #if !defined(PA_HAS_64_BITS_POINTERS)

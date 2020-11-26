@@ -52,16 +52,16 @@ TEST_F(AddressPoolManagerTest, TooLargePool) {
 TEST_F(AddressPoolManagerTest, ManyPages) {
   char* base_ptr = reinterpret_cast<char*>(base_address_);
 
-  EXPECT_EQ(AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                     kPageCnt * kSuperPageSize),
+  EXPECT_EQ(AddressPoolManager::GetInstance()->Reserve(
+                pool_, nullptr, kPageCnt * kSuperPageSize),
             base_ptr);
-  EXPECT_EQ(
-      AddressPoolManager::GetInstance()->Alloc(pool_, nullptr, kSuperPageSize),
-      nullptr);
-  AddressPoolManager::GetInstance()->Free(pool_, base_ptr,
-                                          kPageCnt * kSuperPageSize);
-  EXPECT_EQ(AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                     kPageCnt * kSuperPageSize),
+  EXPECT_EQ(AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                       kSuperPageSize),
+            nullptr);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+      pool_, base_ptr, kPageCnt * kSuperPageSize);
+  EXPECT_EQ(AddressPoolManager::GetInstance()->Reserve(
+                pool_, nullptr, kPageCnt * kSuperPageSize),
             base_ptr);
 }
 
@@ -69,83 +69,94 @@ TEST_F(AddressPoolManagerTest, PagesFragmented) {
   char* base_ptr = reinterpret_cast<char*>(base_address_);
   void* addrs[kPageCnt];
   for (size_t i = 0; i < kPageCnt; ++i) {
-    addrs[i] = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                        kSuperPageSize);
+    addrs[i] = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                          kSuperPageSize);
     EXPECT_EQ(addrs[i], base_ptr + i * kSuperPageSize);
   }
-  EXPECT_EQ(
-      AddressPoolManager::GetInstance()->Alloc(pool_, nullptr, kSuperPageSize),
-      nullptr);
-  for (size_t i = 1; i < kPageCnt; i += 2) {
-    AddressPoolManager::GetInstance()->Free(pool_, addrs[i], kSuperPageSize);
-  }
-  EXPECT_EQ(AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                     2 * kSuperPageSize),
+  EXPECT_EQ(AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                       kSuperPageSize),
             nullptr);
   for (size_t i = 1; i < kPageCnt; i += 2) {
-    addrs[i] = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                        kSuperPageSize);
+    AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, addrs[i],
+                                                            kSuperPageSize);
+  }
+  EXPECT_EQ(AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                       2 * kSuperPageSize),
+            nullptr);
+  for (size_t i = 1; i < kPageCnt; i += 2) {
+    addrs[i] = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                          kSuperPageSize);
     EXPECT_EQ(addrs[i], base_ptr + i * kSuperPageSize);
   }
-  EXPECT_EQ(
-      AddressPoolManager::GetInstance()->Alloc(pool_, nullptr, kSuperPageSize),
-      nullptr);
+  EXPECT_EQ(AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                       kSuperPageSize),
+            nullptr);
 }
 
 TEST_F(AddressPoolManagerTest, IrregularPattern) {
   char* base_ptr = reinterpret_cast<char*>(base_address_);
 
-  void* a1 =
-      AddressPoolManager::GetInstance()->Alloc(pool_, nullptr, kSuperPageSize);
+  void* a1 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        kSuperPageSize);
   EXPECT_EQ(a1, base_ptr);
-  void* a2 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      2 * kSuperPageSize);
+  void* a2 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        2 * kSuperPageSize);
   EXPECT_EQ(a2, base_ptr + 1 * kSuperPageSize);
-  void* a3 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      3 * kSuperPageSize);
+  void* a3 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        3 * kSuperPageSize);
   EXPECT_EQ(a3, base_ptr + 3 * kSuperPageSize);
-  void* a4 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      4 * kSuperPageSize);
+  void* a4 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        4 * kSuperPageSize);
   EXPECT_EQ(a4, base_ptr + 6 * kSuperPageSize);
-  void* a5 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      5 * kSuperPageSize);
+  void* a5 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        5 * kSuperPageSize);
   EXPECT_EQ(a5, base_ptr + 10 * kSuperPageSize);
 
-  AddressPoolManager::GetInstance()->Free(pool_, a4, 4 * kSuperPageSize);
-  void* a6 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      6 * kSuperPageSize);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, a4,
+                                                          4 * kSuperPageSize);
+  void* a6 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        6 * kSuperPageSize);
   EXPECT_EQ(a6, base_ptr + 15 * kSuperPageSize);
 
-  AddressPoolManager::GetInstance()->Free(pool_, a5, 5 * kSuperPageSize);
-  void* a7 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      7 * kSuperPageSize);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, a5,
+                                                          5 * kSuperPageSize);
+  void* a7 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        7 * kSuperPageSize);
   EXPECT_EQ(a7, base_ptr + 6 * kSuperPageSize);
-  void* a8 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      3 * kSuperPageSize);
+  void* a8 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        3 * kSuperPageSize);
   EXPECT_EQ(a8, base_ptr + 21 * kSuperPageSize);
-  void* a9 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                      2 * kSuperPageSize);
+  void* a9 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                        2 * kSuperPageSize);
   EXPECT_EQ(a9, base_ptr + 13 * kSuperPageSize);
 
-  AddressPoolManager::GetInstance()->Free(pool_, a7, 7 * kSuperPageSize);
-  AddressPoolManager::GetInstance()->Free(pool_, a9, 2 * kSuperPageSize);
-  AddressPoolManager::GetInstance()->Free(pool_, a6, 6 * kSuperPageSize);
-  void* a10 = AddressPoolManager::GetInstance()->Alloc(pool_, nullptr,
-                                                       15 * kSuperPageSize);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, a7,
+                                                          7 * kSuperPageSize);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, a9,
+                                                          2 * kSuperPageSize);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, a6,
+                                                          6 * kSuperPageSize);
+  void* a10 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                         15 * kSuperPageSize);
   EXPECT_EQ(a10, base_ptr + 6 * kSuperPageSize);
 }
 
 TEST_F(AddressPoolManagerTest, DecommittedDataIsErased) {
-  void* data =
-      AddressPoolManager::GetInstance()->Alloc(pool_, nullptr, kSuperPageSize);
+  void* data = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                          kSuperPageSize);
   ASSERT_TRUE(data);
+  RecommitSystemPages(data, kSuperPageSize, PageReadWrite,
+                      PageUpdatePermissions);
 
   memset(data, 42, kSuperPageSize);
-  AddressPoolManager::GetInstance()->Free(pool_, data, kSuperPageSize);
+  AddressPoolManager::GetInstance()->UnreserveAndDecommit(pool_, data,
+                                                          kSuperPageSize);
 
-  void* data2 =
-      AddressPoolManager::GetInstance()->Alloc(pool_, nullptr, kSuperPageSize);
+  void* data2 = AddressPoolManager::GetInstance()->Reserve(pool_, nullptr,
+                                                           kSuperPageSize);
   ASSERT_EQ(data, data2);
+  RecommitSystemPages(data2, kSuperPageSize, PageReadWrite,
+                      PageUpdatePermissions);
 
   uint32_t sum = 0;
   for (size_t i = 0; i < kSuperPageSize; i++) {
@@ -162,7 +173,7 @@ TEST_F(AddressPoolManagerTest, IsManagedByDirectMapPool) {
   static const size_t kNumPages[kAllocCount] = {1, 4, 7, 8, 13, 16, 31, 60};
   void* addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
-    addrs[i] = AddressPoolManager::GetInstance()->Alloc(
+    addrs[i] = AddressPoolManager::GetInstance()->Reserve(
         GetDirectMapPool(), nullptr,
         PageAllocationGranularity() * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
@@ -185,7 +196,7 @@ TEST_F(AddressPoolManagerTest, IsManagedByDirectMapPool) {
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
-    AddressPoolManager::GetInstance()->Free(
+    AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         GetDirectMapPool(), addrs[i],
         PageAllocationGranularity() * kNumPages[i]);
     EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(addrs[i]));
@@ -199,7 +210,7 @@ TEST_F(AddressPoolManagerTest, IsManagedByNormalBucketPool) {
   static const size_t kNumPages[kAllocCount] = {1, 3, 7, 11};
   void* addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
-    addrs[i] = AddressPoolManager::GetInstance()->Alloc(
+    addrs[i] = AddressPoolManager::GetInstance()->Reserve(
         GetNormalBucketPool(), nullptr, kSuperPageSize * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
@@ -215,8 +226,8 @@ TEST_F(AddressPoolManagerTest, IsManagedByNormalBucketPool) {
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
-    AddressPoolManager::GetInstance()->Free(GetNormalBucketPool(), addrs[i],
-                                            kSuperPageSize * kNumPages[i]);
+    AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        GetNormalBucketPool(), addrs[i], kSuperPageSize * kNumPages[i]);
     EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(addrs[i]));
     EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(addrs[i]));
   }

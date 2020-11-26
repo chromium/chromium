@@ -55,15 +55,6 @@ void DecommitPages(void* address, size_t size) {
 #endif
 }
 
-// This will crash if the range cannot be committed.
-void CommitPages(void* address, size_t size) {
-#if defined(OS_APPLE)
-  SetSystemPagesAccess(address, size, PageReadWrite);
-#else
-  RecommitSystemPages(address, size, PageReadWrite, PageUpdatePermissions);
-#endif
-}
-
 }  // namespace
 
 constexpr size_t AddressPoolManager::Pool::kMaxBits;
@@ -93,16 +84,14 @@ void AddressPoolManager::Remove(pool_handle handle) {
   pool->Reset();
 }
 
-char* AddressPoolManager::Alloc(pool_handle handle, void*, size_t length) {
+char* AddressPoolManager::Reserve(pool_handle handle, void*, size_t length) {
   Pool* pool = GetPool(handle);
-  char* ptr = reinterpret_cast<char*>(pool->FindChunk(length));
-  if (UNLIKELY(!ptr))
-    return nullptr;
-  CommitPages(ptr, length);
-  return ptr;
+  return reinterpret_cast<char*>(pool->FindChunk(length));
 }
 
-void AddressPoolManager::Free(pool_handle handle, void* ptr, size_t length) {
+void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
+                                              void* ptr,
+                                              size_t length) {
   PA_DCHECK(0 < handle && handle <= kNumPools);
   Pool* pool = GetPool(handle);
   PA_DCHECK(pool->IsInitialized());
@@ -268,13 +257,13 @@ static_assert(kSuperPageSize % PageAllocationGranularity() == 0,
               "AddressPoolManager depends on that kSuperPageSize is multiples "
               "of PageAllocationGranularity().");
 
-char* AddressPoolManager::Alloc(pool_handle handle,
-                                void* requested_address,
-                                size_t length) {
+char* AddressPoolManager::Reserve(pool_handle handle,
+                                  void* requested_address,
+                                  size_t length) {
   PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
-  char* ptr = reinterpret_cast<char*>(AllocPages(requested_address, length,
-                                                 kSuperPageSize, PageReadWrite,
-                                                 PageTag::kPartitionAlloc));
+  char* ptr = reinterpret_cast<char*>(
+      AllocPages(requested_address, length, kSuperPageSize, PageInaccessible,
+                 PageTag::kPartitionAlloc));
   if (UNLIKELY(!ptr))
     return nullptr;
 
@@ -282,7 +271,9 @@ char* AddressPoolManager::Alloc(pool_handle handle,
   return ptr;
 }
 
-void AddressPoolManager::Free(pool_handle handle, void* ptr, size_t length) {
+void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
+                                              void* ptr,
+                                              size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
   PA_DCHECK(!(ptr_as_uintptr & kSuperPageOffsetMask));
   PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));

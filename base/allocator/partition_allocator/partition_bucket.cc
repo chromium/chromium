@@ -43,12 +43,12 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
   // pool).
   if (root->UsesGigaCage()) {
-    ptr = internal::AddressPoolManager::GetInstance()->Alloc(
+    ptr = internal::AddressPoolManager::GetInstance()->Reserve(
         GetDirectMapPool(), nullptr, reserved_size);
   } else {
-    ptr = reinterpret_cast<char*>(AllocPages(nullptr, reserved_size,
-                                             kSuperPageAlignment, PageReadWrite,
-                                             PageTag::kPartitionAlloc));
+    ptr = reinterpret_cast<char*>(
+        AllocPages(nullptr, reserved_size, kSuperPageAlignment,
+                   PageInaccessible, PageTag::kPartitionAlloc));
   }
   if (UNLIKELY(!ptr))
     return nullptr;
@@ -57,20 +57,10 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
                                                     std::memory_order_relaxed);
   root->IncreaseCommittedPages(slot_size);
 
-  // Decommit everything in the initial partition page, except one system page
-  // for metadata.
-  SetSystemPagesAccess(ptr, SystemPageSize(), PageInaccessible);
-  SetSystemPagesAccess(ptr + (SystemPageSize() * 2),
-                       PartitionPageSize() - (SystemPageSize() * 2),
-                       PageInaccessible);
   char* slot = ptr + PartitionPageSize();
-  // Decommit everything past the slot, until the end of the reserved region.
-  PA_DCHECK(slot + slot_size <= ptr + reserved_size);
-  if (slot + slot_size < ptr + reserved_size) {
-    SetSystemPagesAccess(slot + slot_size,
-                         (ptr + reserved_size) - (slot + slot_size),
-                         PageInaccessible);
-  }
+  RecommitSystemPages(ptr + SystemPageSize(), SystemPageSize(), PageReadWrite,
+                      PageUpdatePermissions);
+  RecommitSystemPages(slot, slot_size, PageReadWrite, PageUpdatePermissions);
 
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
       PartitionSuperPageToMetadataArea(ptr));
@@ -214,24 +204,36 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   PA_DCHECK(slot_span_committed_size % SystemPageSize() == 0);
   size_t slot_span_reserved_size = PartitionPageSize() * num_partition_pages;
   PA_DCHECK(slot_span_committed_size <= slot_span_reserved_size);
+
   size_t num_partition_pages_left =
       (root->next_partition_page_end - root->next_partition_page) >>
       PartitionPageShift();
-  if (LIKELY(num_partition_pages_left >= num_partition_pages)) {
-    // In this case, we can still hand out pages from the current super page
-    // allocation.
-    char* ret = root->next_partition_page;
-
-    // Fresh System Pages in the SuperPages are decommited. Commit them
-    // before vending them back.
-    SetSystemPagesAccess(ret, slot_span_committed_size, PageReadWrite);
-
-    root->next_partition_page += slot_span_reserved_size;
-    root->IncreaseCommittedPages(slot_span_committed_size);
-
-    return ret;
+  if (UNLIKELY(num_partition_pages_left < num_partition_pages)) {
+    // In this case, we can no longer hand out pages from the current super page
+    // allocation. Get a new super page.
+    if (!AllocNewSuperPage(root)) {
+      return nullptr;
+    }
   }
 
+  char* ret = root->next_partition_page;
+
+  // System pages in the super page come in a decommited state. Commit them
+  // before vending them back.
+  RecommitSystemPages(ret, slot_span_committed_size, PageReadWrite,
+                      PageUpdatePermissions);
+  root->IncreaseCommittedPages(slot_span_committed_size);
+  root->next_partition_page += slot_span_reserved_size;
+  // Double check that we had enough space in the super page for the new slot
+  // span.
+  PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
+
+  return ret;
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
+    PartitionRoot<thread_safe>* root) {
   // Need a new super page. We want to allocate super pages in a contiguous
   // address region as much as possible. This is important for not causing
   // page table bloat and not fragmenting address spaces in 32 bit
@@ -243,12 +245,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
   // pool).
   if (root->UsesGigaCage()) {
-    super_page = AddressPoolManager::GetInstance()->Alloc(
+    super_page = AddressPoolManager::GetInstance()->Reserve(
         GetNormalBucketPool(), requested_address, kSuperPageSize);
   } else {
     super_page = reinterpret_cast<char*>(
         AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,
-                   PageReadWrite, PageTag::kPartitionAlloc));
+                   PageInaccessible, PageTag::kPartitionAlloc));
   }
   if (UNLIKELY(!super_page))
     return nullptr;
@@ -256,11 +258,6 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
                                             std::memory_order_relaxed);
 
-  // |slot_span_reserved_size| MUST be less than kSuperPageSize -
-  // (PartitionPageSize()*2). This is a trustworthy value because
-  // num_partition_pages is not user controlled.
-  //
-  // TODO(ajwong): Introduce a DCHECK.
   root->next_super_page = super_page + kSuperPageSize;
   char* quarantine_bitmaps = super_page + PartitionPageSize();
   size_t quarantine_bitmaps_reserved_size = 0;
@@ -274,56 +271,23 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   PA_DCHECK(quarantine_bitmaps_size_to_commit <=
             quarantine_bitmaps_reserved_size);
   char* ret = quarantine_bitmaps + quarantine_bitmaps_reserved_size;
-  root->next_partition_page = ret + slot_span_reserved_size;
+  root->next_partition_page = ret;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->IsScannable()));
   PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
-  // The first slot span is accessible. The given slot_span_committed_size is
-  // equal to the system-page-aligned size of the slot span.
-  //
-  // The remainder of the slot span past slot_span_committed_size, as well as
-  // all future slot spans inside the super page are decommitted
-  //
-  // TODO(ajwong): Refactor Page Allocator API so the super page comes in
-  // decommited initially.
-  SetSystemPagesAccess(
-      ret + slot_span_committed_size,
-      (super_page + kSuperPageSize) - (ret + slot_span_committed_size),
-      PageInaccessible);
-  root->IncreaseCommittedPages(slot_span_committed_size);
+  // Keep the first partition page in the super page inaccessible to serve as a
+  // guard page, except an "island" in the middle where we put page metadata and
+  // also a tiny amount of extent metadata.
+  RecommitSystemPages(super_page + SystemPageSize(), SystemPageSize(),
+                      PageReadWrite, PageUpdatePermissions);
 
-  // Make the first partition page in the super page a guard page, but leave a
-  // hole in the middle.
-  // This is where we put page metadata and also a tiny amount of extent
-  // metadata.
-  SetSystemPagesAccess(super_page, SystemPageSize(), PageInaccessible);
-  SetSystemPagesAccess(super_page + (SystemPageSize() * 2),
-                       PartitionPageSize() - (SystemPageSize() * 2),
-                       PageInaccessible);
-
-  // If PCScan is used, keep the quarantine bitmap committed, just release the
-  // unused part of partition page, if any. If PCScan isn't used, release the
-  // entire reserved region (PartitionRoot::EnablePCScan will be responsible
-  // for committing it when enabling PCScan).
+  // If PCScan is used, commit the quarantine bitmap. Otherwise, leave it
+  // uncommitted and let PartitionRoot::EnablePCScan commit it when needed.
   if (root->IsScanEnabled()) {
     PA_DCHECK(root->IsScannable());
-    if (quarantine_bitmaps_reserved_size > quarantine_bitmaps_size_to_commit) {
-      SetSystemPagesAccess(
-          quarantine_bitmaps + quarantine_bitmaps_size_to_commit,
-          quarantine_bitmaps_reserved_size - quarantine_bitmaps_size_to_commit,
-          PageInaccessible);
-    }
-  } else {
-    // If partition isn't scannable, no quarantine bitmaps were reserved, hence
-    // nothing to decommit.
-    if (root->IsScannable()) {
-      PA_DCHECK(quarantine_bitmaps_reserved_size > 0);
-      SetSystemPagesAccess(quarantine_bitmaps, quarantine_bitmaps_reserved_size,
-                           PageInaccessible);
-    } else {
-      PA_DCHECK(quarantine_bitmaps_reserved_size == 0);
-    }
+    RecommitSystemPages(quarantine_bitmaps, quarantine_bitmaps_size_to_commit,
+                        PageReadWrite, PageUpdatePermissions);
   }
 
   // If we were after a specific address, but didn't get it, assume that
