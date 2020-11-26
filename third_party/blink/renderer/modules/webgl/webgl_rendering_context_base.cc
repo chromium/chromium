@@ -3717,6 +3717,10 @@ ScriptValue WebGLRenderingContextBase::getProgramParameter(
     ScriptState* script_state,
     WebGLProgram* program,
     GLenum pname) {
+  // Completion status queries always return true on a lost context. This is
+  // intended to prevent applications from entering an infinite polling loop.
+  if (isContextLost() && pname == GL_COMPLETION_STATUS_KHR)
+    return WebGLAny(script_state, true);
   if (!ValidateWebGLProgramOrShader("getProgramParamter", program)) {
     return ScriptValue::CreateNull(script_state->GetIsolate());
   }
@@ -3829,6 +3833,10 @@ ScriptValue WebGLRenderingContextBase::getShaderParameter(
     ScriptState* script_state,
     WebGLShader* shader,
     GLenum pname) {
+  // Completion status queries always return true on a lost context. This is
+  // intended to prevent applications from entering an infinite polling loop.
+  if (isContextLost() && pname == GL_COMPLETION_STATUS_KHR)
+    return WebGLAny(script_state, true);
   if (!ValidateWebGLProgramOrShader("getShaderParameter", shader)) {
     return ScriptValue::CreateNull(script_state->GetIsolate());
   }
