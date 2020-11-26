@@ -77,7 +77,7 @@ const int kRelatedSearchesVersion = 4;
 
 const int kContextualSearchMaxSelection = 1000;
 const char kXssiEscape[] = ")]}'\n";
-const char kDiscourseContextHeaderPrefix[] = "X-Additional-Discourse-Context: ";
+const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 const char kDoPreventPreloadValue[] = "1";
 
 const int kResponseCodeUninitialized = -1;
@@ -162,8 +162,7 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
 
   // Populates the discourse context and adds it to the HTTP header of the
   // search term resolution request.
-  resource_request->headers.AddHeadersFromString(
-      GetDiscourseContext(*context_));
+  resource_request->headers.CopyFrom(GetDiscourseContext(*context_));
 
   // Disable cookies for this request.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -396,7 +395,7 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
                                  selection_end);
 }
 
-std::string ContextualSearchDelegate::GetDiscourseContext(
+const net::HttpRequestHeaders ContextualSearchDelegate::GetDiscourseContext(
     const ContextualSearchContext& context) {
   discourse_context::ClientDiscourseContext proto;
   discourse_context::Display* display = proto.add_display();
@@ -419,7 +418,10 @@ std::string ContextualSearchDelegate::GetDiscourseContext(
   // The server memoizer expects a web-safe encoding.
   std::replace(encoded_context.begin(), encoded_context.end(), '+', '-');
   std::replace(encoded_context.begin(), encoded_context.end(), '/', '_');
-  return kDiscourseContextHeaderPrefix + encoded_context;
+
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(kDiscourseContextHeaderName, encoded_context);
+  return headers;
 }
 
 // Decodes the given response from the search term resolution request and sets

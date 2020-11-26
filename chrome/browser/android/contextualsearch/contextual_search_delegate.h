@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 #include "chrome/browser/android/contextualsearch/resolved_search_term.h"
+#include "net/http/http_request_headers.h"
 
 namespace content {
 class WebContents;
@@ -127,7 +128,8 @@ class ContextualSearchDelegate
       uint32_t end_offset);
 
   // Populates and returns the discourse context.
-  std::string GetDiscourseContext(const ContextualSearchContext& context);
+  const net::HttpRequestHeaders GetDiscourseContext(
+      const ContextualSearchContext& context);
 
   // Builds a Resolved Search Term by decoding the given JSON string.
   std::unique_ptr<ResolvedSearchTerm> GetResolvedSearchTermFromJson(
