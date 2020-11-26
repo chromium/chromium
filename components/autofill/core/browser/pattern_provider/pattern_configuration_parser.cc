@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/grit/components_resources.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -80,6 +82,11 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
 // are equal or both unspecified (i.e. set to 0) this prioritizes the remote
 // configuration over the local one.
 void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillUseRemotePatterns)) {
+    DVLOG(1) << "Remote patterns are disabled.";
+    return;
+  }
+
   if (!result.value) {
     DVLOG(1) << "Failed to parse PatternProvider configuration JSON string.";
     return;

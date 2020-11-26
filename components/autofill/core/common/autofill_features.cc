@@ -161,12 +161,12 @@ const base::Feature kAutofillRefillWithRendererIds{
 const base::Feature kAutofillNameSectionsWithRendererIds{
     "AutofillNameSectionsWithRendererIds", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, autofill suggestions are displayed in the keyboard accessory
+// When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
 const base::Feature kAutofillKeyboardAccessory{
     "AutofillKeyboardAccessory", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, autofill will use new logic to strip both prefixes
+// When enabled, Autofill will use new logic to strip both prefixes
 // and suffixes when setting FormStructure::parseable_name_
 extern const base::Feature kAutofillLabelAffixRemoval{
     "AutofillLabelAffixRemoval", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -180,7 +180,7 @@ const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
 const base::Feature kAutofillOffNoServerData{"AutofillOffNoServerData",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If feature is enabled, autofill will be disabled for mixed forms (forms on
+// If feature is enabled, Autofill will be disabled for mixed forms (forms on
 // HTTPS sites that submit over HTTP).
 const base::Feature kAutofillPreventMixedFormsFilling{
     "AutofillPreventMixedFormsFilling", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -284,6 +284,11 @@ const base::Feature kAutofillUseNewSectioningMethod{
 const base::Feature kAutofillUsePageLanguageToSelectFieldParsingPatterns{
     "AutofillUsePageLanguageToSelectFieldParsingPatterns",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, Autofill will load remote patterns via the component updater.
+// TODO(crbug/1121990): Remove once launched.
+extern const base::Feature kAutofillUseRemotePatterns{
+    "AutofillUseRemotePatterns", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
