@@ -4167,7 +4167,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
 
-  content::TestNavigationManager child_navigation_manager(web_contents(), url);
+  TestNavigationManager child_navigation_manager(web_contents(), url);
 
   EXPECT_TRUE(ExecJs(root_frame_host(), R"(
     const iframe = document.createElement("iframe");
@@ -4204,7 +4204,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
 
-  content::TestNavigationManager child_navigation_manager(web_contents(), url);
+  TestNavigationManager child_navigation_manager(web_contents(), url);
 
   EXPECT_TRUE(ExecJs(root_frame_host(), R"(
     const iframe = document.createElement("iframe");
@@ -4222,6 +4222,123 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
   EXPECT_EQ(url, child_frame->GetLastCommittedURL());
   EXPECT_FALSE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+// TODO(https://crbug.com/1129326): Revisit this when main-frame navigations are
+// subject to CORS-RFC1918 checks.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    FormSubmissionFromInsecurePublictoLocalIsNotBlockedInMainFrame) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  GURL url = InsecureDefaultURL(*embedded_test_server());
+  TestNavigationManager navigation_manager(web_contents(), url);
+
+  base::StringPiece script_template = R"(
+    const form = document.createElement("form");
+    form.action = $1;
+    form.method = "post";
+    document.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
+
+  navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was not blocked.
+  EXPECT_TRUE(navigation_manager.was_successful());
+
+  EXPECT_EQ(url, EvalJs(root_frame_host(), "document.location.href"));
+  EXPECT_EQ(url, root_frame_host()->GetLastCommittedURL());
+  EXPECT_FALSE(root_frame_host()->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    FormSubmissionFromInsecurePublictoLocalIsBlockedInChildFrame) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  GURL url = InsecureDefaultURL(*embedded_test_server());
+  TestNavigationManager navigation_manager(web_contents(), url);
+
+  base::StringPiece script_template = R"(
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    const childDoc = iframe.contentDocument;
+    const form = childDoc.createElement("form");
+    form.action = $1;
+    form.method = "post";
+    childDoc.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(script_template, url)));
+
+  navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+
+  // Failed navigation.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The URL is the form target URL, to allow for reloading.
+  // The origin is opaque though, a symptom of the failed navigation.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    FormSubmissionGetFromInsecurePublictoLocalIsBlockedInChildFrame) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  GURL target_url = InsecureDefaultURL(*embedded_test_server());
+
+  // The page navigates to `url` followed by an empty query: '?'.
+  GURL expected_url = GURL(target_url.spec() + "?");
+  TestNavigationManager navigation_manager(web_contents(), expected_url);
+
+  base::StringPiece script_template = R"(
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+
+    const childDoc = iframe.contentDocument;
+    const form = childDoc.createElement("form");
+    form.action = $1;
+    form.method = "get";
+    childDoc.body.appendChild(form);
+    form.submit();
+  )";
+
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(), JsReplace(script_template, target_url)));
+
+  navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe was blocked.
+  EXPECT_FALSE(navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+
+  // Failed navigation.
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The URL is the form target URL, to allow for reloading.
+  // The origin is opaque though, a symptom of the failed navigation.
+  EXPECT_EQ(expected_url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
 // TODO(https://crbug.com/1134601): `about:` URLs are all treated as `kUnknown`
