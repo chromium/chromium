@@ -27,14 +27,31 @@ body {
 }
 
 table {
-    width: 100%;
+    width: max-content;
     border-spacing: 0;
-    white-space: pre-wrap !important;
-    word-break: break-word;
+    white-space: pre;
     margin: 0;
     font-size: initial;
     font-family: monospace;
     tab-size: 4;
+}
+
+.line-wrap {
+    width: 100%;
+    white-space: pre-wrap !important;
+    word-break: break-word;
+}
+
+.line-wrap-control {
+    width: 100%;
+    font-size: initial;
+    font-family: monospace;
+    user-select: none;
+    background-color: rgb(240, 240, 240);
+    border-bottom: 1px solid rgb(187, 187, 187);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 td {

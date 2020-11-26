@@ -1027,6 +1027,9 @@ below:
         <ph name="accName">$1<ex>Hazelnuts</ex></ph> not selected
       </message>
 
+      <message name="IDS_VIEW_SOURCE_LINE_WRAP" desc="Short phrase for the label describing the checkbox at the top of the view-source page. This checkbox controls whether long source lines are line-wrapped to fit on the screen, or not.">
+        Line wrap
+      </message>
 
       <message name="IDS_FORM_INPUT_WEEK_TEMPLATE" desc="A specific week (1-53) in a specific year shown in a form control">
         Week <ph name="WEEKNUMBER">$2<ex>51</ex></ph>, <ph name="YEAR">$1<ex>2012</ex></ph>
