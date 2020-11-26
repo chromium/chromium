@@ -16,8 +16,10 @@
 
   /**
    * $i18n{} labels used when template replacement is disabled.
+   *
+   * @const {!Object<string, string>}
    */
-  const i18nLabels = {
+  const i18nLabelReplacements = {
     'SEARCH_TEXT_LABEL': 'Search',
     'READONLY_INDICATOR_TOOLTIP':
         'The contents of this folder are read-only. ' +
@@ -26,19 +28,25 @@
   };
 
   /**
-   * Returns $i18n{} label if devtools code coverage is active, otherwise the
+   * Returns $i18n{} label if devtools code coverage is enabled, otherwise the
    * replaced contents.
    *
    * @param {string} key $i18n{} key of replacement text
+   * @return {!Promise<string>}
    */
   async function getExpectedLabelText(key) {
     const isDevtoolsCoverageActive =
         await sendTestMessage({name: 'isDevtoolsCoverageActive'});
+
     if (isDevtoolsCoverageActive === 'true') {
       return '$i18n{' + key + '}';
     }
 
-    return i18nLabels[key];
+    // Verify |key| has a $i18n{} replacement in |i18nLabelReplacements|.
+    const label = i18nLabelReplacements[key];
+    chrome.test.assertEq('string', typeof label, 'Missing: ' + key);
+
+    return label;
   }
 
   /**
