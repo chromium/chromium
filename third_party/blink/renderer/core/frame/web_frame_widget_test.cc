@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 
+#include "base/run_loop.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -86,6 +87,44 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
           gfx::PointF(150.27, 150.25), &point);
   EXPECT_EQ(main_frame_sink_id, frame_sink_id);
   EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
+}
+
+// Tests that page scale is propagated to all remote frames controlled
+// by a widget.
+TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <iframe style='width: 200px; height: 100px;'
+        srcdoc='<iframe srcdoc="plain text"></iframe>'>
+        </iframe>
+
+      )HTML");
+  base::RunLoop().RunUntilIdle();
+  class PageScaleRemoteFrameClient
+      : public frame_test_helpers::TestWebRemoteFrameClient {
+   public:
+    void PageScaleFactorChanged(float page_scale_factor,
+                                bool is_pinch_gesture_active) override {
+      page_scale_factor_changed_ = true;
+    }
+    bool page_scale_factor_changed_ = false;
+  };
+
+  PageScaleRemoteFrameClient page_scale_remote_frame_client;
+  EXPECT_TRUE(WebView().MainFrame()->FirstChild());
+  {
+    WebFrame* grandchild = WebView().MainFrame()->FirstChild()->FirstChild();
+    EXPECT_TRUE(grandchild);
+    EXPECT_TRUE(grandchild->IsWebLocalFrame());
+    grandchild->Swap(
+        frame_test_helpers::CreateRemote(&page_scale_remote_frame_client));
+  }
+  auto* widget = WebView().MainFrameViewWidget();
+  widget->SetPageScaleStateAndLimits(1.3f, true, 1.0f, 3.0f);
+  EXPECT_TRUE(page_scale_remote_frame_client.page_scale_factor_changed_);
+  WebView().MainFrame()->FirstChild()->FirstChild()->Detach();
 }
 
 }  // namespace blink
