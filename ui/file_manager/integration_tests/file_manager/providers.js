@@ -41,6 +41,20 @@
   }
 
   /**
+   * Returns $i18n{} label if devtools code coverage is active, otherwise
+   * replaced text.
+   */
+  async function getExpectedInstallNewServiceLabelText() {
+    const isDevtoolsCoverageActive =
+        await sendTestMessage({name: 'isDevtoolsCoverageActive'});
+    if (isDevtoolsCoverageActive === 'true') {
+      return '$i18n{INSTALL_NEW_EXTENSION_LABEL}';
+    }
+
+    return 'Install new service';
+  }
+
+  /**
    * Clicks on the gear menu.
    */
   async function clickGearMenu(appId) {
@@ -206,9 +220,10 @@
         'queryAllElements', appId, selector);
 
     // Check the sub-menu do not contain the |manifest| provider.
+    const expectedLabelText = await getExpectedInstallNewServiceLabelText();
     chrome.test.assertEq(2, submenu.length);
     chrome.test.assertEq('SMB file share', submenu[0].text);
-    chrome.test.assertEq('Install new service', submenu[1].text);
+    chrome.test.assertEq(expectedLabelText, submenu[1].text);
   }
 
   /**
@@ -283,10 +298,11 @@
     const appId = await setUpProvider('manifest.json');
     await showProvidersMenu(appId);
 
+    const expectedLabelText = await getExpectedInstallNewServiceLabelText();
     const selector = '#add-new-services-menu:not([hidden]) ' +
         'cr-menu-item[command="#install-new-extension"]:not([disabled])';
     const element = await remoteCall.waitForElement(appId, selector);
-    chrome.test.assertEq('Install new service', element.text);
+    chrome.test.assertEq(expectedLabelText, element.text);
     chrome.test.assertFalse(element.hidden);
   };
 
@@ -297,10 +313,11 @@
     const appId = await setUpProvider('manifest.json');
     await showProvidersMenu(appId);
 
+    const expectedLabelText = await getExpectedInstallNewServiceLabelText();
     const selector = '#add-new-services-menu:not([hidden]) ' +
         'cr-menu-item[command="#install-new-extension"][disabled]';
     const element = await remoteCall.waitForElement(appId, selector);
-    chrome.test.assertEq('Install new service', element.text);
+    chrome.test.assertEq(expectedLabelText, element.text);
     chrome.test.assertFalse(element.hidden);
   };
 })();
