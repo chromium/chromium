@@ -64,12 +64,8 @@ const char* const kEventNames[] = {"Checking",    "Error",    "NoUpdate",
 
 ApplicationCacheHost::ApplicationCacheHost(
     const BrowserInterfaceBrokerProxy& interface_broker_proxy,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    ContextLifecycleNotifier* notifier)
-    : backend_host_(notifier),
-      receiver_(this, notifier),
-      backend_remote_(notifier),
-      task_runner_(std::move(task_runner)),
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)),
       interface_broker_proxy_(interface_broker_proxy) {}
 
 ApplicationCacheHost::~ApplicationCacheHost() = default;

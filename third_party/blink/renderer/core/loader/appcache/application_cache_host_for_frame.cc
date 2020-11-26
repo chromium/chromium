@@ -47,9 +47,7 @@ ApplicationCacheHostForFrame::ApplicationCacheHostForFrame(
     const BrowserInterfaceBrokerProxy& interface_broker_proxy,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::UnguessableToken& appcache_host_id)
-    : ApplicationCacheHost(interface_broker_proxy,
-                           std::move(task_runner),
-                           document_loader->GetFrame()->DomWindow()),
+    : ApplicationCacheHost(interface_broker_proxy, std::move(task_runner)),
       local_frame_(document_loader->GetFrame()),
       document_loader_(document_loader) {
   // PlzNavigate: The browser passes the ID to be used.

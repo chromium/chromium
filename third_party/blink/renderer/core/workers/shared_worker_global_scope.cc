@@ -68,7 +68,7 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
       token_(token) {
   appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
       appcache_host_id, GetBrowserInterfaceBroker(),
-      GetTaskRunner(TaskType::kInternalLoading), this);
+      GetTaskRunner(TaskType::kInternalLoading));
 }
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
