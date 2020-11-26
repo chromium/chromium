@@ -197,9 +197,7 @@ bool TranslateManager::CanManuallyTranslate() {
 
   // MHTML pages currently cannot be translated (crbug.com/217945).
   if (translate_driver_->GetContentsMimeType() == "multipart/related" ||
-      !translate_client_->IsTranslatableURL(
-          translate_driver_->GetVisibleURL()) ||
-      !language_state_.page_needs_translation())
+      !translate_client_->IsTranslatableURL(translate_driver_->GetVisibleURL()))
     return false;
 
   const std::string source_language = language_state_.original_language();
