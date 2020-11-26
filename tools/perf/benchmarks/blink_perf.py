@@ -13,6 +13,7 @@ from core import perf_benchmark
 
 from telemetry import benchmark
 from telemetry import page as page_module
+from telemetry.core import exceptions
 from telemetry.core import memory_cache_http_server
 from telemetry.page import legacy_page_test
 from telemetry.page import shared_page_state
@@ -46,11 +47,14 @@ def StoryNameFromUrl(url, prefix):
     baseName += "_" + query # So that queried page-names don't collide
   return "{b}.{e}".format(b=baseName, e=extension)
 
-def CreateStorySetFromPath(path, skipped_file,
-                           shared_page_state_class=(
-                               shared_page_state.SharedPageState),
-                           append_query=None,
-                           extra_tags=None):
+
+def CreateStorySetFromPath(
+    path,
+    skipped_file,
+    shared_page_state_class=(shared_page_state.SharedPageState),
+    append_query=None,
+    extra_tags=None,
+    page_class=_BlinkPerfPage):
   assert os.path.exists(path)
 
   page_urls = []
@@ -98,12 +102,23 @@ def CreateStorySetFromPath(path, skipped_file,
   common_prefix = os.path.dirname(os.path.commonprefix(all_urls))
   for url in sorted(page_urls):
     name = StoryNameFromUrl(url, common_prefix)
-    ps.AddStory(_BlinkPerfPage(
-        url, ps, ps.base_dir,
-        shared_page_state_class=shared_page_state_class,
-        name=name,
-        tags=extra_tags))
+    ps.AddStory(
+        page_class(
+            url,
+            ps,
+            ps.base_dir,
+            shared_page_state_class=shared_page_state_class,
+            name=name,
+            tags=extra_tags))
   return ps
+
+
+def AddScriptToPage(page, script):
+  if page.script_to_evaluate_on_commit is None:
+    page.script_to_evaluate_on_commit = script
+  else:
+    page.script_to_evaluate_on_commit += script
+
 
 def _CreateMergedEventsBoundaries(events, max_start_time):
   """ Merge events with the given |event_name| and return a list of MergedEvent
@@ -255,7 +270,7 @@ class _BlinkPerfMeasurement(legacy_page_test.LegacyPageTest):
 
   def WillNavigateToPage(self, page, tab):
     del tab  # unused
-    page.script_to_evaluate_on_commit = self._blink_perf_js
+    AddScriptToPage(page, self._blink_perf_js)
 
   def DidNavigateToPage(self, page, tab):
     tab.WaitForJavaScriptCondition('testRunner.isWaitingForTelemetry')
@@ -396,17 +411,59 @@ class BlinkPerfBindings(_BlinkPerfBenchmark):
     return 'blink_perf.bindings'
 
 
+class _ServiceWorkerPerfPage(page_module.Page):
+  def RunPageInteractions(self, action_runner):
+    action_runner.ExecuteJavaScript('testRunner.scheduleTestRun()')
+
+    # If |serviceWorkerPerfTools| is enabled in the test, some actions are
+    # performed for each iteration.
+    perf_tools_enabled = False
+    try:
+      perf_tools_enabled = action_runner.EvaluateJavaScript(
+          'serviceWorkerPerfTools.enabled')
+    except exceptions.EvaluateException:
+      pass
+
+    if perf_tools_enabled:
+      done = False
+      while not done:
+        action_runner.WaitForJavaScriptCondition(
+            'serviceWorkerPerfTools.actionRequired')
+        action = action_runner.EvaluateJavaScript(
+            'serviceWorkerPerfTools.action')
+        if action == 'stop-workers':
+          action_runner.tab.StopAllServiceWorkers()
+        elif action == 'quit':
+          done = True
+        else:
+          raise Exception(
+              'Not supported ServiceWorkerPerfTools action: {}'.format(action))
+        action_runner.EvaluateJavaScript(
+            'serviceWorkerPerfTools.notifyActionDone()')
+    action_runner.WaitForJavaScriptCondition('testRunner.isDone', timeout=600)
+
+
 class ServiceWorkerRequestHandler(
     memory_cache_http_server.MemoryCacheDynamicHTTPRequestHandler):
   """This handler returns dynamic responses for service worker perf tests.
   """
+  _request_count = 0
   _SIZE_1K = 1024
   _SIZE_10K = 10240
   _SIZE_1M = 1048576
   _FILE_NAME_PATTERN_1K =\
       re.compile('.*/service_worker/resources/data/1K_[0-9]+\\.txt')
+  _WORKER_NAME_PATTERN = re.compile(\
+      '.*/service_worker/resources/service-worker-[0-9]+\\.generated\\.js')
+  _CHANGING_WORKER_NAME_PATTERN = re.compile(\
+      '.*/service_worker/resources/changing-service-worker\\.generated\\.js')
+  _WORKER_BODY = '''
+      self.addEventListener('fetch', (event) => {
+        event.respondWith(new Response('hello'));
+      });'''
 
   def ResponseFromHandler(self, path):
+    self._request_count += 1
     # normalize the path by replacing backslashes with slashes.
     normpath = path.replace('\\', '/')
     if normpath.endswith('/service_worker/resources/data/10K.txt'):
@@ -415,6 +472,12 @@ class ServiceWorkerRequestHandler(
       return self.MakeResponse('c' * self._SIZE_1M, 'text/plain', False)
     elif self._FILE_NAME_PATTERN_1K.match(normpath):
       return self.MakeResponse('c' * self._SIZE_1K, 'text/plain', False)
+    elif self._WORKER_NAME_PATTERN.match(normpath):
+      return self.MakeResponse(self._WORKER_BODY, 'text/javascript', False)
+    elif self._CHANGING_WORKER_NAME_PATTERN.match(normpath):
+      # Return different script content for each request.
+      new_body = self._WORKER_BODY + '//' + str(self._request_count)
+      return self.MakeResponse(new_body, 'text/javascript', False)
     return None
 
 
@@ -432,8 +495,19 @@ class BlinkPerfServiceWorker(_BlinkPerfBenchmark):
     return 'UNSCHEDULED_blink_perf.service_worker'
 
   def CreateStorySet(self, options):
-    story_set = super(BlinkPerfServiceWorker, self).CreateStorySet(options)
+    path = os.path.join(BLINK_PERF_BASE_DIR, self.SUBDIR)
+    story_set = CreateStorySetFromPath(
+        path,
+        SKIPPED_FILE,
+        extra_tags=self.TAGS,
+        page_class=_ServiceWorkerPerfPage)
     story_set.SetRequestHandlerClass(ServiceWorkerRequestHandler)
+    with open(
+        os.path.join(os.path.dirname(__file__), 'service_worker_perf.js'),
+        'r') as f:
+      service_worker_perf_js = f.read()
+      for page in story_set.stories:
+        AddScriptToPage(page, service_worker_perf_js)
     return story_set
 
 
