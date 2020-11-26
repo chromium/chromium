@@ -2273,6 +2273,22 @@ void Document::PropagateStyleToViewport() {
     PROPAGATE_FROM(overflow_style, OverscrollBehaviorY, SetOverscrollBehaviorY,
                    EOverscrollBehavior::kAuto);
 
+    // Counts any time overscroll behavior break if we change its viewport
+    // propagation logic. Overscroll behavior only breaks if body has non-none
+    // type that is different from the document one.
+    // TODO(954423): Remove once propagation logic change is complete.
+    if (document_element_style && body_style) {
+      bool overscroll_behavior_is_different =
+          body_style->OverscrollBehaviorX() !=
+              document_element_style->OverscrollBehaviorX() ||
+          body_style->OverscrollBehaviorY() !=
+              document_element_style->OverscrollBehaviorY();
+      if (overscroll_behavior_is_different) {
+        UseCounter::Count(*this,
+                          WebFeature::kOversrollBehaviorOnViewportBreaks);
+      }
+    }
+
     EOverflow overflow_x = EOverflow::kAuto;
     EOverflow overflow_y = EOverflow::kAuto;
     EOverflowAnchor overflow_anchor = EOverflowAnchor::kAuto;

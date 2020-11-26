@@ -30356,6 +30356,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3733" label="AddSourceBufferUsingConfig"/>
   <int value="3734" label="ChangeTypeUsingConfig"/>
   <int value="3735" label="V8SourceBuffer_AppendEncodedChunks_Method"/>
+  <int value="3736" label="OversrollBehaviorOnViewportBreaks"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
