@@ -209630,7 +209630,7 @@
      ]
     },
     "requirements.txt": [
-     "a008e3e72e88c9605b4b01cdc26d68fd4d13d710",
+     "725ddd9e85ee202cf7fc9d3072a770a6351cdb71",
      []
     ],
     "selectors": {
@@ -251379,7 +251379,7 @@
       []
      ],
      "requirements.txt": [
-      "90d0cb6cdc8795c9b39e7644fd330283653b48e4",
+      "d83f5eb89fab1eb9734a90d262e21c33fa162a1f",
       []
      ],
      "revlist.py": [
@@ -251425,7 +251425,7 @@
       []
      ],
      "requirements.txt": [
-      "77c1ea50e90bc2ccff510173fbc892190b616b1d",
+      "a266c322e2cf453221e4a11e4302879e413baa94",
       []
      ],
      "requirements_android_webview.txt": [
@@ -251473,7 +251473,7 @@
       []
      ],
      "requirements_sauce.txt": [
-      "d363945f54fc1b84fdc9ddc58560637ee050881c",
+      "47e268df17307a701bd966a9dbe89c3d542d8d3b",
       []
      ],
      "requirements_servo.txt": [
@@ -379656,6 +379656,13 @@
     ],
     "observe-text.html": [
      "b4b485ddebd57afbd4af2ff962151f92d19a54d3",
+     [
+      null,
+      {}
+     ]
+    ],
+    "placeholder-image.html": [
+     "6a2ce5c7c6df636e7003e7c69a58e65eb444f454",
      [
       null,
       {}
