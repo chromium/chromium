@@ -266,8 +266,7 @@ export class App {
 
     const preloadImages = (async () => {
       const loadImage = (url) => new Promise((resolve, reject) => {
-        const link =
-            /** @type {!HTMLLinkElement} */ (document.createElement('link'));
+        const link = dom.create('link', HTMLLinkElement);
         link.rel = 'preload';
         link.as = 'image';
         link.href = url;

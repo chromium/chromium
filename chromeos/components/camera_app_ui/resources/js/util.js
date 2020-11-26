@@ -24,8 +24,7 @@ import {WaitableEvent} from './waitable_event.js';
  *     Returns canvas element and the context for 2D drawing.
  */
 export function newDrawingCanvas({width, height}) {
-  const canvas =
-      assertInstanceof(document.createElement('canvas'), HTMLCanvasElement);
+  const canvas = dom.create('canvas', HTMLCanvasElement);
   canvas.width = width;
   canvas.height = height;
   const ctx =
@@ -169,8 +168,7 @@ export function orientPhoto(blob, onSuccess, onFailure) {
     if (orientation.rotation === 0 && !orientation.flip) {
       onSuccess(blob);
     } else {
-      const original =
-          assertInstanceof(document.createElement('img'), HTMLImageElement);
+      const original = dom.create('img', HTMLImageElement);
       original.onload = function() {
         drawPhoto(original, orientation, onSuccess, onFailure);
       };
@@ -361,9 +359,8 @@ export function getDefaultFacing() {
  * @return {!Promise<!Blob>} Promise for the result.
  */
 export async function scalePicture(url, isVideo, width, height = undefined) {
-  const element =
-      /** @type {(!HTMLImageElement|!HTMLVideoElement)} */ (
-          document.createElement(isVideo ? 'video' : 'img'));
+  const element = isVideo ? dom.create('video', HTMLVideoElement) :
+                            dom.create('img', HTMLImageElement);
   if (isVideo) {
     element.preload = 'auto';
   }
@@ -486,8 +483,7 @@ export function instantiateTemplate(selector) {
  */
 export async function createUntrustedJSModule(scriptUrl, origin) {
   const untrustedPageReady = new WaitableEvent();
-  const iFrame =
-      /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));
+  const iFrame = dom.create('iframe', HTMLIFrameElement);
   iFrame.addEventListener('load', () => untrustedPageReady.signal());
   iFrame.setAttribute('src', `${origin}/views/untrusted_script_loader.html`);
   iFrame.hidden = true;
