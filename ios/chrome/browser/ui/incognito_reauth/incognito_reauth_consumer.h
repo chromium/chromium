@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_CONSUMER_H_
+
+#import <UIKit/UIKit.h>
+
+@protocol IncognitoReauthConsumer <NSObject>
+
+// Notify consumer that the displayed items require authentication before they
+// can be accessed. Used for biometric incognito tab authentication.
+- (void)setItemsRequireAuthentication:(BOOL)requireAuthentication;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_CONSUMER_H_

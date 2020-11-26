@@ -617,7 +617,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
 }
 
-#pragma mark - GridConsumer
+#pragma mark - IncognitoReauthConsumer
 
 - (void)setItemsRequireAuthentication:(BOOL)require {
   self.contentNeedsAuthentication = require;
@@ -644,6 +644,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.blockingView removeFromSuperview];
   }
 }
+
+#pragma mark - GridConsumer
 
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {

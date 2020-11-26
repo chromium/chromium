@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 
@@ -54,7 +55,8 @@
 @end
 
 // A view controller that contains a grid of items.
-@interface GridViewController : UIViewController <GridConsumer, LayoutSwitcher>
+@interface GridViewController
+    : UIViewController <GridConsumer, LayoutSwitcher, IncognitoReauthConsumer>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
 // The view that is shown when there are no items.

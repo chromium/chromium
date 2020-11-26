@@ -14,6 +14,7 @@
 
 @protocol ApplicationCommands;
 @protocol IncognitoReauthCommands;
+@protocol IncognitoReauthConsumer;
 @protocol GridConsumer;
 @protocol GridCommands;
 @protocol GridDragDropHandler;
@@ -45,7 +46,8 @@
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly) id<GridConsumer> regularTabsConsumer;
-@property(nonatomic, readonly) id<GridConsumer> incognitoTabsConsumer;
+@property(nonatomic, readonly) id<GridConsumer, IncognitoReauthConsumer>
+    incognitoTabsConsumer;
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
 
 // Delegates send updates from the UI layer to the model layer.

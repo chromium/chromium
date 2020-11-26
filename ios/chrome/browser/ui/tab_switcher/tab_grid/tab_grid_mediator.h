@@ -13,7 +13,6 @@
 
 class Browser;
 @protocol GridConsumer;
-@class IncognitoReauthSceneAgent;
 @class TabGridMediator;
 
 namespace sessions {
@@ -48,7 +47,6 @@ class TabRestoreService;
 
 // Initializer with |consumer| as the receiver of model layer updates.
 - (instancetype)initWithConsumer:(id<GridConsumer>)consumer
-                     reauthAgent:(IncognitoReauthSceneAgent*)reauthAgent
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 @end

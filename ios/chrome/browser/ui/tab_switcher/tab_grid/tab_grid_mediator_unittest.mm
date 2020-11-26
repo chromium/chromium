@@ -268,8 +268,7 @@ class TabGridMediatorTest : public PlatformTest {
         TabIdTabHelper::FromWebState(web_state_list_->GetWebStateAt(1))
             ->tab_id();
     consumer_ = [[FakeConsumer alloc] init];
-    mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_
-                                              reauthAgent:nil];
+    mediator_ = [[TabGridMediator alloc] initWithConsumer:consumer_];
     mediator_.browser = browser_.get();
     mediator_.tabRestoreService = tab_restore_service_;
   }

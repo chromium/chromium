@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -79,6 +80,8 @@
 @property(nonatomic, strong) TabGridMediator* regularTabsMediator;
 // Mediator for incognito Tabs.
 @property(nonatomic, strong) TabGridMediator* incognitoTabsMediator;
+// Mediator for incognito reauth.
+@property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Coordinator for history, which can be started from recent tabs.
@@ -325,8 +328,7 @@
   _baseViewController = baseViewController;
 
   self.regularTabsMediator = [[TabGridMediator alloc]
-      initWithConsumer:baseViewController.regularTabsConsumer
-           reauthAgent:nil];
+      initWithConsumer:baseViewController.regularTabsConsumer];
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
   WebStateList* regularWebStateList =
@@ -341,8 +343,7 @@
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]
-      initWithConsumer:baseViewController.incognitoTabsConsumer
-           reauthAgent:reauthAgent];
+      initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
   self.incognitoTabsMediator.delegate = self;
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
@@ -351,6 +352,10 @@
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
+
+  self.incognitoAuthMediator = [[IncognitoReauthMediator alloc]
+      initWithConsumer:self.baseViewController.incognitoTabsConsumer
+           reauthAgent:reauthAgent];
 
   if (@available(iOS 13.0, *)) {
     self.recentTabsContextMenuHelper =

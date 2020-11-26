@@ -13,6 +13,7 @@ source_set("incognito_reauth_commands") {
 source_set("incognito_reauth_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "incognito_reauth_consumer.h",
     "incognito_reauth_view.h",
     "incognito_reauth_view.mm",
   ]
@@ -26,11 +27,14 @@ source_set("incognito_reauth_ui") {
 source_set("incognito_reauth_scene_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "incognito_reauth_mediator.h",
+    "incognito_reauth_mediator.mm",
     "incognito_reauth_scene_agent.h",
     "incognito_reauth_scene_agent.mm",
   ]
   deps = [
     ":incognito_reauth_commands",
+    ":incognito_reauth_ui",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
