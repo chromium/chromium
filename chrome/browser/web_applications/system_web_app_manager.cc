@@ -35,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
@@ -339,7 +340,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return true;
     case SystemAppType::CAMERA:
       return base::FeatureList::IsEnabled(
-          chromeos::features::kCameraSystemWebApp);
+                 chromeos::features::kCameraSystemWebApp) &&
+             !user_manager::UserManager::Get()->IsLoggedInAsGuest();
     case SystemAppType::TERMINAL:
       return true;
     case SystemAppType::MEDIA:
