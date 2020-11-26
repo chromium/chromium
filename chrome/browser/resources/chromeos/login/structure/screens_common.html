@@ -5,11 +5,11 @@
 <!-- Screens that can appear both in OOBE and Login modes. -->
 <oobe-reset-element id="reset" class="step" hidden></oobe-reset-element>
 <include src="../oobe_screen_autolaunch.html">
-<oobe-adb-sideloading-element id="adb-sideloading" class="step hidden">
+<oobe-adb-sideloading-element id="adb-sideloading" class="step hidden" hidden>
 </oobe-adb-sideloading-element>
-<kiosk-enable-element id="kiosk-enable" class="step hidden">
+<kiosk-enable-element id="kiosk-enable" class="step hidden" hidden>
 </kiosk-enable-element>
-<assistant-optin-element id="assistant-optin-flow" class="step hidden">
+<assistant-optin-element id="assistant-optin-flow" class="step hidden" hidden>
 </assistant-optin-element>
 <include src="../../../../../../ui/login/account_picker/chromeos_screen_account_picker.html">
 <include src="../screen_error_message.html">
@@ -19,19 +19,24 @@
 </gaia-signin-element>
 <offline-ad-login-element id="offline-ad-login" class="step hidden" hidden>
 </offline-ad-login-element>
-<tpm-error-message-element id="tpm-error-message" class="step hidden">
+<tpm-error-message-element id="tpm-error-message" class="step hidden" hidden>
 </tpm-error-message-element>
-<wrong-hwid-element id="wrong-hwid" class="step hidden"></wrong-hwid-element>
+<wrong-hwid-element id="wrong-hwid" class="step hidden" hidden>
+</wrong-hwid-element>
 <!-- TODO(osamafathy): move `app-launch-splash` to screens_login.html -->
-<app-launch-splash-element id="app-launch-splash" class="step hidden fullscreen" hidden>
+<app-launch-splash-element id="app-launch-splash" class="step hidden fullscreen"
+    hidden>
 </app-launch-splash-element>
-<saml-confirm-password-element id="saml-confirm-password" class="step hidden" hidden>
+<saml-confirm-password-element id="saml-confirm-password" class="step hidden"
+    hidden>
 </saml-confirm-password-element>
-<signin-fatal-error-element id="signin-fatal-error" class="step faded hidden">
+<signin-fatal-error-element id="signin-fatal-error" class="step faded hidden"
+    hidden>
 </signin-fatal-error-element>
-<device-disabled-element id="device-disabled" class="step hidden">
+<device-disabled-element id="device-disabled" class="step hidden" hidden>
 </device-disabled-element>
-<sync-consent-element id="sync-consent" class="step hidden" hidden></sync-consent-element>
+<sync-consent-element id="sync-consent" class="step hidden" hidden>
+</sync-consent-element>
 <fingerprint-setup-element id="fingerprint-setup" class="step hidden" hidden>
 </fingerprint-setup-element>
 <recommend-apps-element id="recommend-apps" class="step hidden" hidden>
@@ -40,9 +45,9 @@
 </app-downloading-element>
 <include src="../screen_discover.html">
 <include src="../screen_multidevice_setup.html">
-<gesture-navigation-element id="gesture-navigation" class="step hidden">
+<gesture-navigation-element id="gesture-navigation" class="step hidden" hidden>
 </gesture-navigation-element>
-<marketing-opt-in-element id="marketing-opt-in" class="step hidden">
+<marketing-opt-in-element id="marketing-opt-in" class="step hidden" hidden>
 </marketing-opt-in-element>
 <family-link-notice-element id="family-link-notice" class="step hidden" hidden>
 </family-link-notice-element>
