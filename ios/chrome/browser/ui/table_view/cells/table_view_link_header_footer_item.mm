@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
@@ -16,11 +18,19 @@
 #endif
 
 namespace {
+
 // Padding used on the leading and trailing edges of the cell.
 const CGFloat kHorizontalPadding = 16;
 
 // Padding used on the top and bottom edges of the cell.
 const CGFloat kVerticalPadding = 8;
+
+// Returns a padding according to the width of the current device.
+CGFloat HorizontalPadding() {
+  if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
+    return 0;
+  return kHorizontalPadding;
+}
 
 }  // namespace
 
@@ -88,10 +98,10 @@ const CGFloat kVerticalPadding = 8;
                          constant:-kVerticalPadding],
       [_textView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kHorizontalPadding],
+                         constant:-HorizontalPadding()],
       [_textView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kHorizontalPadding],
+                         constant:HorizontalPadding()],
     ]];
   }
   return self;
