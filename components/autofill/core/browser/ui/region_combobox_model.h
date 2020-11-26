@@ -34,8 +34,7 @@ class RegionComboboxModel : public ui::ComboboxModel {
   ~RegionComboboxModel() override;
 
   void LoadRegionData(const std::string& country_code,
-                      RegionDataLoader* region_data_loader,
-                      int64_t timeout_ms);
+                      RegionDataLoader* region_data_loader);
 
   bool IsPendingRegionDataLoad() const {
     return region_data_loader_ != nullptr;
