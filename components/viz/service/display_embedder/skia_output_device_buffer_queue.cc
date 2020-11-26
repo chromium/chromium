@@ -77,6 +77,8 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
     }
   }
 
+  void OnContextLost() { representation_->OnContextLost(); }
+
   bool unique() const { return ref_ == 1; }
   const gpu::Mailbox& mailbox() const { return representation_->mailbox(); }
   gpu::SharedImageRepresentationOverlay::ScopedReadAccess* scoped_read_access()
@@ -389,6 +391,18 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     it->Unref();
   }
 
+  // Code below can destroy last representation of the overlay shared image. On
+  // MacOS it needs context to be current.
+#if defined(OS_APPLE)
+  // TODO(vasilyt): We shouldn't need this after we stop using
+  // SharedImageBackingGLImage as backing.
+  if (!dependency_->GetSharedContextState()->MakeCurrent(nullptr)) {
+    for (auto& overlay : overlays_) {
+      overlay.OnContextLost();
+    }
+  }
+#endif
+
   // Go through backings of all overlays, and release overlay backings which are
   // not used.
   std::vector<gpu::Mailbox> released_overlays;
@@ -409,10 +423,11 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   });
 
   DCHECK(!result.gpu_fence);
+  const auto& mailbox =
+      image ? image->skia_representation()->mailbox() : gpu::Mailbox();
   FinishSwapBuffers(std::move(result), size, latency_info,
-                    /*damage_area=*/base::nullopt,
-                    std::move(released_overlays),
-                    image ? image->skia_representation()->mailbox() : gpu::Mailbox());
+                    /*damage_area=*/base::nullopt, std::move(released_overlays),
+                    mailbox);
   PageFlipComplete(image.get());
 }
 

@@ -1384,7 +1384,11 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
 #if defined(OS_APPLE)
   // Release any backings which are not reused by the current frame, probably
   // because the properties of render passes are changed or render passes are
-  // removed.
+  // removed
+  if (context_is_lost_) {
+    for (auto& image : available_render_pass_overlay_backings_)
+      image->OnContextLost();
+  }
   available_render_pass_overlay_backings_.clear();
 #endif
 

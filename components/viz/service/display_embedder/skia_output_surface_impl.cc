@@ -467,8 +467,10 @@ void SkiaOutputSurfaceImpl::SwapBuffersSkipped() {
   // callbacks.
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped,
                              base::Unretained(impl_on_gpu_.get()));
+  // SwapBuffersSkipped currently does mostly the same as SwapBuffers and needs
+  // MakeCurrent.
   EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
-                 /*make_current=*/false, /*need_framebuffer=*/false);
+                 /*make_current=*/true, /*need_framebuffer=*/false);
 
   // TODO(vasilyt): reuse root recorder
   RecreateRootRecorder();
@@ -657,7 +659,8 @@ void SkiaOutputSurfaceImpl::RemoveRenderPassResource(
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::RemoveRenderPassResource,
                      base::Unretained(impl_on_gpu_.get()), std::move(ids),
                      std::move(image_contexts));
-  EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
+  // RemoveRenderPassResources will delete gpu resources and needs MakeCurrent.
+  EnqueueGpuTask(std::move(callback), {}, /*make_current=*/true,
                  /*need_framebuffer=*/false);
 }
 
