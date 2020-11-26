@@ -14,11 +14,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** View that shows a Material themed spinner. */
 public class MaterialSpinnerView extends AppCompatImageView {
     private final CircularProgressDrawable mSpinner;
+    private final boolean mAlwaysAnimate;
 
     public MaterialSpinnerView(Context context) {
         this(context, null);
@@ -33,6 +37,7 @@ public class MaterialSpinnerView extends AppCompatImageView {
     @SuppressWarnings({"nullness:argument.type.incompatible", "nullness:method.invocation.invalid"})
     public MaterialSpinnerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        TraceEvent.begin("MaterialSpinnerView");
         mSpinner = new CircularProgressDrawable(context);
         mSpinner.setStyle(CircularProgressDrawable.DEFAULT);
         setImageDrawable(mSpinner);
@@ -40,19 +45,49 @@ public class MaterialSpinnerView extends AppCompatImageView {
         Theme theme = context.getTheme();
         theme.resolveAttribute(R.attr.feedSpinnerColor, typedValue, true);
         mSpinner.setColorSchemeColors(typedValue.data);
-
-        if (getVisibility() == View.VISIBLE) {
-            mSpinner.start();
-        }
+        mAlwaysAnimate = FeatureList.isInitialized() ? ChromeFeatureList.isEnabled(
+                                 ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE)
+                                                     : false;
+        updateAnimationState(isAttachedToWindow());
+        TraceEvent.end("MaterialSpinnerView");
     }
 
     @Override
-    public void setVisibility(int visibility) {
-        super.setVisibility(visibility);
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        updateAnimationState(isAttachedToWindow());
+    }
 
-        if (mSpinner.isRunning() && getVisibility() != View.VISIBLE) {
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        updateAnimationState(/*isAttached=*/true);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        // isAttachedToWindow() doesn't turn false during onDetachedFromWindow(), so we pass the new
+        // attachment state into updateAnimationState() here explicitly.
+        updateAnimationState(/*isAttached=*/false);
+        super.onDetachedFromWindow();
+    }
+
+    private void updateAnimationState(boolean isAttached) {
+        // Some Android versions call onVisibilityChanged() during the View's constructor before the
+        // spinner is created.
+        if (mSpinner == null) return;
+
+        // TODO(crbug.com/1151391): This feature is used for A:B testing to determine the impact of
+        // a bug fix. Remove after experiment is complete.
+        if (mAlwaysAnimate) {
+            if (!mSpinner.isRunning()) mSpinner.start();
+            return;
+        }
+
+        boolean visible = isShown() && isAttached;
+        if (mSpinner.isRunning() && !visible) {
             mSpinner.stop();
-        } else if (!mSpinner.isRunning() && getVisibility() == View.VISIBLE) {
+        } else if (!mSpinner.isRunning() && visible) {
             mSpinner.start();
         }
     }
