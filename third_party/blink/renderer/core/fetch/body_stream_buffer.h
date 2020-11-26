@@ -43,7 +43,7 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
       ScriptState*,
       BytesConsumer* consumer,
       AbortSignal* signal,
-      ScriptCachedMetadataHandler* cached_meatadata_handler,
+      ScriptCachedMetadataHandler* cached_metadata_handler,
       scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
   // Create() should be used instead of calling this constructor directly.
@@ -51,12 +51,12 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
                    ScriptState*,
                    BytesConsumer* consumer,
                    AbortSignal* signal,
-                   ScriptCachedMetadataHandler* cached_meatadata_handler,
+                   ScriptCachedMetadataHandler* cached_metadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob);
 
   BodyStreamBuffer(ScriptState*,
                    ReadableStream* stream,
-                   ScriptCachedMetadataHandler* cached_meatadata_handler,
+                   ScriptCachedMetadataHandler* cached_metadata_handler,
                    scoped_refptr<BlobDataHandle> side_data_blob = nullptr);
 
   ReadableStream* Stream() { return stream_; }
