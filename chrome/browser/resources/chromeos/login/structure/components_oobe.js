@@ -4,6 +4,7 @@
 
 // <include src="../oobe_hid_detection.js">
 // <include src="../oobe_i18n_dropdown.js">
+// <include src="../oobe_screen_auto_enrollment_check.js">
 // <include src="../oobe_screen_enable_debugging.js">
 // <include src="../oobe_welcome_dialog.js">
 // <include src="../oobe_welcome.js">

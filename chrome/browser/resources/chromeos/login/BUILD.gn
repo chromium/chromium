@@ -43,6 +43,7 @@ js_type_check("closure_compile_local") {
     ":oobe_network",
     ":oobe_reset",
     ":oobe_screen_assistant_optin_flow",
+    ":oobe_screen_auto_enrollment_check",
     ":oobe_screen_enable_debugging",
     ":oobe_select",
     ":oobe_supervision_transition",
@@ -99,7 +100,7 @@ js_library("multidevice_setup_first_run") {
 js_library("active_directory_password_change") {
   deps = [
     "components/oobe_dialog:oobe_dialog",
-    "components/oobe_i18n_behavior:oobe_i18n_behavior"
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
 
@@ -255,8 +256,8 @@ js_library("oobe_eula") {
   deps = [
     ":web_view_helper",
     "components:login_screen_behavior",
-    "components/oobe_dialog:oobe_dialog",
     "components:oobe_dialog_host_behavior",
+    "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
@@ -286,6 +287,13 @@ js_library("oobe_screen_assistant_optin_flow") {
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
     "components/oobe_dialog:oobe_dialog",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("oobe_screen_auto_enrollment_check") {
+  deps = [
+    "components:login_screen_behavior",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }

@@ -30,13 +30,6 @@ NetworkPortalDetector::CaptivePortalStatus GetCaptivePortalStatus() {
 
 }  // namespace
 
-// static
-AutoEnrollmentCheckScreen* AutoEnrollmentCheckScreen::Get(
-    ScreenManager* manager) {
-  return static_cast<AutoEnrollmentCheckScreen*>(
-      manager->GetScreen(AutoEnrollmentCheckScreenView::kScreenId));
-}
-
 AutoEnrollmentCheckScreen::AutoEnrollmentCheckScreen(
     AutoEnrollmentCheckScreenView* view,
     ErrorScreen* error_screen,

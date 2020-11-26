@@ -1,9 +1,33 @@
-<div class="step hidden" id="auto-enrollment-check" role="group"
-     i18n-values="aria-label:autoEnrollmentCheckScreenHeader" hidden>
-  <div class="step-contents">
-    <div id="auto-enrollment-check-progress" aria-live="polite">
-      <div class="throbber"></div>
-      <div i18n-content="autoEnrollmentCheckMessage"></div>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<dom-module id="auto-enrollment-check-element">
+  <template>
+    <link rel="stylesheet" href="chrome://resources/css/throbber.css">
+    <link rel="stylesheet" href="../../../../../ui/login/oobe.css">
+    <style>
+      #auto-enrollment-check {
+        min-height: 395px;
+        padding: 70px 17px 21px;
+      }
+
+      #auto-enrollment-check #auto-enrollment-check-progress {
+        color: #9c9c9c;
+        display: flex;
+        justify-content: center;
+        margin-top: 130px;
+        min-height: 0;
+      }
+    </style>
+    <div id="auto-enrollment-check" role="group"
+        i18n-values="aria-label:autoEnrollmentCheckScreenHeader">
+      <div class="step-contents">
+        <div id="auto-enrollment-check-progress" aria-live="polite">
+          <div class="throbber"></div>
+          [[i18nDynamic(locale, 'autoEnrollmentCheckMessage')]]
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  </template>
+</dom-module>

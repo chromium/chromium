@@ -832,8 +832,7 @@ void WizardController::ShowWrongHWIDScreen() {
 }
 
 void WizardController::ShowAutoEnrollmentCheckScreen() {
-  AutoEnrollmentCheckScreen* screen =
-      AutoEnrollmentCheckScreen::Get(screen_manager());
+  AutoEnrollmentCheckScreen* screen = GetScreen<AutoEnrollmentCheckScreen>();
   if (retry_auto_enrollment_check_)
     screen->ClearState();
   screen->set_auto_enrollment_controller(GetAutoEnrollmentController());

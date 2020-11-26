@@ -112,8 +112,8 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
   AutoEnrollmentCheckScreen* auto_enrollment_screen() {
     EXPECT_NE(WizardController::default_controller(), nullptr);
     AutoEnrollmentCheckScreen* auto_enrollment_screen =
-        AutoEnrollmentCheckScreen::Get(
-            WizardController::default_controller()->screen_manager());
+        WizardController::default_controller()
+            ->GetScreen<AutoEnrollmentCheckScreen>();
     EXPECT_NE(auto_enrollment_screen, nullptr);
     return auto_enrollment_screen;
   }

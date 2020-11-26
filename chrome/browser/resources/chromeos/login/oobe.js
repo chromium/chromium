@@ -28,7 +28,6 @@
 // <include src="screen_multidevice_setup.js">
 
 // <include src="../../gaia_auth_host/authenticator.js">
-// <include src="oobe_screen_auto_enrollment_check.js">
 // <include src="multi_tap_detector.js">
 // <include src="web_view_helper.js">
 
@@ -41,7 +40,6 @@ HTMLImports.whenReady(() => {
        */
       initialize() {
         cr.ui.login.DisplayManager.initialize();
-        login.AutoEnrollmentCheckScreen.register();
         login.AutolaunchScreen.register();
         login.AccountPickerScreen.register();
         login.ErrorMessageScreen.register();

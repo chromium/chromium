@@ -6,7 +6,14 @@
  * @fileoverview Oobe Auto-enrollment check screen implementation.
  */
 
-login.createScreen(
-    'AutoEnrollmentCheckScreen', 'auto-enrollment-check', function() {
-      return {EXTERNAL_API: []};
+Polymer({
+  is: 'auto-enrollment-check-element',
+
+  behaviors: [OobeI18nBehavior, LoginScreenBehavior],
+
+  ready() {
+    this.initializeLoginScreen('AutoEnrollmentCheckScreen', {
+      resetAllowed: true,
     });
+  },
+});
