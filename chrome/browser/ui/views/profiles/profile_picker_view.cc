@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/google_chrome_strings.h"
@@ -486,6 +487,10 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
   // Unmark this profile ephemeral so that it is not deleted upon next startup.
   entry->SetIsEphemeral(false);
   entry->SetLocalProfileName(name_for_signed_in_profile_);
+
+  // Skip the FRE for this profile as it's replaced by profile creation flow.
+  signed_in_profile_being_created_->GetPrefs()->SetBoolean(
+      prefs::kHasSeenWelcomePage, true);
 
   // TODO(crbug.com/1126913): Change the callback of
   // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only
