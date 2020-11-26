@@ -362,8 +362,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
 // Extension is site_for_cookies, initiator and requested URL are permitted,
 // initiator and requested URL are same-site => SameSite cookies are sent.
+// crbug.com/1153083: flaky on linux, win, and mac
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       OnePermittedSameSiteFrame_Navigation) {
+                       DISABLED_OnePermittedSameSiteFrame_Navigation) {
   SetCookies(kPermittedHost);
   content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();
   content::RenderFrameHost* child_frame =
