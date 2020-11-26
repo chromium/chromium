@@ -14,5 +14,6 @@ specific_include_rules = {
   "devtools_server_unittest\.cc": [
     "+services/network/network_context.h",
     "+services/network/network_service.h",
+    "+services/network/test/fake_test_cert_verifier_params_factory.h",
   ]
 }

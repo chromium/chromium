@@ -153,6 +153,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//net:test_support",
     "//services/network:network_service",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 
