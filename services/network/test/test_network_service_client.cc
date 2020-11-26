@@ -50,7 +50,8 @@ void TestNetworkServiceClient::OnCorsPreflightRequest(
     int32_t routing_id,
     const base::UnguessableToken& devtools_request_id,
     const network::ResourceRequest& request,
-    const GURL& initiator_url) {}
+    const GURL& initiator_url,
+    const std::string& initiator_devtools_request_id) {}
 
 void TestNetworkServiceClient::OnCorsPreflightResponse(
     int32_t process_id,

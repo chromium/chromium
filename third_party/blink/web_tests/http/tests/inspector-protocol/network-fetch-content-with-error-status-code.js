@@ -15,6 +15,7 @@
       getRequestEventParams = event.params;
     } else if (event.params.request.method === 'OPTIONS') {
       optionsRequestEventParams = event.params;
+      optionsRequestInitiatorRequestId = event.params.initiator.requestId;
     }
   });
 
@@ -53,6 +54,8 @@
   });
 
   async function printResultsAndFinish() {
+    const optionsRequestReferencedGetRequest =
+        optionsRequestInitiatorRequestId === getRequestEventParams.requestId;
     testRunner.log('GET Request:');
     testRunner.log(`  Method: ${getRequestEventParams.request.method}`);
     testRunner.log(`  Url: ${getRequestEventParams.request.url}`);
@@ -62,6 +65,10 @@
     testRunner.log(`  Method: ${optionsRequestEventParams.request.method}`);
     testRunner.log(`  Url: ${optionsRequestEventParams.request.url}`);
     testRunner.log(`  Has extra info: ${optionsRequestExtra}`);
+    testRunner.log(
+        `  References get request: ${optionsRequestReferencedGetRequest}`);
+    testRunner.log(
+        `  Initiator type: ${optionsRequestEventParams.initiator.type}`);
 
     testRunner.log('GET response:');
     testRunner.log(`  Has timing info: ${!!getResponseEventParams.response.timing}`);

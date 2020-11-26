@@ -216,7 +216,8 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
        protocol::NetworkHandler::ForAgentHost(it->second.get())) {
     network->RequestSent(request_id, std::string(), request,
                          protocol::Network::Initiator::TypeEnum::Preload,
-                         base::nullopt /* initiator_url */, timestamp);
+                         /*initiator_url=*/base::nullopt,
+                         /*initiator_devtools_request_id=*/"", timestamp);
   }
 }
 

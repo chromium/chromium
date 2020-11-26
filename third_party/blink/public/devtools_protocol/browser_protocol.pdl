@@ -4276,6 +4276,7 @@ domain Network
       SignedExchange
       Ping
       CSPViolationReport
+      Preflight
       Other
 
   # Unique loader identifier.
@@ -4682,6 +4683,7 @@ domain Network
         script
         preload
         SignedExchange
+        preflight
         other
       # Initiator JavaScript stack trace, set for Script only.
       optional Runtime.StackTrace stack
@@ -4693,6 +4695,8 @@ domain Network
       # Initiator column number, set for Parser type or for Script type (when script is importing
       # module) (0-based).
       optional number columnNumber
+      # Set if another request triggered this request (e.g. preflight).
+      optional RequestId requestId
 
   # Cookie object
   type Cookie extends object

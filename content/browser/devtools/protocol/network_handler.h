@@ -177,6 +177,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                    const network::ResourceRequest& request,
                    const char* initiator_type,
                    const base::Optional<GURL>& initiator_url,
+                   const std::string& initiator_devtools_request_id,
                    base::TimeTicks timestamp);
   void ResponseReceived(const std::string& request_id,
                         const std::string& loader_id,

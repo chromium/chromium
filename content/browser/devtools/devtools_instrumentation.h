@@ -160,7 +160,8 @@ void OnCorsPreflightRequest(int32_t process_id,
                             int32_t render_frame_id,
                             const base::UnguessableToken& devtools_request_id,
                             const network::ResourceRequest& request,
-                            const GURL& signed_exchange_url);
+                            const GURL& signed_exchange_url,
+                            const std::string& initiator_devtools_request_id);
 void OnCorsPreflightResponse(int32_t process_id,
                              int32_t render_frame_id,
                              const base::UnguessableToken& devtools_request_id,

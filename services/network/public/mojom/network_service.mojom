@@ -88,7 +88,8 @@ interface NetworkServiceClient {
     int32 render_frame_id,
     mojo_base.mojom.UnguessableToken devtool_request_id,
     URLRequest request,
-    url.mojom.Url initiator_url);
+    url.mojom.Url initiator_url,
+    string initiator_devtool_request_id);
 
   // Called to send the CORS preflight response information. Only called when
   // |devtool_request_id| is available on the original request.

@@ -1776,12 +1776,14 @@ void NetworkHandler::NavigationRequestWillBeSent(
       common_params.has_user_gesture);
 }
 
-void NetworkHandler::RequestSent(const std::string& request_id,
-                                 const std::string& loader_id,
-                                 const network::ResourceRequest& request,
-                                 const char* initiator_type,
-                                 const base::Optional<GURL>& initiator_url,
-                                 base::TimeTicks timestamp) {
+void NetworkHandler::RequestSent(
+    const std::string& request_id,
+    const std::string& loader_id,
+    const network::ResourceRequest& request,
+    const char* initiator_type,
+    const base::Optional<GURL>& initiator_url,
+    const std::string& initiator_devtools_request_id,
+    base::TimeTicks timestamp) {
   if (!enabled_)
     return;
   std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
@@ -1791,6 +1793,8 @@ void NetworkHandler::RequestSent(const std::string& request_id,
       Network::Initiator::Create().SetType(initiator_type).Build();
   if (initiator_url)
     initiator->SetUrl(initiator_url->spec());
+  if (initiator_devtools_request_id.size())
+    initiator->SetRequestId(initiator_devtools_request_id);
   std::string url_fragment;
   std::string url_without_fragment =
       ExtractFragment(request.url, &url_fragment);

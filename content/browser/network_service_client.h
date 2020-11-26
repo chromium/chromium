@@ -64,11 +64,13 @@ class CONTENT_EXPORT NetworkServiceClient
       const net::CookieAndLineAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const base::Optional<std::string>& raw_response_headers) override;
-  void OnCorsPreflightRequest(int32_t process_id,
-                              int32_t render_frame_id,
-                              const base::UnguessableToken& devtool_request_id,
-                              const network::ResourceRequest& request,
-                              const GURL& initiator_url) override;
+  void OnCorsPreflightRequest(
+      int32_t process_id,
+      int32_t render_frame_id,
+      const base::UnguessableToken& devtool_request_id,
+      const network::ResourceRequest& request,
+      const GURL& initiator_url,
+      const std::string& initiator_devtools_request_id) override;
   void OnCorsPreflightResponse(
       int32_t process_id,
       int32_t render_frame_id,

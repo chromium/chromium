@@ -227,7 +227,8 @@ class PreflightController::PreflightLoader final {
       DCHECK(devtools_request_id_);
       network_service_client->OnCorsPreflightRequest(
           process_id_, original_request_.render_frame_id, *devtools_request_id_,
-          *preflight_request, original_request_.url);
+          *preflight_request, original_request_.url,
+          original_request_.devtools_request_id.value_or(""));
     }
     loader_ =
         SimpleURLLoader::Create(std::move(preflight_request), annotation_tag);

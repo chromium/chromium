@@ -236,9 +236,11 @@ void NetworkServiceClient::OnCorsPreflightRequest(
     int32_t render_frame_id,
     const base::UnguessableToken& devtools_request_id,
     const network::ResourceRequest& request,
-    const GURL& initiator_url) {
+    const GURL& initiator_url,
+    const std::string& initiator_devtools_request_id) {
   devtools_instrumentation::OnCorsPreflightRequest(
-      process_id, render_frame_id, devtools_request_id, request, initiator_url);
+      process_id, render_frame_id, devtools_request_id, request, initiator_url,
+      initiator_devtools_request_id);
 }
 
 void NetworkServiceClient::OnCorsPreflightResponse(
