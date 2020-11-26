@@ -404,7 +404,7 @@ class TestImporterTest(LoggingTestCase):
             'NOAUTOREVERT=true\n'
             'No-Export: true\n'
             'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
-            'linux-wpt-payments-fyi-rel')
+            'linux-wpt-input-fyi-rel')
         print host.executive.calls
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
