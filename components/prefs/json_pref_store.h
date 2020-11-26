@@ -122,6 +122,10 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
 
   void OnStoreDeletionFromDisk() override;
 
+#if defined(UNIT_TEST)
+  base::ImportantFileWriter& get_writer() { return writer_; }
+#endif
+
  private:
   friend class base::JsonPrefStoreCallbackTest;
   friend class base::JsonPrefStoreLossyWriteTest;

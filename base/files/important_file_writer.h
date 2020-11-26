@@ -120,6 +120,9 @@ class BASE_EXPORT ImportantFileWriter {
 #if defined(UNIT_TEST)
   size_t previous_data_size() const { return previous_data_size_; }
 #endif
+  void set_previous_data_size(size_t previous_data_size) {
+    previous_data_size_ = previous_data_size;
+  }
 
  private:
   const OneShotTimer& timer() const {

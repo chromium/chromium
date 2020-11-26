@@ -94,7 +94,7 @@ class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
 
   const base::FilePath json_file_path_;
   const int options_;
-  size_t last_read_size_;
+  size_t last_read_size_ = 0u;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(JSONFileValueDeserializer);
 };

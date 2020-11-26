@@ -34,21 +34,17 @@ struct JsonPrefStore::ReadResult {
  public:
   ReadResult();
   ~ReadResult();
+  ReadResult(const ReadResult&) = delete;
+  ReadResult& operator=(const ReadResult&) = delete;
 
   std::unique_ptr<base::Value> value;
-  PrefReadError error;
-  bool no_dir;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadResult);
+  PrefReadError error = PersistentPrefStore::PREF_READ_ERROR_NONE;
+  bool no_dir = false;
+  size_t num_bytes_read = 0u;
 };
 
-JsonPrefStore::ReadResult::ReadResult()
-    : error(PersistentPrefStore::PREF_READ_ERROR_NONE), no_dir(false) {
-}
-
-JsonPrefStore::ReadResult::~ReadResult() {
-}
+JsonPrefStore::ReadResult::ReadResult() = default;
+JsonPrefStore::ReadResult::~ReadResult() = default;
 
 namespace {
 
@@ -121,13 +117,13 @@ std::unique_ptr<JsonPrefStore::ReadResult> ReadPrefsFromDisk(
     const base::FilePath& path) {
   int error_code;
   std::string error_msg;
-  std::unique_ptr<JsonPrefStore::ReadResult> read_result(
-      new JsonPrefStore::ReadResult);
+  auto read_result = std::make_unique<JsonPrefStore::ReadResult>();
   JSONFileValueDeserializer deserializer(path);
   read_result->value = deserializer.Deserialize(&error_code, &error_msg);
   read_result->error =
       HandleReadErrors(read_result->value.get(), path, error_code, error_msg);
   read_result->no_dir = !base::PathExists(path.DirName());
+  read_result->num_bytes_read = deserializer.get_last_read_size();
 
   if (read_result->error == PersistentPrefStore::PREF_READ_ERROR_NONE)
     RecordJsonDataSizeHistogram(path, deserializer.get_last_read_size());
@@ -413,8 +409,7 @@ void JsonPrefStore::OnFileRead(std::unique_ptr<ReadResult> read_result) {
 
   DCHECK(read_result);
 
-  std::unique_ptr<base::DictionaryValue> unfiltered_prefs(
-      new base::DictionaryValue);
+  auto unfiltered_prefs = std::make_unique<base::DictionaryValue>();
 
   read_error_ = read_result->error;
 
@@ -431,6 +426,7 @@ void JsonPrefStore::OnFileRead(std::unique_ptr<ReadResult> read_result) {
         break;
       case PREF_READ_ERROR_NONE:
         DCHECK(read_result->value);
+        writer_.set_previous_data_size(read_result->num_bytes_read);
         unfiltered_prefs.reset(
             static_cast<base::DictionaryValue*>(read_result->value.release()));
         break;

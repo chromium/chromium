@@ -201,6 +201,7 @@ TEST_P(JsonPrefStoreTest, NonExistentFile) {
   EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_NO_FILE,
             pref_store->ReadPrefs());
   EXPECT_FALSE(pref_store->ReadOnly());
+  EXPECT_EQ(0u, pref_store->get_writer().previous_data_size());
 }
 
 // Test fallback behavior for an invalid file.
@@ -310,6 +311,7 @@ TEST_P(JsonPrefStoreTest, Basic) {
   ASSERT_EQ(PersistentPrefStore::PREF_READ_ERROR_NONE, pref_store->ReadPrefs());
   EXPECT_FALSE(pref_store->ReadOnly());
   EXPECT_TRUE(pref_store->IsInitializationComplete());
+  EXPECT_GT(pref_store->get_writer().previous_data_size(), 0u);
 
   // The JSON file looks like this:
   // {
@@ -348,6 +350,7 @@ TEST_P(JsonPrefStoreTest, BasicAsync) {
 
     EXPECT_FALSE(pref_store->ReadOnly());
     EXPECT_TRUE(pref_store->IsInitializationComplete());
+    EXPECT_GT(pref_store->get_writer().previous_data_size(), 0u);
   }
 
   // The JSON file looks like this:
