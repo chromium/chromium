@@ -68,7 +68,8 @@
       <structure name="IDR_CAMERA_SOUND_JS" file="js/sound.js" type="chrome_html" />
       <structure name="IDR_CAMERA_STATE_JS" file="js/state.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TEST_BRIDGE_JS" file="js/test_bridge.js" type="chrome_html" />
-      <structure name="IDR_CAMERA_TEST_HTML" file="views/test.html" type="chrome_html" />
+      <structure name="IDR_CAMERA_TEST_HTML" file="test/test.html" type="chrome_html" />
+      <structure name="IDR_CAMERA_TEST_LEGACY_HTML" file="views/test.html" type="chrome_html" />
       <structure name="IDR_CAMERA_TIMERTICK_JS" file="js/views/camera/timertick.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TOAST_JS" file="js/toast.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TOOLTIP_JS" file="js/tooltip.js" type="chrome_html" />

@@ -14,7 +14,7 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp() {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL(chromeos::kChromeUICameraAppMainURL);
-  info->scope = GURL(chromeos::kChromeUICameraAppURL);
+  info->scope = GURL(chromeos::kChromeUICameraAppScopeURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_NAME);
   web_app::CreateIconInfoForSystemWebApp(

@@ -53,6 +53,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/site_instance.h"
@@ -396,7 +397,15 @@ void ComponentLoader::AddKeyboardApp() {
 }
 
 void ComponentLoader::AddChromeCameraApp() {
-  if (base::FeatureList::IsEnabled(chromeos::features::kCameraSystemWebApp)) {
+  // TODO(crbug.com/1135280): Remove all the logic here once CCA is fully
+  // migrated to SWA.
+
+  // If users should use the SWA version of CCA and the status from the platform
+  // app version is already migrated, there is no need to install the platform
+  // version of CCA.
+  if (base::FeatureList::IsEnabled(chromeos::features::kCameraSystemWebApp) &&
+      profile_->GetPrefs()->GetBoolean(
+          chromeos::prefs::kHasCameraAppMigratedToSWA)) {
     return;
   }
 

@@ -63,6 +63,7 @@
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/common/constants.h"
@@ -104,7 +105,8 @@ url::Origin GetOrigin(const char* url) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
+base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
+    Profile* profile) {
   base::flat_map<SystemAppType, SystemAppInfo> infos;
 // TODO(calamity): Split this into per-platform functions.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -118,8 +120,11 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
         SystemAppInfo(
             "Camera", GURL("chrome://camera-app/views/main.html"),
             base::BindRepeating(&CreateWebAppInfoForCameraSystemWebApp)));
-    infos.at(SystemAppType::CAMERA).uninstall_and_replace = {
-        extension_misc::kCameraAppId};
+    if (!profile->GetPrefs()->GetBoolean(
+            chromeos::prefs::kHasCameraAppMigratedToSWA)) {
+      infos.at(SystemAppType::CAMERA).uninstall_and_replace = {
+          extension_misc::kCameraAppId};
+    }
     // We need "FileHandling" to use File Handling API to set launch directory.
     // And we need "NativeFileSystem2" to use Native File System API.
     infos.at(SystemAppType::CAMERA).enabled_origin_trials =
@@ -387,7 +392,7 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
 
     // Populate with real system apps if the test asks for it.
     if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
-      system_app_infos_ = CreateSystemWebApps();
+      system_app_infos_ = CreateSystemWebApps(profile_);
 
     return;
   }
@@ -400,7 +405,7 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
   update_policy_ = UpdatePolicy::kAlwaysUpdate;
 #endif
 
-  system_app_infos_ = CreateSystemWebApps();
+  system_app_infos_ = CreateSystemWebApps(profile_);
 }
 
 SystemWebAppManager::~SystemWebAppManager() = default;
@@ -493,7 +498,7 @@ void SystemWebAppManager::Start() {
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
   on_apps_synchronized_.reset(new base::OneShotEvent());
-  system_app_infos_ = CreateSystemWebApps();
+  system_app_infos_ = CreateSystemWebApps(profile_);
   Start();
 
   // Wait for the System Web Apps to install.
@@ -806,6 +811,13 @@ void SystemWebAppManager::OnAppsSynchronized(
     on_apps_synchronized_->Signal();
     OnAppsPolicyChanged();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_camera_app_installed =
+      system_app_infos_.find(SystemAppType::CAMERA) != system_app_infos_.end();
+  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kHasCameraAppMigratedToSWA,
+                                   is_camera_app_installed);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool SystemWebAppManager::ShouldForceInstallApps() const {
