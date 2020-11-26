@@ -105,11 +105,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   void Offer(const OSExchangeData& data, int operation);
   void CreateIconSurfaceIfNeeded(const OSExchangeData& data);
-  void HandleUnprocessedMimeTypes(base::TimeTicks start_time);
-  void OnMimeTypeDataTransferred(base::TimeTicks start_time,
-                                 PlatformClipboard::Data contents);
+  void HandleUnprocessedMimeTypes();
+  void OnMimeTypeDataTransferred(PlatformClipboard::Data contents);
   void OnDataTransferFinished(
-      base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
   std::string GetNextUnprocessedMimeType();
   // Calls the window's OnDragEnter with the given location and data,

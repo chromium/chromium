@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -161,7 +160,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     received_data_ = std::make_unique<OSExchangeData>(
         std::make_unique<OSExchangeDataProviderNonBacked>());
     last_drag_location_ = location;
-    HandleUnprocessedMimeTypes(base::TimeTicks::Now());
+    HandleUnprocessedMimeTypes();
   }
 }
 
@@ -282,23 +281,21 @@ void WaylandDataDragController::CreateIconSurfaceIfNeeded(
 // more unprocessed mime types on the |unprocessed_mime_types_| queue. Once this
 // process is finished, OnDataTransferFinished is called to deliver the
 // |received_data_| to the drop handler.
-void WaylandDataDragController::HandleUnprocessedMimeTypes(
-    base::TimeTicks start_time) {
+void WaylandDataDragController::HandleUnprocessedMimeTypes() {
   DCHECK_EQ(state_, State::kTransferring);
   std::string mime_type = GetNextUnprocessedMimeType();
   if (mime_type.empty() || is_leave_pending_) {
-    OnDataTransferFinished(start_time, std::move(received_data_));
+    OnDataTransferFinished(std::move(received_data_));
   } else {
     DCHECK(data_offer_);
     data_device_->RequestData(
         data_offer_.get(), mime_type,
         base::BindOnce(&WaylandDataDragController::OnMimeTypeDataTransferred,
-                       weak_factory_.GetWeakPtr(), start_time));
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
 void WaylandDataDragController::OnMimeTypeDataTransferred(
-    base::TimeTicks start_time,
     PlatformClipboard::Data contents) {
   DCHECK_EQ(state_, State::kTransferring);
   DCHECK(contents);
@@ -309,11 +306,10 @@ void WaylandDataDragController::OnMimeTypeDataTransferred(
   unprocessed_mime_types_.pop_front();
 
   // Continue reading data for other negotiated mime types.
-  HandleUnprocessedMimeTypes(start_time);
+  HandleUnprocessedMimeTypes();
 }
 
 void WaylandDataDragController::OnDataTransferFinished(
-    base::TimeTicks start_time,
     std::unique_ptr<OSExchangeData> received_data) {
   unprocessed_mime_types_.clear();
   state_ = State::kIdle;
@@ -332,9 +328,6 @@ void WaylandDataDragController::OnDataTransferFinished(
     is_leave_pending_ = false;
     return;
   }
-
-  UMA_HISTOGRAM_TIMES("Event.WaylandDragDrop.IncomingDataTransferTime",
-                      base::TimeTicks::Now() - start_time);
 
   PropagateOnDragEnter(last_drag_location_, std::move(received_data));
 }
