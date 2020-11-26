@@ -236,10 +236,11 @@ class FixtureWithMockMessagePump : public Fixture {
                         .SetRandomisedSamplingEnabled(false)
                         .SetTickClock(mock_tick_clock())
                         .Build();
-    sequence_manager_ = SequenceManagerForTest::Create(
+    auto thread_controller =
         std::make_unique<ThreadControllerWithMessagePumpImpl>(std::move(pump),
-                                                              settings),
-        std::move(settings));
+                                                              settings);
+    sequence_manager_ = SequenceManagerForTest::Create(
+        std::move(thread_controller), std::move(settings));
     sequence_manager_->SetDefaultTaskRunner(MakeRefCounted<NullTaskRunner>());
 
     // The SequenceManager constructor calls Now() once for setting up
