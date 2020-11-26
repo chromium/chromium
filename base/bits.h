@@ -164,7 +164,7 @@ ALWAYS_INLINE uint64_t CountLeadingZeroBits64(uint64_t x) {
 // instructions have defined behaviour for 0. We could drop to raw __asm__ to
 // do better, but we'll avoid doing that unless we see proof that we need to.
 template <typename T, unsigned bits = sizeof(T) * 8>
-ALWAYS_INLINE
+ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
                             unsigned>::type
     CountLeadingZeroBits(T value) {
@@ -177,7 +177,7 @@ ALWAYS_INLINE
 }
 
 template <typename T, unsigned bits = sizeof(T) * 8>
-ALWAYS_INLINE
+ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
                             unsigned>::type
     CountTrailingZeroBits(T value) {
@@ -187,31 +187,31 @@ ALWAYS_INLINE
                        : bits;
 }
 
-ALWAYS_INLINE uint32_t CountLeadingZeroBits32(uint32_t x) {
+ALWAYS_INLINE constexpr uint32_t CountLeadingZeroBits32(uint32_t x) {
   return CountLeadingZeroBits(x);
 }
 
-ALWAYS_INLINE uint64_t CountLeadingZeroBits64(uint64_t x) {
+ALWAYS_INLINE constexpr uint64_t CountLeadingZeroBits64(uint64_t x) {
   return CountLeadingZeroBits(x);
 }
 
 #endif
 
-ALWAYS_INLINE size_t CountLeadingZeroBitsSizeT(size_t x) {
+ALWAYS_INLINE constexpr size_t CountLeadingZeroBitsSizeT(size_t x) {
   return CountLeadingZeroBits(x);
 }
 
-ALWAYS_INLINE size_t CountTrailingZeroBitsSizeT(size_t x) {
+ALWAYS_INLINE constexpr size_t CountTrailingZeroBitsSizeT(size_t x) {
   return CountTrailingZeroBits(x);
 }
 
 // Returns the integer i such as 2^i <= n < 2^(i+1)
-inline int Log2Floor(uint32_t n) {
+constexpr int Log2Floor(uint32_t n) {
   return 31 - CountLeadingZeroBits(n);
 }
 
 // Returns the integer i such as 2^(i-1) < n <= 2^i
-inline int Log2Ceiling(uint32_t n) {
+constexpr int Log2Ceiling(uint32_t n) {
   // When n == 0, we want the function to return -1.
   // When n == 0, (n - 1) will underflow to 0xFFFFFFFF, which is
   // why the statement below starts with (n ? 32 : -1).

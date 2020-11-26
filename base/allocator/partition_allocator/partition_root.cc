@@ -303,38 +303,6 @@ static void PartitionDumpBucketStats(
   }
 }
 
-template <bool thread_safe>
-void InitBucketIndexLookup(PartitionRoot<thread_safe>* root) {
-  uint16_t* bucket_index_ptr =
-      &PartitionRoot<thread_safe>::bucket_index_lookup[0];
-  uint16_t bucket_index = 0;
-  const uint16_t sentinel_bucket_index = kNumBuckets;
-
-  for (uint16_t order = 0; order <= kBitsPerSizeT; ++order) {
-    for (uint16_t j = 0; j < kNumBucketsPerOrder; ++j) {
-      if (order < kMinBucketedOrder) {
-        // Use the bucket of the finest granularity for malloc(0) etc.
-        *bucket_index_ptr++ = 0;
-      } else if (order > kMaxBucketedOrder) {
-        *bucket_index_ptr++ = sentinel_bucket_index;
-      } else {
-        uint16_t valid_bucket_index = bucket_index;
-        while (root->buckets[valid_bucket_index].slot_size % kSmallestBucket)
-          valid_bucket_index++;
-        *bucket_index_ptr++ = valid_bucket_index;
-        bucket_index++;
-      }
-    }
-  }
-  PA_DCHECK(bucket_index == kNumBuckets);
-  PA_DCHECK(bucket_index_ptr ==
-            PartitionRoot<thread_safe>::bucket_index_lookup +
-                ((kBitsPerSizeT + 1) * kNumBucketsPerOrder));
-  // And there's one last bucket lookup that will be hit for e.g. malloc(-1),
-  // which tries to overflow to a non-existent order.
-  *bucket_index_ptr = sentinel_bucket_index;
-}
-
 }  // namespace internal
 
 // TODO(lizeb): Consider making this constexpr. Without C++17 std::array, this
@@ -437,11 +405,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   }
   PA_DCHECK(current_size == 1 << kMaxBucketedOrder);
   PA_DCHECK(bucket == &buckets[0] + kNumBuckets);
-
-  // Then set up the fast size -> bucket lookup table.  We call this multiple
-  // times, even though the indices are shared between all PartitionRoots, but
-  // this operation is idempotent, so there is no harm.
-  internal::InitBucketIndexLookup(this);
 
 #if !defined(PA_THREAD_CACHE_SUPPORTED)
   // TLS in ThreadCache not supported on other OSes.

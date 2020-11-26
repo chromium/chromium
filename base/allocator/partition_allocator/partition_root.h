@@ -494,6 +494,88 @@ constexpr size_t kOrderSubIndexMask[BITS_PER_SIZE_T + 1] = {
 
 namespace internal {
 
+// The class used to generate the bucket lookup table at compile-time.
+class BucketIndexLookup final {
+ public:
+  ALWAYS_INLINE constexpr static size_t GetIndex(size_t size);
+
+ private:
+  constexpr BucketIndexLookup() {
+    constexpr uint16_t sentinel_bucket_index = kNumBuckets;
+
+    InitBucketSizes();
+
+    uint16_t* bucket_index_ptr = &bucket_index_lookup_[0];
+    uint16_t bucket_index = 0;
+
+    for (uint16_t order = 0; order <= kBitsPerSizeT; ++order) {
+      for (uint16_t j = 0; j < kNumBucketsPerOrder; ++j) {
+        if (order < kMinBucketedOrder) {
+          // Use the bucket of the finest granularity for malloc(0) etc.
+          *bucket_index_ptr++ = 0;
+        } else if (order > kMaxBucketedOrder) {
+          *bucket_index_ptr++ = sentinel_bucket_index;
+        } else {
+          uint16_t valid_bucket_index = bucket_index;
+          while (bucket_sizes_[valid_bucket_index] % kSmallestBucket)
+            valid_bucket_index++;
+          *bucket_index_ptr++ = valid_bucket_index;
+          bucket_index++;
+        }
+      }
+    }
+    PA_DCHECK(bucket_index == kNumBuckets);
+    PA_DCHECK(bucket_index_ptr == bucket_index_lookup_ + ((kBitsPerSizeT + 1) *
+                                                          kNumBucketsPerOrder));
+    // And there's one last bucket lookup that will be hit for e.g. malloc(-1),
+    // which tries to overflow to a non-existent order.
+    *bucket_index_ptr = sentinel_bucket_index;
+  }
+
+  constexpr void InitBucketSizes() {
+    size_t current_size = kSmallestBucket;
+    size_t current_increment = kSmallestBucket >> kNumBucketsPerOrderBits;
+    size_t* bucket_size = &bucket_sizes_[0];
+    for (size_t i = 0; i < kNumBucketedOrders; ++i) {
+      for (size_t j = 0; j < kNumBucketsPerOrder; ++j) {
+        *bucket_size = current_size;
+        // Disable pseudo buckets so that touching them faults.
+        current_size += current_increment;
+        ++bucket_size;
+      }
+      current_increment <<= 1;
+    }
+  }
+
+  size_t bucket_sizes_[kNumBuckets]{};
+  // The bucket lookup table lets us map a size_t to a bucket quickly.
+  // The trailing +1 caters for the overflow case for very large allocation
+  // sizes.  It is one flat array instead of a 2D array because in the 2D
+  // world, we'd need to index array[blah][max+1] which risks undefined
+  // behavior.
+  uint16_t
+      bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
+};
+
+// static
+ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
+  // This forces the bucket table to be constant-initialized and immediately
+  // materialized in the binary.
+  constexpr BucketIndexLookup lookup{};
+  const size_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
+  // The order index is simply the next few bits after the most significant
+  // bit.
+  const size_t order_index =
+      (size >> kOrderIndexShift[order]) & (kNumBucketsPerOrder - 1);
+  // And if the remaining bits are non-zero we must bump the bucket up.
+  const size_t sub_order_index = size & kOrderSubIndexMask[order];
+  const uint16_t index =
+      lookup.bucket_index_lookup_[(order << kNumBucketsPerOrderBits) +
+                                  order_index + !!sub_order_index];
+  PA_DCHECK(index <= kNumBuckets);  // Last one is the sentinel bucket.
+  return index;
+}
+
 // Gets the SlotSpanMetadata object of the slot span that contains |ptr|. It's
 // used with intention to do obtain the slot size. CAUTION! It works well for
 // normal buckets, but for direct-mapped allocations it'll only work if |ptr| is
@@ -825,16 +907,7 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSize(void* ptr) const {
 template <bool thread_safe>
 ALWAYS_INLINE uint16_t
 PartitionRoot<thread_safe>::SizeToBucketIndex(size_t size) {
-  size_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
-  // The order index is simply the next few bits after the most significant bit.
-  size_t order_index =
-      (size >> kOrderIndexShift[order]) & (kNumBucketsPerOrder - 1);
-  // And if the remaining bits are non-zero we must bump the bucket up.
-  size_t sub_order_index = size & kOrderSubIndexMask[order];
-  uint16_t index = bucket_index_lookup[(order << kNumBucketsPerOrderBits) +
-                                       order_index + !!sub_order_index];
-  PA_DCHECK(index <= kNumBuckets);  // Last one is the sentinetl bucket.
-  return index;
+  return internal::BucketIndexLookup::GetIndex(size);
 }
 
 template <bool thread_safe>
