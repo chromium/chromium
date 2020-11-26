@@ -45,9 +45,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/244856
     "race:libpulsecommon*.so\n"
 
-    // http://crbug.com/246968
-    "race:webrtc::VideoCodingModuleImpl::RegisterPacketRequestCallback\n"
-
     // http://crbug.com/258479
     "race:g_trace_state\n"
 
