@@ -5987,8 +5987,6 @@ static_library("browser") {
       "plugins/reload_plugin_infobar_delegate.h",
       "renderer_host/pepper/chrome_browser_pepper_host_factory.cc",
       "renderer_host/pepper/chrome_browser_pepper_host_factory.h",
-      "renderer_host/pepper/device_id_fetcher.cc",
-      "renderer_host/pepper/device_id_fetcher.h",
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.cc",
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.h",
     ]

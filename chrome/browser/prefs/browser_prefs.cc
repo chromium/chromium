@@ -194,7 +194,6 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/plugins/plugins_resource_service.h"
-#include "chrome/browser/renderer_host/pepper/device_id_fetcher.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -491,6 +490,9 @@ const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
 const char kSettingsLaunchedPasswordChecks[] =
     "profile.settings_launched_password_checks";
 
+// Deprecated 11/2020
+const char kDRMSalt[] = "settings.privacy.drm_salt";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -568,6 +570,7 @@ void RegisterProfilePrefsForMigration(
 #endif
 
   registry->RegisterIntegerPref(kSettingsLaunchedPasswordChecks, 0);
+  registry->RegisterStringPref(kDRMSalt, "");
 }
 
 }  // namespace
@@ -866,7 +869,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  DeviceIDFetcher::RegisterProfilePrefs(registry);
   PluginInfoHostImpl::RegisterUserPrefs(registry);
 #endif
 
@@ -1172,4 +1174,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 11/2020
   profile_prefs->ClearPref(kSettingsLaunchedPasswordChecks);
+
+  // Added 11/2020
+  profile_prefs->ClearPref(kDRMSalt);
 }
