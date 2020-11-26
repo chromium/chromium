@@ -228,7 +228,6 @@
 
 #if defined(OS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
-#include "ipc/ipc_sync_channel.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
 #endif
@@ -1889,24 +1888,11 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
 
   ResetChannelProxy();
 
-  // Do NOT expand ifdef or run time condition checks here! Synchronous
-  // IPCs from browser process are banned. It is only narrowly allowed
-  // for Android WebView to maintain backward compatibility.
-  // See crbug.com/526842 for details.
-#if defined(OS_ANDROID)
-  if (GetContentClient()->UsingSynchronousCompositing()) {
-    // Android never performs a clean shutdown, so we pass nullptr for
-    // shudown_event to indicate that we never intend to signal a shutdown.
-    channel_ =
-        IPC::SyncChannel::Create(this, io_task_runner.get(),
-                                 base::ThreadTaskRunnerHandle::Get(), nullptr);
-  }
-#endif  // OS_ANDROID
-  if (!channel_) {
-    channel_ = std::make_unique<IPC::ChannelProxy>(
-        this, io_task_runner.get(), base::ThreadTaskRunnerHandle::Get());
-  }
-  channel_->Init(std::move(channel_factory), true /* create_pipe_now */);
+  DCHECK(!channel_);
+  channel_ = IPC::ChannelProxy::Create(
+      std::move(channel_factory), this,
+      /*ipc_task_runner=*/io_task_runner.get(),
+      /*listener_task_runner=*/base::ThreadTaskRunnerHandle::Get());
 
   // Note that Channel send is effectively paused and unpaused at various points
   // during startup, and existing code relies on a fragile relative message
@@ -3563,21 +3549,7 @@ bool RenderProcessHostImpl::Send(IPC::Message* msg) {
   if (!channel_)
     return false;
 
-#if !defined(OS_ANDROID)
   DCHECK(!message->is_sync());
-#else
-  if (message->is_sync()) {
-    // If Init() hasn't been called yet since construction or the last
-    // ProcessDied() we avoid blocking on sync IPC.
-    if (!IsInitializedAndNotDead())
-      return false;
-
-    // Likewise if we've done Init(), but process launch has not yet
-    // completed, we avoid blocking on sync IPC.
-    if (child_process_launcher_.get() && child_process_launcher_->IsStarting())
-      return false;
-  }
-#endif
 
   // Allow tests to watch IPCs sent to the renderer.
   if (ipc_send_watcher_for_testing_)

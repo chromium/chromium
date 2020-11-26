@@ -410,10 +410,6 @@ void AgentSchedulingGroupHost::SetUpIPC() {
         bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,
         /*proxy_task_runner=*/base::ThreadTaskRunnerHandle::Get());
 
-    // TODO(crbug.com/1111231): Android WebViews (that support synchronous
-    // compositing) send sync messages from the browser to the renderer, and
-    // therefore need a `SyncChannel`. However, we don't plan to support
-    // WebViews at this stage, so a plain `ChannelProxy` is fine for now.
     channel_ = ChannelProxy::Create(
         std::move(channel_factory), /*listener=*/this,
         /*ipc_task_runner=*/io_task_runner,
