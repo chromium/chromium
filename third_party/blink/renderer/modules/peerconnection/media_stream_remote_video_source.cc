@@ -15,6 +15,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/track_observer.h"
@@ -139,6 +140,10 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
 
   // Offset between NTP clock and WebRTC clock.
   const int64_t ntp_offset_;
+
+  // Determined from a feature flag; if set WebRTC won't forward an unspecified
+  // color space.
+  const bool ignore_unspecified_color_space_;
 };
 
 MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
@@ -160,7 +165,9 @@ MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
                          base::TimeDelta::FromMicroseconds(rtc::TimeMicros())),
       clock_(webrtc::Clock::GetRealTimeClock()),
       ntp_offset_(clock_->TimeInMilliseconds() -
-                  clock_->CurrentNtpInMilliseconds()) {}
+                  clock_->CurrentNtpInMilliseconds()),
+      ignore_unspecified_color_space_(base::FeatureList::IsEnabled(
+          features::kWebRtcIgnoreUnspecifiedColorSpace)) {}
 
 MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
     ~RemoteVideoSourceDelegate() = default;
@@ -275,7 +282,19 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
         WebRtcToMediaVideoRotation(incoming_frame.rotation());
   }
 
-  if (incoming_frame.color_space()) {
+  // The second clause of the condition is controlled by the feature flag
+  // WebRtcIgnoreUnspecifiedColorSpace. If the feature is enabled we won't try
+  // to guess a color space if the webrtc::ColorSpace is unspecified. If the
+  // feature is disabled (default), an unspecified color space will get
+  // converted into a gfx::ColorSpace set to BT709.
+  if (incoming_frame.color_space() &&
+      !(ignore_unspecified_color_space_ &&
+        incoming_frame.color_space()->primaries() ==
+            webrtc::ColorSpace::PrimaryID::kUnspecified &&
+        incoming_frame.color_space()->transfer() ==
+            webrtc::ColorSpace::TransferID::kUnspecified &&
+        incoming_frame.color_space()->matrix() ==
+            webrtc::ColorSpace::MatrixID::kUnspecified)) {
     video_frame->set_color_space(
         WebRtcToMediaVideoColorSpace(*incoming_frame.color_space())
             .ToGfxColorSpace());

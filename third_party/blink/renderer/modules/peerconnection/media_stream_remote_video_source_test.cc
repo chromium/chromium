@@ -13,8 +13,10 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -283,6 +285,80 @@ TEST_F(MediaStreamRemoteVideoSourceTest, PreservesColorSpace) {
                               gfx::ColorSpace::TransferID::SMPTE240M,
                               gfx::ColorSpace::MatrixID::SMPTE240M,
                               gfx::ColorSpace::RangeID::LIMITED));
+  track->RemoveSink(&sink);
+}
+
+TEST_F(MediaStreamRemoteVideoSourceTest,
+       UnspecifiedColorSpaceIsTreatedAsBt709) {
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(), false);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kUnspecified,
+                                 webrtc::ColorSpace::TransferID::kUnspecified,
+                                 webrtc::ColorSpace::MatrixID::kUnspecified,
+                                 webrtc::ColorSpace::RangeID::kLimited);
+  const webrtc::VideoFrame& input_frame =
+      webrtc::VideoFrame::Builder()
+          .set_video_frame_buffer(buffer)
+          .set_timestamp_ms(0)
+          .set_rotation(webrtc::kVideoRotation_0)
+          .set_color_space(kColorSpace)
+          .build();
+  source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+  run_loop.Run();
+
+  EXPECT_EQ(1, sink.number_of_frames());
+  scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
+  EXPECT_TRUE(output_frame);
+  EXPECT_TRUE(output_frame->ColorSpace() ==
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                              gfx::ColorSpace::TransferID::BT709,
+                              gfx::ColorSpace::MatrixID::BT709,
+                              gfx::ColorSpace::RangeID::LIMITED));
+  track->RemoveSink(&sink);
+}
+
+TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
+  base::test::ScopedFeatureList scoped_feauture_list;
+  scoped_feauture_list.InitAndEnableFeature(
+      blink::features::kWebRtcIgnoreUnspecifiedColorSpace);
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(), false);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kUnspecified,
+                                 webrtc::ColorSpace::TransferID::kUnspecified,
+                                 webrtc::ColorSpace::MatrixID::kUnspecified,
+                                 webrtc::ColorSpace::RangeID::kLimited);
+  const webrtc::VideoFrame& input_frame =
+      webrtc::VideoFrame::Builder()
+          .set_video_frame_buffer(buffer)
+          .set_timestamp_ms(0)
+          .set_rotation(webrtc::kVideoRotation_0)
+          .set_color_space(kColorSpace)
+          .build();
+  source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+  run_loop.Run();
+
+  EXPECT_EQ(1, sink.number_of_frames());
+  scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
+  EXPECT_TRUE(output_frame);
+  EXPECT_TRUE(output_frame->ColorSpace() ==
+              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::INVALID,
+                              gfx::ColorSpace::TransferID::INVALID,
+                              gfx::ColorSpace::MatrixID::INVALID,
+                              gfx::ColorSpace::RangeID::INVALID));
   track->RemoveSink(&sink);
 }
 

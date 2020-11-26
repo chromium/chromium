@@ -233,6 +233,12 @@ const base::Feature kWebRtcMultiplexCodec{"WebRTC-MultiplexCodec",
 const base::Feature kWebRtcHideLocalIpsWithMdns{
     "WebRtcHideLocalIpsWithMdns", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Causes WebRTC to not set the color space of video frames on the receive side
+// in case it's unspecified. Otherwise we will guess that the color space is
+// BT709. http://crbug.com/1129243
+const base::Feature kWebRtcIgnoreUnspecifiedColorSpace{
+    "WebRtcIgnoreUnspecifiedColorSpace", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, wake ups from throttleable TaskQueues are limited to 1 per
 // minute in a page that has been backgrounded for 5 minutes.
 //

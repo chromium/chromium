@@ -67,6 +67,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kWebMeasureMemoryViaPerformanceManager;
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcMultiplexCodec;
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcHideLocalIpsWithMdns;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWebRtcIgnoreUnspecifiedColorSpace;
 
 BLINK_COMMON_EXPORT extern const base::Feature kIntensiveWakeUpThrottling;
 BLINK_COMMON_EXPORT extern const char
