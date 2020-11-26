@@ -41,8 +41,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
                      base::DictionaryValue* dict) const;
 
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) const override;
+      const base::DictionaryValue& node) const override;
 };
 
 }  // namespace content

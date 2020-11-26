@@ -22,7 +22,6 @@ char kIdSwitch[] =
     "pid";
 #endif
 char kFiltersSwitch[] = "filters";
-char kJsonSwitch[] = "json";
 char kHelpSwitch[] = "help";
 
 // Convert from string to int, whether in 0x hex format or decimal format.
@@ -88,8 +87,6 @@ int main(int argc, char** argv) {
   base::FilePath filters_path =
       command_line->GetSwitchValuePath(kFiltersSwitch);
 
-  bool use_json = command_line->HasSwitch(kJsonSwitch);
-
   std::string id_str = command_line->GetSwitchValueASCII(kIdSwitch);
   if (!id_str.empty()) {
     unsigned hwnd_or_pid;
@@ -100,14 +97,14 @@ int main(int argc, char** argv) {
     gfx::AcceleratedWidget widget(CastToAcceleratedWidget(hwnd_or_pid));
 
     std::unique_ptr<content::AXTreeServer> server(
-        new content::AXTreeServer(widget, filters_path, use_json));
+        new content::AXTreeServer(widget, filters_path));
     return 0;
   }
 
   AXTreeSelector selector = tools::TreeSelectorFromCommandLine(command_line);
   if (!selector.empty()) {
     std::unique_ptr<content::AXTreeServer> server(
-        new content::AXTreeServer(selector, filters_path, use_json));
+        new content::AXTreeServer(selector, filters_path));
     return 0;
   }
 

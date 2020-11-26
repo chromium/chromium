@@ -74,7 +74,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // AXTreeFormatter overrides.
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
-  base::Value FilterTree(const base::Value& dict) const override;
   std::string FormatTree(const base::Value& tree_node) const override;
   void SetPropertyFilters(
       const std::vector<AXPropertyFilter>& property_filters) override;
@@ -102,8 +101,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // - Provides a filtered version of the dictionary in an out param,
   //   (only if the out param is provided).
   virtual std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) const = 0;
+      const base::DictionaryValue& node) const = 0;
 
   //
   // Utility functions to be used by each platform.

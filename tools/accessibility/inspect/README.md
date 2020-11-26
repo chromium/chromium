@@ -52,7 +52,6 @@ Or by application PID on Mac and Linux:
 `--pid=process_id`
 
 Other options:
-`--json` to output a tree in JSON format
 `--filters=absolute_path_to_filters.txt` to filter properties, use where the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See example-tree-filters.txt in tools/accessibility/inspect.
 `--help` for help
 

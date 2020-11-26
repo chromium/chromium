@@ -71,22 +71,6 @@ std::string AccessibilityTreeFormatterBase::FormatTree(
   return contents;
 }
 
-base::Value AccessibilityTreeFormatterBase::FilterTree(
-    const base::Value& dict) const {
-  base::DictionaryValue filtered_dict;
-  ProcessTreeForOutput(base::Value::AsDictionaryValue(dict), &filtered_dict);
-  const base::Value* children = dict.FindListPath(kChildrenDictAttr);
-  if (children && !children->GetList().empty()) {
-    base::Value filtered_children(base::Value::Type::LIST);
-    for (const auto& child_dict : children->GetList()) {
-      auto filtered_child = FilterTree(child_dict);
-      filtered_children.Append(std::move(filtered_child));
-    }
-    filtered_dict.SetPath(kChildrenDictAttr, std::move(filtered_children));
-  }
-  return std::move(filtered_dict);
-}
-
 void AccessibilityTreeFormatterBase::RecursiveFormatTree(
     const base::Value& dict,
     std::string* contents,

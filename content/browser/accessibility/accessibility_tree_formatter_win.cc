@@ -79,8 +79,7 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
   void AddIA2ValueProperties(const Microsoft::WRL::ComPtr<IAccessible>,
                              base::DictionaryValue* dict) const;
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) const override;
+      const base::DictionaryValue& node) const override;
 };
 
 // static
@@ -872,16 +871,13 @@ void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
 }
 
 std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
-    const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_dict_result) const {
+    const base::DictionaryValue& dict) const {
   std::string line;
 
   // Always show role, and show it first.
   std::string role_value;
   dict.GetString("role", &role_value);
   WriteAttribute(true, role_value, &line);
-  if (filtered_dict_result)
-    filtered_dict_result->SetString("role", role_value);
 
   for (const char* attribute_name : ALL_ATTRIBUTES) {
     const base::Value* value;
@@ -892,32 +888,26 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
       case base::Value::Type::STRING: {
         std::string string_value;
         value->GetAsString(&string_value);
-        bool did_pass_filters = WriteAttribute(
+        WriteAttribute(
             false,
             base::StringPrintf("%s='%s'", attribute_name, string_value.c_str()),
             &line);
-        if (filtered_dict_result && did_pass_filters)
-          filtered_dict_result->SetString(attribute_name, string_value);
         break;
       }
       case base::Value::Type::INTEGER: {
         int int_value = 0;
         value->GetAsInteger(&int_value);
-        bool did_pass_filters = WriteAttribute(
-            false, base::StringPrintf("%s=%d", attribute_name, int_value),
-            &line);
-        if (filtered_dict_result && did_pass_filters)
-          filtered_dict_result->SetInteger(attribute_name, int_value);
+        WriteAttribute(false,
+                       base::StringPrintf("%s=%d", attribute_name, int_value),
+                       &line);
         break;
       }
       case base::Value::Type::DOUBLE: {
         double double_value = 0.0;
         value->GetAsDouble(&double_value);
-        bool did_pass_filters = WriteAttribute(
+        WriteAttribute(
             false, base::StringPrintf("%s=%.2f", attribute_name, double_value),
             &line);
-        if (filtered_dict_result && did_pass_filters)
-          filtered_dict_result->SetDouble(attribute_name, double_value);
         break;
       }
       case base::Value::Type::LIST: {
@@ -934,8 +924,6 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
             if (WriteAttribute(false, string_value, &line))
               filtered_list->AppendString(string_value);
         }
-        if (filtered_dict_result && !filtered_list->empty())
-          filtered_dict_result->Set(attribute_name, std::move(filtered_list));
         break;
       }
       case base::Value::Type::DICTIONARY: {
@@ -943,18 +931,15 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         // Revisit this if that changes.
         const base::DictionaryValue* dict_value;
         value->GetAsDictionary(&dict_value);
-        bool did_pass_filters = false;
         if (strcmp(attribute_name, "size") == 0) {
-          did_pass_filters = WriteAttribute(
+          WriteAttribute(
               false, FormatCoordinates(*dict_value, "size", "width", "height"),
               &line);
         } else if (strcmp(attribute_name, "location") == 0) {
-          did_pass_filters = WriteAttribute(
-              false, FormatCoordinates(*dict_value, "location", "x", "y"),
-              &line);
+          WriteAttribute(false,
+                         FormatCoordinates(*dict_value, "location", "x", "y"),
+                         &line);
         }
-        if (filtered_dict_result && did_pass_filters)
-          filtered_dict_result->SetKey(attribute_name, dict_value->Clone());
         break;
       }
       default:

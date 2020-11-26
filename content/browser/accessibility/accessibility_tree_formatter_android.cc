@@ -99,8 +99,7 @@ class AccessibilityTreeFormatterAndroid
                      base::DictionaryValue* dict) const;
 
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) const override;
+      const base::DictionaryValue& node) const override;
 };
 
 // static
@@ -244,8 +243,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
 }
 
 std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
-    const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_dict_result) const {
+    const base::DictionaryValue& dict) const {
   std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;

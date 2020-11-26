@@ -39,8 +39,7 @@ class AccessibilityTreeFormatterAuraLinux
 
  private:
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) const override;
+      const base::DictionaryValue& node) const override;
 
   base::Value BuildTree(BrowserAccessibility* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
@@ -608,8 +607,7 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
 };
 
 std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
-    const base::DictionaryValue& node,
-    base::DictionaryValue* filtered_dict_result) const {
+    const base::DictionaryValue& node) const {
   std::string error_value;
   if (node.GetString("error", &error_value))
     return error_value;

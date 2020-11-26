@@ -102,8 +102,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   std::string NodeToLineIndex(id, const LineIndexer*) const;
 
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) const override;
+      const base::DictionaryValue& node) const override;
 
   std::string FormatAttributeValue(const base::Value& value) const;
 };
@@ -453,8 +452,7 @@ std::string AccessibilityTreeFormatterMac::NodeToLineIndex(
 }
 
 std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
-    const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_dict_result) const {
+    const base::DictionaryValue& dict) const {
   std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;

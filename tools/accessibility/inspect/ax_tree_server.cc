@@ -10,7 +10,6 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -41,20 +40,17 @@ base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget,
 }
 
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
-                           const base::FilePath& filters_path,
-                           bool use_json) {
-  Run(base::BindOnce(&BuildTreeForSelector, selector), filters_path, use_json);
+                           const base::FilePath& filters_path) {
+  Run(base::BindOnce(&BuildTreeForSelector, selector), filters_path);
 }
 
 AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,
-                           const base::FilePath& filters_path,
-                           bool use_json) {
-  Run(base::BindOnce(&BuildTreeForWindow, widget), filters_path, use_json);
+                           const base::FilePath& filters_path) {
+  Run(base::BindOnce(&BuildTreeForWindow, widget), filters_path);
 }
 
 void AXTreeServer::Run(BuildTree build_tree,
-                       const base::FilePath& filters_path,
-                       bool use_json) {
+                       const base::FilePath& filters_path) {
   std::unique_ptr<AXTreeFormatter> formatter(
       AccessibilityTreeFormatter::Create());
 
@@ -73,8 +69,8 @@ void AXTreeServer::Run(BuildTree build_tree,
     return;
   }
 
-  // Format the tree.
-  Format(*formatter, dict, use_json);
+  // Write to console.
+  printf("%s", formatter->FormatTree(dict).c_str());
 }
 
 std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
@@ -116,25 +112,6 @@ std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
     }
   }
   return filters;
-}
-
-void AXTreeServer::Format(const AXTreeFormatter& formatter,
-                          const base::Value& dict,
-                          bool use_json) {
-  std::string accessibility_contents;
-
-  // Format accessibility tree as JSON or text.
-  if (use_json) {
-    const base::Value filtered_dict = formatter.FilterTree(dict);
-    base::JSONWriter::WriteWithOptions(filtered_dict,
-                                       base::JSONWriter::OPTIONS_PRETTY_PRINT,
-                                       &accessibility_contents);
-  } else {
-    accessibility_contents = formatter.FormatTree(dict);
-  }
-
-  // Write to console.
-  printf("%s", accessibility_contents.c_str());
 }
 
 }  // namespace content

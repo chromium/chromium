@@ -91,16 +91,13 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
                          base::DictionaryValue* dict) const;
   base::string16 GetNodeName(IUIAutomationElement* node) const;
   std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_result = nullptr) const override;
+      const base::DictionaryValue& node) const override;
   void ProcessPropertyForOutput(const std::string& property_name,
                                 const base::DictionaryValue& dict,
-                                std::string& line,
-                                base::DictionaryValue* filtered_result) const;
+                                std::string& line) const;
   void ProcessValueForOutput(const std::string& name,
                              const base::Value* value,
-                             std::string& line,
-                             base::DictionaryValue* filtered_result) const;
+                             std::string& line) const;
   Microsoft::WRL::ComPtr<IUIAutomation> uia_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> element_cache_request_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> children_cache_request_;

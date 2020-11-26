@@ -20,28 +20,19 @@ namespace content {
 class AXTreeServer final {
  public:
   AXTreeServer(gfx::AcceleratedWidget widget,
-               const base::FilePath& filters_path,
-               bool use_json);
+               const base::FilePath& filters_path);
   AXTreeServer(const ui::AXTreeSelector& selector,
-               const base::FilePath& filters_path,
-               bool use_json);
+               const base::FilePath& filters_path);
 
  private:
   using BuildTree = base::OnceCallback<base::Value(const ui::AXTreeFormatter*)>;
 
   // Builds and formats the accessible tree.
-  void Run(BuildTree build_tree,
-           const base::FilePath& filters_path,
-           bool use_json);
+  void Run(BuildTree build_tree, const base::FilePath& filters_path);
 
   // Generates property filters.
   std::vector<ui::AXPropertyFilter> GetPropertyFilters(
       const base::FilePath& filters_path);
-
-  // Formats and dumps into console the tree.
-  void Format(const ui::AXTreeFormatter& formatter,
-              const base::Value& dict,
-              bool use_json);
 
 #if defined(OS_WIN)
   // Only one COM initializer per thread is permitted.

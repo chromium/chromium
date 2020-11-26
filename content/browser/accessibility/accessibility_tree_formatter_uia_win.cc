@@ -996,8 +996,7 @@ void AccessibilityTreeFormatterUia::BuildCacheRequests() {
 }
 
 std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
-    const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_result) const {
+    const base::DictionaryValue& dict) const {
   std::unique_ptr<base::DictionaryValue> tree;
   std::string line;
 
@@ -1006,16 +1005,10 @@ std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
   dict.GetString(UiaIdentifierToCondensedString(UIA_ControlTypePropertyId),
                  &control_type_value);
   WriteAttribute(true, control_type_value, &line);
-  if (filtered_result) {
-    filtered_result->SetString(
-        UiaIdentifierToStringUTF8(UIA_ControlTypePropertyId),
-        control_type_value);
-  }
 
   // properties
   for (long i : properties_) {
-    ProcessPropertyForOutput(UiaIdentifierToCondensedString(i), dict, line,
-                             filtered_result);
+    ProcessPropertyForOutput(UiaIdentifierToCondensedString(i), dict, line);
   }
 
   // patterns
@@ -1049,8 +1042,7 @@ std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
       "Window.IsModal"};
 
   for (const std::string& pattern_property_name : pattern_property_names) {
-    ProcessPropertyForOutput(pattern_property_name, dict, line,
-                             filtered_result);
+    ProcessPropertyForOutput(pattern_property_name, dict, line);
   }
 
   return line;
@@ -1059,75 +1051,60 @@ std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
 void AccessibilityTreeFormatterUia::ProcessPropertyForOutput(
     const std::string& property_name,
     const base::DictionaryValue& dict,
-    std::string& line,
-    base::DictionaryValue* filtered_result) const {
+    std::string& line) const {
   //
   const base::Value* value;
   if (dict.Get(property_name, &value))
-    ProcessValueForOutput(property_name, value, line, filtered_result);
+    ProcessValueForOutput(property_name, value, line);
 }
 
 void AccessibilityTreeFormatterUia::ProcessValueForOutput(
     const std::string& name,
     const base::Value* value,
-    std::string& line,
-    base::DictionaryValue* filtered_result) const {
+    std::string& line) const {
   switch (value->type()) {
     case base::Value::Type::STRING: {
       std::string string_value;
       value->GetAsString(&string_value);
-      bool did_pass_filters = WriteAttribute(
+      WriteAttribute(
           false,
           base::StringPrintf("%s='%s'", name.c_str(), string_value.c_str()),
           &line);
-      if (filtered_result && did_pass_filters)
-        filtered_result->SetString(name, string_value);
       break;
     }
     case base::Value::Type::BOOLEAN: {
       bool bool_value = 0;
       value->GetAsBoolean(&bool_value);
-      bool did_pass_filters =
           WriteAttribute(false,
                          base::StringPrintf("%s=%s", name.c_str(),
                                             (bool_value ? "true" : "false")),
                          &line);
-      if (filtered_result && did_pass_filters)
-        filtered_result->SetBoolean(name, bool_value);
       break;
     }
     case base::Value::Type::INTEGER: {
       int int_value = 0;
       value->GetAsInteger(&int_value);
-      bool did_pass_filters = WriteAttribute(
+      WriteAttribute(
           false, base::StringPrintf("%s=%d", name.c_str(), int_value), &line);
-      if (filtered_result && did_pass_filters)
-        filtered_result->SetInteger(name, int_value);
       break;
     }
     case base::Value::Type::DOUBLE: {
       double double_value = 0.0;
       value->GetAsDouble(&double_value);
-      bool did_pass_filters = WriteAttribute(
-          false, base::StringPrintf("%s=%.2f", name.c_str(), double_value),
-          &line);
-      if (filtered_result && did_pass_filters)
-        filtered_result->SetDouble(name, double_value);
+      WriteAttribute(false,
+                     base::StringPrintf("%s=%.2f", name.c_str(), double_value),
+                     &line);
       break;
     }
     case base::Value::Type::DICTIONARY: {
       const base::DictionaryValue* dict_value = nullptr;
       value->GetAsDictionary(&dict_value);
-      bool did_pass_filters = false;
       if (name == "BoundingRectangle") {
-        did_pass_filters =
-            WriteAttribute(false,
-                           FormatRectangle(*dict_value, "BoundingRectangle",
-                                           "left", "top", "width", "height"),
-                           &line);
+        WriteAttribute(false,
+                       FormatRectangle(*dict_value, "BoundingRectangle", "left",
+                                       "top", "width", "height"),
+                       &line);
       }
-      if (filtered_result && did_pass_filters)
-        filtered_result->SetKey(name, dict_value->Clone());
       break;
     }
     default:

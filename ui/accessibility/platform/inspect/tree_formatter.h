@@ -57,10 +57,6 @@ class AX_EXPORT AXTreeFormatter {
   // given pattern.
   virtual base::Value BuildTreeForSelector(const AXTreeSelector&) const = 0;
 
-  // Returns a filtered accessibility tree using the current property and node
-  // filters.
-  virtual base::Value FilterTree(const base::Value& dict) const = 0;
-
   // Dumps accessibility tree.
   virtual std::string FormatTree(const base::Value& tree_node) const = 0;
 
