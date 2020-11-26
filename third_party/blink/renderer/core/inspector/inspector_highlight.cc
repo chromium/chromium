@@ -426,6 +426,8 @@ BuildFlexContainerHighlightConfigInfo(
                        "rowGapSpace");
   AppendBoxStyleConfig(flex_config.column_gap_space, flex_config_info,
                        "columnGapSpace");
+  AppendLineStyleConfig(flex_config.cross_alignment, flex_config_info,
+                        "crossAlignment");
 
   return flex_config_info;
 }
@@ -923,6 +925,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
     const InspectorFlexContainerHighlightConfig&
         flex_container_highlight_config,
     float scale) {
+  CSSComputedStyleDeclaration* style =
+      MakeGarbageCollected<CSSComputedStyleDeclaration>(node, true);
   LocalFrameView* containing_view = node->GetDocument().View();
   LayoutObject* layout_object = node->GetLayoutObject();
   auto* layout_box = To<LayoutBox>(layout_object);
@@ -964,6 +968,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
   flex_info->setValue("containerBorder", container_builder.Release());
   flex_info->setArray("lines", std::move(lines_info));
   flex_info->setBoolean("isHorizontalFlow", is_horizontal);
+  flex_info->setString(
+      "alignItemsStyle",
+      style->GetPropertyCSSValue(CSSPropertyID::kAlignItems)->CssText());
   flex_info->setValue(
       "flexContainerHighlightConfig",
       BuildFlexContainerHighlightConfigInfo(flex_container_highlight_config));
@@ -1903,6 +1910,8 @@ InspectorHighlight::DefaultFlexContainerConfig() {
       base::Optional<BoxStyle>(InspectorHighlight::DefaultBoxStyle());
   config.column_gap_space =
       base::Optional<BoxStyle>(InspectorHighlight::DefaultBoxStyle());
+  config.cross_alignment =
+      base::Optional<LineStyle>(InspectorHighlight::DefaultLineStyle());
   return config;
 }
 

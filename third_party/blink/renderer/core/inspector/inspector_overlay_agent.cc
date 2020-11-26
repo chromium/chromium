@@ -1541,6 +1541,8 @@ InspectorOverlayAgent::ToFlexContainerHighlightConfig(
       InspectorOverlayAgent::ToBoxStyle(config->getRowGapSpace(nullptr));
   highlight_config->column_gap_space =
       InspectorOverlayAgent::ToBoxStyle(config->getColumnGapSpace(nullptr));
+  highlight_config->cross_alignment =
+      InspectorOverlayAgent::ToLineStyle(config->getCrossAlignment(nullptr));
 
   return highlight_config;
 }

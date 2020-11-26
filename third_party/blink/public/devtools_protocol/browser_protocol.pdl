@@ -5680,6 +5680,8 @@ experimental domain Overlay
       optional BoxStyle rowGapSpace
       # Style of empty space caused by columns gaps (gap/column-gap).
       optional BoxStyle columnGapSpace
+      # Style of the self-alignment line (align-items).
+      optional LineStyle crossAlignment
 
   # Style information for drawing a line.
   type LineStyle extends object

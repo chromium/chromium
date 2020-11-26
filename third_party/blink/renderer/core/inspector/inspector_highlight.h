@@ -98,6 +98,7 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
   base::Optional<BoxStyle> cross_distributed_space;
   base::Optional<BoxStyle> row_gap_space;
   base::Optional<BoxStyle> column_gap_space;
+  base::Optional<LineStyle> cross_alignment;
 };
 
 struct CORE_EXPORT InspectorHighlightConfig {
