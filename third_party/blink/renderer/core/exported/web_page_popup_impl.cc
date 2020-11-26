@@ -1035,17 +1035,6 @@ WebPagePopupImpl::AllocateNewLayerTreeFrameSink() {
   return nullptr;
 }
 
-bool WebPagePopupImpl::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                                         const gfx::Rect& window_screen_rect) {
-  // Whenever |window_screen_rect| changed, update |popup_widget_host_| bounds
-  // so that it doesn't have undesired offset if native window is moved during
-  // creation. This helps to properly set bounds because of a race between
-  // initializing |this| and setting up-to-date bounds based on native window's
-  // location.
-  SetWindowRect(IntRect(window_screen_rect));
-  return false;
-}
-
 // WebPagePopup ----------------------------------------------------------------
 
 WebPagePopup* WebPagePopup::Create(

@@ -140,8 +140,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   KURL GetURLForDebugTrace() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;
-  bool UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                         const gfx::Rect& window_screen_rect) override;
 
   // WebWidget implementation.
   // NOTE: The WebWidget may still be used after requesting the popup to be
