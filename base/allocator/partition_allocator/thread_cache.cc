@@ -148,6 +148,24 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
 ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
     : buckets_(), stats_(), root_(root), next_(nullptr), prev_(nullptr) {
   ThreadCacheRegistry::Instance().RegisterThreadCache(this);
+
+  for (int index = 0; index < kBucketCount; index++) {
+    const auto& root_bucket = root->buckets[index];
+    // Invalid bucket.
+    if (!root_bucket.active_slot_spans_head)
+      continue;
+
+    // Smaller allocations are more frequent, and more performance-sensitive.
+    // Cache more small objects, and fewer larger ones, to save memory.
+    size_t element_size = root_bucket.slot_size;
+    if (element_size <= 128) {
+      buckets_[index].limit = 128;
+    } else if (element_size <= 256) {
+      buckets_[index].limit = 64;
+    } else {
+      buckets_[index].limit = 32;
+    }
+  }
 }
 
 ThreadCache::~ThreadCache() {

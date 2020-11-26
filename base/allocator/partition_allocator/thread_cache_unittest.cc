@@ -299,19 +299,20 @@ TEST_F(ThreadCacheTest, RecordStats) {
 
   tcache->Purge();
   cache_fill_counter.Reset();
-  // Bucket are never full, fill always succeeds.
-  size_t bucket_index = FillThreadCacheAndReturnIndex(
-      kTestSize, ThreadCache::kMaxCountPerBucket + 10);
-  EXPECT_EQ(ThreadCache::kMaxCountPerBucket + 10, cache_fill_counter.Delta());
+  constexpr size_t kMaxCountForBucket = 128;
+  // Buckets are never full, fill always succeeds.
+  size_t bucket_index =
+      FillThreadCacheAndReturnIndex(kTestSize, kMaxCountForBucket + 10);
+  EXPECT_EQ(kMaxCountForBucket + 10, cache_fill_counter.Delta());
   EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
 
   // Memory footprint.
   ThreadCacheStats stats;
   ThreadCacheRegistry::Instance().DumpStats(true, &stats);
   // Bucket was cleared (count halved, then refilled).
-  EXPECT_EQ(g_root->buckets[bucket_index].slot_size *
-                (ThreadCache::kMaxCountPerBucket / 2 + 10),
-            stats.bucket_total_memory);
+  EXPECT_EQ(
+      g_root->buckets[bucket_index].slot_size * (kMaxCountForBucket / 2 + 10),
+      stats.bucket_total_memory);
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }
 
