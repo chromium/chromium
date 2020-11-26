@@ -45,8 +45,8 @@ public class CompositorViewImpl implements CompositorView {
         mContext = context;
         mViewConstraints = constraints.clone();
         mView = useSurfaceView() ? createSurfaceView() : createTextureView();
-        mNativeCompositorViewImpl =
-                CompositorViewImplJni.get().init(CompositorViewImpl.this, windowAndroid);
+        mNativeCompositorViewImpl = CompositorViewImplJni.get().init(
+                CompositorViewImpl.this, windowAndroid, constraints.backgroundColor);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class CompositorViewImpl implements CompositorView {
 
     @NativeMethods
     interface Natives {
-        long init(CompositorViewImpl caller, WindowAndroid windowAndroid);
+        long init(CompositorViewImpl caller, WindowAndroid windowAndroid, int backgroundColor);
         void destroy(long nativeCompositorViewImpl, CompositorViewImpl caller);
         void surfaceCreated(long nativeCompositorViewImpl, CompositorViewImpl caller);
         void surfaceDestroyed(long nativeCompositorViewImpl, CompositorViewImpl caller);

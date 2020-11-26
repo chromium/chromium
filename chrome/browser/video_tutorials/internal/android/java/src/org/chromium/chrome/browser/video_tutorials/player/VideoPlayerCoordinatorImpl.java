@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.video_tutorials.player;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Pair;
 import android.view.View;
 
@@ -99,7 +100,9 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
         mMediaSessionObserver = new PlaybackStateObserver(
                 MediaSession.fromWebContents(mWebContents), () -> { return mMediator; });
 
-        ThinWebView thinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
+        ThinWebViewConstraints constraints = new ThinWebViewConstraints();
+        constraints.backgroundColor = Color.BLACK;
+        ThinWebView thinWebView = ThinWebViewFactory.create(mContext, constraints);
         thinWebView.attachWebContents(mWebContents, webContentView, mWebContentsDelegate);
         return thinWebView;
     }

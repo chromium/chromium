@@ -24,14 +24,14 @@ namespace {
 const int kPixelFormatUnknown = 0;
 }  // namespace
 
-jlong JNI_CompositorViewImpl_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jwindow_android) {
+jlong JNI_CompositorViewImpl_Init(JNIEnv* env,
+                                  const JavaParamRef<jobject>& obj,
+                                  const JavaParamRef<jobject>& jwindow_android,
+                                  jint java_background_color) {
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
-  auto compositor_view =
-      std::make_unique<CompositorViewImpl>(env, obj, window_android);
+  auto compositor_view = std::make_unique<CompositorViewImpl>(
+      env, obj, window_android, java_background_color);
   return reinterpret_cast<intptr_t>(compositor_view.release());
 }
 
@@ -48,13 +48,14 @@ CompositorView* CompositorView::FromJavaObject(
 
 CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
                                        jobject obj,
-                                       ui::WindowAndroid* window_android)
+                                       ui::WindowAndroid* window_android,
+                                       int64_t java_background_color)
     : obj_(env, obj),
       root_layer_(cc::SolidColorLayer::Create()),
       current_surface_format_(kPixelFormatUnknown) {
   compositor_.reset(content::Compositor::Create(this, window_android));
   root_layer_->SetIsDrawable(true);
-  root_layer_->SetBackgroundColor(SK_ColorWHITE);
+  root_layer_->SetBackgroundColor(static_cast<SkColor>(java_background_color));
 }
 
 CompositorViewImpl::~CompositorViewImpl() = default;
