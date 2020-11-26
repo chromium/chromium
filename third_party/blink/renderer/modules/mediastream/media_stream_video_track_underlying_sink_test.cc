@@ -69,8 +69,9 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
   PushableMediaStreamVideoSource* pushable_video_source_;
 };
 
+// crbug.com/1153092: flaky on several platforms.
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
-       WriteToStreamForwardsToMediaStreamSink) {
+       DISABLED_WriteToStreamForwardsToMediaStreamSink) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);

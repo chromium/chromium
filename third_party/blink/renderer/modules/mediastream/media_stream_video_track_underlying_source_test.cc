@@ -121,7 +121,8 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   EXPECT_EQ(video_track->CountSinks(), 0u);
 }
 
-TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FramesAreDropped) {
+// crbug.com/1153092: flaky on several platforms.
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, DISABLED_FramesAreDropped) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* source = CreateSource(script_state);
