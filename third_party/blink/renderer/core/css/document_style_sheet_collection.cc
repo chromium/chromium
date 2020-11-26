@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/css/document_style_sheet_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_candidate.h"
@@ -125,24 +124,6 @@ void DocumentStyleSheetCollection::UpdateActiveStyleSheets(
   ActiveDocumentStyleSheetCollector collector(*collection);
   CollectStyleSheets(engine, collector);
   ApplyActiveStyleSheetChanges(*collection);
-}
-
-void DocumentStyleSheetCollection::CollectViewportRules(
-    ViewportStyleResolver& viewport_resolver) {
-  for (Node* node : style_sheet_candidate_nodes_) {
-    StyleSheetCandidate candidate(*node);
-
-    if (candidate.IsImport())
-      continue;
-    StyleSheet* sheet = candidate.Sheet();
-    if (!sheet)
-      continue;
-    if (!candidate.CanBeActivated(
-            GetDocument().GetStyleEngine().PreferredStylesheetSetName()))
-      continue;
-    viewport_resolver.CollectViewportRulesFromAuthorSheet(
-        To<CSSStyleSheet>(*sheet));
-  }
 }
 
 }  // namespace blink

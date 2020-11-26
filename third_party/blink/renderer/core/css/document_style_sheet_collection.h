@@ -37,7 +37,6 @@ namespace blink {
 class DocumentStyleSheetCollector;
 class StyleEngine;
 class TreeScope;
-class ViewportStyleResolver;
 
 class DocumentStyleSheetCollection final
     : public TreeScopeStyleSheetCollection {
@@ -49,7 +48,6 @@ class DocumentStyleSheetCollection final
 
   void UpdateActiveStyleSheets(StyleEngine&);
   void CollectStyleSheets(StyleEngine&, DocumentStyleSheetCollector&);
-  void CollectViewportRules(ViewportStyleResolver&);
 
   void Trace(Visitor* visitor) const override {
     TreeScopeStyleSheetCollection::Trace(visitor);
