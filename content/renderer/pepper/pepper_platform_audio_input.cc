@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
 #include "content/renderer/pepper/pepper_audio_input_host.h"
@@ -90,7 +89,10 @@ void PepperPlatformAudioInput::OnStreamCreated(
 #endif
   DCHECK_GT(shared_memory_region.GetSize(), 0u);
 
-  if (base::ThreadTaskRunnerHandle::Get().get() != main_task_runner_.get()) {
+  // If we're not on the main thread then bounce over to it. Don't use
+  // base::ThreadTaskRunnerHandle::Get() as |main_task_runner_| will never
+  // match that. See crbug.com/1150822.
+  if (!main_task_runner_->BelongsToCurrentThread()) {
     // If shutdown has occurred, |client_| will be NULL and the handles will be
     // cleaned up on the main thread.
     main_task_runner_->PostTask(
