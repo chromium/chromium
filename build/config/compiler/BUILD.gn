@@ -1948,10 +1948,7 @@ if (is_win) {
   }
 
   if (is_apple) {
-    if (symbol_level == 2) {
-      # Mac dead code stripping requires symbols.
-      common_optimize_on_ldflags += [ "-Wl,-dead_strip" ]
-    }
+    common_optimize_on_ldflags += [ "-Wl,-dead_strip" ]
 
     if (is_official_build) {
       common_optimize_on_ldflags += [
