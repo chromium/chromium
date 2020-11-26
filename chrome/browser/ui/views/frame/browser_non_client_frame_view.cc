@@ -303,13 +303,13 @@ bool BrowserNonClientFrameView::DoesIntersectRect(const views::View* target,
   }
 
   bool should_leave_to_top_container = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // In immersive mode, the caption buttons container is reparented to the
   // TopContainerView and hence |rect| should not be claimed here.  See
-  // BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted().
+  // BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted().
   should_leave_to_top_container =
       browser_view_->immersive_mode_controller()->IsRevealed();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
   if (!browser_view_->IsTabStripVisible()) {
     // Claim |rect| if it is above the top of the topmost client area view.
