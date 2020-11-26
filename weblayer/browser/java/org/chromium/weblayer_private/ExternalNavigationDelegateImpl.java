@@ -14,7 +14,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -89,10 +89,10 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     // This method should never be invoked as WebLayer does not handle incoming intents.
     @Override
-    public @OverrideUrlLoadingResultType int handleIncognitoIntentTargetingSelf(
+    public OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
             final Intent intent, final String referrerUrl, final String fallbackUrl) {
         assert false;
-        return OverrideUrlLoadingResultType.NO_OVERRIDE;
+        return OverrideUrlLoadingResult.forNoOverride();
     }
 
     @Override

@@ -34,6 +34,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -1235,9 +1236,9 @@ public class ExternalNavigationHandlerTest {
                 new ExternalNavigationParams.Builder(YOUTUBE_MOBILE_URL, false)
                         .setOpenInNewTab(true)
                         .build();
-        @OverrideUrlLoadingResultType
-        int result = mUrlHandler.shouldOverrideUrlLoading(params);
-        Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result);
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
         Assert.assertTrue(mDelegate.startActivityIntent != null);
         Assert.assertTrue(
                 mDelegate.startActivityIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
@@ -2031,11 +2032,10 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected @OverrideUrlLoadingResultType int clobberCurrentTab(
-                String url, String referrerUrl) {
+        protected OverrideUrlLoadingResult clobberCurrentTab(String url, String referrerUrl) {
             mNewUrlAfterClobbering = url;
             mReferrerUrlForClobbering = referrerUrl;
-            return OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB;
+            return OverrideUrlLoadingResult.forClobberingTab();
         }
     };
 
@@ -2115,11 +2115,11 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public @OverrideUrlLoadingResultType int handleIncognitoIntentTargetingSelf(
+        public OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
                 Intent intent, String referrerUrl, String fallbackUrl) {
             handleIncognitoIntentTargetingSelfCalled = true;
-            if (mCanLoadUrlInTab) return OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB;
-            return OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
+            if (mCanLoadUrlInTab) return OverrideUrlLoadingResult.forClobberingTab();
+            return OverrideUrlLoadingResult.forExternalIntent();
         }
 
         @Override
@@ -2412,8 +2412,7 @@ public class ExternalNavigationHandlerTest {
                             .setHasUserGesture(mHasUserGesture)
                             .setIsRendererInitiated(mIsRendererInitiated)
                             .build();
-            @OverrideUrlLoadingResultType
-            int result = mUrlHandler.shouldOverrideUrlLoading(params);
+            OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
             boolean startActivityCalled = false;
             boolean startWebApkCalled = false;
 
@@ -2431,7 +2430,7 @@ public class ExternalNavigationHandlerTest {
                 }
             }
 
-            Assert.assertEquals(expectedOverrideResult, result);
+            Assert.assertEquals(expectedOverrideResult, result.getResultType());
             Assert.assertEquals(expectStartIncognito, mUrlHandler.mStartIncognitoIntentCalled);
             Assert.assertEquals(expectStartActivity, startActivityCalled);
             Assert.assertEquals(expectStartWebApk, startWebApkCalled);

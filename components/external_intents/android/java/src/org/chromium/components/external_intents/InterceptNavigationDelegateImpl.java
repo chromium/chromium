@@ -81,7 +81,8 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
 
         ExternalNavigationParams params =
                 new ExternalNavigationParams.Builder(url, incognito).setOpenInNewTab(true).build();
-        mLastOverrideUrlLoadingResultType = mExternalNavHandler.shouldOverrideUrlLoading(params);
+        mLastOverrideUrlLoadingResultType =
+                mExternalNavHandler.shouldOverrideUrlLoading(params).getResultType();
         return mLastOverrideUrlLoadingResultType
                 != ExternalNavigationHandler.OverrideUrlLoadingResultType.NO_OVERRIDE;
     }
@@ -131,7 +132,7 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
                 buildExternalNavigationParams(navigationParams, redirectHandler, shouldCloseTab)
                         .build();
         @OverrideUrlLoadingResultType
-        int result = mExternalNavHandler.shouldOverrideUrlLoading(params);
+        int result = mExternalNavHandler.shouldOverrideUrlLoading(params).getResultType();
         mLastOverrideUrlLoadingResultType = result;
 
         switch (result) {

@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -149,14 +149,13 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public @OverrideUrlLoadingResultType int handleIncognitoIntentTargetingSelf(
+    public OverrideUrlLoadingResult handleIncognitoIntentTargetingSelf(
             final Intent intent, final String referrerUrl, final String fallbackUrl) {
         String primaryUrl = intent.getDataString();
         boolean isUrlLoadedInTheSameTab = ExternalNavigationHandler.loadUrlFromIntent(
                 referrerUrl, primaryUrl, fallbackUrl, this, false, true);
-        return (isUrlLoadedInTheSameTab)
-                ? OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB
-                : OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT;
+        return (isUrlLoadedInTheSameTab) ? OverrideUrlLoadingResult.forClobberingTab()
+                                         : OverrideUrlLoadingResult.forExternalIntent();
     }
 
     @Override

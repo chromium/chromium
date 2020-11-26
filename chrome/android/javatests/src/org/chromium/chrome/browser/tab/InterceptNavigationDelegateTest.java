@@ -76,10 +76,9 @@ public class InterceptNavigationDelegateTest {
         }
 
         @Override
-        public @OverrideUrlLoadingResultType int shouldOverrideUrlLoading(
-                ExternalNavigationParams params) {
+        public OverrideUrlLoadingResult shouldOverrideUrlLoading(ExternalNavigationParams params) {
             mExternalNavParamHistory.add(params);
-            return OverrideUrlLoadingResultType.NO_OVERRIDE;
+            return OverrideUrlLoadingResult.forNoOverride();
         }
     }
 
