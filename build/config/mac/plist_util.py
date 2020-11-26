@@ -109,15 +109,15 @@ def LoadPList(path):
 
 def SavePList(path, format, data):
   """Saves |data| as a Plist to |path| in the specified |format|."""
+  # The below does not replace the destination file but update it in place,
+  # so if more than one hardlink points to destination all of them will be
+  # modified. This is not what is expected, so delete destination file if
+  # it does exist.
+  if os.path.exists(path):
+    os.unlink(path)
   if sys.version_info.major == 2:
     fd, name = tempfile.mkstemp()
     try:
-      # "plutil" does not replace the destination file but update it in place,
-      # so if more than one hardlink points to destination all of them will be
-      # modified. This is not what is expected, so delete destination file if
-      # it does exist.
-      if os.path.exists(path):
-        os.unlink(path)
       with os.fdopen(fd, 'wb') as f:
         plistlib.writePlist(data, f)
       subprocess.check_call(['plutil', '-convert', format, '-o', path, name])
