@@ -166,6 +166,11 @@ Navigation::LoadError NavigationImpl::GetLoadError() {
   if (error_code == net::OK)
     return kNoError;
 
+  // The safe browsing navigation throttle fails navigations with
+  // ERR_BLOCKED_BY_CLIENT when showing safe browsing interstitials.
+  if (error_code == net::ERR_BLOCKED_BY_CLIENT)
+    return kSafeBrowsingError;
+
   if (net::IsCertificateError(error_code))
     return kSSLError;
 

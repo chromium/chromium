@@ -182,6 +182,8 @@ public final class NavigationImpl extends INavigation.Stub {
                 return LoadError.CONNECTIVITY_ERROR;
             case ImplLoadError.OTHER_ERROR:
                 return LoadError.OTHER_ERROR;
+            case ImplLoadError.SAFE_BROWSING_ERROR:
+                return LoadError.SAFE_BROWSING_ERROR;
             default:
                 throw new IllegalArgumentException("Unexpected load error " + loadError);
         }

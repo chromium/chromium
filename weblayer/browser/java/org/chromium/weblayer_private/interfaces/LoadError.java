@@ -10,7 +10,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @IntDef({LoadError.NO_ERROR, LoadError.HTTP_CLIENT_ERROR, LoadError.HTTP_SERVER_ERROR,
-        LoadError.SSL_ERROR, LoadError.CONNECTIVITY_ERROR, LoadError.OTHER_ERROR})
+        LoadError.SSL_ERROR, LoadError.CONNECTIVITY_ERROR, LoadError.OTHER_ERROR,
+        LoadError.SAFE_BROWSING_ERROR})
 @Retention(RetentionPolicy.SOURCE)
 public @interface LoadError {
     int NO_ERROR = 0;
@@ -19,4 +20,6 @@ public @interface LoadError {
     int SSL_ERROR = 3;
     int CONNECTIVITY_ERROR = 4;
     int OTHER_ERROR = 5;
+    // Sent since 88.
+    int SAFE_BROWSING_ERROR = 6;
 }
