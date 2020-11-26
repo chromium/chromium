@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/sharing/webrtc/sharing_mojo_service.h"
@@ -16,6 +17,9 @@ namespace nearby {
 namespace {
 
 NearbyProcessManagerImpl::Factory* g_test_factory = nullptr;
+
+constexpr base::TimeDelta kProcessCleanupTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 void OnSharingShutDownComplete(
     mojo::Remote<sharing::mojom::Sharing> sharing,
@@ -31,14 +35,15 @@ void OnSharingShutDownComplete(
 // static
 std::unique_ptr<NearbyProcessManager> NearbyProcessManagerImpl::Factory::Create(
     NearbyConnectionsDependenciesProvider*
-        nearby_connections_dependencies_provider) {
+        nearby_connections_dependencies_provider,
+    std::unique_ptr<base::OneShotTimer> timer) {
   if (g_test_factory) {
     return g_test_factory->BuildInstance(
-        nearby_connections_dependencies_provider);
+        nearby_connections_dependencies_provider, std::move(timer));
   }
 
   return base::WrapUnique(new NearbyProcessManagerImpl(
-      nearby_connections_dependencies_provider,
+      nearby_connections_dependencies_provider, std::move(timer),
       base::BindRepeating(&sharing::LaunchSharing)));
 }
 
@@ -80,10 +85,12 @@ NearbyProcessManagerImpl::NearbyReferenceImpl::GetNearbySharingDecoder() const {
 NearbyProcessManagerImpl::NearbyProcessManagerImpl(
     NearbyConnectionsDependenciesProvider*
         nearby_connections_dependencies_provider,
+    std::unique_ptr<base::OneShotTimer> timer,
     const base::RepeatingCallback<
         mojo::PendingRemote<sharing::mojom::Sharing>()>& sharing_binder)
     : nearby_connections_dependencies_provider_(
           nearby_connections_dependencies_provider),
+      shutdown_debounce_timer_(std::move(timer)),
       sharing_binder_(sharing_binder) {}
 
 NearbyProcessManagerImpl::~NearbyProcessManagerImpl() = default;
@@ -103,9 +110,15 @@ NearbyProcessManagerImpl::GetNearbyProcessReference(
     }
   }
 
+  NS_LOG(VERBOSE) << "New Nearby process reference requested.";
   auto reference_id = base::UnguessableToken::Create();
   id_to_process_stopped_callback_map_.emplace(
       reference_id, std::move(on_process_stopped_callback));
+
+  // If we were waiting to shut down the process but a new client was added,
+  // stop the timer since the process needs to be kept alive for this new
+  // client.
+  shutdown_debounce_timer_->Stop();
 
   return std::make_unique<NearbyReferenceImpl>(
       connections_, decoder_,
@@ -195,10 +208,24 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
   if (!id_to_process_stopped_callback_map_.empty())
     return;
 
-  ShutDownProcess();
+  NS_LOG(VERBOSE) << "All Nearby references have been released; will shut down "
+                  << "process in " << kProcessCleanupTimeout << " unless a new "
+                  << "reference is obtained.";
+
+  // Stop the process, but wait |kProcessCleanupTimeout| before doing so. Adding
+  // this additional timeout works around issues during Nearby shutdown
+  // (see https://crbug.com/1152609).
+  // TODO(https://crbug.com/1152892): Remove this timeout.
+  shutdown_debounce_timer_->Start(
+      FROM_HERE, kProcessCleanupTimeout,
+      base::BindOnce(&NearbyProcessManagerImpl::ShutDownProcess,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyProcessManagerImpl::ShutDownProcess() {
+  // Ensure that we don't try to stop the process again.
+  shutdown_debounce_timer_->Stop();
+
   NS_LOG(INFO) << "Shutting down Nearby utility process.";
 
   // Ensure that any in-progress CreateNearbyConnections() or

@@ -62,7 +62,8 @@ class FakeNearbyProcessManagerFactory
   // chromeos::nearby::NearbyProcessManagerImpl::Factory:
   std::unique_ptr<chromeos::nearby::NearbyProcessManager> BuildInstance(
       chromeos::nearby::NearbyConnectionsDependenciesProvider*
-          nearby_connections_dependencies_provider) override {
+          nearby_connections_dependencies_provider,
+      std::unique_ptr<base::OneShotTimer> timer) override {
     auto instance =
         std::make_unique<chromeos::nearby::FakeNearbyProcessManager>();
     instance_ = instance.get();

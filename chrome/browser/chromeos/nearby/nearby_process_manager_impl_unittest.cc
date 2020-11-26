@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/timer/mock_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
@@ -130,8 +131,11 @@ class NearbyProcessManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+    mock_timer_ = mock_timer.get();
+
     nearby_process_manager_ = base::WrapUnique(new NearbyProcessManagerImpl(
-        &fake_deps_provider_,
+        &fake_deps_provider_, std::move(mock_timer),
         base::BindRepeating(&FakeSharingMojoService::BindSharingService,
                             base::Unretained(&fake_sharing_mojo_service_))));
   }
@@ -166,6 +170,10 @@ class NearbyProcessManagerImplTest : public testing::Test {
     EXPECT_FALSE(fake_sharing_mojo_service_.AreMocksSet());
   }
 
+  bool IsTimerRunning() const { return mock_timer_->IsRunning(); }
+
+  void FireTimer() { mock_timer_->Fire(); }
+
  private:
   NearbyProcessManagerImpl* GetImpl() {
     return static_cast<NearbyProcessManagerImpl*>(
@@ -181,6 +189,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
   FakeNearbyConnectionsDependenciesProvider fake_deps_provider_;
 
   std::unique_ptr<NearbyProcessManager> nearby_process_manager_;
+
+  base::MockOneShotTimer* mock_timer_ = nullptr;
 };
 
 TEST_F(NearbyProcessManagerImplTest, StartAndStop) {
@@ -189,6 +199,7 @@ TEST_F(NearbyProcessManagerImplTest, StartAndStop) {
   VerifyBound(reference.get());
 
   reference.reset();
+  FireTimer();
   base::RunLoop().RunUntilIdle();
   VerifyNotBound();
   EXPECT_EQ(0u, num_process_stopped_calls());
@@ -200,6 +211,7 @@ TEST_F(NearbyProcessManagerImplTest, StartAndStop) {
   VerifyBound(reference.get());
 
   reference.reset();
+  FireTimer();
   base::RunLoop().RunUntilIdle();
   VerifyNotBound();
   EXPECT_EQ(0u, num_process_stopped_calls());
@@ -215,10 +227,12 @@ TEST_F(NearbyProcessManagerImplTest, MultipleReferences) {
 
   // Deleting one reference should still keep the other reference bound.
   reference1.reset();
+  EXPECT_FALSE(IsTimerRunning());
   base::RunLoop().RunUntilIdle();
   VerifyBound(reference2.get());
 
   reference2.reset();
+  FireTimer();
   base::RunLoop().RunUntilIdle();
   VerifyNotBound();
   EXPECT_EQ(0u, num_process_stopped_calls());
@@ -235,6 +249,31 @@ TEST_F(NearbyProcessManagerImplTest, ProcessStopped) {
 
   VerifyNotBound();
   EXPECT_EQ(1u, num_process_stopped_calls());
+  EXPECT_FALSE(IsTimerRunning());
+}
+
+TEST_F(NearbyProcessManagerImplTest,
+       NewReferenceObtainedWhileWaitingToShutDown) {
+  std::unique_ptr<NearbyProcessManager::NearbyProcessReference> reference =
+      CreateReference();
+  VerifyBound(reference.get());
+
+  // Delete the reference; the timer should be running so that the process is
+  // shut down after the cleanup timeout.
+  reference.reset();
+  EXPECT_TRUE(IsTimerRunning());
+
+  // Obtain a new reference; the timer should have stopped.
+  reference = CreateReference();
+  VerifyBound(reference.get());
+  EXPECT_FALSE(IsTimerRunning());
+
+  // Delete the reference and let the timer fire to shut down the process.
+  reference.reset();
+  FireTimer();
+  base::RunLoop().RunUntilIdle();
+  VerifyNotBound();
+  EXPECT_EQ(0u, num_process_stopped_calls());
 }
 
 }  // namespace nearby

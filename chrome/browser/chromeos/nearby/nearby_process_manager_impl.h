@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_PROCESS_MANAGER_IMPL_H_
 #define CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_PROCESS_MANAGER_IMPL_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -32,14 +35,17 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
    public:
     static std::unique_ptr<NearbyProcessManager> Create(
         NearbyConnectionsDependenciesProvider*
-            nearby_connections_dependencies_provider);
+            nearby_connections_dependencies_provider,
+        std::unique_ptr<base::OneShotTimer> timer =
+            std::make_unique<base::OneShotTimer>());
     static void SetFactoryForTesting(Factory* factory);
     virtual ~Factory() = default;
 
    private:
     virtual std::unique_ptr<NearbyProcessManager> BuildInstance(
         NearbyConnectionsDependenciesProvider*
-            nearby_connections_dependencies_provider) = 0;
+            nearby_connections_dependencies_provider,
+        std::unique_ptr<base::OneShotTimer> timer) = 0;
   };
 
   ~NearbyProcessManagerImpl() override;
@@ -75,6 +81,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   NearbyProcessManagerImpl(
       NearbyConnectionsDependenciesProvider*
           nearby_connections_dependencies_provider,
+      std::unique_ptr<base::OneShotTimer> timer,
       const base::RepeatingCallback<
           mojo::PendingRemote<sharing::mojom::Sharing>()>& sharing_binder);
 
@@ -94,6 +101,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
   NearbyConnectionsDependenciesProvider*
       nearby_connections_dependencies_provider_;
+  std::unique_ptr<base::OneShotTimer> shutdown_debounce_timer_;
   base::RepeatingCallback<mojo::PendingRemote<sharing::mojom::Sharing>()>
       sharing_binder_;
 
