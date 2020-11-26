@@ -100,6 +100,15 @@ class GcpSetupTest : public ::testing::Test {
     return uninstall_reg;
   }
 
+  base::FilePath CreateFilePath(const std::string& file_name) {
+    return temp_dir_.GetPath().AppendASCII(file_name.c_str());
+  }
+
+  void CreateJsonFile(const base::FilePath& path, const std::string& data) {
+    ASSERT_EQ(static_cast<int>(data.size()),
+              base::WriteFile(path, data.data(), data.size()));
+  }
+
   void assert_addremove_reg_exists() {
     base::win::RegKey uninstall_key;
     ASSERT_EQ(ERROR_SUCCESS,
@@ -166,9 +175,9 @@ class GcpSetupTest : public ::testing::Test {
     ASSERT_EQ(version_minor, static_cast<DWORD>(version_components[3]));
   }
 
- private:
   void SetUp() override;
 
+ private:
   base::string16 GetCurrentDateForTesting() {
     static const wchar_t kDateFormat[] = L"yyyyMMdd";
     wchar_t date_str[base::size(kDateFormat)] = {0};
@@ -192,6 +201,7 @@ class GcpSetupTest : public ::testing::Test {
   base::ScopedTempDir scoped_temp_prog_dir_;
   base::ScopedTempDir scoped_temp_start_menu_dir_;
   base::ScopedTempDir scoped_temp_progdata_dir_;
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> program_files_override_;
   std::unique_ptr<base::ScopedPathOverride> start_menu_override_;
   std::unique_ptr<base::ScopedPathOverride> programdata_override_;
@@ -344,6 +354,8 @@ void GcpSetupTest::SetUp() {
   programdata_override_.reset(new base::ScopedPathOverride(
       base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath()));
 
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
   // In non-component builds, base::FILE_MODULE will always return the path
   // to base.dll because of the way CURRENT_MODULE works.  Therefore overriding
   // to point to gaia1_0.dll's destination path (i.e. after it is installed).
@@ -407,28 +419,37 @@ TEST_F(GcpSetupTest, DoInstallWithExtension) {
 }
 
 // Tests install over old install for different types of installations.
-// 0 - Indicates that initial installation isn't standalone.
-// 1 - Indicates that the initial installation is through a standalone
-// installer.
+// 0 - Indicates that initial installation is standalone.
+// 1 - Indicates that the initial installation is through MSI.
 class GcpInstallOverOldInstallTest : public GcpSetupTest,
                                      public ::testing::WithParamInterface<int> {
  public:
-  void SetInstallerConfig(bool append_standalone_flag) {
-    if (append_standalone_flag) {
-      base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-      command_line.AppendSwitch(switches::kStandaloneInstall);
+  void SetInstallerConfig(bool add_installer_data) {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
 
-      StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
-          command_line);
+    // Indicates fresh installation.
+    command_line.AppendSwitch(switches::kStandaloneInstall);
+
+    if (add_installer_data) {
+      // Only set if installation source is MSI.
+
+      std::string installer_json = "{\"distribution\": {\"msi\": true}}";
+      base::FilePath installer_data_path = CreateFilePath("myfile.txt");
+      CreateJsonFile(installer_data_path, installer_json);
+
+      command_line.AppendSwitchPath(switches::kInstallerData,
+                                    installer_data_path);
     }
+
+    StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
+        command_line);
   }
 };
 
 TEST_P(GcpInstallOverOldInstallTest, DoInstallOverOldInstall) {
   logging::ResetEventSourceForTesting();
 
-  // Set installer config as if --standalone flag was provided as indicated by
-  // test parameter.
+  // Set installer data argument to indicate the installation source.
   SetInstallerConfig(GetParam());
 
   // Install using some old version.
@@ -449,12 +470,16 @@ TEST_P(GcpInstallOverOldInstallTest, DoInstallOverOldInstall) {
 
   logging::ResetEventSourceForTesting();
 
-  // Don't include standalone flag as it should have already been indicated in
-  // the registry the first time this is called.
-  SetInstallerConfig(false);
+  // Don't include any flag to indicate the installation source as
+  // the registry was set the first time this is called.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+
+  StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
+      command_line);
+
   EXPECT_TRUE(
       StandaloneInstallerConfigurator::Get()->IsStandaloneInstallation() ==
-      GetParam());
+      !GetParam());
 
   // Now install a newer version.
   ASSERT_EQ(S_OK,
@@ -559,6 +584,9 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
   ExpectAllFilesToExist(false, old_version);
 }
 
+// Tests installations from exe and MSI.
+// 0 - installation is not standalone.
+// 1 - installation is standalone.
 class GcpInstallerTest : public GcpSetupTest,
                          public ::testing::WithParamInterface<int> {};
 
@@ -567,13 +595,21 @@ TEST_P(GcpInstallerTest, DoUninstall) {
 
   logging::ResetEventSourceForTesting();
 
-  if (standalone_installer) {
-    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitch(switches::kStandaloneInstall);
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kStandaloneInstall);
 
-    StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
-        command_line);
+  if (!standalone_installer) {
+    std::string installer_json = "{\"distribution\": {\"msi\": true}}";
+    base::FilePath installer_data_path = CreateFilePath("myfile.txt");
+    CreateJsonFile(installer_data_path, installer_json);
+
+    command_line.AppendSwitchPath(switches::kInstallerData,
+                                  installer_data_path);
   }
+
+  StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
+      command_line);
+
   ASSERT_EQ(S_OK,
             DoInstall(module_path(), product_version(), fakes_for_testing()));
 
@@ -766,6 +802,8 @@ TEST_F(GcpSetupTest, WriteCredentialProviderRegistryValues) {
                                KEY_ALL_ACCESS));
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  // Set the standalone registry, but not installer data so that EXE
+  // installation is indicated.
   command_line.AppendSwitch(switches::kStandaloneInstall);
 
   StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
