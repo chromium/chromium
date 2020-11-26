@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
@@ -26,7 +27,6 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     private long mNativePersistedStateDB;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
-    private Runnable mOnCompleteForTesting;
     // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or @RemovableInRelease to improve
     // performance
     private boolean mIsDestroyed;
@@ -49,7 +49,15 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     public void save(int tabId, String dataId, byte[] data) {
         makeNativeAssertion();
         LevelDBPersistedTabDataStorageJni.get().save(
-                mNativePersistedStateDB, getKey(tabId, dataId), data, mOnCompleteForTesting);
+                mNativePersistedStateDB, getKey(tabId, dataId), data, null);
+    }
+
+    @RemovableInRelease
+    @MainThread
+    public void saveForTesting(int tabId, String dataId, byte[] data, Runnable onComplete) {
+        makeNativeAssertion();
+        LevelDBPersistedTabDataStorageJni.get().save(
+                mNativePersistedStateDB, getKey(tabId, dataId), data, onComplete);
     }
 
     @MainThread
@@ -77,7 +85,15 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     public void delete(int tabId, String dataId) {
         makeNativeAssertion();
         LevelDBPersistedTabDataStorageJni.get().delete(
-                mNativePersistedStateDB, getKey(tabId, dataId), mOnCompleteForTesting);
+                mNativePersistedStateDB, getKey(tabId, dataId), null);
+    }
+
+    @RemovableInRelease
+    @MainThread
+    public void deleteForTesting(int tabId, String dataId, Runnable onComplete) {
+        makeNativeAssertion();
+        LevelDBPersistedTabDataStorageJni.get().delete(
+                mNativePersistedStateDB, getKey(tabId, dataId), onComplete);
     }
 
     @Override
@@ -116,11 +132,6 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
             assert mNativePersistedStateDB == 0;
         }
         mNativePersistedStateDB = nativePtr;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void setOnCompleteForTesting(Runnable onComplete) {
-        mOnCompleteForTesting = onComplete;
     }
 
     @VisibleForTesting

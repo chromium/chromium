@@ -27,6 +27,10 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 class PersistedStateDBFactory;
 class PersistedStateDBFactoryTest;
 class PersistedStateDBTest;
@@ -103,6 +107,7 @@ class PersistedStateDB : public KeyedService {
 
   // Initializes the database
   PersistedStateDB(
+      content::BrowserContext* browser_context,
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
       const base::FilePath& profile_directory);
 
@@ -130,6 +135,9 @@ class PersistedStateDB : public KeyedService {
 
   // Returns true if the database failed to initialize
   bool FailedToInit() const;
+
+  // Browser context associated with the PersistedStateDB
+  content::BrowserContext* browser_context_;
 
   // Status of the database initialization.
   base::Optional<leveldb_proto::Enums::InitStatus> database_status_;

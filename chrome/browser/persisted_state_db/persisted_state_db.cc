@@ -119,9 +119,11 @@ void PersistedStateDB::DeleteAllContent(OperationCallback callback) {
 }
 
 PersistedStateDB::PersistedStateDB(
+    content::BrowserContext* browser_context,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& profile_directory)
-    : database_status_(base::nullopt),
+    : browser_context_(browser_context),
+      database_status_(base::nullopt),
       storage_database_(
           proto_database_provider
               ->GetDB<persisted_state_db::PersistedStateContentProto>(
@@ -246,7 +248,7 @@ void PersistedStateDB::Delete(
 }
 
 void PersistedStateDB::Destroy(JNIEnv* env) {
-  delete this;
+  PersistedStateDBFactory::GetInstance()->Disassociate(browser_context_);
 }
 
 static void JNI_LevelDBPersistedTabDataStorage_Init(

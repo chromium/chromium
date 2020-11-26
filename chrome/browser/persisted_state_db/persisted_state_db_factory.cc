@@ -45,5 +45,6 @@ KeyedService* PersistedStateDBFactory::BuildServiceInstanceFor(
           ->GetProtoDatabaseProvider();
   base::FilePath tab_state_db_dir(
       context->GetPath().AppendASCII(kPersistedStateDBFolder));
-  return new PersistedStateDB(proto_database_provider, tab_state_db_dir);
+  return new PersistedStateDB(context, proto_database_provider,
+                              tab_state_db_dir);
 }

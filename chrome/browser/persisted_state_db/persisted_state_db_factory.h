@@ -21,6 +21,11 @@ class PersistedStateDBFactory : public BrowserContextKeyedServiceFactory {
   // Acquire PersistedStateDB - there is one per profile.
   static PersistedStateDB* GetForProfile(content::BrowserContext* context);
 
+  // Call the parent Disassocaite which is a protected method
+  void Disassociate(content::BrowserContext* context) {
+    BrowserContextKeyedServiceFactory::Disassociate(context);
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<PersistedStateDBFactory>;
 
