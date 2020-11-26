@@ -59,7 +59,6 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer> {
   int int_fields[6];
   gfx::Vector2dF offset;
   unsigned bitfields;
-  SkColor safe_opaque_background_color;
   void* debug_info;
 };
 
@@ -87,19 +86,13 @@ Layer::Inputs::Inputs(int layer_id)
 Layer::Inputs::~Inputs() = default;
 
 Layer::LayerTreeInputs::LayerTreeInputs()
-    : mask_layer(nullptr),
-      opacity(1.f),
-      blend_mode(SkBlendMode::kSrcOver),
-      masks_to_bounds(false),
+    : masks_to_bounds(false),
       is_fast_rounded_corner(false),
       user_scrollable_horizontal(true),
       user_scrollable_vertical(true),
       trilinear_filtering(false),
       hide_layer_and_subtree(false),
-      scrollable(false),
-      backdrop_filter_quality(1.0f),
-      mirror_count(0),
-      corner_radii({0, 0, 0, 0}) {}
+      scrollable(false) {}
 
 Layer::LayerTreeInputs::~LayerTreeInputs() = default;
 
@@ -128,8 +121,7 @@ Layer::Layer()
       needs_show_scrollbars_(false),
       has_transform_node_(false),
       has_clip_node_(false),
-      subtree_has_copy_request_(false),
-      safe_opaque_background_color_(0) {}
+      subtree_has_copy_request_(false) {}
 
 Layer::~Layer() {
   // Our parent should be holding a reference to us so there should be no
@@ -496,25 +488,41 @@ void Layer::SetBackgroundColor(SkColor background_color) {
 
 void Layer::SetSafeOpaqueBackgroundColor(SkColor background_color) {
   DCHECK(IsPropertyChangeAllowed());
-  SkColor opaque_color = SkColorSetA(background_color, 255);
-  if (safe_opaque_background_color_ == opaque_color)
+  SkColor opaque_color = SkColorSetA(background_color, SK_AlphaOPAQUE);
+  auto& inputs = EnsureLayerTreeInputs();
+  if (inputs.safe_opaque_background_color == opaque_color)
     return;
-  safe_opaque_background_color_ = opaque_color;
+  inputs.safe_opaque_background_color = opaque_color;
   SetNeedsPushProperties();
 }
 
 SkColor Layer::SafeOpaqueBackgroundColor() const {
   if (contents_opaque()) {
-    // TODO(936906): We should uncomment this DCHECK, since the
-    // |safe_opaque_background_color_| could be transparent if it is never set
-    // (the default is 0). But to do that, one test needs to be fixed.
-    // DCHECK_EQ(SkColorGetA(safe_opaque_background_color_), SK_AlphaOPAQUE);
-    return safe_opaque_background_color_;
+    if (!layer_tree_host_ || !layer_tree_host_->IsUsingLayerLists()) {
+      // In layer tree mode, PropertyTreeBuilder should have calculated the safe
+      // opaque background color and called SetSafeOpaqueBackgroundColor().
+      DCHECK(layer_tree_inputs());
+      DCHECK_EQ(SkColorGetA(layer_tree_inputs()->safe_opaque_background_color),
+                SK_AlphaOPAQUE);
+      return layer_tree_inputs()->safe_opaque_background_color;
+    }
+    // In layer list mode, the PropertyTreeBuilder algorithm doesn't apply
+    // because it depends on the layer tree hierarchy. Instead we use
+    // background_color() if it's not transparent, or layer_tree_host_'s
+    // background_color(), with the alpha channel forced to be opaque.
+    SkColor color = background_color() == SK_ColorTRANSPARENT
+                        ? layer_tree_host_->background_color()
+                        : background_color();
+    return SkColorSetA(color, SK_AlphaOPAQUE);
   }
-  SkColor color = background_color();
-  if (SkColorGetA(color) == 255)
-    color = SK_ColorTRANSPARENT;
-  return color;
+  if (SkColorGetA(background_color()) == SK_AlphaOPAQUE) {
+    // The layer is not opaque while the background color is, meaning that the
+    // background color doesn't cover the whole layer. Use SK_ColorTRANSPARENT
+    // to avoid intrusive checkerboard where the layer is not covered by the
+    // background color.
+    return SK_ColorTRANSPARENT;
+  }
+  return background_color();
 }
 
 void Layer::SetMasksToBounds(bool masks_to_bounds) {
@@ -1305,7 +1313,7 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
   layer->SetElementId(inputs_.element_id);
   layer->SetHasTransformNode(has_transform_node_);
   layer->SetBackgroundColor(inputs_.background_color);
-  layer->SetSafeOpaqueBackgroundColor(safe_opaque_background_color_);
+  layer->SetSafeOpaqueBackgroundColor(SafeOpaqueBackgroundColor());
   layer->SetBounds(inputs_.bounds);
   layer->SetTransformTreeIndex(transform_tree_index());
   layer->SetEffectTreeIndex(effect_tree_index());

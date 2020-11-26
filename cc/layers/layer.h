@@ -151,22 +151,22 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   virtual void SetBackgroundColor(SkColor background_color);
   SkColor background_color() const { return inputs_.background_color; }
 
-  // Internal to property tree generation. Sets an opaque background color for
-  // the layer, to be used in place of the background_color() if the layer says
-  // contents_opaque() is true.
+  // For layer tree mode only. In layer list mode, client doesn't need to set
+  // it. Sets an opaque background color for the layer, to be used in place of
+  // the background_color() if the layer says contents_opaque() is true.
   void SetSafeOpaqueBackgroundColor(SkColor background_color);
-  // Returns a background color with opaque-ness equal to the value of
+
+  // Returns a background color with opaqueness equal to the value of
   // contents_opaque().
-  // If the layer says contents_opaque() is true, this returns the value set by
-  // SetSafeOpaqueBackgroundColor() which should be an opaque color. Otherwise,
-  // it returns something non-opaque. It prefers to return the
+  // If the layer says contents_opaque() is true, in layer tree mode, this
+  // returns the value set by SetSafeOpaqueBackgroundColor() which should be an
+  // opaque color, and in layer list mode, returns an opaque color calculated
+  // from background_color() and layer_tree_host()->background_clor().
+  // Otherwise, it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
-  // claims to not be), then SK_ColorTRANSPARENT is returned.
+  // claims to not be), then SK_ColorTRANSPARENT is returned to avoid intrusive
+  // checkerboard where the layer is not covered by the background_color().
   SkColor SafeOpaqueBackgroundColor() const;
-  // For testing, return the actual stored value.
-  SkColor ActualSafeOpaqueBackgroundColorForTesting() const {
-    return safe_opaque_background_color_;
-  }
 
   // For layer tree mode only.
   // Set and get the position of this layer, relative to its parent. This is
@@ -862,10 +862,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     // If not null, points to one of child layers which is set as mask layer
     // by SetMaskLayer().
-    PictureLayer* mask_layer;
+    PictureLayer* mask_layer = nullptr;
 
-    float opacity;
-    SkBlendMode blend_mode;
+    float opacity = 1.0f;
+    SkBlendMode blend_mode = SkBlendMode::kSrcOver;
 
     bool masks_to_bounds : 1;
 
@@ -889,12 +889,14 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     gfx::Transform transform;
     gfx::Point3F transform_origin;
 
+    SkColor safe_opaque_background_color = SK_ColorTRANSPARENT;
+
     FilterOperations filters;
     FilterOperations backdrop_filters;
     base::Optional<gfx::RRectF> backdrop_filter_bounds;
-    float backdrop_filter_quality;
+    float backdrop_filter_quality = 1.0f;
 
-    int mirror_count;
+    int mirror_count = 0;
 
     gfx::ScrollOffset scroll_offset;
     // Size of the scroll container that this layer scrolls in.
@@ -944,8 +946,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   bool has_clip_node_ : 1;
   // This value is valid only when LayerTreeHost::has_copy_request() is true
   bool subtree_has_copy_request_ : 1;
-
-  SkColor safe_opaque_background_color_;
 
   std::unique_ptr<LayerDebugInfo> debug_info_;
 

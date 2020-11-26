@@ -1193,16 +1193,88 @@ TEST_P(CompositingSimTest, LayerClipPropertyChanged) {
   EXPECT_FALSE(inner_element_layer->subtree_property_changed());
 }
 
-TEST_P(CompositingSimTest, SafeOpaqueBackgroundColorGetsSet) {
-  // TODO(crbug.com/765003): CAP may make different layerization decisions and
-  // we cannot guarantee that both divs will be composited in this test. When
-  // CAP gets closer to launch, this test should be updated to pass.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
+TEST_P(CompositingSimTest, SafeOpaqueBackgroundColor) {
   InitializeWithHTML(R"HTML(
-      <!DOCTYPE html>
-      <style>
+    <!DOCTYPE html>
+    <style>
+      body { background: yellow; }
+      div {
+        position: absolute;
+        z-index: 1;
+        width: 20px;
+        height: 20px;
+        will-change: transform; /* Composited */
+      }
+      #opaque-color {
+        background: blue;
+      }
+      #opaque-image, #opaque-image-translucent-color {
+        background: linear-gradient(blue, green);
+      }
+      #partly-opaque div {
+        width: 15px;
+        height: 15px;
+        background: blue;
+        will-change: initial;
+      }
+      #translucent, #opaque-image-translucent-color div {
+        background: rgba(0, 255, 255, 0.5);
+        will-change: initial;
+      }
+    </style>
+    <div id="opaque-color"></div>
+    <div id="opaque-image"></div>
+    <div id="opaque-image-translucent-color">
+      <div></div>
+    </div>
+    <div id="partly-opaque">
+      <div></div>
+    </div>
+    <div id="translucent"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* opaque_color = CcLayerByDOMElementId("opaque-color");
+  EXPECT_TRUE(opaque_color->contents_opaque());
+  EXPECT_EQ(SK_ColorBLUE, opaque_color->background_color());
+  EXPECT_EQ(SK_ColorBLUE, opaque_color->SafeOpaqueBackgroundColor());
+
+  auto* opaque_image = CcLayerByDOMElementId("opaque-image");
+  EXPECT_TRUE(opaque_image->contents_opaque());
+  EXPECT_EQ(SK_ColorTRANSPARENT, opaque_image->background_color());
+  // Fallback to use the viewport background.
+  EXPECT_EQ(SK_ColorYELLOW, opaque_image->SafeOpaqueBackgroundColor());
+
+  const SkColor kTranslucentCyan = SkColorSetARGB(128, 0, 255, 255);
+  auto* opaque_image_translucent_color =
+      CcLayerByDOMElementId("opaque-image-translucent-color");
+  EXPECT_TRUE(opaque_image_translucent_color->contents_opaque());
+  EXPECT_EQ(kTranslucentCyan,
+            opaque_image_translucent_color->background_color());
+  // Use background_color() with the alpha channel forced to be opaque.
+  EXPECT_EQ(SK_ColorCYAN,
+            opaque_image_translucent_color->SafeOpaqueBackgroundColor());
+
+  auto* partly_opaque = CcLayerByDOMElementId("partly-opaque");
+  EXPECT_FALSE(partly_opaque->contents_opaque());
+  EXPECT_EQ(SK_ColorBLUE, partly_opaque->background_color());
+  // SafeOpaqueBackgroundColor() returns SK_ColorTRANSPARENT when
+  // background_color() is opaque and contents_opaque() is false.
+  EXPECT_EQ(SK_ColorTRANSPARENT, partly_opaque->SafeOpaqueBackgroundColor());
+
+  auto* translucent = CcLayerByDOMElementId("translucent");
+  EXPECT_FALSE(translucent->contents_opaque());
+  EXPECT_EQ(kTranslucentCyan, translucent->background_color());
+  // SafeOpaqueBackgroundColor() returns background_color() if it's not opaque
+  // and contents_opaque() is false.
+  EXPECT_EQ(kTranslucentCyan, translucent->SafeOpaqueBackgroundColor());
+}
+
+TEST_P(CompositingSimTest, SquashingLayerSafeOpaqueBackgroundColor) {
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
       div {
         position: absolute;
         z-index: 1;
@@ -1223,52 +1295,32 @@ TEST_P(CompositingSimTest, SafeOpaqueBackgroundColorGetsSet) {
       #bottomright {
         top: 24px;
         left: 24px;
+        width: 100px;
+        height: 100px;
         background: cyan;
       }
-      </style>
-      <div id="behind"></div>
-      <div id="topleft"></div>
-      <div id="bottomright"></div>
+    </style>
+    <div id="behind"></div>
+    <div id="topleft"></div>
+    <div id="bottomright"></div>
   )HTML");
 
   Compositor().BeginFrame();
 
-  auto* behind_element = GetElementById("behind");
-  auto* behind_layer = CcLayerByDOMElementId("behind");
-  EXPECT_EQ(behind_layer->element_id(),
-            CompositorElementIdFromUniqueObjectId(
-                behind_element->GetLayoutObject()->UniqueId(),
-                CompositorElementIdNamespace::kPrimary));
-  EXPECT_EQ(behind_layer->SafeOpaqueBackgroundColor(), SK_ColorBLUE);
-
-  auto* grouped_mapping =
-      GetElementById("topleft")->GetLayoutBox()->Layer()->GroupedMapping();
-  ASSERT_TRUE(grouped_mapping);
-  ASSERT_TRUE(grouped_mapping->NonScrollingSquashingLayer());
-  auto& squashing_layer =
-      grouped_mapping->NonScrollingSquashingLayer()->CcLayer();
+  auto* squashing_layer = CcLayerByDOMElementId("topleft");
+  ASSERT_TRUE(squashing_layer);
+  EXPECT_EQ(gfx::Size(124, 124), squashing_layer->bounds());
 
   // Top left and bottom right are squashed.
   // This squashed layer should not be opaque, as it is squashing two squares
   // with some gaps between them.
-  EXPECT_FALSE(squashing_layer.contents_opaque());
-  // This shouldn't DCHECK.
-  squashing_layer.SafeOpaqueBackgroundColor();
-  // Because contents_opaque is false, the SafeOpaqueBackgroundColor() getter
-  // will return SK_ColorTRANSPARENT. So we need to grab the actual color,
-  // to make sure it's right.
-  SkColor squashed_bg_color =
-      squashing_layer.ActualSafeOpaqueBackgroundColorForTesting();
-  // The squashed layer should have a non-transparent safe opaque background
-  // color, that isn't blue. Exactly which color it is depends on heuristics,
-  // but it should be one of the two colors of the elements that created it.
-  EXPECT_NE(squashed_bg_color, SK_ColorBLUE);
-  EXPECT_EQ(SkColorGetA(squashed_bg_color), SK_AlphaOPAQUE);
-  // #behind is blue, which is SK_ColorBLUE
-  // #topleft is lime, which is SK_ColorGREEN
-  // #bottomright is cyan, which is SK_ColorCYAN
-  EXPECT_TRUE((squashed_bg_color == SK_ColorGREEN) ||
-              (squashed_bg_color == SK_ColorCYAN));
+  EXPECT_FALSE(squashing_layer->contents_opaque());
+  // The background color of #bottomright is used as the background color
+  // because it covers the most significant area of the squashing layer.
+  EXPECT_EQ(squashing_layer->background_color(), SK_ColorCYAN);
+  // SafeOpaqueBackgroundColor() returns SK_ColorTRANSPARENT when
+  // background_color() is opaque and contents_opaque() is false.
+  EXPECT_EQ(squashing_layer->SafeOpaqueBackgroundColor(), SK_ColorTRANSPARENT);
 }
 
 // Test that a pleasant checkerboard color is used in the presence of blending.
@@ -1283,6 +1335,7 @@ TEST_P(CompositingSimTest, RootScrollingContentsSafeOpaqueBackgroundColor) {
   auto* scrolling_contents = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(),
       MainFrame().GetFrameView()->LayoutViewport()->GetScrollElementId());
+  EXPECT_EQ(scrolling_contents->background_color(), SK_ColorWHITE);
   EXPECT_EQ(scrolling_contents->SafeOpaqueBackgroundColor(), SK_ColorWHITE);
 }
 

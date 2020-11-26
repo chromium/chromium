@@ -555,20 +555,6 @@ void LayerImpl::SetSafeOpaqueBackgroundColor(SkColor background_color) {
   safe_opaque_background_color_ = background_color;
 }
 
-SkColor LayerImpl::SafeOpaqueBackgroundColor() const {
-  if (contents_opaque()) {
-    // TODO(936906): We should uncomment this DCHECK, since the
-    // |safe_opaque_background_color_| could be transparent if it is never set
-    // (the default is 0). But to do that, one test needs to be fixed.
-    // DCHECK_EQ(SkColorGetA(safe_opaque_background_color_), SK_AlphaOPAQUE);
-    return safe_opaque_background_color_;
-  }
-  SkColor color = background_color();
-  if (SkColorGetA(color) == 255)
-    color = SK_ColorTRANSPARENT;
-  return color;
-}
-
 void LayerImpl::SetContentsOpaque(bool opaque) {
   contents_opaque_ = opaque;
   contents_opaque_for_text_ = opaque;

@@ -815,8 +815,6 @@ static void UpdateBackgroundColor(cc::Layer& layer,
                                   const EffectPaintPropertyNode& layer_effect,
                                   const PaintChunkSubset& paint_chunks) {
   Vector<Color, 4> background_colors;
-  Color safe_opaque_background_color;
-  float safe_opaque_background_area = 0;
   float min_background_area = kMinBackgroundColorCoverageRatio *
                               layer.bounds().width() * layer.bounds().height();
   for (auto it = paint_chunks.end(); it != paint_chunks.begin();) {
@@ -841,20 +839,12 @@ static void UpdateBackgroundColor(cc::Layer& layer,
         break;
       }
     }
-    if (chunk.background_color_area > safe_opaque_background_area) {
-      // This color will be used only if we don't find proper background_color.
-      safe_opaque_background_color = chunk.background_color;
-      safe_opaque_background_area = chunk.background_color_area;
-    }
   }
 
   Color background_color;
   for (Color color : base::Reversed(background_colors))
     background_color = background_color.Blend(color);
   layer.SetBackgroundColor(background_color.Rgb());
-  layer.SetSafeOpaqueBackgroundColor(background_color == Color::kTransparent
-                                         ? safe_opaque_background_color.Rgb()
-                                         : background_color.Rgb());
 }
 
 static void UpdateTouchActionRegion(

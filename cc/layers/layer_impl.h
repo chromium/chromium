@@ -163,9 +163,12 @@ class CC_EXPORT LayerImpl {
   void SetBackgroundColor(SkColor background_color);
   SkColor background_color() const { return background_color_; }
   void SetSafeOpaqueBackgroundColor(SkColor background_color);
-  // If contents_opaque(), return an opaque color else return a
-  // non-opaque color.  Tries to return background_color(), if possible.
-  SkColor SafeOpaqueBackgroundColor() const;
+  SkColor safe_opaque_background_color() const {
+    // Layer::SafeOpaqueBackgroundColor() should ensure this.
+    DCHECK_EQ(contents_opaque(),
+              SkColorGetA(safe_opaque_background_color_) == SK_AlphaOPAQUE);
+    return safe_opaque_background_color_;
+  }
 
   // See Layer::SetContentsOpaque() and SetContentsOpaqueForText() for the
   // relationship between the two flags.
