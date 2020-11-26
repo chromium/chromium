@@ -377,7 +377,7 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, ZeroMaxHeight) {
   offset:unplaced size:1000x53
     offset:0,0 size:126x53
       offset:13,0 size:30x30
-      offset:3,30 size:120x220
+      offset:3,30 size:120x0
         offset:10,10 size:100x200
 )DUMP";
   EXPECT_EQ(expectation, dump);

@@ -51,7 +51,8 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
   const NGConstraintSpace CreateConstraintSpaceForFieldsetContent(
       NGBlockNode fieldset_content,
       LogicalSize padding_box_size,
-      LayoutUnit block_offset);
+      LayoutUnit block_offset,
+      NGCacheSlot slot);
   bool IsFragmentainerOutOfSpace(LayoutUnit block_offset) const;
 
   const WritingDirectionMode writing_direction_;
