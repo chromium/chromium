@@ -58282,13 +58282,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Uncompleted"/>
 </enum>
 
-<enum name="PinSetupScreenUserAction">
-  <summary>Actions which happen on the screen.</summary>
-  <int value="0" label="Done button clicked"/>
-  <int value="1" label="Skip button clicked on starting page"/>
-  <int value="2" label="Skip button clicked in flow"/>
-</enum>
-
 <enum name="PipelineStatus">
   <int value="0" label="PIPELINE_OK"/>
   <int value="1" label="PIPELINE_ERROR_URL_NOT_FOUND"/>

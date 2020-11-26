@@ -22,23 +22,8 @@
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
-
-using ::testing::ElementsAre;
 
 namespace chromeos {
-namespace {
-
-const test::UIPath kBackButton = {"discover-impl", "pin-setup-impl",
-                                  "backButton"};
-const test::UIPath kNextButton = {"discover-impl", "pin-setup-impl",
-                                  "nextButton"};
-const test::UIPath kSkipButton = {"discover-impl", "pin-setup-impl",
-                                  "setupSkipButton"};
-const test::UIPath kDoneButton = {"discover-impl", "pin-setup-impl",
-                                  "doneButton"};
-
-}  // namespace
 
 class PinSetupScreenTest
     : public OobeBaseTest,
@@ -84,21 +69,12 @@ class PinSetupScreenTest
       fake_gaia_->SetupFakeGaiaForChildUser(
           test_child_user_.account_id.GetUserEmail(),
           test_child_user_.account_id.GetGaiaId(),
-          FakeGaiaMixin::kFakeRefreshToken, true /*issue_any_scope_token*/);
+          FakeGaiaMixin::kFakeRefreshToken, false /*issue_any_scope_token*/);
       login_manager_mixin_.AttemptLoginUsingAuthenticator(
           user_context,
           std::make_unique<StubAuthenticatorBuilder>(user_context));
     } else {
       login_manager_mixin_.LoginAsNewRegularUser();
-    }
-  }
-
-  void EnterPin() {
-    const std::vector<std::string> pin = {"1", "9", "9", "4", "0", "5"};
-    for (const auto& digit : pin) {
-      test::OobeJS().TapOnPath({"discover-impl", "pin-setup-impl",
-                                "pinKeyboard", "pinKeyboard",
-                                "digitButton" + digit});
     }
   }
 
@@ -165,75 +141,19 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, Skipped) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
+IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, BasicFlow) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
   WaitForScreenShown();
 
-  test::OobeJS().TapOnPath(kSkipButton);
+  test::OobeJS().TapOnPath(
+      {"discover-impl", "pin-setup-impl", "setupSkipButton"});
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(
-              PinSetupScreen::UserAction::kSkipButtonClickedOnStart),
-          1)));
-}
-
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
-
-  test::OobeJS().TapOnPath(kSkipButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(
-              PinSetupScreen::UserAction::kSkipButtonClickedInFlow),
-          1)));
-}
-
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, FinishedFlow) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-  ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
-
-  test::OobeJS().TapOnPath(kDoneButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
-          1)));
 }
 
 }  // namespace chromeos
