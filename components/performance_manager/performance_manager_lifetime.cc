@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
+#include "components/performance_manager/embedder/graph_features_helper.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
@@ -38,22 +39,9 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
 void DefaultGraphCreatedCallback(
     GraphCreatedCallback external_graph_created_callback,
     GraphImpl* graph) {
-  graph->PassToGraph(
-      std::make_unique<execution_context::ExecutionContextRegistryImpl>());
-  graph->PassToGraph(std::make_unique<FrameNodeImplDescriber>());
-  graph->PassToGraph(std::make_unique<FrameVisibilityDecorator>());
-  graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
-  graph->PassToGraph(std::make_unique<PageLoadTrackerDecorator>());
-  graph->PassToGraph(std::make_unique<PageNodeImplDescriber>());
-  graph->PassToGraph(std::make_unique<ProcessNodeImplDescriber>());
-  graph->PassToGraph(std::make_unique<TabPropertiesDecorator>());
-  graph->PassToGraph(std::make_unique<WorkerNodeImplDescriber>());
-#if !defined(OS_ANDROID)
-  graph->PassToGraph(std::make_unique<SiteDataRecorder>());
-#endif
-
-  // This depends on ExecutionContextRegistry, so must be added afterwards.
-  graph->PassToGraph(std::make_unique<v8_memory::V8ContextTracker>());
+  GraphFeaturesHelper features_helper;
+  features_helper.EnableDefault();
+  features_helper.ConfigureGraph(graph);
 
   // Run graph created callbacks.
   std::move(external_graph_created_callback).Run(graph);

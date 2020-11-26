@@ -63,11 +63,13 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
  public:
   ~NodeDataDescriberRegistryImpl() override;
 
+  // NodeDataDescriberRegistry impl:
   void RegisterDescriber(const NodeDataDescriber* describer,
                          base::StringPiece name) override;
   void UnregisterDescriber(const NodeDataDescriber* describer) override;
-
   base::Value DescribeNodeData(const Node* node) const override;
+
+  size_t size() const { return describers_.size(); }
 
  private:
   template <typename NodeType, typename NodeImplType>
@@ -538,6 +540,14 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   // Before removing the node itself.
   size_t erased = nodes_.erase(node);
   DCHECK_EQ(1u, erased);
+}
+
+size_t GraphImpl::NodeDataDescriberCountForTesting() const {
+  if (!describer_registry_)
+    return 0;
+  auto* registry = static_cast<const NodeDataDescriberRegistryImpl*>(
+      describer_registry_.get());
+  return registry->size();
 }
 
 void GraphImpl::BeforeProcessPidChange(ProcessNodeImpl* process,

@@ -130,6 +130,14 @@ class GraphImpl : public Graph {
   // Returns the number of objects in the |graph_owned_| map, for testing.
   size_t GraphOwnedCountForTesting() const { return graph_owned_.size(); }
 
+  // Returns the number of GraphRegistered objects, for testing.
+  size_t GraphRegisteredCountForTesting() const {
+    return registered_objects_.size();
+  }
+
+  // Returns the number of registered NodeDataDescribers, for testing.
+  size_t NodeDataDescriberCountForTesting() const;
+
  protected:
   friend class NodeBase;
 
