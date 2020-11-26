@@ -32,12 +32,7 @@
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
     (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
-#include <asm/hwcap.h>
-#include <sys/auxv.h>
 #include "base/files/file_util.h"
-// Temporary definitions until a new hwcap.h is pulled in.
-#define HWCAP2_MTE (1 << 18)
-#define HWCAP2_BTI (1 << 17)
 #endif
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -87,7 +82,28 @@ std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
 }  // namespace internal
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
-CPU::CPU() {
+CPU::CPU()
+  : signature_(0),
+    type_(0),
+    family_(0),
+    model_(0),
+    stepping_(0),
+    ext_model_(0),
+    ext_family_(0),
+    has_mmx_(false),
+    has_sse_(false),
+    has_sse2_(false),
+    has_sse3_(false),
+    has_ssse3_(false),
+    has_sse41_(false),
+    has_sse42_(false),
+    has_popcnt_(false),
+    has_avx_(false),
+    has_avx2_(false),
+    has_aesni_(false),
+    has_non_stop_time_stamp_counter_(false),
+    is_running_in_vm_(false),
+    cpu_vendor_("unknown") {
   Initialize();
 }
 
@@ -291,14 +307,6 @@ void CPU::Initialize() {
 #elif defined(ARCH_CPU_ARM_FAMILY)
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   cpu_brand_ = *CpuInfoBrand();
-
-#if defined(ARCH_CPU_ARM64)
-  // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2
-  unsigned long hwcap2 = getauxval(AT_HWCAP2);
-  has_mte_ = hwcap2 & HWCAP2_MTE;
-  has_bti_ = hwcap2 & HWCAP2_BTI;
-#endif
-
 #elif defined(OS_WIN)
   // Windows makes high-resolution thread timing information available in
   // user-space.
