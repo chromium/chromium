@@ -22,6 +22,7 @@ constexpr char kUsername[] = "alice";
 constexpr char kPassword[] = "password123";
 
 namespace {
+
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
                                base::StringPiece username) {
   PasswordForm form;
@@ -32,6 +33,16 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
+
+PasswordForm MakePasswordException(const std::string& signon_realm) {
+  PasswordForm form;
+  form.blocked_by_user = true;
+  form.signon_realm = signon_realm;
+  form.url = GURL(signon_realm);
+  form.in_store = PasswordForm::Store::kProfileStore;
+  return form;
+}
+
 }  // namespace
 
 class AllPasswordsBottomSheetHelperTest : public testing::Test {
@@ -62,6 +73,9 @@ TEST_F(AllPasswordsBottomSheetHelperTest, CallbackIsCalledAfterFetch) {
 }
 
 TEST_F(AllPasswordsBottomSheetHelperTest, CallbackIsNotCalledForEmptyStore) {
+  // Exceptions don't count towards stored passwords!
+  store().AddLogin(MakePasswordException(kExampleCom));
+
   base::MockOnceClosure callback;
   EXPECT_CALL(callback, Run).Times(0);
 

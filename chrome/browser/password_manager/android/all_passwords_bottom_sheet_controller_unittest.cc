@@ -39,6 +39,7 @@ using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
 constexpr char kExampleCom[] = "https://example.com";
 constexpr char kExampleOrg[] = "http://www.example.org";
+constexpr char kExampleDe[] = "https://www.example.de";
 
 constexpr char kUsername1[] = "alice";
 constexpr char kUsername2[] = "bob";
@@ -80,11 +81,19 @@ UiCredential MakeUiCredential(const std::string& username,
 PasswordForm MakeSavedPassword(const std::string& signon_realm,
                                const std::string& username) {
   PasswordForm form;
-  form.signon_realm = std::string(signon_realm);
+  form.signon_realm = signon_realm;
   form.url = GURL(signon_realm);
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = base::ASCIIToUTF16(kPassword);
-  form.username_element = base::ASCIIToUTF16("");
+  form.in_store = PasswordForm::Store::kProfileStore;
+  return form;
+}
+
+PasswordForm MakePasswordException(const std::string& signon_realm) {
+  PasswordForm form;
+  form.blocked_by_user = true;
+  form.signon_realm = signon_realm;
+  form.url = GURL(signon_realm);
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
@@ -149,6 +158,9 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
   store().AddLogin(form2);
   store().AddLogin(form3);
   store().AddLogin(form4);
+  // Exceptions are not shown. Sites where saving is disabled still show pwds.
+  store().AddLogin(MakePasswordException(kExampleDe));
+  store().AddLogin(MakePasswordException(kExampleCom));
 
   EXPECT_CALL(view(),
               Show(UnorderedElementsAre(Pointee(Eq(form1)), Pointee(Eq(form2)),
