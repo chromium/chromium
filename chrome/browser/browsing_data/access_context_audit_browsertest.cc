@@ -10,7 +10,7 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -335,8 +335,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, RemoveRecords) {
       content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(base::Time(), base::Time::Max(),
-                          ChromeBrowsingDataRemoverDelegate::ALL_DATA_TYPES,
-                          ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES,
+                          chrome_browsing_data_remover::ALL_DATA_TYPES,
+                          chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
                           &completion_observer);
   completion_observer.BlockUntilCompletion();
 

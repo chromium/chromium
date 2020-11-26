@@ -5,7 +5,7 @@
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 
 #include "base/scoped_observer.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
 namespace {
@@ -73,11 +73,9 @@ void Remove(uint64_t remove_mask,
 
   if (!filter_builder->MatchesAllOriginsAndDomains()) {
     filterable_mask =
-        remove_mask &
-        ChromeBrowsingDataRemoverDelegate::IMPORTANT_SITES_DATA_TYPES;
+        remove_mask & chrome_browsing_data_remover::IMPORTANT_SITES_DATA_TYPES;
     nonfilterable_mask =
-        remove_mask &
-        ~ChromeBrowsingDataRemoverDelegate::IMPORTANT_SITES_DATA_TYPES;
+        remove_mask & ~chrome_browsing_data_remover::IMPORTANT_SITES_DATA_TYPES;
   }
   browsing_data::RecordDeletionForPeriod(time_period);
 

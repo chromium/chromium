@@ -14,7 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/downgrade/downgrade_utils.h"
 #include "chrome/browser/downgrade/snapshot_file_collector.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
@@ -375,13 +375,12 @@ void SnapshotManager::DeleteSnapshotDataForProfile(
     base::Time delete_begin,
     const base::FilePath& profile_base_name,
     uint64_t remove_mask) {
-  using DataType = ChromeBrowsingDataRemoverDelegate;
+  using chrome_browsing_data_remover::ALL_DATA_TYPES;
+  using chrome_browsing_data_remover::WIPE_PROFILE;
 
-  bool delete_all =
-      (((remove_mask & DataType::WIPE_PROFILE) == DataType::WIPE_PROFILE) ||
-       ((remove_mask & DataType::ALL_DATA_TYPES) ==
-        DataType::ALL_DATA_TYPES)) &&
-      delete_begin.is_null();
+  bool delete_all = (((remove_mask & WIPE_PROFILE) == WIPE_PROFILE) ||
+                     ((remove_mask & ALL_DATA_TYPES) == ALL_DATA_TYPES)) &&
+                    delete_begin.is_null();
   std::vector<base::FilePath> files_to_delete;
   if (!delete_all) {
     for (const auto& item : CollectProfileItems()) {

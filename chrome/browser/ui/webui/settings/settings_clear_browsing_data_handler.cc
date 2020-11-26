@@ -14,7 +14,7 @@
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_factory.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/engagement/important_sites_util.h"
@@ -242,10 +242,10 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   PrefService* prefs = profile_->GetPrefs();
 
-  int site_data_mask = ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA;
+  int site_data_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
   // Don't try to clear LSO data if it's not supported.
   if (!prefs->GetBoolean(prefs::kClearPluginLSODataEnabled))
-    site_data_mask &= ~ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA;
+    site_data_mask &= ~chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA;
 
   uint64_t remove_mask = 0;
   uint64_t origin_mask = 0;
@@ -262,7 +262,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
     switch (data_type) {
       case BrowsingDataType::HISTORY:
         if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory))
-          remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY;
+          remove_mask |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
         break;
       case BrowsingDataType::DOWNLOADS:
         if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory))
@@ -277,16 +277,15 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
         break;
       case BrowsingDataType::PASSWORDS:
-        remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
         remove_mask |=
-            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS;
+            chrome_browsing_data_remover::DATA_TYPE_ACCOUNT_PASSWORDS;
         break;
       case BrowsingDataType::FORM_DATA:
-        remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
         break;
       case BrowsingDataType::SITE_SETTINGS:
-        remove_mask |=
-            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_CONTENT_SETTINGS;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
         break;
       case BrowsingDataType::HOSTED_APPS_DATA:
         remove_mask |= site_data_mask;
@@ -404,8 +403,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
       show_history_notice);
 
   bool show_passwords_notice =
-      (failed_data_types &
-       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
+      (failed_data_types & chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
 
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetBoolKey("showHistoryNotice", show_history_notice);

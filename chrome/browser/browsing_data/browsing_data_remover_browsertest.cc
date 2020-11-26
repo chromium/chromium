@@ -24,7 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
@@ -367,7 +367,7 @@ class BrowsingDataRemoverBrowserTest
     ExpectCookieTreeModelCount(1);
     EXPECT_TRUE(HasDataForType(type));
 
-    RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA,
+    RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                   delete_begin);
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
@@ -387,7 +387,7 @@ class BrowsingDataRemoverBrowserTest
     EXPECT_FALSE(HasDataForType(type));
     EXPECT_EQ(1, GetSiteDataCount());
     ExpectCookieTreeModelCount(1);
-    RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA,
+    RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                   delete_begin);
 
     EXPECT_EQ(0, GetSiteDataCount());
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
   EXPECT_FALSE(is_power_efficient);
 
   // Clear history.
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_HISTORY);
 
   // Verify history no longer exists. Both |is_smooth| and |is_power_efficient|
   // should now report true because the VideoDecodePerfHistory optimistically
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Database) {
   RunScriptAndCheckResult("insertRecord('text')", "done");
   RunScriptAndCheckResult("getRecords()", "text");
 
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
 
   ui_test_utils::NavigateToURL(GetBrowser(), url);
   RunScriptAndCheckResult("createTable()", "done");
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState("tel", &test_origin, profile);
   ASSERT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
   block_state =
       ExternalProtocolHandler::GetBlockState("tel", &test_origin, profile);
   ASSERT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
@@ -901,12 +901,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   SetDataForType(kType);
   EXPECT_TRUE(HasDataForType(kType));
   // Remove history from navigation to site_data.html.
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_HISTORY);
   EXPECT_FALSE(HasDataForType(kType));
   SetDataForType(kType);
   EXPECT_TRUE(HasDataForType(kType));
   // Remove history from previous pushState() call in setHistory().
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_HISTORY);
   EXPECT_FALSE(HasDataForType(kType));
 }
 
@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       prefs, &sync_service));
 
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
 
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       prefs, &sync_service));
@@ -973,9 +973,8 @@ IN_PROC_BROWSER_TEST_F(
         BrowsingDataFilterBuilder::Create(
             BrowsingDataFilterBuilder::Mode::kDelete);
     filter_builder->AddRegisterableDomain("example.com");
-    RemoveWithFilterAndWait(
-        ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA,
-        std::move(filter_builder));
+    RemoveWithFilterAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+                            std::move(filter_builder));
   }
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       prefs, &sync_service));
@@ -986,9 +985,8 @@ IN_PROC_BROWSER_TEST_F(
         BrowsingDataFilterBuilder::Create(
             BrowsingDataFilterBuilder::Mode::kDelete);
     filter_builder->AddRegisterableDomain("google.com");
-    RemoveWithFilterAndWait(
-        ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA,
-        std::move(filter_builder));
+    RemoveWithFilterAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+                            std::move(filter_builder));
   }
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       prefs, &sync_service));
@@ -1040,8 +1038,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   EXPECT_FALSE(HasDataForType(type));
   SetDataForType(type);
   EXPECT_TRUE(HasDataForType(type));
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA,
-                GetParam());
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA, GetParam());
   EXPECT_FALSE(HasDataForType(type));
 }
 
@@ -1352,10 +1349,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Expect all datatypes from above except SessionStorage. SessionStorage is
   // not supported by the CookieTreeModel yet.
   ExpectCookieTreeModelCount(kStorageTypes.size() - 1);
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA |
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
-                ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY |
-                ChromeBrowsingDataRemoverDelegate::DATA_TYPE_CONTENT_SETTINGS);
+                chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+                chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS);
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(0);
 }
@@ -1436,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   EXPECT_EQ(0, chromeos::SystemProxyClient::Get()
                    ->GetTestInterface()
                    ->GetClearUserCredentialsCount());
-  RemoveAndWait(ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
 
   EXPECT_EQ(1, chromeos::SystemProxyClient::Get()
                    ->GetTestInterface()

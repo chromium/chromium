@@ -14,7 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -843,8 +843,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA |
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS,
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
+          chrome_browsing_data_remover::DATA_TYPE_ACCOUNT_PASSWORDS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
   observer.BlockUntilCompletion();
 

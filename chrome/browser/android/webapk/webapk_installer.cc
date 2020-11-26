@@ -35,7 +35,7 @@
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
@@ -79,7 +79,7 @@ class CacheClearer : public content::BrowsingDataRemover::Observer {
     remover->AddObserver(cache_clearer);
     remover->RemoveAndReply(base::Time(), base::Time::Max(),
                             content::BrowsingDataRemover::DATA_TYPE_CACHE,
-                            ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES,
+                            chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
                             cache_clearer);
   }
 

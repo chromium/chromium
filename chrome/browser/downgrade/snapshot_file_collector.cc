@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/autofill/core/browser/payments/strike_database.h"
@@ -62,9 +62,9 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
   // from the translation prefs.
   int pref_data_type =
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ISOLATED_ORIGINS |
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY |
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_CONTENT_SETTINGS;
+      chrome_browsing_data_remover::DATA_TYPE_ISOLATED_ORIGINS |
+      chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+      chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
   std::vector<SnapshotItemDetails> profile_items{
       // General Profile files
       SnapshotItemDetails(base::FilePath(chrome::kPreferencesFilename),
@@ -76,37 +76,36 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
       // History files
       SnapshotItemDetails(base::FilePath(history::kHistoryFilename),
                           SnapshotItemDetails::ItemType::kFile,
-                          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+                          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
                           SnapshotItemId::kHistory),
       SnapshotItemDetails(base::FilePath(history::kFaviconsFilename),
                           SnapshotItemDetails::ItemType::kFile,
-                          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+                          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
                           SnapshotItemId::kFavicons),
       SnapshotItemDetails(base::FilePath(history::kTopSitesFilename),
                           SnapshotItemDetails::ItemType::kFile,
-                          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+                          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
                           SnapshotItemId::kTopSites),
       // Bookmarks
-      SnapshotItemDetails(
-          base::FilePath(bookmarks::kBookmarksFileName),
-          SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_BOOKMARKS,
-          SnapshotItemId::kBookmarks),
+      SnapshotItemDetails(base::FilePath(bookmarks::kBookmarksFileName),
+                          SnapshotItemDetails::ItemType::kFile,
+                          chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS,
+                          SnapshotItemId::kBookmarks),
       // Tab Restore and sessions
       // TODO(crbug.com/1103458): Remove legacy snapshots in M89
       SnapshotItemDetails(
           base::FilePath(sessions::kLegacyCurrentTabSessionFileName),
           SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
           SnapshotItemId::kLegacyCurrentTabSession),
       SnapshotItemDetails(
           base::FilePath(sessions::kLegacyCurrentSessionFileName),
           SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
           SnapshotItemId::kLegacyCurrentSession),
       SnapshotItemDetails(base::FilePath(sessions::kSessionsDirectory),
                           SnapshotItemDetails::ItemType::kDirectory,
-                          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+                          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
                           SnapshotItemId::kSessions),
       // Sign-in state
       SnapshotItemDetails(base::FilePath(profiles::kGAIAPictureFileName),
@@ -116,33 +115,31 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
       SnapshotItemDetails(
           base::FilePath(password_manager::kAffiliationDatabaseFileName),
           SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS |
-              ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
+          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+              chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
           SnapshotItemId::kAffiliationDatabase),
       SnapshotItemDetails(
           base::FilePath(password_manager::kLoginDataForProfileFileName),
           SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS |
-              ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
+          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+              chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
           SnapshotItemId::kLoginDataForProfile),
       SnapshotItemDetails(
           base::FilePath(password_manager::kLoginDataForAccountFileName),
           SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS |
-              ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
+          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+              chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
           SnapshotItemId::kLoginDataForAccount),
-      SnapshotItemDetails(
-          base::FilePath(kWebDataFilename),
-          SnapshotItemDetails::ItemType::kFile,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS |
-              ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
-          SnapshotItemId::kWebData),
-      SnapshotItemDetails(
-          base::FilePath(autofill::kStrikeDatabaseFileName),
-          SnapshotItemDetails::ItemType::kDirectory,
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS |
-              ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA,
-          SnapshotItemId::kStrikeDatabase),
+      SnapshotItemDetails(base::FilePath(kWebDataFilename),
+                          SnapshotItemDetails::ItemType::kFile,
+                          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+                              chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
+                          SnapshotItemId::kWebData),
+      SnapshotItemDetails(base::FilePath(autofill::kStrikeDatabaseFileName),
+                          SnapshotItemDetails::ItemType::kDirectory,
+                          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+                              chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
+                          SnapshotItemId::kStrikeDatabase),
       // Cookies
       SnapshotItemDetails(base::FilePath(chrome::kCookieFilename),
                           SnapshotItemDetails::ItemType::kFile,

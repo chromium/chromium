@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -46,18 +46,17 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   uint64_t remove_mask_1_filterable =
       content::BrowsingDataRemover::DATA_TYPE_CACHE;
   uint64_t remove_mask_1_unfilterable =
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_CONTENT_SETTINGS;
-  uint64_t remove_mask_2 =
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA;
+      chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
+  uint64_t remove_mask_2 = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
   uint64_t origin_mask_2 =
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
       content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
   uint64_t remove_mask_3_filterable =
       content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
   uint64_t remove_mask_3_unfilterable =
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY |
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS |
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA;
+      chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+      chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
+      chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
   // Each scheduled removal is called once the prefs are set.
   delegate.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Now() - base::TimeDelta::FromHours(1),

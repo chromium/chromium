@@ -20,7 +20,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,10 +59,10 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
     remover_->AddObserver(this);
 
     if (all_data) {
-      remover_->RemoveAndReply(
-          base::Time(), base::Time::Max(),
-          ChromeBrowsingDataRemoverDelegate::ALL_DATA_TYPES,
-          ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES, this);
+      remover_->RemoveAndReply(base::Time(), base::Time::Max(),
+                               chrome_browsing_data_remover::ALL_DATA_TYPES,
+                               chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
+                               this);
     } else {
       std::unique_ptr<content::BrowsingDataFilterBuilder> google_tld_filter =
           content::BrowsingDataFilterBuilder::Create(
@@ -78,7 +78,7 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
       remover_->RemoveWithFilterAndReply(
           base::Time(), base::Time::Max(),
           content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE,
-          ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES,
+          chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
           std::move(google_tld_filter), this);
     }
   }

@@ -16,7 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -123,27 +123,27 @@ uint64_t GetRemoveMask(const base::Value& data_types) {
   for (const auto& data_type : data_types.GetList()) {
     std::string data_type_str = data_type.GetString();
     if (data_type_str == browsing_data::policy_data_types::kBrowsingHistory) {
-      result |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY;
+      result |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
     } else if (data_type_str ==
                browsing_data::policy_data_types::kDownloadHistory) {
       result |= content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
     } else if (data_type_str ==
                browsing_data::policy_data_types::kCookiesAndOtherSiteData) {
-      result |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA;
+      result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
     } else if (data_type_str ==
                browsing_data::policy_data_types::kCachedImagesAndFiles) {
       result |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
     } else if (data_type_str ==
                browsing_data::policy_data_types::kPasswordSignin) {
-      result |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
+      result |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
     } else if (data_type_str == browsing_data::policy_data_types::kAutofill) {
-      result |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA;
+      result |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
     } else if (data_type_str ==
                browsing_data::policy_data_types::kSiteSettings) {
-      result |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_CONTENT_SETTINGS;
+      result |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
     } else if (data_type_str ==
                browsing_data::policy_data_types::kHostedAppData) {
-      result |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA;
+      result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
     }
   }
   return result;
@@ -264,7 +264,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
         base::TimeDelta::FromHours(removal_settings.time_to_live_in_hours));
     auto filterable_remove_mask =
         removal_settings.remove_mask &
-        ChromeBrowsingDataRemoverDelegate::FILTERABLE_DATA_TYPES;
+        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
     if (filterable_remove_mask && sync_enabled) {
       auto filter_builder = content::BrowsingDataFilterBuilder::Create(
           content::BrowsingDataFilterBuilder::Mode::kPreserve);
@@ -282,7 +282,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
 
     auto unfilterable_remove_mask =
         removal_settings.remove_mask &
-        ~ChromeBrowsingDataRemoverDelegate::FILTERABLE_DATA_TYPES;
+        ~chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;
     if (unfilterable_remove_mask && sync_enabled) {
       remover->RemoveAndReply(
           base::Time::Min(), deletion_end_time, unfilterable_remove_mask,

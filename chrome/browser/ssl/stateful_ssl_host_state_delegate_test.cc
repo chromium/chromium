@@ -12,9 +12,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/simple_test_clock.h"
-#include "components/browsing_data/content/browsing_data_helper.h"
-
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -619,7 +617,7 @@ class RemoveBrowsingHistorySSLHostStateDelegateTest
             browsing_data::TimePeriod::LAST_HOUR),
         browsing_data::CalculateEndDeleteTime(
             browsing_data::TimePeriod::LAST_HOUR),
-        ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY,
+        chrome_browsing_data_remover::DATA_TYPE_HISTORY,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
         &completion_observer);
     completion_observer.BlockUntilCompletion();

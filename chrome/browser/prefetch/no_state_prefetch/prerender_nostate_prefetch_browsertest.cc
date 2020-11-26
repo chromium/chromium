@@ -19,7 +19,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
@@ -1713,7 +1713,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ClearHistory) {
       kHungPrerenderPage, FINAL_STATUS_CACHE_OR_HISTORY_CLEARED);
 
   ClearBrowsingData(current_browser(),
-                    ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY);
+                    chrome_browsing_data_remover::DATA_TYPE_HISTORY);
   test_prerender->WaitForStop();
 
   // Make sure prerender history was cleared.

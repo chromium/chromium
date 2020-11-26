@@ -17,7 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chromeos/base/file_flusher.h"
 #include "chrome/browser/chromeos/login/helper.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
@@ -462,8 +462,8 @@ void ProfileHelperImpl::ClearSigninProfile(
   browsing_data_remover_->AddObserver(this);
   browsing_data_remover_->RemoveAndReply(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA,
-      ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES, this);
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      chrome_browsing_data_remover::ALL_ORIGIN_TYPES, this);
 
   // Close the current session with SigninPartitionManager. This clears cached
   // data from the last-used sign-in StoragePartition.

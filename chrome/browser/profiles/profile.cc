@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -495,8 +495,8 @@ double Profile::GetDefaultZoomLevelForProfile() {
 void Profile::Wipe() {
   content::BrowserContext::GetBrowsingDataRemover(this)->Remove(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::WIPE_PROFILE,
-      ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES);
+      chrome_browsing_data_remover::WIPE_PROFILE,
+      chrome_browsing_data_remover::ALL_ORIGIN_TYPES);
 }
 
 void Profile::NotifyOffTheRecordProfileCreated(Profile* off_the_record) {

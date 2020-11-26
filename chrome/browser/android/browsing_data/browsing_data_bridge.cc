@@ -22,7 +22,7 @@
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -98,31 +98,30 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   for (const int data_type : data_types_vector) {
     switch (static_cast<browsing_data::BrowsingDataType>(data_type)) {
       case browsing_data::BrowsingDataType::HISTORY:
-        remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
         break;
       case browsing_data::BrowsingDataType::CACHE:
         remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
         break;
       case browsing_data::BrowsingDataType::COOKIES:
         remove_mask |= BrowsingDataRemover::DATA_TYPE_COOKIES;
-        remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         remove_mask |= BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES;
         break;
       case browsing_data::BrowsingDataType::PASSWORDS:
-        remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
         remove_mask |=
-            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS;
+            chrome_browsing_data_remover::DATA_TYPE_ACCOUNT_PASSWORDS;
         break;
       case browsing_data::BrowsingDataType::FORM_DATA:
-        remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
         break;
       case browsing_data::BrowsingDataType::BOOKMARKS:
         // Bookmarks are deleted separately on the Java side.
         NOTREACHED();
         break;
       case browsing_data::BrowsingDataType::SITE_SETTINGS:
-        remove_mask |=
-            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_CONTENT_SETTINGS;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
         break;
       case browsing_data::BrowsingDataType::DOWNLOADS:
       case browsing_data::BrowsingDataType::HOSTED_APPS_DATA:
