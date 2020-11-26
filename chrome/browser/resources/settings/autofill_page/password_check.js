@@ -530,8 +530,10 @@ Polymer({
    * @private
    */
   showsTimestamp_() {
-    return this.status.state === CheckState.IDLE &&
-        !!this.status.elapsedTimeSinceLastCheck;
+    return !!this.status.elapsedTimeSinceLastCheck &&
+        (this.status.state === CheckState.IDLE ||
+         (this.status.state === CheckState.SIGNED_OUT &&
+          this.passwordsWeaknessCheckEnabled));
   },
 
   /**

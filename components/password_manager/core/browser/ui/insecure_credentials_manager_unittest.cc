@@ -8,6 +8,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -507,6 +508,13 @@ TEST_F(InsecureCredentialsManagerTest, MapCompromisedPasswordsToPasswords) {
 
   EXPECT_THAT(provider().GetSavedPasswordsFor(credentials_with_password[2]),
               ElementsAreArray(store().stored_passwords().at(kExampleOrg)));
+}
+
+TEST_F(InsecureCredentialsManagerTest, StartWeakCheckNotifiesOnCompletion) {
+  base::MockOnceClosure closure;
+  provider().StartWeakCheck(closure.Get());
+  EXPECT_CALL(closure, Run);
+  RunUntilIdle();
 }
 
 TEST_F(InsecureCredentialsManagerTest, StartWeakCheckOnEmptyPasswordsList) {

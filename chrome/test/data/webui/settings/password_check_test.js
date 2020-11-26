@@ -982,6 +982,27 @@ suite('PasswordsCheckSection', function() {
     expectFalse(isElementVisible(section.$.subtitle));
   });
 
+  // When the user is signed out but has run a weak check a timestamp should be
+  // shown.
+  test('showWeakCheckTimestampWhenSignedOut', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
+    passwordManager.data.checkStatus = makePasswordCheckStatus(
+        /*state=*/ PasswordCheckState.SIGNED_OUT,
+        /*checked=*/ 0,
+        /*remaining=*/ 0,
+        /*lastCheck=*/ 'Just now');
+
+    const section = createCheckPasswordSection();
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+    const titleRow = section.$.titleRow;
+    const subtitle = section.$.subtitle;
+    assertTrue(isElementVisible(titleRow));
+    assertTrue(isElementVisible(subtitle));
+    expectEquals(
+        section.i18n('checkedPasswords') + ' • Just now', titleRow.innerText);
+  });
+
   // If |passwordsWeaknessCheck| is true, user is signed out and has
   // compromised credentials that were found in the past, shows "Checked
   // passwords" and correct label in the top of comromised passwords section.
