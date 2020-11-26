@@ -213,8 +213,11 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
 ClientDiscardableSharedMemoryManager::~ClientDiscardableSharedMemoryManager() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
-  // TODO(reveman): Determine if this DCHECK can be enabled. crbug.com/430533
-  // DCHECK_EQ(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+  // Any memory allocated by a ClientDiscardableSharedMemoryManager must not be
+  // touched after it is destroyed, or it will cause a use-after-free. This
+  // check ensures that we stop before that can happen, instead of continuing
+  // with dangling pointers.
+  CHECK_EQ(heap_->GetSize(), heap_->GetSizeOfFreeLists());
   if (heap_->GetSize())
     MemoryUsageChanged(0, 0);
 
