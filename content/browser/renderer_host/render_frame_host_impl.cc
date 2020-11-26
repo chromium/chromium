@@ -8727,7 +8727,25 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // renderer one. The browser will just "push" the correct value.
   if (navigation_request->state() >=
       NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE) {
-    DCHECK_EQ(params.sandbox_flags, navigation_request->SandboxFlagsToCommit());
+    if (params.sandbox_flags != navigation_request->SandboxFlagsToCommit()) {
+      DCHECK(false);
+
+      base::debug::ScopedCrashKeyString scoped_url(
+          base::debug::AllocateCrashKeyString(
+              "url", base::debug::CrashKeySize::Size256),
+          params.url.possibly_invalid_spec());
+      base::debug::ScopedCrashKeyString scoped_sandbox(
+          base::debug::AllocateCrashKeyString(
+              "sandbox", base::debug::CrashKeySize::Size256),
+          base::StringPrintf(
+              "%u, %u", uint32_t(params.sandbox_flags),
+              uint32_t(navigation_request->SandboxFlagsToCommit())));
+      base::debug::SetCrashKeyString(
+          base::debug::AllocateCrashKeyString(
+              "is_main_frame", base::debug::CrashKeySize::Size32),
+          frame_tree_node_->IsMainFrame() ? "true" : "false");
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
