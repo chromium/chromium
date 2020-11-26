@@ -13,6 +13,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.AccountTrackerService;
+import org.chromium.components.signin.ProfileDataSource;
 
 import java.util.ArrayList;
 
@@ -21,38 +22,38 @@ import java.util.ArrayList;
  * The native ProfileDownloader requires its access to be in the UI thread.
  * See chrome/browser/profiles/profile_downloader.h/cc for more details.
  */
-public class ProfileDownloader {
-    private static final ObserverList<Observer> sObservers = new ObserverList<Observer>();
+class ProfileDownloader {
+    private static ProfileDownloader sInstance;
 
-    /**
-     * Interface for receiving notifications on account information updates.
-     */
-    public interface Observer {
-        /**
-         * Notifies that an account data in the profile has been updated.
-         * @param accountEmail An account email.
-         * @param fullName A full name.
-         * @param givenName A given name.
-         * @param bitmap A user picture.
-         */
-        void onProfileDownloaded(
-                String accountEmail, String fullName, String givenName, Bitmap bitmap);
+    private final ObserverList<ProfileDataSource.Observer> mObservers = new ObserverList<>();
+
+    static synchronized ProfileDownloader get() {
+        if (sInstance == null) {
+            sInstance = new ProfileDownloader();
+        }
+        return sInstance;
     }
 
     /**
      * Add an observer.
      * @param observer An observer.
      */
-    public static void addObserver(Observer observer) {
-        sObservers.addObserver(observer);
+    public void addObserver(ProfileDataSource.Observer observer) {
+        mObservers.addObserver(observer);
     }
 
     /**
      * Remove an observer.
      * @param observer An observer.
      */
-    public static void removeObserver(Observer observer) {
-        sObservers.removeObserver(observer);
+    public void removeObserver(ProfileDataSource.Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    private void notifyObservers(ProfileDataSource.ProfileData profileData) {
+        for (ProfileDataSource.Observer observer : mObservers) {
+            observer.onProfileDataUpdated(profileData);
+        }
     }
 
     /**
@@ -74,7 +75,7 @@ public class ProfileDownloader {
             mImageSidePixels = new ArrayList<>();
         }
 
-        public static PendingProfileDownloads get(Context context) {
+        static PendingProfileDownloads get(Context context) {
             ThreadUtils.assertOnUiThread();
             if (sPendingProfileDownloads == null) {
                 sPendingProfileDownloads = new PendingProfileDownloads();
@@ -120,7 +121,7 @@ public class ProfileDownloader {
      * @param accountEmail Account email to fetch the information for
      * @param imageSidePixels Request image side (in pixels)
      */
-    public static void startFetchingAccountInfoFor(
+    public void startFetchingAccountInfoFor(
             Context context, String accountEmail, int imageSidePixels, boolean isPreSignin) {
         ThreadUtils.assertOnUiThread();
         Profile profile = Profile.getLastUsedRegularProfile();
@@ -137,11 +138,10 @@ public class ProfileDownloader {
 
     @CalledByNative
     private static void onProfileDownloadSuccess(
-            String accountEmail, String fullName, String givenName, Bitmap bitmap) {
+            String accountEmail, String fullName, String givenName, Bitmap avatar) {
         ThreadUtils.assertOnUiThread();
-        for (Observer observer : sObservers) {
-            observer.onProfileDownloaded(accountEmail, fullName, givenName, bitmap);
-        }
+        ProfileDownloader.get().notifyObservers(
+                new ProfileDataSource.ProfileData(accountEmail, avatar, fullName, givenName));
     }
 
     /**

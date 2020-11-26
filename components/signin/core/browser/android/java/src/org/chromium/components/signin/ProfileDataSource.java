@@ -72,8 +72,21 @@ public interface ProfileDataSource {
         /**
          * Notifies that an account's profile data has been updated.
          * @param accountEmail An account email.
+         *
+         * This method will be removed after migrating all the callers to the second method
          */
+        @Deprecated
         void onProfileDataUpdated(String accountEmail);
+
+        /**
+         * Notifies that an account's profile data has been updated.
+         */
+        void onProfileDataUpdated(ProfileData profileData);
+
+        /**
+         * Removes the profile data of a given accountEmail.
+         */
+        void removeProfileData(String accountEmail);
     }
 
     /**

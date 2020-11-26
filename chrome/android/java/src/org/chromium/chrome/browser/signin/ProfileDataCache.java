@@ -45,8 +45,7 @@ import java.util.Map;
  * should be provided by calling {@link #update(List)}
  */
 @MainThread
-public class ProfileDataCache implements ProfileDownloader.Observer, ProfileDataSource.Observer,
-                                         IdentityManager.Observer {
+public class ProfileDataCache implements ProfileDataSource.Observer, IdentityManager.Observer {
     /**
      * Observer to get notifications about changes in profile data.
      */
@@ -151,7 +150,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
 
         for (int i = 0; i < accounts.size(); i++) {
             if (mCachedProfileData.get(accounts.get(i)) == null) {
-                ProfileDownloader.startFetchingAccountInfoFor(
+                ProfileDownloader.get().startFetchingAccountInfoFor(
                         mContext, accounts.get(i), mImageSize, true);
             }
         }
@@ -204,7 +203,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
                 mProfileDataSource.addObserver(this);
                 updateCacheFromProfileDataSource();
             } else {
-                ProfileDownloader.addObserver(this);
+                ProfileDownloader.get().addObserver(this);
             }
             mIdentityManager.addObserver(this);
         }
@@ -221,7 +220,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
             if (mProfileDataSource != null) {
                 mProfileDataSource.removeObserver(this);
             } else {
-                ProfileDownloader.removeObserver(this);
+                ProfileDownloader.get().removeObserver(this);
             }
             mIdentityManager.removeObserver(this);
         }
@@ -242,11 +241,9 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     }
 
     @Override
-    public void onProfileDownloaded(
-            String accountEmail, String fullName, String givenName, Bitmap bitmap) {
+    public void onProfileDataUpdated(ProfileDataSource.ProfileData profileData) {
         ThreadUtils.assertOnUiThread();
-        updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(
-                accountEmail, prepareAvatar(bitmap, accountEmail), fullName, givenName));
+        updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
     }
 
     @Override
@@ -255,11 +252,16 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         ProfileDataSource.ProfileData profileData =
                 mProfileDataSource.getProfileDataForAccount(accountEmail);
         if (profileData == null) {
-            mCachedProfileData.remove(accountEmail);
-            notifyObservers(accountEmail);
+            removeProfileData(accountEmail);
         } else {
-            updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
+            onProfileDataUpdated(profileData);
         }
+    }
+
+    @Override
+    public void removeProfileData(String accountEmail) {
+        mCachedProfileData.remove(accountEmail);
+        notifyObservers(accountEmail);
     }
 
     /**
