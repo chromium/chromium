@@ -126,7 +126,7 @@ def SavePList(path, format, data):
   else:
     with open(path, 'wb') as f:
       plist_format = {'binary1': plistlib.FMT_BINARY, 'xml1': plistlib.FMT_XML}
-      plistlib.dump(data, f, fmt=plist_format[options.format])
+      plistlib.dump(data, f, fmt=plist_format[format])
 
 
 def MergePList(plist1, plist2):
