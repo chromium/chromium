@@ -42,7 +42,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothProfileManagerClient
     std::unique_ptr<std::string> service;
 
     // Role.
-    enum ProfileRole role;
+    enum ProfileRole role = ProfileRole::SYMMETRIC;
 
     // RFCOMM channel number.
     std::unique_ptr<uint16_t> channel;
