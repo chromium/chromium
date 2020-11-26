@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_handler.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
@@ -78,7 +77,6 @@ enum class ValuePatternsMetric {
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
 class AutofillManager : public AutofillHandler,
-                        public AutofillDownloadManager::Observer,
                         public AutocompleteHistoryManager::SuggestionsHandler,
                         public CreditCardAccessManager::Accessor {
  public:

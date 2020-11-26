@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/language_code.h"
@@ -34,7 +35,7 @@ class LogManager;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
-class AutofillHandler {
+class AutofillHandler : public AutofillDownloadManager::Observer {
  public:
   enum AutofillDownloadManagerState {
     ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
@@ -48,7 +49,7 @@ class AutofillHandler {
     virtual void OnFormParsed() = 0;
   };
 
-  virtual ~AutofillHandler();
+  ~AutofillHandler() override;
 
   // Invoked when the value of textfield is changed.
   void OnTextFieldDidChange(const FormData& form,
@@ -224,6 +225,14 @@ class AutofillHandler {
   }
 
  private:
+  // AutofillDownloadManager::Observer:
+  void OnLoadedServerPredictions(
+      std::string response,
+      const std::vector<FormSignature>& queried_form_signatures) override;
+  void OnServerRequestError(FormSignature form_signature,
+                            AutofillDownloadManager::RequestType request_type,
+                            int http_error) override;
+
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
   AutofillDriver* const driver_;

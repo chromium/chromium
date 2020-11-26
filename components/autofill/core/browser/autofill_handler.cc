@@ -315,4 +315,13 @@ void AutofillHandler::Reset() {
   form_structures_.clear();
 }
 
+void AutofillHandler::OnLoadedServerPredictions(
+    std::string response,
+    const std::vector<FormSignature>& queried_form_signatures) {}
+
+void AutofillHandler::OnServerRequestError(
+    FormSignature form_signature,
+    AutofillDownloadManager::RequestType request_type,
+    int http_error) {}
+
 }  // namespace autofill
