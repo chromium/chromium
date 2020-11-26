@@ -333,6 +333,22 @@ public class ContextualSearchUma {
         int NUM_ENTRIES = 3;
     }
 
+    // Constants for user permissions histogram.
+    @IntDef({
+            Permissions.SEND_NOTHING,
+            Permissions.SEND_URL,
+            Permissions.SEND_CONTENT,
+            Permissions.SEND_URL_AND_CONTENT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Permissions {
+        int SEND_NOTHING = 0;
+        int SEND_URL = 1;
+        int SEND_CONTENT = 2;
+        int SEND_URL_AND_CONTENT = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     /**
      * Key used in maps from {state, reason} to state entry (exit) logging code.
      */
@@ -1612,6 +1628,43 @@ public class ContextualSearchUma {
     static void logUnifiedConsentThrottleEligible(boolean isThrottleEligible) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.UnifiedConsent.ThrottleEligible", isThrottleEligible);
+    }
+
+    /**
+     * Logs a histogram indicating which privacy permissions are available that Related Searches
+     * cares about. This ignores any language constraint.
+     * <p>This can be called multiple times for each user from any part of the code that's freqently
+     * executed.
+     * @param canSendUrl Whether this user has allowed sending page URL info to Google.
+     * @param canSendContent Whether the user can send page content to Google (has accepted the
+     *        Contextual Search opt-in).
+     */
+    static void logRelatedSearchesPermissionsForAllUsers(
+            boolean canSendUrl, boolean canSendContent) {
+        @Permissions
+        int permissionsEnum;
+        if (canSendUrl) {
+            permissionsEnum =
+                    canSendContent ? Permissions.SEND_URL_AND_CONTENT : Permissions.SEND_URL;
+        } else {
+            permissionsEnum = canSendContent ? Permissions.SEND_CONTENT : Permissions.SEND_NOTHING;
+        }
+        RecordHistogram.recordEnumeratedHistogram("Search.RelatedSearches.AllUserPermissions",
+                permissionsEnum, Permissions.NUM_ENTRIES);
+    }
+
+    /**
+     * Logs a histogram indicating that a user is qualified for the Related Searches experiment
+     * regardless of whether that feature is enabled. This uses a boolean histogram but always
+     * logs true in order to get a raw bucket count (without using a user action, as suggested
+     * in the User Action Guidelines doc).
+     * <p>We use this to gauge whether each group has a balanced number of qualified users.
+     * Can be logged multiple times since we'll just look at the user-count of this histogram.
+     * This should be called any time a gesture is detected that could trigger a Related Search
+     * if the feature were enabled.
+     */
+    static void logRelatedSearchesQualifiedUsers() {
+        RecordHistogram.recordBooleanHistogram("Search.RelatedSearches.QualifiedUsers", true);
     }
 
     /**

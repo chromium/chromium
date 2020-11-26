@@ -113,17 +113,17 @@ public abstract class ContextualSearchContext {
      * @param targetLanguage The language to translate into, in case translation might be needed.
      * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that
      *        the user can read fluently, or an empty string.
-     * @param doRelatedSearches Whether the activate the Related Searches functionality too.
      */
     void setResolveProperties(@NonNull String homeCountry, boolean doSendBasePageUrl,
             long previousEventId, int previousUserInteractions, @NonNull String targetLanguage,
-            @NonNull String fluentLanguages, boolean doRelatedSearches) {
+            @NonNull String fluentLanguages) {
+        // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
         mHomeCountry = homeCountry;
         mPreviousEventId = previousEventId;
         mPreviousUserInteractions = previousUserInteractions;
         ContextualSearchContextJni.get().setResolveProperties(getNativePointer(), this, homeCountry,
-                doSendBasePageUrl, previousEventId, previousUserInteractions, doRelatedSearches);
+                doSendBasePageUrl, previousEventId, previousUserInteractions);
         mTargetLanguage = targetLanguage;
         mFluentLanguages = fluentLanguages;
     }
@@ -271,10 +271,18 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * Specifies that this search must be exact so the resolve must return a non-expanding result.
+     * Prepares the Context to be used in a Resolve request by supplying last minute parameters.
+     * If this call is not made before a Resolve then defaults are used (not exact and not a
+     * Related Search).
+     * @param isExactSearch Specifies whether this search must be exact -- meaning the resolve must
+     *        return a non-expanding result that matches the selection exactly.
+     * @param relatedSearchesStamp Information to be attached to the Resolve request that is needed
+     *        for Related Searches. If this string is empty then no Related Searches results will
+     *        be requested.
      */
-    void setExactResolve() {
-        ContextualSearchContextJni.get().setExactResolve(mNativePointer, this);
+    void prepareToResolve(boolean isExactSearch, String relatedSearchesStamp) {
+        ContextualSearchContextJni.get().prepareToResolve(
+                mNativePointer, this, isExactSearch, relatedSearchesStamp);
     }
 
     /**
@@ -587,7 +595,7 @@ public abstract class ContextualSearchContext {
         void destroy(long nativeContextualSearchContext, ContextualSearchContext caller);
         void setResolveProperties(long nativeContextualSearchContext,
                 ContextualSearchContext caller, String homeCountry, boolean doSendBasePageUrl,
-                long previousEventId, int previousEventResults, boolean doRelatedSearches);
+                long previousEventId, int previousEventResults);
         void adjustSelection(long nativeContextualSearchContext, ContextualSearchContext caller,
                 int startAdjust, int endAdjust);
         void setContent(long nativeContextualSearchContext, ContextualSearchContext caller,
@@ -596,6 +604,7 @@ public abstract class ContextualSearchContext {
         void setTranslationLanguages(long nativeContextualSearchContext,
                 ContextualSearchContext caller, String detectedLanguage, String targetLanguage,
                 String fluentLanguages);
-        void setExactResolve(long nativeContextualSearchContext, ContextualSearchContext caller);
+        void prepareToResolve(long nativeContextualSearchContext, ContextualSearchContext caller,
+                boolean isExactSearch, String relatedSearchesStamp);
     }
 }

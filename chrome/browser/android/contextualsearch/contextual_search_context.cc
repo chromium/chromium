@@ -51,14 +51,12 @@ void ContextualSearchContext::SetResolveProperties(
     const base::android::JavaParamRef<jstring>& j_home_country,
     jboolean j_may_send_base_page_url,
     jlong j_previous_event_id,
-    jint j_previous_event_results,
-    jboolean j_do_related_searches) {
+    jint j_previous_event_results) {
   can_resolve_ = true;
   home_country_ = base::android::ConvertJavaStringToUTF8(env, j_home_country);
   can_send_base_page_url_ = j_may_send_base_page_url;
   previous_event_id_ = j_previous_event_id;
   previous_event_results_ = j_previous_event_results;
-  do_related_searches_ = j_do_related_searches;
 }
 
 void ContextualSearchContext::SetContent(
@@ -144,20 +142,25 @@ int ContextualSearchContext::GetEndOffset() const {
   return end_offset_;
 }
 
-void ContextualSearchContext::SetExactResolve(
+void ContextualSearchContext::PrepareToResolve(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  is_exact_resolve_ = true;
+    const base::android::JavaParamRef<jobject>& obj,
+    jboolean j_is_exact_resolve,
+    const base::android::JavaParamRef<jstring>& j_related_searches_stamp) {
+  is_exact_resolve_ = j_is_exact_resolve;
+  related_searches_stamp_ =
+      base::android::ConvertJavaStringToUTF8(env, j_related_searches_stamp);
+  do_related_searches_ = !related_searches_stamp_.empty();
 }
 
-bool ContextualSearchContext::GetExactResolve() {
+bool ContextualSearchContext::GetExactResolve() const {
   return is_exact_resolve_;
 }
 
 base::android::ScopedJavaLocalRef<jstring>
 ContextualSearchContext::DetectLanguage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    const base::android::JavaParamRef<jobject>& obj) const {
   std::string language = GetReliableLanguage(GetSelection());
   if (language.empty())
     language = GetReliableLanguage(this->surrounding_text_);
@@ -181,12 +184,12 @@ void ContextualSearchContext::SetTranslationLanguages(
 }
 
 const ContextualSearchContext::TranslationLanguages&
-ContextualSearchContext::GetTranslationLanguages() {
+ContextualSearchContext::GetTranslationLanguages() const {
   return translation_languages_;
 }
 
 std::string ContextualSearchContext::GetReliableLanguage(
-    const base::string16& contents) {
+    const base::string16& contents) const {
   std::string content_language;
   std::string html_lang;
   std::string cld_language;
@@ -199,7 +202,7 @@ std::string ContextualSearchContext::GetReliableLanguage(
   return language;
 }
 
-base::string16 ContextualSearchContext::GetSelection() {
+base::string16 ContextualSearchContext::GetSelection() const {
   int start = this->start_offset_;
   int end = this->end_offset_;
   DCHECK(start >= 0);
@@ -209,8 +212,12 @@ base::string16 ContextualSearchContext::GetSelection() {
   return this->surrounding_text_.substr(start, end - start);
 }
 
-bool ContextualSearchContext::GetRelatedSearches() {
+bool ContextualSearchContext::GetRelatedSearches() const {
   return do_related_searches_;
+}
+
+const std::string ContextualSearchContext::GetRelatedSearchesStamp() const {
+  return related_searches_stamp_;
 }
 
 // Boilerplate.

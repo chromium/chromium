@@ -12774,6 +12774,14 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Peek Promo was not seen, Panel was not opened"/>
 </enum>
 
+<enum name="ContextualSearchPermissions">
+  <summary>The privacy permissions for the current user.</summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Send URL"/>
+  <int value="2" label="Send content"/>
+  <int value="3" label="Send URL and content"/>
+</enum>
+
 <enum name="ContextualSearchPreferenceState">
   <int value="0" label="Uninitialized"/>
   <int value="1" label="Enabled"/>
