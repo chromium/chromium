@@ -6323,13 +6323,6 @@
      ]
     },
     "selectors": {
-     "focus-visible-001-manual.html": [
-      "3475ba6cac8af1fcb2095aeaae13a0db76ccc7b2",
-      [
-       null,
-       {}
-      ]
-     ],
      "focus-visible-002-manual.html": [
       "f86082df8b8988e94cc2fb5ca8705b59251d2908",
       [
@@ -6360,13 +6353,6 @@
      ],
      "focus-visible-008-manual.html": [
       "53306a90bbcae67ca65feefce3e4d3758d1a4ecd",
-      [
-       null,
-       {}
-      ]
-     ],
-     "focus-visible-012-manual.html": [
-      "c659a728986fd01f47e252b2fe06cce8c91175ac",
       [
        null,
        {}
@@ -88887,6 +88873,19 @@
        [
         [
          "/css/css-paint-api/two-custom-property-animation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "two-element-custom-property-animation.https.html": [
+      "044650dcaffbca576977a6b2ce4ec61fb00cf70c",
+      [
+       null,
+       [
+        [
+         "/css/css-paint-api/two-element-custom-property-animation-ref.html",
          "=="
         ]
        ],
@@ -195630,6 +195629,10 @@
       "1acef69f9413c154b2f527d3792f24bbbdb38643",
       []
      ],
+     "two-element-custom-property-animation-ref.html": [
+      "6c6d94575eceb892278d355278a0c1463c726168",
+      []
+     ],
      "valid-image-after-load-ref.html": [
       "b6a6dec6c6087633b6e3efd8e7e9dcf49a3fea8b",
       []
@@ -252849,7 +252852,7 @@
       []
      ],
      "percent-encoding.py": [
-      "f7228871205a20643787bd41df943154c3bd2e25",
+      "e8fbb7d3b3d26518486ca605a7cc533acaa76bb8",
       []
      ],
      "setters_tests.json": [
@@ -254877,6 +254880,10 @@
      "crypto-suite.https-expected.txt": [
       "1d818ac3e47dce64100cab6adab2f9ee1e48953f",
       []
+     ],
+     "rtp-payloadtypes-expected.txt": [
+      "4f019b911af5a26c280b69480f5e7acae40b44d4",
+      []
      ]
     },
     "receiver-track-live-expected.txt": [
@@ -255403,10 +255410,6 @@
     ],
     "storage_builtins-expected.txt": [
      "b5f739b304cffb7945590afd7a83ce19063a1fcf",
-     []
-    ],
-    "storage_session_window_noopener-expected.txt": [
-     "f7a4f8692db07c9bddb19dd17f835469763e3f2d",
      []
     ],
     "symbol-props.window-expected.txt": [
@@ -309243,6 +309246,15 @@
        {}
       ]
      ],
+     "focus-visible-001.html": [
+      "2afcea22d1d332a71191ec8b22b194f04577709e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-visible-005.html": [
       "b5d58435db1c6d37881bbcd4c856e8abab03aada",
       [
@@ -309277,6 +309289,15 @@
      ],
      "focus-visible-011.html": [
       "0c05c21800d10042c00e67aad90fd867b515b4b2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-visible-012.html": [
+      "a81eef3fb11f446e2d5344d9e50509d1707d1fc2",
       [
        null,
        {
@@ -430101,6 +430122,13 @@
      ],
      "rtp-demuxing.html": [
       "1b8dce3b45dab0d369e49498e19b2fb036635717",
+      [
+       null,
+       {}
+      ]
+     ],
+     "rtp-payloadtypes.html": [
+      "6806e75ed514c04968d03b6d8413daa38b83d053",
       [
        null,
        {}
