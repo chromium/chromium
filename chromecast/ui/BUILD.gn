@@ -46,12 +46,21 @@ cast_source_set("display_settings_manager") {
 }
 
 cast_source_set("aura_components") {
-  sources = [ "aura_components.h" ]
+  sources = [
+    "aura_components.cc",
+    "aura_components.h",
+  ]
 
-  deps = [ ":public" ]
+  deps = [
+    ":public",
+    "//base",
+  ]
 
   if (use_aura) {
-    sources += [ "aura_components.cc" ]
+    sources += [
+      "aura_components_impl.cc",
+      "aura_components_impl.h",
+    ]
 
     deps += [
       ":media_overlay",
