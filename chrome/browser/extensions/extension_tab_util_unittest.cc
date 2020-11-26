@@ -165,4 +165,41 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigation) {
   }
 }
 
+TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnDevtools) {
+  const std::string kDevtoolsURL(
+      "devtools://devtools/bundled/devtools_app.html");
+  // A devtools url should return false and set the error.
+  {
+    auto no_permission_extension = ExtensionBuilder("none").Build();
+    std::string error;
+    GURL url;
+    EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
+        kDevtoolsURL, no_permission_extension.get(), &url, &error));
+    EXPECT_EQ(tabs_constants::kCannotNavigateToDevtools, error);
+  }
+  // Having the devtools permissions should allow access.
+  {
+    auto devtools_extension = ExtensionBuilder("devtools")
+                                  .SetManifestKey("devtools_page", "foo.html")
+                                  .Build();
+    std::string error;
+    GURL url;
+    EXPECT_TRUE(ExtensionTabUtil::PrepareURLForNavigation(
+        kDevtoolsURL, devtools_extension.get(), &url, &error));
+    EXPECT_EQ(kDevtoolsURL, url);
+    EXPECT_TRUE(error.empty());
+  }
+  // Having the debugger permissions should also allow access.
+  {
+    auto debugger_extension =
+        ExtensionBuilder("debugger").AddPermission("debugger").Build();
+    std::string error;
+    GURL url;
+    EXPECT_TRUE(ExtensionTabUtil::PrepareURLForNavigation(
+        kDevtoolsURL, debugger_extension.get(), &url, &error));
+    EXPECT_EQ(kDevtoolsURL, url);
+    EXPECT_TRUE(error.empty());
+  }
+}
+
 }  // namespace extensions
