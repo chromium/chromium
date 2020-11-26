@@ -9023,6 +9023,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessFeaturePolicyBrowserTest,
+                       HeaderPolicyOnXSLTNavigation) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/permissions-policy.xml"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  EXPECT_EQ(CreateParsedFeaturePolicy(
+                {blink::mojom::FeaturePolicyFeature::kGeolocation},
+                {url.GetOrigin()}),
+            root->current_replication_state().feature_policy_header);
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessFeaturePolicyBrowserTest,
                        TestPolicyReplicationOnSameOriginNavigation) {
   GURL start_url(
       embedded_test_server()->GetURL("a.com", "/feature-policy1.html"));
