@@ -7,21 +7,39 @@ GN and Ninja are documented here:
 
 ## Things to Consider When Writing Templates
 ### Inputs and Depfiles
-* List all files read (or executed) by an action as `inputs`.
-  * It is [not enough](https://chromium-review.googlesource.com/c/chromium/src/+/1090231)
-    to have inputs listed by dependent targets. They must be listed directly by targets that use them.
-  * Non-system Python imports are inputs! For scripts that import such modules,
-    use [`action_with_pydeps`](https://cs.chromium.org/chromium/src/build/config/python.gni?rcl=320ee4295eb7fabaa112f08d1aacc88efd1444e5&l=75)
-    to ensure all dependent Python files are captured as inputs.
-* For action inputs that are not computable during "gn gen", actions can write
-  depfiles (.d files) to add additional input files as dependencies for
-  subsequent builds. They are relevant only for incremental builds.
-  * Depfiles should not list files that GN already lists as `inputs`.
-    * Besides being redundant, listing them also makes it harder to remove
-      inputs, since removing them from GN does not immediately remove them from
-      depfiles.
-    * Stale paths in depfiles can cause ninja to complain of circular
-      dependencies [in some cases](https://bugs.chromium.org/p/chromium/issues/detail?id=639042).
+List all files read (or executed) by an action as `inputs`.
+ * It is not enough to have inputs listed by dependent targets. They must be
+   listed directly by targets that use them, or added by a depfile.
+ * Non-system Python imports are inputs! For scripts that import such modules,
+   use [`action_with_pydeps`] to ensure all dependent Python files are captured
+   as inputs.
+
+[`action_with_pydeps`]: https://cs.chromium.org/chromium/src/build/config/python.gni?rcl=320ee4295eb7fabaa112f08d1aacc88efd1444e5&l=75
+
+To understand *why* actions must list all inputs directly, you need to
+understand ninja's "restat" directive, which is used for all GN `action()`s.
+
+From https://ninja-build.org/manual.html:
+
+> if present, causes Ninja to re-stat the command’s outputs after execution of
+> the command. Each output whose modification time the command did not change
+> will be treated as though it had never needed to be built. This may cause the
+> output’s reverse dependencies to be removed from the list of pending build
+> actions.
+
+So, if your action depends on target "X", and "X" does not change its outputs
+when rebuilt, then ninja will not bother to rebuild your target.
+
+For action inputs that are not computable during "gn gen", actions can write
+depfiles (.d files) to add additional input files as dependencies for
+subsequent builds. They are relevant only for incremental builds since they
+won't exist for the initial build.
+ * Depfiles should not list files that GN already lists as `inputs`.
+   * Besides being redundant, listing them also makes it harder to remove
+     inputs, since removing them from GN does not immediately remove them from
+     depfiles.
+   * Stale paths in depfiles can cause ninja to complain of circular
+     dependencies [in some cases](https://bugs.chromium.org/p/chromium/issues/detail?id=639042).
 
 ### Ensuring "gn analyze" Knows About your Inputs
 "gn analyze" is used by bots to run only affected tests and build only affected
