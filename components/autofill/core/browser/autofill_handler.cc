@@ -40,9 +40,14 @@ AutofillField* FindAutofillFillField(const FormStructure& form,
   return nullptr;
 }
 
-// Returns true if |live_form| does not match |cached_form|.
+// Returns true if |live_form| does not match |cached_form|, assuming that
+// |live_form|'s language is |live_form_language|.
 bool CachedFormNeedsUpdate(const FormData& live_form,
+                           const LanguageCode& live_form_language,
                            const FormStructure& cached_form) {
+  if (cached_form.original_page_language() != live_form_language)
+    return true;
+
   if (live_form.fields.size() != cached_form.field_count())
     return true;
 
@@ -201,6 +206,7 @@ void AutofillHandler::SendFormDataToRenderer(
   driver_->SendFormDataToRenderer(query_id, action, data);
 }
 
+// Returns true if |live_form| does not match |cached_form|.
 bool AutofillHandler::GetCachedFormAndField(const FormData& form,
                                             const FormFieldData& field,
                                             FormStructure** form_structure,
@@ -210,7 +216,7 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
       FindCachedFormByRendererId(form.unique_renderer_id);
   if (cached_form) {
     DCHECK(cached_form);
-    if (!CachedFormNeedsUpdate(form, *cached_form)) {
+    if (!CachedFormNeedsUpdate(form, GetPageLanguage(), *cached_form)) {
       // There is no data to return if there are no auto-fillable fields.
       if (!cached_form->autofill_count())
         return false;
@@ -288,7 +294,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
       value_from_dynamic_change_form_ = true;
   }
 
-  form_structure->set_page_language(GetPageLanguage());
+  form_structure->set_original_page_language(GetPageLanguage());
 
   form_structure->DetermineHeuristicTypes(log_manager_);
 

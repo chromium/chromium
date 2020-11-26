@@ -390,6 +390,8 @@ class AutofillManager : public AutofillHandler,
   FormData* pending_form_data() { return pending_form_data_.get(); }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest, PageLanguageGetsCorrectlySet);
+
   // Keeps track of the filling context for a form, used to make refill attemps.
   struct FillingContext {
     // |optional_profile| or |optional_credit_card| must be non-null.

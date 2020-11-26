@@ -658,7 +658,7 @@ void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
   // prediction routines.
   if (ShouldRunHeuristics()) {
     const FieldCandidatesMap field_type_map = FormField::ParseFormFields(
-        fields_, page_language_, is_form_tag_, log_manager);
+        fields_, original_page_language_, is_form_tag_, log_manager);
     for (const auto& field : fields_) {
       const auto iter = field_type_map.find(field->unique_renderer_id);
       if (iter != field_type_map.end()) {
@@ -711,8 +711,8 @@ bool FormStructure::EncodeUploadRequest(
   upload->set_data_present(EncodeFieldTypes(available_field_types));
   upload->set_passwords_revealed(passwords_were_revealed_);
   upload->set_has_form_tag(is_form_tag_);
-  if (!page_language_->empty() && randomized_encoder_ != nullptr) {
-    upload->set_language(page_language_.value());
+  if (!original_page_language_->empty() && randomized_encoder_ != nullptr) {
+    upload->set_language(original_page_language_.value());
   }
 
   auto triggering_event = (submission_event_ != SubmissionIndicatorEvent::NONE)
