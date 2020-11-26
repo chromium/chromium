@@ -72,7 +72,7 @@ make_trie_helpers_files =
 # on Posix we want to run the system one on the path.
 if (host_os == "win") {
   gperf_exe = rebase_path("//third_party/gperf/bin/gperf.exe", root_build_dir)
-} else if (is_mac) {
+} else if (host_os == "mac") {
   gperf_exe = mac_bin_path + "gperf"
 } else {
   gperf_exe = "gperf"
