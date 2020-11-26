@@ -197,7 +197,6 @@ static_library("renderer") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//ppapi/buildflags",
-    "//ppapi/shared_impl",
     "//printing/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",

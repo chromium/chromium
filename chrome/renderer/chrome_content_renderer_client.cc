@@ -128,7 +128,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "ppapi/shared_impl/ppapi_switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -196,6 +195,7 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/common/plugin_utils.h"
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
+#include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck crbug.com/1125897
 #else
 #include "components/plugins/renderer/plugin_placeholder.h"
 #endif

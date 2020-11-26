@@ -2277,7 +2277,6 @@ static_library("browser") {
     "//net",
     "//net:extras",
     "//ppapi/buildflags",
-    "//ppapi/host",
     "//printing",
     "//printing/buildflags",
     "//rlz/buildflags",
@@ -5996,7 +5995,6 @@ static_library("browser") {
     deps += [
       "//components/pdf/browser",
       "//media:media_buildflags",
-      "//ppapi/buildflags",
       "//ppapi/host",
       "//ppapi/proxy:ipc",
       "//services/device/public/mojom",

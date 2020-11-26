@@ -345,7 +345,6 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "ppapi/host/ppapi_host.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
