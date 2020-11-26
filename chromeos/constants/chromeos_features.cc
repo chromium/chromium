@@ -100,6 +100,10 @@ const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
 const base::Feature kAssistAutoCorrect{"AssistAutoCorrect",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable assistive multi word suggestions.
+const base::Feature kAssistMultiWord{"AssistMultiWord",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable assistive personal information.
 const base::Feature kAssistPersonalInfo{"AssistPersonalInfo",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

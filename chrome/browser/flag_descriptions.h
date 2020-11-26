@@ -2498,6 +2498,9 @@ extern const char kHoldingSpacePreviewsDescription[];
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 
+extern const char kImeAssistMultiWordName[];
+extern const char kImeAssistMultiWordDescription[];
+
 extern const char kImeAssistPersonalInfoName[];
 extern const char kImeAssistPersonalInfoDescription[];
 

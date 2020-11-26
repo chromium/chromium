@@ -407,6 +407,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
                           base::FeatureList::IsEnabled(
                               chromeos::features::kHandwritingGestureEditing)));
   features->AppendString(GenerateFeatureFlag(
+      "multiword",
+      base::FeatureList::IsEnabled(chromeos::features::kAssistMultiWord)));
+  features->AppendString(GenerateFeatureFlag(
       "floatingkeyboarddefault",
       base::FeatureList::IsEnabled(
           chromeos::features::kVirtualKeyboardFloatingDefault)));

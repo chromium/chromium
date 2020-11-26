@@ -42273,6 +42273,7 @@ from previous Chrome versions.
   <int value="-1553477903" label="ash-disable-text-filtering-in-overview-mode"/>
   <int value="-1553280810" label="PromoBrowserCommands:enabled"/>
   <int value="-1552898031" label="SingleTabMode:enabled"/>
+  <int value="-1551197844" label="AssistMultiWord:enabled"/>
   <int value="-1550760918" label="PipRoundedCorners:disabled"/>
   <int value="-1550675387" label="CriticalPersistedTabData:enabled"/>
   <int value="-1550541457" label="DisplayIdentification:disabled"/>
@@ -42465,6 +42466,7 @@ from previous Chrome versions.
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
   <int value="-1399419572" label="enable-app-list"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
+  <int value="-1396434715" label="AssistMultiWord:disabled"/>
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
   <int value="-1392562498" label="disable-origin-chip"/>
   <int value="-1391728260" label="ContextualSearchDefinitions:enabled"/>
