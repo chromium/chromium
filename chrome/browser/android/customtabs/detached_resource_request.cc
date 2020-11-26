@@ -175,13 +175,14 @@ void DetachedResourceRequest::Start(
                    network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
   request->url_loader_->SetRetryOptions(1 /* max_retries */, retry_mode);
 
-  // |url_loader_| is owned by the request, and must be kept alive to not cancel
+  // |url_loader| is owned by the request, and must be kept alive to not cancel
   // the request. Pass the ownership of the request to the response callback,
   // ensuring that it stays alive, yet is freed upon completion or failure.
   //
   // This is also the reason for this function to be a static member function
   // instead of a regular function.
-  request->url_loader_->DownloadToString(
+  network::SimpleURLLoader* const url_loader = request->url_loader_.get();
+  url_loader->DownloadToString(
       storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
       base::BindOnce(&DetachedResourceRequest::OnResponseCallback,
                      std::move(request)),
