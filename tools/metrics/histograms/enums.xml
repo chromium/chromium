@@ -60848,8 +60848,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Signed in to sync from secondary profile"/>
   <int value="3" label="Customized sync options"/>
   <int value="4" label="Chose what to sync"/>
-  <int value="5" label="Encrypted all data"/>
-  <int value="6" label="Selected a passphrase"/>
+  <int value="5" label="Encrypted data with new passphrase"/>
+  <int value="6" label="Entered existing passphrase"/>
 </enum>
 
 <enum name="ProfileSyncCustomize">

@@ -72,7 +72,6 @@ cr.define('settings', function() {
    *   extensionsRegistered: boolean,
    *   extensionsSynced: boolean,
    *   fullEncryptionBody: string,
-   *   passphrase: (string|undefined),
    *   passphraseRequired: boolean,
    *   passwordsRegistered: boolean,
    *   passwordsSynced: boolean,
@@ -81,7 +80,6 @@ cr.define('settings', function() {
    *   preferencesSynced: boolean,
    *   readingListRegistered: boolean,
    *   readingListSynced: boolean,
-   *   setNewPassphrase: (boolean|undefined),
    *   syncAllDataTypes: boolean,
    *   tabsRegistered: boolean,
    *   tabsSynced: boolean,
@@ -198,13 +196,20 @@ cr.define('settings', function() {
     setSyncDatatypes(syncPrefs) {}
 
     /**
-     * Sets the sync encryption options.
-     * @param {!settings.SyncPrefs} syncPrefs
-     * @return {!Promise<!settings.PageStatus>}
+     * Attempts to set up a new passphrase to encrypt Sync data.
+     * @param {string} passphrase
+     * @return {!Promise<boolean>} Whether the passphrase was successfully set.
+     * The call can fail, for example, if encrypting the data is disallowed.
      */
-    // TODO(crbug.com/1139060): Use a clear signature which doesn't rely on
-    // syncPrefs.
-    setSyncEncryption(syncPrefs) {}
+    setEncryptionPassphrase(passphrase) {}
+
+    /**
+     * Attempts to set the passphrase to decrypt Sync data.
+     * @param {string} passphrase
+     * @return {!Promise<boolean>} Whether the passphrase was successfully set.
+     * The call can fail, for example, if the passphrase is incorrect.
+     */
+    setDecryptionPassphrase(passphrase) {}
 
     /**
      * Start syncing with an account, specified by its email.
@@ -312,9 +317,13 @@ cr.define('settings', function() {
     }
 
     /** @override */
-    setSyncEncryption(syncPrefs) {
-      return cr.sendWithPromise(
-          'SyncSetupSetEncryption', JSON.stringify(syncPrefs));
+    setEncryptionPassphrase(passphrase) {
+      return cr.sendWithPromise('SyncSetupSetEncryptionPassphrase', passphrase);
+    }
+
+    /** @override */
+    setDecryptionPassphrase(passphrase) {
+      return cr.sendWithPromise('SyncSetupSetDecryptionPassphrase', passphrase);
     }
 
     /** @override */

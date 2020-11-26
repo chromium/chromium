@@ -491,22 +491,23 @@ Polymer({
       return;
     }
 
-    this.syncPrefs.setNewPassphrase = false;
+    this.browserProxy_.setDecryptionPassphrase(this.existingPassphrase_)
+        .then(
+            sucessfullySet => this.handlePageStatusChanged_(
+                sucessfullySet ? settings.PageStatus.DONE :
+                                 settings.PageStatus.PASSPHRASE_FAILED));
 
-    this.syncPrefs.passphrase = this.existingPassphrase_;
     this.existingPassphrase_ = '';
-
-    this.browserProxy_.setSyncEncryption(this.syncPrefs)
-        .then(this.handlePageStatusChanged_.bind(this));
   },
 
   /**
    * @private
-   * @param {!CustomEvent<!settings.PageStatus>} e
+   * @param {!CustomEvent<!{didChange: boolean}>} e
    */
   onPassphraseChanged_(e) {
     this.handlePageStatusChanged_(
-        /** @type {!settings.PageStatus} */ (e.detail));
+        e.detail.didChange ? settings.PageStatus.DONE :
+                             settings.PageStatus.PASSPHRASE_FAILED);
   },
 
   /**

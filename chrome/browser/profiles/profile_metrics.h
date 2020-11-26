@@ -79,10 +79,10 @@ class ProfileMetrics {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum ProfileSync {
-    SYNC_CUSTOMIZE = 0,       // User decided to customize sync
-    SYNC_CHOOSE,              // User chose what to sync
-    SYNC_ENCRYPT,             // User has chosen to encrypt all data
-    SYNC_PASSPHRASE,          // User is using a passphrase
+    SYNC_CUSTOMIZE = 0,           // User decided to customize sync
+    SYNC_CHOOSE,                  // User chose what to sync
+    SYNC_CREATED_NEW_PASSPHRASE,  // User created a passphrase to encrypt data
+    SYNC_ENTERED_EXISTING_PASSPHRASE,  // User entered an existing passphrase
     NUM_PROFILE_SYNC_METRICS
   };
 

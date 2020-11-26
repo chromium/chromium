@@ -337,7 +337,7 @@ suite('SyncSettingsTests', function() {
     assertTrue(passphraseConfirmationInput.invalid);
   });
 
-  test('CreatingPassphraseValidPassphrase', function() {
+  test('CreatingPassphraseValidPassphrase', async function() {
     encryptWithPassphrase.click();
     flush();
 
@@ -350,34 +350,31 @@ suite('SyncSettingsTests', function() {
         encryptionElement.$$('#passphraseConfirmationInput');
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'foo';
+    browserProxy.encryptionPassphraseSuccess = true;
     saveNewPassphrase.click();
 
-    function verifySetSyncEncryption(args) {
-      assertTrue(args.setNewPassphrase);
-      assertEquals('foo', args.passphrase);
+    const passphrase = await browserProxy.whenCalled('setEncryptionPassphrase');
 
-      // Fake backend response.
-      const newPrefs = getSyncAllPrefs();
-      newPrefs.fullEncryptionBody = 'Encrypted with custom passphrase';
-      newPrefs.encryptAllData = true;
-      webUIListenerCallback('sync-prefs-changed', newPrefs);
+    assertEquals('foo', passphrase);
 
-      flush();
+    // Fake backend response.
+    const newPrefs = getSyncAllPrefs();
+    newPrefs.fullEncryptionBody = 'Encrypted with custom passphrase';
+    newPrefs.encryptAllData = true;
+    webUIListenerCallback('sync-prefs-changed', newPrefs);
 
-      return waitBeforeNextRender(syncPage).then(() => {
-        // Need to re-retrieve this, as a different show passphrase radio
-        // button is shown once |syncPrefs.fullEncryptionBody| is non-empty.
-        encryptWithPassphrase = encryptionElement.$$(
-            'cr-radio-button[name="encrypt-with-passphrase"]');
+    flush();
 
-        // Assert that the radio boxes are disabled after encryption enabled.
-        assertTrue(encryptionRadioGroup.disabled);
-        assertEquals(-1, encryptWithGoogle.$.button.tabIndex);
-        assertEquals(-1, encryptWithPassphrase.$.button.tabIndex);
-      });
-    }
-    return browserProxy.whenCalled('setSyncEncryption')
-        .then(verifySetSyncEncryption);
+    await waitBeforeNextRender(syncPage);
+    // Need to re-retrieve this, as a different show passphrase radio
+    // button is shown once |syncPrefs.fullEncryptionBody| is non-empty.
+    encryptWithPassphrase =
+        encryptionElement.$$('cr-radio-button[name="encrypt-with-passphrase"]');
+
+    // Assert that the radio boxes are disabled after encryption enabled.
+    assertTrue(encryptionRadioGroup.disabled);
+    assertEquals(-1, encryptWithGoogle.$.button.tabIndex);
+    assertEquals(-1, encryptWithPassphrase.$.button.tabIndex);
   });
 
   test('RadioBoxesHiddenWhenPassphraseRequired', function() {
@@ -415,7 +412,7 @@ suite('SyncSettingsTests', function() {
         assertFalse(submitExistingPassphrase.disabled);
       });
 
-  test('EnterExistingWrongPassphrase', function() {
+  test('EnterExistingWrongPassphrase', async function() {
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
     prefs.passphraseRequired = true;
@@ -425,21 +422,19 @@ suite('SyncSettingsTests', function() {
     const existingPassphraseInput = syncPage.$$('#existingPassphraseInput');
     assertTrue(!!existingPassphraseInput);
     existingPassphraseInput.value = 'wrong';
-    browserProxy.encryptionResponse = PageStatus.PASSPHRASE_FAILED;
+    browserProxy.decryptionPassphraseSuccess = false;
 
     const submitExistingPassphrase = syncPage.$$('#submitExistingPassphrase');
     assertTrue(!!submitExistingPassphrase);
     submitExistingPassphrase.click();
 
-    return browserProxy.whenCalled('setSyncEncryption').then(function(args) {
-      assertFalse(args.setNewPassphrase);
-      assertEquals('wrong', args.passphrase);
-      assertTrue(args.passphraseRequired);
-      assertTrue(existingPassphraseInput.invalid);
-    });
+    const passphrase = await browserProxy.whenCalled('setDecryptionPassphrase');
+
+    assertEquals('wrong', passphrase);
+    assertTrue(existingPassphraseInput.invalid);
   });
 
-  test('EnterExistingCorrectPassphrase', function() {
+  test('EnterExistingCorrectPassphrase', async function() {
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
     prefs.passphraseRequired = true;
@@ -449,29 +444,27 @@ suite('SyncSettingsTests', function() {
     const existingPassphraseInput = syncPage.$$('#existingPassphraseInput');
     assertTrue(!!existingPassphraseInput);
     existingPassphraseInput.value = 'right';
-    browserProxy.encryptionResponse = PageStatus.CONFIGURE;
+    browserProxy.decryptionPassphraseSuccess = true;
 
     const submitExistingPassphrase = syncPage.$$('#submitExistingPassphrase');
     assertTrue(!!submitExistingPassphrase);
     submitExistingPassphrase.click();
 
-    return browserProxy.whenCalled('setSyncEncryption').then(function(args) {
-      assertFalse(args.setNewPassphrase);
-      assertEquals('right', args.passphrase);
-      assertTrue(args.passphraseRequired);
+    const passphrase = await browserProxy.whenCalled('setDecryptionPassphrase');
 
-      // Fake backend response.
-      const newPrefs = getSyncAllPrefs();
-      newPrefs.encryptAllData = true;
-      webUIListenerCallback('sync-prefs-changed', newPrefs);
+    assertEquals('right', passphrase);
 
-      flush();
+    // Fake backend response.
+    const newPrefs = getSyncAllPrefs();
+    newPrefs.encryptAllData = true;
+    webUIListenerCallback('sync-prefs-changed', newPrefs);
 
-      // Verify that the encryption radio boxes are shown but disabled.
-      assertTrue(encryptionRadioGroup.disabled);
-      assertEquals(-1, encryptWithGoogle.$.button.tabIndex);
-      assertEquals(-1, encryptWithPassphrase.$.button.tabIndex);
-    });
+    flush();
+
+    // Verify that the encryption radio boxes are shown but disabled.
+    assertTrue(encryptionRadioGroup.disabled);
+    assertEquals(-1, encryptWithGoogle.$.button.tabIndex);
+    assertEquals(-1, encryptWithPassphrase.$.button.tabIndex);
   });
 
   test('SyncAdvancedRow', function() {

@@ -87,14 +87,16 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TestSyncEverything);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TestSyncAllManually);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, NonRegisteredType);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TestPassphraseStillRequired);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, EnterCorrectExistingPassphrase);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TestSyncIndividualTypes);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
-                           EnterExistingFrozenImplicitPassword);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, SetNewCustomPassphrase);
+                           SuccessfullyCreateCustomPassphrase);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, EnterWrongExistingPassphrase);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, EnterBlankExistingPassphrase);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TurnOnEncryptAllDisallowed);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, CannotCreateBlankPassphrase);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
+                           CannotCreatePassphraseIfEncryptEverythingDisallowed);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
+                           CannotOverwritePassphraseWithNewOne);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            UnrecoverableErrorInitializingSync);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, GaiaErrorInitializingSync);
@@ -152,7 +154,8 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleGetProfileInfo(const base::ListValue* args);
   void OnDidClosePage(const base::ListValue* args);
   void HandleSetDatatypes(const base::ListValue* args);
-  void HandleSetEncryption(const base::ListValue* args);
+  void HandleSetEncryptionPassphrase(const base::ListValue* args);
+  void HandleSetDecryptionPassphrase(const base::ListValue* args);
   void HandleShowSyncSetupUI(const base::ListValue* args);
   void HandleSyncPrefsDispatch(const base::ListValue* args);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

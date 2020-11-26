@@ -19,7 +19,8 @@
       'getSyncStatus',
       'incrementPromoImpressionCount',
       'setSyncDatatypes',
-      'setSyncEncryption',
+      'setEncryptionPassphrase',
+      'setDecryptionPassphrase',
       'signOut',
       'pauseSync',
       'sendSyncPrefsChanged',
@@ -37,8 +38,10 @@
     this.impressionCount_ = 0;
 
     // Settable fake data.
-    /** @type {!settings.PageStatus} */
-    this.encryptionResponse = settings.PageStatus.CONFIGURE;
+    /** @type {boolean} */
+    this.encryptionPassphraseSuccess = false;
+    /** @type {boolean} */
+    this.decryptionPassphraseSuccess = false;
     /** @type {!Array<!settings.StoredAccount>} */
     this.storedAccounts = [];
     /** @type {!settings.SyncStatus} */
@@ -111,9 +114,15 @@
   }
 
   /** @override */
-  setSyncEncryption(syncPrefs) {
-    this.methodCalled('setSyncEncryption', syncPrefs);
-    return Promise.resolve(this.encryptionResponse);
+  setEncryptionPassphrase(passphrase) {
+    this.methodCalled('setEncryptionPassphrase', passphrase);
+    return Promise.resolve(this.encryptionPassphraseSuccess);
+  }
+
+  /** @override */
+  setDecryptionPassphrase(passphrase) {
+    this.methodCalled('setDecryptionPassphrase', passphrase);
+    return Promise.resolve(this.decryptionPassphraseSuccess);
   }
 
   /** @override */

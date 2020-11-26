@@ -84,8 +84,6 @@ struct SyncConfigInfo {
   bool sync_everything;
   syncer::UserSelectableTypeSet selected_types;
   bool payments_integration_enabled;
-  std::string passphrase;
-  bool set_new_passphrase;
 };
 
 bool IsSyncSubpage(const GURL& current_url) {
@@ -93,9 +91,7 @@ bool IsSyncSubpage(const GURL& current_url) {
 }
 
 SyncConfigInfo::SyncConfigInfo()
-    : sync_everything(false),
-      payments_integration_enabled(false),
-      set_new_passphrase(false) {}
+    : sync_everything(false), payments_integration_enabled(false) {}
 
 SyncConfigInfo::~SyncConfigInfo() {}
 
@@ -132,13 +128,6 @@ bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
       config->selected_types.Put(type);
   }
 
-  // Passphrase settings.
-  if (result->GetString("passphrase", &config->passphrase) &&
-      !config->passphrase.empty() &&
-      !result->GetBoolean("setNewPassphrase", &config->set_new_passphrase)) {
-    DLOG(ERROR) << "GetConfiguration() not passed a set_new_passphrase value";
-    return false;
-  }
   return true;
 }
 
@@ -276,8 +265,12 @@ void PeopleHandler::RegisterMessages() {
       base::BindRepeating(&PeopleHandler::HandleSetDatatypes,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "SyncSetupSetEncryption",
-      base::BindRepeating(&PeopleHandler::HandleSetEncryption,
+      "SyncSetupSetEncryptionPassphrase",
+      base::BindRepeating(&PeopleHandler::HandleSetEncryptionPassphrase,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SyncSetupSetDecryptionPassphrase",
+      base::BindRepeating(&PeopleHandler::HandleSetDecryptionPassphrase,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "SyncSetupShowSetupUI",
@@ -527,79 +520,72 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
 #endif
 }
 
-void PeopleHandler::HandleSetEncryption(const base::ListValue* args) {
-  SyncConfigInfo configuration;
-  const base::Value* callback_id = nullptr;
-  ParseConfigurationArguments(args, &configuration, &callback_id);
+void PeopleHandler::HandleSetEncryptionPassphrase(const base::ListValue* args) {
+  const base::Value& callback_id = args->GetList()[0];
 
-  // Start configuring the SyncService using the configuration passed to us from
-  // the JS layer.
-  syncer::SyncService* service = GetSyncService();
-
-  // If the sync engine has shutdown for some reason, just close the sync
-  // dialog.
-  if (!service || !service->IsEngineInitialized()) {
+  // Check the SyncService is up and running before retrieving SyncUserSettings,
+  // which contains the encryption-related APIs.
+  if (!GetSyncService() || !GetSyncService()->IsEngineInitialized()) {
+    // TODO(crbug.com/1139060): HandleSetDatatypes() also returns a success
+    // status in this case. Consider returning a failure in both methods. Maybe
+    // the CloseSyncSetup() call can also be removed.
     CloseSyncSetup();
-    ResolveJavascriptCallback(*callback_id, base::Value(kDonePageStatus));
+    ResolveJavascriptCallback(callback_id, base::Value(true));
     return;
   }
+  syncer::SyncUserSettings* sync_user_settings =
+      GetSyncService()->GetUserSettings();
 
-  if (service->GetUserSettings()->IsEncryptEverythingAllowed()) {
-    ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_ENCRYPT);
+  const std::string& passphrase = args->GetList()[1].GetString();
+  bool successfully_set = false;
+  if (passphrase.empty()) {
+    successfully_set = false;
+  } else if (!sync_user_settings->IsEncryptEverythingAllowed()) {
+    successfully_set = false;
+  } else if (sync_user_settings->IsUsingSecondaryPassphrase()) {
+    // In case a passphrase is already being used, changing to a new one isn't
+    // currently supported (one must reset all the Sync data).
+    successfully_set = false;
+  } else if (sync_user_settings->IsPassphraseRequired() ||
+             sync_user_settings->IsTrustedVaultKeyRequired()) {
+    // Can't re-encrypt the data with |passphrase| if some of it hasn't even
+    // been decrypted yet due to a pending passphrase / trusted vault key.
+    successfully_set = false;
   } else {
-    // Don't allow "set new passphrase" if the SyncService doesn't allow it.
-    // The UI is hidden, but the user may have enabled it e.g. by fiddling with
-    // the web inspector.
-    configuration.set_new_passphrase = false;
+    sync_user_settings->SetEncryptionPassphrase(passphrase);
+    successfully_set = true;
+    ProfileMetrics::LogProfileSyncInfo(
+        ProfileMetrics::SYNC_CREATED_NEW_PASSPHRASE);
   }
+  ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
+}
 
-  bool passphrase_failed = false;
-  if (!configuration.passphrase.empty()) {
-    // We call IsPassphraseRequired() here (instead of
-    // IsPassphraseRequiredForPreferredDataTypes()) because the user may try to
-    // enter a passphrase even though no encrypted data types are enabled.
-    if (service->GetUserSettings()->IsPassphraseRequired()) {
-      // If we have pending keys, try to decrypt them with the provided
-      // passphrase. We track if this succeeds or fails because a failed
-      // decryption should result in an error even if there aren't any encrypted
-      // data types.
-      passphrase_failed = !service->GetUserSettings()->SetDecryptionPassphrase(
-          configuration.passphrase);
-    } else if (service->GetUserSettings()->IsTrustedVaultKeyRequired()) {
-      // There are pending keys due to trusted vault keys being required, likely
-      // because something changed since the UI was displayed. A passphrase
-      // cannot be set in such circumstances.
-      passphrase_failed = true;
-    } else {
-      // OK, the user sent us a passphrase, but we don't have pending keys. So
-      // it either means that the pending keys were resolved somehow since the
-      // time the UI was displayed (re-encryption, pending passphrase change,
-      // etc) or the user wants to re-encrypt.
-      if (configuration.set_new_passphrase &&
-          !service->GetUserSettings()->IsUsingSecondaryPassphrase()) {
-        service->GetUserSettings()->SetEncryptionPassphrase(
-            configuration.passphrase);
-      }
+void PeopleHandler::HandleSetDecryptionPassphrase(const base::ListValue* args) {
+  const base::Value& callback_id = args->GetList()[0];
+
+  // Check the SyncService is up and running before retrieving SyncUserSettings,
+  // which contains the encryption-related APIs.
+  if (!GetSyncService() || !GetSyncService()->IsEngineInitialized()) {
+    // TODO(crbug.com/1139060): HandleSetDatatypes() also returns a success
+    // status in this case. Consider returning a failure in both methods. Maybe
+    // the CloseSyncSetup() call can also be removed.
+    CloseSyncSetup();
+    ResolveJavascriptCallback(callback_id, base::Value(true));
+    return;
+  }
+  syncer::SyncUserSettings* sync_user_settings =
+      GetSyncService()->GetUserSettings();
+
+  const std::string& passphrase = args->GetList()[1].GetString();
+  bool successfully_set = false;
+  if (!passphrase.empty() && sync_user_settings->IsPassphraseRequired()) {
+    successfully_set = sync_user_settings->SetDecryptionPassphrase(passphrase);
+    if (successfully_set) {
+      ProfileMetrics::LogProfileSyncInfo(
+          ProfileMetrics::SYNC_ENTERED_EXISTING_PASSPHRASE);
     }
   }
-
-  if (passphrase_failed ||
-      service->GetUserSettings()->IsPassphraseRequiredForPreferredDataTypes()) {
-    // If the user doesn't enter any passphrase, we won't call
-    // SetDecryptionPassphrase() (passphrase_failed == false), but we still
-    // want to display an error message to let the user know that their blank
-    // passphrase entry is not acceptable.
-
-    // TODO(tommycli): Switch this to RejectJavascriptCallback once the
-    // Sync page JavaScript has been further refactored.
-    ResolveJavascriptCallback(*callback_id,
-                              base::Value(kPassphraseFailedPageStatus));
-  } else {
-    ResolveJavascriptCallback(*callback_id, base::Value(kConfigurePageStatus));
-  }
-
-  if (!configuration.set_new_passphrase && !configuration.passphrase.empty())
-    ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_PASSPHRASE);
+  ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }
 
 void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue* args) {

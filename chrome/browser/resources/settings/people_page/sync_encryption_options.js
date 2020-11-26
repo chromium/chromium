@@ -68,6 +68,13 @@ Polymer({
   },
 
   /**
+   * Whether there's a setEncryptionPassphrase() call pending response, in which
+   * case the component should wait before making a new call.
+   * @private {boolean}
+   */
+  isSettingEncryptionPassphrase_: false,
+
+  /**
    * Returns the encryption options CrRadioGroupElement.
    * @return {?CrRadioGroupElement}
    */
@@ -137,24 +144,26 @@ Polymer({
   saveNewPassphrase_() {
     assert(this.creatingNewPassphrase_);
     chrome.metricsPrivate.recordUserAction('Sync_SaveNewPassphraseClicked');
-    // Might happen within the transient time between the request to
-    // |setSyncEncryption| and receiving the response.
-    if (this.syncPrefs.setNewPassphrase) {
+
+    if (this.isSettingEncryptionPassphrase_) {
       return;
     }
+
     // If a new password has been entered but it is invalid, do not send the
     // sync state to the API.
     if (!this.validateCreatedPassphrases_()) {
       return;
     }
 
-    this.syncPrefs.setNewPassphrase = true;
-    this.syncPrefs.passphrase = this.passphrase_;
-
+    this.isSettingEncryptionPassphrase_ = true;
     settings.SyncBrowserProxyImpl.getInstance()
-        .setSyncEncryption(this.syncPrefs)
-        .then(pageStatus => {
-          this.fire('passphrase-changed', pageStatus);
+        .setEncryptionPassphrase(this.passphrase_)
+        .then(successfullySet => {
+          // TODO(crbug.com/1139060): Rename the event, there is no change if
+          // |successfullySet| is false. It should also mention 'encryption
+          // passphrase' in its name.
+          this.fire('passphrase-changed', {didChange: successfullySet});
+          this.isSettingEncryptionPassphrase_ = false;
         });
   },
 
