@@ -98,6 +98,10 @@ class PLATFORM_EXPORT Path {
                       const AffineTransform&) const;
   SkPath StrokePath(const StrokeData&, const AffineTransform&) const;
 
+  // Tight Bounding calculation is very expensive, but it guarantees the strict
+  // bounding box. It's always included in BoundingRect. For a logical bounding
+  // box (used for clipping or damage) BoundingRect is recommended.
+  FloatRect TightBoundingRect() const;
   FloatRect BoundingRect() const;
   FloatRect StrokeBoundingRect(const StrokeData&) const;
 

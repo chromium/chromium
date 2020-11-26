@@ -50,10 +50,7 @@ namespace blink {
 void CanvasPath::closePath() {
   if (path_.IsEmpty())
     return;
-
-  FloatRect bound_rect = path_.BoundingRect();
-  if (bound_rect.Width() || bound_rect.Height())
-    path_.CloseSubpath();
+  path_.CloseSubpath();
 }
 
 void CanvasPath::moveTo(double double_x, double double_y) {

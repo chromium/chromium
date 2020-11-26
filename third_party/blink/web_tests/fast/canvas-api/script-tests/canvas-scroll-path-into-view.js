@@ -132,7 +132,7 @@ debug("");
 
 debug("Test case 2: scrollPathIntoView() / CTM != identity");
 scrollTest(CRect, 20, false, 136);
-scrollTest(CCapsule, 42, false, 127);
+scrollTest(CCapsule, 42, false, 106);
 scrollTest(CCurve, 63, false, 133);
 scrollTest(CStar, 40, false, 160);
 debug("");
@@ -146,7 +146,7 @@ debug("");
 
 debug("Test case 4: scrollPathIntoView(path2d) / CTM != identity");
 scrollTest(CRect, 20, true, 136);
-scrollTest(CCapsule, 42, true, 127);
+scrollTest(CCapsule, 42, true, 106);
 scrollTest(CCurve, 63, true, 133);
 scrollTest(CStar, 40, true, 160);
 debug("");

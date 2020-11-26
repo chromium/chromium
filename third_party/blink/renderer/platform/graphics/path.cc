@@ -109,8 +109,12 @@ bool Path::StrokeContains(const FloatPoint& point,
       .contains(SkScalar(point.X()), SkScalar(point.Y()));
 }
 
-FloatRect Path::BoundingRect() const {
+FloatRect Path::TightBoundingRect() const {
   return path_.computeTightBounds();
+}
+
+FloatRect Path::BoundingRect() const {
+  return path_.getBounds();
 }
 
 FloatRect Path::StrokeBoundingRect(const StrokeData& stroke_data) const {

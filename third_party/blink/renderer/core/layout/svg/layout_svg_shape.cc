@@ -122,7 +122,7 @@ float LayoutSVGShape::DashScaleFactor() const {
 void LayoutSVGShape::UpdateShapeFromElement() {
   NOT_DESTROYED();
   CreatePath();
-  fill_bounding_box_ = GetPath().BoundingRect();
+  fill_bounding_box_ = GetPath().TightBoundingRect();
 
   if (HasNonScalingStroke()) {
     // NonScalingStrokeTransform may depend on LocalTransform which in turn may
