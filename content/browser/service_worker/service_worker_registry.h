@@ -314,6 +314,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t stored_resources_total_size_bytes,
       const GURL& stored_scope,
       StatusCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status);
   void DidDeleteRegistration(
       int64_t registration_id,
@@ -383,6 +384,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // An InflightCall implementation which uses a base::RepeatingClosure. Used to
   // represent a mojo remote call of which parameters are copyable.
   class InflightCallWithInvoker;
+
+  // An InflightCall implementation for StoreRegistration(). This specialization
+  // is needed to hold move-only parameters and clone them for retry.
+  class InflightCallStoreRegistration;
 
   uint64_t GetNextCallId();
   void StartRemoteCall(uint64_t call_id, std::unique_ptr<InflightCall> call);

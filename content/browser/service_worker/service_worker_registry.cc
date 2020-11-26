@@ -107,6 +107,39 @@ class ServiceWorkerRegistry::InflightCallWithInvoker
   Invoker invoker_;
 };
 
+class ServiceWorkerRegistry::InflightCallStoreRegistration
+    : public ServiceWorkerRegistry::InflightCall {
+ public:
+  InflightCallStoreRegistration(
+      storage::mojom::ServiceWorkerRegistrationDataPtr data,
+      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources,
+      base::RepeatingCallback<
+          void(storage::mojom::ServiceWorkerDatabaseStatus status)> callback)
+      : data_(std::move(data)),
+        resources_(std::move(resources)),
+        callback_(std::move(callback)) {}
+  ~InflightCallStoreRegistration() override = default;
+
+  void Run(ServiceWorkerRegistry* registry) override {
+    DCHECK(registry);
+    DCHECK(registry->GetRemoteStorageControl().is_connected());
+    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
+        passed_resources;
+    for (const auto& resource : resources_)
+      passed_resources.push_back(resource.Clone());
+
+    registry->GetRemoteStorageControl()->StoreRegistration(
+        data_.Clone(), std::move(passed_resources), callback_);
+  }
+
+ private:
+  storage::mojom::ServiceWorkerRegistrationDataPtr data_;
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources_;
+  base::RepeatingCallback<void(
+      storage::mojom::ServiceWorkerDatabaseStatus status)>
+      callback_;
+};
+
 // A helper class that runs on the IO thread to observe storage policy updates.
 class ServiceWorkerRegistry::StoragePolicyObserver
     : public storage::SpecialStoragePolicy::Observer {
@@ -376,12 +409,14 @@ void ServiceWorkerRegistry::StoreRegistration(
   }
   data->resources_total_size_bytes = resources_total_size_bytes;
 
-  GetRemoteStorageControl()->StoreRegistration(
+  uint64_t call_id = GetNextCallId();
+  auto call = std::make_unique<InflightCallStoreRegistration>(
       std::move(data), std::move(resources),
-      base::BindOnce(&ServiceWorkerRegistry::DidStoreRegistration,
-                     weak_factory_.GetWeakPtr(), registration->id(),
-                     resources_total_size_bytes, registration->scope(),
-                     std::move(callback)));
+      base::BindRepeating(&ServiceWorkerRegistry::DidStoreRegistration,
+                          weak_factory_.GetWeakPtr(), registration->id(),
+                          resources_total_size_bytes, registration->scope(),
+                          base::Passed(&callback), call_id));
+  StartRemoteCall(call_id, std::move(call));
 }
 
 void ServiceWorkerRegistry::DeleteRegistration(
@@ -1087,8 +1122,10 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     uint64_t stored_resources_total_size_bytes,
     const GURL& stored_scope,
     StatusCallback callback,
+    uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus database_status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
 

@@ -1271,6 +1271,51 @@ TEST_F(ServiceWorkerRegistryTest, RemoteStorageDisconnection) {
   ASSERT_EQ(result.status, blink::ServiceWorkerStatusCode::kOk);
 }
 
+// Tests that inflight remote calls are retried after the remote storage is
+// restarted.
+TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
+  const GURL kScope1("http://www.example.com/scope/");
+  const GURL kScriptUrl1("http://www.example.com/script.js");
+  const auto kOrigin1(url::Origin::Create(kScope1));
+  scoped_refptr<ServiceWorkerRegistration> registration1 =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScope1, kScriptUrl1,
+                                                /*resource_id=*/1);
+
+  const GURL kScope2("http://www.example.com/scope/foo");
+  const GURL kScriptUrl2("http://www.example.com/fooscript.js");
+  const auto kOrigin2(url::Origin::Create(kScope2));
+  scoped_refptr<ServiceWorkerRegistration> registration2 =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScope2, kScriptUrl2,
+                                                /*resource_id=*/2);
+
+  {
+    registry()->SimulateStorageRestartForTesting();
+
+    base::RunLoop loop1;
+    registry()->StoreRegistration(
+        registration1.get(), registration1->waiting_version(),
+        base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+          EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
+          loop1.Quit();
+        }));
+
+    registry()->SimulateStorageRestartForTesting();
+
+    base::RunLoop loop2;
+    registry()->StoreRegistration(
+        registration2.get(), registration2->waiting_version(),
+        base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+          EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
+          loop2.Quit();
+        }));
+
+    registry()->SimulateStorageRestartForTesting();
+
+    loop1.Run();
+    loop2.Run();
+  }
+}
+
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
  public:
   ServiceWorkerRegistryOriginTrialsTest() {
