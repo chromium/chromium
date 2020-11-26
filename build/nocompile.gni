@@ -109,6 +109,10 @@ if (enable_nocompile_tests) {
         "-Wno-implicit-int-float-conversion",
       ]
 
+      if (is_apple && host_os != "mac") {
+        args += [ "--target=x86_64-apple-macos" ]
+      }
+
       # Iterate over any extra include dirs and append them to the command line.
       if (defined(invoker.include_dirs)) {
         foreach(include_dir, invoker.include_dirs) {
