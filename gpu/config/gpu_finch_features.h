@@ -55,6 +55,8 @@ GPU_EXPORT extern const base::Feature kSkiaDawn;
 
 GPU_EXPORT extern const base::Feature kEnableSharedImageForWebview;
 
+GPU_EXPORT extern const base::Feature kEnableGrShaderCacheForVulkan;
+
 GPU_EXPORT bool IsUsingVulkan();
 #if defined(OS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();

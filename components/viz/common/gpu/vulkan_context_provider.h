@@ -12,6 +12,7 @@
 #include "components/viz/common/viz_vulkan_context_provider_export.h"
 #include "third_party/vulkan_headers/include/vulkan/vulkan.h"
 
+struct GrContextOptions;
 class GrDirectContext;
 class GrVkSecondaryCBDrawContext;
 
@@ -26,6 +27,7 @@ namespace viz {
 class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanContextProvider
     : public base::RefCountedThreadSafe<VulkanContextProvider> {
  public:
+  virtual bool InitializeGrContext(const GrContextOptions& context_options) = 0;
   virtual gpu::VulkanImplementation* GetVulkanImplementation() = 0;
   virtual gpu::VulkanDeviceQueue* GetDeviceQueue() = 0;
   virtual GrDirectContext* GetGrContext() = 0;
