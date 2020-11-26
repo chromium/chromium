@@ -244,8 +244,7 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   }
 
   if (!translate_client_->IsTranslatableURL(
-          translate_driver_->GetVisibleURL()) ||
-      !language_state_.page_needs_translation()) {
+          translate_driver_->GetVisibleURL())) {
     if (!menuLogging)
       return false;
     TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(

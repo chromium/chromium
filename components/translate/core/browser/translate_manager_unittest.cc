@@ -1003,8 +1003,10 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PageNeedsTranslation) {
   network_notifier_.SimulateOnline();
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", false);
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
-  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+  // Users should be able to manually translate the page, even when
+  // |page_needs_translation| is false.
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
