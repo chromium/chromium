@@ -66,6 +66,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"fitToScanAreaOptionText",
        IDS_SCANNING_APP_FIT_TO_SCAN_AREA_OPTION_TEXT},
       {"flatbedOptionText", IDS_SCANNING_APP_FLATBED_OPTION_TEXT},
+      {"getHelpLinkText", IDS_SCANNING_APP_GET_HELP_LINK_TEXT},
       {"grayscaleOptionText", IDS_SCANNING_APP_GRAYSCALE_OPTION_TEXT},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
       {"letterOptionText", IDS_SCANNING_APP_LETTER_OPTION_TEXT},
@@ -89,6 +90,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},
       {"showFileLocationLabel", IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL},
       {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
+      {"startScanFailedToast", IDS_SCANNING_APP_START_SCAN_FAILED_TOAST},
       {"twoSidedDocFeederOptionText",
        IDS_SCANNING_APP_TWO_SIDED_DOC_FEEDER_OPTION_TEXT}};
 

@@ -81,6 +81,9 @@ class FakeScanService {
     /** @private {?chromeos.scanning.mojom.ScanJobObserverRemote} */
     this.scanJobObserverRemote_ = null;
 
+    /** @private {boolean} */
+    this.failStartScan_ = false;
+
     this.resetForTest();
   }
 
@@ -88,6 +91,7 @@ class FakeScanService {
     this.scanners_ = [];
     this.capabilities_ = new Map();
     this.scanJobObserverRemote_ = null;
+    this.failStartScan_ = false;
     this.resolverMap_.set('getScanners', new PromiseResolver());
     this.resolverMap_.set('getScannerCapabilities', new PromiseResolver());
     this.resolverMap_.set('startScan', new PromiseResolver());
@@ -140,6 +144,11 @@ class FakeScanService {
    */
   setCapabilities(capabilities) {
     this.capabilities_ = capabilities;
+  }
+
+  /** @param {boolean} failStartScan */
+  setFailStartScan(failStartScan) {
+    this.failStartScan_ = failStartScan;
   }
 
   /**
@@ -205,7 +214,7 @@ class FakeScanService {
     return new Promise(resolve => {
       this.scanJobObserverRemote_ = remote;
       this.methodCalled('startScan');
-      resolve({success: true});
+      resolve({success: !this.failStartScan_});
     });
   }
 
@@ -539,6 +548,42 @@ export function scanningAppTest() {
           // enabled, and the cancel button shouldn't be visible.
           assertTrue(isVisible(scanButton));
           assertFalse(isVisible(cancelButton));
+        });
+  });
+
+  test('ScanFailedToStart', () => {
+    const expectedScanners = [
+      createScanner(firstScannerId, firstScannerName),
+    ];
+
+    let capabilities = new Map();
+    capabilities.set(firstScannerId, firstCapabilities);
+
+    fakeScanService_.setFailStartScan(true);
+
+    /** @type {!CrButtonElement} */
+    let scanButton;
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          scanButton =
+              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          assertFalse(scanningApp.$$('#toast').open);
+          // Click the Scan button and the scan will fail to start.
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          assertTrue(scanningApp.$$('#toast').open);
+          assertEquals(
+              scanningApp.i18n('startScanFailedToast'),
+              scanningApp.$$('#toastText').textContent.trim());
+
+          assertFalse(scanButton.disabled);
+          assertTrue(isVisible(scanButton));
         });
   });
 

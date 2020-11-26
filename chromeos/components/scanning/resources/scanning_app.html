@@ -75,6 +75,38 @@
     justify-content: flex-end;
     width: 289px;
   }
+
+  #toast {
+    bottom: 0;
+    left: 0;
+  }
+
+  #toastDiv {
+    align-items: center;
+    display: flex;
+    min-width: 280px;
+  }
+
+  #infoIcon {
+    fill: var(--google-red-refresh-300);
+    margin-inline-end: 10px;
+    margin-inline-start: -8px;
+  }
+
+  #toastText {
+    color: var(--google-grey-200);
+  }
+
+  #getHelpDiv {
+    flex: 1;
+    margin-inline-start: 10px;
+    text-align: right;
+  }
+
+  #getHelpLink {
+    color: var(--google-blue-refresh-300);
+    text-decoration: none;
+  }
 </style>
 <div id="scanningContainer">
   <div class="panel-container">
@@ -146,4 +178,14 @@
       </template>
     </div>
   </div>
+  <cr-toast id="toast" duration="5000">
+    <div id="toastDiv">
+      <iron-icon id="infoIcon" icon="cr:info-outline"></iron-icon>
+      <span id="toastText">[[i18n(toastMessageKey_)]]</span>
+      <!-- TODO(gavinwill): Add href to the help link when available -->
+      <div id="getHelpDiv">
+        <a id="getHelpLink" href="#">[[i18n('getHelpLinkText')]]</a>
+      </div>
+    </div>
+  </cr-toast>
 </div>

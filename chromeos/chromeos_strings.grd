@@ -576,6 +576,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL" desc="The label for the button that opens the Files app. The Files app will open with the user's saved scan file highlighted.">
         Show file location
       </message>
+      <message name="IDS_SCANNING_APP_START_SCAN_FAILED_TOAST" desc="The error message displayed when a scan job fails to start.">
+        Couldn't start scanning
+      </message>
+      <message name="IDS_SCANNING_APP_GET_HELP_LINK_TEXT" desc="The text used for the link that navigates to the Scan app help webpage. This is shown to the user after a scanning error.">
+        Get help
+      </message>
 
       <!-- Diagnostics App -->
       <!-- TODO(michaelcheco): Update with finalized copies of the strings -->

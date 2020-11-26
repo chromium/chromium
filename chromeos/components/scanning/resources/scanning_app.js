@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
@@ -178,6 +180,12 @@ Polymer({
      * @private {?mojoBase.mojom.FilePath}
      */
     lastScannedFilePath_: Object,
+
+    /**
+     * The key to retrieve the appropriate string to display in the toast.
+     * @private {string}
+     */
+    toastMessageKey_: String,
   },
 
   /** @override */
@@ -311,11 +319,14 @@ Polymer({
 
   /** @private */
   onScanClick_() {
+    // Force hide the toast if user attempts a new scan before the toast times
+    // out.
+    this.$.toast.hide();
+
     if (!this.selectedScannerId || !this.selectedSource ||
         !this.selectedFileType || !this.selectedColorMode ||
         !this.selectedPageSize || !this.selectedResolution) {
-      // TODO(jschettler): Replace status text with finalized i18n strings.
-      this.statusText_ = 'Failed to start scan.';
+      this.showToast_('startScanFailedToast');
       return;
     }
 
@@ -367,7 +378,7 @@ Polymer({
    */
   onStartScanResponse_(response) {
     if (!response.success) {
-      this.statusText_ = 'Failed to start scan.';
+      this.showToast_('startScanFailedToast');
       return;
     }
 
@@ -467,5 +478,14 @@ Polymer({
     this.settingsDisabled_ = this.appState_ !== AppState.READY;
     this.showCancelButton_ = this.appState_ === AppState.SCANNING;
     this.showDoneSection_ = this.appState_ === AppState.DONE;
+  },
+
+  /**
+   * @param {string} toastMessageKey
+   * @private
+   */
+  showToast_(toastMessageKey) {
+    this.toastMessageKey_ = toastMessageKey;
+    this.$.toast.show();
   },
 });
