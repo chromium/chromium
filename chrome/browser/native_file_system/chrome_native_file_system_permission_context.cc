@@ -479,8 +479,7 @@ ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
 ChromeNativeFileSystemPermissionContext::PathInfo
 ChromeNativeFileSystemPermissionContext::GetDefaultDirectory() {
   PathInfo path_info;
-  path_info.type = PathType::kLocal;
-  // On failure, |default_path| will remain empty.
+  // On failure, |path_info.path| will remain empty.
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &path_info.path);
   return path_info;
 }
