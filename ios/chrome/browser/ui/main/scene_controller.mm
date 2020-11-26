@@ -1609,6 +1609,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       };
     case START_QR_CODE_SCANNER:
       return ^{
+        if (!self.currentInterface.browser) {
+          return;
+        }
         id<QRScannerCommands> QRHandler = HandlerForProtocol(
             self.currentInterface.browser->GetCommandDispatcher(),
             QRScannerCommands);
@@ -1616,6 +1619,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       };
     case FOCUS_OMNIBOX:
       return ^{
+        if (!self.currentInterface.browser) {
+          return;
+        }
         id<OmniboxCommands> focusHandler = HandlerForProtocol(
             self.currentInterface.browser->GetCommandDispatcher(),
             OmniboxCommands);
