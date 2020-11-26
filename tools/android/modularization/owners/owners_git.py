@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 '''Git utility functions.'''
 
+import os
 import subprocess
 import sys
 
@@ -42,7 +43,12 @@ def _run_ls_files_command(subdirectory: Optional[str],
                           git_src: str) -> List[str]:
   command = _build_ls_files_command(subdirectory)
   filepath_str = run_command(command, cwd=git_src)
-  return [filepath for filepath in filepath_str.split('\n') if filepath]
+  result = []
+  for relative_filepath in filepath_str.split('\n'):
+    if relative_filepath:
+      absolute_filepath = os.path.join(git_src, relative_filepath)
+      result.append(absolute_filepath)
+  return result
 
 
 def _build_ls_files_command(subdirectory: Optional[str]) -> List[str]:
