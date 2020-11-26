@@ -96,6 +96,9 @@ BASE_EXPORT void InitReplacementClassLoader(
 // This method triggers a fatal assertion if the class could not be found.
 // Use HasClass if you need to check whether the class exists.
 BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
+                                                const char* class_name,
+                                                const std::string& split_name);
+BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                                 const char* class_name);
 
 // The method will initialize |atomic_class_id| to contain a global ref to the
@@ -104,6 +107,10 @@ BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
 // The caller is responsible to zero-initialize |atomic_method_id|.
 // It's fine to simultaneously call this on multiple threads referencing the
 // same |atomic_method_id|.
+BASE_EXPORT jclass LazyGetClass(JNIEnv* env,
+                                const char* class_name,
+                                const std::string& split_name,
+                                std::atomic<jclass>* atomic_class_id);
 BASE_EXPORT jclass LazyGetClass(
     JNIEnv* env,
     const char* class_name,

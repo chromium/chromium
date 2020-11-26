@@ -326,7 +326,7 @@ class HeaderGenerator(object):
     self.class_name = self.fully_qualified_class.split('/')[-1]
     self.main_dex = main_dex
     self.helper = jni_generator.HeaderFileGeneratorHelper(
-        self.class_name, fully_qualified_class, use_proxy_hash)
+        self.class_name, fully_qualified_class, use_proxy_hash, None)
     self.use_proxy_hash = use_proxy_hash
     self.registration_dict = None
 

@@ -18,6 +18,12 @@ namespace android {
 // via JNI from Java.
 BASE_EXPORT ScopedJavaLocalRef<jobject> GetClassLoader(JNIEnv* env);
 
+// Gets a ClassLoader instance which can load Java classes from the specified
+// split.
+BASE_EXPORT ScopedJavaLocalRef<jobject> GetSplitClassLoader(
+    JNIEnv* env,
+    const std::string& split_name);
+
 // Returns true if the current process permits selective JNI registration.
 BASE_EXPORT bool IsSelectiveJniRegistrationEnabled(JNIEnv* env);
 

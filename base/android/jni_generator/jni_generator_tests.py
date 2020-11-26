@@ -52,6 +52,7 @@ class TestOptions(object):
     self.enable_tracing = False
     self.use_proxy_hash = False
     self.always_mangle = False
+    self.split_name = None
 
 
 class BaseTest(unittest.TestCase):
@@ -1263,6 +1264,15 @@ class Foo {
                                                     'org/chromium/foo/Foo',
                                                     TestOptions())
     self.AssertGoldenTextEquals(jni_from_java.GetContent())
+
+  def testSplitNameExample(self):
+    opts = TestOptions()
+    opts.split_name = "sample"
+    generated_text = self._CreateJniHeaderFromFile(
+        os.path.join(_JAVA_SRC_DIR, 'SampleForTests.java'),
+        'org/chromium/example/jni_generator/SampleForTests', opts)
+    self.AssertGoldenTextEquals(
+        generated_text, golden_file='SampleForTestsWithSplit_jni.golden')
 
 
 class ProxyTestGenerator(BaseTest):

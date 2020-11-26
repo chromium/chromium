@@ -192,6 +192,9 @@ if (enable_java_templates) {
           args += [ "-n ${invoker.namespace}" ]
         }
       }
+      if (defined(invoker.split_name)) {
+        args += [ "--split_name=${invoker.split_name}" ]
+      }
 
       outputs = []
       foreach(_name, _input_names) {

@@ -363,6 +363,7 @@ class JniParams(object):
         'Ljava/lang/Object',
         'Ljava/lang/String',
         'Ljava/lang/Class',
+        'Ljava/lang/ClassLoader',
         'Ljava/lang/CharSequence',
         'Ljava/lang/Runnable',
         'Ljava/lang/Throwable',
@@ -969,10 +970,12 @@ class JNIFromJavaSource(object):
 class HeaderFileGeneratorHelper(object):
   """Include helper methods for header generators."""
 
-  def __init__(self, class_name, fully_qualified_class, use_proxy_hash):
+  def __init__(self, class_name, fully_qualified_class, use_proxy_hash,
+               split_name):
     self.class_name = class_name
     self.fully_qualified_class = fully_qualified_class
     self.use_proxy_hash = use_proxy_hash
+    self.split_name = split_name
 
   def GetStubName(self, native):
     """Return the name of the stub function for this native method.
@@ -1043,7 +1046,7 @@ const char kClassPath_${JAVA_CLASS}[] = \
 #define ${JAVA_CLASS}_clazz_defined
 inline jclass ${JAVA_CLASS}_clazz(JNIEnv* env) {
   return base::android::LazyGetClass(env, kClassPath_${JAVA_CLASS}, \
-&g_${JAVA_CLASS}_clazz);
+${MAYBE_SPLIT_NAME_ARG}&g_${JAVA_CLASS}_clazz);
 }
 #endif
 """
@@ -1059,7 +1062,10 @@ JNI_REGISTRATION_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
 
     for full_clazz in classes.values():
       values = {
-          'JAVA_CLASS': EscapeClassName(full_clazz),
+          'JAVA_CLASS':
+          EscapeClassName(full_clazz),
+          'MAYBE_SPLIT_NAME_ARG':
+          (('"%s", ' % self.split_name) if self.split_name else '')
       }
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
@@ -1083,8 +1089,10 @@ class InlHeaderFileGenerator(object):
     self.constant_fields = constant_fields
     self.jni_params = jni_params
     self.options = options
-    self.helper = HeaderFileGeneratorHelper(
-        self.class_name, fully_qualified_class, self.options.use_proxy_hash)
+    self.helper = HeaderFileGeneratorHelper(self.class_name,
+                                            fully_qualified_class,
+                                            self.options.use_proxy_hash,
+                                            self.options.split_name)
 
   def GetContent(self):
     """Returns the content of the JNI binding file."""
@@ -1578,6 +1586,9 @@ See SampleForTests.java for more details.
       action='store_true',
       help='Hashes the native declaration of methods used '
       'in @JniNatives interface.')
+  parser.add_argument(
+      '--split_name',
+      help='Split name that the Java classes should be loaded from.')
   args = parser.parse_args()
   input_files = args.input_files
   output_files = args.output_files
