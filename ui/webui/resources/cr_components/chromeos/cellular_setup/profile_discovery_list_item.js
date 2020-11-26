@@ -14,16 +14,53 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    // TODO(crbug.com/1093185) Add type annotation when the real Profile struct
-    // is available.
+    /** @type {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
     profile: {
       type: Object,
       value: null,
+      observer: 'onProfileChanged_',
     },
 
     selected: {
       type: Boolean,
       reflectToAttribute: true,
     },
+
+    /**
+     * @type {?chromeos.cellularSetup.mojom.ESimProfileProperties}
+     * @private
+     */
+    profileProperties_: {
+      type: Object,
+      value: null,
+      notify: true,
+    },
+  },
+
+  /** @private */
+  onProfileChanged_() {
+    if (!this.profile) {
+      this.profileProperties_ = null;
+      return;
+    }
+    this.profile.getProperties().then(response => {
+      this.profileProperties_ = response.properties;
+    });
+  },
+
+  /** @private */
+  getProfileName_() {
+    if (!this.profileProperties_) {
+      return '';
+    }
+    return String.fromCharCode(...this.profileProperties_.name.data);
+  },
+
+  /** @private */
+  getProfileProvider_() {
+    if (!this.profileProperties_) {
+      return '';
+    }
+    return String.fromCharCode(...this.profileProperties_.serviceProvider.data);
   },
 });

@@ -37,12 +37,13 @@
         <div id="details" no-flex$="false">
           <!-- TODO(crbug.com/1093185): Update with real profile image. -->
           <img id="profileImage" src="../../../images/200-logo_googleg.png">
+          <!-- The item's aria properties are set in profile_discovery_list_page. -->
           <div class="flex settings-box-text">
             <div id="profileTitleLabel">
-              [[profile.name]]
+              [[getProfileName_(profileProperties_)]]
             </div>
             <div id="profileProviderLabel">
-              [[profile.provider]]
+              [[getProfileProvider_(profileProperties_)]]
             </div>
           </div>
         </div>

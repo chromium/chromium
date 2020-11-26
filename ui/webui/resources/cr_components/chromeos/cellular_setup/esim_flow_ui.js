@@ -64,11 +64,21 @@ cr.define('cellular_setup', function() {
       },
 
       /**
-       * @type {Array<!Object>}
+       * Profiles fetched that have status kPending.
+       * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+       * @private
+       */
+      pendingProfiles_: {
+        type: Array,
+      },
+
+      /**
+       * Profiles selected in profileDiscoveryPage to be installed.
+       * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
        * @private
        */
       selectedProfiles_: {
-        type: Object,
+        type: Array,
       },
 
       /** @private */
@@ -126,6 +136,7 @@ cr.define('cellular_setup', function() {
             return this.filterForPendingProfiles_(response.profiles);
           })
           .then(profiles => {
+            this.pendingProfiles_ = profiles;
             switch (profiles.length) {
               case 0:
                 this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
@@ -137,8 +148,6 @@ cr.define('cellular_setup', function() {
                     this.handleProfileInstallResponse_.bind(this));
                 break;
               default:
-                // TODO(crbug.com/1093185) Populate the profile discovery with
-                // profiles.
                 this.state_ = ESimUiState.MULTI_PROFILE_SELECTION;
                 break;
             }

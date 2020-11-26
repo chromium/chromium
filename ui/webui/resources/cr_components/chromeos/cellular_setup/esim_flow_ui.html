@@ -28,6 +28,7 @@
           loading-message="[[i18n('eSimProfileDetectMessage')]]">
       </setup-loading-page>
       <profile-discovery-list-page id="profileDiscoveryPage"
+          pending-profiles="[[pendingProfiles_]]"
           selected-profiles="{{selectedProfiles_}}">
       </profile-discovery-list-page>
       <activation-code-page id="activationCodePage"

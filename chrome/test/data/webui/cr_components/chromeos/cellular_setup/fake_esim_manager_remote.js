@@ -11,9 +11,15 @@ cr.define('cellular_setup', function() {
         activationCode: 'activation-code-' + id,
         eid: '1',
         iccid: id,
-        name: 'profile' + id,
-        nickname: 'profile' + id,
-        serviceProvider: 'provider' + id,
+        name: {
+          data: this.stringToCharCodeArray_('profile' + id),
+        },
+        nickname: {
+          data: this.stringToCharCodeArray_('profile' + id),
+        },
+        serviceProvider: {
+          data: this.stringToCharCodeArray_('provider' + id),
+        },
         state: chromeos.cellularSetup.mojom.ProfileState.kPending,
       };
     }
@@ -48,6 +54,18 @@ cr.define('cellular_setup', function() {
      */
     setProfileInstallResultForTest(result) {
       this.profileInstallResult_ = result;
+    }
+
+    /**
+     * @private
+     * @param {string} string
+     */
+    stringToCharCodeArray_(string) {
+      const res = [];
+      for (let i = 0; i < string.length; i++) {
+        res.push(string.charCodeAt(i));
+      }
+      return res;
     }
   }
 
