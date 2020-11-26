@@ -556,7 +556,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 
   if (![_declaredSourceApp length]) {
     if (self.completeURL.SchemeIs(url::kHttpScheme) ||
-        self.completeURL.SchemeIs(url::kHttpScheme)) {
+        self.completeURL.SchemeIs(url::kHttpsScheme)) {
       // If Chrome is opened via the system default browser mechanism, the
       // action should be differentiated from the case where the source is
       // unknown.
