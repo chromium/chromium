@@ -253,8 +253,9 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
     return nullptr;
   }
 
+  const gfx::GpuMemoryBufferType handle_type = handle.type;
   GLenum target =
-      (handle.type == gfx::SHARED_MEMORY_BUFFER ||
+      (handle_type == gfx::SHARED_MEMORY_BUFFER ||
        !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format))
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
@@ -279,7 +280,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
   texture_2d_support =
       (gpu::GetPlatformSpecificTextureTarget() == GL_TEXTURE_2D);
 #endif  // defined(OS_MAC)
-  DCHECK(handle.type == gfx::SHARED_MEMORY_BUFFER || target != GL_TEXTURE_2D ||
+  DCHECK(handle_type == gfx::SHARED_MEMORY_BUFFER || target != GL_TEXTURE_2D ||
          texture_2d_support || image->ShouldBindOrCopy() == gl::GLImage::BIND);
 #endif  // DCHECK_IS_ON()
   if (color_space.IsValid())
