@@ -146,6 +146,16 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     return false;
   }
 
+  vkGetPhysicalDeviceFormatProperties2 =
+      reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties2>(
+          vkGetInstanceProcAddr(vk_instance,
+                                "vkGetPhysicalDeviceFormatProperties2"));
+  if (!vkGetPhysicalDeviceFormatProperties2) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkGetPhysicalDeviceFormatProperties2";
+    return false;
+  }
+
   vkGetPhysicalDeviceImageFormatProperties2 =
       reinterpret_cast<PFN_vkGetPhysicalDeviceImageFormatProperties2>(
           vkGetInstanceProcAddr(vk_instance,
@@ -182,6 +192,15 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
   if (!vkGetPhysicalDeviceProperties) {
     DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
                   << "vkGetPhysicalDeviceProperties";
+    return false;
+  }
+
+  vkGetPhysicalDeviceProperties2 =
+      reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2>(
+          vkGetInstanceProcAddr(vk_instance, "vkGetPhysicalDeviceProperties2"));
+  if (!vkGetPhysicalDeviceProperties2) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkGetPhysicalDeviceProperties2";
     return false;
   }
 
@@ -782,6 +801,15 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     return false;
   }
 
+  vkGetImageSubresourceLayout =
+      reinterpret_cast<PFN_vkGetImageSubresourceLayout>(
+          vkGetDeviceProcAddr(vk_device, "vkGetImageSubresourceLayout"));
+  if (!vkGetImageSubresourceLayout) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkGetImageSubresourceLayout";
+    return false;
+  }
+
   vkMapMemory = reinterpret_cast<PFN_vkMapMemory>(
       vkGetDeviceProcAddr(vk_device, "vkMapMemory"));
   if (!vkMapMemory) {
@@ -1074,6 +1102,21 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
       return false;
     }
   }
+
+#if defined(OS_LINUX)
+  if (gfx::HasExtension(enabled_extensions,
+                        VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME)) {
+    vkGetImageDrmFormatModifierPropertiesEXT =
+        reinterpret_cast<PFN_vkGetImageDrmFormatModifierPropertiesEXT>(
+            vkGetDeviceProcAddr(vk_device,
+                                "vkGetImageDrmFormatModifierPropertiesEXT"));
+    if (!vkGetImageDrmFormatModifierPropertiesEXT) {
+      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                    << "vkGetImageDrmFormatModifierPropertiesEXT";
+      return false;
+    }
+  }
+#endif  // defined(OS_LINUX)
 
   return true;
 }

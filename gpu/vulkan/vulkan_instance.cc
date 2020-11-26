@@ -265,7 +265,17 @@ bool VulkanInstance::CollectInfo() {
     auto& info = vulkan_info_.physical_devices.back();
     info.device = device;
 
-    vkGetPhysicalDeviceProperties(device, &info.properties);
+    info.driver_properties = VkPhysicalDeviceDriverProperties{
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES,
+    };
+
+    VkPhysicalDeviceProperties2 properties2 = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+        .pNext = &info.driver_properties,
+    };
+
+    vkGetPhysicalDeviceProperties2(device, &properties2);
+    info.properties = properties2.properties;
 
     count = 0;
     result = vkEnumerateDeviceExtensionProperties(

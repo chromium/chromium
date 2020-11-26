@@ -129,6 +129,8 @@ bool VulkanDeviceQueue::Initialize(
   const auto& physical_device_info = info.physical_devices[device_index];
   vk_physical_device_ = physical_device_info.device;
   vk_physical_device_properties_ = physical_device_info.properties;
+  vk_physical_device_driver_properties_ =
+      physical_device_info.driver_properties;
   vk_queue_index_ = queue_index;
 
   float queue_priority = 0.0f;

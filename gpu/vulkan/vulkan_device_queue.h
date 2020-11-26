@@ -70,6 +70,11 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
     return vk_physical_device_properties_;
   }
 
+  const VkPhysicalDeviceDriverProperties& vk_physical_device_driver_properties()
+      const {
+    return vk_physical_device_driver_properties_;
+  }
+
   VkDevice GetVulkanDevice() const {
     DCHECK_NE(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
     return vk_device_;
@@ -104,6 +109,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   gfx::ExtensionSet enabled_extensions_;
   VkPhysicalDevice vk_physical_device_ = VK_NULL_HANDLE;
   VkPhysicalDeviceProperties vk_physical_device_properties_;
+  VkPhysicalDeviceDriverProperties vk_physical_device_driver_properties_;
   VkDevice owned_vk_device_ = VK_NULL_HANDLE;
   VkDevice vk_device_ = VK_NULL_HANDLE;
   VkQueue vk_queue_ = VK_NULL_HANDLE;

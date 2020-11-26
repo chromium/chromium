@@ -26,6 +26,7 @@ class GPU_EXPORT VulkanPhysicalDeviceInfo {
   VkPhysicalDevice device = VK_NULL_HANDLE;
 
   VkPhysicalDeviceProperties properties = {};
+  VkPhysicalDeviceDriverProperties driver_properties = {};
   std::vector<VkExtensionProperties> extensions;
 
   VkPhysicalDeviceFeatures features = {};

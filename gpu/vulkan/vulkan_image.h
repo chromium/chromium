@@ -55,7 +55,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkFormat format,
       VkImageUsageFlags usage,
       VkImageCreateFlags flags = 0,
-      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL);
+      VkImageTiling image_tiling = VK_IMAGE_TILING_OPTIMAL,
+      void* image_create_info_next = nullptr,
+      void* memory_allocation_info_next = nullptr);
 
   static std::unique_ptr<VulkanImage> CreateFromGpuMemoryBufferHandle(
       VulkanDeviceQueue* device_queue,
@@ -136,7 +138,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
                                     VkFormat format,
                                     VkImageUsageFlags usage,
                                     VkImageCreateFlags flags,
-                                    VkImageTiling image_tiling);
+                                    VkImageTiling image_tiling,
+                                    void* image_create_info_next,
+                                    void* memory_allocation_info_next);
   bool InitializeFromGpuMemoryBufferHandle(
       VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,

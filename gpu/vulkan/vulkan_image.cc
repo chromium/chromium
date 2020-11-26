@@ -67,10 +67,13 @@ std::unique_ptr<VulkanImage> VulkanImage::CreateWithExternalMemory(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling) {
+    VkImageTiling image_tiling,
+    void* image_create_info_next,
+    void* memory_allocation_info_next) {
   auto image = std::make_unique<VulkanImage>(base::PassKey<VulkanImage>());
-  if (!image->InitializeWithExternalMemory(device_queue, size, format, usage,
-                                           flags, image_tiling)) {
+  if (!image->InitializeWithExternalMemory(
+          device_queue, size, format, usage, flags, image_tiling,
+          image_create_info_next, memory_allocation_info_next)) {
     return nullptr;
   }
   return image;
@@ -270,12 +273,15 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
   return true;
 }
 
-bool VulkanImage::InitializeWithExternalMemory(VulkanDeviceQueue* device_queue,
-                                               const gfx::Size& size,
-                                               VkFormat format,
-                                               VkImageUsageFlags usage,
-                                               VkImageCreateFlags flags,
-                                               VkImageTiling image_tiling) {
+bool VulkanImage::InitializeWithExternalMemory(
+    VulkanDeviceQueue* device_queue,
+    const gfx::Size& size,
+    VkFormat format,
+    VkImageUsageFlags usage,
+    VkImageCreateFlags flags,
+    VkImageTiling image_tiling,
+    void* image_create_info_next,
+    void* memory_allocation_info_next) {
 #if defined(OS_FUCHSIA)
   constexpr auto kHandleType =
       VK_EXTERNAL_MEMORY_HANDLE_TYPE_TEMP_ZIRCON_VMO_BIT_FUCHSIA;
@@ -293,11 +299,24 @@ bool VulkanImage::InitializeWithExternalMemory(VulkanDeviceQueue* device_queue,
       .usage = usage,
       .flags = flags,
   };
+
   VkPhysicalDeviceExternalImageFormatInfo external_info = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO,
       .handleType = kHandleType,
   };
   format_info_2.pNext = &external_info;
+
+#if defined(OS_LINUX)
+  VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
+      .sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+  // If image_tiling is VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT, a modifier_info
+  // struct has to be appended.
+  if (image_tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT)
+    external_info.pNext = &modifier_info;
+#endif
 
   VkImageFormatProperties2 image_format_properties_2 = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
@@ -332,11 +351,13 @@ bool VulkanImage::InitializeWithExternalMemory(VulkanDeviceQueue* device_queue,
 
   VkExternalMemoryImageCreateInfoKHR external_image_create_info = {
       .sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_KHR,
+      .pNext = image_create_info_next,
       .handleTypes = handle_types_,
   };
 
   VkExportMemoryAllocateInfoKHR external_memory_allocate_info = {
       .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_KHR,
+      .pNext = memory_allocation_info_next,
       .handleTypes = handle_types_,
   };
 
