@@ -1387,16 +1387,14 @@ def _CalculateElfOverhead(section_ranges, elf_path):
 
 def _OverwriteSymbolSizesWithRelocationCount(raw_symbols, tool_prefix,
                                              elf_path):
+  logging.info('Removing non-native symbols')
+  raw_symbols = [sym for sym in raw_symbols if sym.IsNative()]
+
   logging.info('Overwriting symbol sizes with relocation count')
-  native_symbols = [sym for sym in raw_symbols if sym.IsNative()]
-  symbol_addresses = [0] * (1 + len(native_symbols))
-
-  for i, symbol in enumerate(native_symbols):
-    symbol_addresses[i] = symbol.address
-
   # Last symbol address is the end of the last symbol, so we don't misattribute
   # all relros after the last symbol to that symbol.
-  symbol_addresses[-1] = native_symbols[-1].address + native_symbols[-1].size
+  symbol_addresses = [s.address for s in raw_symbols]
+  symbol_addresses.append(raw_symbols[-1].end_address)
 
   for symbol in raw_symbols:
     symbol.address = 0
@@ -1418,13 +1416,13 @@ def _OverwriteSymbolSizesWithRelocationCount(raw_symbols, tool_prefix,
   for addr in relro_addresses:
     # Attribute relros to largest symbol start address that precede them.
     idx = bisect.bisect_right(symbol_addresses, addr) - 1
-    if 0 <= idx < len(native_symbols):
-      symbol = native_symbols[idx]
+    if 0 <= idx < len(raw_symbols):
+      symbol = raw_symbols[idx]
       for alias in symbol.aliases or [symbol]:
         alias.size += 1
 
-  logging.info('Removing non-native symbols...')
-  raw_symbols[:] = [sym for sym in raw_symbols if sym.size or sym.IsNative()]
+  raw_symbols = [sym for sym in raw_symbols if sym.size]
+  return raw_symbols
 
 
 def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
@@ -1528,6 +1526,9 @@ def CreateContainerAndSymbols(knobs=None,
     (section_sizes maps section names to respective sizes).
     raw_symbols is a list of Symbol objects.
   """
+  assert elf_path or not opts.relocations_mode, (
+      '--relocations-mode requires a ELF file')
+
   knobs = knobs or SectionSizeKnobs()
   if apk_path and apk_so_path:
     # Extraction takes around 1 second, so do it in parallel.
@@ -1613,7 +1614,7 @@ def CreateContainerAndSymbols(knobs=None,
 
   pak_symbols_by_id = None
   other_symbols = []
-  if apk_path and size_info_prefix:
+  if apk_path and size_info_prefix and not opts.relocations_mode:
     # Can modify |section_ranges|.
     pak_symbols_by_id = _FindPakSymbolsFromApk(opts, section_ranges, apk_path,
                                                size_info_prefix)
@@ -1688,8 +1689,9 @@ def CreateContainerAndSymbols(knobs=None,
   logging.debug('Connecting nm aliases')
   _ConnectNmAliases(raw_symbols)
 
-  if elf_path and opts.relocations_mode:
-    _OverwriteSymbolSizesWithRelocationCount(raw_symbols, tool_prefix, elf_path)
+  if opts.relocations_mode:
+    raw_symbols = _OverwriteSymbolSizesWithRelocationCount(
+        raw_symbols, tool_prefix, elf_path)
 
   section_sizes = {k: size for k, (address, size) in section_ranges.items()}
   container = models.Container(name=container_name,
@@ -1698,7 +1700,10 @@ def CreateContainerAndSymbols(knobs=None,
   for symbol in raw_symbols:
     symbol.container = container
 
-  file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
+  # Sorting for relocations mode causes .data and .data.rel.ro to be interleaved
+  # due to setting all addresses to 0.
+  if not opts.relocations_mode:
+    file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
 
   return container, raw_symbols
 
