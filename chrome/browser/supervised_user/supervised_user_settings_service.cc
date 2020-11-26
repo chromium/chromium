@@ -351,10 +351,6 @@ SupervisedUserSettingsService::ProcessSyncChanges(
         dict->RemoveKey(key);
         break;
       }
-      case SyncChange::ACTION_INVALID: {
-        NOTREACHED();
-        break;
-      }
     }
   }
   store_->ReportValueChanged(kAtomicSettings,

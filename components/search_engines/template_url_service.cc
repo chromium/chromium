@@ -1007,11 +1007,6 @@ base::Optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
     const std::string error_msg =
         "ProcessSyncChanges failed on ChangeType " +
         syncer::SyncChange::ChangeTypeToString(iter->change_type());
-    if (iter->change_type() == syncer::SyncChange::ACTION_INVALID) {
-      error = sync_error_factory_->CreateAndUploadError(FROM_HERE, error_msg);
-      continue;
-    }
-
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
       if (!existing_turl) {
         // Can't DELETE a non-existent engine, although we log it.
@@ -1231,7 +1226,6 @@ void TemplateURLService::ProcessTemplateURLChange(
     const base::Location& from_here,
     const TemplateURL* turl,
     syncer::SyncChange::SyncChangeType type) {
-  DCHECK_NE(type, syncer::SyncChange::ACTION_INVALID);
   DCHECK(turl);
 
   if (!models_associated_)

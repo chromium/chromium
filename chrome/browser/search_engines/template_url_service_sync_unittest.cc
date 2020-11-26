@@ -143,7 +143,8 @@ base::Optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
 
   change_map_.erase(change_map_.begin(), change_map_.end());
   for (auto iter = change_list.begin(); iter != change_list.end(); ++iter)
-    change_map_[GetGUID(iter->sync_data())] = *iter;
+    change_map_.emplace(GetGUID(iter->sync_data()), *iter);
+
   return base::nullopt;
 }
 

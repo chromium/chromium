@@ -22,7 +22,7 @@ SettingSyncData::SettingSyncData(const syncer::SyncChange& sync_change)
 }
 
 SettingSyncData::SettingSyncData(const syncer::SyncData& sync_data)
-    : change_type_(syncer::SyncChange::ACTION_INVALID) {
+    : change_type_(base::nullopt) {
   ExtractSyncData(sync_data);
 }
 

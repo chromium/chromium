@@ -70,7 +70,7 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
       return SyncChange::ACTION_UPDATE;
   }
   NOTREACHED();
-  return SyncChange::ACTION_INVALID;
+  return SyncChange::ACTION_UPDATE;
 }
 
 // Parses the content of |record_list| into |*in_memory_store|. The output
@@ -133,10 +133,6 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 
     for (const SyncChange& change : change_list) {
       switch (change.change_type()) {
-        case SyncChange::ACTION_INVALID:
-          NOTREACHED() << " from " << change.location().ToString();
-          break;
-
         case SyncChange::ACTION_ADD:
         case SyncChange::ACTION_UPDATE: {
           DCHECK_EQ(type_, change.sync_data().GetDataType());

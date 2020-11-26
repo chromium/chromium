@@ -289,7 +289,9 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 
     syncer::SyncError error;
 
-    switch (sync_change->change_type()) {
+    DCHECK(sync_change->change_type().has_value());
+
+    switch (*sync_change->change_type()) {
       case syncer::SyncChange::ACTION_ADD:
         if (!current_value.get()) {
           error = OnSyncAdd(key, std::move(change_value), &changes);
@@ -324,9 +326,6 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
               extension_id_ << "/" << key;
         }
         break;
-
-      default:
-        NOTREACHED();
     }
 
     if (error.IsSet()) {

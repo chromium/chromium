@@ -258,10 +258,6 @@ SupervisedUserAllowlistService::ProcessSyncChanges(
         allowlists_removed = true;
         break;
       }
-      case syncer::SyncChange::ACTION_INVALID: {
-        NOTREACHED();
-        break;
-      }
     }
   }
 

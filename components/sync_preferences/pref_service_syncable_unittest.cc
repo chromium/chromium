@@ -132,8 +132,8 @@ syncer::SyncChange MakeRemoteChange(const std::string& name,
                                     syncer::ModelType model_type) {
   std::string serialized;
   JSONStringValueSerializer json(&serialized);
-  if (!json.Serialize(value))
-    return syncer::SyncChange();
+  bool success = json.Serialize(value);
+  DCHECK(success);
   sync_pb::EntitySpecifics entity;
   sync_pb::PreferenceSpecifics* pref =
       PrefModelAssociator::GetMutableSpecifics(model_type, &entity);

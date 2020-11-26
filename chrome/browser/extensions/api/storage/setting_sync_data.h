@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "components/sync/model/sync_change.h"
 
@@ -25,7 +26,7 @@ class SettingSyncData {
   // Creates from a sync change.
   explicit SettingSyncData(const syncer::SyncChange& sync_change);
 
-  // Creates from sync data. |change_type| will be ACTION_INVALID.
+  // Creates from sync data. |change_type| will be base::nullopt.
   explicit SettingSyncData(const syncer::SyncData& sync_data);
 
   // Creates explicitly.
@@ -36,9 +37,10 @@ class SettingSyncData {
 
   ~SettingSyncData();
 
-  // May return ACTION_INVALID if this object represents sync data that isn't
+  // May return base::nullopt if this object represents sync data that isn't
   // associated with a sync operation.
-  syncer::SyncChange::SyncChangeType change_type() const {
+  const base::Optional<syncer::SyncChange::SyncChangeType>& change_type()
+      const {
     return change_type_;
   }
   const std::string& extension_id() const { return extension_id_; }
@@ -55,7 +57,7 @@ class SettingSyncData {
   // either an extension or app settings data type.
   void ExtractSyncData(const syncer::SyncData& sync_data);
 
-  syncer::SyncChange::SyncChangeType change_type_;
+  base::Optional<syncer::SyncChange::SyncChangeType> change_type_;
   std::string extension_id_;
   std::string key_;
   std::unique_ptr<base::Value> value_;

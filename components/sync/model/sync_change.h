@@ -22,28 +22,28 @@ namespace syncer {
 class SyncChange {
  public:
   enum SyncChangeType {
-    ACTION_INVALID,
     ACTION_ADD,
     ACTION_UPDATE,
     ACTION_DELETE,
   };
 
-  // Default constructor creates an invalid change.
-  SyncChange();
   // Create a new change with the specified sync data.
   SyncChange(const base::Location& from_here,
              SyncChangeType change_type,
              const SyncData& sync_data);
+  // Copy constructor and assignment operator welcome.
+  SyncChange(const SyncChange&) = default;
+  SyncChange& operator=(const SyncChange&) = default;
+  // Move constructor and assignment operator allowed (although questionable).
+  // TODO(crbug.com/1152824): Avoid move semantics if that leads invalid state.
+  SyncChange(SyncChange&&) = default;
+  SyncChange& operator=(SyncChange&&) = default;
   ~SyncChange();
 
-  // Copy constructor and assignment operator welcome.
-
   // Whether this change is valid. This must be true before attempting to access
-  // the data.
-  // Deletes: Requires valid tag when going to the syncer. Requires valid
-  //          specifics when coming from the syncer.
-  // Adds, Updates: Require valid tag and specifics when going to the syncer.
-  //                Require only valid specifics when coming from the syncer.
+  // the data. It may only return false for moved-away instances (unspecified
+  // behavior). Otherwise it's guaranteed to return true.
+  // TODO(crbug.com/1152824): Remove this API once move semantics are removed.
   bool IsValid() const;
 
   // Getters.

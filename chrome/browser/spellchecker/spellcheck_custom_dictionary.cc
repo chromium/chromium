@@ -401,8 +401,6 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
         dictionary_change->RemoveWord(word);
         break;
       case syncer::SyncChange::ACTION_UPDATE:
-        // Intentionally fall through.
-      case syncer::SyncChange::ACTION_INVALID:
         return syncer::ConvertToModelError(
             sync_error_handler_->CreateAndUploadError(
                 FROM_HERE, "Processing sync changes failed on change type " +
