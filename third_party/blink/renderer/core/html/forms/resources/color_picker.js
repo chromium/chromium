@@ -1782,6 +1782,7 @@ class ChannelValueContainer extends HTMLInputElement {
 
     this.addEventListener('input', this.onValueChange_);
     this.addEventListener('blur', this.onBlur_);
+    this.addEventListener('focus', this.onFocus_);
   }
 
   get channelValue() {
@@ -1901,6 +1902,10 @@ class ChannelValueContainer extends HTMLInputElement {
         }
         break;
     }
+  }
+
+  onFocus_ = () => {
+    this.select();
   }
 }
 window.customElements.define(

@@ -27,7 +27,7 @@ promise_test(() => {
 
     assert_equals(rValueContainer.value, '0');
     eventSender.keyDown('1');
-    assert_equals(rValueContainer.value, '01');
+    assert_equals(rValueContainer.value, '1');
     assert_equals(inputEventCount, 1, 'Input event should have fired after color value change.');
     assert_equals(changeEventCount, 0, 'No change event should have fired before popup is closed.');
 

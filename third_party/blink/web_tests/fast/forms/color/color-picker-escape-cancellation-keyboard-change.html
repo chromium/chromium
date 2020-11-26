@@ -23,9 +23,9 @@ promise_test(() => {
     eventSender.mouseDown();
     eventSender.mouseUp();
     assert_equals(rValueContainer.value, '128');
-    eventSender.keyDown('Delete');
-    assert_equals(rValueContainer.value, '28');
-    assert_equals(colorControl.value, '#1cd9ff', 'Expected color value to change from manualinput.');
+    eventSender.keyDown('5');
+    assert_equals(rValueContainer.value, '5');
+    assert_equals(colorControl.value, '#05d9ff', 'Expected color value to change from manualinput.');
     eventSender.keyDown('Escape');
     assert_equals(colorControl.value, '#80d9ff', 'Color control value should have reverted back after pressing escape.');
     assert_equals(rValueContainer.value, '128');

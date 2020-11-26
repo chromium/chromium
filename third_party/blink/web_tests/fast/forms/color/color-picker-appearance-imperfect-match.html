@@ -25,6 +25,7 @@ function openPickerSuccessfulCallback() {
   eventSender.mouseMoveTo(hValueContainerRect.right - 1, hValueContainerRect.bottom - 1);
   eventSender.mouseDown();
   eventSender.mouseUp();
+  eventSender.keyDown('ArrowRight');
   eventSender.keyDown('Backspace');
   eventSender.keyDown('1');
   testRunner.notifyDone();
