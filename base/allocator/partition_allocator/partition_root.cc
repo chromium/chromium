@@ -597,10 +597,12 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   // TODO(chromium:1129751): Change to LIKELY once PCScan is enabled by default.
-  if (UNLIKELY(IsScanEnabled()) && (flags & PartitionPurgeForceAllFreed)) {
-    PCScan::Instance().PerformScanIfNeeded(PCScan::InvocationMode::kBlocking);
+  if (UNLIKELY(IsScanEnabled())) {
+    if (flags & PartitionPurgeForceAllFreed)
+      PCScan::Instance().PerformScan(PCScan::InvocationMode::kBlocking);
+    else
+      PCScan::Instance().PerformScanIfNeeded(PCScan::InvocationMode::kBlocking);
   }
-
   {
     ScopedGuard guard{lock_};
     if (flags & PartitionPurgeDecommitEmptySlotSpans)

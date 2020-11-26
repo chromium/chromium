@@ -66,6 +66,9 @@ class BASE_EXPORT PCScan final {
 
   ALWAYS_INLINE void MoveToQuarantine(void* ptr, SlotSpan* slot_span);
 
+  // Performs scanning unconditionally.
+  void PerformScan(InvocationMode invocation_mode);
+  // Performs scanning only if a certain quarantine threshold was reached.
   void PerformScanIfNeeded(InvocationMode invocation_mode);
 
   void ClearRootsForTesting();
@@ -134,8 +137,6 @@ class BASE_EXPORT PCScan final {
   };
 
   constexpr PCScan() = default;
-
-  void PerformScan(InvocationMode invocation_mode);
 
   static PCScan instance_ PA_CONSTINIT;
 

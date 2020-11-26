@@ -533,13 +533,11 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   auto task = std::make_unique<PCScanTask>(*this);
 
   // Post PCScan task.
-  const auto callback = [](PCScanTask task) { std::move(task).RunOnce(); };
-  if (UNLIKELY(invocation_mode == InvocationMode::kBlocking)) {
-    // Blocking is only used for testing.
-    callback(std::move(*task));
-  } else {
-    PA_DCHECK(InvocationMode::kNonBlocking == invocation_mode);
+  if (LIKELY(invocation_mode == InvocationMode::kNonBlocking)) {
     PCScanThread::Instance().PostTask(std::move(task));
+  } else {
+    PA_DCHECK(InvocationMode::kBlocking == invocation_mode);
+    std::move(*task).RunOnce();
   }
 }
 
