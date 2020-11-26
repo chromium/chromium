@@ -34,11 +34,13 @@ logging should probably only appear in a single place in the code. If the same
 user action needs to be logged in multiple places, consider whether you should
 be using different user action names for these separate call paths.
 
-That said, if you truly need to record the same user action in multiple places,
-that's okay. Use a compile-time constant of appropriate scope that can be
-referenced everywhere. Using inline strings in multiple places can lead to
-errors if you ever need to revise the name and you update one location but
-forget another.
+In rare cases, the same user action can be recorded in multiple places as long
+as only one of the places can be reached. This may be necessary if the user
+action is logged in platform-specific code or if one implementation is being
+replaced with another. When recording an action in multiple places, use a
+compile-time constant of appropriate scope that can be referenced everywhere.
+Using inline strings in multiple places can lead to errors if you ever need to
+revise the name and you update one location but forget another.
 
 ### Efficiency
 
