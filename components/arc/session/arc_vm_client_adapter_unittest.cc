@@ -1199,6 +1199,8 @@ TEST_F(ArcVmClientAdapterTest, ChromeOsChannelStable) {
   EXPECT_TRUE(
       base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
                      "androidboot.chromeos_channel=stable"));
+
+  base::SysInfo::ResetChromeOSVersionInfoForTest();
 }
 
 TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
@@ -1212,6 +1214,8 @@ TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
   EXPECT_TRUE(
       base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
                      "androidboot.chromeos_channel=unknown"));
+
+  base::SysInfo::ResetChromeOSVersionInfoForTest();
 }
 
 // Tests that the binary translation type is set to None when no library is
