@@ -245,7 +245,8 @@ class PageAllocator : public v8::PageAllocator {
     // On Windows, we can only de-commit the trailing pages. FreePages() will
     // still free all pages in the region including the released tail, so it's
     // safe to just decommit the tail.
-    base::DecommitSystemPages(release_base, release_size);
+    base::DecommitSystemPages(release_base, release_size,
+                              base::PageUpdatePermissions);
 #else
 #error Unsupported platform
 #endif
@@ -257,7 +258,7 @@ class PageAllocator : public v8::PageAllocator {
                       Permission permissions) override {
     // If V8 sets permissions to none, we can discard the memory.
     if (permissions == v8::PageAllocator::Permission::kNoAccess) {
-      base::DecommitSystemPages(address, length);
+      base::DecommitSystemPages(address, length, base::PageUpdatePermissions);
       return true;
     } else {
       return base::TrySetSystemPagesAccess(address, length,

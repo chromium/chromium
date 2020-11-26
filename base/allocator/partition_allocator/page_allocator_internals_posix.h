@@ -243,21 +243,25 @@ void* TrimMappingInternal(void* base,
   return ret;
 }
 
-void DecommitSystemPagesInternal(void* address, size_t length) {
+void DecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, PageInaccessible);
+  }
+
   // In POSIX, there is no decommit concept. Discarding is an effective way of
   // implementing the Windows semantics where the OS is allowed to not swap the
   // pages in the region.
-  //
-  // TODO(ajwong): Also explore setting PageInaccessible to make the protection
-  // semantics consistent between Windows and POSIX. This might have a perf cost
-  // though as both decommit and recommit would incur an extra syscall.
-  // http://crbug.com/766882
   DiscardSystemPages(address, length);
 }
 
-bool RecommitSystemPagesInternal(void* address,
-                                 size_t length,
-                                 PageAccessibilityConfiguration accessibility) {
+void RecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
 #if defined(OS_APPLE)
   // On macOS, to update accounting, we need to make another syscall. For more
   // details, see https://crbug.com/823915.
@@ -267,7 +271,11 @@ bool RecommitSystemPagesInternal(void* address,
   // On POSIX systems, the caller need simply read the memory to recommit it.
   // This has the correct behavior because the API requires the permissions to
   // be the same as before decommitting and all configurations can read.
-  return true;
+  // However, if decommit changed the permissions, recommit has to change them
+  // back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    SetSystemPagesAccess(address, length, accessibility);
+  }
 }
 
 void DiscardSystemPagesInternal(void* address, size_t length) {

@@ -26,6 +26,15 @@ enum PageAccessibilityConfiguration {
   PageReadWriteExecute,
 };
 
+// Use for De/RecommitSystemPages API.
+enum PageAccessibilityDisposition {
+  // Enforces permission update (Decommit will set to PageInaccessible;
+  // Recommit will set to whatever was requested, other than PageInaccessible).
+  PageUpdatePermissions,
+  // Will not update permissions, if the platform supports that (POSIX only).
+  PageKeepPermissionsIfPossible,
+};
+
 // macOS supports tagged memory regions, to help in debugging. On Android,
 // these tags are used to name anonymous mappings.
 enum class PageTag {
@@ -91,41 +100,62 @@ BASE_EXPORT void SetSystemPagesAccess(
     PageAccessibilityConfiguration page_accessibility);
 
 // Decommit one or more system pages starting at |address| and continuing for
-// |length| bytes. |length| must be a multiple of |SystemPageSize()|.
+// |length| bytes. |address| and |length| must be aligned to a system page
+// boundary.
+//
+// |accessibility_disposition| allows to specify whether the pages should be
+// made inaccessible (PageUpdatePermissions), or left as is
+// (PageKeepPermissionsIfPossible, POSIX only). The latter should only be used
+// as an optimization if you really know what you're doing.
+// TODO(bartekn): Ideally, all callers should use PageUpdatePermissions,
+// for better security, but that may lead to a perf regression. Tracked at
+// http://crbug.com/766882.
 //
 // Decommitted means that physical resources (RAM or swap) backing the allocated
 // virtual address range are released back to the system, but the address space
 // is still allocated to the process (possibly using up page table entries or
-// other accounting resources). Any access to a decommitted region of memory
-// is an error and will generate a fault.
+// other accounting resources). Unless PageKeepPermissionsIfPossible disposition
+// is used, any access to a decommitted region of memory is an error and will
+// generate a fault.
 //
 // This operation is not atomic on all platforms.
 //
 // Note: "Committed memory" is a Windows Memory Subsystem concept that ensures
 // processes will not fault when touching a committed memory region. There is
 // no analogue in the POSIX memory API where virtual memory pages are
-// best-effort allocated resources on the first touch. To create a
-// platform-agnostic abstraction, this API simulates the Windows "decommit"
-// state by both discarding the region (allowing the OS to avoid swap
-// operations) and changing the page protections so accesses fault.
+// best-effort allocated resources on the first touch. If PageUpdatePermissions
+// disposition is used, this API behaves in a platform-agnostic way by
+// simulating the Windows "decommit" state by both discarding the region
+// (allowing the OS to avoid swap operations) *and* changing the page
+// protections so accesses fault.
 //
-// TODO(ajwong): This currently does not change page protections on POSIX
-// systems due to a perf regression. Tracked at http://crbug.com/766882.
-BASE_EXPORT void DecommitSystemPages(void* address, size_t length);
-
-// Recommit one or more system pages, starting at |address| and continuing for
-// |length| bytes with the given |page_accessibility|. |length| must be a
-// multiple of |SystemPageSize()|.
-//
-// Decommitted system pages must be recommitted with their original permissions
-// before they are used again.
-//
-// Returns true if the recommit change succeeded. In most cases you must |CHECK|
-// the result.
-BASE_EXPORT WARN_UNUSED_RESULT bool RecommitSystemPages(
+// This API will crash if the operation cannot be performed.
+BASE_EXPORT void DecommitSystemPages(
     void* address,
     size_t length,
-    PageAccessibilityConfiguration page_accessibility);
+    PageAccessibilityDisposition accessibility_disposition);
+
+// Recommit one or more system pages, starting at |address| and continuing for
+// |length| bytes with the given |page_accessibility| (must not be
+// PageInaccsessible). |address| and |length| must be aligned to a system page
+// boundary.
+//
+// |accessibility_disposition| allows to specify whether the page permissions
+// should be set to |page_accessibility| (PageUpdatePermissions), or left as is
+// (PageKeepPermissionsIfPossible, POSIX only). The latter can only be used if
+// the pages were previously accessible and decommitted with
+// PageKeepPermissionsIfPossible. It is ok, however, to recommit with
+// PageUpdatePermissions even if pages were decommitted with
+// PageKeepPermissionsIfPossible (merely losing an optimization).
+//
+// This operation is not atomic on all platforms.
+//
+// This API will crash if the operation cannot be performed.
+BASE_EXPORT void RecommitSystemPages(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration page_accessibility,
+    PageAccessibilityDisposition accessibility_disposition);
 
 // Discard one or more system pages starting at |address| and continuing for
 // |length| bytes. |length| must be a multiple of |SystemPageSize()|.

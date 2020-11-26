@@ -180,20 +180,30 @@ void DiscardSystemPagesInternal(void* address, size_t length) {
   ZX_CHECK(status == ZX_OK, status);
 }
 
-void DecommitSystemPagesInternal(void* address, size_t length) {
+void DecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // TODO(bartekn): Ignoring accessibility_disposition preserves the behavior
+  // the API had since its conception, but consider similar optimization to
+  // POSIX.
+  SetSystemPagesAccessInternal(address, length, PageInaccessible);
+
   // TODO(https://crbug.com/1022062): Review whether this implementation is
   // still appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
   // discardable API.
   DiscardSystemPagesInternal(address, length);
-
-  SetSystemPagesAccessInternal(address, length, PageInaccessible);
 }
 
-bool RecommitSystemPagesInternal(void* address,
-                                 size_t length,
-                                 PageAccessibilityConfiguration accessibility) {
+void RecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // TODO(bartekn): Ignoring accessibility_disposition preserves the behavior
+  // the API had since its conception, but consider similar optimization to
+  // POSIX.
   SetSystemPagesAccessInternal(address, length, accessibility);
-  return true;
 }
 
 }  // namespace base

@@ -103,14 +103,23 @@ void FreePagesInternal(void* address, size_t length) {
   PA_CHECK(VirtualFree(address, 0, MEM_RELEASE));
 }
 
-void DecommitSystemPagesInternal(void* address, size_t length) {
+void DecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // Ignore accessibility_disposition, because decommitting is equivalent to
+  // making pages inaccessible.
   SetSystemPagesAccess(address, length, PageInaccessible);
 }
 
-bool RecommitSystemPagesInternal(void* address,
-                                 size_t length,
-                                 PageAccessibilityConfiguration accessibility) {
-  return TrySetSystemPagesAccess(address, length, accessibility);
+void RecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // Ignore accessibility_disposition, because decommitting is equivalent to
+  // making pages inaccessible.
+  SetSystemPagesAccess(address, length, accessibility);
 }
 
 void DiscardSystemPagesInternal(void* address, size_t length) {

@@ -108,13 +108,8 @@ void GCInfoTable::Resize() {
   const size_t table_size_delta = new_committed_size - old_committed_size;
 
   // Commit the new size and allow read/write.
-  // TODO(ajwong): SetSystemPagesAccess should be part of RecommitSystemPages to
-  // avoid having two calls here.
-  base::SetSystemPagesAccess(current_table_end, table_size_delta,
-                             base::PageReadWrite);
-  bool ok = base::RecommitSystemPages(current_table_end, table_size_delta,
-                                      base::PageReadWrite);
-  CHECK(ok);
+  base::RecommitSystemPages(current_table_end, table_size_delta,
+                            base::PageReadWrite, base::PageUpdatePermissions);
 
 #if DCHECK_IS_ON()
   // Check that newly-committed memory is zero-initialized.

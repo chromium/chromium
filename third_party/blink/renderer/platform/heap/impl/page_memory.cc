@@ -16,15 +16,14 @@ void MemoryRegion::Release() {
   base::FreePages(base_, size_);
 }
 
-bool MemoryRegion::Commit() {
-  CHECK(base::RecommitSystemPages(base_, size_, base::PageReadWrite));
-  return base::TrySetSystemPagesAccess(base_, size_, base::PageReadWrite);
+void MemoryRegion::Commit() {
+  base::RecommitSystemPages(base_, size_, base::PageReadWrite,
+                            base::PageUpdatePermissions);
 }
 
 void MemoryRegion::Decommit() {
   ASAN_UNPOISON_MEMORY_REGION(base_, size_);
-  base::DecommitSystemPages(base_, size_);
-  base::SetSystemPagesAccess(base_, size_, base::PageInaccessible);
+  base::DecommitSystemPages(base_, size_, base::PageUpdatePermissions);
 }
 
 PageMemoryRegion::PageMemoryRegion(Address base,
@@ -130,7 +129,7 @@ PageMemory* PageMemory::Allocate(size_t payload_size, RegionTree* region_tree) {
       PageMemoryRegion::AllocateLargePage(allocation_size, region_tree);
   PageMemory* storage =
       SetupPageMemoryInRegion(page_memory_region, 0, payload_size);
-  CHECK(storage->Commit());
+  storage->Commit();
   return storage;
 }
 

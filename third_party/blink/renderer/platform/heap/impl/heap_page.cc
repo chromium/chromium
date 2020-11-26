@@ -673,13 +673,12 @@ void NormalPageArena::AllocatePage() {
       // Take the first possible page ensuring that this thread actually
       // gets a page and add the rest to the page pool.
       if (!page_memory) {
-        bool result = memory->Commit();
-        // If you hit the CHECK, it will mean that you're hitting the limit
-        // of the number of mmapped regions the OS can support
+        // If you hit the CHECK in the call to Commit(), it means that you're
+        // hitting the limit of the number of mmapped regions the OS can support
         // (e.g., /proc/sys/vm/max_map_count in Linux) or on that Windows you
         // have exceeded the max commit charge across all processes for the
         // system.
-        CHECK(result);
+        memory->Commit();
         page_memory = memory;
       } else {
         GetThreadState()->Heap().GetFreePagePool()->Add(ArenaIndex(), memory);

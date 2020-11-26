@@ -33,7 +33,7 @@ class MemoryRegion {
   }
 
   void Release();
-  WARN_UNUSED_RESULT bool Commit();
+  void Commit();
   void Decommit();
 
   Address Base() const { return base_; }
@@ -144,9 +144,9 @@ class PageMemory {
     reserved_->PageDeleted(WritableStart());
   }
 
-  WARN_UNUSED_RESULT bool Commit() {
+  void Commit() {
     reserved_->MarkPageUsed(WritableStart());
-    return writable_.Commit();
+    writable_.Commit();
   }
 
   void Decommit() {

@@ -38,16 +38,13 @@ void PagePool::Add(int index, PageMemory* memory) {
 }
 
 PageMemory* PagePool::Take(int index) {
-  while (PoolEntry* entry = pool_[index]) {
+  if (PoolEntry* entry = pool_[index]) {
     pool_[index] = entry->next;
     PageMemory* memory = entry->data;
     DCHECK(memory);
     delete entry;
-    if (memory->Commit())
-      return memory;
-
-    // We got some memory, but failed to commit it, try again.
-    delete memory;
+    memory->Commit();
+    return memory;
   }
   return nullptr;
 }

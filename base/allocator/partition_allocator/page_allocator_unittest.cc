@@ -265,8 +265,9 @@ TEST(PageAllocatorTest, DecommitErasesMemory) {
 
   memset(buffer, 42, size);
 
-  DecommitSystemPages(buffer, size);
-  EXPECT_TRUE(RecommitSystemPages(buffer, size, PageReadWrite));
+  DecommitSystemPages(buffer, size, PageKeepPermissionsIfPossible);
+  RecommitSystemPages(buffer, size, PageReadWrite,
+                      PageKeepPermissionsIfPossible);
 
   uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
   uint32_t sum = 0;
@@ -290,7 +291,7 @@ TEST(PageAllocatorTest, MappedPagesAccounting) {
 
   EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
 
-  DecommitSystemPages(data, size);
+  DecommitSystemPages(data, size, PageKeepPermissionsIfPossible);
   EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
 
   FreePages(data, size);

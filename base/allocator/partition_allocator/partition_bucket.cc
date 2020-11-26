@@ -606,7 +606,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       decommitted_slot_spans_head = new_slot_span->next_slot_span;
       void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
       root->RecommitSystemPages(addr,
-                                new_slot_span->bucket->get_bytes_per_span());
+                                new_slot_span->bucket->get_bytes_per_span(),
+                                PageKeepPermissionsIfPossible);
       new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }

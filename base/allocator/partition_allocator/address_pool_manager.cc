@@ -39,6 +39,7 @@ AddressPoolManager* AddressPoolManager::GetInstance() {
 
 namespace {
 
+// This will crash if the range cannot be decommitted.
 void DecommitPages(void* address, size_t size) {
 #if defined(OS_APPLE)
   // MAP_FIXED replaces an existing mapping with a new one, when the address is
@@ -50,21 +51,17 @@ void DecommitPages(void* address, size_t size) {
                    MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   PA_CHECK(ptr == address);
 #else
-  SetSystemPagesAccess(address, size, PageInaccessible);
-  DecommitSystemPages(address, size);
+  DecommitSystemPages(address, size, PageUpdatePermissions);
 #endif
 }
 
-bool WARN_UNUSED_RESULT CommitPages(void* address, size_t size) {
+// This will crash if the range cannot be committed.
+void CommitPages(void* address, size_t size) {
 #if defined(OS_APPLE)
   SetSystemPagesAccess(address, size, PageReadWrite);
 #else
-  if (!RecommitSystemPages(address, size, PageReadWrite))
-    return false;
-  SetSystemPagesAccess(address, size, PageReadWrite);
+  RecommitSystemPages(address, size, PageReadWrite, PageUpdatePermissions);
 #endif
-
-  return true;
 }
 
 }  // namespace
@@ -99,9 +96,9 @@ void AddressPoolManager::Remove(pool_handle handle) {
 char* AddressPoolManager::Alloc(pool_handle handle, void*, size_t length) {
   Pool* pool = GetPool(handle);
   char* ptr = reinterpret_cast<char*>(pool->FindChunk(length));
-
-  if (UNLIKELY(!ptr) || !CommitPages(ptr, length))
+  if (UNLIKELY(!ptr))
     return nullptr;
+  CommitPages(ptr, length);
   return ptr;
 }
 

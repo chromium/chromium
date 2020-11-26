@@ -206,17 +206,25 @@ void SetSystemPagesAccess(void* address,
   SetSystemPagesAccessInternal(address, length, accessibility);
 }
 
-void DecommitSystemPages(void* address, size_t length) {
+void DecommitSystemPages(
+    void* address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
   PA_DCHECK(!(length & SystemPageOffsetMask()));
-  DecommitSystemPagesInternal(address, length);
+  DecommitSystemPagesInternal(address, length, accessibility_disposition);
 }
 
-bool RecommitSystemPages(void* address,
-                         size_t length,
-                         PageAccessibilityConfiguration accessibility) {
+void RecommitSystemPages(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
   PA_DCHECK(!(length & SystemPageOffsetMask()));
   PA_DCHECK(accessibility != PageInaccessible);
-  return RecommitSystemPagesInternal(address, length, accessibility);
+  RecommitSystemPagesInternal(address, length, accessibility,
+                              accessibility_disposition);
 }
 
 void DiscardSystemPages(void* address, size_t length) {
