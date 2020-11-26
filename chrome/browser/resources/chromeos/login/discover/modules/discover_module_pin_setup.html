@@ -112,7 +112,7 @@
                     images/pin_illustration_2x.svg 2x">
       </div>
       <div slot="back-navigation">
-        <oobe-back-button
+        <oobe-back-button id="backButton"
             hidden="[[isStepHidden_(step_, 'confirm')]]"
             on-click="onBackButton_"></oobe-back-button>
       </div>
@@ -121,11 +121,12 @@
             text-key="discoverPinSetupSkip"
             hidden="[[!isStepHidden_(step_, 'done')]]">
         </oobe-text-button>
-        <oobe-next-button inverse
+        <oobe-next-button id="nextButton" inverse
             disabled="[[isNextDisabled_(step_, enableSubmit_)]]"
             on-click="onNextButton_" class="focus-on-show"
             hidden="[[!isStepHidden_(step_, 'done')]]"></oobe-next-button>
-        <oobe-text-button inverse on-click="onDoneButton_" class="focus-on-show"
+        <oobe-text-button id="doneButton"
+            inverse on-click="onDoneButton_" class="focus-on-show"
             text-key="discoverPinSetupDone"
             hidden="[[isStepHidden_(step_, 'done')]]">
         </oobe-text-button>

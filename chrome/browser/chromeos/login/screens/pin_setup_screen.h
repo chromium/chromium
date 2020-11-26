@@ -19,6 +19,17 @@ class PinSetupScreen : public BaseScreen {
  public:
   enum class Result { NEXT, NOT_APPLICABLE };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other).  Entries should be never modified
+  // or deleted.  Only additions possible.
+  enum class UserAction {
+    kDoneButtonClicked = 0,
+    kSkipButtonClickedOnStart = 1,
+    kSkipButtonClickedInFlow = 2,
+    kMaxValue = kSkipButtonClickedInFlow
+  };
+
   static std::string GetResultString(Result result);
   static bool ShouldSkip();
 
