@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/timer/mock_timer.h"
 #include "chrome/browser/chromeos/secure_channel/fake_nearby_endpoint_finder.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
@@ -63,6 +64,9 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
   // testing::Test:
   void SetUp() override {
+    auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+    mock_timer_ = mock_timer.get();
+
     broker_ = NearbyConnectionBrokerImpl::Factory::Create(
         GetBluetoothAddress(), &fake_endpoint_finder_,
         message_sender_.BindNewPipeAndPassReceiver(),
@@ -71,7 +75,8 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
         base::BindOnce(&NearbyConnectionBrokerImplTest::OnConnected,
                        base::Unretained(this)),
         base::BindOnce(&NearbyConnectionBrokerImplTest::OnDisconnected,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        std::move(mock_timer));
     EXPECT_EQ(GetBluetoothAddress(),
               fake_endpoint_finder_.remote_device_bluetooth_address());
   }
@@ -141,7 +146,8 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   void InvokeAcceptConnectionCallback(bool success) {
     if (!success) {
       base::RunLoop run_loop;
-      on_disconnected_closure_ = run_loop.QuitClosure();
+      on_disconnect_from_endpoint_closure_ = run_loop.QuitClosure();
+      ExpectDisconnectFromEndpoint();
       std::move(accept_connection_callback_).Run(Status::kError);
       run_loop.Run();
       return;
@@ -169,7 +175,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     NotifyConnectionAccepted();
   }
 
-  void InvokeDisconnectionCallback() {
+  void InvokeDisconnectedCallback() {
     base::RunLoop disconnect_run_loop;
     on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
     connection_lifecycle_listener_->OnDisconnected(kEndpointId);
@@ -215,7 +221,8 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
     // Failure to send should disconnect the ongoing connection.
     base::RunLoop disconnect_run_loop;
-    on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
+    on_disconnect_from_endpoint_closure_ = disconnect_run_loop.QuitClosure();
+    ExpectDisconnectFromEndpoint();
     std::move(send_payload_callback).Run(Status::kError);
     send_message_response_run_loop.Run();
     disconnect_run_loop.Run();
@@ -238,8 +245,9 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   }
 
   void ReceiveInvalidPayloadType() {
-    base::RunLoop disconnect_run_loop;
-    on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
+    base::RunLoop payload_run_loop;
+    on_disconnect_from_endpoint_closure_ = payload_run_loop.QuitClosure();
+    ExpectDisconnectFromEndpoint();
 
     // Create fake file to receive.
     const std::vector<uint8_t> kFakeFileContent{0x01, 0x02, 0x03};
@@ -260,35 +268,84 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
         Payload::New(
             /*id=*/kInvalidPayloadTypeId,
             PayloadContent::NewFile(FilePayload::New(std::move(input_file)))));
-    disconnect_run_loop.Run();
+    payload_run_loop.Run();
   }
 
-  void DeleteBroker(bool expected_to_disconnect) {
+  void DisconnectMojoBindings(bool expected_to_disconnect) {
     if (!expected_to_disconnect) {
+      base::RunLoop disconnect_run_loop;
+      on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
       EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
           .Times(0);
-      broker_.reset();
+      message_sender_.reset();
+      disconnect_run_loop.Run();
       return;
     }
 
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
-        .WillOnce(Invoke(
-            [&](const std::string& service_id, const std::string& endpoint_id,
-                NearbyConnectionsMojom::StopDiscoveryCallback callback) {
-              std::move(callback).Run(Status::kSuccess);
-              run_loop.Quit();
-            }));
-
-    broker_.reset();
-    run_loop.Run();
+    base::RunLoop disconnect_from_endpoint_run_loop;
+    on_disconnect_from_endpoint_closure_ =
+        disconnect_from_endpoint_run_loop.QuitClosure();
+    ExpectDisconnectFromEndpoint();
+    message_sender_.reset();
+    disconnect_from_endpoint_run_loop.Run();
   }
+
+  void InvokeDisconnectedFromEndpointCallback(bool success) {
+    if (success) {
+      std::move(disconnect_from_endpoint_callback_).Run(Status::kSuccess);
+      // Ensure that callback result is received; cannot use external event
+      // because the success callback only updates internal state.
+      base::RunLoop().RunUntilIdle();
+      return;
+    }
+
+    base::RunLoop disconnect_run_loop;
+    on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
+    std::move(disconnect_from_endpoint_callback_).Run(Status::kError);
+    disconnect_run_loop.Run();
+  }
+
+  void SimulateTimeout(bool expected_to_disconnect) {
+    if (!expected_to_disconnect) {
+      base::RunLoop disconnect_run_loop;
+      on_disconnected_closure_ = disconnect_run_loop.QuitClosure();
+      EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
+          .Times(0);
+      mock_timer_->Fire();
+      disconnect_run_loop.Run();
+      return;
+    }
+
+    base::RunLoop disconnect_from_endpoint_run_loop;
+    on_disconnect_from_endpoint_closure_ =
+        disconnect_from_endpoint_run_loop.QuitClosure();
+    ExpectDisconnectFromEndpoint();
+    mock_timer_->Fire();
+    disconnect_from_endpoint_run_loop.Run();
+  }
+
+  NearbyConnectionsMojom::RequestConnectionCallback
+      request_connection_callback_;
+  NearbyConnectionsMojom::AcceptConnectionCallback accept_connection_callback_;
+  NearbyConnectionsMojom::DisconnectFromEndpointCallback
+      disconnect_from_endpoint_callback_;
 
  private:
   // mojom::NearbyMessageReceiver:
   void OnMessageReceived(const std::string& message) override {
     received_messages_.push_back(message);
     std::move(on_message_received_closure_).Run();
+  }
+
+  void ExpectDisconnectFromEndpoint() {
+    EXPECT_CALL(mock_nearby_connections_, DisconnectFromEndpoint(_, _, _))
+        .WillOnce(Invoke(
+            [&](const std::string& service_id, const std::string& endpoint_id,
+                NearbyConnectionsMojom::DisconnectFromEndpointCallback
+                    callback) {
+              disconnect_from_endpoint_callback_ = std::move(callback);
+              std::move(on_disconnect_from_endpoint_closure_).Run();
+            }));
   }
 
   void OnConnected() { std::move(on_connected_closure_).Run(); }
@@ -304,13 +361,12 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
   std::unique_ptr<NearbyConnectionBroker> broker_;
 
+  base::MockOneShotTimer* mock_timer_ = nullptr;
+
   base::OnceClosure on_connected_closure_;
   base::OnceClosure on_disconnected_closure_;
   base::OnceClosure on_message_received_closure_;
-
-  NearbyConnectionsMojom::RequestConnectionCallback
-      request_connection_callback_;
-  NearbyConnectionsMojom::AcceptConnectionCallback accept_connection_callback_;
+  base::OnceClosure on_disconnect_from_endpoint_closure_;
 
   mojo::Remote<ConnectionLifecycleListener> connection_lifecycle_listener_;
   mojo::Remote<PayloadListener> payload_listener_;
@@ -324,36 +380,83 @@ TEST_F(NearbyConnectionBrokerImplTest, SendAndReceive) {
   SendMessage("test2", /*success=*/true);
   ReceiveMessage("test3");
   ReceiveMessage("test4");
-  DeleteBroker(/*expected_to_disconnect=*/true);
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FailToDisconnect) {
+  SetUpFullConnection();
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/false);
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FailToDisconnect_Timeout) {
+  SetUpFullConnection();
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  SimulateTimeout(/*expected_to_disconnect=*/false);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, DisconnectsUnexpectedly) {
   SetUpFullConnection();
-  InvokeDisconnectionCallback();
-  DeleteBroker(/*expected_to_disconnect=*/false);
+  InvokeDisconnectedCallback();
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, ReceiveInvalidPayloadType) {
   SetUpFullConnection();
   ReceiveInvalidPayloadType();
-  DeleteBroker(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailToSend) {
   SetUpFullConnection();
   SendMessage("test", /*success=*/false);
-  DeleteBroker(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailDiscovery) {
   FailDiscovery();
-  DeleteBroker(/*expected_to_disconnect=*/false);
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FailDiscovery_Timeout) {
+  SimulateTimeout(/*expected_to_disconnect=*/false);
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, MojoDisconnectionAfterDiscovery) {
+  DiscoverEndpoint();
+  DisconnectMojoBindings(/*expected_to_disconnect=*/false);
+
+  // Run callback to prevent DCHECK() crash that ensures all Mojo callbacks are
+  // invoked.
+  std::move(request_connection_callback_).Run(Status::kError);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailRequestingConnection) {
   DiscoverEndpoint();
   InvokeRequestConnectionCallback(/*success=*/false);
-  DeleteBroker(/*expected_to_disconnect=*/false);
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FailRequestingConnection_Timeout) {
+  DiscoverEndpoint();
+  SimulateTimeout(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest,
+       MojoDisconnectionAfterRequestConnection) {
+  DiscoverEndpoint();
+  InvokeRequestConnectionCallback(/*success=*/true);
+  NotifyConnectionInitiated();
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+
+  // Run callback to prevent DCHECK() crash that ensures all Mojo callbacks are
+  // invoked.
+  std::move(accept_connection_callback_).Run(Status::kError);
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection) {
@@ -361,7 +464,17 @@ TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection) {
   InvokeRequestConnectionCallback(/*success=*/true);
   NotifyConnectionInitiated();
   InvokeAcceptConnectionCallback(/*success=*/false);
-  DeleteBroker(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
+}
+
+TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection_Timeout) {
+  DiscoverEndpoint();
+  InvokeRequestConnectionCallback(/*success=*/true);
+  NotifyConnectionInitiated();
+  SimulateTimeout(/*expected_to_disconnect=*/true);
+  InvokeDisconnectedFromEndpointCallback(/*success=*/true);
+  InvokeDisconnectedCallback();
 }
 
 }  // namespace secure_channel

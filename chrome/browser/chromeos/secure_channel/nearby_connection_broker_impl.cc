@@ -15,6 +15,9 @@ namespace {
 
 NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
 
+constexpr base::TimeDelta kConnectionStatusChangeTimeout =
+    base::TimeDelta::FromSeconds(10);
+
 using location::nearby::connections::mojom::BytesPayload;
 using location::nearby::connections::mojom::ConnectionInfoPtr;
 using location::nearby::connections::mojom::ConnectionOptions;
@@ -28,14 +31,6 @@ using location::nearby::connections::mojom::PayloadPtr;
 using location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 using location::nearby::connections::mojom::Status;
 
-void OnDisconnectFromEndpointResult(const std::string& endpoint_id,
-                                    Status status) {
-  if (status != Status::kSuccess) {
-    PA_LOG(WARNING) << "Failed to disconnect from endpoint with ID "
-                    << endpoint_id;
-  }
-}
-
 }  // namespace
 
 // static
@@ -47,20 +42,21 @@ NearbyConnectionBrokerImpl::Factory::Create(
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
     const mojo::SharedRemote<NearbyConnections>& nearby_connections,
     base::OnceClosure on_connected_callback,
-    base::OnceClosure on_disconnected_callback) {
+    base::OnceClosure on_disconnected_callback,
+    std::unique_ptr<base::OneShotTimer> timer) {
   if (g_test_factory) {
     return g_test_factory->CreateInstance(
         bluetooth_public_address, endpoint_finder,
         std::move(message_sender_receiver), std::move(message_receiver_remote),
         nearby_connections, std::move(on_connected_callback),
-        std::move(on_disconnected_callback));
+        std::move(on_disconnected_callback), std::move(timer));
   }
 
   return base::WrapUnique(new NearbyConnectionBrokerImpl(
       bluetooth_public_address, endpoint_finder,
       std::move(message_sender_receiver), std::move(message_receiver_remote),
       nearby_connections, std::move(on_connected_callback),
-      std::move(on_disconnected_callback)));
+      std::move(on_disconnected_callback), std::move(timer)));
 }
 
 // static
@@ -76,14 +72,16 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
     const mojo::SharedRemote<NearbyConnections>& nearby_connections,
     base::OnceClosure on_connected_callback,
-    base::OnceClosure on_disconnected_callback)
+    base::OnceClosure on_disconnected_callback,
+    std::unique_ptr<base::OneShotTimer> timer)
     : NearbyConnectionBroker(bluetooth_public_address,
                              std::move(message_sender_receiver),
                              std::move(message_receiver_remote),
                              std::move(on_connected_callback),
                              std::move(on_disconnected_callback)),
       endpoint_finder_(endpoint_finder),
-      nearby_connections_(nearby_connections) {
+      nearby_connections_(nearby_connections),
+      timer_(std::move(timer)) {
   TransitionToStatus(ConnectionStatus::kDiscoveringEndpoint);
   endpoint_finder_->FindEndpoint(
       bluetooth_public_address,
@@ -93,27 +91,55 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
                      base::Unretained(this)));
 }
 
-NearbyConnectionBrokerImpl::~NearbyConnectionBrokerImpl() {
-  if (is_connection_active_) {
-    DCHECK(!remote_endpoint_id_.empty());
-    PA_LOG(VERBOSE) << "Disconnecting from endpoint with ID "
-                    << remote_endpoint_id_;
-    nearby_connections_->DisconnectFromEndpoint(
-        mojom::kServiceId, remote_endpoint_id_,
-        base::BindOnce(&OnDisconnectFromEndpointResult, remote_endpoint_id_));
-  }
-}
+NearbyConnectionBrokerImpl::~NearbyConnectionBrokerImpl() = default;
 
 void NearbyConnectionBrokerImpl::TransitionToStatus(
     ConnectionStatus connection_status) {
-  PA_LOG(VERBOSE) << "Nearby Connection status: " << connection_status_
-                  << " => " << connection_status;
+  PA_LOG(INFO) << "Nearby Connection status: " << connection_status_ << " => "
+               << connection_status;
   connection_status_ = connection_status;
+
+  timer_->Stop();
+
+  // The connected and disconnected states do not expect any further state
+  // changes.
+  if (connection_status_ == ConnectionStatus::kConnected ||
+      connection_status_ == ConnectionStatus::kDisconnected) {
+    return;
+  }
+
+  // If the state does not change within |kConnectionStatusChangeTimeout|, time
+  // out and give up on the connection.
+  timer_->Start(
+      FROM_HERE, kConnectionStatusChangeTimeout,
+      base::BindOnce(
+          &NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyConnectionBrokerImpl::TransitionToDisconnected() {
+void NearbyConnectionBrokerImpl::Disconnect() {
+  if (!need_to_disconnect_endpoint_) {
+    TransitionToDisconnectedAndInvokeCallback();
+    return;
+  }
+
+  if (connection_status_ == ConnectionStatus::kDisconnecting)
+    return;
+
+  TransitionToStatus(ConnectionStatus::kDisconnecting);
+  nearby_connections_->DisconnectFromEndpoint(
+      mojom::kServiceId, remote_endpoint_id_,
+      base::BindOnce(
+          &NearbyConnectionBrokerImpl::OnDisconnectFromEndpointResult,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyConnectionBrokerImpl::TransitionToDisconnectedAndInvokeCallback() {
+  if (connection_status_ == ConnectionStatus::kDisconnected)
+    return;
+
   TransitionToStatus(ConnectionStatus::kDisconnected);
-  Disconnect();
+  InvokeDisconnectedCallback();
 }
 
 void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
@@ -139,7 +165,7 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
 
 void NearbyConnectionBrokerImpl::OnDiscoveryFailure() {
   DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
-  TransitionToDisconnected();
+  Disconnect();
 }
 
 void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
@@ -150,7 +176,7 @@ void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
   }
 
   PA_LOG(WARNING) << "RequestConnection() failed: " << status;
-  TransitionToDisconnected();
+  Disconnect();
 }
 
 void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
@@ -162,7 +188,7 @@ void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
   }
 
   PA_LOG(WARNING) << "AcceptConnection() failed: " << status;
-  TransitionToDisconnected();
+  Disconnect();
 }
 
 void NearbyConnectionBrokerImpl::OnSendPayloadResult(
@@ -175,7 +201,40 @@ void NearbyConnectionBrokerImpl::OnSendPayloadResult(
     return;
 
   PA_LOG(WARNING) << "OnSendPayloadResult() failed: " << status;
-  TransitionToDisconnected();
+  Disconnect();
+}
+
+void NearbyConnectionBrokerImpl::OnDisconnectFromEndpointResult(Status status) {
+  // If the disconnection was successful, wait for the OnDisconnected()
+  // callback.
+  if (status == Status::kSuccess)
+    return;
+
+  PA_LOG(WARNING) << "Failed to disconnect from endpoint with ID "
+                  << remote_endpoint_id_ << ": " << status;
+  need_to_disconnect_endpoint_ = false;
+  Disconnect();
+}
+
+void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
+  if (connection_status_ == ConnectionStatus::kDisconnecting) {
+    PA_LOG(WARNING) << "Timeout disconnecting from endpoint";
+    TransitionToDisconnectedAndInvokeCallback();
+    return;
+  }
+
+  // If there is a timeout requesting a connection, we should still try to
+  // disconnect from the endpoint in case the endpoint was almost about to be
+  // connected before the timeout occurred.
+  if (connection_status_ == ConnectionStatus::kRequestingConnection)
+    need_to_disconnect_endpoint_ = true;
+
+  PA_LOG(WARNING) << "Timeout changing connection status";
+  Disconnect();
+}
+
+void NearbyConnectionBrokerImpl::OnMojoDisconnection() {
+  Disconnect();
 }
 
 void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
@@ -216,7 +275,7 @@ void NearbyConnectionBrokerImpl::OnConnectionInitiated(
   DCHECK_EQ(ConnectionStatus::kWaitingForConnectionInitiation,
             connection_status_);
   TransitionToStatus(ConnectionStatus::kAcceptingConnection);
-  is_connection_active_ = true;
+  need_to_disconnect_endpoint_ = true;
 
   nearby_connections_->AcceptConnection(
       mojom::kServiceId, remote_endpoint_id_,
@@ -250,7 +309,7 @@ void NearbyConnectionBrokerImpl::OnConnectionRejected(
   }
 
   PA_LOG(WARNING) << "Connection rejected: " << status;
-  TransitionToDisconnected();
+  Disconnect();
 }
 
 void NearbyConnectionBrokerImpl::OnDisconnected(
@@ -261,9 +320,11 @@ void NearbyConnectionBrokerImpl::OnDisconnected(
     return;
   }
 
-  PA_LOG(WARNING) << "Connection disconnected";
-  is_connection_active_ = false;
-  TransitionToDisconnected();
+  if (connection_status_ != ConnectionStatus::kDisconnecting) {
+    PA_LOG(WARNING) << "Connection disconnected unexpectedly";
+  }
+  need_to_disconnect_endpoint_ = false;
+  Disconnect();
 }
 
 void NearbyConnectionBrokerImpl::OnBandwidthChanged(
@@ -275,7 +336,7 @@ void NearbyConnectionBrokerImpl::OnBandwidthChanged(
     return;
   }
 
-  PA_LOG(VERBOSE) << "Bandwidth changed: " << medium;
+  PA_LOG(INFO) << "Bandwidth changed: " << medium;
 }
 
 void NearbyConnectionBrokerImpl::OnPayloadReceived(
@@ -290,7 +351,7 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
   if (!payload->content->is_bytes()) {
     PA_LOG(WARNING) << "OnPayloadReceived(): Received unexpected payload type "
                     << "(was expecting bytes type). Disconnecting.";
-    TransitionToDisconnected();
+    Disconnect();
     return;
   }
 
@@ -327,6 +388,9 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case NearbyConnectionBrokerImpl::ConnectionStatus::kConnected:
       stream << "[Connected]";
+      break;
+    case NearbyConnectionBrokerImpl::ConnectionStatus::kDisconnecting:
+      stream << "[Disconnecting]";
       break;
     case NearbyConnectionBrokerImpl::ConnectionStatus::kDisconnected:
       stream << "[Disconnected]";

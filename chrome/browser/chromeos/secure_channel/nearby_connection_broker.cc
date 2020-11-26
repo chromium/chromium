@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 
 namespace chromeos {
 namespace secure_channel {
@@ -22,19 +24,17 @@ NearbyConnectionBroker::NearbyConnectionBroker(
       on_connected_callback_(std::move(on_connected_callback)),
       on_disconnected_callback_(std::move(on_disconnected_callback)) {
   message_sender_receiver_.set_disconnect_handler(base::BindOnce(
-      &NearbyConnectionBroker::Disconnect, base::Unretained(this)));
+      &NearbyConnectionBroker::OnMojoDisconnection, base::Unretained(this)));
   message_receiver_remote_.set_disconnect_handler(base::BindOnce(
-      &NearbyConnectionBroker::Disconnect, base::Unretained(this)));
+      &NearbyConnectionBroker::OnMojoDisconnection, base::Unretained(this)));
 }
 
 NearbyConnectionBroker::~NearbyConnectionBroker() = default;
 
-void NearbyConnectionBroker::Disconnect() {
+void NearbyConnectionBroker::InvokeDisconnectedCallback() {
   message_sender_receiver_.reset();
   message_receiver_remote_.reset();
-
-  if (on_disconnected_callback_)
-    std::move(on_disconnected_callback_).Run();
+  std::move(on_disconnected_callback_).Run();
 }
 
 void NearbyConnectionBroker::NotifyConnected() {

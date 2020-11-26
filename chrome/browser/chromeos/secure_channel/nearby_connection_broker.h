@@ -42,7 +42,11 @@ class NearbyConnectionBroker : public mojom::NearbyMessageSender {
     return bluetooth_public_address_;
   }
 
-  void Disconnect();
+  // Can be overridden by derived classes to handle MessageSender and
+  // MessageReceiver Mojo pipes being disconnected.
+  virtual void OnMojoDisconnection() {}
+
+  void InvokeDisconnectedCallback();
   void NotifyConnected();
   void NotifyMessageReceived(const std::string& received_message);
 

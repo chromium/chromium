@@ -63,7 +63,8 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
           location::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
       base::OnceClosure on_connected_callback,
-      base::OnceClosure on_disconnected_callback) override {
+      base::OnceClosure on_disconnected_callback,
+      std::unique_ptr<base::OneShotTimer> timer) override {
     auto instance = std::make_unique<FakeNearbyConnectionBroker>(
         bluetooth_public_address, std::move(message_sender_receiver),
         std::move(message_receiver_remote), std::move(on_connected_callback),
@@ -204,7 +205,7 @@ TEST_F(NearbyConnectorImplTest, ConnectAndTransferMessages) {
   // Disconnect.
   base::RunLoop disconnect_run_loop;
   receiver.SetMojoDisconnectHandler(disconnect_run_loop.QuitClosure());
-  broker->Disconnect();
+  broker->InvokeDisconnectedCallback();
   disconnect_run_loop.Run();
   EXPECT_EQ(0u, fake_nearby_process_manager_.GetNumActiveReferences());
 }
@@ -246,14 +247,14 @@ TEST_F(NearbyConnectorImplTest, TwoConnections) {
   // there is still an active connection.
   base::RunLoop disconnect_run_loop1;
   receiver1.SetMojoDisconnectHandler(disconnect_run_loop1.QuitClosure());
-  broker1->Disconnect();
+  broker1->InvokeDisconnectedCallback();
   disconnect_run_loop1.Run();
   EXPECT_EQ(1u, fake_nearby_process_manager_.GetNumActiveReferences());
 
   // Disconnect connection 2. The process reference should have been released.
   base::RunLoop disconnect_run_loop2;
   receiver2.SetMojoDisconnectHandler(disconnect_run_loop2.QuitClosure());
-  broker2->Disconnect();
+  broker2->InvokeDisconnectedCallback();
   disconnect_run_loop2.Run();
   EXPECT_EQ(0u, fake_nearby_process_manager_.GetNumActiveReferences());
 }
@@ -271,7 +272,7 @@ TEST_F(NearbyConnectorImplTest, FailToConnect) {
   on_connect_ = connect_run_loop.QuitClosure();
   base::RunLoop disconnect_run_loop;
   receiver.SetMojoDisconnectHandler(disconnect_run_loop.QuitClosure());
-  broker->Disconnect();
+  broker->InvokeDisconnectedCallback();
   connect_run_loop.Run();
   disconnect_run_loop.Run();
 
