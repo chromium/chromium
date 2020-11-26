@@ -138,12 +138,11 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
   void SetUp() override {
     ui::InitializeInputMethodForTesting();
 
-    std::vector<ComponentExtensionIME> ime_list;
-    InitImeList(ime_list);
+    InitImeList();
 
     auto mock_delegate =
         std::make_unique<MockComponentExtensionIMEManagerDelegate>();
-    mock_delegate->set_ime_list(ime_list);
+    mock_delegate->set_ime_list(ime_list_);
 
     manager_ = std::make_unique<InputMethodManagerImpl>(
         std::make_unique<FakeInputMethodDelegate>(), std::move(mock_delegate),
@@ -192,9 +191,8 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     manager_.reset();
   }
 
- private:
-  static void InitImeList(std::vector<ComponentExtensionIME>& ime_list) {
-    ime_list.clear();
+  void InitImeList() {
+    ime_list_.clear();
 
     ComponentExtensionIME ext_xkb;
     ext_xkb.id = extension_ime_util::kXkbExtensionId;
@@ -292,7 +290,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext_xkb_engine_hu.layouts.emplace_back("hu");
     ext_xkb.engines.push_back(ext_xkb_engine_hu);
 
-    ime_list.push_back(ext_xkb);
+    ime_list_.push_back(ext_xkb);
 
     ComponentExtensionIME ext1;
     ext1.id = extension_ime_util::kMozcExtensionId;
@@ -313,7 +311,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext1_engine2.layouts.emplace_back("jp");
     ext1.engines.push_back(ext1_engine2);
 
-    ime_list.push_back(ext1);
+    ime_list_.push_back(ext1);
 
     ComponentExtensionIME ext2;
     ext2.id = extension_ime_util::kT13nExtensionId;
@@ -334,7 +332,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext2_engine2.layouts.emplace_back("us(dvorak)");
     ext2.engines.push_back(ext2_engine2);
 
-    ime_list.push_back(ext2);
+    ime_list_.push_back(ext2);
   }
 
  protected:
@@ -344,6 +342,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
   MockCandidateWindowController* candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
   FakeImeKeyboard* keyboard_ = nullptr;
+  std::vector<ComponentExtensionIME> ime_list_;
   ui::ime::InputMethodMenuManager* menu_manager_;
 
  private:
@@ -1182,7 +1181,8 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
 
 TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionOneIME) {
   const std::string ext_id = extension_ime_util::GetComponentInputMethodID(
-      extension_ime_util::kMozcExtensionId, "nacl_mozc_us");
+      ime_list_[1].id,
+      ime_list_[1].engines[0].engine_id);
   std::vector<std::string> ids;
   ids.push_back(ext_id);
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
@@ -1193,9 +1193,11 @@ TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionOneIME) {
 
 TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionTwoIME) {
   const std::string ext_id1 = extension_ime_util::GetComponentInputMethodID(
-      extension_ime_util::kMozcExtensionId, "nacl_mozc_us");
+      ime_list_[1].id,
+      ime_list_[1].engines[0].engine_id);
   const std::string ext_id2 = extension_ime_util::GetComponentInputMethodID(
-      extension_ime_util::kT13nExtensionId, kExt2Engine1Id);
+      ime_list_[2].id,
+      ime_list_[2].engines[0].engine_id);
   std::vector<std::string> ids;
   ids.push_back(ext_id1);
   ids.push_back(ext_id2);
