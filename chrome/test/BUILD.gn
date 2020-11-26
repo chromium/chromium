@@ -6474,37 +6474,6 @@ if (!is_android) {
       "ppapi/ppapi_interactive_browsertest.cc",
     ]
 
-    if (is_mac) {
-      sources += [
-        "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
-        "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
-        "../browser/global_keyboard_shortcuts_mac_browsertest.mm",
-        "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
-        "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
-        "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
-        "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
-        "base/interactive_test_utils_mac.mm",
-      ]
-    }
-
-    if (is_win) {
-      sources += [
-        "../browser/ui/send_mouse_move_uitest_win.cc",
-        "../browser/ui/views/accessibility/navigation_accessibility_uitest_win.cc",
-        "base/always_on_top_window_killer_win.cc",
-        "base/always_on_top_window_killer_win.h",
-        "base/interactive_test_utils_win.cc",
-        "base/save_desktop_snapshot_win.cc",
-        "base/save_desktop_snapshot_win.h",
-        "base/window_contents_as_string_win.cc",
-        "base/window_contents_as_string_win.h",
-      ]
-
-      if (use_aura) {
-        sources += [ "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc" ]
-      }
-    }
-
     configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
@@ -6695,11 +6664,6 @@ if (!is_android) {
       }
     }
 
-    if (is_mac) {
-      sources +=
-          [ "../browser/notifications/notification_interactive_uitest_mac.mm" ]
-    }
-
     if (is_chromeos_ash) {
       deps += [
         "//chrome/browser/media/router:test_support",
@@ -6726,10 +6690,24 @@ if (!is_android) {
         "../browser/notifications/notification_platform_bridge_win_interactive_uitest.cc",
         "../browser/notifications/win/fake_itoastnotifier.cc",
         "../browser/notifications/win/fake_itoastnotifier.h",
+        "../browser/ui/send_mouse_move_uitest_win.cc",
+        "../browser/ui/views/accessibility/navigation_accessibility_uitest_win.cc",
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
+        "base/always_on_top_window_killer_win.cc",
+        "base/always_on_top_window_killer_win.h",
+        "base/interactive_test_utils_win.cc",
+        "base/save_desktop_snapshot_win.cc",
+        "base/save_desktop_snapshot_win.h",
+        "base/window_contents_as_string_win.cc",
+        "base/window_contents_as_string_win.h",
       ]
+
+      if (use_aura) {
+        sources += [ "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc" ]
+      }
+
       deps += [
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
@@ -6750,7 +6728,18 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      sources += [ "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm" ]
+      sources += [
+        "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
+        "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
+        "../browser/global_keyboard_shortcuts_mac_browsertest.mm",
+        "../browser/notifications/notification_interactive_uitest_mac.mm",
+        "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
+        "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
+        "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
+        "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
+        "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
+        "base/interactive_test_utils_mac.mm",
+      ]
 
       sources -= [
         # TODO(crbug.com/1026820): Re-enable this test when history backend failures are addressed.
