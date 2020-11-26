@@ -46381,6 +46381,11 @@ from previous Chrome versions.
   <int value="9" label="EXECUTION_ERROR"/>
 </enum>
 
+<enum name="MachineLearningServiceGrammarCheckResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="ERROR"/>
+</enum>
+
 <enum name="MachineLearningServiceLoadHandwritingModelResultEvent">
   <int value="0" label="OK"/>
   <int value="1" label="DEPRECATED_MODEL_SPEC_ERROR"/>
