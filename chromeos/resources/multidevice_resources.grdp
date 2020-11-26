@@ -29,33 +29,23 @@
   <!-- Resources for ProximityAuth debug page. -->
   <include name="IDR_MULTIDEVICE_INDEX_HTML"
       file="../components/multidevice/debug_webui/resources/index.html"
-      flattenhtml="true"
-      allowexternalscript="true"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_COMMON_CSS"
       file="../components/multidevice/debug_webui/resources/common.css"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_LOGS_JS"
       file="../components/multidevice/debug_webui/resources/logs.js"
-      flattenhtml="true"
-      allowexternalscript="true"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_WEBUI_JS"
       file="../components/multidevice/debug_webui/resources/webui.js"
-      flattenhtml="true"
-      allowexternalscript="true"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_HTML"
       file="../components/multidevice/debug_webui/resources/proximity_auth.html"
-      flattenhtml="true"
-      allowexternalscript="true"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_CSS"
       file="../components/multidevice/debug_webui/resources/proximity_auth.css"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_JS"
       file="../components/multidevice/debug_webui/resources/proximity_auth.js"
-      flattenhtml="true"
-      allowexternalscript="true"
       type="BINDATA" />
 </grit-part>

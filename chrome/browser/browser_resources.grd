@@ -258,7 +258,7 @@
         <include name="IDR_ACCOUNT_MANAGER_SHARED_CSS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_shared_css.js" use_base_dir="false" type ="BINDATA" />
         <include name="IDR_ACCOUNT_MANAGER_WELCOME_HTML" file="resources\chromeos\account_manager\account_manager_welcome.html" allowexternalscript="true" type="BINDATA" preprocess="true"/>
         <include name="IDR_ACCOUNT_MANAGER_WELCOME_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_welcome_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
-        <include name="IDR_ACCOUNT_MIGRATION_WELCOME_HTML" file="resources\chromeos\account_manager\account_migration_welcome.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_ACCOUNT_MIGRATION_WELCOME_HTML" file="resources\chromeos\account_manager\account_migration_welcome.html" type="BINDATA" />
         <include name="IDR_ACCOUNT_MIGRATION_WELCOME_APP_JS"  file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_migration_welcome_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
         <include name="IDR_ACCOUNT_MANAGER_BROWSER_PROXY_JS" file="resources\chromeos\account_manager\account_manager_browser_proxy.js" type="BINDATA" />
         <include name="IDR_ACCOUNT_MANAGER_ERROR_HTML" file="resources\chromeos\account_manager\account_manager_error.html" allowexternalscript="true" type="BINDATA" preprocess="true"/>
@@ -271,13 +271,13 @@
 
         <include name="IDR_GAIA_ACTION_BUTTONS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\gaia_action_buttons\gaia_action_buttons.js" use_base_dir="false" type ="BINDATA" />
 
-        <include name="IDR_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\password_change.html" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\password_change.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_CSS" file="resources\chromeos\password_change\password_change.css" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\password_change.html" type="BINDATA" />
+        <include name="IDR_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\password_change.js" type="BINDATA" />
+        <include name="IDR_PASSWORD_CHANGE_CSS" file="resources\chromeos\password_change\password_change.css" type="BINDATA" />
         <include name="IDR_PASSWORD_CHANGE_AUTHENTICATOR_JS" file="resources\gaia_auth_host\password_change_authenticator.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_CONFIRM_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\confirm_password_change.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
+        <include name="IDR_CONFIRM_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\confirm_password_change.html" type="chrome_html" />
         <include name="IDR_CONFIRM_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\confirm_password_change.js" type="chrome_html" />
-        <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML" file="resources\chromeos\password_change\urgent_password_expiry_notification.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
+        <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML" file="resources\chromeos\password_change\urgent_password_expiry_notification.html" type="chrome_html" />
         <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_JS" file="resources\chromeos\password_change\urgent_password_expiry_notification.js" type="chrome_html" />
         <include name="IDR_GAIA_AUTH_AUTHENTICATOR_JS" file="resources\gaia_auth_host\authenticator.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_LOCK_SCREEN_REAUTH_HTML" file="resources\chromeos\password_change\lock_screen_reauth.html" flattenhtml="true" type="BINDATA" />
@@ -292,7 +292,7 @@
         <include name="IDR_CROSTINI_UPGRADER_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\crostini_upgrader\app.js" type="BINDATA" use_base_dir="false" />
         <include name="IDR_CROSTINI_UPGRADER_BROWSER_PROXY_JS" file="resources\chromeos\crostini_upgrader\browser_proxy.js" type="BINDATA" />
         <include name="IDR_CROSTINI_UPGRADER_MOJO_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\crostini_upgrader\crostini_upgrader.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_CRYPTOHOME_HTML" file="resources\chromeos\cryptohome.html" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_CRYPTOHOME_HTML" file="resources\chromeos\cryptohome.html" type="BINDATA" />
         <include name="IDR_CRYPTOHOME_JS" file="resources\chromeos\cryptohome.js" type="BINDATA" />
         <!-- manifest file of Connectivity Diagnostics app -->
         <include name="IDR_CONNECTIVITY_DIAGNOSTICS_MANIFEST" file="resources\chromeos\connectivity_diagnostics\manifest.json" type="BINDATA" />
@@ -453,9 +453,9 @@
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />
       </if>
       <if expr="chromeos">
-        <include name="IDR_SMB_SHARES_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_share_dialog_container.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
+        <include name="IDR_SMB_SHARES_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_share_dialog_container.html" type="chrome_html" />
         <include name="IDR_SMB_SHARES_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\smb_shares\smb_share_dialog.js" use_base_dir="false" type="chrome_html" />
-        <include name="IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_credentials_dialog_container.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
+        <include name="IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_credentials_dialog_container.html" type="chrome_html" />
         <include name="IDR_SMB_CREDENTIALS_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\smb_shares\smb_credentials_dialog.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_HTML" file="resources\chromeos\sys_internals\index.html" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_CSS" file="resources\chromeos\sys_internals\index.css" type="BINDATA" />
@@ -517,7 +517,7 @@
       <if expr="chromeos">
         <include name="IDR_MACHINE_LEARNING_INTERNALS_GRAPH_EXECUTOR_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\graph_executor.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_HANDWRITING_RECOGNIZER_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\handwriting_recognizer.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MACHINE_LEARNING_INTERNALS_HTML" file="resources\chromeos\machine_learning\machine_learning_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_MACHINE_LEARNING_INTERNALS_HTML" file="resources\chromeos\machine_learning\machine_learning_internals.html" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_JS" file="resources\chromeos\machine_learning\machine_learning_internals.js" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_MACHINE_LEARNING_SERVICE_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\machine_learning_service.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_MODEL_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\model.mojom-lite.js" use_base_dir="false" type="BINDATA" />
