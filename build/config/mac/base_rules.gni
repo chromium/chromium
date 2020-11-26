@@ -24,7 +24,7 @@ if (is_mac) {
 #     string, path to the converted plist, must be under $root_build_dir
 #
 #   format:
-#     string, the format to `plutil -convert` the plist to.
+#     string, the format to convert the plist to. Either "binary1" or "xml1".
 template("convert_plist") {
   assert(defined(invoker.source), "source must be defined for $target_name")
   assert(defined(invoker.output), "output must be defined for $target_name")
@@ -38,17 +38,12 @@ template("convert_plist") {
                              "deps",
                            ])
 
-    script = "//build/gn_run_binary.py"
+    script = "//build/config/mac/plist_util.py"
     sources = [ invoker.source ]
     outputs = [ invoker.output ]
-
-    # /usr/bin/plutil is present on all images of macOS. If at some point in the
-    # future we need to ship our own copy [e.g. for cross-compile], we can add a
-    # layer of indirection.
     args = [
-      "/usr/bin/plutil",
-      "-convert",
-      invoker.format,
+      "merge",
+      "--format=${invoker.format}",
       "-o",
       rebase_path(invoker.output, root_build_dir),
       rebase_path(invoker.source, root_build_dir),
