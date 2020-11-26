@@ -89,9 +89,11 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     @Override
     public void addAccount() {
         AccountPickerDelegate.recordAccountConsistencyPromoAction(
-                AccountConsistencyPromoAction.ADD_ACCOUNT);
+                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
         mAccountPickerDelegate.addAccount(accountName -> {
             mAddedAccountName = accountName;
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
             onAccountSelected(accountName, false);
         });
     }

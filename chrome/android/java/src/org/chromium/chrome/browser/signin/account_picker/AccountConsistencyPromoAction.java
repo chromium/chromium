@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({
         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
         AccountConsistencyPromoAction.DISMISSED_BACK,
-        AccountConsistencyPromoAction.ADD_ACCOUNT,
+        AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED,
         AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION,
         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
         AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
         AccountConsistencyPromoAction.DISMISSED_BUTTON,
+        AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -48,7 +49,7 @@ public @interface AccountConsistencyPromoAction {
     /**
      * User has tapped |Add account to device| from expanded account list.
      */
-    int ADD_ACCOUNT = 2;
+    int ADD_ACCOUNT_STARTED = 2;
 
     /**
      * User tapped the button from the expanded account list to open the incognito interstitial
@@ -115,5 +116,10 @@ public @interface AccountConsistencyPromoAction {
      */
     int DISMISSED_BUTTON = 14;
 
-    int MAX = 15;
+    /**
+     * User has completed the account addition flow triggered from the bottom sheet.
+     */
+    int ADD_ACCOUNT_COMPLETED = 15;
+
+    int MAX = 16;
 }

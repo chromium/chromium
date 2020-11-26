@@ -369,8 +369,9 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSigninWithAddedAccount() {
-        MetricsUtils.HistogramDelta addAccountHistogram = new HistogramDelta(
-                "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.ADD_ACCOUNT);
+        MetricsUtils.HistogramDelta addAccountHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
         MetricsUtils.HistogramDelta signedInWithAddedAccountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
@@ -509,8 +510,12 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testAddAccountOnExpandedSheet() {
-        MetricsUtils.HistogramDelta accountConsistencyHistogram = new HistogramDelta(
-                "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.ADD_ACCOUNT);
+        MetricsUtils.HistogramDelta addAccountStartedHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
+        MetricsUtils.HistogramDelta addAccountCompletedHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
         buildAndShowExpandedBottomSheet();
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
         verify(mAccountPickerDelegateMock).addAccount(callbackArgumentCaptor.capture());
@@ -521,7 +526,8 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> callback.onResult(profileDataAdded.getAccountName()));
         checkCollapsedAccountList(profileDataAdded);
-        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
+        Assert.assertEquals(1, addAccountStartedHistogram.getDelta());
+        Assert.assertEquals(1, addAccountCompletedHistogram.getDelta());
     }
 
     @Test
