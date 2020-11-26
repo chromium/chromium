@@ -451,10 +451,14 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
   }
 
   for (ServerFieldType type : types) {
-    if (GetVerificationStatus(type) < profile.GetVerificationStatus(type))
+    if (structured_address::IsLessSignificantVerificationStatus(
+            GetVerificationStatus(type), profile.GetVerificationStatus(type))) {
       return -1;
-    if (GetVerificationStatus(type) > profile.GetVerificationStatus(type))
+    }
+    if (structured_address::IsLessSignificantVerificationStatus(
+            profile.GetVerificationStatus(type), GetVerificationStatus(type))) {
       return 1;
+    }
   }
 
   // TODO(crbug.com/1130194): Remove feature check once structured addresses are
@@ -475,11 +479,17 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
         return comparison;
     }
 
-    for (ServerFieldType type : new_types) {
-      if (GetVerificationStatus(type) < profile.GetVerificationStatus(type))
+    for (ServerFieldType type : types) {
+      if (structured_address::IsLessSignificantVerificationStatus(
+              GetVerificationStatus(type),
+              profile.GetVerificationStatus(type))) {
         return -1;
-      if (GetVerificationStatus(type) > profile.GetVerificationStatus(type))
+      }
+      if (structured_address::IsLessSignificantVerificationStatus(
+              profile.GetVerificationStatus(type),
+              GetVerificationStatus(type))) {
         return 1;
+      }
     }
   }
 

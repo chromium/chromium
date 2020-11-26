@@ -37,7 +37,14 @@ enum class VerificationStatus {
   kObserved = 3,
   // The user used the autofill settings to verify and store this token.
   kUserVerified = 4,
+  // The token was parsed by the server.
+  kServerParsed = 5,
 };
+
+// Returns true if |left| has a less significant verification status compared to
+// |right|.
+bool IsLessSignificantVerificationStatus(VerificationStatus left,
+                                         VerificationStatus right);
 
 // The merge mode defines if and how two components are merged.
 enum MergeMode {
