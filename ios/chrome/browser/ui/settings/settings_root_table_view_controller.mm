@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -124,9 +123,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     self.styler.tableViewBackgroundColor =
         UIColor.cr_systemGroupedBackgroundColor;
   [super viewDidLoad];
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  }
   self.styler.cellBackgroundColor =
       UIColor.cr_secondarySystemGroupedBackgroundColor;
   self.styler.cellTitleColor = UIColor.cr_labelColor;
@@ -205,18 +201,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   if ([self.tableViewModel footerForSection:section])
     return UITableViewAutomaticDimension;
   return kDefaultHeaderFooterHeight;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    item.useCustomSeparator = YES;
-  }
-
-  return [super tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
