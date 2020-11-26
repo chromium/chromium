@@ -114,6 +114,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
     _metricsRecorder =
         [[InfobarMetricsRecorder alloc] initWithType:infobarType];
     _presentsModal = presentsModal;
+    _useIconBackgroundTint = YES;
   }
   return self;
 }
@@ -147,6 +148,12 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   // Icon setup.
   UIView* iconContainerView = nil;
   if (self.iconImage) {
+    // If the icon image requires a background tint, ignore the original color
+    // information and draw the image as a template image.
+    if (self.useIconBackgroundTint) {
+      self.iconImage = [self.iconImage
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     UIImageView* iconImageView =
         [[UIImageView alloc] initWithImage:self.iconImage];
     iconImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -155,15 +162,10 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
     UIView* backgroundIconView =
         [[UIView alloc] initWithFrame:iconImageView.frame];
     backgroundIconView.layer.cornerRadius = kIconCornerRadius;
-    backgroundIconView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    // If the icon image requires a background tint, ignore the original color
-    // information and draw the image as a template image.
     if (self.useIconBackgroundTint) {
-      self.iconImage = [self.iconImage
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       backgroundIconView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
     }
+    backgroundIconView.translatesAutoresizingMaskIntoConstraints = NO;
 
     iconContainerView = [[UIView alloc] init];
     [iconContainerView addSubview:backgroundIconView];
