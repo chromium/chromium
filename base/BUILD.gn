@@ -3471,6 +3471,15 @@ test("base_unittests") {
     "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:noshadowing",
   ]
+
+  if (current_cpu == "arm64" &&
+      (is_linux || is_chromeos || is_android || is_fuchsia)) {
+    # base/ has access to the MTE intrinsics because it needs to use them,
+    # but they're not backwards compatible. Use base::CPU::has_mte()
+    # beforehand to confirm or use indirect functions (ifuncs) to select
+    # an MTE-specific implementation via at dynamic link-time.
+    cflags = [ "-march=armv8-a+memtag" ]
+  }
 }
 
 action("build_date") {
