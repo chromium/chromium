@@ -44,11 +44,11 @@ bool NGOutlineUtils::ShouldPaintOutline(
   // fragment. To do this, return |true| if |this| is the first inline fragment
   // of a block fragment.
   while (true) {
-    wtf_size_t fragment_index = cursor.CurrentContainerFragmentIndex();
+    wtf_size_t fragment_index = cursor.ContainerFragmentIndex();
     cursor.MoveToNextForSameLayoutObject();
     DCHECK(cursor);
     if (cursor.Current().BoxFragment() == &physical_fragment)
-      return fragment_index != cursor.CurrentContainerFragmentIndex();
+      return fragment_index != cursor.ContainerFragmentIndex();
   }
 }
 

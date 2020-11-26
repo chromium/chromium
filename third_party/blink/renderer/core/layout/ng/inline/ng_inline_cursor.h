@@ -123,8 +123,8 @@ class CORE_EXPORT NGInlineCursorPosition {
   const NGInlineBreakToken* InlineBreakToken() const;
 
   // The offset relative to the root of the inline formatting context.
-  const PhysicalRect RectInContainerBlock() const;
-  const PhysicalOffset OffsetInContainerBlock() const;
+  const PhysicalRect RectInContainerFragment() const;
+  const PhysicalOffset OffsetInContainerFragment() const;
   const PhysicalSize Size() const;
 
   // InkOverflow of itself, including contents if they contribute to the ink
@@ -246,18 +246,18 @@ class CORE_EXPORT NGInlineCursor {
   }
 
   // Returns the |NGPhysicalBoxFragment| that owns |Items|.
-  const NGPhysicalBoxFragment& BoxFragment() const {
+  const NGPhysicalBoxFragment& ContainerFragment() const {
     DCHECK(root_box_fragment_);
     return *root_box_fragment_;
   }
 
+  // Return the index of the current physical box fragment of the containing
+  // block. An inline formatting context may be block fragmented.
+  wtf_size_t ContainerFragmentIndex() const { return fragment_index_; }
+
   // Returns the |LayoutBlockFlow| containing this cursor.
   // When |this| is a column box, returns the multicol container.
   const LayoutBlockFlow* GetLayoutBlockFlow() const;
-
-  // Return the index of the current physical box fragment of the containing
-  // block. An inline formatting context may be block fragmented.
-  wtf_size_t CurrentContainerFragmentIndex() const { return fragment_index_; }
 
   //
   // Functions to query the current position.
@@ -320,8 +320,8 @@ class CORE_EXPORT NGInlineCursor {
   // first column, and the last three lines will end up in the second column. So
   // we get two box fragments generated for #container - one for each column.
   //
-  // The offsets returned from these methods will be (OffsetInContainerBlock()
-  // values in parentheses):
+  // The offsets returned from these methods will be
+  // (OffsetInContainerFragment() values in parentheses):
   //
   // line1: 0,0   (0,0)
   // line2: 0,20  (0,20)
@@ -334,8 +334,8 @@ class CORE_EXPORT NGInlineCursor {
   // engine to calculate offsets relatively to some ancestor.
   PhysicalRect CurrentRectInBlockFlow() const;
   PhysicalOffset CurrentOffsetInBlockFlow() const {
-    DCHECK_EQ(Current().OffsetInContainerBlock(),
-              Current().RectInContainerBlock().offset);
+    DCHECK_EQ(Current().OffsetInContainerFragment(),
+              Current().RectInContainerFragment().offset);
     return CurrentRectInBlockFlow().offset;
   }
 

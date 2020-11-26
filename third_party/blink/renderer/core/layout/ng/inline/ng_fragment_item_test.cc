@@ -175,14 +175,14 @@ TEST_F(NGFragmentItemTest, BasicText) {
   const NGFragmentItem& text1 = *items_for_text[0];
   EXPECT_EQ(text1.Type(), NGFragmentItem::kText);
   EXPECT_EQ(text1.GetLayoutObject(), layout_text);
-  EXPECT_EQ(text1.OffsetInContainerBlock(), PhysicalOffset());
+  EXPECT_EQ(text1.OffsetInContainerFragment(), PhysicalOffset());
   EXPECT_TRUE(text1.IsFirstForNode());
   EXPECT_FALSE(text1.IsLastForNode());
 
   const NGFragmentItem& text2 = *items_for_text[1];
   EXPECT_EQ(text2.Type(), NGFragmentItem::kText);
   EXPECT_EQ(text2.GetLayoutObject(), layout_text);
-  EXPECT_EQ(text2.OffsetInContainerBlock(), PhysicalOffset(0, 10));
+  EXPECT_EQ(text2.OffsetInContainerFragment(), PhysicalOffset(0, 10));
   EXPECT_FALSE(text2.IsFirstForNode());
   EXPECT_TRUE(text2.IsLastForNode());
 }
@@ -282,12 +282,12 @@ TEST_F(NGFragmentItemTest, BasicInlineBox) {
   EXPECT_TRUE(items_for_span1[0]->IsFirstForNode());
   EXPECT_FALSE(items_for_span1[0]->IsLastForNode());
   EXPECT_EQ(PhysicalOffset(40, 0),
-            items_for_span1[0]->OffsetInContainerBlock());
+            items_for_span1[0]->OffsetInContainerFragment());
   EXPECT_EQ(PhysicalRect(0, 0, 40, 10), items_for_span1[0]->InkOverflow());
   EXPECT_FALSE(items_for_span1[1]->IsFirstForNode());
   EXPECT_TRUE(items_for_span1[1]->IsLastForNode());
   EXPECT_EQ(PhysicalOffset(0, 10),
-            items_for_span1[1]->OffsetInContainerBlock());
+            items_for_span1[1]->OffsetInContainerFragment());
   EXPECT_EQ(PhysicalRect(0, 0, 40, 10), items_for_span1[1]->InkOverflow());
 
   // "span2" doesn't wrap, produces only one fragment.
@@ -298,7 +298,7 @@ TEST_F(NGFragmentItemTest, BasicInlineBox) {
   EXPECT_TRUE(items_for_span2[0]->IsFirstForNode());
   EXPECT_TRUE(items_for_span2[0]->IsLastForNode());
   EXPECT_EQ(PhysicalOffset(0, 20),
-            items_for_span2[0]->OffsetInContainerBlock());
+            items_for_span2[0]->OffsetInContainerFragment());
   EXPECT_EQ(PhysicalRect(0, 0, 80, 10), items_for_span2[0]->InkOverflow());
 }
 

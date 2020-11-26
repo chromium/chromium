@@ -1423,7 +1423,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
         continue;
       if (auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
         PhysicalOffset maybe_flipped_offset =
-            cursor.Current().OffsetInContainerBlock();
+            cursor.Current().OffsetInContainerFragment();
         if (initial_container_is_flipped) {
           maybe_flipped_offset.left = container.Size().width -
                                       child->Size().width -

@@ -433,7 +433,8 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
         // Compute rect of the legacy text box.
         LayoutRect rect =
             cursor.CurrentLocalRect(clamped_start, clamped_end).ToLayoutRect();
-        rect.MoveBy(cursor.Current().OffsetInContainerBlock().ToLayoutPoint());
+        rect.MoveBy(
+            cursor.Current().OffsetInContainerFragment().ToLayoutPoint());
 
         // Compute start of the legacy text box.
         if (unit.AssociatedNode()) {
@@ -570,7 +571,7 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
         if (cursor.Current().IsHiddenForPaint())
           continue;
       }
-      yield(cursor.Current().RectInContainerBlock());
+      yield(cursor.Current().RectInContainerFragment());
     }
     return;
   }
@@ -869,7 +870,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
     NGInlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      if (!EnclosingIntRect(cursor.Current().RectInContainerBlock())
+      if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
                .Contains(FlooredIntPoint(point)))
         continue;
       if (auto position_with_affinity = cursor.PositionForPointInChild(point)) {
@@ -1727,7 +1728,7 @@ PhysicalOffset LayoutText::FirstLineBoxTopLeft() const {
       return PhysicalOffset();
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
-    return cursor ? cursor.Current().OffsetInContainerBlock()
+    return cursor ? cursor.Current().OffsetInContainerFragment()
                   : PhysicalOffset();
   }
   if (const auto* text_box = FirstTextBox()) {
@@ -1750,10 +1751,11 @@ void LayoutText::LogicalStartingPointAndHeight(
     cursor.MoveTo(*this);
     if (!cursor)
       return;
-    PhysicalOffset physical_offset = cursor.Current().OffsetInContainerBlock();
+    PhysicalOffset physical_offset =
+        cursor.Current().OffsetInContainerFragment();
     if (StyleRef().GetWritingDirection().IsHorizontalLtr()) {
       cursor.MoveToLastForSameLayoutObject();
-      logical_height = cursor.Current().RectInContainerBlock().Bottom() -
+      logical_height = cursor.Current().RectInContainerFragment().Bottom() -
                        physical_offset.top;
       logical_starting_point = {physical_offset.left, physical_offset.top};
       return;
@@ -1762,7 +1764,8 @@ void LayoutText::LogicalStartingPointAndHeight(
     logical_starting_point = physical_offset.ConvertToLogical(
         StyleRef().GetWritingDirection(), outer_size, cursor.Current().Size());
     cursor.MoveToLastForSameLayoutObject();
-    PhysicalRect last_physical_rect = cursor.Current().RectInContainerBlock();
+    PhysicalRect last_physical_rect =
+        cursor.Current().RectInContainerFragment();
     LogicalOffset logical_ending_point =
         WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
             .ToLogical(last_physical_rect)
@@ -2330,7 +2333,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (status.start == status.end)
         continue;
       PhysicalRect item_rect = ComputeLocalSelectionRectForText(cursor, status);
-      item_rect.offset += cursor.Current().OffsetInContainerBlock();
+      item_rect.offset += cursor.Current().OffsetInContainerFragment();
       rect.Unite(item_rect);
     }
     return rect;

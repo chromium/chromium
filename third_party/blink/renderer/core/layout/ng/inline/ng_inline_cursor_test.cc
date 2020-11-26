@@ -769,12 +769,12 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalLTR) {
   const auto& text = *To<Text>(GetElementById("root")->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(10, 10), PhysicalSize(20, 20)),
-            cursor.Current().RectInContainerBlock());
+            cursor.Current().RectInContainerFragment());
 
   cursor.MoveTo(*text.GetLayoutObject());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(10, 15), PhysicalSize(20, 10)),
-            cursor.Current().RectInContainerBlock());
-  const PhysicalOffset left_top = cursor.Current().OffsetInContainerBlock();
+            cursor.Current().RectInContainerFragment());
+  const PhysicalOffset left_top = cursor.Current().OffsetInContainerFragment();
 
   EXPECT_EQ(PositionWithAffinity(Position(text, 0)),
             cursor.PositionForPointInChild(left_top + PhysicalOffset(-5, 0)));
@@ -806,12 +806,12 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildHorizontalRTL) {
       *To<Text>(GetElementById("root")->firstChild()->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(754, 10), PhysicalSize(20, 20)),
-            cursor.Current().RectInContainerBlock());
+            cursor.Current().RectInContainerFragment());
 
   cursor.MoveTo(*text.GetLayoutObject());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(754, 15), PhysicalSize(20, 10)),
-            cursor.Current().RectInContainerBlock());
-  const PhysicalOffset left_top = cursor.Current().OffsetInContainerBlock();
+            cursor.Current().RectInContainerFragment());
+  const PhysicalOffset left_top = cursor.Current().OffsetInContainerFragment();
 
   EXPECT_EQ(PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
             cursor.PositionForPointInChild(left_top + PhysicalOffset(-5, 0)));
@@ -842,12 +842,12 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalLTR) {
   const auto& text = *To<Text>(GetElementById("root")->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(10, 10), PhysicalSize(20, 20)),
-            cursor.Current().RectInContainerBlock());
+            cursor.Current().RectInContainerFragment());
 
   cursor.MoveTo(*text.GetLayoutObject());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(15, 10), PhysicalSize(10, 20)),
-            cursor.Current().RectInContainerBlock());
-  const PhysicalOffset left_top = cursor.Current().OffsetInContainerBlock();
+            cursor.Current().RectInContainerFragment());
+  const PhysicalOffset left_top = cursor.Current().OffsetInContainerFragment();
 
   EXPECT_EQ(PositionWithAffinity(Position(text, 0)),
             cursor.PositionForPointInChild(left_top + PhysicalOffset(0, -5)));
@@ -879,12 +879,12 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildVerticalRTL) {
       *To<Text>(GetElementById("root")->firstChild()->firstChild());
   ASSERT_TRUE(cursor.Current().IsLineBox());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(10, 10), PhysicalSize(20, 20)),
-            cursor.Current().RectInContainerBlock());
+            cursor.Current().RectInContainerFragment());
 
   cursor.MoveTo(*text.GetLayoutObject());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(15, 10), PhysicalSize(10, 20)),
-            cursor.Current().RectInContainerBlock());
-  const PhysicalOffset left_top = cursor.Current().OffsetInContainerBlock();
+            cursor.Current().RectInContainerFragment());
+  const PhysicalOffset left_top = cursor.Current().OffsetInContainerFragment();
 
   EXPECT_EQ(PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
             cursor.PositionForPointInChild(left_top + PhysicalOffset(0, -5)));

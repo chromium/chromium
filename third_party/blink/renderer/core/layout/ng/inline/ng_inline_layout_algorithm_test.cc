@@ -229,7 +229,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, MAYBE_VerticalAlignBottomReplaced) {
   EXPECT_EQ(LayoutUnit(96), cursor.Current().Size().height);
   cursor.MoveToNext();
   ASSERT_TRUE(cursor);
-  EXPECT_EQ(LayoutUnit(0), cursor.Current().OffsetInContainerBlock().top)
+  EXPECT_EQ(LayoutUnit(0), cursor.Current().OffsetInContainerFragment().top)
       << "Offset top of <img> should be zero.";
 }
 

@@ -117,7 +117,7 @@ void GatherInlineContainerFragmentsFromItems(
     DCHECK(containing_block_geometry.has_value() ||
            !containing_lineboxes.first);
 
-    PhysicalRect fragment_rect = item->RectInContainerBlock();
+    PhysicalRect fragment_rect = item->RectInContainerFragment();
     fragment_rect.offset += box_offset;
     if (containing_lineboxes.first == linebox) {
       // Unite the start rect with the fragment's rect.

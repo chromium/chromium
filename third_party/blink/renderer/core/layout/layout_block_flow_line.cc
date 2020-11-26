@@ -2447,7 +2447,7 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
             continue;
           PhysicalRect child_rect = child->InkOverflow();
           if (!child_rect.IsEmpty()) {
-            child_rect.offset += child->OffsetInContainerBlock();
+            child_rect.offset += child->OffsetInContainerFragment();
             AddContentsVisualOverflow(child_rect);
           }
         }
@@ -2511,7 +2511,7 @@ void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
             continue;
           const NGFragmentItem& child = *cursor.CurrentItem();
           LogicalRect logical_rect =
-              fragment->ConvertChildToLogical(child.RectInContainerBlock());
+              fragment->ConvertChildToLogical(child.RectInContainerFragment());
           logical_rect.size.inline_size += 1;
           AddLayoutOverflow(
               fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());

@@ -160,8 +160,10 @@ class CORE_EXPORT NGFragmentItem {
   }
   void SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const;
 
-  const PhysicalRect& RectInContainerBlock() const { return rect_; }
-  const PhysicalOffset& OffsetInContainerBlock() const { return rect_.offset; }
+  const PhysicalRect& RectInContainerFragment() const { return rect_; }
+  const PhysicalOffset& OffsetInContainerFragment() const {
+    return rect_.offset;
+  }
   const PhysicalSize& Size() const { return rect_.size; }
   PhysicalRect LocalRect() const { return {PhysicalOffset(), Size()}; }
   void SetOffset(const PhysicalOffset& offset) { rect_.offset = offset; }

@@ -492,7 +492,7 @@ LayoutRect LayoutInline::LocalCaretRect(
     cursor.MoveTo(*this);
     if (cursor) {
       caret_rect.MoveBy(
-          cursor.Current().OffsetInContainerBlock().ToLayoutPoint());
+          cursor.Current().OffsetInContainerFragment().ToLayoutPoint());
     }
   }
 
@@ -1126,19 +1126,18 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     // inline may not start in the first fragment generated for the inline
     // formatting context.
     if (target_fragment_idx != -1)
-      target_fragment_idx += cursor.CurrentContainerFragmentIndex();
+      target_fragment_idx += cursor.ContainerFragmentIndex();
 
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (target_fragment_idx != -1 &&
-          wtf_size_t(target_fragment_idx) !=
-              cursor.CurrentContainerFragmentIndex())
+          wtf_size_t(target_fragment_idx) != cursor.ContainerFragmentIndex())
         continue;
       if (const NGPaintFragment* paint_fragment =
               cursor.Current().PaintFragment()) {
         // NGBoxFragmentPainter::NodeAtPoint() takes an offset that is
         // accumulated up to the fragment itself. Compute this offset.
         const PhysicalOffset child_offset =
-            accumulated_offset + paint_fragment->OffsetInContainerBlock();
+            accumulated_offset + paint_fragment->OffsetInContainerFragment();
         if (NGBoxFragmentPainter(*paint_fragment)
                 .NodeAtPoint(result, hit_test_location, child_offset,
                              hit_test_action))
@@ -1152,7 +1151,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
       // NGBoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
       // up to the fragment itself. Compute this offset.
       const PhysicalOffset child_offset =
-          accumulated_offset + item.OffsetInContainerBlock();
+          accumulated_offset + item.OffsetInContainerFragment();
       if (NGBoxFragmentPainter(cursor, item, *box_fragment)
               .NodeAtPoint(result, hit_test_location, child_offset,
                            accumulated_offset, hit_test_action)) {
@@ -1202,7 +1201,7 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     NGInlineCursor cursor(*parent_cursor);
     cursor.MoveToIncludingCulledInline(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
-      yield(cursor.Current().RectInContainerBlock());
+      yield(cursor.Current().RectInContainerFragment());
   } else {
     DCHECK(!ContainingNGBlockFlow());
     CollectCulledLineBoxRects(yield);
@@ -1256,7 +1255,7 @@ PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
     cursor.MoveToIncludingCulledInline(*this);
     PhysicalRect bounding_box;
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
-      bounding_box.UniteIfNonZero(cursor.Current().RectInContainerBlock());
+      bounding_box.UniteIfNonZero(cursor.Current().RectInContainerFragment());
     return bounding_box;
   }
 
@@ -1409,7 +1408,7 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
     cursor.MoveToIncludingCulledInline(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       PhysicalRect child_rect = cursor.Current().InkOverflow();
-      child_rect.offset += cursor.Current().OffsetInContainerBlock();
+      child_rect.offset += cursor.Current().OffsetInContainerFragment();
       result.Unite(child_rect);
     }
     return result;
@@ -1525,7 +1524,7 @@ PhysicalRect LayoutInline::ReferenceBoxForClipPath() const {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor)
-      return cursor.Current().RectInContainerBlock();
+      return cursor.Current().RectInContainerFragment();
   }
   if (const InlineFlowBox* flow_box = FirstLineBox())
     return FlipForWritingMode(flow_box->FrameRect());

@@ -75,7 +75,7 @@ inline const DisplayItemClient& AsDisplayItemClient(
 inline PhysicalRect ComputeBoxRect(const NGInlineCursor& cursor,
                                    const PhysicalOffset& paint_offset,
                                    const PhysicalOffset& parent_offset) {
-  PhysicalRect box_rect = cursor.CurrentItem()->RectInContainerBlock();
+  PhysicalRect box_rect = cursor.CurrentItem()->RectInContainerFragment();
   box_rect.offset.left += paint_offset.left;
   // We round the y-axis to ensure consistent line heights.
   box_rect.offset.top =

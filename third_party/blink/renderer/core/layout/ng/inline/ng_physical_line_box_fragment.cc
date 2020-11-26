@@ -132,8 +132,8 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
   // Make sure we include the inline-size of the line-box in the overflow.
   // Note, the bottom half-leading should not be included. crbug.com/996847
   const WritingMode container_writing_mode = container_style.GetWritingMode();
-  AddInlineSizeToOverflow(line.RectInContainerBlock(), container_writing_mode,
-                          &overflow);
+  AddInlineSizeToOverflow(line.RectInContainerFragment(),
+                          container_writing_mode, &overflow);
 
   return overflow;
 }

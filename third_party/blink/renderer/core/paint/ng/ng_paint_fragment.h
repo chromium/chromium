@@ -155,12 +155,12 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
   bool IsDirty() const { return is_dirty_inline_; }
 
   // Returns offset to its container box for inline and line box fragments.
-  const PhysicalOffset& OffsetInContainerBlock() const {
+  const PhysicalOffset& OffsetInContainerFragment() const {
     DCHECK(PhysicalFragment().IsInline() || PhysicalFragment().IsLineBox());
     return inline_offset_to_container_box_;
   }
-  const PhysicalRect RectInContainerBlock() const {
-    return PhysicalRect(OffsetInContainerBlock(), Size());
+  const PhysicalRect RectInContainerFragment() const {
+    return PhysicalRect(OffsetInContainerFragment(), Size());
   }
 
   // InkOverflow of itself, not including contents, in the local coordinate.

@@ -496,7 +496,7 @@ PhysicalRect NGFragmentItem::LocalVisualRectFor(
     if (UNLIKELY(item.IsHiddenForPaint()))
       continue;
     PhysicalRect child_visual_rect = item.SelfInkOverflow();
-    child_visual_rect.offset += item.OffsetInContainerBlock();
+    child_visual_rect.offset += item.OffsetInContainerFragment();
     visual_rect.Unite(child_visual_rect);
   }
   return visual_rect;
@@ -526,7 +526,7 @@ PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
     PhysicalRect child_rect;
     item->GetMutableForPainting().RecalcInkOverflow(*cursor, &child_rect);
     if (!child_rect.IsEmpty()) {
-      child_rect.offset += item->OffsetInContainerBlock();
+      child_rect.offset += item->OffsetInContainerFragment();
       contents_ink_overflow.Unite(child_rect);
     }
   }
@@ -584,7 +584,7 @@ void NGFragmentItem::RecalcInkOverflow(
 
   // |contents_rect| is relative to the inline formatting context. Make it
   // relative to |this|.
-  contents_rect.offset -= OffsetInContainerBlock();
+  contents_rect.offset -= OffsetInContainerFragment();
 
   if (Type() == kLine) {
     // Line boxes don't have self overflow. Compute content overflow only.

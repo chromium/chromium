@@ -164,7 +164,7 @@ class AbstractLineBox {
           GetRootInlineBox().BlockDirectionPointInLine());
     }
     const PhysicalOffset physical_offset =
-        cursor_.Current().OffsetInContainerBlock();
+        cursor_.Current().OffsetInContainerFragment();
     return cursor_.Current().Style().IsHorizontalWritingMode()
                ? physical_offset.top
                : physical_offset.left;
@@ -213,7 +213,7 @@ class AbstractLineBox {
 
       const LogicalRect fragment_logical_rect =
           line.Current().ConvertChildToLogical(
-              cursor.Current().RectInContainerBlock());
+              cursor.Current().RectInContainerFragment());
       const LayoutUnit inline_min = fragment_logical_rect.offset.inline_offset;
       const LayoutUnit inline_max = fragment_logical_rect.offset.inline_offset +
                                     fragment_logical_rect.size.inline_size;

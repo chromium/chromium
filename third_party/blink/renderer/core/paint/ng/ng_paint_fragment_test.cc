@@ -72,7 +72,7 @@ TEST_F(NGPaintFragmentTest, InlineFragmentsFor) {
   results.AppendRange(it.begin(), it.end());
   EXPECT_EQ(1u, results.size());
   EXPECT_EQ(text1, results[0]->GetLayoutObject());
-  EXPECT_EQ(PhysicalOffset(), results[0]->OffsetInContainerBlock());
+  EXPECT_EQ(PhysicalOffset(), results[0]->OffsetInContainerFragment());
 
   results.clear();
   it = NGPaintFragment::InlineFragmentsFor(box);
@@ -82,15 +82,15 @@ TEST_F(NGPaintFragmentTest, InlineFragmentsFor) {
   EXPECT_EQ(box, results[1]->GetLayoutObject());
   EXPECT_EQ(box, results[2]->GetLayoutObject());
 
-  EXPECT_EQ(PhysicalOffset(60, 0), results[0]->OffsetInContainerBlock());
+  EXPECT_EQ(PhysicalOffset(60, 0), results[0]->OffsetInContainerFragment());
   EXPECT_EQ("789", To<NGPhysicalTextFragment>(
                        results[0]->FirstChild()->PhysicalFragment())
                        .Text());
-  EXPECT_EQ(PhysicalOffset(0, 10), results[1]->OffsetInContainerBlock());
+  EXPECT_EQ(PhysicalOffset(0, 10), results[1]->OffsetInContainerFragment());
   EXPECT_EQ("123456789", To<NGPhysicalTextFragment>(
                              results[1]->FirstChild()->PhysicalFragment())
                              .Text());
-  EXPECT_EQ(PhysicalOffset(0, 20), results[2]->OffsetInContainerBlock());
+  EXPECT_EQ(PhysicalOffset(0, 20), results[2]->OffsetInContainerFragment());
   EXPECT_EQ("123", To<NGPhysicalTextFragment>(
                        results[2]->FirstChild()->PhysicalFragment())
                        .Text());

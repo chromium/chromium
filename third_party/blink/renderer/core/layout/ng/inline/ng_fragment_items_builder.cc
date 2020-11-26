@@ -246,7 +246,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
     DCHECK(!item.IsDirty());
 
     const LogicalOffset item_offset =
-        converter.ToLogical(item.OffsetInContainerBlock(), item.Size());
+        converter.ToLogical(item.OffsetInContainerFragment(), item.Size());
 
     if (item.Type() == NGFragmentItem::kLine) {
       DCHECK(item.LineBoxFragment());
@@ -276,7 +276,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
       }
 
       items_.emplace_back(item_offset, item);
-      const PhysicalRect line_box_bounds = item.RectInContainerBlock();
+      const PhysicalRect line_box_bounds = item.RectInContainerFragment();
       line_converter.SetOuterSize(line_box_bounds.size);
       for (NGInlineCursor line = cursor.CursorForDescendants(); line;
            line.MoveToNext()) {
@@ -284,7 +284,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
         DCHECK(line_child.CanReuse());
         items_.emplace_back(
             line_converter.ToLogical(
-                line_child.OffsetInContainerBlock() - line_box_bounds.offset,
+                line_child.OffsetInContainerFragment() - line_box_bounds.offset,
                 line_child.Size()),
             line_child);
       }
@@ -340,7 +340,7 @@ void NGFragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
       unsigned descendants_count = item->DescendantsCount();
       DCHECK(descendants_count);
       if (descendants_count) {
-        const PhysicalRect line_box_bounds = item->RectInContainerBlock();
+        const PhysicalRect line_box_bounds = item->RectInContainerFragment();
         line_converter.SetOuterSize(line_box_bounds.size);
         while (--descendants_count) {
           ++iter;

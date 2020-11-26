@@ -81,8 +81,8 @@ LogicalRect ExpandSelectionRectToLineHeight(const LogicalRect& rect,
   NGInlineCursor line(cursor);
   line.MoveToContainingLine();
   const PhysicalRect line_physical_rect(
-      line.Current().OffsetInContainerBlock() -
-          cursor.Current().OffsetInContainerBlock(),
+      line.Current().OffsetInContainerFragment() -
+          cursor.Current().OffsetInContainerFragment(),
       line.Current().Size());
   return ExpandSelectionRectToLineHeight(
       rect, cursor.Current().ConvertChildToLogical(line_physical_rect));
@@ -625,7 +625,7 @@ base::Optional<PhysicalRect> NGPaintFragment::LocalVisualRectFor(
     if (fragment->PhysicalFragment().IsHiddenForPaint())
       continue;
     PhysicalRect child_visual_rect = fragment->SelfInkOverflow();
-    child_visual_rect.offset += fragment->OffsetInContainerBlock();
+    child_visual_rect.offset += fragment->OffsetInContainerFragment();
     visual_rect.Unite(child_visual_rect);
   }
   return visual_rect;

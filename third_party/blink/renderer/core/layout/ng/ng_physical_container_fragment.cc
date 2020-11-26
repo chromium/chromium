@@ -191,7 +191,7 @@ void NGPhysicalContainerFragment::AddOutlineRectsForCursor(
       continue;
     if (item.Type() == NGFragmentItem::kLine) {
       AddOutlineRectsForDescendant(
-          {item.LineBoxFragment(), item.OffsetInContainerBlock()},
+          {item.LineBoxFragment(), item.OffsetInContainerFragment()},
           outline_rects, additional_offset, outline_type, containing_block);
       continue;
     }
@@ -199,7 +199,7 @@ void NGPhysicalContainerFragment::AddOutlineRectsForCursor(
       if (outline_type == NGOutlineType::kDontIncludeBlockVisualOverflow)
         continue;
       outline_rects->push_back(
-          PhysicalRect(additional_offset + item.OffsetInContainerBlock(),
+          PhysicalRect(additional_offset + item.OffsetInContainerFragment(),
                        item.Size().ToLayoutSize()));
       continue;
     }
@@ -207,9 +207,9 @@ void NGPhysicalContainerFragment::AddOutlineRectsForCursor(
       if (const NGPhysicalBoxFragment* child_box =
               item.PostLayoutBoxFragment()) {
         DCHECK(!child_box->IsOutOfFlowPositioned());
-        AddOutlineRectsForDescendant({child_box, item.OffsetInContainerBlock()},
-                                     outline_rects, additional_offset,
-                                     outline_type, containing_block);
+        AddOutlineRectsForDescendant(
+            {child_box, item.OffsetInContainerFragment()}, outline_rects,
+            additional_offset, outline_type, containing_block);
       }
       continue;
     }
@@ -240,14 +240,14 @@ void NGPhysicalContainerFragment::AddScrollableOverflowForInlineChild(
       continue;
     }
     if (item->IsText()) {
-      PhysicalRect child_scroll_overflow = item->RectInContainerBlock();
+      PhysicalRect child_scroll_overflow = item->RectInContainerFragment();
       if (height_type == TextHeightType::kEmHeight) {
         child_scroll_overflow = AdjustTextRectForEmHeight(
             child_scroll_overflow, item->Style(), item->TextShapeResult(),
             container_writing_mode);
       }
       if (UNLIKELY(has_hanging)) {
-        AdjustScrollableOverflowForHanging(line.RectInContainerBlock(),
+        AdjustScrollableOverflowForHanging(line.RectInContainerFragment(),
                                            container_writing_mode,
                                            &child_scroll_overflow);
       }
@@ -261,7 +261,7 @@ void NGPhysicalContainerFragment::AddScrollableOverflowForInlineChild(
       PhysicalRect child_scroll_overflow;
       if (height_type == TextHeightType::kNormalHeight ||
           (child_box->BoxType() != kInlineBox && !IsRubyBox()))
-        child_scroll_overflow = item->RectInContainerBlock();
+        child_scroll_overflow = item->RectInContainerFragment();
       if (child_box->IsInlineBox()) {
         child_box->AddScrollableOverflowForInlineChild(
             container, container_style, line, has_hanging, descendants,
@@ -269,14 +269,14 @@ void NGPhysicalContainerFragment::AddScrollableOverflowForInlineChild(
         child_box->AdjustScrollableOverflowForPropagation(
             container, height_type, &child_scroll_overflow);
         if (UNLIKELY(has_hanging)) {
-          AdjustScrollableOverflowForHanging(line.RectInContainerBlock(),
+          AdjustScrollableOverflowForHanging(line.RectInContainerFragment(),
                                              container_writing_mode,
                                              &child_scroll_overflow);
         }
       } else {
         child_scroll_overflow =
             child_box->ScrollableOverflowForPropagation(container, height_type);
-        child_scroll_overflow.offset += item->OffsetInContainerBlock();
+        child_scroll_overflow.offset += item->OffsetInContainerFragment();
       }
       overflow->Unite(child_scroll_overflow);
       descendants.MoveToNextSkippingChildren();

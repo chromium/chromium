@@ -22,8 +22,8 @@ PhysicalRect ComputeLocalCaretRectByBoxSide(const NGInlineCursor& cursor,
   line_box.MoveToContainingLine();
   DCHECK(line_box);
   const PhysicalOffset offset_to_line_box =
-      cursor.Current().OffsetInContainerBlock() -
-      line_box.Current().OffsetInContainerBlock();
+      cursor.Current().OffsetInContainerFragment() -
+      line_box.Current().OffsetInContainerFragment();
   LayoutUnit caret_height = is_horizontal ? line_box.Current().Size().height
                                           : line_box.Current().Size().width;
   LayoutUnit caret_top =
@@ -100,14 +100,14 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
 
   // Adjust the location to be relative to the inline formatting context.
   PhysicalOffset caret_location = PhysicalOffset(caret_left, caret_top) +
-                                  cursor.Current().OffsetInContainerBlock();
+                                  cursor.Current().OffsetInContainerFragment();
   const PhysicalSize caret_size(caret_width, caret_height);
 
-  const NGPhysicalBoxFragment& fragment = cursor.BoxFragment();
+  const NGPhysicalBoxFragment& fragment = cursor.ContainerFragment();
   NGInlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   const PhysicalOffset line_box_offset =
-      line_box.Current().OffsetInContainerBlock();
+      line_box.Current().OffsetInContainerFragment();
   const PhysicalRect line_box_rect(line_box_offset, line_box.Current().Size());
 
   const NGInlineBreakToken* break_token = line_box.Current().InlineBreakToken();
@@ -190,10 +190,10 @@ LocalCaretRect ComputeLocalSelectionRect(
 
   PhysicalRect rect = caret_rect.rect;
   if (caret_position.cursor.Current().Style().IsHorizontalWritingMode()) {
-    rect.SetY(line_box.Current().OffsetInContainerBlock().top);
+    rect.SetY(line_box.Current().OffsetInContainerFragment().top);
     rect.SetHeight(line_box.Current().Size().height);
   } else {
-    rect.SetX(line_box.Current().OffsetInContainerBlock().left);
+    rect.SetX(line_box.Current().OffsetInContainerFragment().left);
     rect.SetHeight(line_box.Current().Size().width);
   }
   return {caret_rect.layout_object, rect};

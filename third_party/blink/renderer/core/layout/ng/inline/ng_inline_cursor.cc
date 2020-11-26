@@ -529,11 +529,11 @@ const PhysicalRect NGInlineCursorPosition::InkOverflow() const {
   return PhysicalRect();
 }
 
-const PhysicalOffset NGInlineCursorPosition::OffsetInContainerBlock() const {
+const PhysicalOffset NGInlineCursorPosition::OffsetInContainerFragment() const {
   if (paint_fragment_)
-    return paint_fragment_->OffsetInContainerBlock();
+    return paint_fragment_->OffsetInContainerFragment();
   if (item_)
-    return item_->OffsetInContainerBlock();
+    return item_->OffsetInContainerFragment();
   NOTREACHED();
   return PhysicalOffset();
 }
@@ -547,12 +547,13 @@ const PhysicalSize NGInlineCursorPosition::Size() const {
   return PhysicalSize();
 }
 
-const PhysicalRect NGInlineCursorPosition::RectInContainerBlock() const {
+const PhysicalRect NGInlineCursorPosition::RectInContainerFragment() const {
   if (paint_fragment_) {
-    return {paint_fragment_->OffsetInContainerBlock(), paint_fragment_->Size()};
+    return {paint_fragment_->OffsetInContainerFragment(),
+            paint_fragment_->Size()};
   }
   if (item_)
-    return item_->RectInContainerBlock();
+    return item_->RectInContainerFragment();
   NOTREACHED();
   return PhysicalRect();
 }
@@ -654,12 +655,12 @@ PhysicalRect NGInlineCursor::CurrentLocalRect(unsigned start_offset,
 }
 
 PhysicalRect NGInlineCursor::CurrentRectInBlockFlow() const {
-  PhysicalRect rect = Current().RectInContainerBlock();
+  PhysicalRect rect = Current().RectInContainerFragment();
   // We'll now convert the offset from being relative to the containing fragment
   // to being relative to the containing LayoutBlockFlow. For writing modes that
   // don't flip the block direction, this is easy: just add the block-size
   // consumed in previous fragments.
-  auto writing_direction = BoxFragment().Style().GetWritingDirection();
+  auto writing_direction = ContainerFragment().Style().GetWritingDirection();
   switch (writing_direction.GetWritingMode()) {
     default:
       rect.offset.top += previously_consumed_block_size_;
@@ -676,9 +677,9 @@ PhysicalRect NGInlineCursor::CurrentRectInBlockFlow() const {
       const LayoutBlock* containing_block =
           Current().GetLayoutObject()->ContainingBlock();
       DCHECK_EQ(containing_block->StyleRef().GetWritingDirection(),
-                BoxFragment().Style().GetWritingDirection());
+                ContainerFragment().Style().GetWritingDirection());
       LogicalOffset logical_offset = rect.offset.ConvertToLogical(
-          writing_direction, BoxFragment().Size(), rect.size);
+          writing_direction, ContainerFragment().Size(), rect.size);
       LogicalOffset logical_offset_in_flow_thread(
           logical_offset.inline_offset,
           logical_offset.block_offset + previously_consumed_block_size_);
@@ -754,7 +755,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
       }
       // Try to resolve if |point| falls in a line box in block direction.
       const LayoutUnit child_block_offset =
-          child_item->OffsetInContainerBlock()
+          child_item->OffsetInContainerFragment()
               .ConvertToLogical(writing_direction, container_size,
                                 child_item->Size())
               .block_offset;
@@ -879,7 +880,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
       continue;
     }
     const LayoutUnit child_inline_offset =
-        child_item->OffsetInContainerBlock()
+        child_item->OffsetInContainerFragment()
             .ConvertToLogical(writing_direction, container_size,
                               child_item->Size())
             .inline_offset;
@@ -945,7 +946,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInChild(
     const PhysicalOffset& point_in_container) const {
   if (auto* paint_fragment = CurrentPaintFragment()) {
     const PhysicalOffset point_in_child =
-        point_in_container - paint_fragment->OffsetInContainerBlock();
+        point_in_container - paint_fragment->OffsetInContainerFragment();
     return paint_fragment->PositionForPoint(point_in_child);
   }
   DCHECK(CurrentItem());
@@ -953,7 +954,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInChild(
   switch (child_item.Type()) {
     case NGFragmentItem::kText:
       return child_item.PositionForPointInText(
-          point_in_container - child_item.OffsetInContainerBlock(), *this);
+          point_in_container - child_item.OffsetInContainerFragment(), *this);
     case NGFragmentItem::kGeneratedText:
       break;
     case NGFragmentItem::kBox:
@@ -965,7 +966,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInChild(
           // Example: <b style="display:inline-block"><div>b</div></b>
           // [1] NGInlineCursorTest.PositionForPointInChildBlockChildren
           return child_item.GetLayoutObject()->PositionForPoint(
-              point_in_container - child_item.OffsetInContainerBlock());
+              point_in_container - child_item.OffsetInContainerFragment());
         }
       } else {
         // |LayoutInline| used to be culled.

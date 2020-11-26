@@ -63,7 +63,7 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
   const PhysicalOffset adjusted_paint_offset =
       paint_offset + (inline_box_paint_fragment_
                           ? inline_box_paint_fragment_->Offset()
-                          : inline_box_item_->OffsetInContainerBlock());
+                          : inline_box_item_->OffsetInContainerFragment());
   if (paint_info.phase == PaintPhase::kForeground)
     PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
 
@@ -370,7 +370,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
 
     for (const NGPaintFragment* fragment : fragments) {
       PhysicalOffset child_offset = paint_offset +
-                                    fragment->OffsetInContainerBlock() -
+                                    fragment->OffsetInContainerFragment() -
                                     fragment->Offset();
       DCHECK(fragment->PhysicalFragment().IsBox());
       NGInlineBoxFragmentPainter(*fragment).Paint(paint_info, child_offset);
@@ -386,10 +386,10 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   // inline may not start in the first fragment generated for the inline
   // formatting context.
   wtf_size_t target_fragment_idx =
-      cursor.CurrentContainerFragmentIndex() +
+      cursor.ContainerFragmentIndex() +
       paint_info.context.GetPaintController().CurrentFragment();
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    if (target_fragment_idx != cursor.CurrentContainerFragmentIndex())
+    if (target_fragment_idx != cursor.ContainerFragmentIndex())
       continue;
     const NGFragmentItem* item = cursor.CurrentItem();
     DCHECK(item);

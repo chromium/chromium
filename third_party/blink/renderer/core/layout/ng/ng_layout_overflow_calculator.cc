@@ -154,7 +154,7 @@ void NGLayoutOverflowCalculator::AddItemsInternal(const Items& items) {
   for (const auto& item : items) {
     if (const auto* line_box = item->LineBoxFragment()) {
       has_hanging = line_box->HasHanging();
-      line_rect = item->RectInContainerBlock();
+      line_rect = item->RectInContainerFragment();
 
       if (line_rect.IsEmpty())
         continue;
@@ -172,7 +172,7 @@ void NGLayoutOverflowCalculator::AddItemsInternal(const Items& items) {
     }
 
     if (item->IsText()) {
-      PhysicalRect child_overflow = item->RectInContainerBlock();
+      PhysicalRect child_overflow = item->RectInContainerFragment();
 
       // Adjust the text's overflow if the line-box has hanging.
       if (UNLIKELY(has_hanging))
@@ -186,7 +186,7 @@ void NGLayoutOverflowCalculator::AddItemsInternal(const Items& items) {
       // Use the default box-fragment overflow logic.
       PhysicalRect child_overflow =
           LayoutOverflowForPropagation(*child_box_fragment);
-      child_overflow.offset += item->OffsetInContainerBlock();
+      child_overflow.offset += item->OffsetInContainerFragment();
 
       // Only inline-boxes (not atomic-inlines) should be adjusted if the
       // line-box has hanging.

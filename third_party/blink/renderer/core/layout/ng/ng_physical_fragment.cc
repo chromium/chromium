@@ -196,7 +196,7 @@ class FragmentTreeDumper {
       const NGInlineCursorPosition& current = cursor->Current();
       if (const NGPhysicalBoxFragment* box = current.BoxFragment()) {
         if (!box->IsInlineBox()) {
-          Append(box, current.OffsetInContainerBlock(), indent);
+          Append(box, current.OffsetInContainerFragment(), indent);
           continue;
         }
       }
@@ -209,7 +209,7 @@ class FragmentTreeDumper {
 
       if (flags_ & NGPhysicalFragment::DumpOffset) {
         builder_->Append(" offset:");
-        builder_->Append(current.OffsetInContainerBlock().ToString());
+        builder_->Append(current.OffsetInContainerFragment().ToString());
       }
       if (flags_ & NGPhysicalFragment::DumpSize) {
         builder_->Append(" size:");

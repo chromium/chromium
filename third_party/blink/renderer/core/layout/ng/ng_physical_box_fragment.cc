@@ -559,7 +559,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       DCHECK_EQ(&child, cursor.CurrentItem());
       DCHECK_EQ(child.Type(), NGFragmentItem::kLine);
       if (padding_strut)
-        AddLineBoxRect(child.RectInContainerBlock());
+        AddLineBoxRect(child.RectInContainerFragment());
       const NGPhysicalLineBoxFragment* line_box = child.LineBoxFragment();
       DCHECK(line_box);
       PhysicalRect child_scrollable_overflow =
@@ -609,7 +609,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
               item->PostLayoutBoxFragment()) {
         if (child_box->IsFloatingOrOutOfFlowPositioned()) {
           context.AddFloatingOrOutOfFlowPositionedChild(
-              *child_box, item->OffsetInContainerBlock());
+              *child_box, item->OffsetInContainerFragment());
         }
       }
     }
@@ -759,26 +759,26 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   NGInlineCursor cursor;
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
-  wtf_size_t fragment_index = cursor.CurrentContainerFragmentIndex();
+  wtf_size_t fragment_index = cursor.ContainerFragmentIndex();
   bool has_this_fragment = false;
   for (;; cursor.MoveToNextForSameLayoutObject()) {
     if (!cursor) {
       DCHECK(has_this_fragment);
       break;
     }
-    if (fragment_index != cursor.CurrentContainerFragmentIndex()) {
+    if (fragment_index != cursor.ContainerFragmentIndex()) {
       // If this block fragment has |this|, exit the loop.
       if (has_this_fragment)
         break;
       // Otherwise clear the result and continue to the next block fragment.
-      fragment_index = cursor.CurrentContainerFragmentIndex();
+      fragment_index = cursor.ContainerFragmentIndex();
       rects->Shrink(initial_rects_size);
     }
 
     const NGInlineCursorPosition& current = cursor.Current();
     has_this_fragment = has_this_fragment || current.BoxFragment() == this;
     if (!current.Size().IsZero())
-      rects->push_back(current.RectInContainerBlock());
+      rects->push_back(current.RectInContainerFragment());
 
     // Add descendants if any, in the container-relative coordinate.
     if (!current.HasChildren())

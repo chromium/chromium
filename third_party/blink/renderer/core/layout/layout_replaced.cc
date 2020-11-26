@@ -969,9 +969,9 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     const ComputedStyle& line_style = line_box.Current().Style();
     const auto writing_direction = line_style.GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
-                                         line_box.BoxFragment().Size());
+                                         line_box.ContainerFragment().Size());
     const LogicalRect logical_rect =
-        converter.ToLogical(line_box.Current().RectInContainerBlock());
+        converter.ToLogical(line_box.Current().RectInContainerFragment());
     return {logical_rect.offset.block_offset, logical_rect.BlockEndOffset()};
   }
 
