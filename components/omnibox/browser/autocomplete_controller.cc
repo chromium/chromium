@@ -317,7 +317,6 @@ AutocompleteController::AutocompleteController(
         OnDeviceHeadProvider::Create(provider_client_.get(), this);
     if (on_device_head_provider_) {
       providers_.push_back(on_device_head_provider_);
-      on_device_head_provider_->AddModelUpdateCallback();
     }
   }
   if (provider_types & AutocompleteProvider::TYPE_CLIPBOARD) {

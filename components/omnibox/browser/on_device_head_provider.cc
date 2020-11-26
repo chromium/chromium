@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
+#include "components/omnibox/browser/on_device_model_update_listener.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_terms_data.h"
@@ -94,20 +95,6 @@ OnDeviceHeadProvider::OnDeviceHeadProvider(
 
 OnDeviceHeadProvider::~OnDeviceHeadProvider() {}
 
-void OnDeviceHeadProvider::AddModelUpdateCallback() {
-  // Bail out if we have already subscribed.
-  if (model_update_subscription_) {
-    return;
-  }
-
-  auto* model_update_listener = OnDeviceModelUpdateListener::GetInstance();
-  if (model_update_listener) {
-    model_update_subscription_ = model_update_listener->AddModelUpdateCallback(
-        base::BindRepeating(&OnDeviceHeadProvider::OnModelUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
 bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     const AutocompleteInput& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -158,7 +145,7 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
     return;
 
   matches_.clear();
-  if (input.text().empty() || model_filename_.empty())
+  if (input.text().empty() || GetOnDeviceHeadModelFilename().empty())
     return;
 
   // Note |on_device_search_request_id_| has already been changed in |Stop| so
@@ -196,13 +183,6 @@ void OnDeviceHeadProvider::Stop(bool clear_cached_results,
     matches_.clear();
 
   done_ = true;
-}
-
-void OnDeviceHeadProvider::OnModelUpdate(
-    const std::string& new_model_filename) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (!new_model_filename.empty())
-    model_filename_ = new_model_filename;
 }
 
 // TODO(crbug.com/925072): post OnDeviceHeadModel::GetSuggestionsForPrefix
@@ -252,7 +232,8 @@ void OnDeviceHeadProvider::DoSearch(
   base::PostTaskAndReplyWithResult(
       worker_task_runner_.get(), FROM_HERE,
       base::BindOnce(&OnDeviceHeadProvider::GetSuggestionsFromModel,
-                     model_filename_, provider_max_matches_, std::move(params)),
+                     GetOnDeviceHeadModelFilename(), provider_max_matches_,
+                     std::move(params)),
       base::BindOnce(&OnDeviceHeadProvider::SearchDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -301,4 +282,11 @@ void OnDeviceHeadProvider::SearchDone(
 
   done_ = true;
   listener_->OnProviderUpdate(true);
+}
+
+std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {
+  auto* model_update_listener = OnDeviceModelUpdateListener::GetInstance();
+  return model_update_listener != nullptr
+             ? model_update_listener->model_filename()
+             : "";
 }
