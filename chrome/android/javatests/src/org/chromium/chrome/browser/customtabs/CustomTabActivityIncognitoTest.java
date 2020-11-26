@@ -196,7 +196,7 @@ public class CustomTabActivityIncognitoTest {
     public void toolbarHasIncognitoLogo() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         launchIncognitoCustomTab(intent);
-        Espresso.onView(withId(R.id.incognito_cct_logo_button)).check(matches(isDisplayed()));
+        Espresso.onView(withId(R.id.incognito_cct_logo_image_view)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -205,7 +205,8 @@ public class CustomTabActivityIncognitoTest {
     public void toolbarDoesNotHaveIncognitoLogo() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         launchIncognitoCustomTab(intent);
-        Espresso.onView(withId(R.id.incognito_cct_logo_button)).check(matches(not(isDisplayed())));
+        Espresso.onView(withId(R.id.incognito_cct_logo_image_view))
+                .check(matches(not(isDisplayed())));
     }
 
     @Test

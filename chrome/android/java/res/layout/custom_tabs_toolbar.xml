@@ -14,15 +14,16 @@
         style="@style/ToolbarButton"
         android:layout_gravity="start|center_vertical"
         android:contentDescription="@string/close_tab" />
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/incognito_cct_logo_button"
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/incognito_cct_logo_image_view"
         style="@style/LocationBarButton"
         android:layout_width="@dimen/location_bar_icon_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:scaleType="center"
         app:srcCompat="@drawable/ic_incognito_cct_24dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_incognito_badge"/>
     <FrameLayout
         android:id="@+id/location_bar_frame_layout"
         android:layout_width="match_parent"

@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -131,7 +132,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private View mLiteStatusView;
     private View mLiteStatusSeparatorView;
     private TextView mTitleBar;
-    private ImageButton mIncognitoButton;
+    private ImageView mIncognitoImageView;
     private ImageButton mSecurityButton;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
@@ -184,7 +185,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBarFrameLayout = findViewById(R.id.location_bar_frame_layout);
         mTitleUrlContainer = findViewById(R.id.title_url_container);
         mTitleUrlContainer.setOnLongClickListener(this);
-        mIncognitoButton = findViewById(R.id.incognito_cct_logo_button);
+        mIncognitoImageView = findViewById(R.id.incognito_cct_logo_image_view);
         mSecurityButton = findViewById(R.id.security_button);
         mCustomActionButtons = findViewById(R.id.action_buttons);
         mCloseButton = findViewById(R.id.close_button);
@@ -376,7 +377,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private void updateToolbarLayoutMargin() {
         // We show the Incognito logo for Incognito CCT case
-        if (getToolbarDataProvider().isIncognito()) mIncognitoButton.setVisibility(VISIBLE);
+        if (getToolbarDataProvider().isIncognito()) mIncognitoImageView.setVisibility(VISIBLE);
 
         int startMargin = calculateStartMarginWhenCloseButtonVisibilityGone();
 
