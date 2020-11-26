@@ -5718,7 +5718,7 @@
     ],
 
     # TODO(crbug.com/1080424): Merge with an existing set of tests such as
-    # gpu_fyi_linux_intel_and_nvidia_release_telemetry_tests once all CrOS tests
+    # gpu_fyi_linux_release_telemetry_tests once all CrOS tests
     # have been enabled.
     'gpu_fyi_chromeos_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
@@ -5733,6 +5733,15 @@
       # 'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
+    'gpu_fyi_linux_amd_r7_240_release_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_validating_telemetry_tests',
+      'gpu_webgl2_conformance_validating_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_validating_telemetry_tests',
+    ],
+
     'gpu_fyi_linux_debug_gtests': [
       'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
@@ -5743,12 +5752,10 @@
       'gpu_swiftshader_gtests',
     ],
 
-    'gpu_fyi_linux_intel_and_nvidia_release_telemetry_tests': [
+    'gpu_fyi_linux_debug_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_validating_telemetry_tests',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],
@@ -5787,15 +5794,8 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_validating_telemetry_tests',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_fyi_linux_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],
@@ -5885,6 +5885,15 @@
       'gpu_fyi_and_optional_win_specific_gtests',
       'gpu_gles2_conform_gtests',
       'gpu_swiftshader_gtests',
+    ],
+
+    'gpu_fyi_win_amd_release_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
 
     'gpu_fyi_win_debug_telemetry_tests': [

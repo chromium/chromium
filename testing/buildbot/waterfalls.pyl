@@ -3725,7 +3725,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_debug_telemetry_tests',
         },
       },
       'Linux FYI Experimental Release (Intel HD 630)': {
@@ -3755,7 +3755,7 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_and_dawn_gtests',
           'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_intel_and_nvidia_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
         },
       },
       'Linux FYI GPU TSAN Release': {
@@ -3795,7 +3795,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_amd_r7_240_release_telemetry_tests',
         },
       },
       'Linux FYI Release (AMD RX 5500 XT)': {
@@ -3809,7 +3809,9 @@
           'linux_amd_rx_5500_xt',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_linux_release_gtests',
+          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
         },
       },
       'Linux FYI Release (Intel HD 630)': {
@@ -3820,7 +3822,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_intel_and_nvidia_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
           'isolated_scripts': 'gpu_angle_restricted_trace_gold_isolated_scripts',
         },
       },
@@ -3832,7 +3834,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_intel_and_nvidia_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
           'isolated_scripts': 'gpu_angle_restricted_trace_gold_isolated_scripts',
         },
       },
@@ -3844,7 +3846,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_intel_and_nvidia_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
           'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
@@ -4266,7 +4268,9 @@
           'win10_amd_rx_5500_xt',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'isolated_scripts': 'gpu_angle_and_desktop_representative_perf_fyi_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_fyi_win_amd_release_telemetry_tests',
         },
       },
       'Win10 FYI x64 Release (Intel HD 630)': {

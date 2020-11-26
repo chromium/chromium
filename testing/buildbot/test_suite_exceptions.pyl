@@ -2436,6 +2436,11 @@
           '--browser=release_x64',
         ],
       },
+      'Win10 FYI x64 Release (AMD RX 5500 XT)': {
+        'args': [
+          '--browser=release_x64',
+        ],
+      },
       'Win10 FYI x64 Release (Intel HD 630)': {
         'args': [
           '--browser=release_x64',

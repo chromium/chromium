@@ -21,7 +21,7 @@
 #         debug debug-x64
 #         release release-x64 ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f amd-0x7340
 #         apple apple-apple-a12z
 #         arm
 #         google google-0xffff
@@ -236,7 +236,9 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 crbug.com/979444 [ chromeos ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ linux ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ mac no-passthrough no-asan ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
-crbug.com/979444 [ win ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/979444 [ win intel ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/979444 [ win nvidia ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/979444 [ win7 amd ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ android ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 
 # TODO(crbug.com/1097338): simplify this expectation once fuchsia case is fixed
@@ -365,6 +367,15 @@ crbug.com/1043773 [ win amd ] conformance/renderbuffers/depth-renderbuffer-initi
 
 # Win / AMD D3D9 failures
 crbug.com/475095 [ win amd angle-d3d9 ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
+
+# Win / AMD RX 5500 XT failures
+crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
+crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
+crbug.com/1152602 [ win amd-0x7340 angle-d3d11 ] conformance/canvas/drawingbuffer-static-canvas-test.html [ RetryOnFailure ]
+crbug.com/1152619 [ win10 amd-0x7340 angle-d3d9 ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/1152619 [ win amd-0x7340 angle-d3d9 ] conformance/textures/misc/texture-npot-video.html [ Failure ]
+crbug.com/1152621 [ win amd-0x7340 angle-vulkan ] conformance/attribs/gl-vertexattribpointer-offsets.html [ Failure ]
+crbug.com/1152623 [ win amd-0x7340 angle-vulkan ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 
 # Win / D3D9 failures
 # Skipping these two tests because they're causing assertion failures.
@@ -564,6 +575,9 @@ crbug.com/918995 [ linux debug nvidia-0x1cb3 ] conformance/rendering/polygon-off
 crbug.com/550989 [ linux amd ] conformance/more/functions/uniformi.html [ RetryOnFailure ]
 crbug.com/642822 [ linux amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1018028 [ linux amd-0x6613 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
+
+# Linux AMD RX 5500 XT
+crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
 # Linux passthrough AMD
 crbug.com/1143392 [ linux amd passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]

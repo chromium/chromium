@@ -21,7 +21,7 @@
 #         debug debug-x64
 #         release release-x64 ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f amd-0x7340
 #         apple apple-apple-a12z
 #         arm
 #         google google-0xffff
@@ -335,6 +335,18 @@ crbug.com/687374 [ win amd-0x6613 ] deqp/functional/gles3/multisample.html [ Ret
 
 # Failing on AMD RX 550
 crbug.com/angleproject/3354 [ win amd-0x699f ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Skip ]
+
+# Failing on AMD RX 5500 XT
+crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
+crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
+crbug.com/1152602 [ win amd-0x7340 angle-d3d11 ] conformance/canvas/drawingbuffer-static-canvas-test.html [ RetryOnFailure ]
+crbug.com/1152603 [ win amd-0x7340 angle-d3d11 ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
+crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fboinvalidate/* [ Failure ]
+crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
+crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ Failure ]
+crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
+crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fragdepth.html [ Failure ]
+crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
 
 # Flaky on AMD Win7
 crbug.com/989050 [ angle-d3d11 win7 amd ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ RetryOnFailure ]
@@ -890,6 +902,12 @@ crbug.com/696345 [ angle-disabled linux amd-0x6613 ] conformance2/transform_feed
 crbug.com/913301 [ linux amd-0x6613 ] conformance2/textures/misc/generate-mipmap-with-large-base-level.html [ Failure ]
 crbug.com/809237 [ linux amd-0x6613 ] conformance2/uniforms/incompatible-texture-type-for-sampler.html [ Skip ]
 crbug.com/1018028 [ linux amd-0x6613 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
+
+# Linux AMD RX 5500 XT
+crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
+crbug.com/1152588 [ linux amd-0x7340 ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
+crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] conformance2/state/gl-get-calls.html [ Failure ]
+crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/integerstatequery.html [ Failure ]
 
 ####################
 # Android failures #

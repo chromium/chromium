@@ -1163,6 +1163,10 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
 TEST_F(DirectCompositionPixelTest, SwapChainImage) {
   if (!surface_)
     return;
+  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
+  if (context_ && context_->GetVersionInfo() &&
+      context_->GetVersionInfo()->driver_vendor == "ANGLE (AMD)")
+    return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();

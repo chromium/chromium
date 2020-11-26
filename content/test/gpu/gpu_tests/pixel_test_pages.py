@@ -72,7 +72,7 @@ class PixelTestPage(object):
     self.restart_browser_after_test = restart_browser_after_test
     # These are used to pass additional arguments to the test harness.
     # VideoPathTraceTest and OverlayModeTest support the following boolean
-    # arguments: pixel_format, zero_copy, no_overlay, and presentation_mode.
+    # arguments: pixel_format, zero_copy, no_overlay and video_is_rotated.
     self.other_args = other_args
     # This allows a newly added test to be exempted from failures for a
     # (hopefully) short period after being added. This is so that any slightly
@@ -764,21 +764,21 @@ class PixelTestPages(object):
                       '_DirectComposition_Video_MP4_FourColors_Rot_90',
                       test_rect=[0, 0, 270, 240],
                       browser_args=browser_args,
-                      other_args={'presentation_mode': 'COMPOSED'},
+                      other_args={'video_is_rotated': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4_four_colors_rot_180.html',
                       base_name +
                       '_DirectComposition_Video_MP4_FourColors_Rot_180',
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args,
-                      other_args={'presentation_mode': 'COMPOSED'},
+                      other_args={'video_is_rotated': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4_four_colors_rot_270.html',
                       base_name +
                       '_DirectComposition_Video_MP4_FourColors_Rot_270',
                       test_rect=[0, 0, 270, 240],
                       browser_args=browser_args,
-                      other_args={'presentation_mode': 'COMPOSED'},
+                      other_args={'video_is_rotated': True},
                       matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage('pixel_video_vp9.html',
                       base_name + '_DirectComposition_Video_VP9',

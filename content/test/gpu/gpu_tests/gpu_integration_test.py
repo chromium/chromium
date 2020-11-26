@@ -22,6 +22,8 @@ ResultType = json_results.ResultType
 _SUPPORTED_WIN_VERSIONS = ['win7', 'win10']
 _SUPPORTED_WIN_VERSIONS_WITH_DIRECT_COMPOSITION = ['win10']
 _SUPPORTED_WIN_GPU_VENDORS = [0x8086, 0x10de, 0x1002]
+_SUPPORTED_WIN_AMD_GPUS = [0x6613, 0x699f, 0x7340]
+_SUPPORTED_WIN_AMD_GPUS_WITH_NV12_OVERLAYS = [0x7340]
 _SUPPORTED_WIN_INTEL_GPUS = [0x5912, 0x3e92]
 _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS = [0x5912, 0x3e92]
 _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS = [0x5912, 0x3e92]
@@ -458,7 +460,11 @@ class GpuIntegrationTest(
       config['supports_overlays'] = True
       config['yuy2_overlay_support'] = 'SOFTWARE'
       config['nv12_overlay_support'] = 'SOFTWARE'
-      if gpu_vendor_id == 0x8086:
+      if gpu_vendor_id == 0x1002:
+        assert gpu_device_id in _SUPPORTED_WIN_AMD_GPUS
+        if gpu_device_id in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_OVERLAYS:
+          config['nv12_overlay_support'] = 'SCALING'
+      elif gpu_vendor_id == 0x8086:
         assert gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS
         gpu_device_and_driver = ('%x-' + gpu.driver_version) % gpu_device_id
         if gpu_device_id in _SUPPORTED_WIN_INTEL_GPUS_WITH_YUY2_OVERLAYS:
