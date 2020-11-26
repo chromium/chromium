@@ -526,9 +526,10 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         }
       }
 
-      # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
-      if (_is_bundle_module) {
-        isolated_splits_enabled = enable_isolated_splits
+      if (_is_bundle_module && enable_isolated_splits) {
+        # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
+        isolated_splits_enabled = true
+        deps += [ ":${target_name}__all_dfm_resources" ]
       }
 
       # Add all loadable modules and shared libraries from DFMs.
@@ -547,7 +548,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         } else {
           deps += [ "//chrome/android:base_module_java" ]
         }
-        deps += [ ":${target_name}__all_chrome_resources" ]
         if (is_component_build) {
           if (android_64bit_target_cpu && !invoker.is_64_bit_browser) {
             secondary_abi_shared_libraries += _chrome_module_shared_lib_deps
