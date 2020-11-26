@@ -1,55 +1,81 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html>
-<head>
-<script src="../../resources/js-test.js"></script>
-</head>
-<body>
-<p id="description">This test checks that the paste operation trims the pasted fragment to reduce the verbosity of the markup without affecting the style. </p>
-<div id="console"></div>
-<script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 
-var sel = document.getSelection();
-var root = document.createElement("root");
+<body>
+<script>
+function setInnerHTML(el,content) {
+  const fragment = (new DOMParser()).parseFromString(`<pre>${content}</pre>`, 'text/html', {includeShadowRoots: true});
+  el.replaceChildren(...fragment.body.firstChild.childNodes);
+}
+
+function createEditable(markup) {
+  const node = document.createElement('div');
+  node.contentEditable = true;
+  setInnerHTML(node,markup);
+  return node;
+}
+
+assert_true(!!window.testRunner, 'This test requires testRunner');
+const root = document.createElement("root");
 document.body.appendChild(root);
 
+function testPaste(originalMarkupOrElement, expected) {
+  const isElement = originalMarkupOrElement instanceof HTMLElement;
+  const descr = isElement ? originalMarkupOrElement.textContent : originalMarkupOrElement;
+  test(t => {
+    // Clear the clipboard to something known, in case copy fails.
+    const dummy = createEditable("Clear the clipboard");
+    root.appendChild(dummy);
+    dummy.focus();
+    assert_true(document.execCommand("SelectAll", false));
+    assert_true(document.execCommand("Copy", false));
+    dummy.remove();
 
-function createEditable(tagName, markup) {
-    var node = document.createElement(tagName);
-    node.contentEditable = true;
-    node.innerHTML = markup;
-    return node;
-}
-
-function testPaste(tagName, originalMarkup, expected) {
-    var node = createEditable(tagName, originalMarkup);
+    // Create a node containing the test markup.
+    const node = isElement ? originalMarkupOrElement : createEditable(originalMarkupOrElement);
     root.appendChild(node);
-
     node.focus();
-    document.execCommand("SelectAll", false);
-    document.execCommand("Copy", false);
-    document.execCommand("Paste", false);
+    assert_true(document.execCommand("SelectAll", false));
+    assert_true(document.execCommand("Copy", false));
+    node.remove();
 
-    confirmedMarkup = node.innerHTML;
+    // Paste to a fresh node with known content.
+    const nodeDest = createEditable("This should be overwritten");
+    root.appendChild(nodeDest);
+    nodeDest.focus();
+    assert_true(document.execCommand("SelectAll", false));
+    assert_true(document.execCommand("Paste", false));
+    confirmedMarkup = nodeDest.getInnerHTML({includeShadowRoots: true});
+    nodeDest.remove();
 
-    shouldBe("confirmedMarkup", "'" + expected + "'");
+    assert_equals(confirmedMarkup, expected);
+  },`Test for "${descr}"`);
 }
 
-testPaste("div", "Hello", "Hello");
-testPaste("div", "<b><i>Hello</i></b>", "<b><i>Hello</i></b>");
-testPaste("div", "<div><b><i><span style=\"font-weight: normal\"><b><i>Hello</i></b></span></i></b></div>", "<b><i>Hello</i></b>");
-testPaste("div", "<div><div><div>Hello</div></div></div>", "Hello");
-testPaste("div", "<div><b><div><i>Hello</i></div></b></div>", "<i style=\"font-weight: 700;\">Hello</i>");
-testPaste("div", "<div><div style=\"text-align: center;\"><b>Hello</b></div></div>", "<div style=\"text-align: center;\"><b>Hello</b></div>");
-testPaste("div", "<div><b><i><span style=\"font-weight: normal\"><b><i>hello</i></b></span></i></b></div><div><b><i><span style=\"font-weight: normal\"><b><i>world</i></b></span></i></b></div>", 
+testPaste("Hello", "Hello");
+testPaste("Hello<div></div>", "Hello");
+testPaste("<b><i>Hello</i></b>", "<b><i>Hello</i></b>");
+testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>Hello</i></b></span></i></b></div>", "<b><i>Hello</i></b>");
+testPaste("<div><div><div>Hello</div></div></div>", "Hello");
+testPaste("<div><b><div><i>Hello</i></div></b></div>", "<i style=\"font-weight: 700;\">Hello</i>");
+testPaste("<div><div style=\"text-align: center;\"><b>Hello</b></div></div>", "<b style=\"text-align: center;\">Hello</b>");
+testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>hello</i></b></span></i></b></div><div><b><i><span style=\"font-weight: normal\"><b><i>world</i></b></span></i></b></div>", 
           "<div><b><i>hello</i></b></div><div><b><i>world</i></b></div>");
-testPaste("div", "<div><b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i> hello2</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i>&nbsp;hello2</i></b></span></i></b>");
-testPaste("div", "<i style=\"margin: 10px;\"><b><i style=\"margin: 10px;\">hello</i></b></i>",
+testPaste("<div><b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i> hello2</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i>&nbsp;hello2</i></b></span></i></b>");
+testPaste("<i style=\"margin: 10px;\"><b><i style=\"margin: 10px;\">hello</i></b></i>",
           "<i style=\"margin: 10px;\"><b><i style=\"margin: 10px;\">hello</i></b></i>");
-testPaste("div", "<div><b><i><span style=\"font-weight: normal\"><b><i>Hello <!-- comment -->world</i></b></span></i></b></div>", "<b><i>Hello&nbsp;world</i></b>");
-testPaste("div", "<div><b><i><span style=\"font-weight: normal\">plain text<b><i>bold italic text</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\">plain text<b><i>bold italic text</i></b></span></i></b>");
-
-root.style.display = "none";
-
+testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>Hello <!-- comment -->world</i></b></span></i></b></div>", "<b><i>Hello&nbsp;world</i></b>");
+testPaste("<div><b><i><span style=\"font-weight: normal\">plain text<b><i>bold italic text</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\">plain text<b><i>bold italic text</i></b></span></i></b>");
+// Ordinary template gets removed:
+testPaste("<span>foo</span><template>Hello</template><span>bar</span>", "foobar");
+// Note that an empty <div> is left in the resulting pasted text, which isn't ideal:
+testPaste("<span>foo</span><div><template>Hello</template></div><span>bar</span>", "foo<div></div>bar");
+// Contained shadow DOM is stripped, but content is retained:
+testPaste("<span>foo</span><div><template shadowroot='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar");
+testPaste("<span>foo</span><div><template shadowroot='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar");
+// Make sure non-declarative <template shadowroot> doesn't form a shadow root on paste:
+const nodeWithTemplate = createEditable("<span>foo</span><div>ABC<template>Hello</template></div><span>bar</span>");
+nodeWithTemplate.querySelector('template').setAttribute('shadowroot','open');
+testPaste(nodeWithTemplate, "foo<div>ABC</div>bar");
 </script>
-</body>
-</html>
