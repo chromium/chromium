@@ -207,6 +207,10 @@ public class TabUiFeatureUtilities {
      * @return Whether the price tracking feature is enabled and available for use.
      */
     public static boolean isPriceTrackingEnabled() {
-        return ENABLE_PRICE_TRACKING.getValue();
+        // TODO(crbug.com/1152925): Now PriceTracking feature is broken if StartSurface is enabled,
+        // we need to remove !StartSurfaceConfiguration.isStartSurfaceEnabled() when the bug is
+        // fixed.
+        return ENABLE_PRICE_TRACKING.getValue()
+                && !StartSurfaceConfiguration.isStartSurfaceEnabled();
     }
 }
