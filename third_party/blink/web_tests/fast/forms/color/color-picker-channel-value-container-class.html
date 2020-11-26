@@ -84,7 +84,7 @@ test(() => {
 test(() => {
   resetContainerValues(hexValueContainer);
   setContainerValue(hexValueContainer, '4287f5');
-  assert_equals(hexValueContainer.channelValue_, '7effc9');
+  assert_equals(hexValueContainer.channelValue_, '4287f5');
 }, 'hexValueContainer onValueChange_ hex value without \'#\'');
 
 test(() => {
@@ -248,9 +248,9 @@ test(() => {
 test(() => {
   resetContainerValues(sValueContainer, lValueContainer);
   setContainerValue(sValueContainer, '97');
-  assert_equals(sValueContainer.channelValue_, 100);
+  assert_equals(sValueContainer.channelValue_, 97);
   setContainerValue(lValueContainer, '34');
-  assert_equals(lValueContainer.channelValue_, 75);
+  assert_equals(lValueContainer.channelValue_, 34);
 }, 'slValueContainers onValueChange_ without \'%\'');
 </script>
 </body>
