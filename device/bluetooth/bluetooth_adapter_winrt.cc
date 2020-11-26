@@ -1315,14 +1315,14 @@ void BluetoothAdapterWinrt::OnAdvertisementReceived(
     return;
   }
 
-  std::string bluetooth_address =
+  const std::string bluetooth_address =
       BluetoothDeviceWinrt::CanonicalizeAddress(raw_bluetooth_address);
   auto it = devices_.find(bluetooth_address);
   const bool is_new_device = (it == devices_.end());
   if (is_new_device) {
     bool was_inserted = false;
     std::tie(it, was_inserted) = devices_.emplace(
-        std::move(bluetooth_address), CreateDevice(raw_bluetooth_address));
+        bluetooth_address, CreateDevice(raw_bluetooth_address));
     DCHECK(was_inserted);
   }
 
