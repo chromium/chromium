@@ -8508,6 +8508,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // FrameHostMsg_DidCommitProvisionalLoad_Params at all.
   if (!navigation_request && !is_initial_empty_commit &&
       !is_same_document_navigation) {
+    LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
+                                navigation_request.get());
+
     bad_message::ReceivedBadMessage(
         GetProcess(),
         bad_message::RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT);
@@ -9257,6 +9260,12 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
   // Temporary instrumentation to debug the root cause of renderer process
   // terminations. See https://crbug.com/931895.
   auto bool_to_crash_key = [](bool b) { return b ? "true" : "false"; };
+
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("navigation_url",
+                                          base::debug::CrashKeySize::Size256),
+      url.spec());
+
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("is_same_document",
                                           base::debug::CrashKeySize::Size32),
