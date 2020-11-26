@@ -11,6 +11,8 @@
 #include "ash/login/ui/login_user_menu_view.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "ui/display/manager/display_configurator.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -20,7 +22,8 @@ class LoginButton;
 
 // Display the user's profile icon, name, and a menu icon in various layout
 // styles.
-class ASH_EXPORT LoginUserView : public views::View {
+class ASH_EXPORT LoginUserView : public views::View,
+                                 public display::DisplayConfigurator::Observer {
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
@@ -70,6 +73,9 @@ class ASH_EXPORT LoginUserView : public views::View {
 
   // Enables or disables tapping the view.
   void SetTapEnabled(bool enabled);
+
+  // DisplayConfigurator::Observer
+  void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;
 
   const LoginUserInfo& current_user() const { return current_user_; }
 
@@ -127,6 +133,10 @@ class ASH_EXPORT LoginUserView : public views::View {
   // True if the view must be opaque (ie, opacity = 1) regardless of input
   // state.
   bool force_opaque_ = false;
+
+  base::ScopedObservation<display::DisplayConfigurator,
+                          display::DisplayConfigurator::Observer>
+      display_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginUserView);
 };

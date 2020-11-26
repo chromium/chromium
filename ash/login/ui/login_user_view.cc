@@ -17,6 +17,7 @@
 #include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
@@ -171,6 +172,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
     enterprise_icon_->SetVisible(false);
     AddChildView(enterprise_icon_);
   }
+
   ~UserImage() override = default;
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -461,6 +463,9 @@ LoginUserView::LoginUserView(
   hover_notifier_ = std::make_unique<HoverNotifier>(
       this,
       base::BindRepeating(&LoginUserView::OnHover, base::Unretained(this)));
+
+  if (ash::Shell::HasInstance())
+    display_observation_.Observe(ash::Shell::Get()->display_configurator());
 }
 
 LoginUserView::~LoginUserView() = default;
@@ -536,6 +541,12 @@ void LoginUserView::SetForceOpaque(bool force_opaque) {
 void LoginUserView::SetTapEnabled(bool enabled) {
   tap_button_->SetFocusBehavior(enabled ? FocusBehavior::ALWAYS
                                         : FocusBehavior::NEVER);
+}
+
+void LoginUserView::OnPowerStateChanged(
+    chromeos::DisplayPowerState power_state) {
+  bool is_display_on = power_state != chromeos::DISPLAY_POWER_ALL_OFF;
+  user_image_->SetAnimationEnabled(is_display_on && is_opaque_);
 }
 
 const char* LoginUserView::GetClassName() const {
