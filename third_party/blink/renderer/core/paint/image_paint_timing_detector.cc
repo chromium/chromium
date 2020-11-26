@@ -29,12 +29,12 @@ namespace {
 // As the image do not have a lot of content, we down scale |visual_size| by the
 // ratio of |intrinsic_image_size|/|displayed_image_size| = 1/10000.
 //
-// * |visual_size| referes to the size of the |displayed_image_size| after
+// * |visual_size| refers to the size of the |displayed_image_size| after
 // clipping and transforming. The size is in the main-frame's coordinate.
-// * |displayed_image_size| refers to the paint size in the image object's
-// coordinate.
 // * |intrinsic_image_size| refers to the the image object's original size
 // before scaling. The size is in the image object's coordinate.
+// * |displayed_image_size| refers to the paint size in the image object's
+// coordinate.
 uint64_t DownScaleIfIntrinsicSizeIsSmaller(
     uint64_t visual_size,
     const uint64_t& intrinsic_image_size,
@@ -154,16 +154,6 @@ void ImagePaintTimingDetector::OnPaintFinished() {
   RegisterNotifySwapTime();
 }
 
-void ImagePaintTimingDetector::LayoutObjectWillBeDestroyed(
-    const LayoutObject& object) {
-  if (!is_recording_)
-    return;
-
-  // The visible record removal has been handled by
-  // |NotifyImageRemoved|.
-  records_manager_.RemoveInvisibleRecordIfNeeded(object);
-}
-
 void ImagePaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
@@ -171,6 +161,7 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
     return;
   RecordId record_id = std::make_pair(&object, cached_image);
   records_manager_.RemoveImageFinishedRecord(record_id);
+  records_manager_.RemoveInvisibleRecordIfNeeded(record_id);
   if (!records_manager_.IsRecordedVisibleImage(record_id))
     return;
   records_manager_.RemoveVisibleRecord(record_id);
@@ -235,10 +226,10 @@ void ImagePaintTimingDetector::RecordImage(
   Node* node = object.GetNode();
   if (!node)
     return;
-  if (records_manager_.IsRecordedInvisibleImage(object))
-    return;
 
   RecordId record_id = std::make_pair(&object, &cached_image);
+  if (records_manager_.IsRecordedInvisibleImage(record_id))
+    return;
   bool is_recorded_visible_image =
       records_manager_.IsRecordedVisibleImage(record_id);
   if (int depth = IgnorePaintTimingScope::IgnoreDepth()) {
@@ -282,7 +273,7 @@ void ImagePaintTimingDetector::RecordImage(
                                             current_paint_chunk_properties,
                                             object, cached_image);
   if (rect_size == 0) {
-    records_manager_.RecordInvisible(object);
+    records_manager_.RecordInvisible(record_id);
   } else {
     records_manager_.RecordVisible(record_id, rect_size);
     if (cached_image.IsLoaded()) {

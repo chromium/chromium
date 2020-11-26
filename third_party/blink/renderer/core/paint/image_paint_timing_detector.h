@@ -77,8 +77,8 @@ class CORE_EXPORT ImageRecordsManager {
   ImageRecordsManager& operator=(const ImageRecordsManager&) = delete;
   ImageRecord* FindLargestPaintCandidate() const;
 
-  inline void RemoveInvisibleRecordIfNeeded(const LayoutObject& object) {
-    invisible_images_.erase(&object);
+  inline void RemoveInvisibleRecordIfNeeded(const RecordId& record_id) {
+    invisible_images_.erase(record_id);
   }
 
   inline void RemoveImageFinishedRecord(const RecordId& record_id) {
@@ -106,15 +106,15 @@ class CORE_EXPORT ImageRecordsManager {
     // record will be removed in |AssignPaintTimeToRegisteredQueuedRecords|.
   }
 
-  inline void RecordInvisible(const LayoutObject& object) {
-    invisible_images_.insert(&object);
+  inline void RecordInvisible(const RecordId& record_id) {
+    invisible_images_.insert(record_id);
   }
   void RecordVisible(const RecordId& record_id, const uint64_t& visual_size);
   bool IsRecordedVisibleImage(const RecordId& record_id) const {
     return visible_images_.Contains(record_id);
   }
-  bool IsRecordedInvisibleImage(const LayoutObject& object) const {
-    return invisible_images_.Contains(&object);
+  bool IsRecordedInvisibleImage(const RecordId& record_id) const {
+    return invisible_images_.Contains(record_id);
   }
 
   void NotifyImageFinished(const RecordId& record_id) {
@@ -194,7 +194,7 @@ class CORE_EXPORT ImageRecordsManager {
   }
 
   HashMap<RecordId, std::unique_ptr<ImageRecord>> visible_images_;
-  HashSet<const LayoutObject*> invisible_images_;
+  HashSet<RecordId> invisible_images_;
 
   // This stores the image records, which are ordered by size.
   ImageRecordSet size_ordered_set_;
@@ -259,7 +259,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
                    const IntRect& image_border);
   void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
   void OnPaintFinished();
-  void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
   // After the method being called, the detector stops to record new entries and
   // node removal. But it still observe the loading status. In other words, if
