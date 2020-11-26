@@ -488,10 +488,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             mPendingRunAfterDismissTask.run();
             mPendingRunAfterDismissTask = null;
         }
-        if (mSubpageController != null) {
-            mSubpageController.onSubpageRemoved();
-            mSubpageController = null;
-        }
         mWebContentsObserver.destroy();
         mWebContentsObserver = null;
         PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
