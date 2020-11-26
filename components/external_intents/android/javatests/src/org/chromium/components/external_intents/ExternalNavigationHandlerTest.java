@@ -34,6 +34,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingAsyncActionType;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -862,6 +863,7 @@ public class ExternalNavigationHandlerTest {
                 .withIsIncognito(true)
                 .withReferrer(SEARCH_RESULT_URL_FOR_TOM_HANKS)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
                         START_INCOGNITO | START_OTHER_ACTIVITY);
 
         Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
@@ -1089,6 +1091,7 @@ public class ExternalNavigationHandlerTest {
                 .withReferrer(SEARCH_RESULT_URL_FOR_TOM_HANKS)
                 .withIsIncognito(true)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
                         START_INCOGNITO | START_OTHER_ACTIVITY);
 
         Intent invokedIntent = mUrlHandler.mStartActivityInIncognitoIntent;
@@ -1464,7 +1467,8 @@ public class ExternalNavigationHandlerTest {
         // Verify that the file intent action is triggered if file access is not allowed.
         checkUrl(fileUrl)
                 .withPageTransition(PageTransition.AUTO_TOPLEVEL)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, START_FILE);
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_BROWSER_NAVIGATION, START_FILE);
     }
 
     @Test
@@ -1608,6 +1612,7 @@ public class ExternalNavigationHandlerTest {
         checkUrl("market://1234")
                 .withIsIncognito(true)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
                         START_INCOGNITO | START_OTHER_ACTIVITY);
 
         Assert.assertTrue(mUrlHandler.mStartIncognitoIntentCalled);
@@ -1650,6 +1655,7 @@ public class ExternalNavigationHandlerTest {
                 .withHasUserGesture(true)
                 .withIsIncognito(true)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
                         START_INCOGNITO | START_OTHER_ACTIVITY);
         Assert.assertTrue(mDelegate.maybeSetRequestMetadataCalled);
         Assert.assertTrue(mUrlHandler.mStartIncognitoIntentCalled);
@@ -2389,6 +2395,13 @@ public class ExternalNavigationHandlerTest {
 
         public void expecting(
                 @OverrideUrlLoadingResultType int expectedOverrideResult, int otherExpectation) {
+            expecting(expectedOverrideResult, OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION,
+                    otherExpectation);
+        }
+
+        public void expecting(@OverrideUrlLoadingResultType int expectedOverrideResult,
+                @OverrideUrlLoadingAsyncActionType int expectedOverrideAsyncAction,
+                int otherExpectation) {
             boolean expectStartIncognito = (otherExpectation & START_INCOGNITO) != 0;
             boolean expectStartActivity =
                     (otherExpectation & (START_WEBAPK | START_OTHER_ACTIVITY)) != 0;
@@ -2431,6 +2444,7 @@ public class ExternalNavigationHandlerTest {
             }
 
             Assert.assertEquals(expectedOverrideResult, result.getResultType());
+            Assert.assertEquals(expectedOverrideAsyncAction, result.getAsyncActionType());
             Assert.assertEquals(expectStartIncognito, mUrlHandler.mStartIncognitoIntentCalled);
             Assert.assertEquals(expectStartActivity, startActivityCalled);
             Assert.assertEquals(expectStartWebApk, startWebApkCalled);

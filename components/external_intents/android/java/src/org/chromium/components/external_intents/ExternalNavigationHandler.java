@@ -204,23 +204,63 @@ public class ExternalNavigationHandler {
     }
 
     /**
+     * Types of async action that can be taken for a navigation.
+     */
+    @IntDef({OverrideUrlLoadingAsyncActionType.UI_GATING_BROWSER_NAVIGATION,
+            OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
+            OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface OverrideUrlLoadingAsyncActionType {
+        /* The user has been presented with a consent dialog gating a browser navigation. */
+        int UI_GATING_BROWSER_NAVIGATION = 0;
+        /* The user has been presented with a consent dialog gating an intent launch. */
+        int UI_GATING_INTENT_LAUNCH = 1;
+        /* No async action has been taken. */
+        int NO_ASYNC_ACTION = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+  
+    /**
      * Packages information about the result of a check of whether we should override URL loading.
      */
     public static class OverrideUrlLoadingResult {
         @OverrideUrlLoadingResultType
         int mResultType;
 
+        @OverrideUrlLoadingAsyncActionType
+        int mAsyncActionType;
+
         OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType) {
+            this(resultType, OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION);
+        }
+
+        OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType,
+                @OverrideUrlLoadingAsyncActionType int asyncActionType) {
+            // The async action type should be set only for async actions...
+            assert (asyncActionType == OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION
+                    || resultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION);
+
+            // ...and it *must* be set for async actions.
+            assert (!(asyncActionType == OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION
+                    && resultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION));
+
             mResultType = resultType;
+            mAsyncActionType = asyncActionType;
         }
 
         public @OverrideUrlLoadingResultType int getResultType() {
             return mResultType;
         }
 
-        public static OverrideUrlLoadingResult forAsyncAction() {
+        public @OverrideUrlLoadingAsyncActionType int getAsyncActionType() {
+            return mAsyncActionType;
+        }
+
+        public static OverrideUrlLoadingResult forAsyncAction(
+                @OverrideUrlLoadingAsyncActionType int asyncActionType) {
             return new OverrideUrlLoadingResult(
-                    OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION);
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, asyncActionType);
         }
         public static OverrideUrlLoadingResult forNoOverride() {
             return new OverrideUrlLoadingResult(OverrideUrlLoadingResultType.NO_OVERRIDE);
@@ -990,7 +1030,8 @@ public class ExternalNavigationHandler {
                     params.shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent(),
                     shouldProxyForInstantApps)) {
             if (DEBUG) Log.i(TAG, "Incognito navigation out");
-            return OverrideUrlLoadingResult.forAsyncAction();
+            return OverrideUrlLoadingResult.forAsyncAction(
+                    OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH);
         }
         if (DEBUG) Log.i(TAG, "Failed to show incognito alert dialog.");
         return OverrideUrlLoadingResult.forNoOverride();
@@ -1184,7 +1225,8 @@ public class ExternalNavigationHandler {
         // This check should happen for reloads, navigations, etc..., which is why
         // it occurs before the subsequent blocks.
         if (startFileIntentIfNecessary(params, targetIntent)) {
-            return OverrideUrlLoadingResult.forAsyncAction();
+            return OverrideUrlLoadingResult.forAsyncAction(
+                    OverrideUrlLoadingAsyncActionType.UI_GATING_BROWSER_NAVIGATION);
         }
 
         // This should come after file intents, but before any returns of
@@ -1374,7 +1416,8 @@ public class ExternalNavigationHandler {
                 return OverrideUrlLoadingResult.forNoOverride();
             }
             if (DEBUG) Log.i(TAG, "Incognito intent to Play Store.");
-            return OverrideUrlLoadingResult.forAsyncAction();
+            return OverrideUrlLoadingResult.forAsyncAction(
+                    OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH);
         } else {
             startActivity(intent, false, mDelegate);
             if (DEBUG) Log.i(TAG, "Intent to Play Store.");
