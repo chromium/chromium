@@ -3941,8 +3941,7 @@ if (enable_java_templates) {
       assert(_build_host_jar || _build_device_jar,
              "A host or device jar must be created to use bytecode rewriting")
 
-      _rewritten_jar =
-          string_replace(_unprocessed_jar_path, ".jar", "_rewritten.jar")
+      _rewritten_jar = "$target_out_dir/${target_name}_rewritten.jar"
       _rewritten_jar_target_name = "${target_name}__rewritten"
       _rewriter_path = root_build_dir + "/bin/helper/" +
                        get_label_info(invoker.bytecode_rewriter_target, "name")
