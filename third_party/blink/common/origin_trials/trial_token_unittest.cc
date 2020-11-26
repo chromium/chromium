@@ -263,6 +263,14 @@ const char kSampleSubdomainTokenJSON[] =
     "{\"origin\": \"https://example.com:443\", \"isSubdomain\": true, "
     "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
 
+const char kUsageEmptyTokenJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"usage\": \"\", "
+    "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
+const char kUsageSubsetTokenJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"usage\": \"subset\", "
+    "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
 const char kSampleNonThirdPartyTokenJSON[] =
     "{\"origin\": \"https://valid.example.com:443\", \"isThirdParty\": false, "
     "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
@@ -326,10 +334,6 @@ const char* kInvalidTokensVersion3[] = {
     // Invalid value in usage field
     "{\"origin\": \"https://a.a\", \"isThirdParty\": true, \"usage\": "
     "\"cycle\", \"feature\": \"a\", "
-    "\"expiry\": 1458766277}",
-    // usage in non third party token
-    "{\"origin\": \"https://a.a\", \"isThirdParty\": false, \"usage\": "
-    "\"subset\", \"feature\": \"a\", "
     "\"expiry\": 1458766277}",
 };
 
@@ -994,6 +998,7 @@ TEST_P(TrialTokenParseTest, ParseValidToken) {
   EXPECT_FALSE(token->match_subdomains());
   EXPECT_EQ(expected_origin_, token->origin());
   EXPECT_EQ(expected_expiry_, token->expiry_time());
+  EXPECT_EQ(TrialToken::UsageRestriction::kNone, token->usage_restriction());
 }
 
 TEST_P(TrialTokenParseTest, ParseValidNonSubdomainToken) {
@@ -1131,6 +1136,26 @@ TEST_F(TrialTokenTest, ParseValidThirdPartyTokenInvalidVersion) {
   ASSERT_TRUE(token);
   EXPECT_EQ(kExpectedFeatureName, token->feature_name());
   EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidUsageEmptyToken) {
+  std::unique_ptr<TrialToken> token = Parse(kUsageEmptyTokenJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(TrialToken::UsageRestriction::kNone, token->usage_restriction());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidUsageSubsetToken) {
+  std::unique_ptr<TrialToken> token = Parse(kUsageSubsetTokenJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(TrialToken::UsageRestriction::kSubset, token->usage_restriction());
   EXPECT_EQ(expected_origin_, token->origin());
   EXPECT_EQ(expected_expiry_, token->expiry_time());
 }

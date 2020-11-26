@@ -226,9 +226,6 @@ def main():
     if (args.version[0] != 3):
       print("Only version 3 token supports alternative usage restriction.")
       sys.exit(1)
-    if (not args.is_third_party):
-      print("Only third party token supports alternative usage restriction.")
-      sys.exit(1)
     if (args.usage_restriction not in USAGE_RESTRICTION):
       print(
           "Only empty string and \"subset\" are supported in alternative usage "

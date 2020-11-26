@@ -238,13 +238,10 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
       is_third_party = is_third_party_value->GetBool();
     }
 
-    // The |usage| field is optional and can only be set if |isThirdParty| flag
-    // is true. If found, ensure its value is either empty or "subset".
+    // The |usage| field is optional. If found, ensure its value is either empty
+    // or "subset".
     std::string* usage_value = datadict->FindStringKey("usage");
     if (usage_value) {
-      if (!is_third_party) {
-        return nullptr;
-      }
       if (usage_value->empty()) {
         usage = UsageRestriction::kNone;
       } else if (*usage_value == kUsageSubset) {

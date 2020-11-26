@@ -167,6 +167,17 @@ const char kThirdPartyUsageSubsetToken[] =
     "InN1YnNldCIsICJmZWF0dXJlIjogIkZyb2J1bGF0ZVRoaXJkUGFydHkiLCAiZXhw"
     "aXJ5IjogMjAwMDAwMDAwMH0=";
 
+// Well-formed token, for first party, with usage set to user subset exclusion.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com FrobulateThirdParty
+//  --version 3 --usage-restriction subset --expire-timestamp=2000000000
+const char kUsageSubsetToken[] =
+    "Axi0wjIp8gaGr/"
+    "pTPzwrHqeWXnmhCiZhE2edsJ9fHX25GV6A8zg1fCv27qhBNnbxjqDpU0a+"
+    "xKScEiqKK1MS3QUAAAB2eyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlLmNvbTo0ND"
+    "MiLCAidXNhZ2UiOiAic3Vic2V0IiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlVGhpcmRQYXJ0eSIs"
+    "ICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+
 // This timestamp is set to a time after the expiry timestamp of kExpiredToken,
 // but before the expiry timestamp of kValidToken.
 double kNowTimestamp = 1500000000;
@@ -372,8 +383,24 @@ TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledFeatures) {
             validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
                 .status);
 }
+TEST_F(TrialTokenValidatorTest,
+       ValidatorRespectsDisabledFeaturesForUserWithFirstPartyToken) {
+  // Token should be valid if the feature is not disabled for user.
+  TrialTokenResult result =
+      validator_.ValidateToken(kUsageSubsetToken, appropriate_origin_, Now());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName, result.feature_name);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
+  // Token should be invalid when the feature is disabled for user.
+  DisableFeatureForUser(kAppropriateThirdPartyFeatureName);
+  EXPECT_EQ(
+      blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
+      validator_.ValidateToken(kUsageSubsetToken, appropriate_origin_, Now())
+          .status);
+}
 
-TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledFeaturesForUser) {
+TEST_F(TrialTokenValidatorTest,
+       ValidatorRespectsDisabledFeaturesForUserWithThirdPartyToken) {
   // Token should be valid if the feature is not disabled for user.
   TrialTokenResult result = validator_.ValidateToken(
       kThirdPartyUsageSubsetToken, inappropriate_origin_, &appropriate_origin_,
