@@ -997,8 +997,20 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
 }
 #endif
 
+class GuestWebAppInstallTaskTest : public WebAppInstallTaskTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  GuestWebAppInstallTaskTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Default apps should be installable for guest profiles.
-TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
+TEST_P(GuestWebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
   SetInstallFinalizerForTesting();
 
   TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
@@ -1024,6 +1036,10 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
           }));
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestWebAppInstallTaskTest,
+                         /*is_ephemeral_guest=*/testing::Bool());
 
 TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_DisplayMode) {
   {
