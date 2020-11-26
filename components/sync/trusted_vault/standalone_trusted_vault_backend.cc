@@ -357,6 +357,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
 
   switch (status) {
     case TrustedVaultRequestStatus::kSuccess:
+      // TODO(crbug.com/1102340): consider keeping old keys as well.
       StoreKeys(gaia_id, vault_keys, last_vault_key_version);
       break;
     case TrustedVaultRequestStatus::kLocalDataObsolete: {

@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
+#include "components/sync/trusted_vault/download_keys_response_handler.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
@@ -23,11 +24,15 @@ const size_t kMemberProofLength = 32;
 const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
                                      'e', 'd', '_', 'k', 'e', 'y'};
 const char kJoinSecurityDomainsURLPath[] = "/domain:join";
+const char kListSecurityDomainsURLPathAndQuery[] = "/domain:list?view=1";
 const char kSecurityDomainName[] = "chromesync";
 
 // Helper function for filling protobuf bytes field: protobuf represent them as
 // std::string, while in code std::vector<uint8_t> or base::span<uint8_t> is
 // more common.
+// TODO(crbug.com/1113598): this function and its counterpart (proto string to
+// bytes vector) is useful in many places under trusted_vault directory,
+// consider moving it to some utility file.
 void AssignBytesToProtoString(base::span<const uint8_t> bytes,
                               std::string* bytes_proto_field) {
   *bytes_proto_field = std::string(bytes.begin(), bytes.end());
@@ -106,6 +111,17 @@ sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
   return result;
 }
 
+void ProcessDownloadKeysResponse(
+    std::unique_ptr<DownloadKeysResponseHandler> response_handler,
+    TrustedVaultConnection::DownloadKeysCallback callback,
+    TrustedVaultRequest::HttpStatus http_status,
+    const std::string& response_body) {
+  DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      response_handler->ProcessResponse(http_status, response_body);
+  std::move(callback).Run(processed_response.status, processed_response.keys,
+                          processed_response.last_key_version);
+}
+
 }  // namespace
 
 TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
@@ -149,9 +165,23 @@ TrustedVaultConnectionImpl::DownloadKeys(
     int last_trusted_vault_key_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadKeysCallback callback) {
-  NOTIMPLEMENTED();
-  // TODO(crbug.com/1113598): implement logic.
-  return std::make_unique<Request>();
+  auto request = std::make_unique<TrustedVaultRequest>(
+      TrustedVaultRequest::HttpMethod::kGet,
+      GURL(trusted_vault_service_url_.spec() +
+           kListSecurityDomainsURLPathAndQuery),
+      /*serialized_request_proto=*/base::nullopt);
+
+  request->FetchAccessTokenAndSendRequest(
+      account_info.account_id, GetOrCreateURLLoaderFactory(),
+      access_token_fetcher_.get(),
+      base::BindOnce(ProcessDownloadKeysResponse,
+                     /*response_processor=*/
+                     std::make_unique<DownloadKeysResponseHandler>(
+                         last_trusted_vault_key, last_trusted_vault_key_version,
+                         std::move(device_key_pair)),
+                     std::move(callback)));
+
+  return request;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

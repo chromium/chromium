@@ -476,6 +476,7 @@ source_set("unit_tests") {
     "nigori/nigori_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
+    "trusted_vault/download_keys_response_handler_unittest.cc",
     "trusted_vault/securebox_unittest.cc",
     "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
     "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",

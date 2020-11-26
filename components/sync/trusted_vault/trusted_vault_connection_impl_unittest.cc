@@ -39,6 +39,8 @@ const char kEncodedPrivateKey[] =
 const char kTestURL[] = "https://test.com/test";
 const char kTestJoinSecurityDomainsURL[] =
     "https://test.com/test/domain:join?alt=proto";
+const char kTestListSecurityDomainsURL[] =
+    "https://test.com/test/domain:list?view=1&alt=proto";
 const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
                                      'e', 'd', '_', 'k', 'e', 'y'};
 
@@ -113,6 +115,15 @@ class TrustedVaultConnectionImplTest : public testing::Test {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
         kTestJoinSecurityDomainsURL,
         /*content=*/std::string(), response_http_code);
+  }
+
+  bool RespondToListSecurityDomainsRequest(
+      net::HttpStatusCode response_http_code) {
+    // Allow request to reach |test_url_loader_factory_|.
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kTestListSecurityDomainsURL, /*content=*/std::string(),
+        response_http_code);
   }
 
   const std::vector<uint8_t> kTrustedVaultKey = {1, 2, 3, 4};
@@ -298,6 +309,86 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
   // Returned value isn't checked here, because the request can be cancelled
   // before reaching TestURLLoaderFactory.
   RespondToJoinSecurityDomainsRequest(net::HTTP_OK);
+}
+
+TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadKeys(
+          /*account_info=*/CoreAccountInfo(),
+          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
+          /*last_trusted_vault_key_version=*/0,
+          /*device_key_pair=*/MakeTestKeyPair(), base::DoNothing());
+  EXPECT_THAT(request, NotNull());
+
+  network::TestURLLoaderFactory::PendingRequest* pending_http_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_http_request, NotNull());
+
+  const network::ResourceRequest& resource_request =
+      pending_http_request->request;
+  EXPECT_THAT(resource_request.method, Eq("GET"));
+  EXPECT_THAT(resource_request.url, Eq(GURL(kTestListSecurityDomainsURL)));
+}
+
+// TODO(crbug.com/1113598): add coverage for at least one successful case
+// (need to share some helper functions with
+// download_keys_response_handler_unittest.cc).
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleFailedListSecurityDomainsRequest) {
+  base::MockCallback<TrustedVaultConnection::DownloadKeysCallback> callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadKeys(
+          /*account_info=*/CoreAccountInfo(),
+          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
+          /*last_trusted_vault_key_version=*/0,
+          /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError), _, _));
+  EXPECT_TRUE(
+      RespondToListSecurityDomainsRequest(net::HTTP_INTERNAL_SERVER_ERROR));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleAccessTokenFetchingFailureWhenDownloadingKeys) {
+  std::unique_ptr<TrustedVaultConnectionImpl> connection =
+      CreateConnectionWithAccessToken(
+          /*access_token=*/base::nullopt);
+
+  base::MockCallback<TrustedVaultConnection::DownloadKeysCallback> callback;
+
+  // |callback| is called immediately after DownloadKeys(), because there is no
+  // access token.
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError), _, _));
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection->DownloadKeys(
+          /*account_info=*/CoreAccountInfo(),
+          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
+          /*last_trusted_vault_key_version=*/0,
+          /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  // No requests should be sent to the network.
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+}
+
+TEST_F(TrustedVaultConnectionImplTest, ShouldCancelListSecurityDomainsRequest) {
+  base::MockCallback<TrustedVaultConnection::DownloadKeysCallback> callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->DownloadKeys(
+          /*account_info=*/CoreAccountInfo(),
+          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
+          /*last_trusted_vault_key_version=*/0,
+          /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run).Times(0);
+  request.reset();
+  // Returned value isn't checked here, because the request can be cancelled
+  // before reaching TestURLLoaderFactory.
+  RespondToListSecurityDomainsRequest(net::HTTP_OK);
 }
 
 }  // namespace

@@ -13,6 +13,7 @@ message SharedKey {
   optional int32 epoch = 1;
   optional bytes wrapped_key = 2;
   optional bytes member_proof = 3;
+  optional bytes key_proof = 4;
 }
 
 message SecurityDomain {
@@ -27,5 +28,9 @@ message SecurityDomain {
 }
 
 message JoinSecurityDomainsRequest {
+  repeated SecurityDomain security_domains = 1;
+}
+
+message ListSecurityDomainsResponse {
   repeated SecurityDomain security_domains = 1;
 }

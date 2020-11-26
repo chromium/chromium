@@ -4,6 +4,8 @@
 
 static_library("trusted_vault") {
   sources = [
+    "download_keys_response_handler.cc",
+    "download_keys_response_handler.h",
     "securebox.cc",
     "securebox.h",
     "standalone_trusted_vault_backend.cc",
