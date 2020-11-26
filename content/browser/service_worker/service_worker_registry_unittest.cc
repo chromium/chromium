@@ -288,6 +288,8 @@ class ServiceWorkerRegistryTest : public testing::Test {
     return special_storage_policy_.get();
   }
 
+  size_t inflight_call_count() { return registry()->inflight_calls_.size(); }
+
   void InitializeTestHelper() {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(
         user_data_directory_path_, special_storage_policy_.get());
@@ -1314,6 +1316,27 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
     loop1.Run();
     loop2.Run();
   }
+}
+
+TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_DeleteAndStartOver) {
+  base::RunLoop loop;
+  registry()->DeleteAndStartOver(
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        DCHECK_EQ(status, blink::ServiceWorkerStatusCode::kOk);
+        loop.Quit();
+      }));
+
+  EXPECT_EQ(inflight_call_count(), 1U);
+  registry()->SimulateStorageRestartForTesting();
+
+  base::HistogramTester histogram_tester;
+  loop.Run();
+  EXPECT_EQ(inflight_call_count(), 0U);
+  const size_t kExpectedRetryCountForRecovery = 0;
+  const size_t kExpectedSampleCount = 1;
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.Storage.RetryCountForRecovery",
+      kExpectedRetryCountForRecovery, kExpectedSampleCount);
 }
 
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {

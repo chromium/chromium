@@ -48,18 +48,6 @@ blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
   }
 }
 
-ServiceWorkerStorage::DatabaseStatusCallback CreateDatabaseStatusCallback(
-    ServiceWorkerRegistry::StatusCallback callback) {
-  return base::BindOnce(
-      [](ServiceWorkerRegistry::StatusCallback callback,
-         storage::mojom::ServiceWorkerDatabaseStatus database_status) {
-        blink::ServiceWorkerStatusCode status =
-            DatabaseStatusToStatusCode(database_status);
-        std::move(callback).Run(status);
-      },
-      std::move(callback));
-}
-
 void RunSoon(const base::Location& from_here, base::OnceClosure closure) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(from_here, std::move(closure));
 }
@@ -668,8 +656,11 @@ void ServiceWorkerRegistry::PrepareForDeleteAndStartOver() {
 }
 
 void ServiceWorkerRegistry::DeleteAndStartOver(StatusCallback callback) {
-  GetRemoteStorageControl()->Delete(
-      CreateDatabaseStatusCallback(std::move(callback)));
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::Delete,
+      base::BindRepeating(&ServiceWorkerRegistry::DidDeleteAndStartOver,
+                          weak_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
 void ServiceWorkerRegistry::SimulateStorageRestartForTesting() {
@@ -1317,6 +1308,15 @@ void ServiceWorkerRegistry::ScheduleDeleteAndStartOver() {
   // ServiceWorkerContextCore should call PrepareForDeleteAndStartOver().
   DCHECK(!should_schedule_delete_and_start_over_);
   DCHECK(is_storage_disabled_);
+}
+
+void ServiceWorkerRegistry::DidDeleteAndStartOver(
+    StatusCallback callback,
+    uint64_t call_id,
+    storage::mojom::ServiceWorkerDatabaseStatus status) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
+  std::move(callback).Run(DatabaseStatusToStatusCode(status));
 }
 
 void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(

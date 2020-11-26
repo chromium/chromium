@@ -360,6 +360,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
           version_reference);
 
   void ScheduleDeleteAndStartOver();
+  void DidDeleteAndStartOver(
+      StatusCallback callback,
+      uint64_t call_id,
+      storage::mojom::ServiceWorkerDatabaseStatus status);
 
   // TODO(bashi): Consider introducing a helper class that handles the below.
   // These are almost the same as DOMStorageContextWrapper.
