@@ -632,6 +632,12 @@ bool TestingProfile::IsOffTheRecord() const {
   return original_profile_;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool TestingProfile::IsMainProfile() const {
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 const Profile::OTRProfileID& TestingProfile::GetOTRProfileID() const {
   DCHECK(IsOffTheRecord());
   return *otr_profile_id_;

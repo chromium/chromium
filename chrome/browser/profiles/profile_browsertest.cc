@@ -84,6 +84,15 @@
 #include "extensions/common/value_builder.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "components/account_id/account_id.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 // A helper class which creates a SimpleURLLoader with an expected final status
@@ -969,3 +978,158 @@ IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
 }
 
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
+                       IsMainProfileReturnsFalseForNonDefaultPaths) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  {
+    base::FilePath profile_path = temp_dir.GetPath().Append("1Default");
+    std::unique_ptr<Profile> profile(
+        CreateProfile(profile_path, /* delegate= */ nullptr,
+                      Profile::CREATE_MODE_SYNCHRONOUS));
+
+    EXPECT_FALSE(profile->IsMainProfile());
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
+  }
+  FlushIoTaskRunnerAndSpinThreads();
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
+                       IsMainProfileReturnsTrueForPublicSessions) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  {
+    base::FilePath profile_path =
+        temp_dir.GetPath().Append(chrome::kInitialProfile);
+    std::unique_ptr<Profile> profile(
+        CreateProfile(profile_path, /* delegate= */ nullptr,
+                      Profile::CREATE_MODE_SYNCHRONOUS));
+
+    crosapi::mojom::LacrosInitParamsPtr init_params =
+        crosapi::mojom::LacrosInitParams::New();
+    init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
+    chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
+        std::move(init_params));
+
+    EXPECT_TRUE(profile->IsMainProfile());
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
+  }
+  FlushIoTaskRunnerAndSpinThreads();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileBrowserTest,
+    IsMainProfileReturnsTrueForActiveDirectoryEnrolledDevices) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  {
+    base::FilePath profile_path =
+        temp_dir.GetPath().Append(chrome::kInitialProfile);
+    std::unique_ptr<Profile> profile(
+        CreateProfile(profile_path, /* delegate= */ nullptr,
+                      Profile::CREATE_MODE_SYNCHRONOUS));
+
+    crosapi::mojom::LacrosInitParamsPtr init_params =
+        crosapi::mojom::LacrosInitParams::New();
+    init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
+    init_params->device_mode =
+        crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory;
+    chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
+        std::move(init_params));
+
+    EXPECT_TRUE(profile->IsMainProfile());
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
+  }
+  FlushIoTaskRunnerAndSpinThreads();
+}
+
+// TODO(sinhak): Remove this test after launching go/cros-dent-1-lacros.
+IN_PROC_BROWSER_TEST_F(
+    ProfileBrowserTest,
+    IsMainProfileReturnsTrueForMainProfileInRegularSessions) {
+  // Setup.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const std::string kFakePrimaryUsername = "user@example.com";
+  const std::string kFakeGaiaId = "fake-gaia-id";
+  ProfileAttributesStorage& profile_attributes_storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  const base::FilePath profile_path =
+      browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);
+  // Creates a new Profile and (fake) signs in `kFakeGaiaId`.
+  profile_attributes_storage.AddProfile(
+      profile_path, base::UTF8ToUTF16(chrome::kInitialProfile), kFakeGaiaId,
+      base::UTF8ToUTF16(kFakePrimaryUsername),
+      /*is_consented_primary_account=*/false, /*icon_index=*/0,
+      /*supervised_user_id*/ std::string(), EmptyAccountId());
+
+  crosapi::mojom::LacrosInitParamsPtr init_params =
+      crosapi::mojom::LacrosInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
+  init_params->device_mode = crosapi::mojom::DeviceMode::kConsumer;
+  init_params->device_account_gaia_id = kFakeGaiaId;
+  chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
+      std::move(init_params));
+
+  // Test.
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  EXPECT_TRUE(profile->IsMainProfile());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
+                       IsMainProfileReturnsTrueForOTRProfileInRegularSessions) {
+  // Setup.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const std::string kFakePrimaryUsername = "user@example.com";
+  const std::string kFakeGaiaId = "fake-gaia-id";
+  ProfileAttributesStorage& profile_attributes_storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  const base::FilePath profile_path =
+      browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);
+  // Creates a new Profile and (fake) signs in `kFakeGaiaId`.
+  profile_attributes_storage.AddProfile(
+      profile_path, base::UTF8ToUTF16(chrome::kInitialProfile), kFakeGaiaId,
+      base::UTF8ToUTF16(kFakePrimaryUsername),
+      /*is_consented_primary_account=*/false, /*icon_index=*/0,
+      /*supervised_user_id*/ std::string(), EmptyAccountId());
+
+  crosapi::mojom::LacrosInitParamsPtr init_params =
+      crosapi::mojom::LacrosInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
+  init_params->device_mode = crosapi::mojom::DeviceMode::kConsumer;
+  init_params->device_account_gaia_id = kFakeGaiaId;
+  chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
+      std::move(init_params));
+
+  // Test.
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  EXPECT_FALSE(profile->GetPrimaryOTRProfile()->IsMainProfile());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

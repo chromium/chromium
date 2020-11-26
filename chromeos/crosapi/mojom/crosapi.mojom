@@ -162,6 +162,8 @@ struct DefaultPaths {
 //
 // If ash-chrome is newer than lacros-chrome, then some fields may not be
 // processed by lacros-chrome.
+//
+// Next version: 8
 [Stable]
 struct LacrosInitParams {
   // This is ash-chrome's version of the AshChromeService interface. This is
@@ -203,6 +205,13 @@ struct LacrosInitParams {
   // Added in M89.
   [MinVersion=6]
   DefaultPaths? default_paths@6;
+
+  // Device Account's obfuscated Gaia id, if present.
+  // This is null for older versions of ash, for Active Directory sessions,
+  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
+  // Added in M89.
+  [MinVersion=7]
+  string? device_account_gaia_id@7;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

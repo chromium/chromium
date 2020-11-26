@@ -103,6 +103,9 @@ class OffTheRecordProfileImpl : public Profile {
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   bool IsOffTheRecord() override;
   bool IsOffTheRecord() const override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsMainProfile() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::ResourceContext* GetResourceContext() override;

@@ -521,6 +521,11 @@ int LacrosChromeServiceImpl::GetInterfaceVersion(
   return it->second;
 }
 
+void LacrosChromeServiceImpl::SetInitParamsForTests(
+    crosapi::mojom::LacrosInitParamsPtr init_params) {
+  init_params_ = std::move(init_params);
+}
+
 void LacrosChromeServiceImpl::BindScreenManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
   DCHECK(IsScreenManagerAvailable());

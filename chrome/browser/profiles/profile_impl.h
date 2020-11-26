@@ -118,6 +118,9 @@ class ProfileImpl : public Profile {
   base::Time GetCreationTime() const override;
   bool IsOffTheRecord() override;
   bool IsOffTheRecord() const override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsMainProfile() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   base::FilePath GetPath() const override;
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;

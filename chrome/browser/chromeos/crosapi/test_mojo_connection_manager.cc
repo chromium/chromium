@@ -26,6 +26,8 @@ namespace crosapi {
 
 namespace {
 
+constexpr char kFakeGaiaId[] = "fake-gaia-id";
+
 class FakeEnvironmentProvider : public EnvironmentProvider {
   crosapi::mojom::SessionType GetSessionType() override {
     return crosapi::mojom::SessionType::kRegularSession;
@@ -39,6 +41,7 @@ class FakeEnvironmentProvider : public EnvironmentProvider {
     base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &paths->downloads);
     return paths;
   }
+  std::string GetDeviceAccountGaiaId() override { return kFakeGaiaId; }
 };
 
 // TODO(crbug.com/1124494): Refactor the code to share with ARC.

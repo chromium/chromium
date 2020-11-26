@@ -23,7 +23,7 @@ EnvironmentProvider::~EnvironmentProvider() = default;
 
 mojom::SessionType EnvironmentProvider::GetSessionType() {
   const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      user_manager::UserManager::Get()->GetPrimaryUser();
   const Profile* const profile =
       chromeos::ProfileHelper::Get()->GetProfileByUser(user);
   if (profile->IsGuestSession()) {
@@ -82,6 +82,20 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     default_paths->downloads = home.Append("Downloads");
   }
   return default_paths;
+}
+
+std::string EnvironmentProvider::GetDeviceAccountGaiaId() {
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user)
+    return std::string();
+
+  const AccountId& account_id = user->GetAccountId();
+  if (account_id.GetAccountType() != AccountType::GOOGLE)
+    return std::string();
+
+  DCHECK(!account_id.GetGaiaId().empty());
+  return account_id.GetGaiaId();
 }
 
 }  // namespace crosapi

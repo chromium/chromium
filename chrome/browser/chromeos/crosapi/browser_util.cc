@@ -84,6 +84,8 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
   params->device_mode = environment_provider->GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
   params->default_paths = environment_provider->GetDefaultPaths();
+  params->device_account_gaia_id =
+      environment_provider->GetDeviceAccountGaiaId();
 
   return params;
 }

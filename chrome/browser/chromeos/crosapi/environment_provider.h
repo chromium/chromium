@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_ENVIRONMENT_PROVIDER_H_
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_ENVIRONMENT_PROVIDER_H_
 
+#include <string>
+
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 
 namespace crosapi {
@@ -25,6 +27,7 @@ class EnvironmentProvider {
   // These are provided by ash because they are part of the device account,
   // not the Lacros profile.
   virtual crosapi::mojom::DefaultPathsPtr GetDefaultPaths();
+  virtual std::string GetDeviceAccountGaiaId();
 };
 
 }  // namespace crosapi

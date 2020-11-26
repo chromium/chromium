@@ -207,6 +207,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // work on M87 or older should not use this.
   int GetInterfaceVersion(base::Token interface_uuid) const;
 
+  // Sets `init_params_` to the provided value.
+  // Useful for tests that cannot setup a full Lacros test environment with a
+  // working Mojo connection to Ash.
+  void SetInitParamsForTests(crosapi::mojom::LacrosInitParamsPtr init_params);
+
  private:
   // LacrosChromeServiceNeverBlockingState is an implementation detail of this
   // class.

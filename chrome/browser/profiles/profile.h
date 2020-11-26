@@ -439,11 +439,13 @@ class Profile : public content::BrowserContext {
   virtual bool IsSystemProfile() const;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1129543): Implement this method.
-  // In Lacros, there is exactly one profile associated with the currently
-  // logged in user on ChromeOS.
-  bool IsMainProfile() const { return false; }
-#endif
+  // Returns `true` if this is the first/initial Profile in Lacros, and - for
+  // regular sessions, if this Profile has the Device Account logged in.
+  // For non-regular sessions (Guest Sessions, Managed Guest Sessions) which do
+  // not have the concept of a Device Account, the latter condition is not
+  // checked.
+  virtual bool IsMainProfile() const = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool CanUseDiskWhenOffTheRecord() override;
 

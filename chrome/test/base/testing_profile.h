@@ -295,6 +295,9 @@ class TestingProfile : public Profile {
   // profile dynamically.
   bool IsOffTheRecord() final;
   bool IsOffTheRecord() const final;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsMainProfile() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::ResourceContext* GetResourceContext() override;
