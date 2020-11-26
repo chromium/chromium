@@ -588,8 +588,6 @@ bool FrameTreeNode::StopLoading() {
     navigation_request_->set_net_error(net::ERR_ABORTED);
   ResetNavigationRequest(false);
 
-  // TODO(nasko): see if child frames should send IPCs in site-per-process
-  // mode.
   if (!IsMainFrame())
     return true;
 

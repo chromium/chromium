@@ -8011,13 +8011,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 
-  // Navigate to an URL, which redirects to a data: URL, since it is an
-  // unsafe redirect and will result in a blocked navigation and error page.
-  // TODO(nasko): Find a different way to cause a blocked navigation, so
-  // we test a bit more generic case.
-  GURL redirect_to_unsafe_url(
-      embedded_test_server()->GetURL("/server-redirect?data:text/html,Hello!"));
-  EXPECT_FALSE(NavigateToURL(shell(), redirect_to_unsafe_url));
+  // Navigate to a URL that is blocked, which results in an error page.
+  GURL blocked_url(embedded_test_server()->GetURL("/blocked.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(blocked_url,
+                                                   net::ERR_BLOCKED_BY_CLIENT);
+  EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
 
@@ -8034,12 +8033,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // The expectation is that the blocked URL is present in the NavigationEntry,
   // and shows up in both GetURL and GetVirtualURL.
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
-  EXPECT_FALSE(
-      controller.GetLastCommittedEntry()->GetURL().SchemeIs(url::kDataScheme));
-  EXPECT_EQ(redirect_to_unsafe_url,
-            controller.GetLastCommittedEntry()->GetURL());
-  EXPECT_EQ(redirect_to_unsafe_url,
-            controller.GetLastCommittedEntry()->GetVirtualURL());
+  EXPECT_EQ(blocked_url, controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(blocked_url, controller.GetLastCommittedEntry()->GetVirtualURL());
 }
 
 // Verifies that unsafe redirects to javascript: URLs are canceled and don't

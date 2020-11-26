@@ -22,8 +22,6 @@ class WebContents;
 
 // Interface for objects embedding a NavigationController to provide the
 // functionality NavigationController needs.
-// TODO(nasko): This interface should exist for short amount of time, while
-// we transition navigation code from WebContents to Navigator.
 class NavigationControllerDelegate {
  public:
   virtual ~NavigationControllerDelegate() {}
