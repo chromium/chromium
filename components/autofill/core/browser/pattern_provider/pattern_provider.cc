@@ -71,7 +71,7 @@ PatternProvider& PatternProvider::GetInstance() {
   static base::NoDestructor<PatternProvider> instance;
   static bool initialized = false;
   if (!initialized) {
-    instance->SetPatterns(CreateDefaultRegexPatterns(), base::Version(), true);
+    instance->SetPatterns(CreateDefaultRegexPatterns(), base::Version());
     initialized = true;
   }
   return *instance;
@@ -81,15 +81,12 @@ PatternProvider::PatternProvider() = default;
 PatternProvider::~PatternProvider() = default;
 
 void PatternProvider::SetPatterns(PatternProvider::Map patterns,
-                                  const base::Version version,
-                                  const bool overwrite_equal_version) {
+                                  const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!pattern_version_.IsValid() ||
-      (version.IsValid() && pattern_version_ < version) ||
-      (version.IsValid() && pattern_version_ == version &&
-       overwrite_equal_version)) {
-    patterns_ = patterns;
+      (version.IsValid() && pattern_version_ <= version)) {
+    patterns_ = std::move(patterns);
     pattern_version_ = version;
     EnrichPatternsWithEnVersion(&patterns_);
     SortPatternsByScore(&patterns_);

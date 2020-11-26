@@ -117,11 +117,6 @@ class AutofillTest : public InProcessBrowserTest {
     // Don't want Keychain coming up on Mac.
     test::DisableSystemServices(browser()->profile()->GetPrefs());
 
-    // Load the MatchingPattern definitions.
-    base::RunLoop run_loop;
-    field_type_parsing::PopulateFromResourceBundle(run_loop.QuitClosure());
-    run_loop.Run();
-
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

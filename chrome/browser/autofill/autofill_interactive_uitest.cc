@@ -302,11 +302,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         &AutofillInteractiveTestBase::HandleTestURL, base::Unretained(this)));
     embedded_test_server()->StartAcceptingConnections();
 
-    // Load the MatchingPattern definitions.
-    base::RunLoop run_loop;
-    field_type_parsing::PopulateFromResourceBundle(run_loop.QuitClosure());
-    run_loop.Run();
-
     // By default, all SSL cert checks are valid. Can be overriden in tests if
     // needed.
     cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);

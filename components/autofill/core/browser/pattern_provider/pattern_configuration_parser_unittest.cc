@@ -23,7 +23,7 @@ namespace field_type_parsing {
 // parsed to the map structure used by |PatternProvider| as
 // expected, given the input is valid.
 TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
-  std::string JSON_message = R"(
+  std::string json_message = R"(
     {
       "version": "1.0",
       "FULL_NAME": {
@@ -61,14 +61,14 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
         ]
       }
     })";
-  base::Optional<base::Value> JSON_object =
-      base::JSONReader::Read(JSON_message);
+  base::Optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
 
-  ASSERT_TRUE(JSON_object) << "Incorrectly formatted JSON string.";
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
-  base::Version version = ExtractVersionFromJsonObject(JSON_object.value());
+  base::Version version = ExtractVersionFromJsonObject(json_object.value());
   base::Optional<PatternProvider::Map> optional_patterns =
-      GetConfigurationFromJsonObject(JSON_object.value());
+      GetConfigurationFromJsonObject(json_object.value());
 
   ASSERT_TRUE(version.IsValid());
   ASSERT_TRUE(optional_patterns);
@@ -101,7 +101,7 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
 // Test that the parser does not return anything if some |MatchingPattern|
 // object is missing a property.
 TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
-  std::string JSON_message = R"(
+  std::string json_message = R"(
     {
       "version": "1.0",
       "FULL_NAME": {
@@ -126,13 +126,13 @@ TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
         ]
       }
     })";
-  base::Optional<base::Value> JSON_object =
-      base::JSONReader::Read(JSON_message);
+  base::Optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
 
-  ASSERT_TRUE(JSON_object) << "Incorrectly formatted JSON string.";
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   base::Optional<PatternProvider::Map> optional_patterns =
-      GetConfigurationFromJsonObject(JSON_object.value());
+      GetConfigurationFromJsonObject(json_object.value());
 
   ASSERT_FALSE(optional_patterns);
 }
@@ -140,7 +140,7 @@ TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
 // Test that the parser correctly sets the default version if
 // it is not present in the configuration.
 TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
-  std::string JSON_message = R"(
+  std::string json_message = R"(
     {
       "FULL_NAME": {
         "en": [
@@ -154,12 +154,12 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
         ]
       }
     })";
-  base::Optional<base::Value> JSON_object =
-      base::JSONReader::Read(JSON_message);
+  base::Optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
 
-  ASSERT_TRUE(JSON_object) << "Incorrectly formatted JSON string.";
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
-  base::Version version = ExtractVersionFromJsonObject(JSON_object.value());
+  base::Version version = ExtractVersionFromJsonObject(json_object.value());
 
   ASSERT_EQ(base::Version("0"), version);
 }
@@ -167,7 +167,7 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
 // Test that the parser does not return anything if the inner key points
 // to a single object instead of a list.
 TEST(PatternConfigurationParserTest, MalformedNotList) {
-  std::string JSON_message = R"(
+  std::string json_message = R"(
     {
       "FULL_NAME": {
         "en": {
@@ -179,13 +179,13 @@ TEST(PatternConfigurationParserTest, MalformedNotList) {
         }
       }
     })";
-  base::Optional<base::Value> JSON_object =
-      base::JSONReader::Read(JSON_message);
+  base::Optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
 
-  ASSERT_TRUE(JSON_object) << "Incorrectly formatted JSON string.";
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   base::Optional<PatternProvider::Map> optional_patterns =
-      GetConfigurationFromJsonObject(JSON_object.value());
+      GetConfigurationFromJsonObject(json_object.value());
 
   ASSERT_FALSE(optional_patterns);
 }

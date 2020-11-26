@@ -18,9 +18,11 @@
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/grit/components_resources.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 
@@ -65,9 +67,43 @@ class UnitTestPatternProvider : public PatternProvider {
         patterns[AutofillType::ServerFieldTypeToString(COMPANY_NAME)];
     company_patterns[kLanguageDe] = de_patterns;
     company_patterns[kLanguageEn] = en_patterns;
-    SetPatterns(patterns, base::Version(), true);
+    SetPatterns(std::move(patterns), base::Version());
   }
 };
+
+// Called when the JSON bundle has been parsed, and sets the PatternProvider's
+// patterns.
+void OnJsonParsed(base::OnceClosure done_callback,
+                  data_decoder::DataDecoder::ValueOrError result) {
+  base::Version version =
+      field_type_parsing::ExtractVersionFromJsonObject(result.value.value());
+  base::Optional<PatternProvider::Map> patterns =
+      field_type_parsing::GetConfigurationFromJsonObject(result.value.value());
+  ASSERT_TRUE(patterns);
+  ASSERT_TRUE(version.IsValid());
+  PatternProvider& pattern_provider = PatternProvider::GetInstance();
+  pattern_provider.SetPatterns(std::move(patterns.value()), std::move(version));
+  std::move(done_callback).Run();
+}
+
+// Loads the string from the Resource Bundle on a worker thread.
+void LoadPatternsFromResourceBundle() {
+  ASSERT_TRUE(ui::ResourceBundle::HasSharedInstance());
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ui::ResourceBundle::LoadDataResourceString,
+                     base::Unretained(&bundle), IDR_AUTOFILL_REGEX_JSON),
+      base::BindOnce(
+          [](base::OnceClosure done_callback, std::string resource_string) {
+            data_decoder::DataDecoder::ParseJsonIsolated(
+                std::move(resource_string),
+                base::BindOnce(&OnJsonParsed, std::move(done_callback)));
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
 
 }  // namespace
 
@@ -115,9 +151,7 @@ TEST(AutofillPatternProviderTest, TestDefaultEqualsJson) {
   ASSERT_NE(default_patterns, PatternProvider::GetInstance().patterns_);
 
   // Load the JSON explicitly from the file.
-  base::RunLoop run_loop;
-  field_type_parsing::PopulateFromResourceBundle(run_loop.QuitClosure());
-  run_loop.Run();
+  LoadPatternsFromResourceBundle();
 
   auto json_version = PatternProvider::GetInstance().pattern_version_;
   auto json_patterns = PatternProvider::GetInstance().patterns_;

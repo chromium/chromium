@@ -195,11 +195,6 @@ void FormStructureBrowserTest::SetUpCommandLine(
 void FormStructureBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
 
-  // Load the MatchingPattern definitions.
-  base::RunLoop run_loop;
-  field_type_parsing::PopulateFromResourceBundle(run_loop.QuitClosure());
-  run_loop.Run();
-
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &FormStructureBrowserTest::HandleRequest, base::Unretained(this)));
   ASSERT_TRUE(embedded_test_server()->Start());

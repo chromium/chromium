@@ -76,18 +76,12 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   return true;
 }
 
-// Callback which is used once the JSON is parsed.
-// |overwrite_equal_version| should be true when loading a remote
-// configuration. If the configuration versions are equal or
-// both unspecified (i.e. set to 0) this prioritizes the remote
+// Callback which is used once the JSON is parsed. If the configuration versions
+// are equal or both unspecified (i.e. set to 0) this prioritizes the remote
 // configuration over the local one.
-void OnJsonParsed(bool overwrite_equal_version,
-                  base::OnceClosure done_callback,
-                  data_decoder::DataDecoder::ValueOrError result) {
-  // Skip any processing in case of an error.
+void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     DVLOG(1) << "Failed to parse PatternProvider configuration JSON string.";
-    std::move(done_callback).Run();
     return;
   }
 
@@ -97,15 +91,12 @@ void OnJsonParsed(bool overwrite_equal_version,
 
   if (patterns && version.IsValid()) {
     DVLOG(1) << "Successfully parsed PatternProvider configuration.";
-
     PatternProvider& pattern_provider = PatternProvider::GetInstance();
     pattern_provider.SetPatterns(std::move(patterns.value()),
-                                 std::move(version), overwrite_equal_version);
+                                 std::move(version));
   } else {
     DVLOG(1) << "Failed to parse PatternProvider configuration JSON object.";
   }
-
-  std::move(done_callback).Run();
 }
 
 }  // namespace
@@ -169,35 +160,8 @@ base::Version ExtractVersionFromJsonObject(base::Value& root) {
 }
 
 void PopulateFromJsonString(std::string json_string) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      std::move(json_string),
-      base::BindOnce(&OnJsonParsed, true, base::DoNothing::Once()));
-}
-
-void PopulateFromResourceBundle(base::OnceClosure done_callback) {
-  if (!ui::ResourceBundle::HasSharedInstance()) {
-    VLOG(1) << "Resource Bundle unavailable to load Autofill Matching Pattern "
-               "definitions.";
-    std::move(done_callback).Run();
-    return;
-  }
-
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-
-  // Load the string from the Resource Bundle on a worker thread, then
-  // securely parse the JSON in a separate process and call |OnJsonParsed|
-  // with the result.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ui::ResourceBundle::LoadDataResourceString,
-                     base::Unretained(&bundle), IDR_AUTOFILL_REGEX_JSON),
-      base::BindOnce(
-          [](base::OnceClosure done_callback, std::string resource_string) {
-            data_decoder::DataDecoder::ParseJsonIsolated(
-                std::move(resource_string),
-                base::BindOnce(&OnJsonParsed, false, std::move(done_callback)));
-          },
-          std::move(done_callback)));
+  data_decoder::DataDecoder::ParseJsonIsolated(std::move(json_string),
+                                               base::BindOnce(&OnJsonParsed));
 }
 
 base::Optional<PatternProvider::Map>

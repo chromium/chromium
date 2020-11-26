@@ -27,7 +27,6 @@ class PatternProvider {
  public:
   // The outer keys are field types or other pattern names. The inner keys are
   // page languages in lower case.
-  // TODO(crbug/1142413): decide on uppercase or lowercase.
   using Map = std::map<std::string,
                        std::map<LanguageCode, std::vector<MatchingPattern>>>;
 
@@ -35,9 +34,7 @@ class PatternProvider {
   static PatternProvider& GetInstance();
 
   // Setter for loading patterns from external storage.
-  void SetPatterns(const Map patterns,
-                   const base::Version version,
-                   const bool overwrite_equal_version);
+  void SetPatterns(const Map patterns, const base::Version& version);
 
   // Find the patterns for a given ServerFieldType and for a given
   // |page_language|.
