@@ -6023,3 +6023,6 @@ crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ P
 crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.html [ Pass Timeout ]
 crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.worker.html [ Pass Timeout ]
 crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
+
+#Sheriff 2020-11-26
+crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Timeout ]
