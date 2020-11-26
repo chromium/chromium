@@ -208,7 +208,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
 
   INCREMENT_COUNTER(stats_.cache_fill_count);
 
-  if (bucket_index >= kBucketCount) {
+  if (UNLIKELY(bucket_index >= kBucketCount)) {
     INCREMENT_COUNTER(stats_.cache_fill_misses);
     return false;
   }
@@ -225,7 +225,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
   INCREMENT_COUNTER(stats_.cache_fill_hits);
 
   // Batched deallocation, amortizing lock acquisitions.
-  if (bucket.count >= kMaxCountPerBucket) {
+  if (UNLIKELY(bucket.count >= kMaxCountPerBucket)) {
     ClearBucket(bucket, kMaxCountPerBucket / 2);
   }
 
@@ -235,7 +235,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
 ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
   INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
-  if (bucket_index >= kBucketCount) {
+  if (UNLIKELY(bucket_index >= kBucketCount)) {
     INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     INCREMENT_COUNTER(stats_.alloc_misses);
     return nullptr;
@@ -243,7 +243,7 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
 
   auto& bucket = buckets_[bucket_index];
   auto* result = bucket.freelist_head;
-  if (!result) {
+  if (UNLIKELY(!result)) {
     PA_DCHECK(bucket.count == 0);
     INCREMENT_COUNTER(stats_.alloc_miss_empty);
     INCREMENT_COUNTER(stats_.alloc_misses);
