@@ -71,18 +71,6 @@ namespace extensions {
 
 namespace {
 
-enum TestParam {
-  // Whether the extension under test is "allowlisted" (see
-  // GetExtensionsAllowlist in
-  // //extensions/browser/url_loader_factory_manager.cc).
-  kAllowlisted = 1 << 0,
-
-  // Whether network::features::
-  // kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess is
-  // enabled.
-  kDeriveOriginFromUrl = 1 << 2,
-};
-
 const char kCorsErrorWhenFetching[] = "error: TypeError: Failed to fetch";
 
 // The manifest.json used by tests uses |kExpectedKey| that will result in the
@@ -197,7 +185,7 @@ class ServiceWorkerConsoleObserver
 
 class CorbAndCorsExtensionBrowserTest
     : public CorbAndCorsExtensionTestBase,
-      public ::testing::WithParamInterface<TestParam> {
+      public ::testing::WithParamInterface<bool> {
  public:
   using Base = CorbAndCorsExtensionTestBase;
 
@@ -205,17 +193,6 @@ class CorbAndCorsExtensionBrowserTest
     std::vector<base::Feature> disabled_features;
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
-
-    if (DeriveOriginFromUrl()) {
-      enabled_features.emplace_back(
-          network::features::
-              kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess,
-          base::FieldTrialParams());
-    } else {
-      disabled_features.push_back(
-          network::features::
-              kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess);
-    }
 
     if (IsExtensionAllowlisted()) {
       base::FieldTrialParams field_trial_params;
@@ -240,13 +217,7 @@ class CorbAndCorsExtensionBrowserTest
         &policy_provider_);
   }
 
-  bool IsExtensionAllowlisted() {
-    return (GetParam() & TestParam::kAllowlisted) != 0;
-  }
-
-  bool DeriveOriginFromUrl() {
-    return (GetParam() & TestParam::kDeriveOriginFromUrl) != 0;
-  }
+  bool IsExtensionAllowlisted() { return GetParam(); }
 
   const Extension* InstallExtension(
       GURL resource_to_fetch_from_declarative_content_script = GURL()) {
@@ -1288,7 +1259,7 @@ class TrustTokenExtensionBrowserTest : public CorbAndCorsExtensionBrowserTest {
 };
 INSTANTIATE_TEST_SUITE_P(Allowlisted_AllowlistForCors,
                          TrustTokenExtensionBrowserTest,
-                         ::testing::Values(TestParam::kAllowlisted));
+                         ::testing::Values(true));
 IN_PROC_BROWSER_TEST_P(
     TrustTokenExtensionBrowserTest,
     FromProgrammaticContentScript_TrustTokenRedemptionAllowed) {
@@ -2296,23 +2267,16 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
 
 INSTANTIATE_TEST_SUITE_P(Allowlisted,
                          CorbAndCorsExtensionBrowserTest,
-                         ::testing::Values(TestParam::kAllowlisted));
+                         ::testing::Values(true));
 INSTANTIATE_TEST_SUITE_P(NotAllowlisted,
                          CorbAndCorsExtensionBrowserTest,
-                         ::testing::Values(0));
+                         ::testing::Values(false));
 
 INSTANTIATE_TEST_SUITE_P(Allowlisted_LegacyOriginHeaderBehavior,
                          OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(TestParam::kAllowlisted));
-INSTANTIATE_TEST_SUITE_P(Allowlisted_NewOriginHeaderBehavior,
-                         OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(TestParam::kAllowlisted |
-                                           TestParam::kDeriveOriginFromUrl));
+                         ::testing::Values(true));
 INSTANTIATE_TEST_SUITE_P(NotAllowlisted_LegacyOriginHeaderBehavior,
                          OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(0));
-INSTANTIATE_TEST_SUITE_P(NotAllowlisted_NewOriginHeaderBehavior,
-                         OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(TestParam::kDeriveOriginFromUrl));
+                         ::testing::Values(false));
 
 }  // namespace extensions

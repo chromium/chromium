@@ -146,12 +146,6 @@ const base::FeatureParam<std::string>
 const base::Feature kDisableKeepaliveFetch{"DisableKeepaliveFetch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Attach the origin of the destination URL to the "origin" header
-const base::Feature
-    kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess{
-        "DeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess",
-        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether a |request_initiator| that mismatches
 // |request_initiator_origin_lock| leads to 1) failing the HTTP request and 2)
 // calling mojo::ReportBadMessage (on desktop platforms, where NetworkService
