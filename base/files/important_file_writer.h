@@ -117,6 +117,10 @@ class BASE_EXPORT ImportantFileWriter {
   // Overrides the timer to use for scheduling writes with |timer_override|.
   void SetTimerForTesting(OneShotTimer* timer_override);
 
+#if defined(UNIT_TEST)
+  size_t previous_data_size() const { return previous_data_size_; }
+#endif
+
  private:
   const OneShotTimer& timer() const {
     return timer_override_ ? *timer_override_ : timer_;
@@ -168,6 +172,11 @@ class BASE_EXPORT ImportantFileWriter {
 
   // Custom histogram suffix.
   const std::string histogram_suffix_;
+
+  // Memorizes the amount of data written on the previous write. This helps
+  // preallocating memory for the data serialization. It is only used for
+  // scheduled writes.
+  size_t previous_data_size_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

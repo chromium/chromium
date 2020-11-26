@@ -371,8 +371,15 @@ void ImportantFileWriter::ScheduleWrite(DataSerializer* serializer) {
 
 void ImportantFileWriter::DoScheduledWrite() {
   DCHECK(serializer_);
-  std::unique_ptr<std::string> data(new std::string);
+  auto data = std::make_unique<std::string>();
+
+  // Pre-allocate previously needed memory plus 1kB for potential growth of
+  // data. Reduces the number of memory allocations to grow |data| step by step
+  // from tiny to very large.
+  data->reserve(previous_data_size_ + 1024);
+
   if (serializer_->SerializeData(data.get())) {
+    previous_data_size_ = data->size();
     WriteNow(std::move(data));
   } else {
     DLOG(WARNING) << "failed to serialize data to be saved in "

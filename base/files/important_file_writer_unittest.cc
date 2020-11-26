@@ -234,6 +234,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWrite) {
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, ThreadTaskRunnerHandle::Get(),
                              kCommitInterval);
+  EXPECT_EQ(0u, writer.previous_data_size());
   writer.SetTimerForTesting(&timer);
   EXPECT_FALSE(writer.HasPendingWrite());
   DataSerializer serializer("foo");
@@ -247,6 +248,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWrite) {
   RunLoop().RunUntilIdle();
   ASSERT_TRUE(PathExists(writer.path()));
   EXPECT_EQ("foo", GetFileContent(writer.path()));
+  EXPECT_EQ(3u, writer.previous_data_size());
 }
 
 TEST_F(ImportantFileWriterTest, DoScheduledWrite) {
