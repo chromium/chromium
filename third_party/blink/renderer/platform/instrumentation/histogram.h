@@ -31,7 +31,6 @@ class PLATFORM_EXPORT CustomCountHistogram {
   void Count(base::HistogramBase::Sample);
   void CountMany(base::HistogramBase::Sample, int count);
   void CountMicroseconds(base::TimeDelta);
-  void CountMilliseconds(base::TimeDelta);
 
  protected:
   explicit CustomCountHistogram(base::HistogramBase*);
