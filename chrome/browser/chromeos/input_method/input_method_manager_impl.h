@@ -249,6 +249,9 @@ class InputMethodManagerImpl : public InputMethodManager,
       CandidateWindowController* candidate_window_controller);
   // Sets |keyboard_|.
   void SetImeKeyboardForTesting(ImeKeyboard* keyboard);
+  // Initialize |component_extension_manager_|.
+  void InitializeComponentExtensionForTesting(
+      std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
 
   // content::NotificationObserver overrides:
   void Observe(int type,

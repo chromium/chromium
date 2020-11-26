@@ -2761,9 +2761,6 @@
         },
       },
       'linux-chromeos-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
-        ],
         'swarming': {
           'shards': 2,
         },
