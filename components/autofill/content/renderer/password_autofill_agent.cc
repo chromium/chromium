@@ -1403,8 +1403,8 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   WebFormElement form = cleared_element.Form();
   if (form.IsNull()) {
     // Process password field clearing for fields outside the <form> tag.
-    GetPasswordManagerDriver()->PasswordFormCleared(
-        *GetFormDataFromUnownedInputElements());
+    if (auto unowned_form_data = GetFormDataFromUnownedInputElements())
+      GetPasswordManagerDriver()->PasswordFormCleared(*unowned_form_data);
     return;
   }
   // Process field clearing for a form under a <form> tag.
