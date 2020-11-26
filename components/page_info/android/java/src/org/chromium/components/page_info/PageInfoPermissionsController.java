@@ -65,8 +65,10 @@ public class PageInfoPermissionsController
     public void onSubpageRemoved() {
         assert mSubpageFragment != null;
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().remove(mSubpageFragment).commitNow();
+        SingleWebsiteSettings fragment = mSubpageFragment;
         mSubpageFragment = null;
+        if (host.isFinishing()) return;
+        host.getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
     }
 
     public void setPermissions(PageInfoView.PermissionParams params) {

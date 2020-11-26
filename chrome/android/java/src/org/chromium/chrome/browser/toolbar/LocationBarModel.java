@@ -130,10 +130,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public boolean hasTab() {
-        // TODO(dtrainor, tedchoc): Remove the isInitialized() check when we no longer wait for
-        // TAB_CLOSED events to remove this tab.  Otherwise there is a chance we use this tab after
-        // {@link ChromeTab#destroy()} is called.
-        return mTab != null && mTab.isInitialized();
+        // TODO(https://crbug.com/1147131): Remove the isInitialized() and isDestroyed checks when
+        // we no longer wait for TAB_CLOSED events to remove this tab.  Otherwise there is a chance
+        // we use this tab after {@link Tab#destroy()} is called.
+        return mTab != null && mTab.isInitialized() && !mTab.isDestroyed();
     }
 
     @Override

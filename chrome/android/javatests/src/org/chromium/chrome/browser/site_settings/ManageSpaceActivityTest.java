@@ -100,7 +100,7 @@ public class ManageSpaceActivityTest {
     @Test
     @SmallTest
     public void testLaunchActivity() {
-        startManageSpaceActivity();
+        startManageSpaceActivity().finish();
     }
 
     @Test

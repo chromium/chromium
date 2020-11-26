@@ -218,7 +218,7 @@ public class StartupLoadingMetricsTest {
             // mSlowPage will hang for 2 seconds before sending a response. It should be enough to
             // put Chrome in background before the page is committed.
             mTabbedActivityTestRule.prepareUrlIntent(intent, mSlowPage);
-            mTabbedActivityTestRule.startActivityCompletely(intent);
+            mTabbedActivityTestRule.launchActivity(intent);
 
             // Put Chrome in background before the page is committed.
             ChromeApplicationTestUtils.fireHomeScreenIntent(
