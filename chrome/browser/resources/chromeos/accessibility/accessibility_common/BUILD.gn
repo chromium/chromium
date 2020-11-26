@@ -113,4 +113,5 @@ js_library("autoclick") {
 
 js_library("magnifier") {
   sources = [ "magnifier/magnifier.js" ]
+  externs_list = [ "$externs_path/settings_private.js" ]
 }

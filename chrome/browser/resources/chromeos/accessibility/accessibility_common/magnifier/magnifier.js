@@ -6,7 +6,20 @@
  * Main class for the Chrome OS magnifier.
  */
 class Magnifier {
-  constructor() {
+  /**
+   * @param {!Magnifier.Type} type The type of magnifier in use.
+   */
+  constructor(type) {
+    /** @const {!Magnifier.Type} */
+    this.type = type;
+
+    /**
+     * Whether focus following is enabled or not, based on
+     * settings.a11y.screen_magnifier_focus_following preference.
+     * @private {boolean}
+     */
+    this.screenMagnifierFocusFollowing_;
+
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
         [], chrome.automation.EventType.FOCUS, this.onFocus_.bind(this));
@@ -29,12 +42,45 @@ class Magnifier {
    * @private
    */
   init_() {
+    chrome.settingsPrivate.getAllPrefs(this.updateFromPrefs_.bind(this));
+    chrome.settingsPrivate.onPrefsChanged.addListener(
+        this.updateFromPrefs_.bind(this));
+
     chrome.automation.getDesktop(desktop => {
       this.focusHandler_.setNodes(desktop);
       this.focusHandler_.start();
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
     });
+  }
+
+  /**
+   * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
+   * @private
+   */
+  updateFromPrefs_(prefs) {
+    prefs.forEach((pref) => {
+      switch (pref.key) {
+        case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
+          this.screenMagnifierFocusFollowing_ = !!pref.value;
+          break;
+        default:
+          return;
+      }
+    });
+  }
+
+  /**
+   * Returns whether magnifier viewport should follow focus. Exposed for
+   * testing.
+   *
+   * TODO(crbug.com/1146595): Add Chrome OS preference to allow disabling focus
+   * following for docked magnifier.
+   */
+  shouldFollowFocus() {
+    return this.type === Magnifier.Type.DOCKED ||
+        this.type === Magnifier.Type.FULL_SCREEN &&
+        this.screenMagnifierFocusFollowing_;
   }
 
   /**
@@ -53,7 +99,7 @@ class Magnifier {
    */
   onFocus_(event) {
     const {location} = event.target;
-    if (!location) {
+    if (!location || !this.shouldFollowFocus()) {
       return;
     }
 
@@ -68,7 +114,7 @@ class Magnifier {
    */
   onActiveDescendantChanged_(event) {
     const {activeDescendant} = event.target;
-    if (!activeDescendant) {
+    if (!activeDescendant || !this.shouldFollowFocus()) {
       return;
     }
 
@@ -80,3 +126,23 @@ class Magnifier {
     chrome.accessibilityPrivate.moveMagnifierToRect(location);
   }
 }
+
+/**
+ * Magnifier types.
+ * @enum {string}
+ * @const
+ */
+Magnifier.Type = {
+  FULL_SCREEN: 'fullScreen',
+  DOCKED: 'docked',
+};
+
+/**
+ * Preferences that are configurable for Magnifier.
+ * @enum {string}
+ * @const
+ */
+Magnifier.Prefs = {
+  SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
+      'settings.a11y.screen_magnifier_focus_following',
+};

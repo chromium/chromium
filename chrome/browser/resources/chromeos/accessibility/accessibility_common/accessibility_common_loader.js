@@ -41,14 +41,14 @@ class AccessibilityCommon {
         this.onAutoclickUpdated_.bind(this));
 
     chrome.accessibilityFeatures.screenMagnifier.get(
-        {}, this.onMagnifierUpdated_.bind(this));
+        {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.FULL_SCREEN));
     chrome.accessibilityFeatures.screenMagnifier.onChange.addListener(
-        this.onMagnifierUpdated_.bind(this));
+        this.onMagnifierUpdated_.bind(this, Magnifier.Type.FULL_SCREEN));
 
     chrome.accessibilityFeatures.dockedMagnifier.get(
-        {}, this.onMagnifierUpdated_.bind(this));
+        {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
     chrome.accessibilityFeatures.dockedMagnifier.onChange.addListener(
-        this.onMagnifierUpdated_.bind(this));
+        this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
   }
 
   /**
@@ -69,13 +69,15 @@ class AccessibilityCommon {
   }
 
   /**
+   * @param {!Magnifier.Type} type
    * @param {*} details
    * @private
    */
-  onMagnifierUpdated_(details) {
+  onMagnifierUpdated_(type, details) {
     if (details.value && !this.magnifier_) {
-      this.magnifier_ = new Magnifier();
-    } else if (!details.value && this.magnifier_) {
+      this.magnifier_ = new Magnifier(type);
+    } else if (
+        !details.value && this.magnifier_ && this.magnifier_.type === type) {
       this.magnifier_.onMagnifierDisabled();
       this.magnifier_ = null;
     }
