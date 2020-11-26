@@ -1464,10 +1464,15 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   auto cookie3 = CanonicalCookie::Create(
       url, "name=value;HttpOnly;SameSite=Lax", creation_time, server_time);
   ASSERT_TRUE(cookie3);
-  EXPECT_TRUE(cookie3->IsSetPermittedInContext(options)
-                  .status.HasExactlyExclusionReasonsForTesting(
-                      {CookieInclusionStatus::EXCLUDE_HTTP_ONLY,
-                       CookieInclusionStatus::EXCLUDE_SAMESITE_LAX}));
+  EXPECT_TRUE(
+      cookie3
+          ->IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::UNKNOWN,
+                           false /* delegate_treats_url_as_trustworthy */))
+          .status.HasExactlyExclusionReasonsForTesting(
+              {CookieInclusionStatus::EXCLUDE_HTTP_ONLY,
+               CookieInclusionStatus::EXCLUDE_SAMESITE_LAX}));
 }
 
 TEST(CanonicalCookieTest, PartialCompare) {
@@ -2509,14 +2514,34 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
   CookieOptions context_network;
   context_network.set_include_httponly();
 
-  EXPECT_TRUE(cookie_scriptable.IsSetPermittedInContext(context_network)
+  EXPECT_TRUE(cookie_scriptable
+                  .IsSetPermittedInContext(
+                      context_network,
+                      CookieAccessParams(
+                          CookieAccessSemantics::UNKNOWN,
+                          false /* delegate_treats_url_as_trustworthy */))
                   .status.IsInclude());
-  EXPECT_TRUE(cookie_scriptable.IsSetPermittedInContext(context_script)
+  EXPECT_TRUE(cookie_scriptable
+                  .IsSetPermittedInContext(
+                      context_script,
+                      CookieAccessParams(
+                          CookieAccessSemantics::UNKNOWN,
+                          false /* delegate_treats_url_as_trustworthy */))
                   .status.IsInclude());
 
-  EXPECT_TRUE(cookie_httponly.IsSetPermittedInContext(context_network)
+  EXPECT_TRUE(cookie_httponly
+                  .IsSetPermittedInContext(
+                      context_network,
+                      CookieAccessParams(
+                          CookieAccessSemantics::UNKNOWN,
+                          false /* delegate_treats_url_as_trustworthy */))
                   .status.IsInclude());
-  EXPECT_TRUE(cookie_httponly.IsSetPermittedInContext(context_script)
+  EXPECT_TRUE(cookie_httponly
+                  .IsSetPermittedInContext(
+                      context_script,
+                      CookieAccessParams(
+                          CookieAccessSemantics::UNKNOWN,
+                          false /* delegate_treats_url_as_trustworthy */))
                   .status.HasExactlyExclusionReasonsForTesting(
                       {CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
 
@@ -2555,13 +2580,25 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
         CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
 
     EXPECT_TRUE(cookie_same_site_unrestricted
-                    .IsSetPermittedInContext(context_cross_site)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unrestricted
-                    .IsSetPermittedInContext(context_same_site_lax)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unrestricted
-                    .IsSetPermittedInContext(context_same_site_strict)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
 
     {
@@ -2571,19 +2608,31 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
       CookieInclusionStatus status_strict_to_lax =
           cookie_same_site_unrestricted
-              .IsSetPermittedInContext(context_same_site_strict_to_lax)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_lax,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_lax.IsInclude());
       EXPECT_FALSE(status_strict_to_lax.HasDowngradeWarning());
       CookieInclusionStatus status_strict_to_cross =
           cookie_same_site_unrestricted
-              .IsSetPermittedInContext(context_same_site_strict_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_cross.IsInclude());
       EXPECT_FALSE(status_strict_to_cross.HasDowngradeWarning());
       CookieInclusionStatus status_lax_to_cross =
           cookie_same_site_unrestricted
-              .IsSetPermittedInContext(context_same_site_lax_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_lax_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_lax_to_cross.IsInclude());
       EXPECT_FALSE(status_lax_to_cross.HasDowngradeWarning());
@@ -2595,19 +2644,31 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
       CookieInclusionStatus status_strict_to_lax =
           cookie_same_site_unrestricted
-              .IsSetPermittedInContext(context_same_site_strict_to_lax)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_lax,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_lax.IsInclude());
       EXPECT_FALSE(status_strict_to_lax.HasDowngradeWarning());
       CookieInclusionStatus status_strict_to_cross =
           cookie_same_site_unrestricted
-              .IsSetPermittedInContext(context_same_site_strict_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_cross.IsInclude());
       EXPECT_FALSE(status_strict_to_cross.HasDowngradeWarning());
       CookieInclusionStatus status_lax_to_cross =
           cookie_same_site_unrestricted
-              .IsSetPermittedInContext(context_same_site_lax_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_lax_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_lax_to_cross.IsInclude());
       EXPECT_FALSE(status_lax_to_cross.HasDowngradeWarning());
@@ -2620,15 +2681,28 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
         base::Time(), true /*secure*/, false /*httponly*/,
         CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false);
 
-    EXPECT_TRUE(cookie_same_site_lax.IsSetPermittedInContext(context_cross_site)
+    EXPECT_TRUE(cookie_same_site_lax
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.HasExactlyExclusionReasonsForTesting(
                         {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX}));
-    EXPECT_TRUE(
-        cookie_same_site_lax.IsSetPermittedInContext(context_same_site_lax)
-            .status.IsInclude());
-    EXPECT_TRUE(
-        cookie_same_site_lax.IsSetPermittedInContext(context_same_site_strict)
-            .status.IsInclude());
+    EXPECT_TRUE(cookie_same_site_lax
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
+                    .status.IsInclude());
+    EXPECT_TRUE(cookie_same_site_lax
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
+                    .status.IsInclude());
 
     {
       // Schemeful Same-Site disabled.
@@ -2637,20 +2711,32 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
       CookieInclusionStatus status_strict_to_lax =
           cookie_same_site_lax
-              .IsSetPermittedInContext(context_same_site_strict_to_lax)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_lax,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_lax.IsInclude());
       EXPECT_FALSE(status_strict_to_lax.HasDowngradeWarning());
       CookieInclusionStatus status_strict_to_cross =
           cookie_same_site_lax
-              .IsSetPermittedInContext(context_same_site_strict_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_cross.IsInclude());
       EXPECT_TRUE(status_strict_to_cross.HasWarningReason(
           CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE));
       CookieInclusionStatus status_lax_to_cross =
           cookie_same_site_lax
-              .IsSetPermittedInContext(context_same_site_lax_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_lax_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_lax_to_cross.IsInclude());
       EXPECT_TRUE(status_lax_to_cross.HasWarningReason(
@@ -2663,13 +2749,21 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
       CookieInclusionStatus status_strict_to_lax =
           cookie_same_site_lax
-              .IsSetPermittedInContext(context_same_site_strict_to_lax)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_lax,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_lax.IsInclude());
       EXPECT_FALSE(status_strict_to_lax.HasDowngradeWarning());
       CookieInclusionStatus status_strict_to_cross =
           cookie_same_site_lax
-              .IsSetPermittedInContext(context_same_site_strict_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_FALSE(status_strict_to_cross.IsInclude());
       EXPECT_TRUE(status_strict_to_cross.HasWarningReason(
@@ -2678,7 +2772,11 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
           CookieInclusionStatus::EXCLUDE_SAMESITE_LAX));
       CookieInclusionStatus status_lax_to_cross =
           cookie_same_site_lax
-              .IsSetPermittedInContext(context_same_site_lax_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_lax_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_FALSE(status_lax_to_cross.IsInclude());
       EXPECT_TRUE(status_lax_to_cross.HasWarningReason(
@@ -2696,15 +2794,27 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
     // TODO(morlovich): Do compatibility testing on whether set of strict in lax
     // context really should be accepted.
-    EXPECT_TRUE(
-        cookie_same_site_strict.IsSetPermittedInContext(context_cross_site)
-            .status.HasExactlyExclusionReasonsForTesting(
-                {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT}));
-    EXPECT_TRUE(
-        cookie_same_site_strict.IsSetPermittedInContext(context_same_site_lax)
-            .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_strict
-                    .IsSetPermittedInContext(context_same_site_strict)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
+                    .status.HasExactlyExclusionReasonsForTesting(
+                        {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT}));
+    EXPECT_TRUE(cookie_same_site_strict
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
+                    .status.IsInclude());
+    EXPECT_TRUE(cookie_same_site_strict
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
 
     {
@@ -2714,20 +2824,32 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
       CookieInclusionStatus status_strict_to_lax =
           cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_lax)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_lax,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_lax.IsInclude());
       EXPECT_FALSE(status_strict_to_lax.HasDowngradeWarning());
       CookieInclusionStatus status_strict_to_cross =
           cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_cross.IsInclude());
       EXPECT_TRUE(status_strict_to_cross.HasWarningReason(
           CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE));
       CookieInclusionStatus status_lax_to_cross =
           cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_lax_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_lax_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_lax_to_cross.IsInclude());
       EXPECT_TRUE(status_lax_to_cross.HasWarningReason(
@@ -2740,13 +2862,21 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
 
       CookieInclusionStatus status_strict_to_lax =
           cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_lax)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_lax,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_TRUE(status_strict_to_lax.IsInclude());
       EXPECT_FALSE(status_strict_to_lax.HasDowngradeWarning());
       CookieInclusionStatus status_strict_to_cross =
           cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_strict_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_FALSE(status_strict_to_cross.IsInclude());
       EXPECT_TRUE(status_strict_to_cross.HasWarningReason(
@@ -2755,7 +2885,11 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
           CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT));
       CookieInclusionStatus status_lax_to_cross =
           cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_lax_to_cross)
+              .IsSetPermittedInContext(
+                  context_same_site_lax_to_cross,
+                  CookieAccessParams(
+                      CookieAccessSemantics::UNKNOWN,
+                      false /* delegate_treats_url_as_trustworthy */))
               .status;
       EXPECT_FALSE(status_lax_to_cross.IsInclude());
       EXPECT_TRUE(status_lax_to_cross.HasWarningReason(
@@ -2770,23 +2904,29 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
       base::test::ScopedFeatureList feature_list;
       feature_list.InitAndEnableFeature(features::kSchemefulSameSite);
 
-      EXPECT_FALSE(
-          cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_cross,
-                                       CookieAccessSemantics::UNKNOWN)
-              .status.IsInclude());
-      EXPECT_FALSE(
-          cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_cross,
-                                       CookieAccessSemantics::NONLEGACY)
-              .status.IsInclude());
+      EXPECT_FALSE(cookie_same_site_strict
+                       .IsSetPermittedInContext(
+                           context_same_site_strict_to_cross,
+                           CookieAccessParams(
+                               CookieAccessSemantics::UNKNOWN,
+                               false /* delegate_treats_url_as_trustworthy */))
+                       .status.IsInclude());
+      EXPECT_FALSE(cookie_same_site_strict
+                       .IsSetPermittedInContext(
+                           context_same_site_strict_to_cross,
+                           CookieAccessParams(
+                               CookieAccessSemantics::NONLEGACY,
+                               false /* delegate_treats_url_as_trustworthy */))
+                       .status.IsInclude());
       // LEGACY semantics should allow cookies which Schemeful Same-Site would
       // normally block.
-      EXPECT_TRUE(
-          cookie_same_site_strict
-              .IsSetPermittedInContext(context_same_site_strict_to_cross,
-                                       CookieAccessSemantics::LEGACY)
-              .status.IsInclude());
+      EXPECT_TRUE(cookie_same_site_strict
+                      .IsSetPermittedInContext(
+                          context_same_site_strict_to_cross,
+                          CookieAccessParams(
+                              CookieAccessSemantics::LEGACY,
+                              false /* delegate_treats_url_as_trustworthy */))
+                      .status.IsInclude());
     }
   }
 
@@ -2801,42 +2941,69 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
     feature_list.InitAndDisableFeature(features::kSameSiteByDefaultCookies);
 
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_cross_site,
-                                             CookieAccessSemantics::UNKNOWN)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_lax,
-                                             CookieAccessSemantics::UNKNOWN)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_strict,
-                                             CookieAccessSemantics::UNKNOWN)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_cross_site,
-                                             CookieAccessSemantics::LEGACY)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_lax,
-                                             CookieAccessSemantics::LEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_strict,
-                                             CookieAccessSemantics::LEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_cross_site,
-                                             CookieAccessSemantics::NONLEGACY)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::NONLEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.HasExactlyExclusionReasonsForTesting(
                         {CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_lax,
-                                             CookieAccessSemantics::NONLEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::NONLEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_strict,
-                                             CookieAccessSemantics::NONLEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::NONLEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
   }
 
@@ -2845,44 +3012,71 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
     feature_list.InitAndEnableFeature(features::kSameSiteByDefaultCookies);
 
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_cross_site,
-                                             CookieAccessSemantics::UNKNOWN)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.HasExactlyExclusionReasonsForTesting(
                         {CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_lax,
-                                             CookieAccessSemantics::UNKNOWN)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_strict,
-                                             CookieAccessSemantics::UNKNOWN)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::UNKNOWN,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_cross_site,
-                                             CookieAccessSemantics::LEGACY)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::LEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_lax,
-                                             CookieAccessSemantics::LEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::LEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_strict,
-                                             CookieAccessSemantics::LEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::LEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_cross_site,
-                                             CookieAccessSemantics::NONLEGACY)
+                    .IsSetPermittedInContext(
+                        context_cross_site,
+                        CookieAccessParams(
+                            CookieAccessSemantics::NONLEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.HasExactlyExclusionReasonsForTesting(
                         {CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_lax,
-                                             CookieAccessSemantics::NONLEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_lax,
+                        CookieAccessParams(
+                            CookieAccessSemantics::NONLEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
     EXPECT_TRUE(cookie_same_site_unspecified
-                    .IsSetPermittedInContext(context_same_site_strict,
-                                             CookieAccessSemantics::NONLEGACY)
+                    .IsSetPermittedInContext(
+                        context_same_site_strict,
+                        CookieAccessParams(
+                            CookieAccessSemantics::NONLEGACY,
+                            false /* delegate_treats_url_as_trustworthy */))
                     .status.IsInclude());
   }
 }
@@ -2901,7 +3095,10 @@ TEST(CanonicalCookieTest, IsSetPermittedEffectiveSameSite) {
 
   EXPECT_EQ(
       cookie_no_restriction
-          .IsSetPermittedInContext(options, CookieAccessSemantics::UNKNOWN)
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::UNKNOWN,
+                           false /* delegate_treats_url_as_trustworthy */))
           .effective_same_site,
       CookieEffectiveSameSite::NO_RESTRICTION);
 
@@ -2914,7 +3111,10 @@ TEST(CanonicalCookieTest, IsSetPermittedEffectiveSameSite) {
 
   EXPECT_EQ(
       cookie_lax
-          .IsSetPermittedInContext(options, CookieAccessSemantics::UNKNOWN)
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::UNKNOWN,
+                           false /* delegate_treats_url_as_trustworthy */))
           .effective_same_site,
       CookieEffectiveSameSite::LAX_MODE);
 
@@ -2927,7 +3127,10 @@ TEST(CanonicalCookieTest, IsSetPermittedEffectiveSameSite) {
 
   EXPECT_EQ(
       cookie_strict
-          .IsSetPermittedInContext(options, CookieAccessSemantics::UNKNOWN)
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::UNKNOWN,
+                           false /* delegate_treats_url_as_trustworthy */))
           .effective_same_site,
       CookieEffectiveSameSite::STRICT_MODE);
 
@@ -2945,26 +3148,39 @@ TEST(CanonicalCookieTest, IsSetPermittedEffectiveSameSite) {
 
   EXPECT_EQ(
       cookie_old_unspecified
-          .IsSetPermittedInContext(options, CookieAccessSemantics::UNKNOWN)
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::UNKNOWN,
+                           false /* delegate_treats_url_as_trustworthy */))
           .effective_same_site,
       CookieEffectiveSameSite::LAX_MODE);
 
   EXPECT_EQ(
       cookie_unspecified
-          .IsSetPermittedInContext(options, CookieAccessSemantics::UNKNOWN)
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::UNKNOWN,
+                           false /* delegate_treats_url_as_trustworthy */))
           .effective_same_site,
       CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE);
 
   EXPECT_EQ(
       cookie_unspecified
-          .IsSetPermittedInContext(options, CookieAccessSemantics::NONLEGACY)
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::NONLEGACY,
+                           false /* delegate_treats_url_as_trustworthy */))
           .effective_same_site,
       CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE);
 
-  EXPECT_EQ(cookie_unspecified
-                .IsSetPermittedInContext(options, CookieAccessSemantics::LEGACY)
-                .effective_same_site,
-            CookieEffectiveSameSite::NO_RESTRICTION);
+  EXPECT_EQ(
+      cookie_unspecified
+          .IsSetPermittedInContext(
+              options, CookieAccessParams(
+                           CookieAccessSemantics::LEGACY,
+                           false /* delegate_treats_url_as_trustworthy */))
+          .effective_same_site,
+      CookieEffectiveSameSite::NO_RESTRICTION);
 }
 
 }  // namespace net

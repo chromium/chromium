@@ -1187,11 +1187,13 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
                           ? net::CookieSourceScheme::kSecure
                           : net::CookieSourceScheme::kNonSecure);
 
+  bool delegate_treats_url_as_trustworthy =
+      cookie_access_delegate() &&
+      cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url);
   CookieAccessScheme access_scheme =
       cookie_util::ProvisionalAccessScheme(source_url);
   if (access_scheme == CookieAccessScheme::kNonCryptographic &&
-      cookie_access_delegate() &&
-      cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url)) {
+      delegate_treats_url_as_trustworthy) {
     access_scheme = CookieAccessScheme::kTrustworthy;
   }
 
@@ -1227,8 +1229,11 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
 
   const std::string key(GetKey(cc->Domain()));
 
-  cc->IsSetPermittedInContext(options, GetAccessSemanticsForCookie(*cc),
-                              &access_result);
+  cc->IsSetPermittedInContext(
+      options,
+      CookieAccessParams(GetAccessSemanticsForCookie(*cc),
+                         delegate_treats_url_as_trustworthy),
+      &access_result);
 
   base::Time creation_date = cc->CreationDate();
   if (creation_date.is_null()) {

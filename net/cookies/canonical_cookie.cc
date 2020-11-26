@@ -776,17 +776,17 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
 
 CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     const CookieOptions& options,
-    CookieAccessSemantics access_semantics) const {
+    const CookieAccessParams& params) const {
   CookieAccessResult access_result;
-  IsSetPermittedInContext(options, access_semantics, &access_result);
+  IsSetPermittedInContext(options, params, &access_result);
   return access_result;
 }
 
 void CanonicalCookie::IsSetPermittedInContext(
     const CookieOptions& options,
-    CookieAccessSemantics access_semantics,
+    const CookieAccessParams& params,
     CookieAccessResult* access_result) const {
-  access_result->access_semantics = access_semantics;
+  access_result->access_semantics = params.access_semantics;
   if (options.exclude_httponly() && IsHttpOnly()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "HttpOnly cookie not permitted in script context.";
@@ -797,7 +797,7 @@ void CanonicalCookie::IsSetPermittedInContext(
   // If both SameSiteByDefaultCookies and CookiesWithoutSameSiteMustBeSecure
   // are enabled, non-SameSite cookies without the Secure attribute will be
   // rejected.
-  if (access_semantics != CookieAccessSemantics::LEGACY &&
+  if (params.access_semantics != CookieAccessSemantics::LEGACY &&
       cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled() &&
       SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
@@ -813,11 +813,12 @@ void CanonicalCookie::IsSetPermittedInContext(
   // For LEGACY cookies we should always return the schemeless context,
   // otherwise let GetContextForCookieInclusion() decide.
   CookieOptions::SameSiteCookieContext::ContextType cookie_inclusion_context =
-      access_semantics == CookieAccessSemantics::LEGACY
+      params.access_semantics == CookieAccessSemantics::LEGACY
           ? options.same_site_cookie_context().context()
           : options.same_site_cookie_context().GetContextForCookieInclusion();
 
-  access_result->effective_same_site = GetEffectiveSameSite(access_semantics);
+  access_result->effective_same_site =
+      GetEffectiveSameSite(params.access_semantics);
   DCHECK(access_result->effective_same_site !=
          CookieEffectiveSameSite::UNDEFINED);
   switch (access_result->effective_same_site) {

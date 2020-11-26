@@ -307,18 +307,17 @@ class NET_EXPORT CanonicalCookie {
       const CookieAccessParams& params) const;
 
   // Returns if the cookie with given attributes can be set in context described
-  // by |options|, and if no, describes why.
-  // WARNING: this does not cover checking whether secure cookies are set in
-  // a secure schema, since whether the schema is secure isn't part of
+  // by |options| and |params|, and if no, describes why.
+  // TODO(cfredric): this does not cover checking whether secure cookies are set
+  // in a secure scheme, since whether the scheme is secure isn't part of
   // |options|.
   CookieAccessResult IsSetPermittedInContext(
       const CookieOptions& options,
-      CookieAccessSemantics access_semantics =
-          CookieAccessSemantics::UNKNOWN) const;
+      const CookieAccessParams& params) const;
 
   // Overload that updates an existing |status| rather than returning a new one.
   void IsSetPermittedInContext(const CookieOptions& options,
-                               CookieAccessSemantics access_semantics,
+                               const CookieAccessParams& params,
                                CookieAccessResult* access_result) const;
 
   std::string DebugString() const;
