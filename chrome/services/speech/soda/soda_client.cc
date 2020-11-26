@@ -18,6 +18,7 @@ SodaClient::SodaClient(base::FilePath library_path)
       sample_rate_(0),
       channel_count_(0) {}
 
+NO_SANITIZE("cfi-icall")
 SodaClient::~SodaClient() {
   DCHECK(soda_async_handle_);
   DCHECK(delete_soda_func_);
@@ -25,6 +26,7 @@ SodaClient::~SodaClient() {
     delete_soda_func_(soda_async_handle_);
 }
 
+NO_SANITIZE("cfi-icall")
 void SodaClient::AddAudio(const char* audio_buffer, int audio_buffer_size) {
   DCHECK(soda_async_handle_);
   DCHECK(add_audio_func_);
@@ -35,6 +37,7 @@ bool SodaClient::DidAudioPropertyChange(int sample_rate, int channel_count) {
   return sample_rate != sample_rate_ || channel_count != channel_count_;
 }
 
+NO_SANITIZE("cfi-icall")
 void SodaClient::Reset(const SodaConfig config) {
   DCHECK(soda_async_handle_);
   DCHECK(create_soda_func_);
