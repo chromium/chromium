@@ -5917,6 +5917,7 @@ crbug.com/1042877 http/tests/security/img-crossorigin-redirect-credentials.https
 # Sheriff 2020-09-30
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation.https.html [ Pass Failure ]
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-custom-property-animation.https.html [ Pass Failure ]
+crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-element-custom-property-animation.https.html [ Pass Failure ]
 
 # Sheriff 2020-10-09
 crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
