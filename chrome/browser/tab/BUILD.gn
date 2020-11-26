@@ -60,6 +60,7 @@ android_library("java") {
     "//components/external_intents/android:java",
     "//components/find_in_page/android:java",
     "//components/navigation_interception/android:navigation_interception_java",
+    "//components/payments/content/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",

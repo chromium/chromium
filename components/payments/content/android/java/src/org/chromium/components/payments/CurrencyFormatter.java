@@ -46,6 +46,15 @@ public class CurrencyFormatter {
         }
     }
 
+    /**
+     * Set the maximum number of fractional digits in the formatted price.
+     * @param maxFractionalDigits maximum number of fractional digits
+     */
+    public void setMaximumFractionalDigits(int maxFractionalDigits) {
+        CurrencyFormatterJni.get().setMaxFractionalDigits(
+                mCurrencyFormatterAndroid, maxFractionalDigits);
+    }
+
     /** @return The currency code formatted for display. */
     public String getFormattedCurrencyCode() {
         return CurrencyFormatterJni.get().getFormattedCurrencyCode(
@@ -76,6 +85,7 @@ public class CurrencyFormatter {
         void destroy(long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);
         String format(
                 long nativeCurrencyFormatterAndroid, CurrencyFormatter caller, String amountValue);
+        void setMaxFractionalDigits(long nativeCurrencyFormatterAndroid, int maxFractionalDigits);
         String getFormattedCurrencyCode(
                 long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);
     }
