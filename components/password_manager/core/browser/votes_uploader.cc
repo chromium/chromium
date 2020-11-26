@@ -369,7 +369,7 @@ bool VotesUploader::UploadPasswordVote(
   }
 
   // Annotate the form with the source language of the page.
-  form_structure.set_original_page_language(client_->GetPageLanguage());
+  form_structure.set_current_page_language(client_->GetPageLanguage());
 
   // Attach the Randomized Encoder.
   form_structure.set_randomized_encoder(
@@ -423,7 +423,7 @@ void VotesUploader::UploadFirstLoginVotes(
   form_structure.set_upload_required(UPLOAD_REQUIRED);
 
   // Annotate the form with the source language of the page.
-  form_structure.set_original_page_language(client_->GetPageLanguage());
+  form_structure.set_current_page_language(client_->GetPageLanguage());
 
   // Attach the Randomized Encoder.
   form_structure.set_randomized_encoder(

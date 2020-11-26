@@ -45,7 +45,7 @@ AutofillField* FindAutofillFillField(const FormStructure& form,
 bool CachedFormNeedsUpdate(const FormData& live_form,
                            const LanguageCode& live_form_language,
                            const FormStructure& cached_form) {
-  if (cached_form.original_page_language() != live_form_language)
+  if (cached_form.current_page_language() != live_form_language)
     return true;
 
   if (live_form.fields.size() != cached_form.field_count())
@@ -294,7 +294,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
       value_from_dynamic_change_form_ = true;
   }
 
-  form_structure->set_original_page_language(GetPageLanguage());
+  form_structure->set_current_page_language(GetPageLanguage());
 
   form_structure->DetermineHeuristicTypes(log_manager_);
 

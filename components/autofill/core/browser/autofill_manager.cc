@@ -797,7 +797,7 @@ bool AutofillManager::MaybeStartVoteUploadProcess(
     copied_credit_cards.push_back(*card);
 
   // Annotate the form with the source language of the page.
-  form_structure->set_original_page_language(GetPageLanguage());
+  form_structure->set_current_page_language(GetPageLanguage());
 
   // Attach the Randomized Encoder.
   form_structure->set_randomized_encoder(
@@ -2798,7 +2798,7 @@ LanguageCode AutofillManager::GetPageLanguage() const {
   const translate::LanguageState* language_state = client_->GetLanguageState();
   if (!language_state)
     return LanguageCode();
-  return LanguageCode(language_state->original_language());
+  return LanguageCode(language_state->current_language());
 }
 
 }  // namespace autofill

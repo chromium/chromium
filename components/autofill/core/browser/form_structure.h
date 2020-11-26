@@ -366,12 +366,12 @@ class FormStructure {
 
   void set_is_rich_query_enabled(bool v) { is_rich_query_enabled_ = v; }
 
-  const LanguageCode& original_page_language() const {
-    return original_page_language_;
+  const LanguageCode& current_page_language() const {
+    return current_page_language_;
   }
 
-  void set_original_page_language(LanguageCode language) {
-    original_page_language_ = std::move(language);
+  void set_current_page_language(LanguageCode language) {
+    current_page_language_ = std::move(language);
   }
 
   bool value_from_dynamic_change_form() const {
@@ -588,7 +588,7 @@ class FormStructure {
 
   // The language detected for this form's page, before any translations
   // performed by Chrome.
-  LanguageCode original_page_language_;
+  LanguageCode current_page_language_;
 
   // The id attribute of the form.
   base::string16 id_attribute_;
