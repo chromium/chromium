@@ -14,33 +14,18 @@ DockedMagnifierE2ETest = class extends E2ETestBase {
   constructor() {
     super();
     window.RoleType = chrome.automation.RoleType;
+  }
 
-    /**
-     * Registers a listener for
-     * chrome.accessibilityPrivate.onMagnifierBoundsChanged in the ctor. After
-     * that, the test code can perform the action, and then use
-     * waitForNextMagnifierBounds() to be wait for the previously-registered
-     * listener to be called.
-     *
-     * @private
-     */
-    this.nextMagnifierBoundsWaiter_ = class {
-      constructor() {
-        this.promise_ = new Promise(resolve => {
-          const listener = (magnifierBounds) => {
-            chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
-                listener);
-            resolve(magnifierBounds);
-          };
-          chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
-              listener);
-        });
-      }
-
-      async waitForNextMagnifierBounds() {
-        return this.promise_;
-      }
-    };
+  async getNextMagnifierBounds() {
+    return new Promise(resolve => {
+      const listener = (magnifierBounds) => {
+        chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
+            listener);
+        resolve(magnifierBounds);
+      };
+      chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+          listener);
+    });
   }
 
   /** @override */
@@ -75,18 +60,18 @@ TEST_F(
         const group = root.find({role: RoleType.GROUP});
 
         // Focus and move magnifier to top.
-        // Then verify magnifier contain top and not banana.
-        const boundsWaiter1 = new this.nextMagnifierBoundsWaiter_();
         top.focus();
-        let bounds = await boundsWaiter1.waitForNextMagnifierBounds();
+
+        // Verify magnifier contain top and not banana.
+        let bounds = await this.getNextMagnifierBounds();
         assertTrue(RectUtil.contains(bounds, top.location));
         assertFalse(RectUtil.contains(bounds, banana.location));
 
         // Click group to change active descendant to banana.
-        // Then verify magnifier bounds contain banana.
-        const boundsWaiter2 = new this.nextMagnifierBoundsWaiter_();
         group.doDefault();
-        bounds = await boundsWaiter2.waitForNextMagnifierBounds();
+
+        // Verify magnifier bounds contain banana.
+        bounds = await this.getNextMagnifierBounds();
         assertFalse(RectUtil.contains(bounds, top.location));
         assertTrue(RectUtil.contains(bounds, banana.location));
       });
