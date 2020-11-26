@@ -25,14 +25,19 @@ void PostProtoResponse(base::OnceCallback<void(const ReplyType&)> callback,
 
 }  // namespace
 
-FakeTpmManagerClient::FakeTpmManagerClient() = default;
+FakeTpmManagerClient::FakeTpmManagerClient() {
+  // By design, TPM is configured as "enabled" and "owned" for backward
+  // compatibility of what fake cryptohome client used to do.
+  nonsensitive_status_reply_.set_is_enabled(true);
+  nonsensitive_status_reply_.set_is_owned(true);
+}
 
 FakeTpmManagerClient::~FakeTpmManagerClient() = default;
 
 void FakeTpmManagerClient::GetTpmNonsensitiveStatus(
     const ::tpm_manager::GetTpmNonsensitiveStatusRequest& request,
     GetTpmNonsensitiveStatusCallback callback) {
-  NOTIMPLEMENTED();
+  PostProtoResponse(std::move(callback), nonsensitive_status_reply_);
 }
 
 void FakeTpmManagerClient::GetVersionInfo(
@@ -61,6 +66,11 @@ void FakeTpmManagerClient::ClearStoredOwnerPassword(
 
 TpmManagerClient::TestInterface* FakeTpmManagerClient::GetTestInterface() {
   return this;
+}
+
+::tpm_manager::GetTpmNonsensitiveStatusReply*
+FakeTpmManagerClient::mutable_nonsensitive_status_reply() {
+  return &nonsensitive_status_reply_;
 }
 
 ::tpm_manager::GetVersionInfoReply*

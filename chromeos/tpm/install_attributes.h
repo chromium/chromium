@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace chromeos {
@@ -211,10 +212,11 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   // errors (cryptohomed startup is slow).
   void TriggerConsistencyCheck(int dbus_retries);
 
-  // Callback for TpmGetPassword() DBUS call.  Generates UMA or schedules retry
-  // in case of DBUS error.
-  void OnTpmGetPasswordCompleted(int dbus_retries_remaining,
-                                 base::Optional<std::string> result);
+  // Callback for `GetTpmNonsensitiveStatus()` DBUS call.  Generates UMA or
+  // schedules retry in case of DBUS error.
+  void OnTpmStatusComplete(
+      int dbus_retries_remaining,
+      const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
 
   CryptohomeClient* cryptohome_client_;
 

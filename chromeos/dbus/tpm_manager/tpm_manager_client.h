@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
   // only implemented in the fake implementation.
   class TestInterface {
    public:
+    // Gets a mutable reply that is returned when `GetTpmNonsensitiveStatus()`
+    // is called.
+    virtual ::tpm_manager::GetTpmNonsensitiveStatusReply*
+    mutable_nonsensitive_status_reply() = 0;
     // Gets a mutable reply that is returned when `GetVersionInfo()` is called.
     virtual ::tpm_manager::GetVersionInfoReply*
     mutable_version_info_reply() = 0;

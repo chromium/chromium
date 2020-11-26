@@ -14,6 +14,8 @@ component("tpm") {
     "//chromeos/dbus/constants",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/login/login_state",
     "//components/account_id",
     "//components/policy/core/common:common_constants",
@@ -36,6 +38,7 @@ source_set("test_support") {
   deps = [
     ":tpm",
     "//base",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/policy/core/common:common_constants",
   ]
   sources = [
@@ -54,6 +57,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/constants",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/tpm_manager:tpm_manager",
     "//components/policy/proto",
     "//google_apis",
     "//testing/gtest",

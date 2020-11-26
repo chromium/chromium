@@ -43,9 +43,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   TpmManagerClient::TestInterface* GetTestInterface() override;
 
   // TpmManagerClient::TestInterface:
+  ::tpm_manager::GetTpmNonsensitiveStatusReply*
+  mutable_nonsensitive_status_reply() override;
   ::tpm_manager::GetVersionInfoReply* mutable_version_info_reply() override;
 
  private:
+  ::tpm_manager::GetTpmNonsensitiveStatusReply nonsensitive_status_reply_;
   ::tpm_manager::GetVersionInfoReply version_info_reply_;
 };
 
