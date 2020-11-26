@@ -29,7 +29,7 @@ config("common_config") {
   defines = [ "HAVE_CONFIG_H" ]
 
   include_dirs = [
-    "config/$host_os",
+    "config/$current_os",
     "xz/src/common",
     "xz/src/liblzma/api",
     "xz/src/liblzma/check",
@@ -387,7 +387,7 @@ executable("xz") {
   deps = [ ":lzma" ]
 
   include_dirs = [
-    "config/$host_os",
+    "config/$current_os",
     "xz/src/common",
   ]
 }
@@ -413,7 +413,7 @@ executable("xzdec") {
   deps = [ ":lzma_decompress" ]
 
   include_dirs = [
-    "config/$host_os",
+    "config/$current_os",
     "xz/src/common",
   ]
 
