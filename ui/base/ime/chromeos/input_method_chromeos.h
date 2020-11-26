@@ -170,6 +170,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   // Indicates whether there is a pending SetCompositionRange operation.
   base::Optional<PendingSetCompositionRange> pending_composition_range_;
 
+  base::Optional<gfx::Range> pending_autocorrect_range_;
+
   // An object to compose a character from a sequence of key presses
   // including dead key etc.
   CharacterComposer character_composer_;

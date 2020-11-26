@@ -319,6 +319,16 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
     GetTextFromRange(range, &composition_text_.text);
     return true;
   }
+  bool SetAutocorrectRange(const gfx::Range& range) override {
+    // TODO(crbug.com/1148157): This is a workaround to ensure that the range is
+    // valid in the text. Change this class to a proper fake so that the text
+    // contents can be queried accurately.
+    if (!inserted_text_.empty() || inserted_char_ != 0) {
+      DummyTextInputClient::SetAutocorrectRange(range);
+      return true;
+    }
+    return false;
+  }
 
   bool HasNativeEvent() const {
     return dispatched_key_event_.HasNativeEvent();
@@ -421,6 +431,7 @@ TEST_F(InputMethodChromeOSTest,
        OnWillChangeFocusedClientClearAutocorrectRange) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->SetFocusedTextInputClient(this);
+  ime_->CommitText("hello");
   ime_->SetAutocorrectRange(gfx::Range(0, 5));
   EXPECT_EQ(gfx::Range(0, 5), this->GetAutocorrectRange());
 
@@ -1146,6 +1157,22 @@ TEST_F(InputMethodChromeOSKeyEventTest, JP106KeyTest) {
   ime_->DispatchKeyEvent(&eventDbeDbc);
   EXPECT_TRUE(input_method_manager_->state()->is_jp_kbd());
   EXPECT_FALSE(input_method_manager_->state()->is_jp_ime());
+}
+
+TEST_F(InputMethodChromeOSKeyEventTest,
+       SetAutocorrectRangeRunsAfterCommitText) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  ime_->OnTextInputTypeChanged(this);
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ime_->DispatchKeyEvent(&event);
+
+  ime_->CommitText("a");
+  ime_->SetAutocorrectRange(gfx::Range(0, 1));
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(/*handled=*/true);
+
+  EXPECT_EQ(L'a', inserted_char_);
+  EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
 }
 
 }  // namespace ui

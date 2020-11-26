@@ -409,7 +409,15 @@ gfx::Rect InputMethodChromeOS::GetAutocorrectCharacterBounds() {
 bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
   if (IsTextInputTypeNone())
     return false;
-  return GetTextInputClient()->SetAutocorrectRange(range);
+
+  // If we have pending key events, then delay the operation until
+  // |ProcessKeyEventPostIME|. Otherwise, process it immediately.
+  if (handling_key_event_) {
+    pending_autocorrect_range_ = range;
+    return true;
+  } else {
+    return GetTextInputClient()->SetAutocorrectRange(range);
+  }
 }
 
 bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {
@@ -593,6 +601,11 @@ void InputMethodChromeOS::ProcessInputMethodResult(ui::KeyEvent* event,
 
     pending_composition_ = base::nullopt;
     pending_composition_range_.reset();
+  }
+
+  if (pending_autocorrect_range_) {
+    client->SetAutocorrectRange(*pending_autocorrect_range_);
+    pending_autocorrect_range_.reset();
   }
 
   // We should not clear composition text here, as it may belong to the next
