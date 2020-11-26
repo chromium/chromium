@@ -55,12 +55,11 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
 
   root->total_size_of_direct_mapped_pages.fetch_add(reserved_size,
                                                     std::memory_order_relaxed);
-  root->IncreaseCommittedPages(slot_size);
 
   char* slot = ptr + PartitionPageSize();
   RecommitSystemPages(ptr + SystemPageSize(), SystemPageSize(), PageReadWrite,
                       PageUpdatePermissions);
-  RecommitSystemPages(slot, slot_size, PageReadWrite, PageUpdatePermissions);
+  root->RecommitSystemPagesForData(slot, slot_size, PageUpdatePermissions);
 
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
       PartitionSuperPageToMetadataArea(ptr));
@@ -220,9 +219,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
 
   // System pages in the super page come in a decommited state. Commit them
   // before vending them back.
-  RecommitSystemPages(ret, slot_span_committed_size, PageReadWrite,
-                      PageUpdatePermissions);
-  root->IncreaseCommittedPages(slot_span_committed_size);
+  root->RecommitSystemPagesForData(ret, slot_span_committed_size,
+                                   PageUpdatePermissions);
   root->next_partition_page += slot_span_reserved_size;
   // Double check that we had enough space in the super page for the new slot
   // span.
@@ -569,9 +567,9 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       PA_DCHECK(new_slot_span->is_decommitted());
       decommitted_slot_spans_head = new_slot_span->next_slot_span;
       void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
-      root->RecommitSystemPages(addr,
-                                new_slot_span->bucket->get_bytes_per_span(),
-                                PageKeepPermissionsIfPossible);
+      root->RecommitSystemPagesForData(
+          addr, new_slot_span->bucket->get_bytes_per_span(),
+          PageKeepPermissionsIfPossible);
       new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }

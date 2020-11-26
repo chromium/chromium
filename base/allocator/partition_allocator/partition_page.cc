@@ -41,6 +41,7 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
     extent->next_extent->prev_extent = extent->prev_extent;
   }
 
+  // The actual decommit is deferred, when releasing the reserved memory region.
   root->DecreaseCommittedPages(slot_span->bucket->slot_size);
 
   size_t reserved_size =
@@ -166,8 +167,8 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
   void* addr = SlotSpanMetadata::ToPointer(this);
-  root->DecommitSystemPages(addr, bucket->get_bytes_per_span(),
-                            PageKeepPermissionsIfPossible);
+  root->DecommitSystemPagesForData(addr, bucket->get_bytes_per_span(),
+                                   PageKeepPermissionsIfPossible);
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
   // it on to the decommitted list when we next walk the active list.

@@ -212,12 +212,12 @@ struct BASE_EXPORT PartitionRoot {
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
-  ALWAYS_INLINE void DecommitSystemPages(
+  ALWAYS_INLINE void DecommitSystemPagesForData(
       void* address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  ALWAYS_INLINE void RecommitSystemPages(
+  ALWAYS_INLINE void RecommitSystemPagesForData(
       void* address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
@@ -856,21 +856,21 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::DecreaseCommittedPages(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPages(
+ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPagesForData(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  ::base::DecommitSystemPages(address, length, accessibility_disposition);
+  DecommitSystemPages(address, length, accessibility_disposition);
   DecreaseCommittedPages(length);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPages(
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
-  ::base::RecommitSystemPages(address, length, PageReadWrite,
-                              accessibility_disposition);
+  RecommitSystemPages(address, length, PageReadWrite,
+                      accessibility_disposition);
   IncreaseCommittedPages(length);
 }
 

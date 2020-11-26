@@ -456,15 +456,16 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
-    DecommitSystemPages(char_ptr + new_slot_size, decommit_size,
-                        PageUpdatePermissions);
+    DecommitSystemPagesForData(char_ptr + new_slot_size, decommit_size,
+                               PageUpdatePermissions);
   } else if (new_slot_size <=
              DirectMapExtent::FromSlotSpan(slot_span)->map_size) {
     // Grow within the actually allocated memory. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPages(char_ptr + current_slot_size, recommit_slot_size_growth,
-                        PageUpdatePermissions);
+    RecommitSystemPagesForData(char_ptr + current_slot_size,
+                               recommit_slot_size_growth,
+                               PageUpdatePermissions);
 
 #if DCHECK_IS_ON()
     memset(char_ptr + current_slot_size, kUninitializedByte,
