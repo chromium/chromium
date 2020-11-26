@@ -12366,8 +12366,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12392,8 +12392,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12418,8 +12418,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12447,8 +12447,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12474,8 +12474,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12499,8 +12499,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12523,8 +12523,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12544,8 +12544,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12579,8 +12579,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12613,8 +12613,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12648,8 +12648,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12683,8 +12683,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12718,8 +12718,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12753,8 +12753,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12792,8 +12792,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12836,8 +12836,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12880,8 +12880,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12924,8 +12924,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -12968,8 +12968,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13004,8 +13004,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13040,8 +13040,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13075,8 +13075,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13112,8 +13112,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13150,8 +13150,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13187,8 +13187,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -13224,8 +13224,8 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:3e92-19.0.8",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:3e92-19.0.8|8086:3e92-20.0.8",
+              "os": "Ubuntu-19.04|Ubuntu-20.04",
               "pool": "chromium.tests.gpu"
             }
           ],

@@ -465,8 +465,8 @@
   'linux_intel_uhd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:3e92-19.0.8',
-        'os': 'Ubuntu-19.04',
+        'gpu': '8086:3e92-19.0.8|8086:3e92-20.0.8',
+        'os': 'Ubuntu-19.04|Ubuntu-20.04',
         'pool': 'chromium.tests.gpu',
       },
       # Same long expiration as win10_intel_uhd_630_stable due to capacity.
