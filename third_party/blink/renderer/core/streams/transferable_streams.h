@@ -15,6 +15,7 @@ class ExceptionState;
 class MessagePort;
 class ReadableStream;
 class ScriptState;
+class UnderlyingSourceBase;
 class WritableStream;
 
 // Creates the writable side of a cross-realm identity transform stream, using
@@ -33,6 +34,16 @@ CORE_EXPORT WritableStream* CreateCrossRealmTransformWritable(ScriptState*,
 CORE_EXPORT ReadableStream* CreateCrossRealmTransformReadable(ScriptState*,
                                                               MessagePort* port,
                                                               ExceptionState&);
+
+// Creates a ReadableStream that is identical to the concatenation of
+// a ReadableStream created with `source1` and a ReadableStream created with
+// `source2`.
+// The implementation is optimized with an assumption that `source2` is (much)
+// longer than `source1`.
+CORE_EXPORT ReadableStream* CreateConcatenatedReadableStream(
+    ScriptState*,
+    UnderlyingSourceBase* source1,
+    UnderlyingSourceBase* source2);
 
 }  // namespace blink
 

@@ -29,7 +29,7 @@ class CORE_EXPORT UnderlyingSourceBase
   void Trace(Visitor*) const override;
   ~UnderlyingSourceBase() override = default;
 
-  ScriptPromise startWrapper(ScriptState*, ScriptValue stream);
+  ScriptPromise startWrapper(ScriptState*, ScriptValue controller);
   virtual ScriptPromise Start(ScriptState*);
 
   virtual ScriptPromise pull(ScriptState*);

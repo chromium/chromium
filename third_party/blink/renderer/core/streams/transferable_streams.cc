@@ -8,9 +8,13 @@
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
 #include "base/stl_util.h"
+#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -20,13 +24,16 @@
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
+#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -49,6 +56,12 @@
 namespace blink {
 
 namespace {
+
+template <typename T, typename... Args>
+NewScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
+  return MakeGarbageCollected<NewScriptFunction>(
+      script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
+}
 
 // These are the types of messages that are sent between peers.
 enum class MessageType { kPull, kChunk, kClose, kError };
@@ -737,6 +750,172 @@ class CrossRealmTransformReadable::CancelAlgorithm final
   const Member<CrossRealmTransformReadable> readable_;
 };
 
+class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
+ public:
+  using Constant = NewScriptFunction::Constant;
+
+  class PullSource2 final : public NewScriptFunction::Callable {
+   public:
+    explicit PullSource2(ConcatenatingUnderlyingSource* source)
+        : source_(source) {}
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+      return source_->source2_->pull(script_state).AsScriptValue();
+    }
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(source_);
+      NewScriptFunction::Callable::Trace(visitor);
+    }
+
+   private:
+    const Member<ConcatenatingUnderlyingSource> source_;
+  };
+
+  class OnReadingSource1Success final : public NewScriptFunction::Callable {
+   public:
+    explicit OnReadingSource1Success(ConcatenatingUnderlyingSource* source)
+        : source_(source) {}
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(source_);
+      NewScriptFunction::Callable::Trace(visitor);
+    }
+    ScriptValue Call(ScriptState* script_state,
+                     ScriptValue read_result) override {
+      DCHECK(read_result.IsObject());
+      bool done = false;
+      v8::Local<v8::Value> value =
+          V8UnpackIteratorResult(script_state,
+                                 read_result.V8Value().As<v8::Object>(), &done)
+              .ToLocalChecked();
+      if (done) {
+        // We've finished reading `source1_`. Let's start reading `source2_`.
+        source_->has_finished_reading_source1_ = true;
+        ReadableStreamDefaultController* controller =
+            source_->Controller()->GetOriginalController();
+        return source_->source2_
+            ->startWrapper(script_state,
+                           ScriptValue::From(script_state, controller))
+            .Then(CreateFunction<PullSource2>(script_state, source_))
+            .AsScriptValue();
+      }
+      source_->Controller()->Enqueue(value);
+      return ScriptPromise::CastUndefined(script_state).AsScriptValue();
+    }
+
+   private:
+    const Member<ConcatenatingUnderlyingSource> source_;
+  };
+
+  class OnReadingSource1Fail final : public NewScriptFunction::Callable {
+   public:
+    explicit OnReadingSource1Fail(ConcatenatingUnderlyingSource* source)
+        : source_(source) {}
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(source_);
+      NewScriptFunction::Callable::Trace(visitor);
+    }
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+      ScriptValue reason(script_state->GetIsolate(),
+                         v8::Undefined(script_state->GetIsolate()));
+
+      ReadableStream* dummy_stream =
+          ReadableStream::CreateWithCountQueueingStrategy(
+              script_state, source_->source2_,
+              /*high_water_mark=*/0);
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     ExceptionState::kUnknownContext, "", "");
+      dummy_stream->cancel(script_state, reason, exception_state);
+      // We don't care about the result of the cancellation, including
+      // exceptions.
+      exception_state.ClearException();
+
+      return ScriptPromise::Reject(script_state, value).AsScriptValue();
+    }
+
+   private:
+    const Member<ConcatenatingUnderlyingSource> source_;
+  };
+
+  ConcatenatingUnderlyingSource(ScriptState* script_state,
+                                UnderlyingSourceBase* source1,
+                                UnderlyingSourceBase* source2)
+      : UnderlyingSourceBase(script_state),
+        stream_for_source1_(ReadableStream::CreateWithCountQueueingStrategy(
+            script_state,
+            source1,
+            /*high_water_mark=*/0)),
+        source2_(source2) {}
+
+  ScriptPromise Start(ScriptState* script_state) override {
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   ExceptionState::kUnknownContext, "", "");
+    reader_for_source1_ = ReadableStream::AcquireDefaultReader(
+        script_state, stream_for_source1_, /*for_author_code=*/false,
+        exception_state);
+    if (exception_state.HadException()) {
+      return ScriptPromise::Reject(script_state, exception_state);
+    }
+    DCHECK(reader_for_source1_);
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  ScriptPromise pull(ScriptState* script_state) override {
+    if (has_finished_reading_source1_) {
+      return source2_->pull(script_state);
+    }
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   ExceptionState::kUnknownContext, "", "");
+    ScriptPromise read_promise =
+        reader_for_source1_->read(script_state, exception_state);
+    if (exception_state.HadException()) {
+      return ScriptPromise::Reject(script_state, exception_state);
+    }
+    return read_promise.Then(
+        CreateFunction<OnReadingSource1Success>(script_state, this),
+        CreateFunction<OnReadingSource1Fail>(script_state, this));
+  }
+
+  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+    if (has_finished_reading_source1_) {
+      return source2_->Cancel(script_state, reason);
+    }
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   ExceptionState::kUnknownContext, "", "");
+    ScriptPromise cancel_promise1 =
+        reader_for_source1_->cancel(script_state, reason, exception_state);
+    if (exception_state.HadException()) {
+      cancel_promise1 = ScriptPromise::Reject(script_state, exception_state);
+    }
+
+    ReadableStream* dummy_stream =
+        ReadableStream::CreateWithCountQueueingStrategy(script_state, source2_,
+                                                        /*high_water_mark=*/0);
+    ScriptPromise cancel_promise2 =
+        dummy_stream->cancel(script_state, reason, exception_state);
+    if (exception_state.HadException()) {
+      cancel_promise2 = ScriptPromise::Reject(script_state, exception_state);
+    }
+
+    return ScriptPromise::All(script_state, {cancel_promise1, cancel_promise2});
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(stream_for_source1_);
+    visitor->Trace(reader_for_source1_);
+    visitor->Trace(source2_);
+    UnderlyingSourceBase::Trace(visitor);
+  }
+
+ private:
+  Member<ReadableStream> stream_for_source1_;
+  Member<ReadableStreamDefaultReader> reader_for_source1_;
+  bool has_finished_reading_source1_ = false;
+  Member<UnderlyingSourceBase> source2_;
+};
+
 ReadableStream* CrossRealmTransformReadable::CreateReadableStream(
     ExceptionState& exception_state) {
   DCHECK(!controller_) << "CreateReadableStream can only be called once";
@@ -850,6 +1029,17 @@ CORE_EXPORT ReadableStream* CreateCrossRealmTransformReadable(
     ExceptionState& exception_state) {
   return MakeGarbageCollected<CrossRealmTransformReadable>(script_state, port)
       ->CreateReadableStream(exception_state);
+}
+
+ReadableStream* CreateConcatenatedReadableStream(
+    ScriptState* script_state,
+    UnderlyingSourceBase* source1,
+    UnderlyingSourceBase* source2) {
+  return ReadableStream::CreateWithCountQueueingStrategy(
+      script_state,
+      MakeGarbageCollected<ConcatenatingUnderlyingSource>(script_state, source1,
+                                                          source2),
+      /*high_water_mark=*/0);
 }
 
 }  // namespace blink

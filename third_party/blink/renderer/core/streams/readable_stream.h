@@ -198,6 +198,12 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                               WritableStream*,
                               PipeOptions*);
 
+  // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
+  static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,
+                                                           ReadableStream*,
+                                                           bool for_author_code,
+                                                           ExceptionState&);
+
   //
   // Functions exported for use by TransformStream. Not part of the standard.
   //
@@ -240,12 +246,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#initialize-readable-stream
   static void Initialize(ReadableStream*);
-
-  // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
-  static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,
-                                                           ReadableStream*,
-                                                           bool for_author_code,
-                                                           ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   static StreamPromiseResolver* AddReadRequest(ScriptState*, ReadableStream*);

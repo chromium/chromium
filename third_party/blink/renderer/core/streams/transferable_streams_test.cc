@@ -4,26 +4,152 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
+#include "base/types/strong_alias.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_writer.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
 namespace {
+
+enum class SourceType { kPush, kPull };
+
+class TestUnderlyingSource final : public UnderlyingSourceBase {
+ public:
+  TestUnderlyingSource(SourceType source_type,
+                       ScriptState* script_state,
+                       Vector<int> sequence,
+                       ScriptPromise start_promise)
+      : UnderlyingSourceBase(script_state),
+        type_(source_type),
+        sequence_(std::move(sequence)),
+        start_promise_(start_promise) {}
+  TestUnderlyingSource(SourceType source_type,
+                       ScriptState* script_state,
+                       Vector<int> sequence)
+      : TestUnderlyingSource(source_type,
+                             script_state,
+                             std::move(sequence),
+                             ScriptPromise::CastUndefined(script_state)) {}
+  ~TestUnderlyingSource() override = default;
+
+  ScriptPromise Start(ScriptState* script_state) override {
+    started_ = true;
+    if (type_ == SourceType::kPush) {
+      for (int element : sequence_) {
+        EnqueueOrError(script_state, element);
+      }
+      index_ = sequence_.size();
+      Controller()->Close();
+    }
+    return start_promise_;
+  }
+  ScriptPromise pull(ScriptState* script_state) override {
+    if (type_ == SourceType::kPush) {
+      return ScriptPromise::CastUndefined(script_state);
+    }
+    if (index_ == sequence_.size()) {
+      Controller()->Close();
+      return ScriptPromise::CastUndefined(script_state);
+    }
+    EnqueueOrError(script_state, sequence_[index_]);
+    ++index_;
+    return ScriptPromise::CastUndefined(script_state);
+  }
+  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+    cancelled_ = true;
+    cancel_reason_ = reason;
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  bool IsStarted() const { return started_; }
+  bool IsCancelled() const { return cancelled_; }
+  ScriptValue CancelReason() const { return cancel_reason_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(start_promise_);
+    visitor->Trace(cancel_reason_);
+    UnderlyingSourceBase::Trace(visitor);
+  }
+
+ private:
+  void EnqueueOrError(ScriptState* script_state, int num) {
+    if (num < 0) {
+      Controller()->Error(V8ThrowException::CreateRangeError(
+          script_state->GetIsolate(), "foo"));
+      return;
+    }
+    Controller()->Enqueue(num);
+  }
+
+  const SourceType type_;
+  const Vector<int> sequence_;
+  wtf_size_t index_ = 0;
+
+  const ScriptPromise start_promise_;
+  bool started_ = false;
+  bool cancelled_ = false;
+  ScriptValue cancel_reason_;
+};
+
+void ExpectValue(int line,
+                 ScriptState* script_state,
+                 v8::Local<v8::Value> result,
+                 int32_t expectation) {
+  SCOPED_TRACE(testing::Message() << "__LINE__ = " << line);
+  if (!result->IsObject()) {
+    ADD_FAILURE() << "The result is not an Object.";
+    return;
+  }
+  v8::Local<v8::Value> value;
+  bool done = false;
+  if (!V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
+           .ToLocal(&value)) {
+    ADD_FAILURE() << "Failed to unpack the iterator result.";
+    return;
+  }
+  EXPECT_FALSE(done);
+  if (!value->IsInt32()) {
+    ADD_FAILURE() << "The value is not an int32.";
+    return;
+  }
+  EXPECT_EQ(value.As<v8::Number>()->Value(), expectation);
+}
+
+void ExpectDone(int line,
+                ScriptState* script_state,
+                v8::Local<v8::Value> result) {
+  SCOPED_TRACE(testing::Message() << "__LINE__ = " << line);
+  v8::Local<v8::Value> value;
+  bool done = false;
+  if (!V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
+           .ToLocal(&value)) {
+    ADD_FAILURE() << "Failed to unpack the iterator result.";
+    return;
+  }
+  EXPECT_TRUE(done);
+}
 
 // We only do minimal testing here. The functionality of transferable streams is
 // tested in the layout tests.
@@ -118,6 +244,366 @@ TEST(TransferableStreamsTest, SmokeTest) {
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
 
   EXPECT_TRUE(got_response);
+}
+
+TEST(ConcatenatedReadableStreamTest, Empty) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({}));
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectDone(__LINE__, script_state, read_promise->Result());
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_TRUE(source2->IsStarted());
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_FALSE(source2->IsCancelled());
+}
+
+TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({1}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({5, 6}));
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+    EXPECT_TRUE(source1->IsStarted());
+    EXPECT_FALSE(source2->IsStarted());
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
+    EXPECT_TRUE(source2->IsStarted());
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 6);
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectDone(__LINE__, script_state, read_promise->Result());
+  }
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_FALSE(source2->IsCancelled());
+}
+
+TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPush, script_state, Vector<int>({1}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPush, script_state, Vector<int>({5, 6}));
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+    EXPECT_TRUE(source1->IsStarted());
+    EXPECT_FALSE(source2->IsStarted());
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
+    EXPECT_TRUE(source2->IsStarted());
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 6);
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectDone(__LINE__, script_state, read_promise->Result());
+  }
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_FALSE(source2->IsCancelled());
+}
+
+TEST(ConcatenatedReadableStreamTest, ErrorInSource1) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({1, -2}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({5, 6}));
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kRejected);
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_TRUE(source2->IsStarted());
+  EXPECT_TRUE(source2->IsCancelled());
+}
+
+TEST(ConcatenatedReadableStreamTest, ErrorInSource2) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({1}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({-2}));
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kRejected);
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_TRUE(source2->IsStarted());
+  EXPECT_FALSE(source2->IsCancelled());
+}
+
+TEST(ConcatenatedReadableStreamTest, Cancel1) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({1, 2}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({5, 6}));
+
+  ScriptValue reason = ScriptValue::From(script_state, "hello");
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_FALSE(source2->IsStarted());
+  EXPECT_FALSE(source2->IsCancelled());
+  {
+    reader->cancel(script_state, reason, ASSERT_NO_EXCEPTION);
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_TRUE(source1->IsCancelled());
+  EXPECT_EQ(reason, source1->CancelReason());
+  EXPECT_TRUE(source2->IsStarted());
+  EXPECT_TRUE(source2->IsCancelled());
+  EXPECT_EQ(reason, source2->CancelReason());
+}
+
+TEST(ConcatenatedReadableStreamTest, Cancel2) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({5}));
+
+  ScriptValue reason = ScriptValue::From(script_state, "hello");
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
+  }
+  {
+    reader->cancel(script_state, reason, ASSERT_NO_EXCEPTION);
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_FALSE(source1->IsCancelled());
+  EXPECT_TRUE(source2->IsStarted());
+  EXPECT_TRUE(source2->IsCancelled());
+  EXPECT_EQ(reason, source2->CancelReason());
+}
+
+TEST(ConcatenatedReadableStreamTest, PendingStart1) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({1, 2}),
+      resolver->Promise());
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({5, 6}));
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kPending);
+
+    resolver->Resolve();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_FALSE(source2->IsStarted());
+}
+
+TEST(ConcatenatedReadableStreamTest, PendingStart2) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({1}));
+  TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(
+      SourceType::kPull, script_state, Vector<int>({5, 6}),
+      resolver->Promise());
+
+  ReadableStream* stream =
+      CreateConcatenatedReadableStream(script_state, source1, source2);
+  ASSERT_TRUE(stream);
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(reader);
+
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
+  }
+  {
+    v8::Local<v8::Promise> read_promise =
+        reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kPending);
+
+    resolver->Resolve();
+    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
+    ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
+  }
+  EXPECT_TRUE(source1->IsStarted());
+  EXPECT_TRUE(source2->IsStarted());
 }
 
 }  // namespace

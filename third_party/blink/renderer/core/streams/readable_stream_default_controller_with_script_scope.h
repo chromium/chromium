@@ -48,6 +48,10 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
     Error(js_error);
   }
 
+  ReadableStreamDefaultController* GetOriginalController() {
+    return controller_;
+  }
+
   void Trace(Visitor*) const;
 
  private:
