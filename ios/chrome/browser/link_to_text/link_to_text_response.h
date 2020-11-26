@@ -30,8 +30,8 @@ class WebState;
 
 // Parses a serialized response stored in |value| into a LinkToTextResponse
 // instance.
-+ (instancetype)createFromValue:(const base::Value*)value
-                       webState:(web::WebState*)webState;
++ (instancetype)linkToTextResponseWithValue:(const base::Value*)value
+                                   webState:(web::WebState*)webState;
 
 // Response payload. Nil when an error occurred.
 @property(nonatomic, readonly) LinkToTextPayload* payload;
@@ -41,6 +41,9 @@ class WebState;
 @property(nonatomic, readonly)
     base::Optional<shared_highlighting::LinkGenerationError>
         error;
+
+// Source ID for the associated WebState.
+@property(nonatomic, readonly) ukm::SourceId sourceID;
 
 @end
 

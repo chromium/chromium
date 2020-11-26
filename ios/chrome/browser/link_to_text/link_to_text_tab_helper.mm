@@ -59,7 +59,8 @@ void LinkToTextTabHelper::OnJavaScriptResponseReceived(
     LinkToTextCallback callback,
     const base::Value* response) {
   if (callback) {
-    callback([LinkToTextResponse createFromValue:response webState:web_state_]);
+    callback([LinkToTextResponse linkToTextResponseWithValue:response
+                                                    webState:web_state_]);
   }
 }
 

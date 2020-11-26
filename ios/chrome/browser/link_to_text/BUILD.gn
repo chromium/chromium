@@ -14,6 +14,7 @@ source_set("link_to_text") {
   deps = [
     ":internal",
     "//components/shared_highlighting/core/common",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/tabs",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

@@ -66,8 +66,12 @@ using shared_highlighting::LinkGenerationError;
 - (void)receivedLinkToTextResponse:(LinkToTextResponse*)response {
   DCHECK(response);
   if (response.error.has_value()) {
-    [self linkGenerationFailedWithError:response.error.value()];
+    LinkGenerationError error = response.error.value();
+    shared_highlighting::LogLinkGeneratedErrorUkmEvent(response.sourceID,
+                                                       error);
+    [self linkGenerationFailedWithError:error];
   } else {
+    shared_highlighting::LogLinkGeneratedSuccessUkmEvent(response.sourceID);
     [self shareLinkToText:response.payload];
   }
 }
