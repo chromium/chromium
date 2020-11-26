@@ -13,6 +13,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 
 namespace content {
 class BrowserContext;
@@ -106,6 +107,25 @@ enum class PermissionPromptDisposition {
   NONE_VISIBLE = 7,
 };
 
+// The reason why the permission prompt disposition was used. Enum used in UKMs,
+// do not re-order or change values. Deprecated items should only be commented
+// out.
+enum class PermissionPromptDispositionReason {
+  // Disposition was selected in prefs.
+  USER_PREFERENCE_IN_SETTINGS = 0,
+
+  // Disposition was chosen because Safe Browsing classifies the origin
+  // as being spammy or abusive with permission requests.
+  SAFE_BROWSING_VERDICT = 1,
+
+  // Disposition was chosen based on grant likelihood predicted by the
+  // Web Permission Prediction Service.
+  PREDICTION_SERVICE = 2,
+
+  // Disposition was used as a fallback, if no selector made a decision.
+  DEFAULT_FALLBACK = 3,
+};
+
 enum class AdaptiveTriggers {
   // None of the adaptive triggers were met. Currently this means two or less
   // consecutive denies in a row.
@@ -126,6 +146,9 @@ enum class PermissionAutoRevocationHistory {
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
+  using PredictionGrantLikelihood =
+      PermissionSuggestion_Likelihood_DiscretizedLikelihood;
+
   static const char kPermissionsPromptShown[];
   static const char kPermissionsPromptShownGesture[];
   static const char kPermissionsPromptShownNoGesture[];
@@ -167,7 +190,9 @@ class PermissionUmaUtil {
       const std::vector<PermissionRequest*>& requests,
       content::WebContents* web_contents,
       PermissionAction permission_action,
-      PermissionPromptDisposition ui_disposition);
+      PermissionPromptDisposition ui_disposition,
+      base::Optional<PermissionPromptDispositionReason> ui_reason,
+      base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood);
 
   static void RecordWithBatteryBucket(const std::string& histogram);
 
@@ -225,14 +250,17 @@ class PermissionUmaUtil {
   friend class PermissionUmaUtilTest;
 
   // web_contents may be null when for recording non-prompt actions.
-  static void RecordPermissionAction(ContentSettingsType permission,
-                                     PermissionAction action,
-                                     PermissionSourceUI source_ui,
-                                     PermissionRequestGestureType gesture_type,
-                                     PermissionPromptDisposition ui_disposition,
-                                     const GURL& requesting_origin,
-                                     const content::WebContents* web_contents,
-                                     content::BrowserContext* browser_context);
+  static void RecordPermissionAction(
+      ContentSettingsType permission,
+      PermissionAction action,
+      PermissionSourceUI source_ui,
+      PermissionRequestGestureType gesture_type,
+      PermissionPromptDisposition ui_disposition,
+      base::Optional<PermissionPromptDispositionReason> ui_reason,
+      const GURL& requesting_origin,
+      const content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
+      base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.

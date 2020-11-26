@@ -127,8 +127,11 @@ void RecordPermissionActionUkm(
     int ignore_count,
     PermissionSourceUI source_ui,
     PermissionPromptDisposition ui_disposition,
+    base::Optional<PermissionPromptDispositionReason> ui_reason,
     base::Optional<bool> has_three_consecutive_denies,
     base::Optional<bool> has_previously_revoked_permission,
+    base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+        predicted_grant_likelihood,
     base::Optional<ukm::SourceId> source_id) {
   // Only record the permission change if the origin is in the history.
   if (!source_id.has_value())
@@ -145,6 +148,14 @@ void RecordPermissionActionUkm(
       .SetPriorIgnores(std::min(kPriorCountCap, ignore_count))
       .SetSource(static_cast<int64_t>(source_ui))
       .SetPromptDisposition(static_cast<int64_t>(ui_disposition));
+
+  if (ui_reason.has_value())
+    builder.SetPromptDispositionReason(static_cast<int64_t>(ui_reason.value()));
+
+  if (predicted_grant_likelihood.has_value()) {
+    builder.SetPredictionsApiResponse_GrantLikelihood(
+        static_cast<int64_t>(predicted_grant_likelihood.value()));
+  }
 
   if (has_three_consecutive_denies.has_value()) {
     int64_t satisfied_adaptive_triggers = 0;
@@ -284,8 +295,9 @@ void PermissionUmaUtil::PermissionRevoked(
     RecordPermissionAction(permission, PermissionAction::REVOKED, source_ui,
                            PermissionRequestGestureType::UNKNOWN,
                            PermissionPromptDisposition::NOT_APPLICABLE,
-                           revoked_origin,
-                           /*web_contents=*/nullptr, browser_context);
+                           base::nullopt /* ui_reason */, revoked_origin,
+                           nullptr /* web_contents */, browser_context,
+                           base::nullopt /* predicted_grant_likelihood */);
   }
 }
 
@@ -349,7 +361,9 @@ void PermissionUmaUtil::PermissionPromptResolved(
     const std::vector<PermissionRequest*>& requests,
     content::WebContents* web_contents,
     PermissionAction permission_action,
-    PermissionPromptDisposition ui_disposition) {
+    PermissionPromptDisposition ui_disposition,
+    base::Optional<PermissionPromptDispositionReason> ui_reason,
+    base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
   std::string action_string;
 
   switch (permission_action) {
@@ -388,10 +402,10 @@ void PermissionUmaUtil::PermissionPromptResolved(
     PermissionRequestGestureType gesture_type = request->GetGestureType();
     const GURL& requesting_origin = request->GetOrigin();
 
-    RecordPermissionAction(permission, permission_action,
-                           PermissionSourceUI::PROMPT, gesture_type,
-                           ui_disposition, requesting_origin, web_contents,
-                           web_contents->GetBrowserContext());
+    RecordPermissionAction(
+        permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
+        ui_disposition, ui_reason, requesting_origin, web_contents,
+        web_contents->GetBrowserContext(), predicted_grant_likelihood);
 
     std::string priorDismissPrefix =
         "Permissions.Prompt." + action_string + ".PriorDismissCount2.";
@@ -552,9 +566,11 @@ void PermissionUmaUtil::RecordPermissionAction(
     PermissionSourceUI source_ui,
     PermissionRequestGestureType gesture_type,
     PermissionPromptDisposition ui_disposition,
+    base::Optional<PermissionPromptDispositionReason> ui_reason,
     const GURL& requesting_origin,
     const content::WebContents* web_contents,
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser_context);
@@ -566,14 +582,15 @@ void PermissionUmaUtil::RecordPermissionAction(
       browser_context, web_contents, requesting_origin,
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
-          dismiss_count, ignore_count, source_ui, ui_disposition,
+          dismiss_count, ignore_count, source_ui, ui_disposition, ui_reason,
           permission == ContentSettingsType::NOTIFICATIONS
               ? PermissionsClient::Get()
                     ->HadThreeConsecutiveNotificationPermissionDenies(
                         browser_context)
               : base::nullopt,
           PermissionsClient::Get()->HasPreviouslyAutoRevokedPermission(
-              browser_context, requesting_origin, permission)));
+              browser_context, requesting_origin, permission),
+          predicted_grant_likelihood));
 
   switch (permission) {
     case ContentSettingsType::GEOLOCATION:

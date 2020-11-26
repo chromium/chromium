@@ -37,4 +37,9 @@ NotificationPermissionUiSelector::Decision::UseNormalUiAndShowNoWarning() {
   return Decision(UseNormalUi(), ShowNoWarning());
 }
 
+base::Optional<PermissionUmaUtil::PredictionGrantLikelihood>
+NotificationPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
+  return base::nullopt;
+}
+
 }  // namespace permissions

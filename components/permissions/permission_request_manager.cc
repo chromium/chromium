@@ -23,7 +23,6 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_id.h"
-#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/switches.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -598,6 +597,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
     selector->Cancel();
 
   current_request_already_displayed_ = false;
+  prediction_grant_likelihood_.reset();
   current_request_ui_to_use_.reset();
   selector_decisions_.clear();
 
@@ -611,7 +611,9 @@ void PermissionRequestManager::FinalizeCurrentRequests(
 
   PermissionUmaUtil::PermissionPromptResolved(
       requests_, web_contents(), permission_action,
-      DetermineCurrentRequestUIDispositionForUMA());
+      DetermineCurrentRequestUIDispositionForUMA(),
+      DetermineCurrentRequestUIDispositionReasonForUMA(),
+      prediction_grant_likelihood_);
 
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
@@ -793,6 +795,12 @@ void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
     }
   }
 
+  if (!prediction_grant_likelihood_.has_value()) {
+    prediction_grant_likelihood_ =
+        notification_permission_ui_selectors_[selector_index]
+            ->PredictedGrantLikelihoodForUKM();
+  }
+
   // We have already made a decision because of a higher priority selector
   // therefore this selector's decision can be discarded.
   if (current_request_ui_to_use_.has_value())
@@ -829,6 +837,24 @@ PermissionRequestManager::DetermineCurrentRequestUIDispositionForUMA() {
   if (view_)
     return view_->GetPromptDisposition();
   return PermissionPromptDisposition::NONE_VISIBLE;
+}
+
+PermissionPromptDispositionReason
+PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
+  if (!ShouldCurrentRequestUseQuietUI()) {
+    return PermissionPromptDispositionReason::DEFAULT_FALLBACK;
+  }
+
+  switch (ReasonForUsingQuietUi()) {
+    case QuietUiReason::kEnabledInPrefs:
+      return PermissionPromptDispositionReason::USER_PREFERENCE_IN_SETTINGS;
+    case QuietUiReason::kTriggeredByCrowdDeny:
+    case QuietUiReason::kTriggeredDueToAbusiveRequests:
+    case QuietUiReason::kTriggeredDueToAbusiveContent:
+      return PermissionPromptDispositionReason::SAFE_BROWSING_VERDICT;
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
+      return PermissionPromptDispositionReason::PREDICTION_SERVICE;
+  }
 }
 
 void PermissionRequestManager::LogWarningToConsole(const char* message) {
