@@ -312,7 +312,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForOrigin_UnregisterFail) {
   loop.Run();
 
   // The operation should still complete.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed, status);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, status);
 }
 
 }  // namespace content

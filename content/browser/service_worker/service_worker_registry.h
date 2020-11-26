@@ -281,10 +281,12 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       const GURL& client_url,
       int64_t trace_event_id,
       FindRegistrationCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       storage::mojom::ServiceWorkerFindRegistrationResultPtr result);
   void DidFindRegistrationForScope(
       FindRegistrationCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       storage::mojom::ServiceWorkerFindRegistrationResultPtr result);
   void DidFindRegistrationForId(
@@ -296,11 +298,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void DidGetRegistrationsForOrigin(
       GetRegistrationsCallback callback,
       const url::Origin& origin_filter,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       std::vector<storage::mojom::ServiceWorkerFindRegistrationResultPtr>
           entries);
   void DidGetAllRegistrations(
       GetRegistrationsInfosCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       RegistrationList registration_data_list);
   void DidGetStorageUsageForOrigin(
@@ -320,11 +324,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       int64_t registration_id,
       const GURL& origin,
       StatusCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       ServiceWorkerStorage::OriginState origin_state);
 
   void DidUpdateRegistration(
       StatusCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidWriteUncommittedResourceIds(
       storage::mojom::ServiceWorkerDatabaseStatus status);
@@ -349,12 +355,14 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void DidGetNewRegistrationId(
       blink::mojom::ServiceWorkerRegistrationOptions options,
       NewRegistrationCallback callback,
+      uint64_t call_id,
       int64_t registration_id);
   void DidGetNewVersionId(
       scoped_refptr<ServiceWorkerRegistration> registration,
       const GURL& script_url,
       blink::mojom::ScriptType script_type,
       NewVersionCallback callback,
+      uint64_t call_id,
       int64_t version_id,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
           version_reference);
