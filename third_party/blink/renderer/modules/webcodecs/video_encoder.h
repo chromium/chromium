@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_codecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
@@ -120,7 +121,6 @@ class MODULES_EXPORT VideoEncoder final
       media::VideoEncoderOutput output,
       base::Optional<media::VideoEncoder::CodecDescription> codec_desc);
   void HandleError(DOMException* ex);
-  void HandleError(std::string context, media::Status);
   void EnqueueRequest(Request* request);
   void ProcessRequests();
   void ProcessEncode(Request* request);
@@ -140,19 +140,11 @@ class MODULES_EXPORT VideoEncoder final
       const ParsedConfig& config);
   bool CanReconfigure(ParsedConfig& original_config, ParsedConfig& new_config);
 
+  std::unique_ptr<CodecLogger> logger_;
+
   std::unique_ptr<media::VideoEncoder> media_encoder_;
   // This flag maybe removed when all encoders can handle NV12 frame.
   bool support_nv12_ = false;
-
-  // |parent_media_log_| must be destroyed if ever the ExecutionContext is
-  // destroyed, since the blink::MediaInspectorContext* pointer given to
-  // InspectorMediaEventHandler might no longer be valid.
-  // |parent_media_log_| should not be used directly. Use |media_log_| instead.
-  std::unique_ptr<media::MediaLog> parent_media_log_;
-
-  // We might destroy |parent_media_log_| at any point, so keep a clone which
-  // can be safely accessed, and whose raw pointer can be given callbacks.
-  std::unique_ptr<media::MediaLog> media_log_;
 
   V8CodecState state_;
 

@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "media/base/async_destroy_video_encoder.h"
-#include "media/base/media_util.h"
 #include "media/base/mime_util.h"
 #include "media/base/offloading_video_encoder.h"
 #include "media/base/video_codecs.h"
@@ -37,7 +36,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
@@ -170,24 +168,14 @@ VideoEncoder::VideoEncoder(ScriptState* script_state,
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 
-  ExecutionContext* context = GetExecutionContext();
+  logger_ = std::make_unique<CodecLogger>(
+      GetExecutionContext(), Thread::MainThread()->GetTaskRunner());
 
-  DCHECK(context);
+  media::MediaLog* log = logger_->log();
 
-  parent_media_log_ = Platform::Current()->GetMediaLog(
-      MediaInspectorContextImpl::From(*context),
-      Thread::MainThread()->GetTaskRunner());
-
-  if (!parent_media_log_)
-    parent_media_log_ = std::make_unique<media::NullMediaLog>();
-
-  // This allows us to destroy |parent_media_log_| and stop logging,
-  // without causing problems to |media_log_| users.
-  media_log_ = parent_media_log_->Clone();
-
-  media_log_->SetProperty<media::MediaLogProperty::kFrameTitle>(
+  log->SetProperty<media::MediaLogProperty::kFrameTitle>(
       std::string("VideoEncoder(WebCodecs)"));
-  media_log_->SetProperty<media::MediaLogProperty::kFrameUrl>(
+  log->SetProperty<media::MediaLogProperty::kFrameUrl>(
       GetExecutionContext()->Url().GetString().Ascii());
 
   output_callback_ = init->output();
@@ -300,9 +288,10 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
 void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
                                     bool is_hw_accelerated) {
   // TODO(https://crbug.com/1139089) : Add encoder properties.
-  media_log_->SetProperty<media::MediaLogProperty::kVideoDecoderName>(
-      encoder_name);
-  media_log_->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(
+  media::MediaLog* log = logger_->log();
+
+  log->SetProperty<media::MediaLogProperty::kVideoDecoderName>(encoder_name);
+  log->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(
       is_hw_accelerated);
 }
 
@@ -314,11 +303,11 @@ void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
 
   media_encoder_ = CreateMediaVideoEncoder(*active_config_);
   if (!media_encoder_) {
-    HandleError(
+    HandleError(logger_->MakeException(
         "Encoder creation error.",
         media::Status(media::StatusCode::kEncoderInitializationError,
                       "Unable to create encoder (most likely unsupported "
-                      "codec/acceleration requirement combination)"));
+                      "codec/acceleration requirement combination)")));
     return;
   }
 
@@ -336,7 +325,8 @@ void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
     DCHECK(self->active_config_);
 
     if (!status.is_ok()) {
-      self->HandleError("Encoder initialization error.", status);
+      self->HandleError(self->logger_->MakeException(
+          "Encoder initialization error.", status));
     }
 
     self->stall_request_processing_ = false;
@@ -548,6 +538,9 @@ void VideoEncoder::ResetInternal() {
 }
 
 void VideoEncoder::HandleError(DOMException* ex) {
+  if (state_.AsEnum() == V8CodecState::Enum::kClosed)
+    return;
+
   // Save a temp before we clear the callback.
   V8WebCodecsErrorCallback* error_callback = error_callback_.Get();
 
@@ -560,21 +553,14 @@ void VideoEncoder::HandleError(DOMException* ex) {
   media_encoder_.reset();
   output_callback_.Clear();
 
+  // Prevent further logging.
+  logger_->Neuter();
+
   if (!script_state_->ContextIsValid() || !error_callback)
     return;
 
   ScriptState::Scope scope(script_state_);
   error_callback->InvokeAndReportException(nullptr, ex);
-}
-
-void VideoEncoder::HandleError(std::string error_message,
-                               media::Status status) {
-  media_log_->NotifyError(status);
-
-  // For now, the only uses of this method correspond to kOperationErrors.
-  auto* ex = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kOperationError, error_message.c_str());
-  HandleError(ex);
 }
 
 void VideoEncoder::EnqueueRequest(Request* request) {
@@ -618,7 +604,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError("Encoding error.", status);
+      self->HandleError(
+          self->logger_->MakeException("Encoding error.", status));
     }
     self->ProcessRequests();
   };
@@ -627,9 +614,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
   if (frame->HasGpuMemoryBuffer() && !support_nv12_) {
     frame = ConvertToI420Frame(frame);
     if (!frame) {
-      HandleError("Unexpected frame format.",
-                  media::Status(media::StatusCode::kEncoderFailedEncode,
-                                "Unexpected frame format"));
+      HandleError(logger_->MakeException(
+          "Unexpected frame format.", media::StatusCode::kEncoderFailedEncode));
       return;
     }
   }
@@ -706,7 +692,8 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError("Encoder reconfiguration error.", status);
+      self->HandleError(self->logger_->MakeException(
+          "Encoder initialization error.", status));
       self->stall_request_processing_ = false;
       return;
     }
@@ -750,7 +737,8 @@ void VideoEncoder::ProcessFlush(Request* request) {
     if (status.is_ok()) {
       req->resolver.Release()->Resolve();
     } else {
-      self->HandleError("Flushing error.", status);
+      self->HandleError(
+          self->logger_->MakeException("Flushing error.", status));
       req->resolver.Release()->Reject();
     }
     self->stall_request_processing_ = false;
@@ -800,7 +788,7 @@ void VideoEncoder::CallOutputCallback(
 }
 
 void VideoEncoder::ContextDestroyed() {
-  parent_media_log_ = nullptr;
+  logger_->Neuter();
 }
 
 bool VideoEncoder::HasPendingActivity() const {

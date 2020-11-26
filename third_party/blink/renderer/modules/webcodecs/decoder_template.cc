@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "media/base/media_util.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -25,7 +24,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
@@ -74,20 +72,15 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
 
   // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
   if (IsMainThread()) {
-    parent_media_log_ = Platform::Current()->GetMediaLog(
-        MediaInspectorContextImpl::From(*context),
-        context->GetTaskRunner(TaskType::kInternalMedia));
+    logger_ = std::make_unique<CodecLogger>(
+        context, context->GetTaskRunner(TaskType::kInternalMedia));
+  } else {
+    // This will create a logger backed by a NullMediaLog, which does nothing.
+    logger_ = std::make_unique<CodecLogger>();
   }
 
-  if (!parent_media_log_)
-    parent_media_log_ = std::make_unique<media::NullMediaLog>();
-
-  // This allows us to destroy |parent_media_log_| and stop logging,
-  // without causing problems to |media_log_| users.
-  media_log_ = parent_media_log_->Clone();
-
-  media_log_->SetProperty<media::MediaLogProperty::kFrameUrl>(
-      GetExecutionContext()->Url().GetString().Ascii());
+  logger_->log()->SetProperty<media::MediaLogProperty::kFrameUrl>(
+      context->Url().GetString().Ascii());
 
   output_cb_ = init->output();
   error_cb_ = init->error();
@@ -274,11 +267,11 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
 
   if (!decoder_) {
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
-                                     gpu_factories_, media_log_.get());
+                                     gpu_factories_, logger_->log());
     if (!decoder_) {
-      HandleError("Configuration error",
-                  media::Status(media::StatusCode::kDecoderCreationFailed,
-                                "Could not create decoder."));
+      Shutdown(logger_->MakeException(
+          "Configuration error: Could not create decoder.",
+          media::StatusCode::kDecoderCreationFailed));
       return false;
     }
 
@@ -319,10 +312,9 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   DCHECK_GT(num_pending_decodes_, 0);
 
   if (!decoder_) {
-    HandleError(
-        "Decoding error",
-        media::Status(media::StatusCode::kDecoderInitializeNeverCompleted,
-                      "No decoder found."));
+    Shutdown(logger_->MakeException(
+        "Decoding error: no decoder found.",
+        media::StatusCode::kDecoderInitializeNeverCompleted));
     return false;
   }
 
@@ -334,13 +326,13 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
 
   // The request may be invalid, if so report that now.
   if (!request->decoder_buffer || request->decoder_buffer->data_size() == 0) {
-    media::Status error =
-        !request->status.is_ok()
-            ? request->status
-            : media::Status(media::StatusCode::kDecoderFailedDecode,
-                            "Null or empty decoder buffer.");
+    if (request->status.is_ok()) {
+      Shutdown(logger_->MakeException("Null or empty decoder buffer.",
+                                      media::StatusCode::kDecoderFailedDecode));
+    } else {
+      Shutdown(logger_->MakeException("Decoder error.", request->status));
+    }
 
-    HandleError("Decoding error", error);
     return false;
   }
 
@@ -404,28 +396,10 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::HandleError(std::string context,
-                                          media::Status status) {
-  DVLOG(1) << __func__;
-  if (IsClosed())
-    return;
-
-  media_log_->NotifyError(status);
-
-  std::string message =
-      context + (status.message().empty() ? "." : ": " + status.message());
-
-  // We could have different DOMExceptionCodes, but for the moment, all of our
-  // exceptions seem appropriate as operation errors.
-  auto* ex = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kOperationError, message.c_str());
-  Shutdown(ex);
-}
-
-template <typename Traits>
 void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   DVLOG(3) << __func__;
-  DCHECK(!IsClosed());
+  if (IsClosed())
+    return;
 
   // Abort pending work (otherwise it will never complete)
   if (pending_request_) {
@@ -448,6 +422,9 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   // Prevent any late callbacks running.
   output_cb_.Release();
   error_cb_.Release();
+
+  // Prevent any further logging from being reported.
+  logger_->Neuter();
 
   // Clear decoding and JS-visible queue state.
   decoder_.reset();
@@ -491,7 +468,7 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    HandleError("Configuration error", status);
+    Shutdown(logger_->MakeException("Configuration error.", status));
     return;
   }
 
@@ -513,12 +490,12 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    HandleError("Decoder initialization error", status);
+    Shutdown(logger_->MakeException("Decoder initialization error.", status));
     return;
   }
 
   Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
-                           media_log_.get());
+                           logger_->log());
 
   pending_request_.Release();
 
@@ -533,7 +510,7 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id, media::Status status) {
     return;
 
   if (!status.is_ok() && status.code() != media::StatusCode::kAborted) {
-    HandleError("Decoding error", status);
+    Shutdown(logger_->MakeException("Decoding error.", status));
     return;
   }
 
@@ -553,7 +530,7 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kFlush);
 
   if (!status.is_ok()) {
-    HandleError("Flushing error", status);
+    Shutdown(logger_->MakeException("Flushing error.", status));
     return;
   }
 
@@ -595,6 +572,11 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 }
 
 template <typename Traits>
+void DecoderTemplate<Traits>::ContextDestroyed() {
+  logger_->Neuter();
+}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(output_cb_);
@@ -604,11 +586,6 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(pending_decodes_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-}
-
-template <typename Traits>
-void DecoderTemplate<Traits>::ContextDestroyed() {
-  parent_media_log_ = nullptr;
 }
 
 template <typename Traits>
