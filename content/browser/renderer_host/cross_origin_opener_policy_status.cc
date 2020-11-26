@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -84,7 +85,6 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
     : frame_tree_node_(frame_tree_node),
       virtual_browsing_context_group_(frame_tree_node->current_frame_host()
                                           ->virtual_browsing_context_group()),
-      had_opener_(!!frame_tree_node->opener()),
       is_initial_navigation_(!frame_tree_node_->has_committed_real_load()),
       current_coop_(
           frame_tree_node->current_frame_host()->cross_origin_opener_policy()),
@@ -176,17 +176,20 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
           current_coop_.report_only_value, current_origin_,
           is_initial_navigation_, response_coop.value, response_origin);
 
+  bool has_other_window_in_browsing_context_group =
+      frame_tree_node_->current_frame_host()
+          ->delegate()
+          ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
+              frame_tree_node_->current_frame_host())
+          .size() > 1;
+
   if (cross_origin_policy_swap) {
     require_browsing_instance_swap_ = true;
 
-    // If this response's COOP causes a BrowsingInstance swap that severs an
-    // opener, report this to the previous COOP reporter and/or the COOP
-    // reporter of the response if they exist.
-    // TODO(clamy): This is not correct. We should be sending a report if there
-    // is any other top-level browsing context in the browsing context group,
-    // and not only when the browsing context has an opener. Otherwise, we
-    // would not emit a report when the opener of a window has a bcg switch.
-    if (had_opener_) {
+    // If this response's COOP causes a BrowsingInstance swap that severs
+    // communication with another page, report this to the previous COOP
+    // reporter and/or the COOP reporter of the response if they exist.
+    if (has_other_window_in_browsing_context_group) {
       response_reporter->QueueNavigationToCOOPReport(
           current_url_, current_origin_.IsSameOriginWith(response_origin),
           false /* is_report_only */);
@@ -205,13 +208,10 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
                                 navigating_from_report_only_coop_swap);
   if (virtual_browsing_instance_swap) {
     // If this response's report-only COOP would cause a BrowsingInstance swap
-    // that would sever an opener, report this to the previous COOP reporter
-    // and/or the COOP reporter of the response if they exist.
-    // TODO(clamy): This is not correct. We should be sending a report if there
-    // is any other top-level browsing context in the browsing context group,
-    // and not only when the browsing context has an opener. Otherwise, we
-    // would not emit a report when the opener of a window has a bcg switch.
-    if (had_opener_) {
+    // that would sever communication with another page, report this to the
+    // previous COOP reporter and/or the COOP reporter of the response if they
+    // exist.
+    if (has_other_window_in_browsing_context_group) {
       response_reporter->QueueNavigationToCOOPReport(
           current_url_, current_origin_.IsSameOriginWith(response_origin),
           true /* is_report_only */);

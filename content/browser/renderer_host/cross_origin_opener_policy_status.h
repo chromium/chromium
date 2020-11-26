@@ -88,11 +88,6 @@ class CrossOriginOpenerPolicyStatus {
 
   int virtual_browsing_context_group_;
 
-  // When a page has a reachable opener and COOP triggers a browsing instance
-  // swap we sever the window.open relationship. This is one of the cases that
-  // can be reported using the COOP reporting API.
-  const bool had_opener_;
-
   // Whether this is the first navigation happening in the browsing context.
   const bool is_initial_navigation_;
 

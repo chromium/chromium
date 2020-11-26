@@ -637,6 +637,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The page is trying to move the main frame's representation in the client.
   virtual void SetWindowRect(const gfx::Rect& new_bounds) {}
 
+  // Returns the list of top-level RenderFrameHosts hosting active documents
+  // that belong to the same browsing context group as |render_frame_host|.
+  virtual std::vector<RenderFrameHostImpl*>
+  GetActiveTopLevelDocumentsInBrowsingContextGroup(
+      RenderFrameHostImpl* render_frame_host);
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

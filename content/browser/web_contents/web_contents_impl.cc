@@ -7024,6 +7024,30 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   delegate_->SetContentsBounds(this, bounds);
 }
 
+std::vector<RenderFrameHostImpl*>
+WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
+    RenderFrameHostImpl* render_frame_host) {
+  std::vector<RenderFrameHostImpl*> out;
+  for (WebContentsImpl* web_contents : GetAllWebContents()) {
+    RenderFrameHostImpl* other_render_frame_host = web_contents->GetMainFrame();
+
+    // Filters out inactive documents.
+    if (other_render_frame_host->lifecycle_state() !=
+        RenderFrameHostImpl::LifecycleState::kActive) {
+      continue;
+    }
+
+    // Filters out documents from a different browsing context group.
+    if (!render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
+            other_render_frame_host->GetSiteInstance())) {
+      continue;
+    }
+
+    out.push_back(other_render_frame_host);
+  }
+  return out;
+}
+
 void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
                                       bool to_different_document) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",

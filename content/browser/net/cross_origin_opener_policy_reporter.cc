@@ -76,18 +76,15 @@ base::Optional<base::UnguessableToken> GetFrameToken(
 std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
     FrameTreeNode* frame) {
   DCHECK(frame->IsMainFrame());
-  SiteInstance* site_instance = frame->current_frame_host()->GetSiteInstance();
   int virtual_browsing_context_group =
       frame->current_frame_host()->virtual_browsing_context_group();
 
   std::vector<FrameTreeNode*> out;
-  for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    RenderFrameHostImpl* rfh = wc->GetMainFrame();
-
-    // Filters out windows from a different browsing context group.
-    if (!rfh->GetSiteInstance()->IsRelatedSiteInstance(site_instance))
-      continue;
-
+  for (RenderFrameHostImpl* rfh :
+       frame->current_frame_host()
+           ->delegate()
+           ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
+               frame->current_frame_host())) {
     // Filter out windows from the same virtual browsing context group.
     if (rfh->virtual_browsing_context_group() == virtual_browsing_context_group)
       continue;

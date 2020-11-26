@@ -199,4 +199,10 @@ bool RenderFrameHostDelegate::ShowPopupMenu(
   return false;
 }
 
+std::vector<RenderFrameHostImpl*>
+RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
+    RenderFrameHostImpl* render_frame_host) {
+  return std::vector<RenderFrameHostImpl*>();
+}
+
 }  // namespace content
