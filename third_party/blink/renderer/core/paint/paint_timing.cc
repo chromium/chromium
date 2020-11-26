@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -41,6 +42,47 @@ WindowPerformance* GetPerformanceInstance(LocalFrame* frame) {
 }
 
 }  // namespace
+
+class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
+    : public FrameCallback {
+ public:
+  RecodingTimeAfterBackForwardCacheRestoreFrameCallback(
+      PaintTiming* paint_timing,
+      size_t record_index)
+      : paint_timing_(paint_timing), record_index_(record_index) {}
+  ~RecodingTimeAfterBackForwardCacheRestoreFrameCallback() override = default;
+
+  void Invoke(double high_res_time_ms) override {
+    // Instead of |high_res_time_ms|, use PaintTiming's |clock_->NowTicks()| for
+    // consistency and testability.
+    paint_timing_->SetRequestAnimationFrameAfterBackForwardCacheRestore(
+        record_index_, count_);
+
+    count_++;
+    if (count_ ==
+        WebPerformance::
+            kRequestAnimationFramesToRecordAfterBackForwardCacheRestore) {
+      paint_timing_->NotifyPaintTimingChanged();
+      return;
+    }
+
+    if (auto* frame = paint_timing_->GetFrame()) {
+      if (auto* document = frame->GetDocument()) {
+        document->RequestAnimationFrame(this);
+      }
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(paint_timing_);
+    FrameCallback::Trace(visitor);
+  }
+
+ private:
+  Member<PaintTiming> paint_timing_;
+  const size_t record_index_;
+  size_t count_ = 0;
+};
 
 // static
 const char PaintTiming::kSupplementName[] = "PaintTiming";
@@ -334,6 +376,21 @@ void PaintTiming::SetFirstPaintAfterBackForwardCacheRestoreSwap(
   NotifyPaintTimingChanged();
 }
 
+void PaintTiming::SetRequestAnimationFrameAfterBackForwardCacheRestore(
+    size_t index,
+    size_t count) {
+  auto now = clock_->NowTicks();
+
+  // The elements are allocated when the page is restored from the cache.
+  DCHECK_LT(index,
+            request_animation_frames_after_back_forward_cache_restore_.size());
+  auto& current_rafs =
+      request_animation_frames_after_back_forward_cache_restore_[index];
+  DCHECK_LT(count, current_rafs.size());
+  DCHECK_EQ(current_rafs[count], base::TimeTicks());
+  current_rafs[count] = now;
+}
+
 void PaintTiming::ReportSwapResultHistogram(WebSwapResult result) {
   UMA_HISTOGRAM_ENUMERATION("PageLoad.Internal.Renderer.PaintTiming.SwapResult",
                             result);
@@ -343,9 +400,36 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
   // Allocate the last element with 0, which indicates that the first paint
   // after this navigation doesn't happen yet.
   size_t index = first_paints_after_back_forward_cache_restore_swap_.size();
+  DCHECK_EQ(index,
+            request_animation_frames_after_back_forward_cache_restore_.size());
+
   first_paints_after_back_forward_cache_restore_swap_.push_back(
       base::TimeTicks());
   RegisterNotifyFirstPaintAfterBackForwardCacheRestoreSwapTime(index);
+
+  request_animation_frames_after_back_forward_cache_restore_.push_back(
+      RequestAnimationFrameTimesAfterBackForwardCacheRestore{});
+
+  LocalFrame* frame = GetFrame();
+  if (!frame->IsMainFrame()) {
+    return;
+  }
+
+  Document* document = frame->GetDocument();
+  DCHECK(document);
+
+  // Cancel if there is already a registered callback.
+  if (raf_after_bfcache_restore_measurement_callback_id_) {
+    document->CancelAnimationFrame(
+        raf_after_bfcache_restore_measurement_callback_id_);
+    raf_after_bfcache_restore_measurement_callback_id_ = 0;
+  }
+
+  raf_after_bfcache_restore_measurement_callback_id_ =
+      document->RequestAnimationFrame(
+          MakeGarbageCollected<
+              RecodingTimeAfterBackForwardCacheRestoreFrameCallback>(this,
+                                                                     index));
 }
 
 }  // namespace blink

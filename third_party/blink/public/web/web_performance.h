@@ -47,9 +47,17 @@ class WindowPerformance;
 
 class WebPerformance {
  public:
+  // The count to record the times on requestAnimationFrame after the page is
+  // restored from the back-forward cache.
+  static constexpr int
+      kRequestAnimationFramesToRecordAfterBackForwardCacheRestore = 3;
+
   struct BackForwardCacheRestoreTiming {
     double navigation_start = 0;
     double first_paint = 0;
+    std::array<double,
+               kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>
+        request_animation_frames = {};
     base::Optional<base::TimeDelta> first_input_delay;
   };
 

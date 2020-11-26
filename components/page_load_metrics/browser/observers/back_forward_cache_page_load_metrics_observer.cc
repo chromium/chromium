@@ -12,6 +12,12 @@ namespace internal {
 
 const char kHistogramFirstPaintAfterBackForwardCacheRestore[] =
     "PageLoad.PaintTiming.NavigationToFirstPaint.AfterBackForwardCacheRestore";
+const char kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore[] =
+    "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillFirst";
+const char kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore[] =
+    "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillSecond";
+const char kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore[] =
+    "PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillThird";
 const char kHistogramFirstInputDelayAfterBackForwardCacheRestore[] =
     "PageLoad.InteractiveTiming.FirstInputDelay.AfterBackForwardCacheRestore";
 extern const char
@@ -95,6 +101,27 @@ void BackForwardCachePageLoadMetricsObserver::
                           base::TimeDelta{});
     }
   }
+}
+
+void BackForwardCachePageLoadMetricsObserver::
+    OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
+        const page_load_metrics::mojom::BackForwardCacheTiming& timing) {
+  auto request_animation_frames =
+      timing.request_animation_frames_after_back_forward_cache_restore;
+  DCHECK_EQ(request_animation_frames.size(), 3u);
+
+  PAGE_LOAD_HISTOGRAM(
+      internal::
+          kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore,
+      request_animation_frames[0]);
+  PAGE_LOAD_HISTOGRAM(
+      internal::
+          kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore,
+      request_animation_frames[1]);
+  PAGE_LOAD_HISTOGRAM(
+      internal::
+          kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore,
+      request_animation_frames[2]);
 }
 
 void BackForwardCachePageLoadMetricsObserver::

@@ -80,6 +80,11 @@ WebPerformance::BackForwardCacheRestore() const {
         MillisecondsToSeconds(restore_timings[i].navigation_start);
     timings[i].first_paint =
         MillisecondsToSeconds(restore_timings[i].first_paint);
+    for (size_t j = 0; j < restore_timings[i].request_animation_frames.size();
+         j++) {
+      timings[i].request_animation_frames[j] =
+          MillisecondsToSeconds(restore_timings[i].request_animation_frames[j]);
+    }
     timings[i].first_input_delay = restore_timings[i].first_input_delay;
   }
   return timings;

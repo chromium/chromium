@@ -375,6 +375,13 @@ class PageLoadMetricsObserver {
       const mojom::BackForwardCacheTiming& timing,
       size_t index) {}
 
+  // This is called several times on requestAnimationFrame after the page is
+  // restored from the back-forward cache. The number of the calls is hard-
+  // coded as WebPerformance::
+  // kRequestAnimationFramesToRecordAfterBackForwardCacheRestore.
+  virtual void OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
+      const mojom::BackForwardCacheTiming& timing) {}
+
   // Unlike other paint callbacks, OnFirstMeaningfulPaintInMainFrameDocument is
   // tracked per document, and is reported for the main frame document only.
   virtual void OnFirstMeaningfulPaintInMainFrameDocument(

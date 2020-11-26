@@ -1990,6 +1990,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfill{Count}"
+    units="ms" expires_after="2021-11-01">
+  <owner>altimin@chromium.org</owner>
+  <owner>bmcquade@chromium.org</owner>
+  <owner>hajimehoshi@chromium.org</owner>
+  <summary>
+    Meastures the time duration between the page restore from BFcache and the
+    {Count} requestAnimationFrame time.
+  </summary>
+  <token key="Count">
+    <variant name="First"/>
+    <variant name="Second"/>
+    <variant name="Third"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2021-04-04">
   <owner>maxlg@chromium.org</owner>

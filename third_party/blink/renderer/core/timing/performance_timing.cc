@@ -337,9 +337,16 @@ PerformanceTiming::BackForwardCacheRestore() const {
       load_timing->BackForwardCacheRestoreNavigationStarts();
   WTF::Vector<base::TimeTicks> first_paints =
       paint_timing->FirstPaintsAfterBackForwardCacheRestore();
+  WTF::Vector<std::array<
+      base::TimeTicks,
+      WebPerformance::
+          kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>>
+      request_animation_frames =
+          paint_timing->RequestAnimationFramesAfterBackForwardCacheRestore();
   WTF::Vector<base::Optional<base::TimeDelta>> first_input_delays =
       interactive_detector->GetFirstInputDelaysAfterBackForwardCacheRestore();
   DCHECK_EQ(navigation_starts.size(), first_paints.size());
+  DCHECK_EQ(navigation_starts.size(), request_animation_frames.size());
   DCHECK_EQ(navigation_starts.size(), first_input_delays.size());
 
   WTF::Vector<BackForwardCacheRestoreTiming> restore_timings(
@@ -349,6 +356,10 @@ PerformanceTiming::BackForwardCacheRestore() const {
         MonotonicTimeToIntegerMilliseconds(navigation_starts[i]);
     restore_timings[i].first_paint =
         MonotonicTimeToIntegerMilliseconds(first_paints[i]);
+    for (size_t j = 0; j < request_animation_frames[i].size(); j++) {
+      restore_timings[i].request_animation_frames[j] =
+          MonotonicTimeToIntegerMilliseconds(request_animation_frames[i][j]);
+    }
     restore_timings[i].first_input_delay = first_input_delays[i];
   }
   return restore_timings;

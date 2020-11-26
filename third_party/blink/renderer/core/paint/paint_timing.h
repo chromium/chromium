@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
@@ -30,6 +31,10 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
       WTF::CrossThreadOnceFunction<void(WebSwapResult, base::TimeTicks)>;
+  using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
+      base::TimeTicks,
+      WebPerformance::
+          kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>;
 
  public:
   static const char kSupplementName[];
@@ -90,6 +95,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_paints_after_back_forward_cache_restore_swap_;
   }
 
+  WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
+  RequestAnimationFramesAfterBackForwardCacheRestore() const {
+    return request_animation_frames_after_back_forward_cache_restore_;
+  }
+
   // FirstContentfulPaint returns the first time that 'contentful' content was
   // painted. For instance, the first time that text or image content was
   // painted.
@@ -146,6 +156,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void Trace(Visitor*) const override;
 
  private:
+  friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;
+
   LocalFrame* GetFrame() const;
   void NotifyPaintTimingChanged();
 
@@ -175,6 +187,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // index to avoid confusing the data from different navigations.
   void SetFirstPaintAfterBackForwardCacheRestoreSwap(base::TimeTicks stamp,
                                                      size_t index);
+  void SetRequestAnimationFrameAfterBackForwardCacheRestore(size_t index,
+                                                            size_t count);
 
   void RegisterNotifySwapTime(PaintEvent);
   void RegisterNotifyFirstPaintAfterBackForwardCacheRestoreSwapTime(
@@ -193,6 +207,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_paint_swap_;
   WTF::Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_swap_;
+  WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
+      request_animation_frames_after_back_forward_cache_restore_;
   base::TimeTicks first_image_paint_;
   base::TimeTicks first_image_paint_swap_;
   base::TimeTicks first_contentful_paint_;
@@ -204,6 +220,10 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks last_portal_activated_swap_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
+
+  // The callback ID for requestAnimationFrame to record its time after the page
+  // is restored from the back-forward cache.
+  int raf_after_bfcache_restore_measurement_callback_id_ = 0;
 
   const base::TickClock* clock_;
 

@@ -141,6 +141,18 @@ void DispatchEventsAfterBackForwardCacheRestore(
                                                                i);
     }
 
+    auto request_animation_frames =
+        new_timings[i]
+            ->request_animation_frames_after_back_forward_cache_restore;
+    if (request_animation_frames.size() == 3 &&
+        (i >= last_timings.size() ||
+         last_timings[i]
+             ->request_animation_frames_after_back_forward_cache_restore
+             .empty())) {
+      observer->OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
+          *new_timings[i]);
+    }
+
     auto first_input_delay =
         new_timings[i]->first_input_delay_after_back_forward_cache_restore;
     if (first_input_delay.has_value() &&
