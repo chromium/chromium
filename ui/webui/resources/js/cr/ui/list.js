@@ -1401,9 +1401,6 @@ cr.define('cr.ui', function() {
   function handleMouseDown(e) {
     e.target = /** @type {!HTMLElement} */ (e.target);
     const listItem = this.getListItemAncestor(e.target);
-    if (!listItem) {
-      return;
-    }
     const wasSelected = listItem && listItem.selected;
     this.handlePointerDownUp_(e);
 
