@@ -1245,6 +1245,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         @Override
         public void create(PaymentAppFactoryDelegate delegate) {
             Runnable createApp = () -> {
+                if (delegate.getParams().hasClosed()) return;
                 boolean canMakePayment =
                         delegate.getParams().getMethodData().containsKey(mAppMethodName);
                 delegate.onCanMakePaymentCalculated(canMakePayment);

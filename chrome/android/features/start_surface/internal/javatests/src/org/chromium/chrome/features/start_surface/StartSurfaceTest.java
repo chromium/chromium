@@ -811,7 +811,7 @@ public class StartSurfaceTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
             + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
     public void
-    testShow_SingleAsHomepageV2_FromResumeShowStart() throws ExecutionException {
+    testShow_SingleAsHomepageV2_FromResumeShowStart() throws Exception {
         // clang-format on
         if (!mImmediateReturn) return;
 
@@ -831,7 +831,7 @@ public class StartSurfaceTest {
         pressHome();
 
         // Simulates pressing Chrome's icon and launching Chrome from warm start.
-        startMainActivityFromLauncher();
+        mActivityTestRule.resumeMainActivityFromLauncher();
 
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());

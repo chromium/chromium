@@ -64,9 +64,11 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
         LevelDBPersistedTabDataStorage.setSkipNativeAssertionsForTesting(true);
     }
 
+    @UiThreadTest
     @SmallTest
     @Test
     public void testFactoryMethod() {
+        Profile realProfile = Profile.getLastUsedRegularProfile();
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
         Profile.setLastUsedProfileForTesting(mProfile1);
         LevelDBPersistedTabDataStorage profile1Storage = factory.create();
@@ -76,6 +78,8 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
         LevelDBPersistedTabDataStorage profile1StorageAgain = factory.create();
         Assert.assertEquals(profile1Storage, profile1StorageAgain);
         Assert.assertNotEquals(profile1Storage, profile2Storage);
+        // Restore the original profile so the Activity can shut down correctly.
+        Profile.setLastUsedProfileForTesting(realProfile);
     }
 
     @UiThreadTest

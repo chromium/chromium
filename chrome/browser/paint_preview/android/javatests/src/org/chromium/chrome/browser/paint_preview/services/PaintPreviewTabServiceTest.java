@@ -99,6 +99,8 @@ public class PaintPreviewTabServiceTest {
         activity.getWindow().setLocalFocus(true, true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             InstrumentationRegistry.getInstrumentation().callActivityOnRestart(activity);
+            InstrumentationRegistry.getInstrumentation().callActivityOnStart(activity);
+            InstrumentationRegistry.getInstrumentation().callActivityOnResume(activity);
         });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

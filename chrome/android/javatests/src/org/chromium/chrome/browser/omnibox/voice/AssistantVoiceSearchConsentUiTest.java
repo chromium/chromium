@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
+import android.support.test.runner.lifecycle.Stage;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -26,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -33,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -130,16 +134,19 @@ public class AssistantVoiceSearchConsentUiTest {
     public void testDialogInteractivity_LearnMoreButton() {
         showConsentUi();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClickUtils.clickButton(mAssistantVoiceSearchConsentUi.getContentView().findViewById(
-                    R.id.avs_consent_ui_learn_more));
-            mBottomSheetTestSupport.endAllAnimations();
-        });
+        SettingsActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                SettingsActivity.class, Stage.RESUMED, () -> {
+                    ClickUtils.clickButton(
+                            mAssistantVoiceSearchConsentUi.getContentView().findViewById(
+                                    R.id.avs_consent_ui_learn_more));
+                    mBottomSheetTestSupport.endAllAnimations();
+                });
 
         onView(withText(mActivityTestRule.getActivity().getResources().getString(
                        R.string.avs_setting_category_title)))
                 .check(matches(isDisplayed()));
         Mockito.verify(mCallback, Mockito.times(0)).onResult(/* meaningless value */ true);
+        activity.finish();
     }
 
     @Test

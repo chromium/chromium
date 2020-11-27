@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
@@ -64,11 +65,15 @@ public class HomepagePolicyIntegrationTest {
 
     private EmbeddedTestServer mTestServer;
 
-    @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
     public SettingsActivityTestRule<HomepageSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(HomepageSettings.class);
+
+    // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
+    // CTA won't work.
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
     public HomepageTestRule mHomepageTestRule = new HomepageTestRule();

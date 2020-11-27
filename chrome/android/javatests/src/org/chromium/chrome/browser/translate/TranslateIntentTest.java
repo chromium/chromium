@@ -265,9 +265,8 @@ public class TranslateIntentTest {
         intent.setClassName(context, "com.google.android.apps.chrome.TranslateDispatcher");
         intent.putExtra(TranslateIntentHandler.EXTRA_EXPECTED_URL, url);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // Send this via startActivity so we don't bypass LaunchIntentHandler.
-        mActivityTestRule.startActivityCompletely(intent);
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        // The Activity is already launched so we cannot use startActivityCompletely().
+        mActivityTestRule.getActivity().startActivity(intent);
 
         // Only the target tab is selected.
         TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
