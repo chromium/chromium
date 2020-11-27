@@ -13,19 +13,25 @@ namespace blink {
 void RecordSmsOutcome(WebOTPServiceOutcome outcome,
                       ukm::SourceId source_id,
                       ukm::UkmRecorder* ukm_recorder) {
+  // In |SmsBrowserTest| we wait for UKM to be recorded to avoid race condition
+  // between outcome capture and evaluation. Recording UMA before UKM makes sure
+  // that |FetchHistogramsFromChildProcesses| reaches the child processes after
+  // UMA is recorded.
+  UMA_HISTOGRAM_ENUMERATION("Blink.Sms.Receive.Outcome", outcome);
+
   DCHECK_NE(source_id, ukm::kInvalidSourceId);
   DCHECK(ukm_recorder);
 
   ukm::builders::SMSReceiver builder(source_id);
   builder.SetOutcome(static_cast<int>(outcome));
   builder.Record(ukm_recorder);
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.Sms.Receive.Outcome", outcome);
 }
 
 void RecordSmsSuccessTime(base::TimeDelta duration,
                           ukm::SourceId source_id,
                           ukm::UkmRecorder* ukm_recorder) {
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSuccess", duration);
+
   DCHECK_NE(source_id, ukm::kInvalidSourceId);
   DCHECK(ukm_recorder);
 
@@ -34,13 +40,13 @@ void RecordSmsSuccessTime(base::TimeDelta duration,
   builder.SetTimeSuccessMs(
       ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
   builder.Record(ukm_recorder);
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSuccess", duration);
 }
 
 void RecordSmsUserCancelTime(base::TimeDelta duration,
                              ukm::SourceId source_id,
                              ukm::UkmRecorder* ukm_recorder) {
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeUserCancel", duration);
+
   DCHECK_NE(source_id, ukm::kInvalidSourceId);
   DCHECK(ukm_recorder);
 
@@ -49,8 +55,6 @@ void RecordSmsUserCancelTime(base::TimeDelta duration,
   builder.SetTimeUserCancelMs(
       ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
   builder.Record(ukm_recorder);
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeUserCancel", duration);
 }
 
 void RecordSmsCancelTime(base::TimeDelta duration) {

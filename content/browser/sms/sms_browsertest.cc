@@ -898,8 +898,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ExpectNoOutcomeUKM();
 }
 
-// Disabled test: crbug.com/1146218
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordUserCancelledAsOutcome) {
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
