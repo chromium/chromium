@@ -127,8 +127,7 @@ void GalleryWatchManager::FileWatchManager::AddFileWatch(
   }
 
   auto watcher = std::make_unique<base::FilePathWatcher>();
-  bool success = watcher->Watch(path,
-                                true /*recursive*/,
+  bool success = watcher->Watch(path, base::FilePathWatcher::Type::kRecursive,
                                 base::Bind(&FileWatchManager::OnFilePathChanged,
                                            weak_factory_.GetWeakPtr()));
 
