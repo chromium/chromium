@@ -23,7 +23,7 @@ enum class CSSValueID;
 enum class ColorSpaceGamut;
 enum class ForcedColors;
 enum class NavigationControls;
-enum class ScreenSpanning;
+enum class ScreenSpanning { kNone, kSingleFoldHorizontal, kSingleFoldVertical };
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id);
