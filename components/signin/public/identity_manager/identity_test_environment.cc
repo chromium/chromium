@@ -51,6 +51,8 @@
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #endif
 
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 namespace signin {
 
 class IdentityManagerDependenciesOwner {
@@ -476,7 +478,11 @@ void IdentityTestEnvironment::
         const std::string& id_token) {
   WaitForAccessTokenRequestIfNecessary(base::nullopt);
   fake_token_service()->IssueTokenForAllPendingRequests(
-      OAuth2AccessTokenConsumer::TokenResponse(token, expiration, id_token));
+      TokenResponseBuilder()
+          .WithAccessToken(token)
+          .WithExpirationTime(expiration)
+          .WithIdToken(id_token)
+          .build());
 }
 
 void IdentityTestEnvironment::
@@ -487,8 +493,11 @@ void IdentityTestEnvironment::
         const std::string& id_token) {
   WaitForAccessTokenRequestIfNecessary(account_id);
   fake_token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(token, expiration, id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(token)
+                      .WithExpirationTime(expiration)
+                      .WithIdToken(id_token)
+                      .build());
 }
 
 void IdentityTestEnvironment::
@@ -498,9 +507,12 @@ void IdentityTestEnvironment::
         const std::string& id_token,
         const ScopeSet& scopes) {
   WaitForAccessTokenRequestIfNecessary(base::nullopt);
-  fake_token_service()->IssueTokenForScope(
-      scopes,
-      OAuth2AccessTokenConsumer::TokenResponse(token, expiration, id_token));
+  fake_token_service()->IssueTokenForScope(scopes,
+                                           TokenResponseBuilder()
+                                               .WithAccessToken(token)
+                                               .WithExpirationTime(expiration)
+                                               .WithIdToken(id_token)
+                                               .build());
 }
 
 void IdentityTestEnvironment::

@@ -12,10 +12,10 @@
 #include "base/strings/string_split.h"
 #include "base/syslog_logging.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -23,9 +23,11 @@ CredentialProviderSigninInfoFetcher::CredentialProviderSigninInfoFetcher(
     const std::string& refresh_token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : scoped_access_token_fetcher_(
-          std::make_unique<OAuth2AccessTokenFetcherImpl>(this,
-                                                         url_loader_factory,
-                                                         refresh_token)),
+          GaiaAccessTokenFetcher::
+              CreateExchangeRefreshTokenForAccessTokenInstance(
+                  this,
+                  url_loader_factory,
+                  refresh_token)),
       user_info_fetcher_(
           std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory)),
       token_handle_fetcher_(

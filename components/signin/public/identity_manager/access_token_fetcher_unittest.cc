@@ -32,6 +32,8 @@ namespace signin {
 
 namespace {
 
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 const char kTestGaiaId[] = "dummyId";
 const char kTestGaiaId2[] = "dummyId2";
 const char kTestEmail[] = "me@gmail.com";
@@ -148,10 +150,11 @@ TEST_F(AccessTokenFetcherTest, OneShotShouldCallBackOnFulfilledRequest) {
                             access_token_info()));
 
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -178,10 +181,11 @@ TEST_F(AccessTokenFetcherTest,
                             access_token_info()));
 
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -201,11 +205,14 @@ TEST_F(AccessTokenFetcherTest,
 
   // Before the refresh token is available, the callback shouldn't get called.
   EXPECT_CALL(callback, Run(_, _)).Times(0);
-  token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+  }
 
   // Once the refresh token becomes available, we should get an access token
   // request.
@@ -218,11 +225,14 @@ TEST_F(AccessTokenFetcherTest,
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
 
-  token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+  }
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -269,10 +279,11 @@ TEST_F(AccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
 
   // Now fulfilling the access token request should have no effect.
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest, ReturnsErrorWhenAccountIsUnknown) {
@@ -424,10 +435,11 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForSameAccountFulfilled) {
   EXPECT_CALL(callback2, Run(GoogleServiceAuthError::AuthErrorNone(),
                              access_token_info()));
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 }
 
 TEST_F(AccessTokenFetcherTest, MultipleRequestsForDifferentAccountsFulfilled) {
@@ -459,21 +471,28 @@ TEST_F(AccessTokenFetcherTest, MultipleRequestsForDifferentAccountsFulfilled) {
   // called back with the access token.
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
-  token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id, TokenResponseBuilder()
+                        .WithAccessToken(access_token_info().token)
+                        .WithExpirationTime(access_token_info().expiration_time)
+                        .WithIdToken(access_token_info().id_token)
+                        .build());
+  }
 
   // Once the second access token request is fulfilled, it should get
   // called back with the access token.
   EXPECT_CALL(callback2, Run(GoogleServiceAuthError::AuthErrorNone(),
                              access_token_info()));
-  token_service()->IssueAllTokensForAccount(
-      account_id2,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+  {
+    token_service()->IssueAllTokensForAccount(
+        account_id2,
+        TokenResponseBuilder()
+            .WithAccessToken(access_token_info().token)
+            .WithExpirationTime(access_token_info().expiration_time)
+            .WithIdToken(access_token_info().id_token)
+            .build());
+  }
 }
 
 TEST_F(AccessTokenFetcherTest,
@@ -525,10 +544,11 @@ TEST_F(AccessTokenFetcherTest,
               Run(GoogleServiceAuthError::AuthErrorNone(), access_token_info()))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop4, &base::RunLoop::Quit));
   token_service()->IssueAllTokensForAccount(
-      account_id2,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id2, TokenResponseBuilder()
+                       .WithAccessToken(access_token_info().token)
+                       .WithExpirationTime(access_token_info().expiration_time)
+                       .WithIdToken(access_token_info().id_token)
+                       .build());
 
   run_loop4.Run();
 }
@@ -566,12 +586,12 @@ TEST_F(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
   // with the access token.
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
                             access_token_info()));
-
   token_service()->IssueAllTokensForAccount(
-      account_id,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id, TokenResponseBuilder()
+                      .WithAccessToken(access_token_info().token)
+                      .WithExpirationTime(access_token_info().expiration_time)
+                      .WithIdToken(access_token_info().id_token)
+                      .build());
 
   // Now add a second account and request an access token for it to test
   // that the default URLLoaderFactory is used if none is specified.
@@ -605,10 +625,11 @@ TEST_F(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
   EXPECT_CALL(callback2, Run(GoogleServiceAuthError::AuthErrorNone(),
                              access_token_info()));
   token_service()->IssueAllTokensForAccount(
-      account_id2,
-      OAuth2AccessTokenConsumer::TokenResponse(
-          access_token_info().token, access_token_info().expiration_time,
-          access_token_info().id_token));
+      account_id2, TokenResponseBuilder()
+                       .WithAccessToken(access_token_info().token)
+                       .WithExpirationTime(access_token_info().expiration_time)
+                       .WithIdToken(access_token_info().id_token)
+                       .build());
 }
 
 }  // namespace signin

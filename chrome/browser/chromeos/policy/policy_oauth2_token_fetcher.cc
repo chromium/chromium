@@ -15,11 +15,11 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using content::BrowserThread;
@@ -170,8 +170,9 @@ void PolicyOAuth2TokenFetcherImpl::StartFetchingAccessToken() {
   std::vector<std::string> scopes;
   scopes.push_back(GaiaConstants::kDeviceManagementServiceOAuth);
   scopes.push_back(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
-  access_token_fetcher_.reset(new OAuth2AccessTokenFetcherImpl(
-      this, system_url_loader_factory_, oauth2_refresh_token_));
+  access_token_fetcher_ =
+      GaiaAccessTokenFetcher::CreateExchangeRefreshTokenForAccessTokenInstance(
+          this, system_url_loader_factory_, oauth2_refresh_token_);
   access_token_fetcher_->Start(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(),
       GaiaUrls::GetInstance()->oauth2_chrome_client_secret(),

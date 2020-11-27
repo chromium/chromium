@@ -23,6 +23,9 @@
 using signin_metrics::SourceForRefreshTokenOperation;
 
 namespace {
+
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 std::string SourceToString(SourceForRefreshTokenOperation source) {
   switch (source) {
     case SourceForRefreshTokenOperation::kUnknown:
@@ -195,9 +198,10 @@ ProfileOAuth2TokenService::StartRequestForMultilogin(
       new OAuth2AccessTokenManager::RequestImpl(account_id, consumer));
   // Create token response from token. Expiration time and id token do not
   // matter and should not be accessed.
-  OAuth2AccessTokenConsumer::TokenResponse token_response(
-      refresh_token, base::Time(), std::string());
-  // If we can get refresh token from the delegate, inform consumer right away.
+  // TODO(1151018): See bug description for why the refresh token is passed
+  // in the access token field.
+  OAuth2AccessTokenConsumer::TokenResponse token_response =
+      TokenResponseBuilder().WithAccessToken(refresh_token).build();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&OAuth2AccessTokenManager::RequestImpl::InformConsumer,

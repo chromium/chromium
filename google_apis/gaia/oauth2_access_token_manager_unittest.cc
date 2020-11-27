@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -38,9 +39,10 @@ class FakeOAuth2AccessTokenManagerDelegate
       OAuth2AccessTokenConsumer* consumer) override {
     EXPECT_NE(account_ids_to_refresh_tokens_.find(account_id),
               account_ids_to_refresh_tokens_.end());
-    return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-        consumer, url_loader_factory,
-        account_ids_to_refresh_tokens_[account_id]);
+    return GaiaAccessTokenFetcher::
+        CreateExchangeRefreshTokenForAccessTokenInstance(
+            consumer, url_loader_factory,
+            account_ids_to_refresh_tokens_[account_id]);
   }
 
   bool HasRefreshToken(const CoreAccountId& account_id) const override {

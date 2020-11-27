@@ -29,6 +29,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 // Callback from FetchOAuth2TokenWithUsername().
 // Arguments:
 // - the error, or NONE if the token fetch was successful.
@@ -113,8 +115,10 @@ void AndroidAccessTokenFetcher::OnAccessTokenResponse(
     return;
   }
   if (error.state() == GoogleServiceAuthError::NONE) {
-    FireOnGetTokenSuccess(OAuth2AccessTokenConsumer::TokenResponse(
-        access_token, expiration_time, std::string()));
+    FireOnGetTokenSuccess(TokenResponseBuilder()
+                              .WithAccessToken(access_token)
+                              .WithExpirationTime(expiration_time)
+                              .build());
   } else {
     FireOnGetTokenFailure(error);
   }

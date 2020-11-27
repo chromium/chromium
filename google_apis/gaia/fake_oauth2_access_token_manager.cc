@@ -12,19 +12,21 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-FakeOAuth2AccessTokenManager::PendingRequest::PendingRequest() {}
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
+FakeOAuth2AccessTokenManager::PendingRequest::PendingRequest() = default;
 
 FakeOAuth2AccessTokenManager::PendingRequest::PendingRequest(
     const PendingRequest& other) = default;
 
-FakeOAuth2AccessTokenManager::PendingRequest::~PendingRequest() {}
+FakeOAuth2AccessTokenManager::PendingRequest::~PendingRequest() = default;
 
 FakeOAuth2AccessTokenManager::FakeOAuth2AccessTokenManager(
     OAuth2AccessTokenManager::Delegate* delegate)
     : OAuth2AccessTokenManager(delegate),
       auto_post_fetch_response_on_message_loop_(false) {}
 
-FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() {}
+FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() = default;
 
 void FakeOAuth2AccessTokenManager::IssueAllTokensForAccount(
     const CoreAccountId& account_id,
@@ -33,8 +35,10 @@ void FakeOAuth2AccessTokenManager::IssueAllTokensForAccount(
   DCHECK(!auto_post_fetch_response_on_message_loop_);
   CompleteRequests(account_id, true, FakeOAuth2AccessTokenManager::ScopeSet(),
                    GoogleServiceAuthError::AuthErrorNone(),
-                   OAuth2AccessTokenConsumer::TokenResponse(
-                       access_token, expiration, std::string() /* id_token */));
+                   TokenResponseBuilder()
+                       .WithAccessToken(access_token)
+                       .WithExpirationTime(expiration)
+                       .build());
 }
 
 void FakeOAuth2AccessTokenManager::IssueAllTokensForAccount(
@@ -60,8 +64,10 @@ void FakeOAuth2AccessTokenManager::IssueTokenForScope(
   DCHECK(!auto_post_fetch_response_on_message_loop_);
   CompleteRequests(CoreAccountId(), false, scope,
                    GoogleServiceAuthError::AuthErrorNone(),
-                   OAuth2AccessTokenConsumer::TokenResponse(
-                       access_token, expiration, std::string() /* id_token */));
+                   TokenResponseBuilder()
+                       .WithAccessToken(access_token)
+                       .WithExpirationTime(expiration)
+                       .build());
 }
 
 void FakeOAuth2AccessTokenManager::IssueTokenForScope(
@@ -95,8 +101,10 @@ void FakeOAuth2AccessTokenManager::IssueTokenForAllPendingRequests(
   CompleteRequests(CoreAccountId(), true,
                    FakeOAuth2AccessTokenManager::ScopeSet(),
                    GoogleServiceAuthError::AuthErrorNone(),
-                   OAuth2AccessTokenConsumer::TokenResponse(
-                       access_token, expiration, std::string() /* id_token */));
+                   TokenResponseBuilder()
+                       .WithAccessToken(access_token)
+                       .WithExpirationTime(expiration)
+                       .build());
 }
 
 void FakeOAuth2AccessTokenManager::IssueTokenForAllPendingRequests(
@@ -133,10 +141,7 @@ void FakeOAuth2AccessTokenManager::CompleteRequests(
             base::Time());
       }
 
-      it->request->InformConsumer(
-          error, OAuth2AccessTokenConsumer::TokenResponse(
-                     token_response.access_token,
-                     token_response.expiration_time, token_response.id_token));
+      it->request->InformConsumer(error, token_response);
     }
   }
 }
@@ -190,8 +195,10 @@ void FakeOAuth2AccessTokenManager::FetchOAuth2Token(
                        weak_ptr_factory_.GetWeakPtr(), account_id,
                        /*all_scoped=*/true, scopes,
                        GoogleServiceAuthError::AuthErrorNone(),
-                       OAuth2AccessTokenConsumer::TokenResponse(
-                           "access_token", base::Time::Max(), std::string())));
+                       TokenResponseBuilder()
+                           .WithAccessToken("access_token")
+                           .WithExpirationTime(base::Time::Max())
+                           .build()));
   }
 }
 

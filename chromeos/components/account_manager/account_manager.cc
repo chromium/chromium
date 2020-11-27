@@ -27,11 +27,11 @@
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -661,8 +661,9 @@ AccountManager::CreateAccessTokenFetcher(
     return nullptr;
   }
 
-  return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-      consumer, url_loader_factory_, it->second.token);
+  return GaiaAccessTokenFetcher::
+      CreateExchangeRefreshTokenForAccessTokenInstance(
+          consumer, url_loader_factory_, it->second.token);
 }
 
 bool AccountManager::IsTokenAvailable(

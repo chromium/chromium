@@ -30,6 +30,8 @@
 
 namespace {
 
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 // Match the way Chromium handles authentication errors in
 // google_apis/gaia/oauth2_access_token_fetcher.cc:
 GoogleServiceAuthError GetGoogleServiceAuthErrorFromNSError(
@@ -144,8 +146,10 @@ void SSOAccessTokenFetcher::OnAccessTokenResponse(NSString* token,
   if (auth_error.state() == GoogleServiceAuthError::NONE) {
     base::Time expiration_date =
         base::Time::FromDoubleT([expiration timeIntervalSince1970]);
-    FireOnGetTokenSuccess(OAuth2AccessTokenConsumer::TokenResponse(
-        base::SysNSStringToUTF8(token), expiration_date, std::string()));
+    FireOnGetTokenSuccess(TokenResponseBuilder()
+                              .WithAccessToken(base::SysNSStringToUTF8(token))
+                              .WithExpirationTime(expiration_date)
+                              .build());
   } else {
     FireOnGetTokenFailure(auth_error);
   }

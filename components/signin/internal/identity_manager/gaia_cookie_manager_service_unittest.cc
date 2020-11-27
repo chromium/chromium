@@ -35,6 +35,8 @@
 
 namespace {
 
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 const char kAccountId1[] = "account_id1";
 const char kAccountId2[] = "account_id2";
 const char kAccountId3[] = "account_id3";
@@ -154,10 +156,10 @@ class GaiaCookieManagerServiceTest : public testing::Test {
 
   void SimulateAccessTokenSuccess(OAuth2AccessTokenManager::Consumer* consumer,
                                   OAuth2AccessTokenManager::Request* request) {
-    OAuth2AccessTokenConsumer::TokenResponse token_response =
-        OAuth2AccessTokenConsumer::TokenResponse("AccessToken", base::Time(),
-                                                 "Idtoken");
-    consumer->OnGetTokenSuccess(request, token_response);
+    consumer->OnGetTokenSuccess(request, TokenResponseBuilder()
+                                             .WithAccessToken("AccessToken")
+                                             .WithIdToken("Idtoken")
+                                             .build());
   }
 
   void SimulateMergeSessionSuccess(GaiaAuthConsumer* consumer,

@@ -10,19 +10,14 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/escape.h"
 #include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -31,90 +26,58 @@ namespace {
 constexpr char kGetAccessTokenBodyFormat[] =
     "client_id=%s&"
     "client_secret=%s&"
-    "grant_type=refresh_token&"
-    "refresh_token=%s";
+    "grant_type=%s&"
+    "%s=%s";
 
 constexpr char kGetAccessTokenBodyWithScopeFormat[] =
     "client_id=%s&"
     "client_secret=%s&"
-    "grant_type=refresh_token&"
-    "refresh_token=%s&"
+    "grant_type=%s&"
+    "%s=%s&"
     "scope=%s";
 
+constexpr char kGrantTypeAuthCode[] = "authorization_code";
+constexpr char kGrantTypeRefreshToken[] = "refresh_token";
+
+constexpr char kKeyAuthCode[] = "code";
+constexpr char kKeyRefreshToken[] = "refresh_token";
+
 constexpr char kAccessTokenKey[] = "access_token";
+constexpr char krefreshTokenKey[] = "refresh_token";
 constexpr char kExpiresInKey[] = "expires_in";
 constexpr char kIdTokenKey[] = "id_token";
 constexpr char kErrorKey[] = "error";
 
-// Enumerated constants for logging server responses on 400 errors, matching
-// RFC 6749.
-enum OAuth2ErrorCodesForHistogram {
-  OAUTH2_ACCESS_ERROR_INVALID_REQUEST = 0,
-  OAUTH2_ACCESS_ERROR_INVALID_CLIENT,
-  OAUTH2_ACCESS_ERROR_INVALID_GRANT,
-  OAUTH2_ACCESS_ERROR_UNAUTHORIZED_CLIENT,
-  OAUTH2_ACCESS_ERROR_UNSUPPORTED_GRANT_TYPE,
-  OAUTH2_ACCESS_ERROR_INVALID_SCOPE,
-  OAUTH2_ACCESS_ERROR_UNKNOWN,
-  OAUTH2_ACCESS_ERROR_COUNT
-};
-
-OAuth2ErrorCodesForHistogram OAuth2ErrorToHistogramValue(
-    const std::string& error) {
+OAuth2AccessTokenFetcherImpl::OAuth2ErrorCodesForHistogram
+OAuth2ErrorToHistogramValue(const std::string& error) {
   if (error == "invalid_request")
-    return OAUTH2_ACCESS_ERROR_INVALID_REQUEST;
+    return OAuth2AccessTokenFetcherImpl::OAUTH2_ACCESS_ERROR_INVALID_REQUEST;
   else if (error == "invalid_client")
-    return OAUTH2_ACCESS_ERROR_INVALID_CLIENT;
+    return OAuth2AccessTokenFetcherImpl::OAUTH2_ACCESS_ERROR_INVALID_CLIENT;
   else if (error == "invalid_grant")
-    return OAUTH2_ACCESS_ERROR_INVALID_GRANT;
+    return OAuth2AccessTokenFetcherImpl::OAUTH2_ACCESS_ERROR_INVALID_GRANT;
   else if (error == "unauthorized_client")
-    return OAUTH2_ACCESS_ERROR_UNAUTHORIZED_CLIENT;
+    return OAuth2AccessTokenFetcherImpl::
+        OAUTH2_ACCESS_ERROR_UNAUTHORIZED_CLIENT;
   else if (error == "unsupported_grant_type")
-    return OAUTH2_ACCESS_ERROR_UNSUPPORTED_GRANT_TYPE;
+    return OAuth2AccessTokenFetcherImpl::
+        OAUTH2_ACCESS_ERROR_UNSUPPORTED_GRANT_TYPE;
   else if (error == "invalid_scope")
-    return OAUTH2_ACCESS_ERROR_INVALID_SCOPE;
+    return OAuth2AccessTokenFetcherImpl::OAUTH2_ACCESS_ERROR_INVALID_SCOPE;
 
-  return OAUTH2_ACCESS_ERROR_UNKNOWN;
+  return OAuth2AccessTokenFetcherImpl::OAUTH2_ACCESS_ERROR_UNKNOWN;
 }
 
 static GoogleServiceAuthError CreateAuthError(int net_error) {
   CHECK_NE(net_error, net::OK);
-  DLOG(WARNING) << "Could not reach Google Accounts servers: errno "
-                << net_error;
+  DLOG(WARNING) << "Could not reach Authorization servers: errno " << net_error;
   return GoogleServiceAuthError::FromConnectionError(net_error);
 }
 
 static std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
     const GURL& url,
-    const std::string& body) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("oauth2_access_token_fetcher", R"(
-        semantics {
-          sender: "OAuth 2.0 Access Token Fetcher"
-          description:
-            "This request is used by the Token Service to fetch an OAuth 2.0 "
-            "access token for a known Google account."
-          trigger:
-            "This request can be triggered at any moment when any service "
-            "requests an OAuth 2.0 access token from the Token Service."
-          data:
-            "Chrome OAuth 2.0 client id and secret, the set of OAuth 2.0 "
-            "scopes and the OAuth 2.0 refresh token."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This feature cannot be disabled in settings, but if user signs "
-            "out of Chrome, this request would not be made."
-          chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
-            }
-          }
-        })");
-
+    const std::string& body,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -160,13 +123,19 @@ std::unique_ptr<base::DictionaryValue> ParseGetAccessTokenResponse(
 OAuth2AccessTokenFetcherImpl::OAuth2AccessTokenFetcherImpl(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& refresh_token)
+    const std::string& refresh_token,
+    const std::string& auth_code)
     : OAuth2AccessTokenFetcher(consumer),
       url_loader_factory_(url_loader_factory),
       refresh_token_(refresh_token),
-      state_(INITIAL) {}
+      auth_code_(auth_code),
+      state_(INITIAL) {
+  // It's an error to specify neither a refresh token nor an auth code, or
+  // to specify both at the same time.
+  CHECK_NE(refresh_token_.empty(), auth_code_.empty());
+}
 
-OAuth2AccessTokenFetcherImpl::~OAuth2AccessTokenFetcherImpl() {}
+OAuth2AccessTokenFetcherImpl::~OAuth2AccessTokenFetcherImpl() = default;
 
 void OAuth2AccessTokenFetcherImpl::CancelRequest() {
   url_loader_.reset();
@@ -185,10 +154,11 @@ void OAuth2AccessTokenFetcherImpl::Start(
 void OAuth2AccessTokenFetcherImpl::StartGetAccessToken() {
   CHECK_EQ(INITIAL, state_);
   state_ = GET_ACCESS_TOKEN_STARTED;
-  url_loader_ =
-      CreateURLLoader(MakeGetAccessTokenUrl(),
-                      MakeGetAccessTokenBody(client_id_, client_secret_,
-                                             refresh_token_, scopes_));
+  url_loader_ = CreateURLLoader(
+      GetAccessTokenURL(),
+      MakeGetAccessTokenBody(client_id_, client_secret_, refresh_token_,
+                             auth_code_, scopes_),
+      GetTrafficAnnotationTag());
   // It's safe to use Unretained below as the |url_loader_| is owned by |this|.
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
@@ -211,8 +181,8 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     histogram_value = url_loader_->NetError();
     net_failure = true;
   }
-  base::UmaHistogramSparse("Gaia.ResponseCodesForOAuth2AccessToken",
-                           histogram_value);
+  RecordResponseCodeUma(histogram_value);
+
   if (net_failure) {
     OnGetTokenFailure(CreateAuthError(histogram_value));
     return;
@@ -238,19 +208,17 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     case net::HTTP_BAD_REQUEST: {
       // HTTP_BAD_REQUEST (400) usually contains error as per
       // http://tools.ietf.org/html/rfc6749#section-5.2.
-      std::string gaia_error;
+      std::string oauth2_error;
       if (!ParseGetAccessTokenFailureResponse(std::move(response_body),
-                                              &gaia_error)) {
+                                              &oauth2_error)) {
         OnGetTokenFailure(
             GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR));
         return;
       }
 
       OAuth2ErrorCodesForHistogram access_error(
-          OAuth2ErrorToHistogramValue(gaia_error));
-      UMA_HISTOGRAM_ENUMERATION("Gaia.BadRequestTypeForOAuth2AccessToken",
-                                access_error,
-                                OAUTH2_ACCESS_ERROR_COUNT);
+          OAuth2ErrorToHistogramValue(oauth2_error));
+      RecordBadRequestTypeUma(access_error);
 
       OnGetTokenFailure(
           access_error == OAUTH2_ACCESS_ERROR_INVALID_GRANT
@@ -280,11 +248,9 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
   // The request was successfully fetched and it returned OK.
   // Parse out the access token and the expiration time.
-  std::string access_token;
-  int expires_in;
-  std::string id_token;
-  if (!ParseGetAccessTokenSuccessResponse(
-          std::move(response_body), &access_token, &expires_in, &id_token)) {
+  OAuth2AccessTokenConsumer::TokenResponse token_response;
+  if (!ParseGetAccessTokenSuccessResponse(std::move(response_body),
+                                          &token_response)) {
     DLOG(WARNING) << "Response doesn't match expected format";
     OnGetTokenFailure(
         GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
@@ -292,10 +258,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   }
   // The token will expire in |expires_in| seconds. Take a 10% error margin to
   // prevent reusing a token too close to its expiration date.
-  OnGetTokenSuccess(OAuth2AccessTokenConsumer::TokenResponse(
-      access_token,
-      base::Time::Now() + base::TimeDelta::FromSeconds(9 * expires_in / 10),
-      id_token));
+  OnGetTokenSuccess(token_response);
 }
 
 void OAuth2AccessTokenFetcherImpl::OnGetTokenSuccess(
@@ -316,33 +279,42 @@ void OAuth2AccessTokenFetcherImpl::OnURLLoadComplete(
 }
 
 // static
-GURL OAuth2AccessTokenFetcherImpl::MakeGetAccessTokenUrl() {
-  return GaiaUrls::GetInstance()->oauth2_token_url();
-}
-
-// static
 std::string OAuth2AccessTokenFetcherImpl::MakeGetAccessTokenBody(
     const std::string& client_id,
     const std::string& client_secret,
     const std::string& refresh_token,
+    const std::string& auth_code,
     const std::vector<std::string>& scopes) {
+  // It's an error to specify neither a refresh token nor an auth code, or
+  // to specify both at the same time.
+  CHECK_NE(refresh_token.empty(), auth_code.empty());
+
   std::string enc_client_id = net::EscapeUrlEncodedData(client_id, true);
   std::string enc_client_secret =
       net::EscapeUrlEncodedData(client_secret, true);
-  std::string enc_refresh_token =
-      net::EscapeUrlEncodedData(refresh_token, true);
+
+  const char* key = nullptr;
+  const char* grant_type = nullptr;
+  std::string enc_value;
+  if (refresh_token.empty()) {
+    key = kKeyAuthCode;
+    grant_type = kGrantTypeAuthCode;
+    enc_value = net::EscapeUrlEncodedData(auth_code, true);
+  } else {
+    key = kKeyRefreshToken;
+    grant_type = kGrantTypeRefreshToken;
+    enc_value = net::EscapeUrlEncodedData(refresh_token, true);
+  }
+
   if (scopes.empty()) {
-    return base::StringPrintf(kGetAccessTokenBodyFormat,
-                              enc_client_id.c_str(),
-                              enc_client_secret.c_str(),
-                              enc_refresh_token.c_str());
+    return base::StringPrintf(kGetAccessTokenBodyFormat, enc_client_id.c_str(),
+                              enc_client_secret.c_str(), grant_type, key,
+                              enc_value.c_str());
   } else {
     std::string scopes_string = base::JoinString(scopes, " ");
     return base::StringPrintf(
-        kGetAccessTokenBodyWithScopeFormat,
-        enc_client_id.c_str(),
-        enc_client_secret.c_str(),
-        enc_refresh_token.c_str(),
+        kGetAccessTokenBodyWithScopeFormat, enc_client_id.c_str(),
+        enc_client_secret.c_str(), grant_type, key, enc_value.c_str(),
         net::EscapeUrlEncodedData(scopes_string, true).c_str());
   }
 }
@@ -350,18 +322,25 @@ std::string OAuth2AccessTokenFetcherImpl::MakeGetAccessTokenBody(
 // static
 bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
     std::unique_ptr<std::string> response_body,
-    std::string* access_token,
-    int* expires_in,
-    std::string* id_token) {
-  CHECK(access_token);
+    OAuth2AccessTokenConsumer::TokenResponse* token_response) {
+  CHECK(token_response);
   std::unique_ptr<base::DictionaryValue> value =
       ParseGetAccessTokenResponse(std::move(response_body));
   if (!value)
     return false;
-  // ID token field is optional.
-  value->GetString(kIdTokenKey, id_token);
-  return value->GetString(kAccessTokenKey, access_token) &&
-         value->GetInteger(kExpiresInKey, expires_in);
+
+  // Refresh and id token are optional and don't cause an error if missing.
+  value->GetString(krefreshTokenKey, &token_response->refresh_token);
+  value->GetString(kIdTokenKey, &token_response->id_token);
+
+  int expires_in;
+  bool ok = value->GetString(kAccessTokenKey, &token_response->access_token) &&
+            value->GetInteger(kExpiresInKey, &expires_in);
+  if (ok) {
+    token_response->expiration_time =
+        base::Time::Now() + base::TimeDelta::FromSeconds(9 * expires_in / 10);
+  }
+  return ok;
 }
 
 // static

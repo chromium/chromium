@@ -40,6 +40,9 @@
 #endif
 
 namespace {
+
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
+
 // Simple wrapper around a static string; used to avoid implicit conversion
 // of the account key to an std::string (which is the type used for account
 // identifier). This is a POD type so it can be used for static storage const
@@ -274,9 +277,11 @@ class AccountTrackerServiceTest : public testing::Test {
   void IssueAccessToken(AccountKey account_key) {
     fake_oauth2_token_service_.IssueAllTokensForAccount(
         AccountKeyToAccountId(account_key),
-        OAuth2AccessTokenConsumer::TokenResponse(
-            base::StringPrintf("access_token-%s", account_key.value),
-            base::Time::Max(), std::string()));
+        TokenResponseBuilder()
+            .WithAccessToken(
+                base::StringPrintf("access_token-%s", account_key.value))
+            .WithExpirationTime(base::Time::Max())
+            .build());
   }
 
   std::string GenerateValidTokenInfoResponse(AccountKey account_key) {

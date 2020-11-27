@@ -5,8 +5,8 @@
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 
 namespace {
 // Values used from |MutableProfileOAuth2TokenServiceDelegate|.
@@ -47,8 +47,9 @@ FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer) {
   auto it = refresh_tokens_.find(account_id);
   DCHECK(it != refresh_tokens_.end());
-  return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-      consumer, url_loader_factory, it->second->refresh_token);
+  return GaiaAccessTokenFetcher::
+      CreateExchangeRefreshTokenForAccessTokenInstance(
+          consumer, url_loader_factory, it->second->refresh_token);
 }
 
 bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(

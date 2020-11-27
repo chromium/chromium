@@ -88,6 +88,8 @@ template("google_apis_tmpl") {
     sources = [
       "gaia/core_account_id.cc",
       "gaia/core_account_id.h",
+      "gaia/gaia_access_token_fetcher.cc",
+      "gaia/gaia_access_token_fetcher.h",
       "gaia/gaia_auth_consumer.cc",
       "gaia/gaia_auth_consumer.h",
       "gaia/gaia_auth_fetcher.cc",

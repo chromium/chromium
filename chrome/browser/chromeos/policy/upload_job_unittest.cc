@@ -23,8 +23,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/fake_oauth2_access_token_manager.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -172,8 +172,9 @@ class FakeOAuth2AccessTokenManagerDelegate
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer) override {
     EXPECT_EQ(CoreAccountId(kRobotAccountId), account_id);
-    return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-        consumer, url_loader_factory, "fake_refresh_token");
+    return GaiaAccessTokenFetcher::
+        CreateExchangeRefreshTokenForAccessTokenInstance(
+            consumer, url_loader_factory, "fake_refresh_token");
   }
 
   bool HasRefreshToken(const CoreAccountId& account_id) const override {

@@ -21,11 +21,11 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -300,8 +300,9 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
   }
   std::string refresh_token = GetRefreshToken(account_id);
   DCHECK(!refresh_token.empty());
-  return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-      consumer, url_loader_factory, refresh_token);
+  return GaiaAccessTokenFetcher::
+      CreateExchangeRefreshTokenForAccessTokenInstance(
+          consumer, url_loader_factory, refresh_token);
 }
 
 GoogleServiceAuthError MutableProfileOAuth2TokenServiceDelegate::GetAuthError(
