@@ -855,19 +855,6 @@ public class PaymentRequestService
         return !TextUtils.isEmpty(mDelegate.getTwaPackageName());
     }
 
-    /** @return Whether PaymentRequest.show() was invoked with a user gesture. */
-    public boolean isUserGestureShow() {
-        return mIsUserGestureShow;
-    }
-
-    /**
-     * @return Whether all payment apps have been queried of canMakePayment() and
-     *         hasEnrolledInstrument().
-     */
-    public boolean isFinishedQueryingPaymentApps() {
-        return mIsFinishedQueryingPaymentApps;
-    }
-
     @VisibleForTesting
     public static void setIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest() {
         sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = true;
@@ -1041,7 +1028,7 @@ public class PaymentRequestService
         if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
             return;
         }
-        if (isFinishedQueryingPaymentApps()) {
+        if (mIsFinishedQueryingPaymentApps) {
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
             if (error != null) {
@@ -1076,12 +1063,12 @@ public class PaymentRequestService
     private static boolean onlySingleAppCanProvideAllRequiredInformation(
             PaymentOptions options, List<PaymentApp> allApps) {
         if (!PaymentOptionsUtils.requestAnyInformation(options)) {
-            return allApps.size() == 1 && !((PaymentApp) allApps.get(0)).isAutofillInstrument();
+            return allApps.size() == 1 && !allApps.get(0).isAutofillInstrument();
         }
 
         boolean anAppCanProvideAllInfo = false;
         for (int i = 0; i < allApps.size(); i++) {
-            PaymentApp app = (PaymentApp) allApps.get(i);
+            PaymentApp app = allApps.get(i);
             if ((!options.requestShipping || app.handlesShippingAddress())
                     && (!options.requestPayerName || app.handlesPayerName())
                     && (!options.requestPayerPhone || app.handlesPayerPhone())
@@ -1203,9 +1190,10 @@ public class PaymentRequestService
             return;
         }
 
+        boolean hasNotifiedInvokedPaymentApp =
+                mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate();
         if (!PaymentOptionsUtils.requestAnyInformation(mPaymentOptions)
-                && (mInvokedPaymentApp == null
-                        || !mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate())) {
+                && !hasNotifiedInvokedPaymentApp) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.INVALID_STATE, PaymentErrorReason.USER_CANCEL);
@@ -1220,8 +1208,6 @@ public class PaymentRequestService
         }
         mSpec.updateWith(details);
 
-        boolean hasNotifiedInvokedPaymentApp =
-                mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate();
         if (hasNotifiedInvokedPaymentApp) {
             // After a payment app has been invoked, all of the merchant's calls to update the price
             // via updateWith() should be forwarded to the invoked app, so it can reflect the
@@ -1583,12 +1569,6 @@ public class PaymentRequestService
     @Nullable
     public String getTwaPackageName() {
         return mDelegate.getTwaPackageName();
-    }
-
-    /** @return The invoked payment app, can be null. */
-    @Nullable
-    public PaymentApp getInvokedPaymentApp() {
-        return mInvokedPaymentApp;
     }
 
     // Implements PaymentRequestUpdateEventListener:
