@@ -917,3 +917,16 @@ body.files-ng [file-type-icon='plugin_vm'] {
 .tree-row > .file-row > [volume-type-icon='smb'] {
   -webkit-mask-image: url(../images/volumes/smb.svg);
 }
+
+body.files-ng [file-type-icon='trash'] {
+  -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
+  background-color: currentColor;
+  background-image: none;
+}
+
+.tree-row > .file-row > [root-type-icon='trash'],
+.tree-row > .file-row > [volume-type-icon='trash'] {
+  -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
+}
+
+

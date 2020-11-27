@@ -145,7 +145,7 @@ shareBase.testSharePaths = async (
   // Go back to 'My files' and ensure message is not shown.
   assertTrue(test.fakeMouseDoubleClick(myFilesDirTree), 'click My files');
   await test.waitForFiles(test.TestEntryInfo.getExpectedRows(
-      test.BASIC_MY_FILES_ENTRY_SET_WITH_LINUX_FILES));
+      test.BASIC_MY_FILES_ENTRY_SET_WITH_FAKES));
   await test.waitForElement(shareMessageHidden);
 
   // Dispatch unshare event which is normally initiated when the user

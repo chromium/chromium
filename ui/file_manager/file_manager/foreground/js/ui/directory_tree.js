@@ -2563,6 +2563,11 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
       return new AndroidAppItem(
           /** @type {!NavigationModelAndroidAppItem} */ (modelItem), tree);
       break;
+    case NavigationModelItemType.TRASH:
+      return new FakeItem(
+          VolumeManagerCommon.RootType.TRASH,
+          /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      break;
   }
   assertNotReached(`No DirectoryItem model: "${modelItem.type}"`);
 };

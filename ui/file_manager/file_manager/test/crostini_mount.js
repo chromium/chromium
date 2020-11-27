@@ -59,7 +59,7 @@ crostiniMount.testMountCrostiniSuccess = async (done) => {
 
   // MyFiles folder should be shown when crostini goes away.
   await test.waitForFiles(test.TestEntryInfo.getExpectedRows(
-      test.BASIC_MY_FILES_ENTRY_SET_WITH_LINUX_FILES));
+      test.BASIC_MY_FILES_ENTRY_SET_WITH_FAKES));
 
   done();
 };

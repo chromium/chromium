@@ -58,7 +58,8 @@
     this.hasFixedLabel = this.isRootEntry &&
         (rootType !== VolumeManagerCommon.RootType.SHARED_DRIVE &&
          rootType !== VolumeManagerCommon.RootType.COMPUTER &&
-         rootType !== VolumeManagerCommon.RootType.REMOVABLE);
+         rootType !== VolumeManagerCommon.RootType.REMOVABLE &&
+         rootType !== VolumeManagerCommon.RootType.TRASH);
     Object.freeze(this);
   }
 }

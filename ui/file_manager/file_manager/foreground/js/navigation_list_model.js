@@ -13,6 +13,7 @@ const NavigationModelItemType = {
   ENTRY_LIST: 'entry-list',
   DRIVE: 'drive',
   ANDROID_APP: 'android-app',
+  TRASH: 'trash',
 };
 
 /**
@@ -215,6 +216,12 @@ class NavigationListModel extends cr.EventTarget {
      * @private {NavigationModelFakeItem}
      */
     this.linuxFilesItem_ = null;
+
+    /**
+     * Root folder for trash.
+     * @private {NavigationModelFakeItem}
+     */
+    this.trashItem_ = null;
 
     /**
      * NavigationModel for MyFiles, since DirectoryTree expect it to be always
@@ -659,6 +666,17 @@ class NavigationListModel extends cr.EventTarget {
         this.linuxFilesItem_.entry.navigationModel = this.linuxFilesItem_;
         myFilesEntry.addEntry(this.linuxFilesItem_.entry);
       }
+    }
+
+    // Add Trash to My Files.
+    if (loadTimeData.getBoolean('FILES_TRASH_ENABLED')) {
+      if (!this.trashItem_) {
+        this.trashItem_ = new NavigationModelFakeItem(
+            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
+            new TrashRootEntry(this.volumeManager_));
+      }
+      myFilesEntry.removeByRootType(VolumeManagerCommon.RootType.TRASH);
+      myFilesEntry.addEntry(this.trashItem_.entry);
     }
 
     // Add Drive.

@@ -42,6 +42,7 @@ function setUp() {
     MY_FILES_ROOT_LABEL: 'My files',
     DOWNLOADS_DIRECTORY_LABEL: 'Downloads',
     DRIVE_DIRECTORY_LABEL: 'My Drive',
+    FILES_TRASH_ENABLED: false,
   };
   window.loadTimeData.getString = id => {
     return window.loadTimeData.data_[id] || id;
@@ -111,6 +112,13 @@ function testModel() {
   const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
   assertEquals(1, myFilesEntryList.getUIChildren().length);
   assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0].name);
+
+  // Trash is displayed within My files when feature is enabled.
+  window.loadTimeData.data_['FILES_TRASH_ENABLED'] = true;
+  model.reorderNavigationItems_();
+  assertEquals(6, model.length);
+  assertEquals(2, myFilesEntryList.getUIChildren().length);
+  assertEquals('Trash', myFilesEntryList.getUIChildren()[1].name);
 }
 
 /**

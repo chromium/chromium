@@ -159,6 +159,7 @@
 // <include src="toolbar_controller.js">
 // <include src="thumbnail_loader.js">
 // <include src="list_thumbnail_loader.js">
+// <include src="trash.js">
 // <include src="providers_model.js">
 // <include src="ui/actions_submenu.js">
 // <include src="ui/banners.js">

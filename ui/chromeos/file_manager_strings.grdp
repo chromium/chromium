@@ -83,6 +83,9 @@
   <message name="IDS_FILE_BROWSER_RECENT_ROOT_LABEL" desc="A label for the 'Recent' root which shows files recently modified by the user.">
     Recent
   </message>
+  <message name="IDS_FILE_BROWSER_TRASH_ROOT_LABEL" desc="A label for the 'Trash' root which shows files in the trash / recycle bin.">
+    Trash
+  </message>
   <message name="IDS_FILE_BROWSER_DOCPROVIDER_ROOT_LABEL_WITH_SUMMARY" desc="A label for a documents provider root, which has both title and summary.">
     <ph name="ROOT_TITLE">$1<ex>MyCloudProvider</ex></ph> (<ph name="ROOT_SUMMARY">$2<ex>me@example.com</ex></ph>)
   </message>

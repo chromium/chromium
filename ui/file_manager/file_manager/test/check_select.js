@@ -9,13 +9,15 @@ checkselect.testCancelCheckSelectModeAfterAction = async (done) => {
 
   // Click 2nd last file on checkmark to start check-select-mode.
   assertTrue(test.fakeMouseClick(
-      '#file-list li.table-row:nth-of-type(4) .detail-checkmark'));
-  await test.waitForElement('#file-list li[selected].table-row:nth-of-type(4)');
+      '#file-list li.table-row:nth-last-of-type(2) .detail-checkmark'));
+  await test.waitForElement(
+      '#file-list li[selected].table-row:nth-last-of-type(2)');
 
   // Click last file on checkmark, adds to selection.
   assertTrue(test.fakeMouseClick(
-      '#file-list li.table-row:nth-of-type(5) .detail-checkmark'));
-  await test.waitForElement('#file-list li[selected].table-row:nth-of-type(5)');
+      '#file-list li.table-row:nth-last-of-type(1) .detail-checkmark'));
+  await test.waitForElement(
+      '#file-list li[selected].table-row:nth-last-of-type(1)');
   assertEquals(2, document.querySelectorAll('#file-list li[selected]').length);
 
   // Click selection menu (3-dots).

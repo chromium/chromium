@@ -31737,6 +31737,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="24" label="RECENT_AUDIO"/>
   <int value="25" label="RECENT_IMAGES"/>
   <int value="26" label="RECENT_VIDEOS"/>
+  <int value="27" label="TRASH"/>
 </enum>
 
 <enum name="FileManagerTaskType">

@@ -1154,6 +1154,8 @@ util.getRootTypeLabel = locationInfo => {
       return str('LINUX_FILES_ROOT_LABEL');
     case VolumeManagerCommon.RootType.MY_FILES:
       return str('MY_FILES_ROOT_LABEL');
+    case VolumeManagerCommon.RootType.TRASH:
+      return str('TRASH_ROOT_LABEL');
     case VolumeManagerCommon.RootType.MEDIA_VIEW:
       const mediaViewRootType =
           VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(

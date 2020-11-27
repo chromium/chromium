@@ -59,7 +59,7 @@ pluginVm.testLabelIconContextMenu = async (done) => {
       [test.ENTRIES.pluginVm, test.ENTRIES.photosInPluginVm], [], []);
   test.refreshFileList();
   await test.waitForFiles(test.TestEntryInfo.getExpectedRows(
-      [test.ENTRIES.pluginVm, test.ENTRIES.linuxFiles]));
+      [test.ENTRIES.pluginVm, test.ENTRIES.linuxFiles, test.ENTRIES.trash]));
 
   // Verify folder icon.
   await test.waitForElement(iconFolder);
