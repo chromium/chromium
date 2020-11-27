@@ -97,7 +97,7 @@ public class PaymentRequestService
     private PaymentRequestSpec mSpec;
     private boolean mHasClosed;
     private boolean mIsFinishedQueryingPaymentApps;
-    private boolean mIsCurrentPaymentRequestShowing;
+    private boolean mIsShowCalled;
     private boolean mIsShowWaitingForUpdatedDetails;
 
     /** If not empty, use this error message for rejecting PaymentRequest.show(). */
@@ -761,7 +761,7 @@ public class PaymentRequestService
 
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
-        if (isCurrentPaymentRequestShowing()) {
+        if (mIsShowCalled) {
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
             if (error != null) {
@@ -795,7 +795,7 @@ public class PaymentRequestService
      * @return Whether client has been disconnected.
      */
     private boolean disconnectIfNoPaymentMethodsSupported(boolean hasAvailableApps) {
-        if (!mIsFinishedQueryingPaymentApps || !isCurrentPaymentRequestShowing()) return false;
+        if (!mIsFinishedQueryingPaymentApps || !mIsShowCalled) return false;
         if (!mCanMakePayment || (mPendingApps.isEmpty() && !hasAvailableApps)) {
             // All factories have responded, but none of them have apps. It's possible to add credit
             // cards, but the merchant does not support them either. The payment request must be
@@ -859,11 +859,6 @@ public class PaymentRequestService
     /** @return Whether PaymentRequest.show() was invoked with a user gesture. */
     public boolean isUserGestureShow() {
         return mIsUserGestureShow;
-    }
-
-    /** @return Whether the current payment request service has called show(). */
-    public boolean isCurrentPaymentRequestShowing() {
-        return mIsCurrentPaymentRequestShowing;
     }
 
     /**
@@ -1015,7 +1010,7 @@ public class PaymentRequestService
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec is destroyed only after close().";
 
-        if (mBrowserPaymentRequest.isShowingUi()) {
+        if (mIsShowCalled) {
             // Can be triggered only by a compromised renderer. In normal operation, calling show()
             // twice on the same instance of PaymentRequest in JavaScript is rejected at the
             // renderer level.
@@ -1034,7 +1029,7 @@ public class PaymentRequestService
         }
         sShowingPaymentRequest = this;
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
-        mIsCurrentPaymentRequestShowing = true;
+        mIsShowCalled = true;
         mIsUserGestureShow = isUserGesture;
         mIsShowWaitingForUpdatedDetails = waitForUpdatedDetails;
 
@@ -1061,7 +1056,7 @@ public class PaymentRequestService
     // Return the error if failed, null if success.
     @Nullable
     private String triggerPaymentAppUiSkipIfApplicable() {
-        if (!mIsFinishedQueryingPaymentApps || !mIsCurrentPaymentRequestShowing
+        if (mHasClosed || !mIsFinishedQueryingPaymentApps || !mIsShowCalled
                 || mIsShowWaitingForUpdatedDetails) {
             return null;
         }
@@ -1191,7 +1186,7 @@ public class PaymentRequestService
             return;
         }
 
-        if (!mIsCurrentPaymentRequestShowing) {
+        if (!mIsShowCalled) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW, PaymentErrorReason.USER_CANCEL);
@@ -1236,7 +1231,7 @@ public class PaymentRequestService
      */
     /* package */ void onPaymentDetailsNotUpdated() {
         if (mBrowserPaymentRequest == null) return;
-        if (!mIsCurrentPaymentRequestShowing) {
+        if (!mIsShowCalled) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW, PaymentErrorReason.USER_CANCEL);
@@ -1382,7 +1377,6 @@ public class PaymentRequestService
         if (mHasClosed) return;
         mHasClosed = true;
 
-        mIsCurrentPaymentRequestShowing = false;
         sShowingPaymentRequest = null;
 
         if (mBrowserPaymentRequest != null) {

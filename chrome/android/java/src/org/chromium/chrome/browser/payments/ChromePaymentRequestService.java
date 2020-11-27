@@ -214,11 +214,6 @@ public class ChromePaymentRequestService
         }
     }
 
-    @Override
-    public boolean isShowingUi() {
-        return mPaymentUiService.isShowingUI();
-    }
-
     // Implements BrowserPaymentRequest:
     @Override
     public String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,

@@ -50,6 +50,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private boolean mWarnNoFaviconCalled;
     private boolean mIsClientClosed;
     private MojoException mConnectionError;
+    private boolean mIsUserGestureDefaultValue = true;
+    private boolean mWaitForUpdatedDetailsDefaultValue;
 
     public PaymentRequestServiceTest() {
         mBrowserPaymentRequest = Mockito.mock(BrowserPaymentRequest.class);
@@ -129,6 +131,15 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private void assertErrorAndReason(String errorMessage, int errorReason) {
         Assert.assertEquals(errorMessage, mSentErrorMessage);
         Assert.assertEquals(errorReason, mSentErrorReason);
+    }
+
+    private void assertClosed(boolean isClosed) {
+        Assert.assertEquals(mIsClientClosed, isClosed);
+        Assert.assertEquals(mIsOnCloseListenerInvoked, isClosed);
+    }
+
+    private void show(PaymentRequestService service) {
+        service.show(mIsUserGestureDefaultValue, mWaitForUpdatedDetailsDefaultValue);
     }
 
     private PaymentRequestServiceBuilder defaultBuilder() {
@@ -269,6 +280,18 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Assert.assertNull(defaultBuilder().setPaymentRequestSpec(spec).build());
         assertErrorAndReason(
                 ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testTwoShowsFailService() {
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+        assertErrorAndReason(null, NO_PAYMENT_ERROR);
+        assertClosed(false);
+        show(service);
+        assertErrorAndReason(ErrorStrings.CANNOT_SHOW_TWICE, PaymentErrorReason.USER_CANCEL);
+        assertClosed(true);
     }
 
     @Test

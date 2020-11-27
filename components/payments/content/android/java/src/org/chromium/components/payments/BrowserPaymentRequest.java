@@ -207,11 +207,6 @@ public interface BrowserPaymentRequest {
         return null;
     }
 
-    /** @return Whether any payment UI is being shown. */
-    default boolean isShowingUi() {
-        return false;
-    }
-
     /**
      * Continues the unfinished part of show() that was blocked for the payment details that was
      * pending to be updated.

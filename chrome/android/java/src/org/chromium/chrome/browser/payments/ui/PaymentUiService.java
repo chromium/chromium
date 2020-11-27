@@ -447,11 +447,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mMinimalUi;
     }
 
-    /** @return Whether the Payment Request or Minimal UIs are showing. */
-    public boolean isShowingUI() {
-        return mPaymentRequestUI != null || mMinimalUi != null;
-    }
-
     // Implements PaymentUiServiceTestInterface:
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
