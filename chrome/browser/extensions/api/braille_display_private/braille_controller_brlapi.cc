@@ -189,7 +189,7 @@ void BrailleControllerImpl::StartWatchingSocketDirOnTaskThread() {
                                                 base::BlockingType::MAY_BLOCK);
   base::FilePath brlapi_dir(BRLAPI_SOCKETPATH);
   if (!file_path_watcher_.Watch(
-          brlapi_dir, false,
+          brlapi_dir, base::FilePathWatcher::Type::kNonRecursive,
           base::Bind(&BrailleControllerImpl::OnSocketDirChangedOnTaskThread,
                      base::Unretained(this)))) {
     LOG(WARNING) << "Couldn't watch brlapi directory " << BRLAPI_SOCKETPATH;
