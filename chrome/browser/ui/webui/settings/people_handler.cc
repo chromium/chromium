@@ -655,14 +655,21 @@ void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
 void PeopleHandler::HandleSignout(const base::ListValue* args) {
   bool delete_profile = false;
   args->GetBoolean(0, &delete_profile);
+  base::FilePath profile_path = profile_->GetPath();
 
   if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
     // If the user cannot signout, the profile must be destroyed.
     DCHECK(delete_profile);
   } else {
+    Browser* browser =
+        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
+    if (browser) {
+      browser->signin_view_controller()->ShowGaiaLogoutTab(
+          signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
+    }
+
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
     if (identity_manager->HasPrimaryAccount()) {
-
       signin_metrics::SignoutDelete delete_metric =
           delete_profile ? signin_metrics::SignoutDelete::DELETED
                          : signin_metrics::SignoutDelete::KEEPING;
@@ -672,6 +679,8 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
       // (see http://crbug.com/1068978). If the account is already invalid, drop
       // the token now (because it's already invalid on the web, so the Gaia
       // logout tab won't affect it, see http://crbug.com/1114646).
+      // This operation may delete the current browser that owns |this| if force
+      // signin is enabled. See https://crbug.com/1153120.
       identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
           signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
           signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
@@ -679,18 +688,12 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
       DCHECK(!delete_profile)
           << "Deleting the profile should only be offered the user is syncing.";
     }
-
-    Browser* browser =
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-    if (!browser)
-      return;
-
-    browser->signin_view_controller()->ShowGaiaLogoutTab(
-        signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
   }
 
+  // CAUTION: |this| may be deleted at this point.
+
   if (delete_profile) {
-    webui::DeleteProfileAtPath(profile_->GetPath(),
+    webui::DeleteProfileAtPath(profile_path,
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
   }
 }
