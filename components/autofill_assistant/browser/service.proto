@@ -1963,7 +1963,7 @@ message LoginDetailsProto {
     // - set to empty string: this button is not important for a11y.
     // - set to non-empty string: the button will have the specified content
     // description.
-    optional string edit_button_content_description = 9;
+    optional string edit_button_content_description = 10;
 
     // If the option was chosen, this payload will be returned to the server.
     optional bytes payload = 1;
@@ -1979,6 +1979,8 @@ message LoginDetailsProto {
       LoginOptionCustomProto custom = 4;
       LoginOptionPasswordManagerProto password_manager = 5;
     }
+
+    reserved 9;
   }
   // The title for the login selection (e.g., 'Login details for <domain>').
   optional string section_title = 1;
