@@ -33,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -131,6 +132,10 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         OriginTrialsMap({{GetOrigin("chrome://camera-app"),
                           {"FileHandling", "NativeFileSystem2"}}});
     infos.at(SystemAppType::CAMERA).capture_navigations = true;
+
+    // TODO(b/172343409): Remove this log when the camera app is fully migrated
+    // to SWA.
+    CAMERA_LOG(EVENT) << "Install the camera app as SWA";
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::DIAGNOSTICS)) {
