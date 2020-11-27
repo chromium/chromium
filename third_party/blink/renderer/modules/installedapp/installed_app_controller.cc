@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom-blink.h"
@@ -105,6 +106,12 @@ void InstalledAppController::OnFilterInstalledApps(
       app->setVersion(res->version);
     applications.push_back(app);
   }
+
+  LocalDOMWindow* window = GetSupplementable();
+  ukm::builders::InstalledRelatedApps(window->UkmSourceID())
+      .SetCalled(true)
+      .Record(window->UkmRecorder());
+
   callbacks->OnSuccess(applications);
 }
 

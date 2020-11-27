@@ -5907,6 +5907,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InstalledRelatedApps">
+  <owner>rayankans@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Recorded before resolving a call to navigator.getInstalledRelatedApps().
+  </summary>
+  <metric name="Called">
+    <summary>
+      Always true.
+    </summary>
+  </metric>
+</event>
+
 <event name="Intervention.DocumentWrite.ScriptBlock" singular="True">
   <owner>bmcquade@chromium.org</owner>
   <summary>
