@@ -132,11 +132,6 @@ class AbstractTestResultType(object):
         if self.actual_driver_output.error:
             artifact_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_STDERR, '.txt')
-
-            # some ref tests don't produce any text output and also
-            # have a text baseline. They also produce an image mismatch
-            # error. If the test driver produces stderr then an exception
-            # will be raised because we will be writing that stderr twice
             artifacts_abspath = self.filesystem.join(
                 self.result_directory, typ_artifacts.ArtifactsSubDirectory(),
                 artifact_filename)
