@@ -1015,7 +1015,8 @@ class NotificationPlatformBridgeLinuxImpl
     // long-running Chrome process.
     product_logo_file_watcher_ = std::make_unique<base::FilePathWatcher>();
     if (!product_logo_file_watcher_->Watch(
-            product_logo_file_->file_path(), false,
+            product_logo_file_->file_path(),
+            base::FilePathWatcher::Type::kNonRecursive,
             base::Bind(
                 &NotificationPlatformBridgeLinuxImpl::OnProductLogoFileChanged,
                 this))) {
