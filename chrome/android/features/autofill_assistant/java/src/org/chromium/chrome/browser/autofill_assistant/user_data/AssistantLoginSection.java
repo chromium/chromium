@@ -70,8 +70,11 @@ public class AssistantLoginSection extends AssistantCollectUserDataSection<Assis
 
     @Override
     protected String getEditButtonContentDescription(AssistantLoginChoice choice) {
-        // TODO(b/143862732): Send this a11y string from the backend.
-        return mContext.getString(R.string.learn_more);
+        if (choice.getEditButtonContentDescription() != null) {
+            return choice.getEditButtonContentDescription();
+        } else {
+            return mContext.getString(R.string.learn_more);
+        }
     }
 
     @Override

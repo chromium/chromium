@@ -507,6 +507,10 @@ void CollectUserDataAction::OnGetLogins(
         login_option.preselection_priority(),
         login_option.has_info_popup()
             ? base::make_optional(login_option.info_popup())
+            : base::nullopt,
+        login_option.has_edit_button_content_description()
+            ? base::make_optional(
+                  login_option.edit_button_content_description())
             : base::nullopt);
     login_details_map_.emplace(
         identifier, std::make_unique<LoginDetails>(
@@ -807,6 +811,10 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
                 : -1,
             login_option.has_info_popup()
                 ? base::make_optional(login_option.info_popup())
+                : base::nullopt,
+            login_option.has_edit_button_content_description()
+                ? base::make_optional(
+                      login_option.edit_button_content_description())
                 : base::nullopt};
         collect_user_data_options_->login_choices.emplace_back(
             std::move(choice));

@@ -18,6 +18,7 @@ public class AssistantLoginChoice extends EditableOption {
     private final int mPriority;
     private final String mSublabelAccessibilityHint;
     private final @Nullable AssistantInfoPopup mInfoPopup;
+    private final @Nullable String mEditButtonContentDescription;
 
     /**
      * @param identifier The unique identifier of this login choice.
@@ -27,14 +28,16 @@ public class AssistantLoginChoice extends EditableOption {
      * @param priority The priority of this login choice (lower value == higher priority). Can be -1
      * to indicate default/auto.
      * @param infoPopup Optional popup that provides further information for this login choice.
+     * @param editButtonContentDescription Optional content description for the edit button.
      */
     public AssistantLoginChoice(String identifier, String label, String sublabel,
-            String sublabelAccessibilityHint, int priority,
-            @Nullable AssistantInfoPopup infoPopup) {
+            String sublabelAccessibilityHint, int priority, @Nullable AssistantInfoPopup infoPopup,
+            @Nullable String editButtonContentDescription) {
         super(identifier, label, sublabel, null);
         mPriority = priority;
         mSublabelAccessibilityHint = sublabelAccessibilityHint;
         mInfoPopup = infoPopup;
+        mEditButtonContentDescription = editButtonContentDescription;
     }
 
     public int getPriority() {
@@ -47,5 +50,9 @@ public class AssistantLoginChoice extends EditableOption {
 
     public String getSublabelAccessibilityHint() {
         return mSublabelAccessibilityHint;
+    }
+
+    public @Nullable String getEditButtonContentDescription() {
+        return mEditButtonContentDescription;
     }
 }

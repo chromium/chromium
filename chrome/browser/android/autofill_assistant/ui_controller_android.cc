@@ -112,12 +112,18 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
       jsublabel_accessibility_hint = ConvertUTF8ToJavaString(
           env, login_choice.sublabel_accessibility_hint.value());
     }
+    base::android::ScopedJavaLocalRef<jstring>
+        jedit_button_content_description = nullptr;
+    if (login_choice.edit_button_content_description.has_value()) {
+      jedit_button_content_description = base::android::ConvertUTF8ToJavaString(
+          env, login_choice.edit_button_content_description.value());
+    }
     Java_AssistantCollectUserDataModel_addLoginChoice(
         env, jlist, ConvertUTF8ToJavaString(env, login_choice.identifier),
         ConvertUTF8ToJavaString(env, login_choice.label),
         ConvertUTF8ToJavaString(env, login_choice.sublabel),
         jsublabel_accessibility_hint, login_choice.preselect_priority,
-        jinfo_popup);
+        jinfo_popup, jedit_button_content_description);
   }
   return jlist;
 }

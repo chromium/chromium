@@ -365,9 +365,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private static void addLoginChoice(List<AssistantLoginChoice> loginChoices, String identifier,
             String label, String sublabel, String sublabelAccessibilityHint, int priority,
-            @Nullable AssistantInfoPopup infoPopup) {
-        loginChoices.add(new AssistantLoginChoice(
-                identifier, label, sublabel, sublabelAccessibilityHint, priority, infoPopup));
+            @Nullable AssistantInfoPopup infoPopup, @Nullable String editButtonContentDescription) {
+        loginChoices.add(new AssistantLoginChoice(identifier, label, sublabel,
+                sublabelAccessibilityHint, priority, infoPopup, editButtonContentDescription));
     }
 
     /** Sets the list of available login choices. */
