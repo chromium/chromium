@@ -597,7 +597,7 @@ public class ReturnToChromeTest {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityTestRule.prepareUrlIntent(intent, url);
         Assert.assertFalse(mInflated.get());
-        mActivityTestRule.launchActivity(intent);
+        mActivityTestRule.startActivityCompletely(intent);
         if (mUseInstantStart) {
             CriteriaHelper.pollUiThread(mInflated::get);
         } else {

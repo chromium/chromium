@@ -122,10 +122,8 @@ public class PageInfoCookiesController
     public void onSubpageRemoved() {
         assert mSubPage != null;
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        PageInfoCookiesPreference subBage = mSubPage;
+        host.getSupportFragmentManager().beginTransaction().remove(mSubPage).commitNow();
         mSubPage = null;
-        if (host.isFinishing()) return;
-        host.getSupportFragmentManager().beginTransaction().remove(subBage).commitNow();
     }
 
     @Override

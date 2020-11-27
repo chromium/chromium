@@ -91,7 +91,7 @@ public class StartSurfaceNoTabsTest {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityTestRule.prepareUrlIntent(intent, null);
-        mActivityTestRule.launchActivity(intent);
+        mActivityTestRule.startActivityCompletely(intent);
     }
 
     @Before

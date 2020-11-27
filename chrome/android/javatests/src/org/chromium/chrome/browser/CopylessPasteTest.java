@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -71,6 +72,7 @@ public class CopylessPasteTest {
     @After
     public void tearDown() throws Exception {
         AppIndexingUtil.setCallbackForTesting(null);
+        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
     }
 
     private static class CopylessHelper extends CallbackHelper {

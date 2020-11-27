@@ -20,8 +20,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -33,6 +36,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -109,7 +113,31 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
      */
     public void startMainActivityFromIntent(Intent intent, String url) {
         prepareUrlIntent(intent, url);
+
+        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         startActivityCompletely(intent);
+        waitForActivityNativeInitializationComplete();
+
+        CriteriaHelper.pollUiThread(
+                () -> getActivity().getActivityTab() != null, "Tab never selected/initialized.");
+        Tab tab = getActivity().getActivityTab();
+
+        ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
+
+        if (tab != null && UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
+                && !getActivity().isInOverviewMode()) {
+            NewTabPageTestUtils.waitForNtpLoaded(tab);
+        }
+
+        Assert.assertTrue("Deferred startup never completed. Did you try to start an Activity "
+                        + "that was already started?",
+                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+
+        Assert.assertNotNull(tab);
+        Assert.assertNotNull(tab.getView());
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     /**

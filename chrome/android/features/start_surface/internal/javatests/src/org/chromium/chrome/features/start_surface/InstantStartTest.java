@@ -65,7 +65,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
@@ -173,7 +172,7 @@ public class InstantStartTest {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityTestRule.prepareUrlIntent(intent, null);
-        mActivityTestRule.launchActivity(intent);
+        mActivityTestRule.startActivityCompletely(intent);
     }
 
     public static Bitmap createThumbnailBitmapAndWriteToFile(int tabId) {
@@ -272,8 +271,7 @@ public class InstantStartTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().startDelayedNativeInitializationForTests());
         CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized,
-                ScalableTimeout.scaleTimeout(10000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
     }
 
@@ -570,7 +568,6 @@ public class InstantStartTest {
             RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
             if (viewHolder != null) {
                 ImageView thumbnail = viewHolder.itemView.findViewById(R.id.tab_thumbnail);
-                if (!(thumbnail.getDrawable() instanceof BitmapDrawable)) return false;
                 BitmapDrawable drawable = (BitmapDrawable) thumbnail.getDrawable();
                 Bitmap bitmap = drawable.getBitmap();
                 if (bitmap == null) return false;

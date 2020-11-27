@@ -23,9 +23,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
-import android.support.test.runner.lifecycle.Stage;
+import android.app.Activity;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -42,10 +43,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -293,11 +295,8 @@ public class AssistantOnboardingCoordinatorTest {
                                     spannedMessage.getSpanEnd(spans[0]))
                             .toString());
         });
-        CustomTabActivity activity = ApplicationTestUtils.waitForActivityWithClass(
-                CustomTabActivity.class, Stage.RESUMED, () -> spans[0].onClick(termsMessage));
-        CriteriaHelper.pollUiThread(
-                () -> activity.getActivityTab().getUrlString().equals(expectedTermsUrl));
-        activity.finish();
+        spans[0].onClick(termsMessage);
+        waitUntil(() -> getOpenedUrlSpec().equals(expectedTermsUrl));
     }
 
     @Test
@@ -357,13 +356,12 @@ public class AssistantOnboardingCoordinatorTest {
                             .toString()
                             .replaceAll("\\s+", " "));
         });
-        CustomTabActivity activity = ApplicationTestUtils.waitForActivityWithClass(
-                CustomTabActivity.class, Stage.RESUMED, () -> spans[0].onClick(termsMessage));
-        String url = mActivity.getResources()
-                             .getText(R.string.autofill_assistant_google_terms_url)
-                             .toString();
-        CriteriaHelper.pollUiThread(() -> activity.getActivityTab().getUrlString().equals(url));
-        activity.finish();
+        spans[0].onClick(termsMessage);
+        waitUntil(()
+                          -> getOpenedUrlSpec().equals(
+                                  mActivity.getResources()
+                                          .getText(R.string.autofill_assistant_google_terms_url)
+                                          .toString()));
     }
 
     /** Trigger onboarding and wait until it is fully displayed. */
@@ -371,5 +369,22 @@ public class AssistantOnboardingCoordinatorTest {
             AssistantOnboardingCoordinator coordinator, Callback<Boolean> callback) {
         TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.show(callback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+    }
+
+    // Get the newly opened Activity (through CustomTabActivity.showInfoPage) that happens on
+    // terms click. Return the URL of the current tab on that activity.
+    private String getOpenedUrlSpec() {
+        for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+            if (runningActivity instanceof CustomTabActivity
+                    && ApplicationStatus.getStateForActivity(runningActivity)
+                            == ActivityState.RESUMED) {
+                return ChromeTabUtils
+                        .getUrlOnUiThread(((CustomTabActivity) runningActivity)
+                                                  .getTabModelSelector()
+                                                  .getCurrentTab())
+                        .getSpec();
+            }
+        }
+        return "";
     }
 }

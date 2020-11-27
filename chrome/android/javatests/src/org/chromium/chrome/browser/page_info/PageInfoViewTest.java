@@ -108,7 +108,7 @@ public class PageInfoViewTest {
 
     private void loadUrlAndOpenPageInfo(String url) {
         mActivityTestRule.loadUrl(url);
-        onViewWaiting(allOf(withId(R.id.location_bar_status_icon), isDisplayed())).perform(click());
+        onView(withId(R.id.location_bar_status_icon)).perform(click());
     }
 
     private View getPageInfoView() {
@@ -187,6 +187,8 @@ public class PageInfoViewTest {
         // Choose a fixed, "random" port to create stable screenshots.
         mTestServerRule.setServerPort(424242);
         mTestServerRule.setServerUsesHttps(true);
+
+        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
@@ -210,7 +212,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnInsecureHttpWebsite() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_HttpWebsite");
@@ -224,7 +225,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnSecureWebsite() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsite");
     }
@@ -238,7 +238,6 @@ public class PageInfoViewTest {
     @DisabledTest(message = "https://crbug.com/1133770")
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnExpiredCertificateWebsite() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ExpiredCertWebsite");
@@ -252,7 +251,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testChromePage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo("chrome://version/");
         mRenderTestRule.render(getPageInfoView(), "PageInfo_InternalSite");
     }
@@ -266,7 +264,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithPermissions() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mIsSystemLocationSettingEnabled = false;
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -281,7 +278,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithCookieBlocking() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookieBlocking");
@@ -295,7 +291,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithPermissionsAndCookieBlocking() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -310,7 +305,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithDefaultSettingPermissions() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addDefaultSettingPermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_DefaultSettingPermissions");
@@ -324,7 +318,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnSecureWebsiteV2() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteV2");
     }
@@ -353,7 +346,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowConnectionInfoSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpage");
@@ -367,7 +359,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowPermissionsSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
@@ -382,7 +373,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowCookiesSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_cookies_row)).perform(click());
@@ -397,7 +387,6 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testNoPermissionsSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         View dialog = (View) getPageInfoView().getParent();
         onView(withId(R.id.page_info_permissions_row))
@@ -412,7 +401,6 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     @FlakyTest(message = "https://crbug.com/1147236")
     public void testClearCookiesOnSubpage() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
@@ -438,7 +426,6 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testResetPermissionsOnSubpage() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
         // Create permissions.
@@ -466,7 +453,6 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testPaintPreview() {
-        mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             final ChromeActivity activity = mActivityTestRule.getActivity();
             final Tab tab = activity.getActivityTab();

@@ -250,7 +250,6 @@ public class OfflineIndicatorControllerTest {
 
         // Offline indicator should not be shown.
         checkOfflineIndicatorVisibility(downloadActivity, false);
-        downloadActivity.finish();
     }
 
     @Test
