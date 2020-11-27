@@ -16,6 +16,4 @@ declare_args() {
   # integration with the open source, cross-platform Chromium updater.
   # TODO(crbug.com/1054060)
   enable_chromium_updater = false
-
-  tpm_fallback = false
 }
