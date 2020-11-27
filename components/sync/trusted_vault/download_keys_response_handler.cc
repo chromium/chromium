@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "components/sync/protocol/vault.pb.h"
+#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "crypto/hmac.h"
 
@@ -71,20 +72,17 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
     const SecureBoxPrivateKey& member_private_key) {
   std::vector<ExtractedSharedKey> result;
   for (const sync_pb::SharedKey& shared_key : member.keys()) {
-    std::vector<uint8_t> wrapped_key(shared_key.wrapped_key().begin(),
-                                     shared_key.wrapped_key().end());
     base::Optional<std::vector<uint8_t>> decrypted_key =
-        member_private_key.Decrypt(base::span<const uint8_t>(),
-                                   kWrappedKeyHeader, wrapped_key);
+        member_private_key.Decrypt(
+            base::span<const uint8_t>(), kWrappedKeyHeader,
+            /*encrypted_payload=*/ProtoStringToBytes(shared_key.wrapped_key()));
     if (!decrypted_key.has_value()) {
       // Decryption failed.
       return std::vector<ExtractedSharedKey>();
     }
-    result.push_back(
-        ExtractedSharedKey{/*version=*/shared_key.epoch(), *decrypted_key,
-                           /*key_proof=*/
-                           std::vector<uint8_t>(shared_key.key_proof().begin(),
-                                                shared_key.key_proof().end())});
+    result.push_back(ExtractedSharedKey{
+        /*version=*/shared_key.epoch(), *decrypted_key,
+        /*key_proof=*/ProtoStringToBytes(shared_key.key_proof())});
   }
 
   std::sort(result.begin(), result.end(),

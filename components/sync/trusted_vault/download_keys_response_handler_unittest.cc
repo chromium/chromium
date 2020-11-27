@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/vault.pb.h"
+#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "crypto/hmac.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,11 +29,6 @@ const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
                                      'e', 'd', '_', 'k', 'e', 'y'};
 const char kSecurityDomainName[] = "chromesync";
 
-void AssignBytesToProtoString(base::span<const uint8_t> bytes,
-                              std::string* bytes_proto_field) {
-  *bytes_proto_field = std::string(bytes.begin(), bytes.end());
-}
-
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   std::vector<uint8_t> private_key_bytes;
   bool success = base::HexStringToBytes(kEncodedPrivateKey, &private_key_bytes);
@@ -50,7 +46,6 @@ void FillSecurityDomainMember(
   DCHECK_EQ(trusted_vault_keys.size(), trusted_vault_keys_versions.size());
   DCHECK_EQ(trusted_vault_keys.size(), signing_keys.size());
 
-  std::vector<uint8_t> public_key_bytes = public_key.ExportToBytes();
   AssignBytesToProtoString(public_key.ExportToBytes(),
                            member->mutable_public_key());
 

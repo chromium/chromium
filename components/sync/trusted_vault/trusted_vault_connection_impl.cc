@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/download_keys_response_handler.h"
+#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
@@ -26,17 +27,6 @@ const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
 const char kJoinSecurityDomainsURLPath[] = "/domain:join";
 const char kListSecurityDomainsURLPathAndQuery[] = "/domain:list?view=1";
 const char kSecurityDomainName[] = "chromesync";
-
-// Helper function for filling protobuf bytes field: protobuf represent them as
-// std::string, while in code std::vector<uint8_t> or base::span<uint8_t> is
-// more common.
-// TODO(crbug.com/1113598): this function and its counterpart (proto string to
-// bytes vector) is useful in many places under trusted_vault directory,
-// consider moving it to some utility file.
-void AssignBytesToProtoString(base::span<const uint8_t> bytes,
-                              std::string* bytes_proto_field) {
-  *bytes_proto_field = std::string(bytes.begin(), bytes.end());
-}
 
 void ProcessRegisterDeviceResponse(
     TrustedVaultConnection::RegisterAuthenticationFactorCallback callback,

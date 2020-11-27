@@ -14,6 +14,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
+#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -169,21 +170,17 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
 
   ASSERT_THAT(security_domain.members(), SizeIs(1));
   const sync_pb::SecurityDomain::Member& member = security_domain.members(0);
-  const std::vector<uint8_t> member_public_key_bytes(
-      member.public_key().begin(), member.public_key().end());
-  EXPECT_THAT(member_public_key_bytes,
+  EXPECT_THAT(ProtoStringToBytes(member.public_key()),
               Eq(key_pair->public_key().ExportToBytes()));
 
   ASSERT_THAT(member.keys(), SizeIs(1));
   const sync_pb::SharedKey& shared_key = member.keys(0);
   EXPECT_THAT(shared_key.epoch(), Eq(kLastKeyVersion));
 
-  const std::vector<uint8_t> wrapped_key_bytes(shared_key.wrapped_key().begin(),
-                                               shared_key.wrapped_key().end());
   base::Optional<std::vector<uint8_t>> decrypted_trusted_vault_key =
       key_pair->private_key().Decrypt(
           /*shared_key=*/base::span<const uint8_t>(), kWrappedKeyHeader,
-          /*encrypted_payload=*/wrapped_key_bytes);
+          /*encrypted_payload=*/ProtoStringToBytes(shared_key.wrapped_key()));
   ASSERT_THAT(decrypted_trusted_vault_key, Ne(base::nullopt));
   EXPECT_THAT(*decrypted_trusted_vault_key, Eq(kTrustedVaultKey));
 

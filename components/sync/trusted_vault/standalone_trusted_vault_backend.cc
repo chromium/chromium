@@ -18,6 +18,7 @@
 #include "components/os_crypt/os_crypt.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 
 namespace syncer {
@@ -104,9 +105,9 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   DCHECK(!ongoing_connection_request_);
 
   std::unique_ptr<SecureBoxKeyPair> key_pair =
-      SecureBoxKeyPair::CreateByPrivateKeyImport(base::as_bytes(
-          base::make_span(per_user_vault->local_device_registration_info()
-                              .private_key_material())));
+      SecureBoxKeyPair::CreateByPrivateKeyImport(
+          ProtoStringToBytes(per_user_vault->local_device_registration_info()
+                                 .private_key_material()));
   if (!key_pair) {
     // Corrupted state: device is registered, but |key_pair| can't be imported.
     // TODO(crbug.com/1094326): restore from this state (throw away the key and
@@ -122,14 +123,12 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     return;
   }
 
-  std::string last_key = per_user_vault->vault_key()
-                             .at(per_user_vault->vault_key_size() - 1)
-                             .key_material();
-  std::vector<uint8_t> last_key_bytes(last_key.begin(), last_key.end());
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
   ongoing_connection_request_ = connection_->DownloadKeys(
-      *primary_account_, last_key_bytes,
+      *primary_account_,
+      /*last_trusted_vault_key=*/
+      ProtoStringToBytes(per_user_vault->vault_key().rbegin()->key_material()),
       per_user_vault->last_vault_key_version(), std::move(key_pair),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
                      base::Unretained(this), account_info.gaia));
@@ -152,7 +151,8 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   per_user_vault->set_keys_are_stale(false);
   per_user_vault->clear_vault_key();
   for (const std::vector<uint8_t>& key : keys) {
-    per_user_vault->add_vault_key()->set_key_material(key.data(), key.size());
+    AssignBytesToProtoString(
+        key, per_user_vault->add_vault_key()->mutable_key_material());
   }
 
   WriteToDisk(data_, file_path_);
@@ -265,9 +265,10 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
 
   std::unique_ptr<SecureBoxKeyPair> key_pair;
   if (per_user_vault->has_local_device_registration_info()) {
-    key_pair = SecureBoxKeyPair::CreateByPrivateKeyImport(base::as_bytes(
-        base::make_span(per_user_vault->local_device_registration_info()
-                            .private_key_material())));
+    key_pair = SecureBoxKeyPair::CreateByPrivateKeyImport(
+        /*private_key_bytes=*/ProtoStringToBytes(
+            per_user_vault->local_device_registration_info()
+                .private_key_material()));
     if (!key_pair) {
       // Device key is corrupted.
       // TODO(crbug.com/1102340): consider generation of new key in this case.
@@ -280,18 +281,12 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     // or registration callback is cancelled). To avoid duplicated registrations
     // device key is stored before sending the registration request, so the same
     // key will be used for future registration attempts.
-    std::vector<uint8_t> serialized_private_key =
-        key_pair->private_key().ExportToBytes();
-    per_user_vault->mutable_local_device_registration_info()
-        ->set_private_key_material(serialized_private_key.data(),
-                                   serialized_private_key.size());
+    AssignBytesToProtoString(
+        key_pair->private_key().ExportToBytes(),
+        per_user_vault->mutable_local_device_registration_info()
+            ->mutable_private_key_material());
     WriteToDisk(data_, file_path_);
   }
-
-  std::string last_key = per_user_vault->vault_key()
-                             .at(per_user_vault->vault_key_size() - 1)
-                             .key_material();
-  std::vector<uint8_t> last_key_bytes(last_key.begin(), last_key.end());
 
   // Cancel existing callbacks passed to |connection_| to ensure there is only
   // one ongoing request.
@@ -299,7 +294,9 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
   ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
-      *primary_account_, last_key_bytes,
+      *primary_account_,
+      /*last_trusted_vault_key=*/
+      ProtoStringToBytes(per_user_vault->vault_key().rbegin()->key_material()),
       per_user_vault->last_vault_key_version(), key_pair->public_key(),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                      base::Unretained(this), gaia_id));
@@ -399,8 +396,7 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys() {
   if (per_user_vault) {
     for (const sync_pb::LocalTrustedVaultKey& key :
          per_user_vault->vault_key()) {
-      const std::string& key_material = key.key_material();
-      vault_keys.emplace_back(key_material.begin(), key_material.end());
+      vault_keys.emplace_back(ProtoStringToBytes(key.key_material()));
     }
   }
 
