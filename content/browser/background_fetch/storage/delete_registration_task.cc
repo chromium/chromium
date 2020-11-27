@@ -101,6 +101,7 @@ void DeleteRegistrationTask::DidGetRegistration(
       SetStorageError(BackgroundFetchStorageError::kServiceWorkerStorageError);
       AbandonFetches(service_worker_registration_id_);
       std::move(done_closure).Run();
+      return;
     }
   }
 #endif  // DCHECK_IS_ON()
