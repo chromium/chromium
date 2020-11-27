@@ -20,7 +20,6 @@ constexpr char ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture[];
 ContentCaptureTaskHistogramReporter::ContentCaptureTaskHistogramReporter()
     : capture_content_time_histogram_(kCaptureContentTime, 0, 50000, 50),
       send_content_time_histogram_(kSendContentTime, 0, 50000, 50),
-      sent_content_count_histogram_(kSentContentCount, 0, 10000, 50),
       task_runs_per_capture_histogram_(kTaskRunsPerCapture, 0, 100, 50) {}
 
 ContentCaptureTaskHistogramReporter::~ContentCaptureTaskHistogramReporter() =
@@ -96,7 +95,7 @@ void ContentCaptureTaskHistogramReporter::OnAllCapturedContentSent() {
 
 void ContentCaptureTaskHistogramReporter::RecordsSentContentCountPerDocument(
     size_t sent_content_count) {
-  sent_content_count_histogram_.Count(sent_content_count);
+  base::UmaHistogramCounts10000(kSentContentCount, sent_content_count);
 }
 
 }  // namespace blink

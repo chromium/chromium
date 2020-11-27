@@ -36,15 +36,4 @@ void CustomCountHistogram::CountMicroseconds(base::TimeDelta delta) {
       delta.InMicroseconds()));
 }
 
-LinearHistogram::LinearHistogram(const char* name,
-                                 base::HistogramBase::Sample min,
-                                 base::HistogramBase::Sample max,
-                                 int32_t bucket_count)
-    : CustomCountHistogram(base::LinearHistogram::FactoryGet(
-          name,
-          min,
-          max,
-          bucket_count,
-          base::HistogramBase::kUmaTargetedHistogramFlag)) {}
-
 }  // namespace blink

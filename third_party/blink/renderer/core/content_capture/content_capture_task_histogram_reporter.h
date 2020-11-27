@@ -22,7 +22,8 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   static constexpr char kCaptureContentTime[] =
       "ContentCapture.CaptureContentTime2";
   static constexpr char kSendContentTime[] = "ContentCapture.SendContentTime";
-  static constexpr char kSentContentCount[] = "ContentCapture.SentContentCount";
+  static constexpr char kSentContentCount[] =
+      "ContentCapture.SentContentCount2";
   static constexpr char kTaskDelayInMs[] = "ContentCapture.TaskDelayTimeInMs";
   static constexpr char kTaskRunsPerCapture[] =
       "ContentCapture.TaskRunsPerCapture";
@@ -72,8 +73,6 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   // Records time to send the content, its range is from 0 to 50,000
   // microseconds.
   CustomCountHistogram send_content_time_histogram_;
-  // Records total count has been sent, its range is from 0 to 10,000.
-  LinearHistogram sent_content_count_histogram_;
   // Records the number of times ContentCapture task run to complete a capture
   // which includes capturing and sending the content.
   CustomCountHistogram task_runs_per_capture_histogram_;

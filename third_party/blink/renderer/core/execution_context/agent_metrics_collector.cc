@@ -4,14 +4,14 @@
 
 #include "third_party/blink/renderer/core/execution_context/agent_metrics_collector.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -116,10 +116,10 @@ void AgentMetricsCollector::ReportMetrics() {
 }
 
 void AgentMetricsCollector::AddTimeToTotalAgents(int time_delta_to_add) {
-  DEFINE_STATIC_LOCAL(LinearHistogram, agents_per_renderer_histogram,
-                      (kAgentsPerRendererByTimeHistogram, 1, 100, 101));
-  agents_per_renderer_histogram.CountMany(agent_to_windows_map_.size(),
-                                          time_delta_to_add);
+  base::LinearHistogram::FactoryGet(
+      kAgentsPerRendererByTimeHistogram, 1, 100, 101,
+      base::HistogramBase::kUmaTargetedHistogramFlag)
+      ->AddCount(agent_to_windows_map_.size(), time_delta_to_add);
 }
 
 void AgentMetricsCollector::ReportToBrowser() {

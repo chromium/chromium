@@ -90,6 +90,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentCapture.SentContentCount" units="count"
     expires_after="2021-04-04">
+  <obsolete>
+    Replaced by ContentCapture.SentContentCount2 in M89, which uses standard
+    buckets for 10k counts rather than exact linear buckets.
+  </obsolete>
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
+  <summary>The total number of content captures sent for a document.</summary>
+</histogram>
+
+<histogram name="ContentCapture.SentContentCount2" units="count"
+    expires_after="2021-04-04">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>The total number of content captures sent for a document.</summary>

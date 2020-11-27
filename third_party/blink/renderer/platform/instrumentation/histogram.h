@@ -38,14 +38,6 @@ class PLATFORM_EXPORT CustomCountHistogram {
   base::HistogramBase* histogram_;
 };
 
-class PLATFORM_EXPORT LinearHistogram : public CustomCountHistogram {
- public:
-  explicit LinearHistogram(const char* name,
-                           base::HistogramBase::Sample min,
-                           base::HistogramBase::Sample max,
-                           int32_t bucket_count);
-};
-
 template <typename Derived>
 class ScopedUsHistogramTimerBase {
   USING_FAST_MALLOC(ScopedUsHistogramTimerBase);
