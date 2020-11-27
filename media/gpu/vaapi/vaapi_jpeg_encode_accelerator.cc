@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -221,25 +222,17 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   }
 
   // Prepare exif.
-  const uint8_t* exif_buffer;
+  const uint8_t* exif_buffer = nullptr;
   size_t exif_buffer_size = 0;
   if (exif_mapping) {
     exif_buffer = static_cast<const uint8_t*>(exif_mapping->memory());
     exif_buffer_size = exif_mapping->size();
-  } else {
-    exif_buffer = nullptr;
   }
-  // When the exif buffer contains a thumbnail, the VAAPI encoder would
-  // generate a corrupted JPEG. We can work around the problem by supplying an
-  // all-zero buffer with the same size and fill in the real exif buffer after
-  // encoding.
-  // TODO(shenghao): Remove this mechanism after b/79840013 is fixed.
-  std::vector<uint8_t> exif_buffer_dummy(exif_buffer_size, 0);
-  size_t exif_offset = 0;
 
-  if (!jpeg_encoder_->Encode(input_size, exif_buffer_dummy.data(),
-                             exif_buffer_size, quality, blit_surface->id(),
-                             cached_output_buffer_->id(), &exif_offset)) {
+  if (!jpeg_encoder_->Encode(input_size, /*exif_buffer=*/nullptr,
+                             /*exif_buffer_size=*/0u, quality,
+                             blit_surface->id(), cached_output_buffer_->id(),
+                             /*exif_offset=*/nullptr)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
@@ -268,12 +261,14 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     return;
   }
 
-  bool isMapped = output_gmb_buffer->Map();
-  if (!isMapped) {
+  const bool is_mapped = output_gmb_buffer->Map();
+  if (!is_mapped) {
     VLOGF(1) << "Map the output gmb buffer failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
+  base::ScopedClosureRunner output_gmb_buffer_unmapper(base::BindOnce(
+      &gfx::GpuMemoryBuffer::Unmap, base::Unretained(output_gmb_buffer.get())));
 
   // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
   // would wait until encoding is finished.
@@ -282,22 +277,82 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   // Since the format of |output_gmb_buffer| is gfx::BufferFormat::R_8, we can
   // use its area as the maximum bytes we need to download to avoid buffer
   // overflow.
-  if (!vaapi_wrapper_->DownloadFromVABuffer(
-          cached_output_buffer_->id(), blit_surface->id(),
-          static_cast<uint8_t*>(output_memory),
-          output_gmb_buffer->GetSize().GetArea(), &encoded_size)) {
-    VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
+  // Since we didn't supply EXIF data to the JPEG encoder, it creates a default
+  // APP0 segment in the header. We will download the result to an offset and
+  // replace the APP0 segment by APP1 including EXIF data:
+  //      SOI + APP0 (2 + 2 + 14 bytes) + other data
+  //   -> SOI + APP1 (2 + 2 + |exif_buffer_size| bytes) + other data
+  // Note that |exif_buffer_size| >= 14 since EXIF + TIFF headers are 14 bytes,
+  // and <= (2^16-1)-2 since APP1 data size is stored in 2 bytes.
+  // TODO(b/171369066, b/171340559): Remove this workaround when Intel iHD
+  // driver has fixed the EXIF handling.
+  constexpr size_t kApp0DataSize = 14;
+  constexpr size_t kMaxExifSize = ((1u << 16) - 1) - 2;
+  if (exif_buffer_size > 0 &&
+      (exif_buffer_size < kApp0DataSize || exif_buffer_size > kMaxExifSize)) {
+    VLOGF(1) << "Unexpected EXIF data size (" << exif_buffer_size << ")";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
-
-    output_gmb_buffer->Unmap();
     return;
   }
+  const size_t output_offset =
+      exif_buffer_size > 0 ? exif_buffer_size - kApp0DataSize : 0;
+  const size_t output_size =
+      base::checked_cast<size_t>(output_gmb_buffer->GetSize().GetArea());
+  if (output_offset >= output_size) {
+    VLOGF(1) << "Output buffer size (" << output_size << ") is too small";
+    notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+    return;
+  }
+  uint8_t* frame_content = output_memory + output_offset;
+  const size_t max_frame_size = output_size - output_offset;
+  if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
+                                            blit_surface->id(), frame_content,
+                                            max_frame_size, &encoded_size)) {
+    VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
+    notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+    return;
+  }
+  DCHECK_LE(encoded_size, max_frame_size);
 
-  // Copy the real exif buffer into preserved space.
-  memcpy(static_cast<uint8_t*>(output_memory) + exif_offset, exif_buffer,
-         exif_buffer_size);
+  if (exif_buffer_size > 0) {
+    // Check the output header is 2+2+14 bytes APP0 as expected.
+    constexpr uint8_t kJpegSoiAndApp0Header[] = {
+        0xFF, JPEG_SOI, 0xFF, JPEG_APP0, 0x00, 0x10,
+    };
+    if (encoded_size < base::size(kJpegSoiAndApp0Header)) {
+      VLOGF(1) << "Unexpected JPEG data size received from encoder";
+      notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+      return;
+    }
+    for (size_t i = 0; i < base::size(kJpegSoiAndApp0Header); ++i) {
+      if (frame_content[i] != kJpegSoiAndApp0Header[i]) {
+        VLOGF(1) << "Unexpected JPEG header received from encoder";
+        notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+        return;
+      }
+    }
+    // Copy the EXIF data into preserved space.
+    const uint8_t jpeg_soi_and_app1_header[] = {
+        0xFF,
+        JPEG_SOI,
+        0xFF,
+        JPEG_APP1,
+        static_cast<uint8_t>((exif_buffer_size + 2) / 256),
+        static_cast<uint8_t>((exif_buffer_size + 2) % 256),
+    };
+    DCHECK_GE(output_size, base::size(jpeg_soi_and_app1_header));
+    if (exif_buffer_size > output_size - base::size(jpeg_soi_and_app1_header)) {
+      VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
+      notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+      return;
+    }
+    memcpy(output_memory, jpeg_soi_and_app1_header,
+           base::size(jpeg_soi_and_app1_header));
+    memcpy(output_memory + base::size(jpeg_soi_and_app1_header), exif_buffer,
+           exif_buffer_size);
+    encoded_size += output_offset;
+  }
 
-  output_gmb_buffer->Unmap();
   video_frame_ready_cb_.Run(task_id, encoded_size);
 }
 
