@@ -4,7 +4,9 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
@@ -57,6 +59,12 @@ class PrefetchBrowserTest : public WebLayerBrowserTest {
 
  protected:
   bool prefetch_target_request_seen_ = false;
+  base::Lock lock_;
+
+  // |requests_| is accessed on the UI thread by the test body and on the IO
+  // thread by the test server's request handler, so must be guarded by a lock
+  // to avoid data races.
+  std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
 
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
@@ -80,21 +88,15 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchWorks) {
 // https://crbug.com/922362: When the prefetched request is redirected, DCHECKs
 // in PrefetchURLLoader::FollowRedirect() failed due to "X-Client-Data" in
 // removed_headers. Verify that it no longer does.
-// TODO(https://crbug.com/1144142): Fails on TSan due to data race.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_RedirectedPrefetch DISABLED_RedirectedPrefetch
-#else
-#define MAYBE_RedirectedPrefetch RedirectedPrefetch
-#endif
-IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, MAYBE_RedirectedPrefetch) {
-  std::vector<net::test_server::HttpRequest> requests;
+IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&requests](const net::test_server::HttpRequest& request)
+      [this](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        base::AutoLock auto_lock(lock_);
         if (request.relative_url == std::string(kRedirectPrefetchPage)) {
-          requests.push_back(request);
+          requests_.push_back(request);
           response->set_content_type("text/html");
           response->set_content(
               base::StringPrintf("<link rel=\"prefetch\" href=\"%s\" "
@@ -102,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, MAYBE_RedirectedPrefetch) {
                                  kRedirectPrefetchUrl));
           return response;
         } else if (request.relative_url == std::string(kRedirectPrefetchUrl)) {
-          requests.push_back(request);
+          requests_.push_back(request);
           response->set_code(net::HTTP_MOVED_PERMANENTLY);
           response->AddCustomHeader(
               "Location", base::StringPrintf("https://example.com:%s%s",
@@ -111,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, MAYBE_RedirectedPrefetch) {
           return response;
         } else if (request.relative_url ==
                    std::string(kRedirectedPrefetchUrl)) {
-          requests.push_back(request);
+          requests_.push_back(request);
           return response;
         }
         return nullptr;
@@ -119,15 +121,21 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, MAYBE_RedirectedPrefetch) {
 
   https_server.ServeFilesFromSourceDirectory(
       base::FilePath(FILE_PATH_LITERAL("weblayer/test/data")));
+  {
+    base::AutoLock auto_lock(lock_);
+    requests_.clear();
+  }
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL("www.google.com", kRedirectPrefetchPage);
   EXPECT_TRUE(RunPrefetchExperiment(url, base::ASCIIToUTF16("done")));
-  ASSERT_EQ(3U, requests.size());
-
-  EXPECT_EQ(base::StringPrintf("www.google.com:%u", https_server.port()),
-            requests[0].headers["Host"]);
-  EXPECT_EQ(kRedirectPrefetchPage, requests[0].relative_url);
+  {
+    base::AutoLock auto_lock(lock_);
+    ASSERT_EQ(3U, requests_.size());
+    EXPECT_EQ(base::StringPrintf("www.google.com:%u", https_server.port()),
+              requests_[0].headers["Host"]);
+    EXPECT_EQ(kRedirectPrefetchPage, requests_[0].relative_url);
+  }
 }
 
 }  // namespace weblayer
