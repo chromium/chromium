@@ -488,6 +488,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       chromeos::prefs::kLauncherResultEverLaunched, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  registry->RegisterBooleanPref(
+      chromeos::prefs::kHasCameraAppMigratedToSWA, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
@@ -1090,9 +1094,8 @@ void Preferences::UpdateAutoRepeatRate() {
   rate.repeat_interval_in_ms = xkb_auto_repeat_interval_pref_.GetValue();
   DCHECK(rate.initial_delay_in_ms > 0);
   DCHECK(rate.repeat_interval_in_ms > 0);
-  input_method::InputMethodManager::Get()
-      ->GetImeKeyboard()
-      ->SetAutoRepeatRate(rate);
+  input_method::InputMethodManager::Get()->GetImeKeyboard()->SetAutoRepeatRate(
+      rate);
 
   user_manager::known_user::SetIntegerPref(user_->GetAccountId(),
                                            ash::prefs::kXkbAutoRepeatDelay,

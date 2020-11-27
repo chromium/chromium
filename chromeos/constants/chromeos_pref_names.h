@@ -54,6 +54,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kSuggestedContentEnabled[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLauncherResultEverLaunched[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kHasCameraAppMigratedToSWA[];
 
 }  // namespace prefs
 }  // namespace chromeos
