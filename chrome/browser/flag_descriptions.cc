@@ -3747,6 +3747,10 @@ const char kCrosLanguageSettingsUpdateName[] = "Language Settings Update";
 const char kCrosLanguageSettingsUpdateDescription[] =
     "Enable this flag to see the new language settings update.";
 
+const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
+const char kCrosOnDeviceGrammarCheckDescription[] =
+    "Enable new on-device grammar check component.";
+
 const char kCrosRegionsModeName[] = "Cros-regions load mode";
 const char kCrosRegionsModeDescription[] =
     "This flag controls cros-regions load mode";

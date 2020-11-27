@@ -2170,6 +2170,9 @@ extern const char kContextualNudgesDescription[];
 extern const char kCrosLanguageSettingsUpdateName[];
 extern const char kCrosLanguageSettingsUpdateDescription[];
 
+extern const char kCrosOnDeviceGrammarCheckName[];
+extern const char kCrosOnDeviceGrammarCheckDescription[];
+
 extern const char kCrosRegionsModeName[];
 extern const char kCrosRegionsModeDescription[];
 extern const char kCrosRegionsModeDefault[];

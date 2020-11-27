@@ -453,6 +453,10 @@ const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",
 const base::Feature kMediaAppPdfInInk{"MediaAppPdfInInk",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable on-device grammar check service.
+const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
