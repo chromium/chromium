@@ -69,7 +69,7 @@ void AudioPipeReader::StartOnAudioThread() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (!file_watcher_.Watch(
-          pipe_path_.DirName(), true,
+          pipe_path_.DirName(), base::FilePathWatcher::Type::kRecursive,
           base::BindRepeating(&AudioPipeReader::OnDirectoryChanged,
                               base::Unretained(this)))) {
     LOG(ERROR) << "Failed to watch pulseaudio directory "

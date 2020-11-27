@@ -113,7 +113,7 @@ void CertDbContentWatcher::StartWatching() {
 
   // base::Unretained() is safe since this class owns the FileWatcher.
   file_watcher_->Watch(
-      cert_watch_path_, true,
+      cert_watch_path_, base::FilePathWatcher::Type::kRecursive,
       base::BindRepeating(&CertDbContentWatcher::OnCertDirectoryChanged,
                           base::Unretained(this)));
 
