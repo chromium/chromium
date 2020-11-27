@@ -338,8 +338,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>shuchen@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    The breakdown of input method usage by input method IDs. Recorded when the
-    user presses keys on physical or on-screen keyboard.
+    Breakdown of input method usage by input method IDs. Recorded for an input
+    method ID when the system's 'active input method' is switched to the input
+    method with that ID. Note: In this context, 'input method ID' refers to the
+    'global' input method IDs, i.e. tuple of the extension ID the input method
+    belongs to and the extension-local ID of the input method.
   </summary>
 </histogram>
 
