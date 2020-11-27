@@ -137,8 +137,6 @@ TEST(CPU, RunExtendedInstructions) {
     // sure that it's not optimized out by the compiler.
     __asm__ __volatile__("irg %0, %1" : "=r"(val) : "r"(ptr));
 #endif  // __ARM_FEATURE_MEMORY_TAGGING
-  } else {
-    GTEST_SKIP();
   }
 #endif  // ARCH_CPU_ARM64
 }
