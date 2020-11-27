@@ -32,9 +32,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="UIThread"/>
 </variants>
 
+<histogram name="HangWatcher.IsThreadHung.{ProcessType}.{ThreadType}"
+    units="boolean" expires_after="2021-10-23">
+  <owner>olivierli@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Every 10 seconds, a boolean is recorded to this histogram to indicate
+    whether the {ProcessType} {ThreadType} was hung. The thread is hung if the
+    current work unit started running more than 10 seconds ago and this was not
+    labeled as &quot;working as intended&quot; by HangWatchScopeDisabled.
+    Recording is skipped if the hang watcher detects an irregular heartbeat
+    (e.g. when the machine sleeps).
+  </summary>
+  <token key="ProcessType" variants="ProcessType"/>
+  <token key="ThreadType" variants="ThreadType"/>
+</histogram>
+
 <histogram
     name="HangWatcher.NumberOfHungThreadsDuringWatchWindow.{ProcessType}.{ThreadType}"
     units="threads" expires_after="2021-10-23">
+  <obsolete>
+    Replaced by HangWatcher.IsThreadHung on 11-2020.
+  </obsolete>
   <owner>olivierli@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

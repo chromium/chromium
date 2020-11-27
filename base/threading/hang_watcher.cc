@@ -41,7 +41,7 @@ constexpr base::FeatureParam<int> kUIThreadLogLevel{
 constexpr base::FeatureParam<int> kThreadPoolLogLevel{
     &HangWatcher::kEnableHangWatcher, "threadpool_log_level", 0};
 
-constexpr base::TimeDelta HangWatchScopeEnabled::kDefaultHangWatchTime =
+constexpr auto HangWatchScopeEnabled::kDefaultHangWatchTime =
     base::TimeDelta::FromSeconds(10);
 
 namespace {
@@ -65,25 +65,25 @@ std::atomic<LoggingLevel> g_ui_thread_log_level{LoggingLevel::kNone};
 // encountered on each call to Monitor().
 void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
                                  int count) {
-  constexpr int kMaxHungThreadCount = 100;
+  // In the case of unique threads like the IO or UI thread a count does
+  // not make sense.
+  const bool any_thread_hung = count >= 1;
+
   switch (thread_type) {
     case HangWatcher::ThreadType::kIOThread:
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          "HangWatcher.NumberOfHungThreadsDuringWatchWindow.BrowserProcess."
+      UMA_HISTOGRAM_BOOLEAN(
+          "HangWatcher.IsThreadHung.BrowserProcess."
           "IOThread",
-          count, kMaxHungThreadCount);
+          any_thread_hung);
       break;
     case HangWatcher::ThreadType::kUIThread:
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          "HangWatcher.NumberOfHungThreadsDuringWatchWindow.BrowserProcess."
+      UMA_HISTOGRAM_BOOLEAN(
+          "HangWatcher.IsThreadHung.BrowserProcess."
           "UIThread",
-          count, kMaxHungThreadCount);
+          any_thread_hung);
       break;
     case HangWatcher::ThreadType::kThreadPoolThread:
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          "HangWatcher.NumberOfHungThreadsDuringWatchWindow.BrowserProcess."
-          "ThreadPool",
-          count, kMaxHungThreadCount);
+      // Not recorded for now.
       break;
   }
 }
@@ -113,8 +113,10 @@ constexpr const char* kThreadName = "HangWatcher";
 // that can be detected. It instead increases the probability that a call to
 // Monitor() will happen at the right time to catch a hang. This has to be
 // balanced with power/cpu use concerns as busy looping would catch amost all
-// hangs but present unacceptable overhead.
-const base::TimeDelta kMonitoringPeriod = base::TimeDelta::FromSeconds(10);
+// hangs but present unacceptable overhead. NOTE: If this period is ever changed
+// then all metrics that depend on it like
+// HangWatcher.IsThreadHung need to be updated.
+constexpr auto kMonitoringPeriod = base::TimeDelta::FromSeconds(10);
 
 HangWatchScopeEnabled::HangWatchScopeEnabled(TimeDelta timeout) {
   internal::HangWatchState* current_hang_watch_state =
