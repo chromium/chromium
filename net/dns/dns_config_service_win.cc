@@ -620,7 +620,8 @@ class DnsConfigServiceWin::Watcher
     dnscache_watcher_.Watch(kDnscachePath, callback);
     policy_watcher_.Watch(kPolicyPath, callback);
 
-    if (!hosts_watcher_.Watch(GetHostsPath(), false,
+    if (!hosts_watcher_.Watch(GetHostsPath(),
+                              base::FilePathWatcher::Type::kNonRecursive,
                               base::BindRepeating(&Watcher::OnHostsChanged,
                                                   base::Unretained(this)))) {
       UMA_HISTOGRAM_ENUMERATION("AsyncDNS.WatchStatus",

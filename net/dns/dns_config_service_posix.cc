@@ -115,7 +115,8 @@ class DnsConfigWatcher {
 
   bool Watch(const CallbackType& callback) {
     callback_ = callback;
-    return watcher_.Watch(base::FilePath(kFilePathConfig), false,
+    return watcher_.Watch(base::FilePath(kFilePathConfig),
+                          base::FilePathWatcher::Type::kNonRecursive,
                           base::BindRepeating(&DnsConfigWatcher::OnCallback,
                                               base::Unretained(this)));
   }
