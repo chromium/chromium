@@ -1676,6 +1676,35 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessageError(
       base::TimeTicks::Now().since_origin().InSecondsF(), error_message);
 }
 
+void InspectorNetworkAgent::WebTransportCreated(
+    ExecutionContext* execution_context,
+    uint64_t transport_id,
+    const KURL& request_url) {
+  std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
+      current_stack_trace =
+          SourceLocation::Capture(execution_context)->BuildInspectorObject();
+  if (!current_stack_trace) {
+    GetFrontend()->webTransportCreated(
+        IdentifiersFactory::SubresourceRequestId(transport_id),
+        UrlWithoutFragment(request_url).GetString());
+    return;
+  }
+
+  std::unique_ptr<protocol::Network::Initiator> initiator_object =
+      protocol::Network::Initiator::create()
+          .setType(protocol::Network::Initiator::TypeEnum::Script)
+          .build();
+  initiator_object->setStack(std::move(current_stack_trace));
+  GetFrontend()->webTransportCreated(
+      IdentifiersFactory::SubresourceRequestId(transport_id),
+      UrlWithoutFragment(request_url).GetString(), std::move(initiator_object));
+}
+
+void InspectorNetworkAgent::WebTransportClosed(uint64_t transport_id) {
+  GetFrontend()->webTransportClosed(
+      IdentifiersFactory::SubresourceRequestId(transport_id));
+}
+
 Response InspectorNetworkAgent::enable(Maybe<int> total_buffer_size,
                                        Maybe<int> resource_buffer_size,
                                        Maybe<int> max_post_data_size) {

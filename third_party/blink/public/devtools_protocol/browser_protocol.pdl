@@ -5487,6 +5487,21 @@ domain Network
       # WebSocket request data.
       WebSocketRequest request
 
+  # Fired upon WebTransport creation.
+  event webTransportCreated
+    parameters
+      # WebTransport identifier.
+      RequestId transportId
+      # WebTransport request URL.
+      string url
+      # Request initiator.
+      optional Initiator initiator
+
+  event webTransportClosed
+    parameters
+      # WebTransport identifier.
+      RequestId transportId
+
   experimental type PrivateNetworkRequestPolicy extends string
     enum
       Allow

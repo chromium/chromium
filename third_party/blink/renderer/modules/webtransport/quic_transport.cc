@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -369,7 +371,8 @@ QuicTransport::QuicTransport(ScriptState* script_state,
       url_(NullURL(), url),
       quic_transport_(context),
       handshake_client_receiver_(this, context),
-      client_receiver_(this, context) {}
+      client_receiver_(this, context),
+      inspector_transport_id_(CreateUniqueIdentifier()) {}
 
 ScriptPromise QuicTransport::createSendStream(ScriptState* script_state,
                                               ExceptionState& exception_state) {
@@ -701,7 +704,7 @@ void QuicTransport::Init(const String& url,
   handshake_client_receiver_.set_disconnect_handler(
       WTF::Bind(&QuicTransport::OnConnectionError, WrapWeakPersistent(this)));
 
-  // TODO(ricea): Report something to devtools.
+  probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
 
   // The choice of 1 for the ReadableStream means that it will queue one
   // datagram even when read() is not being called. Unfortunately, that datagram
@@ -744,6 +747,7 @@ void QuicTransport::ResetAll() {
 
 void QuicTransport::Dispose() {
   DVLOG(1) << "QuicTransport::Dispose() this=" << this;
+  probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
   stream_map_.clear();
   quic_transport_.reset();
   handshake_client_receiver_.reset();

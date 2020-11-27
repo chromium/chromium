@@ -133,6 +133,8 @@ interface CoreProbes {
   void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const char>>& data);
   void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const char* payload, size_t payload_length);
   void DidReceiveWebSocketMessageError(ExecutionContext*, uint64_t identifier, const String& error_message);
+  void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
+  void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
   void NetworkStateChanged([Keep] LocalFrame*, bool online);
   void UpdateApplicationCacheStatus([Keep] LocalFrame*);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */

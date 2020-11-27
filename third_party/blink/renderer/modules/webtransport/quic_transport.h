@@ -172,6 +172,8 @@ class MODULES_EXPORT QuicTransport final
   Member<ReadableStream> received_bidirectional_streams_;
   Member<StreamVendingUnderlyingSource>
       received_bidirectional_streams_underlying_source_;
+
+  const uint64_t inspector_transport_id_;
 };
 
 }  // namespace blink
