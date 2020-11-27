@@ -72,6 +72,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         mDetails.id = "testId";
         mDetails.total = new PaymentItem();
         mOptions = new PaymentOptions();
+        mOptions.requestShipping = true;
         mSpec = Mockito.mock(PaymentRequestSpec.class);
         Mockito.doReturn(new PaymentItem()).when(mSpec).getRawTotal();
         Map<String, PaymentMethodData> methodDataMap = new HashMap<>();
@@ -187,8 +188,18 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setDetails(PaymentDetails details) {
+    /* package */ PaymentRequestServiceBuilder setPaymentDetailsInit(PaymentDetails details) {
         mDetails = details;
+        return this;
+    }
+
+    /* package */ PaymentRequestServiceBuilder setPaymentDetailsInitId(String id) {
+        mDetails.id = id;
+        return this;
+    }
+
+    /* package */ PaymentRequestServiceBuilder setPaymentDetailsInitTotal(PaymentItem total) {
+        mDetails.total = total;
         return this;
     }
 

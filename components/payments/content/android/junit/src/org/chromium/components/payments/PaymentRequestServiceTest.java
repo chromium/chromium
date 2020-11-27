@@ -192,6 +192,10 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         service.show(mIsUserGestureDefaultValue, mWaitForUpdatedDetailsDefaultValue);
     }
 
+    private void updateWith(PaymentRequestService service) {
+        service.updateWith(getDefaultPaymentDetailsUpdate());
+    }
+
     private PaymentRequestServiceBuilder defaultBuilder() {
         return PaymentRequestServiceBuilder.defaultBuilder(
                 ()
@@ -212,7 +216,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
     }
 
-    private PaymentDetails getDefaultDetails() {
+    private PaymentDetails getDefaultPaymentDetailsUpdate() {
         return new PaymentDetails();
     }
 
@@ -272,9 +276,98 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testNullDetailsFailsCreation() {
-        Assert.assertNull(defaultBuilder().setDetails(null).build());
+        Assert.assertNull(defaultBuilder().setPaymentDetailsInit(null).build());
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
                 PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testDetailsWithoutIdFailsCreation() {
+        Assert.assertNull(defaultBuilder().setPaymentDetailsInitId(null).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testDetailsWithoutTotalFailsCreation() {
+        Assert.assertNull(defaultBuilder().setPaymentDetailsInitTotal(null).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testNullDetailsFailsUpdateWith() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, false);
+        assertNoError();
+        service.updateWith(null);
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .onPaymentDetailsUpdated(Mockito.any(), Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testDetailsWithIdFailsUpdateWith() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, false);
+        PaymentDetails details = getDefaultPaymentDetailsUpdate();
+        details.id = "testId";
+        assertNoError();
+        service.updateWith(details);
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .onPaymentDetailsUpdated(Mockito.any(), Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testOnPaymentDetailsUpdatedIsInvoked() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, false);
+        updateWith(service);
+        assertNoError();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .onPaymentDetailsUpdated(Mockito.any(), Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testNullDetailsFailsContinueShow() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, true);
+        assertNoError();
+        service.updateWith(null);
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never()).continueShow(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testDetailsWithIdFailsContinueShow() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, true);
+        assertNoError();
+        PaymentDetails details = getDefaultPaymentDetailsUpdate();
+        details.id = "testId";
+        service.updateWith(details);
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never()).continueShow(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testContinueShowIsInvoked() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, true);
+        updateWith(service);
+        assertNoError();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1)).continueShow(Mockito.anyBoolean());
     }
 
     @Test
@@ -463,7 +556,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
                 .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
-        service.updateWith(getDefaultDetails());
+        service.updateWith(getDefaultPaymentDetailsUpdate());
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
     }

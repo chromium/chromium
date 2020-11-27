@@ -414,16 +414,8 @@ public class PaymentRequestService
             return null;
         }
 
-        for (PaymentMethodData datum : methodData) {
-            if (datum == null || TextUtils.isEmpty(datum.supportedMethod)) {
-                abortForInvalidDataFromRenderer(
-                        client, journeyLogger, ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
-                return null;
-            }
-        }
-
         // details has default value, so could never be null, according to payment_request.idl.
-        if (details == null || details.id == null || details.total == null) {
+        if (details == null) {
             abortForInvalidDataFromRenderer(
                     client, journeyLogger, ErrorStrings.INVALID_PAYMENT_DETAILS);
             return null;
@@ -560,6 +552,8 @@ public class PaymentRequestService
 
     private boolean initAndValidate(Factory factory, PaymentMethodData[] rawMethodData,
             PaymentDetails details, boolean googlePayBridgeEligible) {
+        assert rawMethodData != null;
+        assert details != null;
         mBrowserPaymentRequest = factory.createBrowserPaymentRequest(this);
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
 
@@ -601,7 +595,7 @@ public class PaymentRequestService
         mQueryForQuota = new HashMap<>(methodData);
         mBrowserPaymentRequest.modifyQueryForQuotaCreatedIfNeeded(mQueryForQuota, mPaymentOptions);
 
-        if (details == null || details.id == null || details.total == null
+        if (details.id == null || details.total == null
                 || !mDelegate.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS,
@@ -1158,13 +1152,18 @@ public class PaymentRequestService
                 && invokedPaymentApp.isValidForPaymentMethodData(methodName, null);
     }
 
-    private String continueShow(PaymentDetails details) {
+    private boolean isPaymentDetailsUpdateValid(PaymentDetails details) {
+        // ID cannot be updated. Updating the total is optional.
+        return details.id == null && mDelegate.validatePaymentDetails(details)
+                && mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details);
+    }
+
+    private String continueShow(@Nullable PaymentDetails details) {
         assert mIsShowWaitingForUpdatedDetails;
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
-        if (!mDelegate.validatePaymentDetails(details)
-                || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
+        if (details == null || !isPaymentDetailsUpdateValid(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             return ErrorStrings.INVALID_PAYMENT_DETAILS;
         }
@@ -1181,9 +1180,10 @@ public class PaymentRequestService
 
     /**
      * The component part of the {@link PaymentRequest#updateWith} implementation.
-     * @param details The details that the merchant provides to update the payment request.
+     * @param details The details that the merchant provides to update the payment request, can be
+     *         null.
      */
-    /* package */ void updateWith(PaymentDetails details) {
+    /* package */ void updateWith(@Nullable PaymentDetails details) {
         if (mBrowserPaymentRequest == null) return;
         if (mIsShowWaitingForUpdatedDetails) {
             // Under this condition, updateWith() is called in response to the resolution of
@@ -1212,12 +1212,10 @@ public class PaymentRequestService
             return;
         }
 
-        // ID cannot be updated. Updating the total is optional.
-        if (details == null || details.id != null || !mDelegate.validatePaymentDetails(details)
-                || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
+        if (details == null || !isPaymentDetailsUpdateValid(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                    PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return;
         }
         mSpec.updateWith(details);
