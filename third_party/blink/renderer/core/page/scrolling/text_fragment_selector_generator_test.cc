@@ -717,6 +717,43 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
   GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
 }
 
+// Check the case when selections starts with a node nested in "inline-block"
+// node. crbug.com/1151474
+TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      li {
+        display: inline-block;
+      }
+    </style>
+    <div>Test page</div>
+    <ul>
+      <li>
+        <a id="link1"/>
+      </li>
+      <li>
+        <a id="link2"/>
+      </li>
+      <li>
+        <a id="link3"/>
+      </li>
+    </ul>
+    <p id='first'>First paragraph text that is longer  than 20 chars</p>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Node* img = GetDocument().getElementById("link1");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(img, PositionAnchorType::kAfterChildren);
+  const auto& end = Position(first_paragraph, 5);
+  ASSERT_EQ("  \nFirst", PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
+}
+
 // Check the case when selections ends with an non text node.
 TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
   SimRequest request("https://example.com/test.html", "text/html");

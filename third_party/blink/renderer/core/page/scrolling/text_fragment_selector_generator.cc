@@ -20,11 +20,6 @@ namespace blink {
 
 namespace {
 
-// Returns text content of the node, skipping invisible children and comments.
-String GetText(Node* node) {
-  return PlainText(EphemeralRange::RangeOfContents(*node));
-}
-
 // Returns true if text from beginning of |node| until |pos_offset| can be
 // considered empty. Otherwise, return false.
 bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
@@ -76,7 +71,9 @@ Node* NextNonEmptyVisibleTextNode(Node* start_node) {
   // Move forward/backward until non empty visible text node is found.
   for (Node* node = start_node; node; node = Direction::Next(*node)) {
     Node* next_node = Direction::GetVisibleTextNode(*node);
-    if (!next_node || !GetText(next_node).IsEmpty())
+    if (!next_node || !PlainText(EphemeralRange::RangeOfContents(*next_node))
+                           .StripWhiteSpace()
+                           .IsEmpty())
       return next_node;
     node = next_node;
   }
