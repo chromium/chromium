@@ -83,6 +83,7 @@ source_set("web_applications") {
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/sync",
+    "//components/user_manager",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
