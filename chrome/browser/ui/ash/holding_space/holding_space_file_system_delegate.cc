@@ -38,7 +38,7 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
       return;
     watchers_[file_path] = std::make_unique<base::FilePathWatcher>();
     watchers_[file_path]->Watch(
-        file_path, /*recursive=*/false,
+        file_path, base::FilePathWatcher::Type::kNonRecursive,
         base::Bind(&FileSystemWatcher::OnFilePathChanged,
                    weak_factory_.GetWeakPtr()));
   }
