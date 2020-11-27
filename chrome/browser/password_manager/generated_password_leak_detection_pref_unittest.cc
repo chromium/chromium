@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -76,7 +77,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
   EXPECT_EQ(test_observer.GetUpdatedPrefName(),
             kGeneratedPasswordLeakDetectionPref);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Clearing the primary account does not make sense on ChromeOS.
   test_observer.Reset();
   identity_test_env()->ClearPrimaryAccount();

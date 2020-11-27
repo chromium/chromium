@@ -22,6 +22,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -141,7 +142,7 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #endif
 
@@ -1170,7 +1171,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
       credentials_filter_(this, base::BindRepeating(&GetSyncService, profile_)),
 #else
       credentials_filter_(

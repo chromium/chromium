@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -282,7 +283,7 @@ TEST_F(AdvancedProtectionStatusManagerTest, StayInAdvancedProtection) {
   aps_manager.UnsubscribeFromSigninEvents();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Not applicable to Chrome OS.
 TEST_F(AdvancedProtectionStatusManagerTest, SignInAndSignOutEvent) {
   AdvancedProtectionStatusManager aps_manager(
@@ -394,7 +395,7 @@ TEST_F(AdvancedProtectionStatusManagerTest,
 
 // On ChromeOS, there is no unconsented primary account. We can only track the
 // primary account.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
   AdvancedProtectionStatusManager aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),

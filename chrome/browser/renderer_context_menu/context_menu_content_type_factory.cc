@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "content/public/browser/web_contents.h"
@@ -25,14 +26,14 @@
 #include "extensions/common/extension.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/session_manager/core/session_manager.h"
 #endif
 
 namespace {
 
 bool IsUserSessionBlocked() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (session_manager::SessionManager::Get() &&
       session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return true;

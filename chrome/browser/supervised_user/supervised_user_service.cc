@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/supervised_user_whitelist_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,7 +59,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -215,7 +216,7 @@ std::string SupervisedUserService::GetExtensionRequestId(
 std::string SupervisedUserService::GetCustodianEmailAddress() const {
   std::string email = profile_->GetPrefs()->GetString(
       prefs::kSupervisedUserCustodianEmail);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // |GetActiveUser()| can return null in unit tests.
   if (email.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
     email = chromeos::ChromeUserManager::Get()
@@ -237,7 +238,7 @@ std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
 std::string SupervisedUserService::GetCustodianName() const {
   std::string name = profile_->GetPrefs()->GetString(
       prefs::kSupervisedUserCustodianName);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // |GetActiveUser()| can return null in unit tests.
   if (name.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
     name = base::UTF16ToUTF8(
@@ -786,7 +787,7 @@ void SupervisedUserService::Shutdown() {
 SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
     const Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because
   // extensions creation flags are ignored in case of default extensions with

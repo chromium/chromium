@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -323,7 +324,7 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
   if (reason != REASON_DOWNLOAD_UNCOMMON)
     return false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 #else
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());

@@ -7,9 +7,12 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // Hide this function on platforms where the dialog does not exist.
-#if defined(OS_MAC) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 class Profile;
 

@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
@@ -261,13 +262,13 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 
   RecordNearbyShareEnabledMetric(prefs);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
     is_screen_locked_ = session_controller->IsScreenLocked();
     session_controller->AddObserver(this);
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   nearby_process_observer_.Add(process_manager_);
   power_client_->AddObserver(this);
@@ -327,11 +328,11 @@ void NearbySharingServiceImpl::Shutdown() {
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* session_controller = ash::SessionController::Get();
   if (session_controller)
     session_controller->RemoveObserver(this);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   foreground_receive_callbacks_.Clear();
   background_receive_callbacks_.Clear();

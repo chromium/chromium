@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
@@ -24,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -99,7 +100,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
     ASSERT_TRUE(test_profile_manager_->SetUp());
 
 // ChromeOS requires a chromeos::FakeChromeUserManager for the tests to work.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const char kEmail[] = "account@gmail.com";
     const AccountId test_account_id(AccountId::FromUserEmail(kEmail));
     user_manager_ = new chromeos::FakeChromeUserManager;
@@ -147,7 +148,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
   TestingProfile* test_profile_;
   std::unique_ptr<TestingProfileManager> test_profile_manager_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif

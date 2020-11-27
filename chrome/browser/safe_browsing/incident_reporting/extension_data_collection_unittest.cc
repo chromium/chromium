@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_signer.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -34,7 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #endif
@@ -135,13 +136,13 @@ class ExtensionDataCollectionTest : public testing::Test {
     profile_manager_.reset(
         new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
     ASSERT_TRUE(profile_manager_->SetUp());
-#if defined OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     test_user_manager_.reset(new chromeos::ScopedTestUserManager());
 #endif
   }
 
   void TearDown() override {
-#if defined OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // UserManager should be destroyed before TestingBrowserProcess as it
     // uses it in destructor.
     test_user_manager_.reset();
@@ -189,7 +190,7 @@ class ExtensionDataCollectionTest : public testing::Test {
  private:
   int profile_number_;
 
-#if defined OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
 #endif

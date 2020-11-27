@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
@@ -814,7 +815,7 @@ class ForegroundedOrClosedTest : public TabActivityWatcherTest {
 
 // Tests TabManager.Backgrounded.ForegroundedOrClosed UKM logging.
 // Flaky on ChromeOS. http://crbug.com/924864
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SingleTab DISABLED_SingleTab
 #else
 #define MAYBE_SingleTab SingleTab

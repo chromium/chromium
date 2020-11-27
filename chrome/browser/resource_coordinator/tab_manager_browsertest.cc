@@ -13,6 +13,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -470,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectPDFPages) {
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Makes sure that recently opened or used tabs are protected.
 IN_PROC_BROWSER_TEST_F(TabManagerTest,
                        ProtectRecentlyUsedTabsFromUrgentDiscarding) {
@@ -517,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   // WebContentsData::WebContentsDestroyed.
   tsm->CloseAllTabs();
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Makes sure that tabs using media devices are protected.
 IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectVideoTabs) {
@@ -674,11 +675,11 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownSharedTabProcess) {
   base::HistogramTester tester;
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The unsafe killing attempt will fail for the same reason.
   tester.ExpectUniqueSample(
       "TabManager.Discarding.DiscardedTabCouldUnsafeFastShutdown", false, 1);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   tester.ExpectUniqueSample(
       "TabManager.Discarding.DiscardedTabCouldFastShutdown", false, 1);
 }
@@ -696,16 +697,16 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownWithUnloadHandler) {
   // one of them is current, and the other has an unload handler. An unsafe
   // attempt will be made on some platforms.
   base::HistogramTester tester;
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The unsafe attempt for ChromeOS should succeed as ChromeOS ignores unload
   // handlers when in critical condition.
   content::WindowedNotificationObserver observer(
       content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
       content::NotificationService::AllSources());
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   tester.ExpectUniqueSample(
       "TabManager.Discarding.DiscardedTabCouldUnsafeFastShutdown", true, 1);
   tester.ExpectUniqueSample(
@@ -714,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownWithUnloadHandler) {
 #else
   tester.ExpectUniqueSample(
       "TabManager.Discarding.DiscardedTabCouldFastShutdown", false, 1);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 IN_PROC_BROWSER_TEST_F(TabManagerTest,
@@ -733,12 +734,12 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   base::HistogramTester tester;
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The unsafe killing attempt will fail as ChromeOS does not ignore
   // beforeunload handlers.
   tester.ExpectUniqueSample(
       "TabManager.Discarding.DiscardedTabCouldUnsafeFastShutdown", false, 1);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   tester.ExpectUniqueSample(
       "TabManager.Discarding.DiscardedTabCouldFastShutdown", false, 1);
 }
@@ -981,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 
 // On ChromeOS, active tabs are discarded if their window is non-visible. On
 // other platforms, they are never discarded.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
 #else
@@ -1027,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
 
 // On ChromeOS, active tabs are discarded if their window is non-visible. On
 // other platforms, they are never discarded.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
 #else
@@ -1191,4 +1192,4 @@ IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest,
 
 }  // namespace resource_coordinator
 
-#endif  // OS_WIN || OS_MAXOSX || OS_LINUX || defined(OS_CHROMEOS)
+#endif  // OS_WIN || OS_MAXOSX || OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)

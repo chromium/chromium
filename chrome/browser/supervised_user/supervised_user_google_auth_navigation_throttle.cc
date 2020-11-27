@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
@@ -123,7 +124,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   if (authStatus == ChildAccountService::AuthState::PENDING)
     return content::NavigationThrottle::DEFER;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // A credentials re-mint is already underway when we reach here (Mirror
   // account reconciliation). Nothing to do here except block the navigation
   // while re-minting is underway.

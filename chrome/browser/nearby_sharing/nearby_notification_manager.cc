@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -59,7 +60,7 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
 
   // TODO(crbug.com/1102348): Also show settings for other platforms once there
   // is a nearby settings page in Chrome browser.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   notification.set_settings_button_handler(
       message_center::SettingsButtonHandler::DELEGATE);
 #endif

@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_delegate.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -17,7 +18,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #endif
@@ -89,7 +90,7 @@ void NearbyNotificationHandler::OnClose(Profile* profile,
 
 void NearbyNotificationHandler::OpenSettings(Profile* profile,
                                              const GURL& origin) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile, chromeos::settings::mojom::kNearbyShareSubpagePath);
 #else

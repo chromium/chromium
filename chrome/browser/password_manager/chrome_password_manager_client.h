@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
@@ -51,7 +52,7 @@ class TouchToFillController;
 #include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #else
 #include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
@@ -387,7 +388,7 @@ class ChromePasswordManagerClient
   // point.
   BooleanPrefMember saving_passwords_enabled_;
 
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
   // ChromeOS and Android don't support multiple profiles
   const password_manager::SyncCredentialsFilter credentials_filter_;
 #else

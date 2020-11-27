@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/browser_process.h"
@@ -101,7 +102,7 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
@@ -433,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ContextMenuEntriesAreDisabledInLockedFullscreen) {
   int entries_to_test[] = {
@@ -456,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   for (auto entry : entries_to_test)
     EXPECT_FALSE(menu->IsCommandIdEnabled(entry));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenEntryPresentForNormalURLs) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -695,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 // Only Chrome OS supports emoji panel callbacks.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ContextMenuForEmojiPanel_NoCallback) {
   // Reset the emoji callback.
@@ -712,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   // If there's no callback, the emoji context menu should not be present.
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_EMOJI));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, CopyLinkTextMouse) {
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
@@ -1137,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenImageInNewTab) {
 }
 
 // Functionality is not present on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
   {
     std::unique_ptr<TestRenderViewContextMenu> menu(
@@ -1282,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
     EXPECT_EQ(profile, Profile::FromBrowserContext(tab->GetBrowserContext()));
   }
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Maintains image search test state. In particular, note that |menu_observer_|
 // must live until the right-click completes asynchronously.

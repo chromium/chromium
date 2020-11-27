@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -129,7 +130,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
 #endif
 
   scoped_refptr<PasswordStore> ps;
-#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID) || \
     defined(OS_MAC) || defined(USE_X11) || defined(USE_OZONE)
   ps = new password_manager::PasswordStoreDefault(std::move(login_db));
 #else
@@ -159,8 +160,10 @@ PasswordStoreFactory::BuildServiceInstanceFor(
       profile->GetPrefs(), base::TimeDelta::FromSeconds(60),
       network_context_getter);
 
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   std::unique_ptr<password_manager::PasswordStoreSigninNotifier> notifier =
       std::make_unique<password_manager::PasswordStoreSigninNotifierImpl>(
           IdentityManagerFactory::GetForProfile(profile));

@@ -28,6 +28,7 @@
 #include "base/threading/thread.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -68,7 +69,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/network_change_notifier.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/resource_coordinator/tab_manager_delegate_chromeos.h"
 #endif
 
@@ -143,7 +144,7 @@ TabManager::TabManager(TabLoadTracker* tab_load_tracker)
       background_tab_loading_mode_(BackgroundTabLoadingMode::kStaggered),
       loading_slots_(kNumOfLoadingSlots),
       tab_load_tracker_(tab_load_tracker) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_.reset(new TabManagerDelegate(weak_ptr_factory_.GetWeakPtr()));
 #endif
   browser_tab_strip_tracker_.Init();
@@ -160,13 +161,13 @@ TabManager::~TabManager() {
 void TabManager::Start() {
   background_tab_loading_mode_ = BackgroundTabLoadingMode::kStaggered;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_->StartPeriodicOOMScoreUpdate();
 #endif
 
 // MemoryPressureMonitor is not implemented on Linux so far and tabs are never
 // discarded.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't handle memory pressure events here if this is done by
   // PerformanceManager.
   if (!base::FeatureList::IsEnabled(
@@ -222,12 +223,12 @@ LifecycleUnitVector TabManager::GetSortedLifecycleUnits() {
 
 void TabManager::DiscardTab(LifecycleUnitDiscardReason reason,
                             TabDiscardDoneCB tab_discard_done) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Call Chrome OS specific low memory handling process.
   delegate_->LowMemoryKill(reason, std::move(tab_discard_done));
 #else
   DiscardTabImpl(reason, std::move(tab_discard_done));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
@@ -249,7 +250,7 @@ void TabManager::DiscardTabFromMemoryPressure() {
   DCHECK(!base::FeatureList::IsEnabled(
       performance_manager::features::kUrgentDiscardingFromPerformanceManager));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Output a log with per-process memory usage and number of file descriptors,
   // as well as GPU memory details. Discard happens without waiting for the log
   // (https://crbug.com/850545) Per comment at
@@ -258,7 +259,7 @@ void TabManager::DiscardTabFromMemoryPressure() {
   // platforms since it is not used and data shows it can create IO thread hangs
   // (https://crbug.com/1040522).
   memory::OomMemoryDetails::Log("Tab Discards Memory details");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Start handling memory pressure. Suppress further notifications before
   // completion in case a slow handler queues up multiple dispatches of this

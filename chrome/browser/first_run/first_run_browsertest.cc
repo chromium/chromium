@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunBrowserTest, SetShouldShowWelcomePage) {
   EXPECT_FALSE(ShouldShowWelcomePage());
 }
 
-#if !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 
 // A generic test class to be subclassed by test classes testing specific
@@ -420,6 +420,6 @@ INSTANTIATE_TEST_SUITE_P(FirstRunMasterPrefsVariationsSeedTests,
                          FirstRunMasterPrefsVariationsSeedTest,
                          testing::Bool());
 
-#endif  // !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace first_run

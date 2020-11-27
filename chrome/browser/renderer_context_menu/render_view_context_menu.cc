@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -210,7 +211,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/intent_helper/open_with_menu.h"
@@ -511,7 +512,7 @@ content::WebContents* GetWebContentsToUse(content::WebContents* web_contents) {
 
 bool g_custom_id_ranges_initialized = false;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void AddAvatarToLastMenuItem(const gfx::Image& icon,
                              ui::SimpleMenuModel* menu) {
   // Don't try to scale too small icons.
@@ -526,7 +527,7 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
   menu->SetIcon(menu->GetItemCount() - 1,
                 ui::ImageModel::FromImage(sized_icon));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void OnProfileCreated(const GURL& link_url,
                       const content::Referrer& referrer,
@@ -885,12 +886,12 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   bool supports_smart_text_selection = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   supports_smart_text_selection =
       content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) &&
       arc::IsArcPlayStoreEnabledForProfile(GetProfile());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (supports_smart_text_selection)
     AppendSmartSelectionActionItems();
 
@@ -1175,7 +1176,7 @@ void RenderViewContextMenu::AppendLinkItems() {
     // time.
     // TODO(jochen): Consider adding support for ChromeOS with similar
     // semantics as the profile switcher in the system tray.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // g_browser_process->profile_manager() is null during unit tests.
     if (g_browser_process->profile_manager() &&
         GetProfile()->IsRegularProfile()) {
@@ -1230,7 +1231,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         }
       }
     }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -1296,7 +1297,7 @@ void RenderViewContextMenu::AppendLinkItems() {
 }
 
 void RenderViewContextMenu::AppendOpenWithLinkItems() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   open_with_menu_observer_ =
       std::make_unique<arc::OpenWithMenu>(browser_context_, this);
   observers_.AddObserver(open_with_menu_observer_.get());
@@ -1305,7 +1306,7 @@ void RenderViewContextMenu::AppendOpenWithLinkItems() {
 }
 
 void RenderViewContextMenu::AppendQuickAnswersItems() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!quick_answers_menu_observer_) {
     quick_answers_menu_observer_ =
         std::make_unique<QuickAnswersMenuObserver>(this);
@@ -1317,7 +1318,7 @@ void RenderViewContextMenu::AppendQuickAnswersItems() {
 }
 
 void RenderViewContextMenu::AppendSmartSelectionActionItems() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   start_smart_selection_action_menu_observer_ =
       std::make_unique<arc::StartSmartSelectionActionMenu>(this);
   observers_.AddObserver(start_smart_selection_action_menu_observer_.get());
@@ -1720,7 +1721,7 @@ void RenderViewContextMenu::AppendEditableItems() {
                                     IDS_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsClipboardHistoryEnabled()) {
     menu_model_.AddItemWithStringId(
         IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
@@ -2116,7 +2117,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return true;
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (chromeos::features::IsClipboardHistoryEnabled())
         return ash::ClipboardHistoryController::Get()->CanShowMenu();
 #else
@@ -2458,7 +2459,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // Calculate the anchor point in screen coordinates.
       gfx::Point anchor_point_in_screen =
           GetRenderFrameHost()->GetNativeView()->GetBoundsInScreen().origin();

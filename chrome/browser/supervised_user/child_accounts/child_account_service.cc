@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -31,7 +32,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #else
 #include "chrome/browser/signin/signin_util.h"
@@ -80,7 +81,7 @@ ChildAccountService::~ChildAccountService() {}
 bool ChildAccountService::IsChildAccountDetectionEnabled() {
 // Child account detection is always enabled on Android and ChromeOS, and
 // disabled in other platforms.
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
@@ -178,7 +179,7 @@ bool ChildAccountService::SetActive(bool active) {
     settings_service->SetLocalSetting(supervised_users::kGeolocationDisabled,
                                       std::make_unique<base::Value>(false));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // This is also used by user policies (UserPolicySigninService), but since
     // child accounts can not also be Dasher accounts, there shouldn't be any
     // problems.
@@ -204,7 +205,7 @@ bool ChildAccountService::SetActive(bool active) {
     settings_service->SetLocalSetting(supervised_users::kGeolocationDisabled,
                                       nullptr);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     signin_util::SetUserSignoutAllowedForProfile(profile_, true);
 #endif
 
@@ -336,7 +337,7 @@ void ChildAccountService::ScheduleNextFamilyInfoUpdate(base::TimeDelta delay) {
 }
 
 void ChildAccountService::PropagateChildStatusToUser(bool is_child) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {

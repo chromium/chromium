@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 #include "chrome/browser/diagnostics/recon_diagnostics.h"
 #include "chrome/browser/diagnostics/sqlite_diagnostics.h"
@@ -29,7 +30,7 @@ const int DiagnosticsModel::kDiagnosticsTestCount = 17;
 #elif defined(OS_MAC)
 const int DiagnosticsModel::kDiagnosticsTestCount = 14;
 #elif defined(OS_POSIX)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const int DiagnosticsModel::kDiagnosticsTestCount = 18;
 #else
 const int DiagnosticsModel::kDiagnosticsTestCount = 16;
@@ -66,7 +67,7 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
         continue_running = RunTest(tests_[i].get(), observer, i);
         ++tests_run_;
       } else {
-#if defined(OS_CHROMEOS)  // Only collecting UMA stats on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
         RecordUMATestResult(static_cast<DiagnosticsTestId>(tests_[i]->GetId()),
                             RESULT_SKIPPED);
 #else
@@ -89,7 +90,7 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
       if (continue_running) {
         continue_running = RunRecovery(tests_[i].get(), observer, i);
       } else {
-#if defined(OS_CHROMEOS)  // Only collecting UMA stats on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
         RecordUMARecoveryResult(
             static_cast<DiagnosticsTestId>(tests_[i]->GetId()), RESULT_SKIPPED);
 #else
@@ -216,7 +217,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
     tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     tests_.push_back(MakeSqliteNssCertDbTest());
     tests_.push_back(MakeSqliteNssKeyDbTest());
 #endif

@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/history/core/browser/history_constants.h"
@@ -30,9 +31,9 @@
 #include "storage/browser/database/database_tracker.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_constants.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace diagnostics {
 
@@ -229,7 +230,7 @@ std::unique_ptr<DiagnosticsTest> MakeSqliteHistoryDbTest() {
       base::FilePath(history::kHistoryFilename));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<DiagnosticsTest> MakeSqliteNssCertDbTest() {
   base::FilePath home_dir;
   base::PathService::Get(base::DIR_HOME, &home_dir);
@@ -247,7 +248,7 @@ std::unique_ptr<DiagnosticsTest> MakeSqliteNssKeyDbTest() {
       DIAGNOSTICS_SQLITE_INTEGRITY_NSS_KEY_TEST,
       home_dir.Append(chromeos::kNssKeyDbPath));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<DiagnosticsTest> MakeSqliteFaviconsDbTest() {
   return std::make_unique<SqliteIntegrityTest>(

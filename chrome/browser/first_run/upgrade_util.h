@@ -9,8 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #error Not used on Android or ChromeOS
 #endif
 

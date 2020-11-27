@@ -11,12 +11,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 #include "chrome/browser/diagnostics/diagnostics_writer.h"
 #include "chrome/common/chrome_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
@@ -41,7 +42,7 @@ bool DiagnosticsController::HasResults() {
 void DiagnosticsController::ClearResults() { model_.reset(); }
 
 void DiagnosticsController::RecordRegularStartup() {
-#if defined(OS_CHROMEOS)  // Only collecting UMA stats on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
   // Count the number of normal starts, so we can compare that with the number
   // of recovery runs to get a percentage.
   UMA_HISTOGRAM_ENUMERATION(
@@ -74,7 +75,7 @@ int DiagnosticsController::RunRecovery(const base::CommandLine& command_line,
                                        DiagnosticsWriter* writer) {
 // Separate out recoveries that we execute automatically as a result of a
 // crash from user-run recoveries.
-#if defined(OS_CHROMEOS)  // Only collecting UMA stats on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
   if (command_line.HasSwitch(chromeos::switches::kLoginUser)) {
     UMA_HISTOGRAM_ENUMERATION("Diagnostics.RecoveryRun",
                               diagnostics::RECOVERY_CRASH_RUN,

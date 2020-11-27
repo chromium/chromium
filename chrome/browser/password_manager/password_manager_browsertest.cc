@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -809,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForFetchSubmit) {
 }
 
 // Flaky on chromeos: http://crbug.com/870372
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_PromptForFetchSubmitWithoutNavigation \
   DISABLED_PromptForFetchSubmitWithoutNavigation
 #else
@@ -846,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 }
 
 // Flaky on chromeos: http://crbug.com/870372
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_PromptForFetchSubmitWithoutNavigation_SignupForm \
   DISABLED_PromptForFetchSubmitWithoutNavigation_SignupForm
 #else

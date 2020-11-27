@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -143,7 +144,7 @@ class FamilyInfoFetcherTest
   }
 
   CoreAccountInfo SetPrimaryAccount() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return identity_test_env_.SetUnconsentedPrimaryAccount(kAccountId);
 #elif defined(OS_ANDROID)
     // TODO(https://crbug.com/1046746): Change to SetUnconsentedPrimaryAccount()
@@ -156,7 +157,7 @@ class FamilyInfoFetcherTest
   }
 
   void IssueRefreshToken() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(kAccountId);
 #elif defined(OS_ANDROID)
     identity_test_env_.MakePrimaryAccountAvailable(kAccountId);
