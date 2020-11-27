@@ -27,7 +27,7 @@ public class PageInfoPermissionsController
     private PageInfoControllerDelegate mDelegate;
     private String mTitle;
     private String mPageUrl;
-    private SingleWebsiteSettings mSubpageFragment;
+    private SingleWebsiteSettings mSubPage;
 
     public PageInfoPermissionsController(PageInfoMainController mainController,
             PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl) {
@@ -49,24 +49,27 @@ public class PageInfoPermissionsController
 
     @Override
     public View createViewForSubpage(ViewGroup parent) {
-        assert mSubpageFragment == null;
+        assert mSubPage == null;
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
-        mSubpageFragment = (SingleWebsiteSettings) Fragment.instantiate(
+        mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
-        mSubpageFragment.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
-        mSubpageFragment.setHideNonPermissionPreferences(true);
-        mSubpageFragment.setWebsiteSettingsObserver(this);
+        mSubPage.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
+        mSubPage.setHideNonPermissionPreferences(true);
+        mSubPage.setWebsiteSettingsObserver(this);
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().add(mSubpageFragment, null).commitNow();
-        return mSubpageFragment.requireView();
+        host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
+        return mSubPage.requireView();
     }
 
     @Override
     public void onSubpageRemoved() {
-        assert mSubpageFragment != null;
+        assert mSubPage != null;
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().remove(mSubpageFragment).commitNow();
-        mSubpageFragment = null;
+        SingleWebsiteSettings subPage = mSubPage;
+        mSubPage = null;
+        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
+        if (host.isFinishing() || host.getSupportFragmentManager().isStateSaved()) return;
+        host.getSupportFragmentManager().beginTransaction().remove(subPage).commitNow();
     }
 
     public void setPermissions(PageInfoView.PermissionParams params) {
