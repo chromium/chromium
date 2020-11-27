@@ -334,8 +334,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidWriteUncommittedResourceIds(
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidDoomUncommittedResourceIds(
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidGetUserData(GetUserDataCallback callback,
                       storage::mojom::ServiceWorkerDatabaseStatus status,
