@@ -1159,7 +1159,8 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
         // ideally store the containing box fragment in the hit-test result
         // here, but doing that might prevent us from finding the right fragment
         // item later on in PositionForPoint(), if the inline has been offset
-        // from its static position.
+        // from its static position. So clear it.
+        result.SetBoxFragment(nullptr);
         return true;
       }
     }

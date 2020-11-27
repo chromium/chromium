@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -135,6 +137,40 @@ TEST_F(HitTestingTest, OcclusionHitTestWithClipPath) {
   UpdateAllLifecyclePhasesForTest();
   result = target->GetLayoutObject()->HitTestForOcclusion();
   EXPECT_EQ(result.InnerNode(), occluder);
+}
+
+// crbug.com/1153037
+TEST_F(HitTestingTest, LegacyInputElementInFragmentTraversal) {
+  ScopedLayoutNGFragmentTraversalForTest fragment_traversal_feature(true);
+  ScopedEditingNGForTest editing_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin:100px; }
+    </style>
+    <input id="target">
+  )HTML");
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(110, 110));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(GetLayoutView().HitTest(hit_location, hit_result));
+  ASSERT_TRUE(hit_result.InnerNode());
+  const auto* layout_object = hit_result.InnerNode()->GetLayoutObject();
+  ASSERT_TRUE(layout_object);
+
+  // In this test we'll use the legacy layout engine for form controls, so the
+  // INPUT element will generate a LayoutTextControl with an inner editable
+  // LayoutBlockFlow child. We'll hit-test by traversing the fragment tree
+  // (rather than the LayoutObject tree). We should hit the inner
+  // LayoutBlockFlow. Since it is a legacy object and it is also laid out by a
+  // legacy parent, it will not generate any NG fragments. Check that we hit the
+  // right node, and that the hit-testing code hasn't incorrectly set an NG
+  // fragment from an ancestor.
+
+  ASSERT_EQ(layout_object->Parent()->GetNode(),
+            GetDocument().getElementById("target"));
+  EXPECT_FALSE(hit_result.BoxFragment());
 }
 
 }  // namespace blink

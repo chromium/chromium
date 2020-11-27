@@ -651,6 +651,10 @@ class CORE_EXPORT NGInlineBackwardCursor {
 
   void MoveToPreviousSibling();
 
+  const NGPhysicalBoxFragment& ContainerFragment() const {
+    return cursor_.ContainerFragment();
+  }
+
  private:
   NGInlineCursorPosition current_;
   const NGInlineCursor& cursor_;
