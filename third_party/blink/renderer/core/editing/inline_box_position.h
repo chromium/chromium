@@ -69,12 +69,10 @@ CORE_EXPORT InlineBoxPosition
 ComputeInlineBoxPosition(const PositionWithAffinity&);
 CORE_EXPORT InlineBoxPosition
 ComputeInlineBoxPosition(const PositionInFlatTreeWithAffinity&);
-CORE_EXPORT InlineBoxPosition ComputeInlineBoxPosition(const VisiblePosition&);
 
 PositionWithAffinity ComputeInlineAdjustedPosition(const PositionWithAffinity&);
 PositionInFlatTreeWithAffinity ComputeInlineAdjustedPosition(
     const PositionInFlatTreeWithAffinity&);
-PositionWithAffinity ComputeInlineAdjustedPosition(const VisiblePosition&);
 
 InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(
     const PositionWithAffinity&);

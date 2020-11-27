@@ -366,11 +366,6 @@ InlineBoxPosition ComputeInlineBoxPosition(
   return ComputeInlineBoxPositionTemplate<EditingInFlatTreeStrategy>(position);
 }
 
-InlineBoxPosition ComputeInlineBoxPosition(const VisiblePosition& position) {
-  DCHECK(position.IsValid()) << position;
-  return ComputeInlineBoxPosition(position.ToPositionWithAffinity());
-}
-
 PositionWithAffinity ComputeInlineAdjustedPosition(
     const PositionWithAffinity& position) {
   return ComputeInlineAdjustedPositionAlgorithm(position, 0);
@@ -379,13 +374,6 @@ PositionWithAffinity ComputeInlineAdjustedPosition(
 PositionInFlatTreeWithAffinity ComputeInlineAdjustedPosition(
     const PositionInFlatTreeWithAffinity& position) {
   return ComputeInlineAdjustedPositionAlgorithm(position, 0);
-}
-
-PositionWithAffinity ComputeInlineAdjustedPosition(
-    const VisiblePosition& position) {
-  DCHECK(position.IsValid()) << position;
-  return ComputeInlineAdjustedPositionAlgorithm(
-      position.ToPositionWithAffinity(), 0);
 }
 
 InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(

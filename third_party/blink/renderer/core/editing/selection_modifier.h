@@ -102,10 +102,11 @@ class CORE_EXPORT SelectionModifier {
   VisiblePosition ModifyMovingBackward(TextGranularity);
   Position NextWordPositionForPlatform(const Position&);
 
-  static VisiblePosition PreviousLinePosition(const VisiblePosition&,
-                                              LayoutUnit line_direction_point);
-  static VisiblePosition NextLinePosition(const VisiblePosition&,
-                                          LayoutUnit line_direction_point);
+  static PositionWithAffinity PreviousLinePosition(
+      const PositionWithAffinity&,
+      LayoutUnit line_direction_point);
+  static PositionWithAffinity NextLinePosition(const PositionWithAffinity&,
+                                               LayoutUnit line_direction_point);
   static VisiblePosition PreviousParagraphPosition(
       const VisiblePosition&,
       LayoutUnit line_direction_point);

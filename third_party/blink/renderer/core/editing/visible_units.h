@@ -151,8 +151,8 @@ EndOfSentence(const PositionInFlatTree&);
 CORE_EXPORT VisiblePosition EndOfSentence(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfSentence(const VisiblePositionInFlatTree&);
-VisiblePosition PreviousSentencePosition(const VisiblePosition&);
-VisiblePosition NextSentencePosition(const VisiblePosition&);
+Position PreviousSentencePosition(const Position&);
+Position NextSentencePosition(const Position&);
 EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange&);
 EphemeralRange ExpandRangeToSentenceBoundary(const EphemeralRange&);
 
@@ -240,8 +240,8 @@ bool IsStartOfDocument(const VisiblePosition&);
 bool IsEndOfDocument(const VisiblePosition&);
 
 // editable content
-VisiblePosition StartOfEditableContent(const VisiblePosition&);
-VisiblePosition EndOfEditableContent(const VisiblePosition&);
+Position StartOfEditableContent(const Position&);
+Position EndOfEditableContent(const Position&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(const VisiblePosition&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(
     const VisiblePositionInFlatTree&);

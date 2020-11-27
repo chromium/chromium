@@ -452,25 +452,20 @@ bool IsEndOfDocument(const VisiblePosition& p) {
 
 // ---------
 
-VisiblePosition StartOfEditableContent(
-    const VisiblePosition& visible_position) {
-  DCHECK(visible_position.IsValid()) << visible_position;
-  ContainerNode* highest_root =
-      HighestEditableRoot(visible_position.DeepEquivalent());
+Position StartOfEditableContent(const Position& position) {
+  ContainerNode* highest_root = HighestEditableRoot(position);
   if (!highest_root)
-    return VisiblePosition();
+    return Position();
 
-  return VisiblePosition::FirstPositionInNode(*highest_root);
+  return Position::FirstPositionInNode(*highest_root);
 }
 
-VisiblePosition EndOfEditableContent(const VisiblePosition& visible_position) {
-  DCHECK(visible_position.IsValid()) << visible_position;
-  ContainerNode* highest_root =
-      HighestEditableRoot(visible_position.DeepEquivalent());
+Position EndOfEditableContent(const Position& position) {
+  ContainerNode* highest_root = HighestEditableRoot(position);
   if (!highest_root)
-    return VisiblePosition();
+    return Position();
 
-  return VisiblePosition::LastPositionInNode(*highest_root);
+  return Position::LastPositionInNode(*highest_root);
 }
 
 bool IsEndOfEditableOrNonEditableContent(const VisiblePosition& position) {

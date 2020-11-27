@@ -240,30 +240,15 @@ EphemeralRange ExpandRangeToSentenceBoundary(const EphemeralRange& range) {
 
 // ----
 
-PositionInFlatTreeWithAffinity NextSentencePosition(
-    const PositionInFlatTree& start) {
+PositionInFlatTree NextSentencePosition(const PositionInFlatTree& start) {
   const PositionInFlatTree result = NextSentencePositionInternal(start);
   return AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-      PositionInFlatTreeWithAffinity(result), start);
+             PositionInFlatTreeWithAffinity(result), start)
+      .GetPosition();
 }
 
-PositionWithAffinity NextSentencePosition(const Position& start) {
-  const PositionInFlatTreeWithAffinity result =
-      NextSentencePosition(ToPositionInFlatTree(start));
-  return ToPositionInDOMTreeWithAffinity(result);
-}
-
-VisiblePosition NextSentencePosition(const VisiblePosition& c) {
-  return CreateVisiblePosition(
-      NextSentencePosition(c.DeepEquivalent()).GetPosition(),
-      TextAffinity::kUpstreamIfPossible);
-}
-
-VisiblePositionInFlatTree NextSentencePosition(
-    const VisiblePositionInFlatTree& c) {
-  return CreateVisiblePosition(
-      NextSentencePosition(c.DeepEquivalent()).GetPosition(),
-      TextAffinity::kUpstreamIfPossible);
+Position NextSentencePosition(const Position& start) {
+  return ToPositionInDOMTree(NextSentencePosition(ToPositionInFlatTree(start)));
 }
 
 // ----
@@ -281,10 +266,6 @@ PositionInFlatTree PreviousSentencePosition(
 Position PreviousSentencePosition(const Position& position) {
   return ToPositionInDOMTree(
       PreviousSentencePosition(ToPositionInFlatTree(position)));
-}
-
-VisiblePosition PreviousSentencePosition(const VisiblePosition& c) {
-  return CreateVisiblePosition(PreviousSentencePosition(c.DeepEquivalent()));
 }
 
 // ----
