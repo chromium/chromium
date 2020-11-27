@@ -114,10 +114,12 @@ class TrashEntry {
 class TrashDirectoryReader {
   /**
    * @param {!FileSystem} fileSystem trash file system.
+   * @param {!TrashConfig} config trash config.
    * @param {string} rootLabel Label of trash root to prefix entries with.
    */
-  constructor(fileSystem, rootLabel) {
+  constructor(fileSystem, config, rootLabel) {
     this.fileSystem_ = fileSystem;
+    this.config_ = config;
     this.rootLabel_ = rootLabel;
 
     /** @private {!Object<!Entry>} all entries in .Trash/files keyed by name. */
@@ -130,21 +132,6 @@ class TrashDirectoryReader {
      * @private {?DirectoryReader}
      */
     this.infoReader_ = null;
-  }
-
-  /**
-   * Promise wrapper for FileSystemDirectoryEntry.getDirectory().
-   *
-   * @param {!DirectoryEntry} dirEntry current directory.
-   * @param {string} path name of directory within dirEntry.
-   * @return {!Promise<!DirectoryEntry>} Promise which resolves with
-   *     <dirEntry>/<path>.
-   * @private
-   */
-  getDirectory_(dirEntry, path) {
-    return new Promise((resolve, reject) => {
-      dirEntry.getDirectory(path, {create: true}, resolve, reject);
-    });
   }
 
   /**
@@ -222,12 +209,11 @@ class TrashDirectoryReader {
 
     // Read all of .Trash/files on first call.
     if (!this.infoReader_) {
-      const trashDir =
-          await this.getDirectory_(this.fileSystem_.root, '.Trash');
-      const filesDir = await this.getDirectory_(trashDir, 'files');
+      const trashDirs =
+          await TrashDirs.getTrashDirs(this.fileSystem_, this.config_);
 
       // Get all entries in trash/files.
-      const filesReader = filesDir.createReader();
+      const filesReader = trashDirs.files.createReader();
       try {
         while (true) {
           const entries = await ls(filesReader);
@@ -242,8 +228,7 @@ class TrashDirectoryReader {
         return;
       }
 
-      const infoDir = await this.getDirectory_(trashDir, 'info');
-      this.infoReader_ = infoDir.createReader();
+      this.infoReader_ = trashDirs.info.createReader();
     }
 
     // Consume infoReader which is initialized in the first call. Read from
@@ -278,7 +263,8 @@ class TrashDirectoryReader {
 }
 
 /**
- * Root Trash entry sits inside "My files".
+ * Root Trash entry sits inside "My files". It shows the combined entries of
+ * trashes defined in TrashConfig.
  */
 class TrashRootEntry extends FakeEntryImpl {
   /**
@@ -291,11 +277,17 @@ class TrashRootEntry extends FakeEntryImpl {
 
   /** @override */
   createReader() {
-    const info = this.volumeManager_.getCurrentProfileVolumeInfo(
-        VolumeManagerCommon.VolumeType.DOWNLOADS);
-    const locationInfo =
-        this.volumeManager_.getLocationInfo(info.fileSystem.root);
-    const rootLabel = util.getRootTypeLabel(assert(locationInfo));
-    return new TrashDirectoryReader(info.fileSystem, rootLabel);
+    const readers = [];
+    TrashConfig.CONFIG.forEach(c => {
+      const info =
+          this.volumeManager_.getCurrentProfileVolumeInfo(c.volumeType);
+      if (info && info.fileSystem) {
+        const locationInfo =
+            this.volumeManager_.getLocationInfo(info.fileSystem.root);
+        const rootLabel = util.getRootTypeLabel(assert(locationInfo));
+        readers.push(new TrashDirectoryReader(info.fileSystem, c, rootLabel));
+      }
+    });
+    return new CombinedReaders(readers);
   }
 }

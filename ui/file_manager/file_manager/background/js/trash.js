@@ -8,44 +8,6 @@
  */
 
 /**
- * Wrapper for /.Trash/files and /.Trash/info directories.
- */
-class TrashDirs {
-  /**
-   * @param {!DirectoryEntry} files /.Trash/files directory entry.
-   * @param {!DirectoryEntry} info /.Trash/info directory entry.
-   */
-  constructor(files, info) {
-    this.files = files;
-    this.info = info;
-  }
-}
-
-/**
- * Configuration for where Trash is stored in a volume.
- */
-class TrashConfig {
-  /**
-   * @param {VolumeManagerCommon.RootType} rootType
-   * @param {string} topDir Top directory of volume. Must end with a slash to
-   *     make comparisons simpler.
-   * @param {string} trashDir Trash directory. Must end with a slash to make
-   *     comparisons simpler.
-   * @param {boolean=} prefixPathWithRemoteMount Optional, if true, 'Path=' in
-   *     *.trashinfo is prefixed with the volume.remoteMountPath. For crostini,
-   *     this is the user's homedir (/home/<username>).
-   */
-  constructor(rootType, topDir, trashDir, prefixPathWithRemoteMount = false) {
-    this.id = `${rootType}-${topDir}`;
-    this.rootType = rootType;
-    this.topDir = topDir;
-    this.trashDir = trashDir;
-    this.prefixPathWithRemoteMount = prefixPathWithRemoteMount;
-    this.pathPrefix = '';
-  }
-}
-
-/**
  * Result from calling Trash.removeFileOrDirectory().
  */
 class TrashItem {
@@ -102,9 +64,9 @@ class Trash {
       return null;
     }
     const fullPathSlash = entry.fullPath + '/';
-    for (const config of Trash.CONFIG) {
+    for (const config of TrashConfig.CONFIG) {
       const entryInVolume = fullPathSlash.startsWith(config.topDir);
-      if (config.rootType === info.rootType && entryInVolume) {
+      if (config.volumeType === info.volumeInfo.volumeType && entryInVolume) {
         if (config.prefixPathWithRemoteMount) {
           config.pathPrefix = info.volumeInfo.remoteMountPath;
         }
@@ -174,16 +136,8 @@ class Trash {
       return trashDirs;
     }
 
-    let trashRoot = entry.filesystem.root;
-    const parts = config.trashDir.split('/');
-    for (const part of parts) {
-      if (part) {
-        trashRoot = await this.getDirectory_(trashRoot, part);
-      }
-    }
-    const trashFiles = await this.getDirectory_(trashRoot, 'files');
-    const trashInfo = await this.getDirectory_(trashRoot, 'info');
-    trashDirs = new TrashDirs(trashFiles, trashInfo);
+    trashDirs = await TrashDirs.getTrashDirs(entry.filesystem, config);
+
     // Check and remove old items max once per session.
     this.removeOldItems_(trashDirs, Date.now());
     this.trashDirs_[config.id] = trashDirs;
@@ -215,21 +169,6 @@ class Trash {
           writer.write(new Blob([info], {type: 'text/plain'}));
         }, reject);
       }, reject);
-    });
-  }
-
-  /**
-   * Promise wrapper for FileSystemDirectoryEntry.getDirectory().
-   *
-   * @param {!DirectoryEntry} dirEntry current directory.
-   * @param {string} path name of directory within dirEntry.
-   * @return {!Promise<!DirectoryEntry>} Promise which resolves with
-   *     <dirEntry>/<path>.
-   * @private
-   */
-  getDirectory_(dirEntry, path) {
-    return new Promise((resolve, reject) => {
-      dirEntry.getDirectory(path, {create: true}, resolve, reject);
     });
   }
 
@@ -314,7 +253,7 @@ class Trash {
     // Move to last directory in path, making sure dirs are created if needed.
     let dir = trashItem.filesEntry.filesystem.root;
     for (let i = 0; i < parts.length - 1; i++) {
-      dir = await this.getDirectory_(dir, parts[i]);
+      dir = await TrashDirs.getDirectory(dir, parts[i]);
     }
 
     // Restore filesEntry first, then remove its trash infoEntry.
@@ -449,21 +388,3 @@ class Trash {
  */
 Trash.AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 
-/**
- * Volumes supported for Trash, and location of Trash dir. Items will be
- * searched in order.
- *
- * @type {!Array<!TrashConfig>}
- */
-Trash.CONFIG = [
-  // MyFiles/Downloads is a separate volume on a physical device, and doing a
-  // move from MyFiles/Downloads/<path> to MyFiles/.Trash actually does a
-  // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.
-  new TrashConfig(
-      VolumeManagerCommon.RootType.DOWNLOADS, '/Downloads/',
-      '/Downloads/.Trash/'),
-  new TrashConfig(VolumeManagerCommon.RootType.DOWNLOADS, '/', '/.Trash/'),
-  new TrashConfig(
-      VolumeManagerCommon.RootType.CROSTINI, '/', '/.local/share/Trash/',
-      /*prefixPathWithRemoteMount=*/ true),
-];

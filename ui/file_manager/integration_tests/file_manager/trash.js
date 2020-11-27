@@ -21,6 +21,11 @@ testcase.trashMoveToTrash = async () => {
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
+  // Navigate to /Trash and ensure the file is shown.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+
   // Open the gear menu by clicking the gear button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#gear-button']));

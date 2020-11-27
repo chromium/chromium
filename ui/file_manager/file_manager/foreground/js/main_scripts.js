@@ -87,6 +87,7 @@
 // <include src="../../common/js/util.js">
 // <include src="../../common/js/progress_center_common.js">
 // <include src="../../common/js/importer_common.js">
+// <include src="../../common/js/trash_config.js">
 //
 // <include src="constants.js">
 // <include src="crossover_search_utils.js">
