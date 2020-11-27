@@ -109,17 +109,89 @@ TEST_F(PolicyMapTest, SetAndGet) {
 TEST_F(PolicyMapTest, AddError) {
   PolicyMap map;
   SetPolicy(&map, kTestPolicyName1, base::Value(0));
-  PolicyMap::Entry* entry = map.GetMutable(kTestPolicyName1);
+  PolicyMap::Entry* entry1 = map.GetMutable(kTestPolicyName1);
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
       static_cast<base::string16 (*)(int)>(&base::NumberToString16));
-  EXPECT_EQ(base::string16(), entry->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::string16(), entry1->GetLocalizedErrors(lookup));
   map.AddError(kTestPolicyName1, 1234);
-  EXPECT_EQ(base::UTF8ToUTF16("1234"), entry->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1234"), entry1->GetLocalizedErrors(lookup));
   map.AddError(kTestPolicyName1, 5678);
-  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"), entry->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
+            entry1->GetLocalizedErrors(lookup));
   map.AddError(kTestPolicyName1, "abcd");
   EXPECT_EQ(base::UTF8ToUTF16("abcd\n1234\n5678"),
-            entry->GetLocalizedErrors(lookup));
+            entry1->GetLocalizedErrors(lookup));
+
+  // Add second entry to make sure errors are added individually.
+  SetPolicy(&map, kTestPolicyName2, base::Value(0));
+  PolicyMap::Entry* entry2 = map.GetMutable(kTestPolicyName2);
+  // Test AddError with placeholder replacement (one arg)
+  map.AddError(kTestPolicyName2, IDS_POLICY_MIGRATED_OLD_POLICY,
+               {base::UTF8ToUTF16("SomeNewPolicy")});
+  EXPECT_EQ(base::UTF8ToUTF16("abcd\n1234\n5678"),
+            entry1->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("This policy is deprecated. You should use the "
+                              "SomeNewPolicy policy instead."),
+            entry2->GetLocalizedErrors(lookup));
+  map.AddError(kTestPolicyName2, 1357);
+  EXPECT_EQ(base::UTF8ToUTF16("abcd\n1234\n5678"),
+            entry1->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
+                              "the SomeNewPolicy policy instead."),
+            entry2->GetLocalizedErrors(lookup));
+  // Test AddError with placeholder replacement (two args)
+  map.AddError(
+      kTestPolicyName1, IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
+      {base::UTF8ToUTF16("SomeSource"), base::UTF8ToUTF16("SomeDestination")});
+  EXPECT_EQ(
+      base::UTF8ToUTF16("abcd\n1234\n5678\nYour administrator has blocked "
+                        "sharing from SomeSource to SomeDestination"),
+      entry1->GetLocalizedErrors(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
+                              "the SomeNewPolicy policy instead."),
+            entry2->GetLocalizedErrors(lookup));
+}
+
+TEST_F(PolicyMapTest, AddWarning) {
+  PolicyMap map;
+  SetPolicy(&map, kTestPolicyName1, base::Value(0));
+  PolicyMap::Entry* entry1 = map.GetMutable(kTestPolicyName1);
+  PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
+      static_cast<base::string16 (*)(int)>(&base::NumberToString16));
+  EXPECT_EQ(base::string16(), entry1->GetLocalizedWarnings(lookup));
+  entry1->AddWarning(1234);
+  EXPECT_EQ(base::UTF8ToUTF16("1234"), entry1->GetLocalizedWarnings(lookup));
+  entry1->AddWarning(5678);
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
+            entry1->GetLocalizedWarnings(lookup));
+
+  // Add second entry to make sure warnings are added individually.
+  SetPolicy(&map, kTestPolicyName2, base::Value(0));
+  PolicyMap::Entry* entry2 = map.GetMutable(kTestPolicyName2);
+  // Test AddWarning with placeholder replacement (one arg)
+  entry2->AddWarning(IDS_POLICY_MIGRATED_OLD_POLICY,
+                     {base::UTF8ToUTF16("SomeNewPolicy")});
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
+            entry1->GetLocalizedWarnings(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("This policy is deprecated. You should use the "
+                              "SomeNewPolicy policy instead."),
+            entry2->GetLocalizedWarnings(lookup));
+  entry2->AddWarning(1357);
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678"),
+            entry1->GetLocalizedWarnings(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
+                              "the SomeNewPolicy policy instead."),
+            entry2->GetLocalizedWarnings(lookup));
+  // Test AddWarning with placeholder replacement (two args)
+  entry1->AddWarning(
+      IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
+      {base::UTF8ToUTF16("SomeSource"), base::UTF8ToUTF16("SomeDestination")});
+  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678\nYour administrator has blocked "
+                              "sharing from SomeSource to SomeDestination"),
+            entry1->GetLocalizedWarnings(lookup));
+  EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
+                              "the SomeNewPolicy policy instead."),
+            entry2->GetLocalizedWarnings(lookup));
 }
 
 TEST_F(PolicyMapTest, Equals) {

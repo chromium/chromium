@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -27,6 +28,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if defined(OS_ANDROID)
@@ -82,10 +84,10 @@ void RemapProxyPolicies(PolicyMap* policies) {
   }
 }
 
-// Maps the separate policies for proxy settings into a single Dictionary
-// policy. This allows to keep the logic of merging policies from different
-// sources simple, as all separate proxy policies should be considered as a
-// single whole during merging.
+// Maps the separate renamed policies into a single Dictionary policy. This
+// allows to keep the logic of merging policies from different sources simple,
+// as all separate renamed policies should be considered as a single whole
+// during merging.
 void RemapRenamedPolicies(PolicyMap* policies) {
   // For all renamed policies we need to explicitly merge the value of the
   // old policy with the new one or else merging will not be carried over
@@ -141,8 +143,10 @@ void RemapRenamedPolicies(PolicyMap* policies) {
     if (old_policy &&
         (!new_policy || old_policy->has_higher_priority_than(*new_policy))) {
       PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      // TODO(pastarmovj): Re-add the policy errors in a way that does not
-      // depend on resources being loaded that early.
+      policy_entry.AddError(IDS_POLICY_MIGRATED_NEW_POLICY,
+                            {base::UTF8ToUTF16(policy_pair.first)});
+      old_policy->AddError(IDS_POLICY_MIGRATED_OLD_POLICY,
+                           {base::UTF8ToUTF16(policy_pair.second)});
       policies->Set(policy_pair.second, std::move(policy_entry));
     }
     if (policy_lists_to_merge.contains(policy_pair.first) &&
