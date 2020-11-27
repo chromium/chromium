@@ -1411,6 +1411,8 @@ static_library("browser") {
     "previews/previews_ui_tab_helper.h",
     "previews/resource_loading_hints/resource_loading_hints_web_contents_observer.cc",
     "previews/resource_loading_hints/resource_loading_hints_web_contents_observer.h",
+    "privacy_sandbox/privacy_sandbox_prefs.cc",
+    "privacy_sandbox/privacy_sandbox_prefs.h",
     "process_resource_usage.cc",
     "process_resource_usage.h",
     "process_singleton.h",

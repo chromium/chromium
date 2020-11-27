@@ -1,0 +1,28 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_prefs.h"
+
+#include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+
+namespace prefs {
+
+const char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
+
+const char kPrivacySandboxManauallyControlled[] =
+    "privacy_sandbox.manually_controlled";
+
+}  // namespace prefs
+
+namespace privacy_sandbox {
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxApisEnabled, false);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxManauallyControlled,
+                                false);
+}
+}  // namespace privacy_sandbox
