@@ -18,6 +18,9 @@ DomObjectFrameStack::DomObjectFrameStack(const DomObjectFrameStack&) = default;
 content::RenderFrameHost* FindCorrespondingRenderFrameHost(
     const std::string& frame_id,
     content::WebContents* web_contents) {
+  if (frame_id.empty()) {
+    return web_contents->GetMainFrame();
+  }
   const auto& all_frames = web_contents->GetAllFrames();
   const auto& it = std::find_if(
       all_frames.begin(), all_frames.end(), [&](const auto& frame) {

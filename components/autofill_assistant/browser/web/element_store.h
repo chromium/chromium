@@ -23,7 +23,7 @@ class ElementStore {
  public:
   // |web_contents| must outlive this instance.
   ElementStore(content::WebContents* web_contents);
-  ~ElementStore();
+  virtual ~ElementStore();
 
   ElementStore(const ElementStore&) = delete;
   ElementStore& operator=(const ElementStore&) = delete;
@@ -35,8 +35,8 @@ class ElementStore {
 
   // Get an element from the store. If the element does not exist or cannot be
   // reconstructed this returns an error status.
-  ClientStatus GetElement(const std::string& client_id,
-                          ElementFinder::Result* out_element) const;
+  virtual ClientStatus GetElement(const std::string& client_id,
+                                  ElementFinder::Result* out_element) const;
 
   // Removes an element. Returns true if the element was removed.
   bool RemoveElement(const std::string& client_id);
@@ -48,6 +48,8 @@ class ElementStore {
   void Clear();
 
  private:
+  friend class FakeElementStore;
+
   content::WebContents* web_contents_;
 
   base::flat_map<std::string, DomObjectFrameStack> object_map_;

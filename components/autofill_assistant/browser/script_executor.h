@@ -31,6 +31,7 @@ namespace autofill_assistant {
 class ElementStore;
 class UserModel;
 class WaitForDocumentOperation;
+class WebController;
 
 // Class to execute an assistant script.
 class ScriptExecutor : public ActionDelegate,
@@ -263,6 +264,7 @@ class ScriptExecutor : public ActionDelegate,
   WebsiteLoginManager* GetWebsiteLoginManager() override;
   content::WebContents* GetWebContents() override;
   ElementStore* GetElementStore() const override;
+  WebController* GetWebController() const override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   std::string GetLocale() override;
   void SetDetails(std::unique_ptr<Details> details) override;

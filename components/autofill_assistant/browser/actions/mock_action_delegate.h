@@ -21,6 +21,8 @@
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
+#include "components/autofill_assistant/browser/web/fake_element_store.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -269,6 +271,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
   MOCK_METHOD0(GetWebContents, content::WebContents*());
+  MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_METHOD0(GetLocale, std::string());
   MOCK_METHOD1(SetDetails, void(std::unique_ptr<Details> details));
@@ -378,7 +381,7 @@ class MockActionDelegate : public ActionDelegate {
 
   ElementStore* GetElementStore() const override {
     if (!element_store_) {
-      element_store_ = std::make_unique<ElementStore>(nullptr);
+      element_store_ = std::make_unique<FakeElementStore>();
     }
     return element_store_.get();
   }

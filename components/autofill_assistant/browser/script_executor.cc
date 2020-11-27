@@ -215,6 +215,19 @@ bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
     case ActionProto::ActionInfoCase::kConfigureUiState:
     case ActionProto::ActionInfoCase::kPresaveGeneratedPassword:
     case ActionProto::ActionInfoCase::kGetElementStatus:
+    case ActionProto::ActionInfoCase::kScrollIntoView:
+    case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeInteractive:
+    case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeComplete:
+    case ActionProto::ActionInfoCase::kSendClickEvent:
+    case ActionProto::ActionInfoCase::kSendTapEvent:
+    case ActionProto::ActionInfoCase::kJsClick:
+    case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
+    case ActionProto::ActionInfoCase::kSetFieldValue:
+    case ActionProto::ActionInfoCase::kSetElementAttribute:
+    case ActionProto::ActionInfoCase::kSelectFieldValue:
+    case ActionProto::ActionInfoCase::kFocusField:
+    case ActionProto::ActionInfoCase::kWaitForElementToBecomeStable:
+    case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       return false;
   }
@@ -779,6 +792,10 @@ content::WebContents* ScriptExecutor::GetWebContents() {
 
 ElementStore* ScriptExecutor::GetElementStore() const {
   return delegate_->GetElementStore();
+}
+
+WebController* ScriptExecutor::GetWebController() const {
+  return delegate_->GetWebController();
 }
 
 std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() {

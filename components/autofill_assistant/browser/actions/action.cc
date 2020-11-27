@@ -170,6 +170,45 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kGetElementStatus:
       out << "GetElementStatus";
       break;
+    case ActionProto::ActionInfoCase::kScrollIntoView:
+      out << "ScrollIntoView";
+      break;
+    case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeInteractive:
+      out << "WaitForDocumentToBecomeInteractive";
+      break;
+    case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeComplete:
+      out << "WaitForDocumentToBecomeComplete";
+      break;
+    case ActionProto::ActionInfoCase::kSendClickEvent:
+      out << "SendClickEvent";
+      break;
+    case ActionProto::ActionInfoCase::kSendTapEvent:
+      out << "SendTapEvent";
+      break;
+    case ActionProto::ActionInfoCase::kJsClick:
+      out << "JsClick";
+      break;
+    case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
+      out << "SendKeystrokeEvents";
+      break;
+    case ActionProto::ActionInfoCase::kSetFieldValue:
+      out << "SetFieldValue";
+      break;
+    case ActionProto::ActionInfoCase::kSetElementAttribute:
+      out << "SetElementAttribute";
+      break;
+    case ActionProto::ActionInfoCase::kSelectFieldValue:
+      out << "SelectFieldValue";
+      break;
+    case ActionProto::ActionInfoCase::kFocusField:
+      out << "FocusField";
+      break;
+    case ActionProto::ActionInfoCase::kWaitForElementToBecomeStable:
+      out << "WaitForElementToBecomeStable";
+      break;
+    case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
+      out << "CheckElementIsOnTop";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

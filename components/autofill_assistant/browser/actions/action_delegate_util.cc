@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
@@ -157,6 +158,37 @@ void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
       std::move(perform_actions),
       std::make_unique<ProcessedActionStatusDetailsProto>(), 0, element,
       std::move(done), OkClientStatus());
+}
+
+void PerformWithTextValue(
+    const ActionDelegate* delegate,
+    const TextValue& text_value,
+    base::OnceCallback<void(const std::string&,
+                            const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done) {
+  std::string value;
+  switch (text_value.value_case()) {
+    case TextValue::kText:
+      value = text_value.text();
+      break;
+    case TextValue::kAutofillValue: {
+      ClientStatus autofill_status = GetFormattedAutofillValue(
+          text_value.autofill_value(), delegate->GetUserData(), &value);
+      if (!autofill_status.ok()) {
+        std::move(done).Run(autofill_status);
+        return;
+      }
+      break;
+    }
+    case TextValue::VALUE_NOT_SET:
+      std::move(done).Run(ClientStatus(INVALID_ACTION));
+      return;
+  }
+
+  std::move(perform).Run(value, element, std::move(done));
 }
 
 void AddOptionalStep(OptionalStep optional_step,

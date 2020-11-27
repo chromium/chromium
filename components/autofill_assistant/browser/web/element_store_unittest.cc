@@ -71,11 +71,23 @@ TEST_F(ElementStoreTest, GetElementFromStore) {
 TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
   auto element = std::make_unique<ElementFinder::Result>();
   element->dom_object.object_data.object_id = "1";
+  element->dom_object.object_data.node_frame_id = "unknown";
   AddElement("1", std::move(element));
 
   ElementFinder::Result result;
   EXPECT_EQ(CLIENT_ID_RESOLUTION_FAILED,
             element_store_->GetElement("1", &result).proto_status());
+}
+
+TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
+  auto element = std::make_unique<ElementFinder::Result>();
+  element->dom_object.object_data.object_id = "1";
+  AddElement("1", std::move(element));
+
+  ElementFinder::Result result;
+  EXPECT_EQ(ACTION_APPLIED,
+            element_store_->GetElement("1", &result).proto_status());
+  EXPECT_EQ(web_contents()->GetMainFrame(), result.container_frame_host);
 }
 
 TEST_F(ElementStoreTest, AddElementToStoreOverwrites) {

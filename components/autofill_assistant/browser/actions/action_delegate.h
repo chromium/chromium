@@ -43,6 +43,7 @@ struct ClientSettings;
 struct CollectUserDataOptions;
 class ElementStore;
 class UserAction;
+class WebController;
 class WebsiteLoginManager;
 
 // Action delegate called when processing actions.
@@ -284,8 +285,8 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Sets the keyboard focus to |element| and inputs the specified codepoints.
-  // Returns the result through |callback|.
+  // Inputs the specified codepoints into |element|. Expects the |element| to
+  // have focus. Returns the result through |callback|.
   virtual void SendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int key_press_delay_in_millisecond,
@@ -380,6 +381,9 @@ class ActionDelegate {
 
   // Get the ElementStore.
   virtual ElementStore* GetElementStore() const = 0;
+
+  // Get the WebController.
+  virtual WebController* GetWebController() const = 0;
 
   // Returns the e-mail address that corresponds to the access token or an empty
   // string.

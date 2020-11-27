@@ -31,24 +31,35 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.CheckElementIsOnTopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
+import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.OptionalStep;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
+import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
+import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto.KeyPress;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextFilter;
+import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
+import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDocumentToBecomeInteractiveProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.WaitForElementToBecomeStableProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -470,6 +481,72 @@ public class AutofillAssistantInputActionIntegrationTest {
         assertThat(processed.get(1).getStatusDetails().getOriginalStatus(),
                 is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
         assertThat(processed.get(2).getStatus(), is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+    }
+
+    @Test
+    @MediumTest
+    public void setTextWithMiniActions() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto element = SelectorProto.newBuilder()
+                                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
+                                        .build();
+        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(element)
+                                                 .setClientId(clientId)))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setWaitForDocumentToBecomeInteractive(
+                                 WaitForDocumentToBecomeInteractiveProto.newBuilder()
+                                         .setClientId(clientId)
+                                         .setTimeoutInMs(1000))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setWaitForElementToBecomeStable(
+                                 WaitForElementToBecomeStableProto.newBuilder()
+                                         .setClientId(clientId)
+                                         .setStableCheckMaxRounds(10)
+                                         .setStableCheckIntervalMs(200))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setCheckElementIsOnTop(
+                                 CheckElementIsOnTopProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSetFieldValue(
+                                 SetFieldValueProto.newBuilder().setClientId(clientId).setValue(
+                                         TextValue.newBuilder().setText("")))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSendKeystrokeEvents(
+                                 SendKeystrokeEventsProto.newBuilder()
+                                         .setClientId(clientId)
+                                         .setDelayInMs(0)
+                                         .setValue(TextValue.newBuilder().setText("Value")))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Done").addChoices(
+                                 Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("Value"));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

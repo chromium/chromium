@@ -78,9 +78,24 @@ void TakeElementAndGetProperty(
                           std::move(element_result), std::move(done)));
 }
 
+// Run all |perform_actions| sequentially. Breaks the execution on any error
+// and executes the |done| callback with the final status.
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
                 const ElementFinder::Result& element,
                 base::OnceCallback<void(const ClientStatus&)> done);
+
+// Resolve the |text_value| and run the |perform| callback. Run the |done|
+// callback with an error status if the |text_value| could not be resolved.
+// Run the |done| callback with the result status of |perform| otherwise.
+void PerformWithTextValue(
+    const ActionDelegate* delegate,
+    const TextValue& text_value,
+    base::OnceCallback<void(const std::string&,
+                            const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done);
 
 // Adds an optional step to the |actions|. If the step is |SKIP_STEP|, it does
 // not add it. For |REPORT_STEP_RESULT| it adds the step ignoring a potential

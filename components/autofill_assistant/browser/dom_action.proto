@@ -30,13 +30,13 @@ message WaitForDocumentToBecomeCompleteProto {
   optional int32 timeout_in_ms = 2;
 }
 
-message WaitForElementToBecomeStable {
+message WaitForElementToBecomeStableProto {
   optional ClientIdProto client_id = 1;
   optional int32 stable_check_max_rounds = 2 [default = 50];
   optional int32 stable_check_interval_ms = 3 [default = 200];
 }
 
-message CheckElementIsOnTop {
+message CheckElementIsOnTopProto {
   optional ClientIdProto client_id = 1;
 }
 

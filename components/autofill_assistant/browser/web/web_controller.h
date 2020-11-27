@@ -198,14 +198,24 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Sets the keyboard focus to |element| and inputs |codepoints|, one
-  // character at a time. Key presses will have a delay of |delay_in_milli|
-  // between them.
-  // Returns the result through |callback|.
+  // Inputs the specified codepoints into |element|. Expects the |element| to
+  // have focus. Key presses will have a delay of
+  // |key_press_delay_in_millisecond| between them. Returns the result through
+  // |callback|.
   virtual void SendKeyboardInput(
       const ElementFinder::Result& element,
       const std::vector<UChar32>& codepoints,
-      int delay_in_milli,
+      int key_press_delay_in_millisecond,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Inputs the specified |value| into |element| with keystrokes per character.
+  // Expects the |element| to have focus. Key presses will have a delay of
+  // |key_press_delay_in_millisecond| between them. Returns the result through
+  // |callback|.
+  virtual void SendTextInput(
+      int key_press_delay_in_millisecond,
+      const std::string& value,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Return the outerHTML of |element|.

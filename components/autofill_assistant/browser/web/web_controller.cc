@@ -1155,10 +1155,19 @@ void WebController::SetAttribute(
                                     std::move(callback))));
 }
 
+void WebController::SendTextInput(
+    int key_press_delay_in_millisecond,
+    const std::string& value,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  SendKeyboardInput(element, UTF8ToUnicode(value),
+                    key_press_delay_in_millisecond, std::move(callback));
+}
+
 void WebController::SendKeyboardInput(
     const ElementFinder::Result& element,
     const std::vector<UChar32>& codepoints,
-    const int delay_in_millisecond,
+    const int key_press_delay_in_millisecond,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   if (VLOG_IS_ON(3)) {
     std::string input_str;
@@ -1174,7 +1183,7 @@ void WebController::SendKeyboardInput(
 
   DispatchKeyboardTextDownEvent(
       element.node_frame_id(), codepoints, 0,
-      /* delay= */ false, delay_in_millisecond,
+      /* delay= */ false, key_press_delay_in_millisecond,
       base::BindOnce(&DecorateWebControllerStatus,
                      WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
                      std::move(callback)));
