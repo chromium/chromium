@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.format.Formatter;
 
@@ -30,6 +31,7 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
     private Runnable mOnClearCallback;
+    private Dialog mConfirmationDialog;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -46,6 +48,14 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
         SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
         mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+        }
     }
 
     public void setParams(PageInfoCookiesViewParams params) {
@@ -81,13 +91,15 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
     }
 
     private void showClearCookiesConfirmation() {
-        new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                .setTitle(R.string.page_info_cookies_clear)
-                .setMessage(R.string.page_info_cookies_clear_confirmation)
-                .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
-                        (dialog, which) -> mOnClearCallback.run())
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        mConfirmationDialog =
+                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                        .setTitle(R.string.page_info_cookies_clear)
+                        .setMessage(R.string.page_info_cookies_clear_confirmation)
+                        .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
+                                (dialog, which) -> mOnClearCallback.run())
+                        .setNegativeButton(
+                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .show();
     }
 
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {

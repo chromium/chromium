@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.site_settings;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -170,6 +171,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     // Map from preference key to ContentSettingsType.
     private Map<String, Integer> mPreferenceMap;
 
+    private Dialog mConfirmationDialog;
+
     private class SingleWebsitePermissionsPopulator
             implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
         private final WebsiteAddress mSiteAddress;
@@ -230,6 +233,14 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
         init();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+        }
     }
 
     private void init() {
@@ -1044,6 +1055,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+        // It is possible that this UI is destroyed while a ListPreference dialog is open because
+        // incognito mode is closed through the system notification.
+        if (getView() == null) return true;
+
         @ContentSettingValues
         int permission = ContentSetting.fromString((String) newValue);
         BrowserContextHandle browserContextHandle =
@@ -1076,23 +1091,26 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 : R.string.website_reset_confirmation;
         int buttonResId = mHideNonPermissionPreferences ? R.string.reset : titleResId;
         // Handle the Clear & Reset preference click by showing a confirmation.
-        new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
-                .setTitle(titleResId)
-                .setMessage(confirmationResId)
-                .setPositiveButton(buttonResId,
-                        (dialog, which) -> {
-                            if (mHideNonPermissionPreferences) {
-                                mSiteDataCleaner.resetPermissions(
-                                        getSiteSettingsClient().getBrowserContextHandle(), mSite);
-                            } else {
-                                resetSite();
-                            }
-                            if (mWebsiteSettingsObserver != null) {
-                                mWebsiteSettingsObserver.onPermissionsReset();
-                            }
-                        })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+                        .setTitle(titleResId)
+                        .setMessage(confirmationResId)
+                        .setPositiveButton(buttonResId,
+                                (dialog, which) -> {
+                                    if (mHideNonPermissionPreferences) {
+                                        mSiteDataCleaner.resetPermissions(
+                                                getSiteSettingsClient().getBrowserContextHandle(),
+                                                mSite);
+                                    } else {
+                                        resetSite();
+                                    }
+                                    if (mWebsiteSettingsObserver != null) {
+                                        mWebsiteSettingsObserver.onPermissionsReset();
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .show();
         return true;
     }
 
