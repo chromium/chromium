@@ -258,7 +258,12 @@ class PageAllocator : public v8::PageAllocator {
                       Permission permissions) override {
     // If V8 sets permissions to none, we can discard the memory.
     if (permissions == v8::PageAllocator::Permission::kNoAccess) {
-      base::DecommitSystemPages(address, length, base::PageUpdatePermissions);
+      // Use PageKeepPermissionsIfPossible as an optimization, to avoid perf
+      // regression (see crrev.com/c/2563038 for details). This may cause the
+      // memory region to still be accessible on certain platforms, but at least
+      // the physical pages will be discarded.
+      base::DecommitSystemPages(address, length,
+                                base::PageKeepPermissionsIfPossible);
       return true;
     } else {
       return base::TrySetSystemPagesAccess(address, length,
