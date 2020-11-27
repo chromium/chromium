@@ -2335,8 +2335,13 @@ void ChildProcessSecurityPolicyImpl::
 void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
     const IsolationContext& isolation_context,
     const url::Origin& origin) {
-  DCHECK(IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
-      << "Attempting to opt-in invalid origin: " << origin;
+  if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin)) {
+    static auto* invalid_origin_optin_key = base::debug::AllocateCrashKeyString(
+        "invalid_opt_in_origin", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(invalid_origin_optin_key,
+                                   origin.Serialize());
+    base::debug::DumpWithoutCrashing();
+  }
 
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());
