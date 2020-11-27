@@ -145,7 +145,7 @@ BluetoothLowEnergyDeviceWatcherMac::BluetoothPlistFilePath() {
 void BluetoothLowEnergyDeviceWatcherMac::AddBluetoothPropertyListFileWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   property_list_watcher_->Watch(
-      BluetoothPlistFilePath(), false /* recursive */,
+      BluetoothPlistFilePath(), base::FilePathWatcher::Type::kNonRecursive,
       base::BindRepeating(&BluetoothLowEnergyDeviceWatcherMac::
                               OnPropertyListFileChangedOnFileThread,
                           this));
