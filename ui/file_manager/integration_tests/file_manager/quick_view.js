@@ -1359,9 +1359,8 @@
   };
 
   /**
-   * Tests opening Quick View on an JPEG image that has EXIF
-   * displays the EXIF information in the QuickView Metadata
-   * Box.
+   * Tests that opening Quick View on a JPEG image with EXIF displays the EXIF
+   * information in the QuickView Metadata Box.
    */
   testcase.openQuickViewImageExif = async () => {
     const caller = getCaller();
