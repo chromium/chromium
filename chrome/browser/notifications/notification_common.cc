@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/notification_common.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -34,10 +35,10 @@ void NotificationCommon::OpenNotificationSettings(Profile* profile,
 // TODO(peter): Use the |origin| to direct the user to a more appropriate
 // settings page to toggle permission.
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  // Android settings are handled through Java. Chrome OS settings are handled
-  // through the tray's setting panel.
-  NOTREACHED();
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+// Android settings are handled through Java. Chrome OS settings are handled
+// through the tray's setting panel.
+NOTREACHED();
 #else
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile);
   chrome::ShowContentSettingsExceptions(browser_displayer.browser(),

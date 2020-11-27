@@ -6,7 +6,9 @@
 
 #include <utility>
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
@@ -16,7 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace em = enterprise_management;
 
@@ -26,7 +28,7 @@ namespace enterprise_reporting {
 // delegates, then move this method's implementation to ReportGeneratorChromeOS.
 void ReportGeneratorDesktop::SetAndroidAppInfos(
     ReportGenerator::ReportRequest* basic_request) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(basic_request);
   basic_request->clear_android_app_infos();
 
@@ -52,7 +54,7 @@ void ReportGeneratorDesktop::SetAndroidAppInfos(
     basic_request->mutable_android_app_infos()->AddAllocated(
         generator.Generate(prefs, app_id).release());
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace enterprise_reporting

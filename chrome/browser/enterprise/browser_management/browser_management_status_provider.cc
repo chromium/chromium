@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/browser_management/browser_management_status_provider.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -22,7 +23,7 @@ BrowserCloudManagementStatusProvider::~BrowserCloudManagementStatusProvider() =
     default;
 
 bool BrowserCloudManagementStatusProvider::IsManaged() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
 #elif !defined(OS_ANDROID)
   // A machine level user cloud policy manager is only created if the browser is

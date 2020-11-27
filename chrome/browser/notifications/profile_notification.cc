@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -36,7 +37,7 @@ ProfileNotification::ProfileNotification(
           notification),
       original_id_(notification.id()),
       type_(type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_) {
     notification_.set_profile_id(
         multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail());

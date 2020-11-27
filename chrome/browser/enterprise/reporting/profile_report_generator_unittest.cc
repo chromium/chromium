@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/values/values_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -285,7 +286,7 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReport) {
   // users info are included on CrOS only.
   EXPECT_TRUE(report);
   EXPECT_EQ(profile()->GetPath().AsUTF8Unsafe(), report->id());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(profile()->GetProfileUserName(), report->name());
   EXPECT_TRUE(report->has_chrome_signed_in_user());
 #else

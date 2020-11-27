@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
@@ -105,7 +106,7 @@ class ReportSchedulerTest : public ::testing::Test {
     generator_ = generator_ptr_.get();
     uploader_ptr_ = std::make_unique<MockReportUploader>();
     uploader_ = uploader_ptr_.get();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     SetLastUploadVersion(chrome::kChromeVersion);
 #endif
     Init(true, kDMToken, kClientId);
@@ -136,7 +137,7 @@ class ReportSchedulerTest : public ::testing::Test {
                                        std::make_unique<base::Value>(enabled));
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetLastUploadVersion(const std::string& version) {
     local_state_.Get()->SetString(kLastUploadVersion, version);
   }
@@ -144,7 +145,7 @@ class ReportSchedulerTest : public ::testing::Test {
   void ExpectLastUploadVersion(const std::string& version) {
     EXPECT_EQ(local_state_.Get()->GetString(kLastUploadVersion), version);
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // If lastUploadTimestamp is updated recently, it should be updated as Now().
   // Otherwise, it should be same as previous set timestamp.
@@ -168,7 +169,7 @@ class ReportSchedulerTest : public ::testing::Test {
 
   // Chrome OS needn't setup registration.
   void EXPECT_CALL_SetupRegistration() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_CALL(*client_, SetupRegistration(_, _, _)).Times(0);
 #else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _));
@@ -176,7 +177,7 @@ class ReportSchedulerTest : public ::testing::Test {
   }
 
   void EXPECT_CALL_SetupRegistrationWithSetDMToken() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_CALL(*client_, SetupRegistration(_, _, _)).Times(0);
 #else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
@@ -237,7 +238,7 @@ TEST_P(ReportSchedulerFeatureTest, NoReportWithoutPolicy) {
 }
 
 // Chrome OS needn't set dm token and client id in the report scheduler.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(ReportSchedulerFeatureTest, NoReportWithoutDMToken) {
   Init(true, "", kClientId);
   CreateScheduler();
@@ -431,7 +432,7 @@ TEST_P(ReportSchedulerFeatureTest, ReportingIsDisabledWhileNewReportIsPosted) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that a basic report is generated and uploaded when a browser update is
 // detected.
@@ -599,7 +600,7 @@ TEST_P(ReportSchedulerFeatureTest, OnNewVersionRegularReport) {
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 1, 1);
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ReportSchedulerTest, OnExtensionRequest) {
   SetLastUploadInHour(base::TimeDelta::FromHours(1));
@@ -656,7 +657,7 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestWithPersistentError) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
   SetLastUploadInHour(base::TimeDelta::FromHours(1));
@@ -703,6 +704,6 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
   histogram_tester_.ExpectBucketCount(kUploadTriggerMetricName, 4, 1);
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_reporting

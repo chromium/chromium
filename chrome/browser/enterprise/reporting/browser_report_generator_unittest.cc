@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
@@ -27,9 +28,9 @@
 #include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/chrome_constants.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace em = enterprise_management;
 
@@ -76,10 +77,10 @@ class BrowserReportGeneratorTest : public ::testing::Test {
     profile_manager_.CreateGuestProfile();
     profile_manager_.CreateSystemProfile();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
     profile_manager_.CreateTestingProfile(chrome::kLockScreenAppProfile);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void InitializePlugin() {
@@ -112,7 +113,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
             [&run_loop](std::unique_ptr<em::BrowserReport> report) {
               EXPECT_TRUE(report.get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
               EXPECT_FALSE(report->has_browser_version());
               EXPECT_FALSE(report->has_channel());
               EXPECT_FALSE(report->has_installed_browser_version());
@@ -138,7 +139,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
               EXPECT_EQ(kProfileName, profile.name());
               EXPECT_FALSE(profile.is_detail_available());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
               EXPECT_EQ(0, report->plugins_size());
 #else
               EXPECT_LE(1, report->plugins_size());
@@ -202,7 +203,7 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReport) {
   GenerateAndVerify();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
   InitializeUpdate();
   InitializeProfile();

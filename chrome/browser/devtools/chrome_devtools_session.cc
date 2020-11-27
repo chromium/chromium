@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/protocol/cast_handler.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
@@ -17,7 +18,7 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/devtools/protocol/window_manager_handler.h"
 #endif
 
@@ -41,7 +42,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
     browser_handler_ =
         std::make_unique<BrowserHandler>(&dispatcher_, agent_host->GetId());
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   window_manager_handler_ =
       std::make_unique<WindowManagerHandler>(&dispatcher_);
 #endif

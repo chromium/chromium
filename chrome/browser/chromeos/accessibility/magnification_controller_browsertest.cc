@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -160,7 +161,7 @@ class MagnificationControllerTest : public InProcessBrowserTest {
 };
 
 // Test is flaky on ChromeOS: crbug.com/1150753
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FollowFocusOnWebButtonContained \
   DISABLED_FollowFocusOnWebButtonContained
 #else

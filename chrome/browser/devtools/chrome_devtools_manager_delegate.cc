@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
@@ -43,7 +44,7 @@
 #include "extensions/common/manifest.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
@@ -181,7 +182,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
 bool ChromeDevToolsManagerDelegate::AllowInspection(
     Profile* profile,
     const extensions::Extension* extension) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kForceDevToolsAvailable))
     return true;
@@ -191,7 +192,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
   Availability availability =
       policy::DeveloperToolsPolicyHandler::GetDevToolsAvailability(
           profile->GetPrefs());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not create DevTools if it's disabled for primary profile.
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   if (primary_profile &&

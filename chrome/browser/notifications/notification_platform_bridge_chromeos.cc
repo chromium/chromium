@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "ui/gfx/image/image.h"
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/notifications/notification_platform_bridge_lacros.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #else
@@ -37,7 +37,7 @@ bool NotificationPlatformBridge::CanHandleType(
 }
 
 NotificationPlatformBridgeChromeOs::NotificationPlatformBridgeChromeOs() {
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   mojo::Remote<crosapi::mojom::MessageCenter>* remote = nullptr;
   auto* service = chromeos::LacrosChromeServiceImpl::Get();
   if (service->IsMessageCenterAvailable())

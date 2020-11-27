@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/util/values/values_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -125,12 +126,12 @@ ProfileReportGeneratorDesktop::MakePolicyConversionsClient() {
 
 policy::MachineLevelUserCloudPolicyManager*
 ProfileReportGeneratorDesktop::GetCloudPolicyManager() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return nullptr;
 #else
   return g_browser_process->browser_policy_connector()
       ->machine_level_user_cloud_policy_manager();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace enterprise_reporting

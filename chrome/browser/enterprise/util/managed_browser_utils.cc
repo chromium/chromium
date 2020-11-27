@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -18,12 +19,12 @@
 #include "chrome/browser/profiles/profile_android.h"
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chrome {
 namespace enterprise_util {
@@ -34,7 +35,7 @@ bool HasBrowserPoliciesApplied(Profile* profile) {
   if (profile_connector->IsManaged())
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // This session's primary user may also have policies, and those policies may
   // not have per-profile support.
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();

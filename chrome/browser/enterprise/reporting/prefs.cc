@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -21,7 +22,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // the migration.
   registry->RegisterBooleanPref(kCloudReportingEnabled, false);
   registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(kLastUploadVersion, std::string());
 #endif
 }

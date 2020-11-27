@@ -7,9 +7,10 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #endif
@@ -31,11 +32,11 @@ class ChromeInternalLogSource : public SystemLogsSource {
   void PopulatePowerApiLogs(SystemLogsResponse* response);
   void PopulateDataReductionProxyLogs(SystemLogsResponse* response);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void PopulateLocalStateSettings(SystemLogsResponse* response);
   void PopulateArcPolicyStatus(SystemLogsResponse* response);
   void PopulateOnboardingTime(SystemLogsResponse* response);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
   void PopulateUsbKeyboardDetected(SystemLogsResponse* response);
@@ -44,7 +45,7 @@ class ChromeInternalLogSource : public SystemLogsSource {
   void PopulateLastUpdateState(SystemLogsResponse* response);
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 #endif
 

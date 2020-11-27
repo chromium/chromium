@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,7 +29,7 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "components/arc/arc_prefs.h"
@@ -47,7 +48,7 @@ const char kPluginVersion[] = "1.0";
 const char kPluginDescription[] = "This is a plugin.";
 const char kPluginFileName[] = "file_name";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kArcAppName1[] = "app_name1";
 const char kArcPackageName1[] = "package_name1";
 const char kArcActivityName1[] = "activity_name1";
@@ -56,7 +57,7 @@ const char kArcPackageName2[] = "package_name2";
 const char kArcActivityName2[] = "activity_name2";
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // We only upload serial number on Windows.
 void VerifySerialNumber(const std::string& serial_number) {
 #if defined(OS_WIN)
@@ -97,7 +98,7 @@ void AddExtensionToProfile(TestingProfile* profile) {
                                      .Build());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 arc::mojom::AppInfo CreateArcApp(const std::string& app_name,
                                  const std::string& package_name,
@@ -301,7 +302,7 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 
   // In the ChromeOsUserReportRequest for Chrome OS, these fields are not
   // existing. Therefore, they are skipped according to current environment.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_NE(std::string(), basic_request->computer_name());
   EXPECT_NE(std::string(), basic_request->os_user_name());
   VerifySerialNumber(basic_request->serial_number());
@@ -320,7 +321,7 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 
   EXPECT_TRUE(basic_request->has_browser_report());
   auto& browser_report = basic_request->browser_report();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(browser_report.has_browser_version());
   EXPECT_FALSE(browser_report.has_channel());
 #else
@@ -329,7 +330,7 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 #endif
   EXPECT_NE(std::string(), browser_report.executable_path());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(0, browser_report.plugins_size());
 #else
   // There might be other plugins like PDF plugin, however, our fake plugin
@@ -356,7 +357,7 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 
   // In the ChromeOsUserReportRequest for Chrome OS, these fields are not
   // existing. Therefore, they are skipped according to current environment.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_NE(std::string(), basic_request->computer_name());
   EXPECT_NE(std::string(), basic_request->os_user_name());
   VerifySerialNumber(basic_request->serial_number());
@@ -370,7 +371,7 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 
   EXPECT_TRUE(basic_request->has_browser_report());
   auto& browser_report = basic_request->browser_report();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(browser_report.has_browser_version());
   EXPECT_FALSE(browser_report.has_channel());
 #else
@@ -379,7 +380,7 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 #endif
   EXPECT_NE(std::string(), browser_report.executable_path());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(0, browser_report.plugins_size());
 #else
   // There might be other plugins like PDF plugin, however, our fake plugin
@@ -404,7 +405,7 @@ TEST_F(ReportGeneratorTest, ExtensionRequestOnly) {
 
   auto* basic_request = requests[0].get();
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(basic_request->has_computer_name());
   EXPECT_FALSE(basic_request->has_os_user_name());
   EXPECT_FALSE(basic_request->has_os_report());
@@ -419,7 +420,7 @@ TEST_F(ReportGeneratorTest, ExtensionRequestOnly) {
             basic_request->partial_report_types(0));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   ArcAppTest arc_app_test;

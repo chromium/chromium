@@ -10,6 +10,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -70,7 +71,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(TouchExplorationTest);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // crbug.com/422943
 #define MAYBE_NoRewritingEventsWhenOff DISABLED_NoRewritingEventsWhenOff
 #else

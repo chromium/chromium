@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/file_manager/web_file_tasks.h"
@@ -215,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
 // Test that the MediaApp can load RAW files passed on launch params.
 // Disabled on ChromeOS because it fails randomly on linux-chromeos-chrome.
 // See: https://crbug.com/1152318
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_HandleRawFiles DISABLED_HandleRawFiles
 #else
 #define MAYBE_HandleRawFiles HandleRawFiles

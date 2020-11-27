@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
@@ -13,7 +14,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 assert(use_ozone)
 
 source_set("chromeos") {
@@ -3960,6 +3961,7 @@ source_set("unit_tests") {
     "//ash/public/cpp/external_arc",
     "//ash/public/cpp/external_arc:test_support",
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser/resources/chromeos/zip_archiver:char_coding",
     "//chrome/browser/ui",

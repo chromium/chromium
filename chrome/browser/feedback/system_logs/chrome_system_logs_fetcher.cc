@@ -14,7 +14,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/system_logs/command_line_log_source.h"
@@ -29,13 +29,13 @@
 #include "chrome/browser/chromeos/system_logs/ui_hierarchy_log_source.h"
 #endif
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/feedback/system_logs/log_sources/user_log_files_log_source.h"
 #endif
 
 namespace system_logs {
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 
 constexpr char kDefaultLogPath[] = "/home/chronos/user/lacros/lacros.log";
@@ -52,7 +52,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   fetcher->AddSource(std::make_unique<CrashIdsSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // These sources rely on scrubbing in SystemLogsFetcher.
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
   fetcher->AddSource(std::make_unique<DBusLogSource>());
@@ -75,17 +75,17 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   }
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
       base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (crosapi::browser_util::IsLacrosEnabled()) {
     fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
         base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return fetcher;
 }
