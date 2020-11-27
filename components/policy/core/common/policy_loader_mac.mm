@@ -77,7 +77,8 @@ PolicyLoaderMac::~PolicyLoaderMac() {
 
 void PolicyLoaderMac::InitOnBackgroundThread() {
   if (!managed_policy_path_.empty()) {
-    watcher_.Watch(managed_policy_path_, false,
+    watcher_.Watch(managed_policy_path_,
+                   base::FilePathWatcher::Type::kNonRecursive,
                    base::BindRepeating(&PolicyLoaderMac::OnFileUpdated,
                                        base::Unretained(this)));
   }
