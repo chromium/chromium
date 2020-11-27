@@ -219,9 +219,8 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& forms,
-                                      base::TimeTicks timestamp) {
-  autofill_handler_->OnFormsSeen(forms, timestamp);
+void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& forms) {
+  autofill_handler_->OnFormsSeen(forms);
 }
 
 void ContentAutofillDriver::SetFormToBeProbablySubmitted(

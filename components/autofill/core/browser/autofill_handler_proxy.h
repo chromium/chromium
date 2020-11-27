@@ -25,8 +25,8 @@ class AutofillHandlerProxy : public AutofillHandler {
   void OnDidFillAutofillFormData(const FormData& form,
                                  const base::TimeTicks timestamp) override;
 
-  void OnDidPreviewAutofillFormData() override;
-  void OnDidEndTextFieldEditing() override;
+  void OnDidPreviewAutofillFormData() override {}
+  void OnDidEndTextFieldEditing() override {}
   void OnHidePopup() override;
   void SelectFieldOptionsDidChange(const FormData& form) override;
 
@@ -64,11 +64,10 @@ class AutofillHandlerProxy : public AutofillHandler {
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
 
-  bool ShouldParseForms(const std::vector<FormData>& forms,
-                        const base::TimeTicks timestamp) override;
+  bool ShouldParseForms(const std::vector<FormData>& forms) override;
 
-  void OnFormsParsed(const std::vector<const FormData*>& form_structures,
-                     const base::TimeTicks timestamp) override;
+  void OnFormsParsed(
+      const std::vector<const FormData*>& form_structures) override {}
 
  private:
   AutofillProvider* provider_;

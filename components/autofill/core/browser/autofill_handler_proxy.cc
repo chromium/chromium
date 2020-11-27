@@ -62,17 +62,13 @@ void AutofillHandlerProxy::OnSelectControlDidChangeImpl(
   provider_->OnSelectControlDidChange(this, form, field, bounding_box);
 }
 
-bool AutofillHandlerProxy::ShouldParseForms(const std::vector<FormData>& forms,
-                                            const base::TimeTicks timestamp) {
-  provider_->OnFormsSeen(this, forms, timestamp);
+bool AutofillHandlerProxy::ShouldParseForms(
+    const std::vector<FormData>& forms) {
+  provider_->OnFormsSeen(this, forms);
   // Need to parse the |forms| to FormStructure, so heuristic_type can be
   // retrieved later.
   return true;
 }
-
-void AutofillHandlerProxy::OnFormsParsed(
-    const std::vector<const FormData*>& form_structures,
-    const base::TimeTicks timestamp) {}
 
 void AutofillHandlerProxy::OnFocusNoLongerOnForm(bool had_interacted_form) {
   provider_->OnFocusNoLongerOnForm(this, had_interacted_form);
@@ -83,10 +79,6 @@ void AutofillHandlerProxy::OnDidFillAutofillFormData(
     const base::TimeTicks timestamp) {
   provider_->OnDidFillAutofillFormData(this, form, timestamp);
 }
-
-void AutofillHandlerProxy::OnDidPreviewAutofillFormData() {}
-
-void AutofillHandlerProxy::OnDidEndTextFieldEditing() {}
 
 void AutofillHandlerProxy::OnHidePopup() {
   provider_->OnHidePopup(this);

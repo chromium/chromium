@@ -341,8 +341,7 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
 }
 
 void AutofillProviderAndroid::OnFormsSeen(AutofillHandlerProxy* handler,
-                                          const std::vector<FormData>& forms,
-                                          const base::TimeTicks timestamp) {}
+                                          const std::vector<FormData>& forms) {}
 
 void AutofillProviderAndroid::OnHidePopup(AutofillHandlerProxy* handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

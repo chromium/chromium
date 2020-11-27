@@ -270,7 +270,7 @@ autofillManagerFromWebState:(web::WebState*)webState
                   ofFormsSeen:(const FormDataVector&)forms {
   DCHECK(autofillManager);
   DCHECK(!forms.empty());
-  autofillManager->OnFormsSeen(forms, base::TimeTicks::Now());
+  autofillManager->OnFormsSeen(forms);
 }
 
 // Notifies the autofill manager when forms are submitted.

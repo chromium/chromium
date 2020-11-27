@@ -88,8 +88,7 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
                        mojom::SubmissionSource source);
 
   // Invoked when |forms| has been detected.
-  void OnFormsSeen(const std::vector<FormData>& forms,
-                   const base::TimeTicks timestamp);
+  void OnFormsSeen(const std::vector<FormData>& forms);
 
   // Invoked when focus is no longer on form. |had_interacted_form| indicates
   // whether focus was previously on a form with which the user had interacted.
@@ -191,12 +190,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 
   // Return whether the |forms| from OnFormSeen() should be parsed to
   // form_structures.
-  virtual bool ShouldParseForms(const std::vector<FormData>& forms,
-                                const base::TimeTicks timestamp) = 0;
+  virtual bool ShouldParseForms(const std::vector<FormData>& forms) = 0;
 
   // Invoked when forms from OnFormsSeen() has been parsed to |form_structures|.
-  virtual void OnFormsParsed(const std::vector<const FormData*>& forms,
-                             const base::TimeTicks timestamp) = 0;
+  virtual void OnFormsParsed(const std::vector<const FormData*>& forms) = 0;
 
   // Returns the number of FormStructures with the given |form_signature| and
   // appends them to |form_structures|. Runs in linear time.

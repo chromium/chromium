@@ -660,8 +660,7 @@ void AutofillManager::OnVirtualCardCandidateSelected(
 }
 #endif
 
-bool AutofillManager::ShouldParseForms(const std::vector<FormData>& forms,
-                                       const base::TimeTicks timestamp) {
+bool AutofillManager::ShouldParseForms(const std::vector<FormData>& forms) {
   bool autofill_enabled = IsAutofillEnabled();
   sync_state_ = personal_data_ ? personal_data_->GetSyncSigninState()
                                : AutofillSyncSigninState::kNumSyncStates;
@@ -2033,8 +2032,7 @@ std::vector<Suggestion> AutofillManager::GetCreditCardSuggestions(
   return suggestions;
 }
 
-void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms,
-                                    const base::TimeTicks timestamp) {
+void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
   DCHECK(!forms.empty());
   has_parsed_forms_ = true;
 

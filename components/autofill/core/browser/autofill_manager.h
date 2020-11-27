@@ -369,10 +369,8 @@ class AutofillManager : public AutofillHandler,
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
-  bool ShouldParseForms(const std::vector<FormData>& forms,
-                        const base::TimeTicks timestamp) override;
-  void OnFormsParsed(const std::vector<const FormData*>& forms,
-                     const base::TimeTicks timestamp) override;
+  bool ShouldParseForms(const std::vector<FormData>& forms) override;
+  void OnFormsParsed(const std::vector<const FormData*>& forms) override;
 
   AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
     return form_interactions_ukm_logger_.get();

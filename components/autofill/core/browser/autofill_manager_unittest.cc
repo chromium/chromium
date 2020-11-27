@@ -462,7 +462,7 @@ class AutofillManagerTest : public testing::Test {
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
-    autofill_manager_->OnFormsSeen(forms, AutofillTickClock::NowTicks());
+    autofill_manager_->OnFormsSeen(forms);
   }
 
   void FormSubmitted(const FormData& form) {
@@ -8460,7 +8460,7 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("und");
 
-  autofill_manager_->OnFormsSeen({form}, base::TimeTicks());
+  autofill_manager_->OnFormsSeen({form});
   FormStructure* parsed_form =
       autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
 
@@ -8469,7 +8469,7 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
-  autofill_manager_->OnFormsSeen({form}, base::TimeTicks());
+  autofill_manager_->OnFormsSeen({form});
   parsed_form =
       autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
 

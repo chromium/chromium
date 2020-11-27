@@ -70,8 +70,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SetFormToBeProbablySubmitted(
       const base::Optional<FormData>& form) override {}
 
-  void FormsSeen(const std::vector<FormData>& forms,
-                 base::TimeTicks timestamp) override {
+  void FormsSeen(const std::vector<FormData>& forms) override {
     // FormsSeen() could be called multiple times and sometimes even with empty
     // forms array for main frame, but we're interested in only the first time
     // call.

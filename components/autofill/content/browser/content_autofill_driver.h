@@ -107,8 +107,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // mojom::AutofillDriver:
   void SetFormToBeProbablySubmitted(
       const base::Optional<FormData>& form) override;
-  void FormsSeen(const std::vector<FormData>& forms,
-                 base::TimeTicks timestamp) override;
+  void FormsSeen(const std::vector<FormData>& forms) override;
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource source) override;

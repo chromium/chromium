@@ -65,8 +65,7 @@ class AutofillProvider {
                                          base::TimeTicks timestamp) = 0;
 
   virtual void OnFormsSeen(AutofillHandlerProxy* handler,
-                           const std::vector<FormData>& forms,
-                           const base::TimeTicks timestamp) = 0;
+                           const std::vector<FormData>& forms) = 0;
 
   virtual void OnHidePopup(AutofillHandlerProxy* handler) = 0;
 
