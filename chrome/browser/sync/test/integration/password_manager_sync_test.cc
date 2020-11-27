@@ -90,7 +90,7 @@ class PathDeletionWaiter {
     if (!base::PathExists(path_)) {
       return true;
     }
-    watcher_.Watch(path_, /*recursive=*/true,
+    watcher_.Watch(path_, base::FilePathWatcher::Type::kRecursive,
                    base::BindRepeating(&PathDeletionWaiter::PathChanged,
                                        base::Unretained(this)));
     run_loop_.Run();
