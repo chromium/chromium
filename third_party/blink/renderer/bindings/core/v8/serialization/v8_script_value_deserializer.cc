@@ -95,6 +95,14 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
   return i;
 }
 
+MessagePort* CreateEntangledPort(ScriptState* script_state,
+                                 const MessagePortChannel& channel) {
+  MessagePort* const port =
+      MakeGarbageCollected<MessagePort>(*ExecutionContext::From(script_state));
+  port->Entangle(channel);
+  return port;
+}
+
 }  // namespace
 
 V8ScriptValueDeserializer::V8ScriptValueDeserializer(
@@ -183,12 +191,7 @@ void V8ScriptValueDeserializer::Transfer() {
     // TODO(ricea): Make ExtendableMessageEvent store an
     // UnpackedSerializedScriptValue like MessageEvent does, and then this
     // special case won't be necessary.
-    Vector<MessagePortChannel> channels;
-    for (auto& stream : serialized_script_value_->GetStreams()) {
-      channels.push_back(stream.channel);
-    }
-    transferred_stream_ports_ = MessagePort::EntanglePorts(
-        *ExecutionContext::From(script_state_), channels);
+    streams_ = std::move(serialized_script_value_->GetStreams());
   }
 
   // There's nothing else to transfer if the deserializer was not given an
@@ -558,43 +561,46 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       if (!TransferableStreamsEnabled())
         return nullptr;
       uint32_t index = 0;
-      if (!ReadUint32(&index) || !transferred_stream_ports_ ||
-          index >= transferred_stream_ports_->size()) {
+      if (!ReadUint32(&index) || index >= streams_.size()) {
         return nullptr;
       }
       return ReadableStream::Deserialize(
-          script_state_, (*transferred_stream_ports_)[index].Get(),
+          script_state_,
+          CreateEntangledPort(GetScriptState(), streams_[index].channel),
           exception_state);
     }
     case kWritableStreamTransferTag: {
       if (!TransferableStreamsEnabled())
         return nullptr;
       uint32_t index = 0;
-      if (!ReadUint32(&index) || !transferred_stream_ports_ ||
-          index >= transferred_stream_ports_->size()) {
+      if (!ReadUint32(&index) || index >= streams_.size()) {
         return nullptr;
       }
       return WritableStream::Deserialize(
-          script_state_, (*transferred_stream_ports_)[index].Get(),
+          script_state_,
+          CreateEntangledPort(GetScriptState(), streams_[index].channel),
           exception_state);
     }
     case kTransformStreamTransferTag: {
       if (!TransferableStreamsEnabled())
         return nullptr;
       uint32_t index = 0;
-      if (!ReadUint32(&index) || !transferred_stream_ports_ ||
+      if (!ReadUint32(&index) ||
           index == std::numeric_limits<decltype(index)>::max() ||
-          index + 1 >= transferred_stream_ports_->size()) {
+          index + 1 >= streams_.size()) {
         return nullptr;
       }
+      MessagePort* const port_for_readable =
+          CreateEntangledPort(GetScriptState(), streams_[index].channel);
+      MessagePort* const port_for_writable =
+          CreateEntangledPort(GetScriptState(), streams_[index + 1].channel);
 
       // https://streams.spec.whatwg.org/#ts-transfer
       // 1. Let readableRecord be !
       //    StructuredDeserializeWithTransfer(dataHolder.[[readable]], the
       //    current Realm).
       ReadableStream* readable = ReadableStream::Deserialize(
-          script_state_, (*transferred_stream_ports_)[index].Get(),
-          exception_state);
+          script_state_, port_for_readable, exception_state);
       if (!readable)
         return nullptr;
 
@@ -602,8 +608,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       //    StructuredDeserializeWithTransfer(dataHolder.[[writable]], the
       //    current Realm).
       WritableStream* writable = WritableStream::Deserialize(
-          script_state_, (*transferred_stream_ports_)[index + 1].Get(),
-          exception_state);
+          script_state_, port_for_writable, exception_state);
       if (!writable)
         return nullptr;
 
