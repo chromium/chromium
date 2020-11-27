@@ -14,6 +14,8 @@
 #include "base/optional.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -45,7 +47,9 @@ std::vector<std::unique_ptr<AndroidAppDescription>> createApp(
 class AndroidAppCommunicationTest : public testing::Test {
  public:
   AndroidAppCommunicationTest()
-      : support_(AndroidAppCommunicationTestSupport::Create()) {}
+      : support_(AndroidAppCommunicationTestSupport::Create()),
+        web_contents_(
+            web_contents_factory_.CreateWebContents(support_->context())) {}
   ~AndroidAppCommunicationTest() override = default;
 
   AndroidAppCommunicationTest(const AndroidAppCommunicationTest& other) =
@@ -77,6 +81,8 @@ class AndroidAppCommunicationTest : public testing::Test {
   }
 
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
+  content::TestWebContentsFactory web_contents_factory_;
+  content::WebContents* web_contents_;
   base::Optional<std::string> error_;
   std::vector<std::unique_ptr<AndroidAppDescription>> apps_;
   bool is_ready_to_pay_ = false;
@@ -466,6 +472,7 @@ TEST_F(AndroidAppCommunicationTest, NoArcForInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
+      web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -490,6 +497,7 @@ TEST_F(AndroidAppCommunicationTest, TwaPaymentOnlyWithPlayBilling) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
+      web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -522,6 +530,7 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentWithMoreThanOnePaymentMethodData) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
+      web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -557,6 +566,7 @@ TEST_F(AndroidAppCommunicationTest, PaymentWithEmptyMethodData) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
+      web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -589,6 +599,7 @@ TEST_F(AndroidAppCommunicationTest, UserCancelInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
+      web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 
@@ -621,6 +632,7 @@ TEST_F(AndroidAppCommunicationTest, UserConfirmInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
+      web_contents_,
       base::BindOnce(&AndroidAppCommunicationTest::OnPaymentAppResponse,
                      base::Unretained(this)));
 

@@ -1,5 +1,6 @@
 include_rules = [
   "-components/payments/content/android",
+  "+ash/public/cpp/external_arc/overlay",
   "+components/arc",
   "+components/autofill",
   "+components/keyed_service/content",

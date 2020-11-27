@@ -10,6 +10,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payer_data.h"
+#include "content/public/browser/web_contents.h"
 
 namespace payments {
 
@@ -21,14 +22,16 @@ AndroidPaymentApp::AndroidPaymentApp(
     const GURL& payment_request_origin,
     const std::string& payment_request_id,
     std::unique_ptr<AndroidAppDescription> description,
-    base::WeakPtr<AndroidAppCommunication> communication)
+    base::WeakPtr<AndroidAppCommunication> communication,
+    content::GlobalFrameRoutingId frame_routing_id)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::NATIVE_MOBILE_APP),
       stringified_method_data_(std::move(stringified_method_data)),
       top_level_origin_(top_level_origin),
       payment_request_origin_(payment_request_origin),
       payment_request_id_(payment_request_id),
       description_(std::move(description)),
-      communication_(communication) {
+      communication_(communication),
+      frame_routing_id_(frame_routing_id) {
   DCHECK(!payment_method_names.empty());
   DCHECK_EQ(payment_method_names.size(), stringified_method_data_->size());
   DCHECK_EQ(*payment_method_names.begin(),
@@ -48,10 +51,19 @@ void AndroidPaymentApp::InvokePaymentApp(Delegate* delegate) {
   if (!communication_)
     return;
 
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh || !rfh->IsCurrent())
+    return;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+
   communication_->InvokePaymentApp(
       description_->package, description_->activities.front()->name,
       *stringified_method_data_, top_level_origin_, payment_request_origin_,
-      payment_request_id_,
+      payment_request_id_, web_contents,
       base::BindOnce(&AndroidPaymentApp::OnPaymentAppResponse,
                      weak_ptr_factory_.GetWeakPtr(), delegate));
 }

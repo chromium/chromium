@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
+#include "base/callback_helpers.h"
 #include "components/arc/mojom/payment_app.mojom.h"
 #include "components/arc/pay/arc_payment_app_bridge.h"
 #include "components/payments/core/android_app_description.h"
@@ -13,6 +15,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -100,8 +103,13 @@ void OnIsReadyToPay(AndroidAppCommunication::IsReadyToPayCallback callback,
 
 void OnPaymentAppResponse(
     AndroidAppCommunication::InvokePaymentAppCallback callback,
+    base::ScopedClosureRunner overlay_state,
     arc::mojom::InvokePaymentAppResultPtr response) {
+  // Dismiss and prevent any further overlays
+  overlay_state.RunAndReset();
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (response.is_null()) {
     std::move(callback).Run(errors::kEmptyResponse,
                             /*is_activity_result_ok=*/false,
@@ -271,8 +279,22 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
                         const GURL& top_level_origin,
                         const GURL& payment_request_origin,
                         const std::string& payment_request_id,
+                        content::WebContents* web_contents,
                         InvokePaymentAppCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // Create and register a token with ArcOverlayManager for the
+    // browser window. Doing so is required to allow the Android Play Billing
+    // interface to be overlaid on top of the browser window.
+    // TODO(b/172592701): Use base::UnguessableToken::Create().ToString() and
+    // send the same value to the Android service.
+    std::string billing_token =
+        payment_request_origin.spec() + "#" + payment_request_id;
+    ash::ArcOverlayManager* const overlay_manager =
+        ash::ArcOverlayManager::instance();
+    base::ScopedClosureRunner overlay_state =
+        overlay_manager->RegisterHostWindow(std::move(billing_token),
+                                            web_contents->GetNativeView());
 
     base::Optional<std::string> error_message;
     if (package_name_for_testing_ == package_name) {
@@ -304,7 +326,8 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
 
     payment_app_service->InvokePaymentApp(
         std::move(parameters),
-        base::BindOnce(&OnPaymentAppResponse, std::move(callback)));
+        base::BindOnce(&OnPaymentAppResponse, std::move(callback),
+                       std::move(overlay_state)));
   }
 
   // AndroidAppCommunication implementation.

@@ -70,6 +70,10 @@ source_set("browsertests") {
       "//components/permissions:permissions",
     ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//ash/public/cpp/external_arc:external_arc" ]
+  }
 }
 
 source_set("unittests") {
