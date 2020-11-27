@@ -144,6 +144,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
     send_content_state_immediately_ = value;
   }
 
+  CompositorDependencies* compositor_deps() const { return compositor_deps_; }
+
   // Functions to add and remove observers for this object.
   void AddObserver(RenderViewObserver* observer);
   void RemoveObserver(RenderViewObserver* observer);

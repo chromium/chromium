@@ -268,7 +268,7 @@ void WebFrameTestProxy::Reset() {
     // have to sync them to WebKit again.
     render_view()->SetBlinkPreferences(render_view()->GetBlinkPreferences());
 
-    GetLocalRootWebWidgetTestProxy()->GetWebViewTestProxy()->Reset();
+    web_view_test_proxy_->Reset();
   }
   if (IsLocalRoot()) {
     GetLocalRootWebWidgetTestProxy()->Reset();

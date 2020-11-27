@@ -167,6 +167,9 @@ class CONTENT_EXPORT RenderWidget
   // Destroy the RenderWidget. The |widget| is the owning pointer of |this|.
   virtual void Close(std::unique_ptr<RenderWidget> widget);
 
+  virtual void Initialize(blink::WebWidget* web_widget,
+                          const blink::ScreenInfo& screen_info);
+
  private:
   // Friend RefCounted so that the dtor can be non-public. Using this class
   // without ref-counting is an error.
@@ -182,8 +185,6 @@ class CONTENT_EXPORT RenderWidget
   friend class RenderWidgetTest;
   friend class RenderViewImplTest;
 
-  void Initialize(blink::WebWidget* web_widget,
-                  const blink::ScreenInfo& screen_info);
   // Initializes the compositor and dependent systems, as part of the
   // Initialize() process.
   void InitCompositing(const blink::ScreenInfo& screen_info);

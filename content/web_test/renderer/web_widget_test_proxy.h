@@ -19,14 +19,9 @@ class WebLocalFrame;
 }  // namespace blink
 
 namespace content {
-class RenderViewImpl;
-}
-
-namespace content {
 
 class TestRunner;
 class EventSender;
-class WebViewTestProxy;
 
 // WebWidgetTestProxy is used to run web tests. This class is a partial fake
 // implementation of RenderWidget that overrides the minimal necessary portions
@@ -65,17 +60,11 @@ class WebWidgetTestProxy : public RenderWidget {
                               const SkBitmap& drag_image,
                               const gfx::Point& image_offset) override;
 
-  // In the test runner code, it can be expected that the RenderViewImpl will
-  // actually be a WebViewTestProxy as the creation of RenderView/Frame/Widget
-  // are all hooked at the same time to provide a consistent set of fake
-  // objects.
-  WebViewTestProxy* GetWebViewTestProxy();
-
   // WebWidgetTestProxy is always a widget for a RenderFrame, so its WebWidget
   // is always a WebFrameWidget.
   blink::WebFrameWidget* GetWebFrameWidget();
 
-  EventSender* event_sender() { return &event_sender_; }
+  EventSender* event_sender() { return event_sender_.get(); }
   void Reset();
   void Install(blink::WebLocalFrame* frame);
 
@@ -93,6 +82,10 @@ class WebWidgetTestProxy : public RenderWidget {
  private:
   TestRunner* GetTestRunner();
 
+  // RenderWidget overrides.
+  void Initialize(blink::WebWidget* web_widget,
+                  const blink::ScreenInfo& screen_info) override;
+
   void ScheduleAnimationInternal(bool do_raster);
   void AnimateNow();
 
@@ -106,7 +99,9 @@ class WebWidgetTestProxy : public RenderWidget {
   // Perform the synchronous composite step for a given RenderWidget.
   static void DoComposite(RenderWidget* widget, bool do_raster);
 
-  EventSender event_sender_{this};
+  std::unique_ptr<EventSender> event_sender_;
+
+  TestRunner* test_runner_ = nullptr;
 
   // For collapsing multiple simulated ScheduleAnimation() calls.
   bool animation_scheduled_ = false;

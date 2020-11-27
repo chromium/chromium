@@ -31,9 +31,25 @@ void WebWidgetTestProxy::WillBeginMainFrame() {
   RenderWidget::WillBeginMainFrame();
 }
 
+void WebWidgetTestProxy::Initialize(blink::WebWidget* web_widget,
+                                    const blink::ScreenInfo& screen_info) {
+  RenderWidget::Initialize(web_widget, screen_info);
+  blink::WebFrameWidget* frame_widget =
+      static_cast<blink::WebFrameWidget*>(web_widget);
+  WebViewTestProxy* web_view_test_proxy = static_cast<WebViewTestProxy*>(
+      RenderView::FromWebView(GetWebFrameWidget()->LocalRoot()->View()));
+  test_runner_ = web_view_test_proxy->GetTestRunner();
+  event_sender_ =
+      std::make_unique<EventSender>(frame_widget, web_view_test_proxy);
+}
+
 void WebWidgetTestProxy::ScheduleAnimation() {
-  if (GetTestRunner()->TestIsRunning())
-    ScheduleAnimationInternal(GetTestRunner()->animation_requires_raster());
+  // |test_runner_| might be null if this callback occurs during the
+  // `Initialize()` call.
+  if (!test_runner_)
+    return;
+  if (test_runner_->TestIsRunning())
+    ScheduleAnimationInternal(test_runner_->animation_requires_raster());
 }
 
 void WebWidgetTestProxy::ScheduleAnimationForWebTests() {
@@ -97,28 +113,8 @@ bool WebWidgetTestProxy::InterceptStartDragging(
 
   // When running a test, we need to fake a drag drop operation otherwise
   // Windows waits for real mouse events to know when the drag is over.
-  event_sender_.DoDragDrop(data, mask);
+  event_sender_->DoDragDrop(data, mask);
   return true;
-}
-
-WebViewTestProxy* WebWidgetTestProxy::GetWebViewTestProxy() {
-  if (delegate()) {
-    // TODO(https://crbug.com/545684): Because WebViewImpl still inherits
-    // from WebWidget and infact, before a frame is attached, IS actually
-    // the WebWidget used in blink, it is not possible to walk the object
-    // relations in the blink side to find the associated RenderViewImpl
-    // consistently. Thus, here, just directly cast the delegate(). Since
-    // all creations of RenderViewImpl in the test_runner layer haved been
-    // shimmed to return a WebViewTestProxy, it is safe to downcast here.
-    return static_cast<WebViewTestProxy*>(delegate());
-  } else {
-    auto* web_widget = static_cast<blink::WebFrameWidget*>(GetWebWidget());
-    blink::WebView* web_view = web_widget->LocalRoot()->View();
-
-    RenderView* render_view = RenderView::FromWebView(web_view);
-    // RenderViews are always WebViewTestProxy within the test_runner namespace.
-    return static_cast<WebViewTestProxy*>(render_view);
-  }
 }
 
 blink::WebFrameWidget* WebWidgetTestProxy::GetWebFrameWidget() {
@@ -126,7 +122,7 @@ blink::WebFrameWidget* WebWidgetTestProxy::GetWebFrameWidget() {
 }
 
 void WebWidgetTestProxy::Reset() {
-  event_sender_.Reset();
+  event_sender_->Reset();
   // Ends any synthetic gestures started in |event_sender_|.
   GetWebWidget()->FlushInputProcessedCallback();
 
@@ -137,7 +133,7 @@ void WebWidgetTestProxy::Reset() {
 }
 
 void WebWidgetTestProxy::Install(blink::WebLocalFrame* frame) {
-  event_sender_.Install(frame);
+  event_sender_->Install(frame);
 }
 
 void WebWidgetTestProxy::SynchronouslyCompositeAfterTest() {
@@ -151,7 +147,7 @@ void WebWidgetTestProxy::SynchronouslyCompositeAfterTest() {
 }
 
 TestRunner* WebWidgetTestProxy::GetTestRunner() {
-  return GetWebViewTestProxy()->GetTestRunner();
+  return test_runner_;
 }
 
 // static
@@ -200,7 +196,7 @@ void WebWidgetTestProxy::SynchronouslyComposite(bool do_raster) {
   // WebView without a main frame, would have no opportunity to execute this
   // method call.
   if (delegate()) {
-    blink::WebView* view = GetWebViewTestProxy()->GetWebView();
+    blink::WebView* view = GetWebFrameWidget()->LocalRoot()->View();
     if (blink::WebPagePopup* popup = view->GetPagePopup()) {
       auto* popup_render_widget =
           static_cast<RenderWidget*>(popup->GetClientForTesting());

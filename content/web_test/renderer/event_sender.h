@@ -42,7 +42,6 @@ class Arguments;
 namespace content {
 class TestRunner;
 class WebViewTestProxy;
-class WebWidgetTestProxy;
 
 // Key event location code introduced in DOM Level 3.
 // See also: http://www.w3.org/TR/DOM-Level-3-Events/#events-keyboardevents
@@ -55,7 +54,7 @@ enum KeyLocationCode {
 
 class EventSender {
  public:
-  explicit EventSender(WebWidgetTestProxy*);
+  EventSender(blink::WebFrameWidget*, WebViewTestProxy*);
   virtual ~EventSender();
 
   void Reset();
@@ -210,6 +209,11 @@ class EventSender {
 
   void UpdateLifecycleToPrePaint();
 
+  // Web tests are written to be dsf-independent. This scale should be applied
+  // to coordinates provided from js, to convert them to physical pixels when
+  // UseZoomForDSF is enabled.
+  float DeviceScaleFactorForEvents();
+
   base::TimeTicks last_event_timestamp() const { return last_event_timestamp_; }
 
   bool force_layout_on_events() const { return force_layout_on_events_; }
@@ -257,7 +261,8 @@ class EventSender {
   int wm_sys_dead_char_;
 #endif
 
-  WebWidgetTestProxy* const web_widget_test_proxy_;
+  blink::WebFrameWidget* const web_frame_widget_;
+  WebViewTestProxy* const web_view_test_proxy_;
 
   bool force_layout_on_events_;
 
@@ -298,7 +303,7 @@ class EventSender {
   typedef std::unordered_map<int, PointerState> PointerStateMap;
   PointerStateMap current_pointer_state_;
 
-  bool replaying_saved_events_;
+  bool replaying_saved_events_ = false;
 
   base::circular_deque<SavedEvent> mouse_event_queue_;
 
