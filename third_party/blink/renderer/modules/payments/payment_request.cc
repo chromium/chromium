@@ -1503,6 +1503,10 @@ void PaymentRequest::OnError(PaymentErrorReason error,
 
   switch (error) {
     case PaymentErrorReason::USER_CANCEL:
+    // Intentional fall through.
+    case PaymentErrorReason::INVALID_DATA_FROM_RENDERER:
+    // Intentional fall through.
+    case PaymentErrorReason::ALREADY_SHOWING:
       exception_code = DOMExceptionCode::kAbortError;
       break;
 
@@ -1513,10 +1517,6 @@ void PaymentRequest::OnError(PaymentErrorReason error,
     case PaymentErrorReason::NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL:
       exception_code = DOMExceptionCode::kNotSupportedError;
       not_supported_for_invalid_origin_or_ssl_error_ = error_message;
-      break;
-
-    case PaymentErrorReason::ALREADY_SHOWING:
-      exception_code = DOMExceptionCode::kAbortError;
       break;
 
     case PaymentErrorReason::UNKNOWN:

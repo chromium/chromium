@@ -376,15 +376,15 @@ public class PaymentRequestService
 
         if (renderFrameHost.getLastCommittedOrigin() == null
                 || renderFrameHost.getLastCommittedURL() == null) {
-            abortBeforeInstantiation(/*client=*/null, /*journeyLogger=*/null, ErrorStrings.NO_FRAME,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    /*client=*/null, /*journeyLogger=*/null, ErrorStrings.NO_FRAME);
             return null;
         }
 
         WebContents webContents = delegate.getLiveWebContents(renderFrameHost);
         if (webContents == null || webContents.isDestroyed()) {
-            abortBeforeInstantiation(/*client=*/null, /*journeyLogger=*/null,
-                    ErrorStrings.NO_WEB_CONTENTS, AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    /*client=*/null, /*journeyLogger=*/null, ErrorStrings.NO_WEB_CONTENTS);
             return null;
         }
 
@@ -392,45 +392,43 @@ public class PaymentRequestService
         JourneyLogger journeyLogger = delegate.createJourneyLogger(isOffTheRecord, webContents);
 
         if (client == null) {
-            abortBeforeInstantiation(/*client=*/null, journeyLogger, ErrorStrings.INVALID_STATE,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    /*client=*/null, journeyLogger, ErrorStrings.INVALID_STATE);
             return null;
         }
 
         if (!delegate.isOriginSecure(webContents.getLastCommittedUrl())) {
-            abortBeforeInstantiation(client, journeyLogger, ErrorStrings.NOT_IN_A_SECURE_ORIGIN,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    client, journeyLogger, ErrorStrings.NOT_IN_A_SECURE_ORIGIN);
             return null;
         }
 
         if (methodData == null) {
-            abortBeforeInstantiation(client, journeyLogger,
-                    ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    client, journeyLogger, ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
             return null;
         }
 
         for (PaymentMethodData datum : methodData) {
             if (datum == null || TextUtils.isEmpty(datum.supportedMethod)) {
-                abortBeforeInstantiation(client, journeyLogger,
-                        ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
-                        AbortReason.INVALID_DATA_FROM_RENDERER);
+                abortForInvalidDataFromRenderer(
+                        client, journeyLogger, ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
                 return null;
             }
         }
 
         // details has default value, so could never be null, according to payment_request.idl.
         if (details == null || details.id == null || details.total == null) {
-            abortBeforeInstantiation(client, journeyLogger, ErrorStrings.INVALID_PAYMENT_DETAILS,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    client, journeyLogger, ErrorStrings.INVALID_PAYMENT_DETAILS);
             return null;
         }
 
         // options has default value, so could never be null, according to
         // payment_request.idl.
         if (options == null) {
-            abortBeforeInstantiation(client, journeyLogger, ErrorStrings.INVALID_PAYMENT_OPTIONS,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            abortForInvalidDataFromRenderer(
+                    client, journeyLogger, ErrorStrings.INVALID_PAYMENT_OPTIONS);
             return null;
         }
 
@@ -492,12 +490,13 @@ public class PaymentRequestService
         }
     }
 
-    /** Abort the request, used before this class's instantiation. */
-    private static void abortBeforeInstantiation(@Nullable PaymentRequestClient client,
-            @Nullable JourneyLogger journeyLogger, String debugMessage, int reason) {
+    private static void abortForInvalidDataFromRenderer(@Nullable PaymentRequestClient client,
+            @Nullable JourneyLogger journeyLogger, String debugMessage) {
         Log.d(TAG, debugMessage);
-        if (client != null) client.onError(reason, debugMessage);
-        if (journeyLogger != null) journeyLogger.setAborted(reason);
+        if (client != null) {
+            client.onError(PaymentErrorReason.INVALID_DATA_FROM_RENDERER, debugMessage);
+        }
+        if (journeyLogger != null) journeyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
         if (sNativeObserverForTest != null) sNativeObserverForTest.onConnectionTerminated();
     }
 
@@ -588,8 +587,8 @@ public class PaymentRequestService
         mBrowserPaymentRequest.modifyMethodDataIfNeeded(methodData);
         if (methodData == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.USER_CANCEL);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                    PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return false;
         }
         methodData = Collections.unmodifiableMap(methodData);
@@ -600,8 +599,8 @@ public class PaymentRequestService
         if (details == null || details.id == null || details.total == null
                 || !mDelegate.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                    PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return false;
         }
 
@@ -615,7 +614,7 @@ public class PaymentRequestService
         if (spec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
-                    ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.USER_CANCEL);
+                    ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return false;
         }
         mSpec = spec;
@@ -1370,7 +1369,8 @@ public class PaymentRequestService
      */
     /* package */ void abortForInvalidDataFromRenderer(String debugMessage) {
         mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-        disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
+        disconnectFromClientWithDebugMessage(
+                debugMessage, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     /**

@@ -177,24 +177,32 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testInsecureOriginFailsCreation() {
         Assert.assertNull(defaultBuilder().setOriginSecure(false).build());
+        assertErrorAndReason(
+                ErrorStrings.NOT_IN_A_SECURE_ORIGIN, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
     @Feature({"Payments"})
     public void testNullMethodDataFailsCreation() {
         Assert.assertNull(defaultBuilder().setMethodData(null).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
     @Feature({"Payments"})
     public void testNullDetailsFailsCreation() {
         Assert.assertNull(defaultBuilder().setDetails(null).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
     @Feature({"Payments"})
     public void testNullOptionsFailsCreation() {
         Assert.assertNull(defaultBuilder().setOptions(null).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_OPTIONS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
@@ -219,6 +227,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testMethodDataNullElementFailsCreation() {
         PaymentMethodData[] methodData = new PaymentMethodData[1];
         Assert.assertNull(defaultBuilder().setMethodData(methodData).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
@@ -228,6 +238,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         methodData[0] = new PaymentMethodData();
         methodData[0].supportedMethod = "";
         Assert.assertNull(defaultBuilder().setMethodData(methodData).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
@@ -237,13 +249,16 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         methodData[0] = new PaymentMethodData();
         methodData[0].supportedMethod = null;
         Assert.assertNull(defaultBuilder().setMethodData(methodData).build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
     @Feature({"Payments"})
     public void testInvalidDetailsFailsCreation() {
         Assert.assertNull(defaultBuilder().setIsPaymentDetailsValid(false).build());
-        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
@@ -252,7 +267,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestSpec spec = Mockito.mock(PaymentRequestSpec.class);
         Mockito.doReturn(null).when(spec).getRawTotal();
         Assert.assertNull(defaultBuilder().setPaymentRequestSpec(spec).build());
-        assertErrorAndReason(ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.USER_CANCEL);
+        assertErrorAndReason(
+                ErrorStrings.TOTAL_REQUIRED, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
