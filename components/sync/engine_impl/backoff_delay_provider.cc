@@ -16,6 +16,29 @@
 
 namespace syncer {
 
+namespace {
+
+// This calculates approx. last_delay * kBackoffMultiplyFactor +/- last_delay
+// * kBackoffJitterFactor. |jitter_sign| must be -1 or 1 and determines whether
+// the jitter in the delay will be positive or negative.
+base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
+  DCHECK(jitter_sign == -1 || jitter_sign == 1);
+
+  if (last_delay >= kMaxBackoffTime)
+    return kMaxBackoffTime;
+
+  const base::TimeDelta backoff =
+      std::max(base::TimeDelta::FromSeconds(1),
+               last_delay * kBackoffMultiplyFactor) +
+      jitter_sign * kBackoffJitterFactor * last_delay;
+
+  // Clamp backoff between 1 second and |kMaxBackoffTime|.
+  return std::max(base::TimeDelta::FromSeconds(1),
+                  std::min(backoff, kMaxBackoffTime));
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<BackoffDelayProvider> BackoffDelayProvider::FromDefaults() {
   // base::WrapUnique() used because the constructor is private.
@@ -41,25 +64,9 @@ BackoffDelayProvider::~BackoffDelayProvider() {}
 
 base::TimeDelta BackoffDelayProvider::GetDelay(
     const base::TimeDelta& last_delay) {
-  if (last_delay >= kMaxBackoffTime)
-    return kMaxBackoffTime;
-
-  // This calculates approx. base_delay * 2 +/- base_delay / 2
-  base::TimeDelta backoff = std::max(base::TimeDelta::FromSeconds(1),
-                                     last_delay * kBackoffRandomizationFactor);
-
-  // Flip a coin to randomize backoff interval by +/- 50%.
-  int rand_sign = base::RandInt(0, 1) * 2 - 1;
-
-  // Truncation is adequate for rounding here.
-  base::TimeDelta jitter =
-      (last_delay / kBackoffRandomizationFactor)
-          .FloorToMultiple(base::TimeDelta::FromSeconds(1));
-  backoff += rand_sign * jitter;
-
-  // Clamp backoff between 1 second and |kMaxBackoffTime|.
-  return std::max(base::TimeDelta::FromSeconds(1),
-                  std::min(backoff, kMaxBackoffTime));
+  // Flip a coin to randomize backoff interval by +/- kBackoffJitterFactor.
+  const int jitter_sign = base::RandInt(0, 1) * 2 - 1;
+  return GetDelayImpl(last_delay, jitter_sign);
 }
 
 base::TimeDelta BackoffDelayProvider::GetInitialDelay(
@@ -108,6 +115,12 @@ base::TimeDelta BackoffDelayProvider::GetInitialDelay(
     return short_initial_backoff_;
 
   return default_initial_backoff_;
+}
+
+base::TimeDelta BackoffDelayProvider::GetDelayForTesting(
+    base::TimeDelta last_delay,
+    int jitter_sign) {
+  return GetDelayImpl(last_delay, jitter_sign);
 }
 
 }  // namespace syncer

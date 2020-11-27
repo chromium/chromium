@@ -11,15 +11,18 @@
 #include "components/sync/engine/polling_constants.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::TimeDelta;
 
 namespace syncer {
 
-class BackoffDelayProviderTest : public testing::Test {};
+namespace {
 
-TEST_F(BackoffDelayProviderTest, GetRecommendedDelay) {
+using base::TimeDelta;
+using testing::Gt;
+using testing::Lt;
+
+TEST(BackoffDelayProviderTest, GetRecommendedDelay) {
   std::unique_ptr<BackoffDelayProvider> delay(
       BackoffDelayProvider::FromDefaults());
   EXPECT_EQ(TimeDelta::FromSeconds(1),
@@ -35,7 +38,7 @@ TEST_F(BackoffDelayProviderTest, GetRecommendedDelay) {
             delay->GetDelay(kMaxBackoffTime + TimeDelta::FromSeconds(1)));
 }
 
-TEST_F(BackoffDelayProviderTest, GetInitialDelay) {
+TEST(BackoffDelayProviderTest, GetInitialDelay) {
   std::unique_ptr<BackoffDelayProvider> delay(
       BackoffDelayProvider::FromDefaults());
   ModelNeutralState state;
@@ -76,7 +79,7 @@ TEST_F(BackoffDelayProviderTest, GetInitialDelay) {
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 }
 
-TEST_F(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
+TEST(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
   std::unique_ptr<BackoffDelayProvider> delay(
       BackoffDelayProvider::WithShortInitialRetryOverride());
   ModelNeutralState state;
@@ -108,5 +111,41 @@ TEST_F(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
   EXPECT_EQ(kInitialBackoffImmediateRetryTime, delay->GetInitialDelay(state));
 }
+
+// This rules out accidents with the constants.
+TEST(BackoffDelayProviderTest, GetExponentiallyIncreasingDelay) {
+  std::unique_ptr<BackoffDelayProvider> delay_provider(
+      BackoffDelayProvider::FromDefaults());
+
+  ASSERT_THAT(kBackoffMultiplyFactor, Gt(1.0));
+  // Even when the jitter is negative, the delay should grow (overall
+  // multiplicative factor bigger than 1).
+  ASSERT_THAT(kBackoffJitterFactor, Lt(kBackoffMultiplyFactor - 1.0));
+
+  const TimeDelta delay0 = TimeDelta::FromSeconds(1);
+  const TimeDelta delay1_min =
+      delay_provider->GetDelayForTesting(delay0, /*jitter_sign=*/-1);
+  const TimeDelta delay2_min =
+      delay_provider->GetDelayForTesting(delay1_min, /*jitter_sign=*/-1);
+  const TimeDelta delay1_max =
+      delay_provider->GetDelayForTesting(delay0, /*jitter_sign=*/1);
+  const TimeDelta delay2_max =
+      delay_provider->GetDelayForTesting(delay1_max, /*jitter_sign=*/1);
+
+  ASSERT_THAT(delay1_min, Lt(delay1_max));
+  ASSERT_THAT(delay2_min, Lt(delay2_max));
+
+  // The minimum value should increase faster than linearly.
+  EXPECT_THAT(delay1_min, Gt(delay0));
+  EXPECT_THAT(delay2_min, Gt(delay1_min));
+  EXPECT_THAT(delay2_min - delay1_min, Gt(delay1_min - delay0));
+
+  // The maximum value should increase faster than linearly.
+  EXPECT_THAT(delay1_max, Gt(delay0));
+  EXPECT_THAT(delay2_max, Gt(delay1_max));
+  EXPECT_THAT(delay2_max - delay1_max, Gt(delay1_max - delay0));
+}
+
+}  // namespace
 
 }  // namespace syncer

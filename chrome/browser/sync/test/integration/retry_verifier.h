@@ -18,9 +18,8 @@ class SyncCycleSnapshot;
 // place somewhere in this range. The algorithm that calculates the retry wait
 // time uses rand functions.
 struct DelayInfo {
-  // TODO(crbug.com/1152797): Adopt base::TimeDelta in this file.
-  int64_t min_delay;
-  int64_t max_delay;
+  base::TimeDelta min_delay;
+  base::TimeDelta max_delay;
 };
 
 // Class to verify retries take place using the exponential backoff algorithm.

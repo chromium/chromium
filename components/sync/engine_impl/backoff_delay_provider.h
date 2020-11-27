@@ -39,6 +39,12 @@ class BackoffDelayProvider {
   // See possible values and comments in polling_constants.h.
   virtual base::TimeDelta GetInitialDelay(const ModelNeutralState& state) const;
 
+  // Test-only variant that avoids randomness in tests. |jitter_sign| must be -1
+  // or 1 and determines whether the jitter in the delay will be positive or
+  // negative.
+  base::TimeDelta GetDelayForTesting(base::TimeDelta last_delay,
+                                     int jitter_sign);
+
  protected:
   BackoffDelayProvider(const base::TimeDelta& default_initial_backoff,
                        const base::TimeDelta& short_initial_backoff);

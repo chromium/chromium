@@ -15,8 +15,11 @@ const base::TimeDelta kDefaultPollInterval = base::TimeDelta::FromHours(8);
 // Maximum interval for exponential backoff.
 const base::TimeDelta kMaxBackoffTime = base::TimeDelta::FromMinutes(10);
 
+// Factor by which the backoff time will be multiplied.
+const double kBackoffMultiplyFactor = 2.0;
+
 // Backoff interval randomization factor.
-const int kBackoffRandomizationFactor = 2;
+const double kBackoffJitterFactor = 0.5;
 
 // After a failure contacting sync servers, specifies how long to wait before
 // reattempting and entering exponential backoff if consecutive failures

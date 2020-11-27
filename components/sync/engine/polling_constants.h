@@ -14,7 +14,8 @@ namespace syncer {
 // Constants used by SyncScheduler when polling servers for updates.
 extern const base::TimeDelta kDefaultPollInterval;
 extern const base::TimeDelta kMaxBackoffTime;
-extern const int kBackoffRandomizationFactor;
+extern const double kBackoffMultiplyFactor;
+extern const double kBackoffJitterFactor;
 extern const base::TimeDelta kInitialBackoffRetryTime;
 extern const base::TimeDelta kInitialBackoffShortRetryTime;
 extern const base::TimeDelta kInitialBackoffImmediateRetryTime;
