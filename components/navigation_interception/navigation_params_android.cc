@@ -26,10 +26,11 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaNavigationParams(
       ConvertUTF8ToJavaString(env, params.referrer().url.spec());
 
   return Java_NavigationParams_create(
-      env, jstring_url, jstring_referrer, params.is_post(),
-      params.has_user_gesture(), params.transition_type(), params.is_redirect(),
-      params.is_external_protocol(), params.is_main_frame(),
-      params.is_renderer_initiated(), has_user_gesture_carryover,
+      env, jstring_url, jstring_referrer, params.navigation_id(),
+      params.is_post(), params.has_user_gesture(), params.transition_type(),
+      params.is_redirect(), params.is_external_protocol(),
+      params.is_main_frame(), params.is_renderer_initiated(),
+      has_user_gesture_carryover,
       params.initiator_origin() ? params.initiator_origin()->CreateJavaObject()
                                 : nullptr);
 }

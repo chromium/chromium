@@ -28,6 +28,9 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
 
   navigation_interception::NavigationParams navigation_params(
       url, content::Referrer(),
+      // Pass 0 as the navigation ID to specify that this instance doesn't
+      // correspond to a NavigationHandle.
+      0,
       has_user_gesture,  // has_user_gesture
       false,             // is_post, doesn't matter here.
       page_transition,

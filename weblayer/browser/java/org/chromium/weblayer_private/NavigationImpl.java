@@ -29,6 +29,14 @@ public final class NavigationImpl extends INavigation.Stub {
     // WARNING: NavigationImpl may outlive the native side, in which case this member is set to 0.
     private long mNativeNavigationImpl;
 
+    // Set to true if/when it is determined that an external intent was launched for this
+    // navigation.
+    private boolean mIntentLaunched;
+
+    // Set to true if/when it is determined that this navigation result in UI being presented to the
+    // user via which the user will determine whether an intent should be launched.
+    private boolean mIsUserDecidingIntentLaunch;
+
     public NavigationImpl(INavigationControllerClient client, long nativeNavigationImpl) {
         mNativeNavigationImpl = nativeNavigationImpl;
         try {
@@ -141,6 +149,16 @@ public final class NavigationImpl extends INavigation.Stub {
     }
 
     @Override
+    public boolean wasIntentLaunched() {
+        return mIntentLaunched;
+    }
+
+    @Override
+    public boolean isUserDecidingIntentLaunch() {
+        return mIsUserDecidingIntentLaunch;
+    }
+
+    @Override
     public boolean wasStopCalled() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
@@ -159,6 +177,14 @@ public final class NavigationImpl extends INavigation.Stub {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
         return NavigationImplJni.get().isReload(mNativeNavigationImpl);
+    }
+
+    public void setIntentLaunched() {
+        mIntentLaunched = true;
+    }
+
+    public void setIsUserDecidingIntentLaunch() {
+        mIsUserDecidingIntentLaunch = true;
     }
 
     private void throwIfNativeDestroyed() {

@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import android.app.Activity;
 
+import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -54,4 +55,10 @@ public interface InterceptNavigationDelegateClient {
     /* Invoked when a navigation has begun in the InterceptNavigationDelegateImpl instance
      * associated with this instance. */
     void onNavigationStarted(NavigationParams params);
+
+    /* Invoked when the InterceptNavigationDelegateImpl instance
+     * associated with this instance has reached a decision for the navigation specified by
+     * |params|. |overrideUrlLoadingResult| specifies the decision. */
+    void onDecisionReachedForNavigation(
+            NavigationParams params, OverrideUrlLoadingResult overrideUrlLoadingResult);
 }
