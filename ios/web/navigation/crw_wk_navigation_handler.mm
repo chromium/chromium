@@ -1997,13 +1997,16 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
   ErrorPageHelper* errorPage = [[ErrorPageHelper alloc] initWithError:error];
   WKBackForwardListItem* backForwardItem = webView.backForwardList.currentItem;
-  // There are 3 possible scenarios here:
+  // There are 4 possible scenarios here:
   //   1. Current nav item is an error page for failed URL;
   //   2. Current nav item has a failed URL. This may happen when
   //      back/forward/refresh on a loaded page;
   //   3. Current nav item is an irrelevant page.
   //   4. Current nav item is a session restoration.
-  // For 1, 2 and 4, load an empty string to remove existing JS code.
+  // For 1, 2 and 4, load an empty string to remove existing JS code. The URL is
+  // also updated to the URL of the page that failed to allow back/forward
+  // navigations even on navigations originating from pushstate. See
+  // crbug.com/1153261.
   // For 3, load error page file to create a new nav item.
   // The actual error HTML will be loaded in didFinishNavigation callback.
   WKNavigation* errorNavigation = nil;
@@ -2015,7 +2018,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     errorNavigation = [webView loadFileURL:errorPage.errorPageFileURL
                    allowingReadAccessToURL:errorPage.errorPageFileURL];
   } else {
-    errorNavigation = [webView loadHTMLString:@"" baseURL:backForwardItem.URL];
+    errorNavigation = [webView loadHTMLString:@""
+                                      baseURL:errorPage.failedNavigationURL];
   }
   [self.navigationStates setState:web::WKNavigationState::REQUESTED
                     forNavigation:errorNavigation];
