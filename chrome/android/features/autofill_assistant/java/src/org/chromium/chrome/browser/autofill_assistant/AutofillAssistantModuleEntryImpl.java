@@ -46,9 +46,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
             Context context, @NonNull WebContents webContents,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            ApplicationViewportInsetSupplier bottomInsetProvider, boolean skipOnboarding,
-            boolean isChromeCustomTab, @NonNull String initialUrl, Map<String, String> parameters,
-            String experimentIds, @Nullable String callerAccount, @Nullable String userName) {
+            ApplicationViewportInsetSupplier bottomInsetProvider, boolean isChromeCustomTab,
+            @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
+            @Nullable String callerAccount, @Nullable String userName) {
         if (shouldStartTriggerScript(parameters)) {
             if (TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))
                     && !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
@@ -80,9 +80,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                                     parameters.put(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT, "true");
                                     startAutofillAssistantRegular(bottomSheetController,
                                             browserControls, compositorViewHolder, context,
-                                            webContents, skipOnboarding, isChromeCustomTab,
-                                            initialUrl, parameters, experimentIds, callerAccount,
-                                            userName);
+                                            webContents, isChromeCustomTab, initialUrl, parameters,
+                                            experimentIds, callerAccount, userName);
                                 }
                             }
                         });
@@ -99,9 +98,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                                     isFirstTimeUser ? firstTimeUserScriptPath
                                                     : returningUserScriptPath);
                             startAutofillAssistantRegular(bottomSheetController, browserControls,
-                                    compositorViewHolder, context, webContents, skipOnboarding,
-                                    isChromeCustomTab, initialUrl, parameters, experimentIds,
-                                    callerAccount, userName);
+                                    compositorViewHolder, context, webContents, isChromeCustomTab,
+                                    initialUrl, parameters, experimentIds, callerAccount, userName);
                         }
                     });
             return;
@@ -109,8 +107,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
 
         // Regular flow for starting without dedicated trigger script.
         startAutofillAssistantRegular(bottomSheetController, browserControls, compositorViewHolder,
-                context, webContents, skipOnboarding, isChromeCustomTab, initialUrl, parameters,
-                experimentIds, callerAccount, userName);
+                context, webContents, isChromeCustomTab, initialUrl, parameters, experimentIds,
+                callerAccount, userName);
     }
 
     /** Whether {@code parameters} indicate that a trigger script should be started. */
@@ -140,10 +138,10 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
      */
     private void startAutofillAssistantRegular(BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            Context context, @NonNull WebContents webContents, boolean skipOnboarding,
-            boolean isChromeCustomTab, @NonNull String initialUrl, Map<String, String> parameters,
-            String experimentIds, @Nullable String callerAccount, @Nullable String userName) {
-        if (skipOnboarding) {
+            Context context, @NonNull WebContents webContents, boolean isChromeCustomTab,
+            @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
+            @Nullable String callerAccount, @Nullable String userName) {
+        if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             if (parameters.containsKey(PARAMETER_TRIGGER_SCRIPT_USED)
                     || parameters.containsKey(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT)) {
                 AutofillAssistantMetrics.recordLiteScriptOnboarding(
