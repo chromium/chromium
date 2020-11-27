@@ -729,11 +729,12 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     return;
   }
 
-  GetRemoteStorageControl()->FindRegistrationForId(
-      registration_id, origin,
-      base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForId,
-                     weak_factory_.GetWeakPtr(), registration_id,
-                     std::move(callback)));
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::FindRegistrationForId,
+      base::BindRepeating(&ServiceWorkerRegistry::DidFindRegistrationForId,
+                          weak_factory_.GetWeakPtr(), registration_id,
+                          base::Passed(&callback)),
+      static_cast<const int64_t>(registration_id), origin);
 }
 
 ServiceWorkerRegistration*
@@ -949,9 +950,11 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
 void ServiceWorkerRegistry::DidFindRegistrationForId(
     int64_t registration_id,
     FindRegistrationCallback callback,
+    uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {

@@ -1347,8 +1347,6 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
     EXPECT_EQ(inflight_call_count(), 2U);
     registry()->SimulateStorageRestartForTesting();
 
-    // TODO(crbug.com/1133143): Add test for FindRegistrationForId().
-
     loop1.Run();
     loop2.Run();
     EXPECT_EQ(inflight_call_count(), 0U);
@@ -1445,6 +1443,67 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
     loop4.Run();
     EXPECT_EQ(inflight_call_count(), 0U);
   }
+}
+
+// Tests that FindRegistrationForId methods are retried after the remote storage
+// is restarted. Separated from other FindRegistration method tests because
+// these methods skip remote calls when live registrations are alive.
+TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
+  // Prerequisite: Store two registrations.
+  const GURL origin1("https://www.example.com");
+  const GURL scope1("https://www.example.com/foo/");
+  const GURL script1(origin1.spec() + "/script.js");
+  const int64_t registration_id1 = 1;
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources1;
+  resources1.push_back(CreateResourceRecord(1, script1, 100));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
+      CreateRegistrationData(registration_id1,
+                             /*version_id=*/1000,
+                             /*scope=*/scope1,
+                             /*script_url=*/script1, resources1);
+  StoreRegistrationData(std::move(data1), std::move(resources1));
+
+  const GURL origin2("https://www.example.com");
+  const GURL scope2("https://www.example.com/bar/");
+  const GURL script2(origin2.spec() + "/script.js");
+  const int64_t registration_id2 = 2;
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources2;
+  resources2.push_back(CreateResourceRecord(2, script2, 200));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data2 =
+      CreateRegistrationData(registration_id2,
+                             /*version_id=*/2000,
+                             /*scope=*/scope2,
+                             /*script_url=*/script2, resources2);
+  StoreRegistrationData(std::move(data2), std::move(resources2));
+
+  base::RunLoop loop1;
+  registry()->FindRegistrationForId(
+      registration_id1, url::Origin::Create(origin1.GetOrigin()),
+      base::BindLambdaForTesting(
+          [&](blink::ServiceWorkerStatusCode status,
+              scoped_refptr<ServiceWorkerRegistration> found_registration) {
+            EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
+            EXPECT_EQ(found_registration->id(), registration_id1);
+            loop1.Quit();
+          }));
+
+  base::RunLoop loop2;
+  registry()->FindRegistrationForIdOnly(
+      registration_id2,
+      base::BindLambdaForTesting(
+          [&](blink::ServiceWorkerStatusCode status,
+              scoped_refptr<ServiceWorkerRegistration> found_registration) {
+            EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
+            EXPECT_EQ(found_registration->id(), registration_id2);
+            loop2.Quit();
+          }));
+
+  EXPECT_EQ(inflight_call_count(), 2U);
+  registry()->SimulateStorageRestartForTesting();
+
+  loop1.Run();
+  loop2.Run();
+  EXPECT_EQ(inflight_call_count(), 0U);
 }
 
 TEST_F(ServiceWorkerRegistryTest,

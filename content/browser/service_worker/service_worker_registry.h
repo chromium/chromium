@@ -292,6 +292,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void DidFindRegistrationForId(
       int64_t registration_id,
       FindRegistrationCallback callback,
+      uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       storage::mojom::ServiceWorkerFindRegistrationResultPtr result);
 
