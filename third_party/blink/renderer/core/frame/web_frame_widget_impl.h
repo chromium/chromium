@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -723,7 +722,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
   void MouseContextMenu(const WebMouseEvent&);
   void CancelDrag();
-  void RequestAnimationAfterDelayTimerFired(TimerBase*);
   void PresentationCallbackForMeaningfulLayout(blink::WebSwapResult,
                                                base::TimeTicks);
 
@@ -872,9 +870,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // PaintWorkletPaintDispatcher on the compositor thread.
   base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> paint_task_runner_;
-
-  std::unique_ptr<TaskRunnerTimer<WebFrameWidgetImpl>>
-      request_animation_after_delay_timer_;
 
   // WebFrameWidgetImpl is not tied to ExecutionContext
   HeapMojoAssociatedRemote<mojom::blink::FrameWidgetHost,

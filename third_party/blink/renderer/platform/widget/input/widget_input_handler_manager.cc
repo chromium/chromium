@@ -272,7 +272,7 @@ bool WidgetInputHandlerManager::HandleInputEvent(
 }
 
 void WidgetInputHandlerManager::SetNeedsMainFrame() {
-  widget_->client()->ScheduleAnimation();
+  widget_->RequestAnimationAfterDelay(base::TimeDelta());
 }
 
 void WidgetInputHandlerManager::WillShutdown() {

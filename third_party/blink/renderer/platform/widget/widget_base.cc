@@ -145,14 +145,18 @@ WidgetBase::WidgetBase(
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root)
-    : client_(client),
+    : never_composited_(never_composited),
+      is_for_child_local_root_(is_for_child_local_root),
+      use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()),
+      client_(client),
       widget_host_(std::move(widget_host), task_runner),
       receiver_(this, std::move(widget), task_runner),
       next_previous_flags_(kInvalidNextPreviousFlagsValue),
-      use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()),
       is_hidden_(hidden),
-      never_composited_(never_composited),
-      is_for_child_local_root_(is_for_child_local_root) {
+      request_animation_after_delay_timer_(
+          std::move(task_runner),
+          this,
+          &WidgetBase::RequestAnimationAfterDelayTimerFired) {
   if (auto* main_thread_scheduler =
           scheduler::WebThreadScheduler::MainThreadScheduler()) {
     render_widget_scheduling_state_ =
@@ -1304,6 +1308,27 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
   else
     UpdateTextInputState();
 #endif
+}
+
+void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay) {
+  if (delay.is_zero()) {
+    client_->ScheduleAnimation();
+    return;
+  }
+
+  // Consolidate delayed animation frame requests to keep only the longest
+  // delay.
+  if (request_animation_after_delay_timer_.IsActive() &&
+      request_animation_after_delay_timer_.NextFireInterval() > delay) {
+    request_animation_after_delay_timer_.Stop();
+  }
+  if (!request_animation_after_delay_timer_.IsActive()) {
+    request_animation_after_delay_timer_.StartOneShot(delay, FROM_HERE);
+  }
+}
+
+void WidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
+  client_->ScheduleAnimation();
 }
 
 void WidgetBase::UpdateSurfaceAndScreenInfo(

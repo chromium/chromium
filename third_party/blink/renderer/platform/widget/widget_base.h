@@ -20,6 +20,7 @@
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
@@ -178,6 +179,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   WidgetBaseClient* client() { return client_; }
 
   void SetToolTipText(const String& tooltip_text, TextDirection dir);
+
+  // Posts a task with the given delay, then calls ScheduleAnimation() on the
+  // WidgetBaseClient.
+  void RequestAnimationAfterDelay(const base::TimeDelta& delay);
 
   void ShowVirtualKeyboard();
   void UpdateSelectionBounds();
@@ -341,11 +346,22 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // our state.
   void SetHidden(bool hidden);
 
-  std::unique_ptr<LayerTreeView> layer_tree_view_;
-  scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
-  WidgetBaseClient* client_;
+  // Called after the delay given in `RequestAnimationAfterDelay()`.
+  void RequestAnimationAfterDelayTimerFired(TimerBase*);
+
+  // Indicates that we are never visible, so never produce graphical output.
+  const bool never_composited_;
+  // Indicates this is for a child local root.
+  const bool is_for_child_local_root_;
+  // When true, the device scale factor is a part of blink coordinates.
+  const bool use_zoom_for_dsf_;
+  WidgetBaseClient* const client_;
+
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;
   mojo::AssociatedReceiver<mojom::blink::Widget> receiver_;
+
+  std::unique_ptr<LayerTreeView> layer_tree_view_;
+  scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
   std::unique_ptr<scheduler::WebRenderWidgetSchedulingState>
       render_widget_scheduling_state_;
   bool has_focus_ = false;
@@ -431,16 +447,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // See https://crbug.com/1131389
   gfx::Size visible_viewport_size_in_dips_;
 
-  const bool use_zoom_for_dsf_;
-
   // Indicates that we shouldn't bother generated paint events.
   bool is_hidden_;
 
-  // Indicates that we are never visible, so never produce graphical output.
-  const bool never_composited_;
-
-  // Indicates this is for a child local root.
-  const bool is_for_child_local_root_;
+  // Delayed callback to ensure we have only one delayed ScheduleAnimation()
+  // call going at a time.
+  TaskRunnerTimer<WidgetBase> request_animation_after_delay_timer_;
 
   // The task runner on the main thread used for compositor tasks.
   scoped_refptr<base::SingleThreadTaskRunner>

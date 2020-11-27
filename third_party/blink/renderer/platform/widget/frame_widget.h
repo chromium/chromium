@@ -47,8 +47,8 @@ class PLATFORM_EXPORT FrameWidget
   virtual void SetOverscrollBehavior(
       const cc::OverscrollBehavior& overscroll_behavior) = 0;
 
-  // Posts a task with the given delay, then calls ScheduleAnimation() on the
-  // Client().
+  // Posts a task with the given delay, then requests an animation frame from
+  // the compositor (ie LayerTreeHost::SetNeedsAnimate()).
   virtual void RequestAnimationAfterDelay(const base::TimeDelta&) = 0;
 
   // Sets the root layer. The |layer| can be null when detaching the root layer.

@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
@@ -166,31 +167,24 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   }
 
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta = base::TimeDelta()) override {
+                         base::TimeDelta delay = base::TimeDelta()) override {
+    // Destroying/removing the popup's content can be seen as a mutation that
+    // ends up calling ScheduleAnimation(). Since the popup is going away, we
+    // do not wish to actually do anything.
+    if (popup_->closing_)
+      return;
     if (WebTestSupport::IsRunningWebTest()) {
-      // In single threaded web tests, the main frame's WebWidgetClient
-      // (provided by WebViewTestProxy or WebWidgetTestProxy) runs the composite
-      // step for the current popup. We don't run popup tests with a compositor
-      // thread.
-      WebLocalFrameImpl* web_frame = popup_->web_view_->MainFrameImpl();
-      WebWidgetClient* widget_client = nullptr;
-
-      if (web_frame) {
-        widget_client = web_frame->FrameWidgetImpl()->Client();
-      } else {
-        // We'll enter this case for a popup in an out-of-proc iframe.
-        // Get the WidgetClient for the frame of the popup's owner element,
-        // instead of the WebView's MainFrame.
-        Element& popup_owner_element = popup_->popup_client_->OwnerElement();
-        WebLocalFrameImpl* web_local_frame_impl = WebLocalFrameImpl::FromFrame(
-            popup_owner_element.GetDocument().GetFrame());
-        widget_client = web_local_frame_impl->FrameWidgetImpl()->Client();
-      }
-
-      widget_client->ScheduleAnimation();
+      // In single-threaded web tests, the owner frame tree runs the composite
+      // step for the popup. Popup widgets don't runany composite step on their
+      // own. And we don't run popup tests with a compositor thread, so no need
+      // to check for that.
+      Document& opener_document =
+          popup_->popup_client_->OwnerElement().GetDocument();
+      opener_document.GetPage()->GetChromeClient().ScheduleAnimation(
+          opener_document.GetFrame()->View(), delay);
       return;
     }
-    popup_->WidgetClient()->ScheduleAnimation();
+    popup_->widget_base_->RequestAnimationAfterDelay(delay);
   }
 
   void AttachCompositorAnimationTimeline(CompositorAnimationTimeline* timeline,
@@ -209,8 +203,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfo();
   }
-
-  WebViewImpl* GetWebView() const override { return popup_->web_view_; }
 
   IntSize MinimumWindowSize() const override { return IntSize(0, 0); }
 
@@ -309,15 +301,15 @@ WebPagePopupImpl::~WebPagePopupImpl() {
   DCHECK(!page_);
 }
 
-void WebPagePopupImpl::InitializeForTesting(WebView* web_view) {
-  SetWebView(static_cast<WebViewImpl*>(web_view));
+void WebPagePopupImpl::InitializeForTesting(WebView* opener_web_view) {
+  SetWebView(static_cast<WebViewImpl*>(opener_web_view));
 }
 
-void WebPagePopupImpl::SetWebView(WebViewImpl* web_view) {
-  DCHECK(web_view);
-  DCHECK(!web_view_);
-  web_view_ = web_view;
-  if (auto* widget = web_view->MainFrameViewWidget()) {
+void WebPagePopupImpl::SetWebView(WebViewImpl* opener_web_view) {
+  DCHECK(opener_web_view);
+  DCHECK(!opener_web_view_);
+  opener_web_view_ = opener_web_view;
+  if (auto* widget = opener_web_view->MainFrameViewWidget()) {
     if (auto* device_emulator = widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
       opener_original_widget_screen_origin_ =
@@ -327,18 +319,18 @@ void WebPagePopupImpl::SetWebView(WebViewImpl* web_view) {
   }
 }
 
-void WebPagePopupImpl::Initialize(WebViewImpl* web_view,
+void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
                                   PagePopupClient* popup_client) {
   DCHECK(popup_client);
   popup_client_ = popup_client;
-  SetWebView(web_view);
+  SetWebView(opener_web_view);
 
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
   chrome_client_ = MakeGarbageCollected<PagePopupChromeClient>(this);
   page_clients.chrome_client = chrome_client_.Get();
 
-  Settings& main_settings = web_view_->GetPage()->GetSettings();
+  Settings& main_settings = opener_web_view_->GetPage()->GetSettings();
   page_ = Page::CreateNonOrdinary(page_clients);
   page_->GetSettings().SetAcceleratedCompositingEnabled(true);
   page_->GetSettings().SetScriptEnabled(true);
@@ -889,7 +881,7 @@ gfx::Rect WebPagePopupImpl::ViewportVisibleRect() {
 KURL WebPagePopupImpl::GetURLForDebugTrace() {
   if (!page_)
     return {};
-  WebFrame* main_frame = web_view_->MainFrame();
+  WebFrame* main_frame = opener_web_view_->MainFrame();
   if (main_frame->IsWebLocalFrame())
     return main_frame->ToWebLocalFrame()->GetDocument().Url();
   return {};
@@ -972,7 +964,7 @@ void WebPagePopupImpl::ClosePopup() {
   // owner of itself. Note however that WebViewImpl may briefly extend the
   // lifetime of this object since it owns a reference, but it should only be
   // to call HasSamePopupClient().
-  web_view_->CleanupPagePopup();
+  opener_web_view_->CleanupPagePopup();
 }
 
 LocalDOMWindow* WebPagePopupImpl::Window() {

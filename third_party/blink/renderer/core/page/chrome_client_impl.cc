@@ -417,13 +417,7 @@ void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
   // WebFrameWidget needs to be initialized before initializing the core frame?
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   if (widget) {
-    if (delay.is_zero()) {
-      // LocalRootFrameWidget() is a WebWidget, its client is the embedder.
-      WebWidgetClient* web_widget_client = widget->Client();
-      web_widget_client->ScheduleAnimation();
-    } else {
-      widget->RequestAnimationAfterDelay(delay);
-    }
+    widget->RequestAnimationAfterDelay(delay);
   }
 }
 

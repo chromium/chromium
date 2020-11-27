@@ -360,10 +360,6 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() {
 void WebFrameWidgetImpl::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
   local_root_->SetFrameWidget(this);
-  request_animation_after_delay_timer_ =
-      std::make_unique<TaskRunnerTimer<WebFrameWidgetImpl>>(
-          local_root.GetTaskRunner(TaskType::kInternalDefault), this,
-          &WebFrameWidgetImpl::RequestAnimationAfterDelayTimerFired);
 }
 
 bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
@@ -398,7 +394,6 @@ void WebFrameWidgetImpl::Close(
   local_root_->SetFrameWidget(nullptr);
   local_root_ = nullptr;
   client_ = nullptr;
-  request_animation_after_delay_timer_.reset();
   widget_base_->Shutdown(std::move(cleanup_runner));
   widget_base_.reset();
   receiver_.reset();
@@ -2684,14 +2679,7 @@ void WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout(
 
 void WebFrameWidgetImpl::RequestAnimationAfterDelay(
     const base::TimeDelta& delay) {
-  DCHECK(request_animation_after_delay_timer_.get());
-  if (request_animation_after_delay_timer_->IsActive() &&
-      request_animation_after_delay_timer_->NextFireInterval() > delay) {
-    request_animation_after_delay_timer_->Stop();
-  }
-  if (!request_animation_after_delay_timer_->IsActive()) {
-    request_animation_after_delay_timer_->StartOneShot(delay, FROM_HERE);
-  }
+  widget_base_->RequestAnimationAfterDelay(delay);
 }
 
 void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
@@ -2719,11 +2707,6 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   if (ForMainFrame()) {
     View()->DidChangeRootLayer(root_layer_exists);
   }
-}
-
-void WebFrameWidgetImpl::RequestAnimationAfterDelayTimerFired(TimerBase*) {
-  if (client_)
-    client_->ScheduleAnimation();
 }
 
 base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>

@@ -232,7 +232,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void DidSetBounds();
 
   WebPagePopupClient* web_page_popup_client_;
-  WebViewImpl* web_view_ = nullptr;
+  // This is the WebView that opened the popup.
+  WebViewImpl* opener_web_view_ = nullptr;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
   // This member is non-null between the call to Initialize() and the call to
   // ClosePopup(). If page_ is non-null, it is guaranteed to have an attached

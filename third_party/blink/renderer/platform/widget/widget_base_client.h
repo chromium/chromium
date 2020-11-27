@@ -142,7 +142,7 @@ class WidgetBaseClient {
   // Called to inform the Widget that it has gained or lost keyboard focus.
   virtual void FocusChanged(bool) {}
 
-  // Call to schedule an animation.
+  // Call to request an animation frame from the compositor.
   virtual void ScheduleAnimation() {}
 
   // TODO(bokan): Temporary to unblock synthetic gesture events running under
