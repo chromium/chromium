@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "rlz/lib/financial_ping.h"
 #include "rlz/lib/lib_values.h"
 #include "rlz/lib/net_response_check.h"
@@ -48,7 +49,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/important_file_writer.h"
 #include "base/stl_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -219,7 +220,7 @@ TEST_F(RlzLibTest, SetAccessPointRlz) {
   EXPECT_STREQ("IeTbRlz", rlz_50);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RlzLibTest, SetAccessPointRlzOnlyOnce) {
   // On Chrome OS, and RLZ string can ne set only once.
   char rlz_50[50];
@@ -483,7 +484,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
   EXPECT_TRUE(rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER,
                                          kPingResponse2));
   EXPECT_TRUE(rlz_lib::GetAccessPointRlz(rlz_lib::IETB_SEARCH_BOX, value, 50));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, the RLZ string is not modified by response once set.
   EXPECT_STREQ("1T4_____en__252", value);
 #else
@@ -494,7 +495,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
     "crc32: 0\r\n";  // Good RLZ - empty response.
   EXPECT_TRUE(rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER,
                                          kPingResponse3));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, the RLZ string is not modified by response once set.
   EXPECT_STREQ("1T4_____en__252", value);
 #else
@@ -1078,7 +1079,7 @@ TEST_F(RlzLibTest, LockAcquistionSucceedsButStoreFileCannotBeCreated) {
 
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;

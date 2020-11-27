@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "rlz/lib/rlz_lib.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -181,16 +182,16 @@ void RlzLibTestBase::SetUp() {
   EXPECT_TRUE(rlz_lib::SetAccessPointRlz(rlz_lib::IE_HOME_PAGE, ""));
 #endif  // defined(OS_POSIX)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   statistics_provider_ =
       std::make_unique<chromeos::system::FakeStatisticsProvider>();
   chromeos::system::StatisticsProvider::SetTestProvider(
       statistics_provider_.get());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void RlzLibTestBase::TearDown() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

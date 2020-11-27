@@ -15,6 +15,7 @@
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/backoff_entry.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/financial_ping.h"
@@ -441,7 +442,7 @@ bool SendFinancialPing(Product product,
   FinancialPing::UpdateLastPingTime(product);
   std::string response;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const net::BackoffEntry::Policy policy = {
       0,  // Number of initial errors to ignore.
       base::TimeDelta::FromSeconds(5).InMilliseconds(),  // Initial delay.

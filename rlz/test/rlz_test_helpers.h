@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_POSIX)
@@ -19,7 +20,7 @@
 #include "base/test/test_reg_util_win.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
 #endif
 
@@ -58,7 +59,7 @@ class RlzLibTestBase : public RlzLibTestNoMachineState {
   void SetUp() override;
   void TearDown() override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::system::FakeStatisticsProvider>
       statistics_provider_;
 #endif

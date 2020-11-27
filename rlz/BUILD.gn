@@ -5,6 +5,7 @@
 # Note that this build file assumes rlz_use_chrome_net which is a condition in
 # the GYP file, but is always true for Chrome builds.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
@@ -30,7 +31,10 @@ source_set("rlz_utils") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//third_party/zlib" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//third_party/zlib",
+  ]
 }
 
 if (enable_rlz_support) {
@@ -72,9 +76,10 @@ if (enable_rlz_support) {
     deps = [
       ":rlz_utils",
       "//base",
+      "//build:chromeos_buildflags",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "chromeos/lib/rlz_value_store_chromeos.cc",
         "chromeos/lib/rlz_value_store_chromeos.h",
@@ -130,13 +135,14 @@ if (enable_rlz_support) {
     deps = [
       ":rlz_utils",
       "//base/third_party/dynamic_annotations",
+      "//build:chromeos_buildflags",
       "//net",
       "//services/network/public/cpp:cpp",
       "//services/network/public/mojom",
       "//url",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chromeos/dbus",
         "//chromeos/system",
@@ -157,8 +163,11 @@ if (enable_rlz_support) {
       "//base/test:test_support",
       "//testing/gtest",
     ]
-    deps = [ ":rlz_lib" ]
-    if (is_chromeos) {
+    deps = [
+      ":rlz_lib",
+      "//build:chromeos_buildflags",
+    ]
+    if (is_chromeos_ash) {
       public_deps += [ "//chromeos/system" ]
     }
   }
@@ -187,6 +196,7 @@ if (enable_rlz_support) {
       ":rlz_utils",
       ":test_support",
       "//base",
+      "//build:chromeos_buildflags",
       "//mojo/core/embedder",
       "//net:test_support",
       "//services/network:test_support",
@@ -194,7 +204,7 @@ if (enable_rlz_support) {
       "//testing/gtest",
       "//third_party/zlib",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chromeos/dbus:test_support",
         "//chromeos/system",
