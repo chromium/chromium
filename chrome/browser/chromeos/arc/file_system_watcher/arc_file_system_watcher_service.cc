@@ -257,7 +257,7 @@ void ArcFileSystemWatcherService::FileSystemWatcher::Start() {
 
   watcher_ = std::make_unique<base::FilePathWatcher>();
   // On Linux, base::FilePathWatcher::Watch() always returns true.
-  watcher_->Watch(cros_dir_, true,
+  watcher_->Watch(cros_dir_, base::FilePathWatcher::Type::kRecursive,
                   base::BindRepeating(&FileSystemWatcher::OnFilePathChanged,
                                       weak_ptr_factory_.GetWeakPtr()));
 }
