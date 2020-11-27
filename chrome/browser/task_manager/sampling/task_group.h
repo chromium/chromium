@@ -16,15 +16,16 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "chrome/browser/task_manager/sampling/task_group_sampler.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/nacl/common/buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gpu {
 struct VideoMemoryUsageStats;
@@ -79,9 +80,9 @@ class TaskGroup {
   // process represented by this TaskGroup have completed.
   bool AreBackgroundCalculationsDone() const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetArcSampler(ArcSharedSampler* sampler);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const base::ProcessHandle& process_handle() const { return process_handle_; }
   const base::ProcessId& process_id() const { return process_id_; }
@@ -97,7 +98,7 @@ class TaskGroup {
   base::TimeDelta cpu_time() const { return cpu_time_; }
   void set_footprint_bytes(int64_t footprint) { memory_footprint_ = footprint; }
   int64_t footprint_bytes() const { return memory_footprint_; }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   int64_t swapped_bytes() const { return swapped_mem_bytes_; }
 #endif
   int64_t gpu_memory() const { return gpu_memory_; }
@@ -150,10 +151,10 @@ class TaskGroup {
   void OnSamplerRefreshDone(
       base::Optional<SharedSampler::SamplingResult> results);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnArcSamplerRefreshDone(
       base::Optional<ArcSharedSampler::MemoryFootprintBytes> results);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void OnBackgroundRefreshTypeFinished(int64_t finished_refresh_type);
 
@@ -169,10 +170,10 @@ class TaskGroup {
   scoped_refptr<TaskGroupSampler> worker_thread_sampler_;
 
   scoped_refptr<SharedSampler> shared_sampler_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Shared sampler that retrieves memory footprint for all ARC processes.
   ArcSharedSampler* arc_shared_sampler_;  // Not owned
-#endif                                    // defined(OS_CHROMEOS)
+#endif                                    // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Lists the Tasks in this TaskGroup.
   // Tasks are not owned by the TaskGroup. They're owned by the TaskProviders.

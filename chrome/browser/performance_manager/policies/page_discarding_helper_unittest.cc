@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,7 +77,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardRecentlyAudiblePage) {
           page_node()));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardRecentlyVisiblePage) {
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
@@ -181,7 +182,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsConnectedToUSBDevice) {
           page_node()));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageMultipleTimes) {
   testing::FakePageLiveStateData::GetOrCreate(page_node())->was_discarded_ =
       true;

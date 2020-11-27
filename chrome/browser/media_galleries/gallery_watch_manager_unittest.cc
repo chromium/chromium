@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager_observer.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
@@ -29,7 +30,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #endif
@@ -57,7 +58,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
  public:
   GalleryWatchManagerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         test_user_manager_(std::make_unique<chromeos::ScopedTestUserManager>()),
 #endif
         profile_(new TestingProfile()),
@@ -104,7 +105,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
     // because TestingProfile uses TestingBrowserProcess in its destructor.
     ShutdownProfile();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // The TestUserManager must be destroyed before the TestingBrowserProcess
     // because TestUserManager uses TestingBrowserProcess in its destructor.
     test_user_manager_.reset();
@@ -200,7 +201,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 
   EnsureMediaDirectoriesExists mock_gallery_locations_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
 #endif
@@ -217,7 +218,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 };
 
 // TODO(crbug.com/936065): Flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic

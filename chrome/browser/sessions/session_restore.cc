@@ -29,6 +29,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,7 +71,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #endif
 
@@ -313,7 +314,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       BrowserList::RemoveObserver(this);
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-End",
                                                            false);
 #endif
@@ -323,7 +324,7 @@ class SessionRestoreImpl : public BrowserListObserver {
   void OnGotSession(
       std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
       SessionID active_window_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-GotSession", false);
 #endif
@@ -364,7 +365,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       return FinishedTabCreation(false, false, created_contents);
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-CreatingTabs-Start", false);
 #endif
@@ -400,7 +401,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         // The first set of tabs is added to the existing browser.
         browser = browser_;
       } else {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-Start", false);
 #endif
@@ -414,7 +415,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         browser = CreateRestoredBrowser(
             BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
             show_state, (*i)->app_name, (*i)->user_title);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-End", false);
 #endif
@@ -478,7 +479,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     if (last_normal_browser && !urls_to_open_.empty())
       AppendURLsToBrowser(last_normal_browser, urls_to_open_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-CreatingTabs-End", false);
 #endif
@@ -641,7 +642,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.initial_bounds = bounds;
     params.user_title = user_title;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // We only store trusted app windows, so we also create them as trusted.
     if (type == Browser::Type::TYPE_APP) {
       params = Browser::CreateParams::CreateForApp(
@@ -759,7 +760,7 @@ Browser* SessionRestore::RestoreSession(
     Profile* profile, Browser* browser,
     SessionRestore::BehaviorBitmask behavior,
     const std::vector<GURL>& urls_to_open) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
       "SessionRestore-Start", false);
 #endif

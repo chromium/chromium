@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/browser_child_process_watcher.h"
 #include "chrome/browser/performance_manager/decorators/frozen_frame_aggregator.h"
@@ -35,7 +36,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
@@ -44,7 +45,7 @@
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #endif  // BUILDFLAG(USE_TCMALLOC)
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
@@ -95,7 +96,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                            CreatePolicyForPlatform());
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (performance_manager::policies::UserspaceSwapPolicy::
           UserspaceSwapSupportedAndEnabled()) {
     graph->PassToGraph(
@@ -109,7 +110,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                        performance_manager::policies::DynamicTcmallocPolicy>());
   }
 #endif  // BUILDFLAG(USE_TCMALLOC)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
   graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());

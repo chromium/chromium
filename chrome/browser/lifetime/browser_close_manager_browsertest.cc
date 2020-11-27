@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -62,7 +63,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
@@ -282,7 +283,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
         chromeos::switches::kIgnoreUserProfileMappingForTests);
 #endif
@@ -527,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // Regression for crbug.com/365052 caused some of tabs to be closed even if
 // user chose to cancel browser close.
 // Flaky on ChromeOS ASan. https://crbug.com/805457
-#if defined(OS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
 #define MAYBE_TestUnloadMultipleSlowTabs DISABLED_TestUnloadMultipleSlowTabs
 #else
 #define MAYBE_TestUnloadMultipleSlowTabs TestUnloadMultipleSlowTabs

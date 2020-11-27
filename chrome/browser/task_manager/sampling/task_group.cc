@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -92,9 +93,9 @@ TaskGroup::TaskGroup(
       on_background_calculations_done_(on_background_calculations_done),
       worker_thread_sampler_(nullptr),
       shared_sampler_(shared_sampler),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       arc_shared_sampler_(nullptr),
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       expected_on_bg_done_flags_(kBackgroundRefreshTypesMask),
       current_on_bg_done_flags_(0),
       platform_independent_cpu_usage_(std::numeric_limits<double>::quiet_NaN()),
@@ -143,10 +144,10 @@ TaskGroup::TaskGroup(
 
 TaskGroup::~TaskGroup() {
   shared_sampler_->UnregisterCallback(process_id_);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc_shared_sampler_)
     arc_shared_sampler_->UnregisterCallback(process_id_);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void TaskGroup::AddTask(Task* task) {
@@ -249,7 +250,7 @@ bool TaskGroup::AreBackgroundCalculationsDone() const {
   return expected_on_bg_done_flags_ == current_on_bg_done_flags_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TaskGroup::SetArcSampler(ArcSharedSampler* sampler) {
   DCHECK(sampler);
   arc_shared_sampler_ = sampler;
@@ -257,7 +258,7 @@ void TaskGroup::SetArcSampler(ArcSharedSampler* sampler) {
       process_id_, base::BindRepeating(&TaskGroup::OnArcSamplerRefreshDone,
                                        weak_ptr_factory_.GetWeakPtr()));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TaskGroup::RefreshGpuMemory(
     const gpu::VideoMemoryUsageStats& gpu_memory_stats) {
@@ -364,13 +365,13 @@ void TaskGroup::OnSamplerRefreshDone(
                                   shared_sampler_->GetSupportedFlags());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TaskGroup::OnArcSamplerRefreshDone(
     base::Optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
   if (memory_footprint)
     set_footprint_bytes(*memory_footprint);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TaskGroup::OnBackgroundRefreshTypeFinished(int64_t finished_refresh_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

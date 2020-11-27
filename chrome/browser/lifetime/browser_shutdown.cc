@@ -24,6 +24,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -50,11 +51,11 @@
 #include "chrome/browser/win/browser_util.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #endif
@@ -63,7 +64,7 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/service_process/service_process_control.h"
 #endif
 
@@ -224,11 +225,11 @@ ShutdownType GetShutdownType() {
 
 #if !defined(OS_ANDROID)
 bool ShutdownPreThreadsStop() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker(
       "BrowserShutdownStarted", false);
 #endif
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Shutdown the IPC channel to the service processes.
   ServiceProcessControl::GetInstance()->Disconnect();
 #endif
@@ -285,7 +286,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   // goes away.
   ProfileManager::NukeDeletedProfilesFromDisk();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted",
                                                           true);
 #endif
@@ -298,7 +299,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 #endif
 
   if (restart_mode != RestartMode::kNoRestart) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NOTIMPLEMENTED();
 #else
     const base::CommandLine& old_cl(*base::CommandLine::ForCurrentProcess());
@@ -335,7 +336,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
       new_cl.AppendSwitchNative(it.first, it.second);
 
     upgrade_util::RelaunchChromeBrowser(new_cl);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   if (g_shutdown_type != ShutdownType::kNotValid &&
@@ -355,7 +356,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
     base::WriteFile(shutdown_ms_file, shutdown_ms.c_str(), len);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NotifyAndTerminate(false /* fast_path */);
 #endif
 }

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -19,7 +20,7 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #if defined(OS_WIN)
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_win.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
 #endif
 
@@ -121,7 +122,7 @@ base::Value WorkingSetTrimmerPolicy::DescribeProcessNodeData(
 bool WorkingSetTrimmerPolicy::PlatformSupportsWorkingSetTrim() {
 #if defined(OS_WIN)
   return WorkingSetTrimmerPolicyWin::PlatformSupportsWorkingSetTrim();
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return WorkingSetTrimmerPolicyChromeOS::PlatformSupportsWorkingSetTrim();
 #else
   return false;
@@ -133,7 +134,7 @@ std::unique_ptr<WorkingSetTrimmerPolicy>
 WorkingSetTrimmerPolicy::CreatePolicyForPlatform() {
 #if defined(OS_WIN)
   return std::make_unique<WorkingSetTrimmerPolicyWin>();
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<WorkingSetTrimmerPolicyChromeOS>();
 #else
   NOTIMPLEMENTED() << "Platform does not support WorkingSetTrim.";

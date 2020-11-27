@@ -104,7 +104,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
   ~SessionRestoreTest() override = default;
 
  protected:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(nkostylev): Investigate if we can remove this switch.
     command_line->AppendSwitch(switches::kCreateBrowserOnStartupForTests);
@@ -116,7 +116,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
 
     SessionStartupPref pref(SessionStartupPref::LAST);
     SessionStartupPref::SetStartupPref(browser()->profile(), pref);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     if (strcmp(test_info->name(), "NoSessionRestoreNewWindowChromeOS") != 0) {
@@ -237,7 +237,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
     }
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* CreateSecondaryProfile(int profile_num) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -249,7 +249,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
     SessionStartupPref::SetStartupPref(profile, pref);
     return profile;
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   GURL url1_;
   GURL url2_;
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoredTabsHaveCorrectInitialSize) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verify that session restore does not occur when a user opens a browser window
 // when no other browser windows are open on ChromeOS.
 // TODO(pkotwicz): Add test which doesn't open incognito browser once
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   EXPECT_TRUE(app_browser->window()->IsMaximized());
   EXPECT_TRUE(app_browser->is_type_app());
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a tabbed browser and popup and makes sure we restore both.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_WindowWithOneTab) {
   EXPECT_EQ(0U, service->entries().size());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // This test does not apply to ChromeOS as ChromeOS does not do session
 // restore when a new window is open.
 
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TabWithDownloadDoesNotGetRestored) {
   }
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 class MultiBrowserObserver : public BrowserListObserver {
@@ -2011,11 +2011,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
                .possibly_invalid_spec();
   }
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // PRE_CorrectLoadingOrder is flaky on ChromeOS MSAN and Mac.
 // See http://crbug.com/493167.
-#if (defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)) || defined(OS_MAC)
+#if (BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)) || defined(OS_MAC)
 #define MAYBE_PRE_CorrectLoadingOrder DISABLED_PRE_CorrectLoadingOrder
 #define MAYBE_CorrectLoadingOrder DISABLED_CorrectLoadingOrder
 #else

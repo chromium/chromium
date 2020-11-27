@@ -7,6 +7,7 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -111,7 +112,7 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     SessionStartupPref pref(SessionStartupPref::LAST);
     SessionStartupPref::SetStartupPref(browser()->profile(), pref);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     SessionServiceTestHelper helper(
         SessionServiceFactory::GetForProfile(browser()->profile()));
     helper.SetForceBrowserNotAliveWithNoWindows(true);

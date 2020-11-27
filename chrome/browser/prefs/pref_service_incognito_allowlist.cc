@@ -8,6 +8,7 @@
 
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -20,16 +21,16 @@
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_pref_names.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 // List of keys that can be changed in the user prefs file by the incognito
 // profile.
 const char* const kPersistentPrefNames[] = {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Accessibility preferences should be persisted if they are changed in
     // incognito mode.
     ash::prefs::kAccessibilityLargeCursorEnabled,
@@ -69,7 +70,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
     ash::prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
     ash::prefs::kShouldAlwaysShowAccessibilityMenu,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_ANDROID)
     kAnimationPolicyAllowed,
     kAnimationPolicyOnce,
@@ -133,7 +134,9 @@ const char* const kPersistentPrefNames[] = {
     prefs::kShowFullscreenToolbar,
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Toggleing custom frames affects all open windows in the profile, hence
     // should be written to the regular profile when changed in incognito mode.
     prefs::kUseCustomChromeFrame,

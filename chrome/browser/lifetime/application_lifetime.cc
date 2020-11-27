@@ -13,6 +13,7 @@
 #include "base/process/process_handle.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -42,7 +43,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -50,7 +51,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/user_manager.h"
 #endif
 
@@ -84,7 +85,7 @@ bool AreAllBrowsersCloseable() {
 }
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets kApplicationLocale in |local_state| for the login screen on the next
 // application start, if it is forced to a specific value due to enterprise
 // policy or the owner's locale.  Returns true if any pref has been modified.
@@ -132,7 +133,7 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kWasRestarted, true);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->set_restart_requested();
 
   DCHECK(!g_send_stop_request_to_session_manager);
@@ -212,7 +213,7 @@ void CloseAllBrowsers() {
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker(
       "StartedClosingWindows", false);
 #endif
@@ -223,7 +224,7 @@ void CloseAllBrowsers() {
 #endif  // !defined(OS_ANDROID)
 
 void AttemptUserExit() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   VLOG(1) << "AttemptUserExit";
   chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted",
                                                           false);
@@ -250,7 +251,7 @@ void AttemptUserExit() {
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
   AttemptExitInternal(false);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // The Android implementation is in application_lifetime_android.cc
@@ -261,7 +262,7 @@ void AttemptRestart() {
 #endif  // !defined(OS_ANDROID)
 
 void AttemptRelaunch() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
   // If running the Chrome OS build, but we're not on the device, fall through.
@@ -271,7 +272,7 @@ void AttemptRelaunch() {
 
 #if !defined(OS_ANDROID)
 void RelaunchIgnoreUnloadHandlers() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
   // If running the Chrome OS build, but we're not on the device, fall through.
@@ -281,7 +282,7 @@ void RelaunchIgnoreUnloadHandlers() {
 #endif
 
 void AttemptExit() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, user exit and system exits are the same.
   AttemptUserExit();
 #else
@@ -304,7 +305,7 @@ void ExitIgnoreUnloadHandlers() {
   // We always mark exit cleanly.
   MarkAsCleanShutdown();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS ExitIgnoreUnloadHandlers() is used to handle SIGTERM.
   // In this case, AreAllBrowsersCloseable()
   // can be false in following cases. a) power-off b) signout from
@@ -312,16 +313,16 @@ void ExitIgnoreUnloadHandlers() {
   browser_shutdown::OnShutdownStarting(
       AreAllBrowsersCloseable() ? browser_shutdown::ShutdownType::kBrowserExit
                                 : browser_shutdown::ShutdownType::kEndSession);
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   // For desktop browsers, always perform a silent exit.
   browser_shutdown::OnShutdownStarting(
       browser_shutdown::ShutdownType::kSilentExit);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // !defined(OS_ANDROID)
   AttemptExitInternal(true);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsAttemptingShutdown() {
   return g_send_stop_request_to_session_manager;
 }

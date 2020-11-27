@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
@@ -28,7 +29,7 @@ namespace performance_manager {
 namespace policies {
 namespace {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Time during which non visible pages are protected from urgent discarding
 // (not on ChromeOS).
 constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
@@ -219,7 +220,7 @@ bool PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
       return false;
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (page_node->GetTimeSinceLastVisibilityChange() <
       kNonVisiblePagesUrgentProtectionTime) {
     return false;
@@ -269,7 +270,7 @@ bool PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
       return false;
     if (live_state_data->IsConnectedToUSBDevice())
       return false;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
     if (live_state_data->WasDiscarded())
       return false;

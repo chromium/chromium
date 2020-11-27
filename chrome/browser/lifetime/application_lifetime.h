@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 class Browser;
 
@@ -57,7 +58,7 @@ void AttemptExit();
 // use AttemptExit or AttemptRestart respectively.
 void ExitIgnoreUnloadHandlers();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if any of the above Attempt calls have been called.
 bool IsAttemptingShutdown();
 #endif

@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
@@ -38,12 +39,12 @@
 #include "services/network/public/cpp/features.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/arc/process/arc_process_service.h"
 #include "chrome/browser/task_manager/providers/arc/arc_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task_provider.h"
 #include "components/arc/arc_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace task_manager {
 
@@ -101,12 +102,12 @@ TaskManagerImpl::TaskManagerImpl()
       std::move(primary_subproviders),
       std::make_unique<RenderProcessHostTaskProvider>()));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAvailable())
     task_providers_.push_back(std::make_unique<ArcProcessTaskProvider>());
   task_providers_.push_back(std::make_unique<VmProcessTaskProvider>());
   arc_shared_sampler_ = std::make_unique<ArcSharedSampler>();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TaskManagerImpl::~TaskManagerImpl() {
@@ -158,7 +159,7 @@ int64_t TaskManagerImpl::GetMemoryFootprintUsage(TaskId task_id) const {
 }
 
 int64_t TaskManagerImpl::GetSwappedMemoryUsage(TaskId task_id) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return GetTaskGroupByTaskId(task_id)->swapped_bytes();
 #else
   return -1;
@@ -481,7 +482,7 @@ void TaskManagerImpl::TaskAdded(Task* task) {
                                    is_running_in_vm,
                                    on_background_data_ready_callback_,
                                    shared_sampler_, blocking_pool_runner_));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (task->GetType() == Task::ARC)
       task_group->SetArcSampler(arc_shared_sampler_.get());
 #endif
@@ -627,12 +628,12 @@ void TaskManagerImpl::Refresh() {
                                enabled_resources_flags());
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (TaskManagerObserver::IsResourceRefreshEnabled(
           REFRESH_TYPE_MEMORY_FOOTPRINT, enabled_resources_flags())) {
     arc_shared_sampler_->Refresh();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NotifyObserversOnRefresh(GetTaskIdsList());
 }

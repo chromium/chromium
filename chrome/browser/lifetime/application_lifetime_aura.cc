@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -14,7 +15,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #else
 #include "chrome/browser/notifications/notification_ui_manager.h"
@@ -26,7 +27,7 @@ void HandleAppExitingForPlatform() {
   // Close all non browser windows now. Those includes notifications
   // and windows created by Ash (launcher, background, etc).
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::Shell::HasInstance()) {
     // Releasing the capture will close any menus that might be open:
     // http://crbug.com/134472
@@ -42,7 +43,7 @@ void HandleAppExitingForPlatform() {
 
   views::Widget::CloseAllSecondaryWidgets();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableZeroBrowsersOpenForTests)) {
     // App is exiting, release the keep alive on behalf of Aura Shell.

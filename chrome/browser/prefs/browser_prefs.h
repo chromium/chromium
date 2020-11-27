@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -31,7 +32,7 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                               const std::string& locale);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Register all prefs that will be used via a PrefService attached to the
 // sign-in profile using the locale of |g_browser_process|.
 void RegisterSigninProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

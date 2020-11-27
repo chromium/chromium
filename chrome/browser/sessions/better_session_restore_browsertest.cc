@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -564,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 // ChromeOS does not override the SessionStartupPreference upon controlled
 // system restart.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 class RestartTest : public BetterSessionRestoreTest {
  public:
   RestartTest() { }

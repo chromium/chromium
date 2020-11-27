@@ -5,6 +5,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -21,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"
 #endif
 
@@ -51,7 +52,7 @@ class BrowserClosingObserver : public BrowserListObserver {
 
 // ChromeOS has the different shutdown flow on user initiated exit process.
 // See the comment for chrome::AttemptUserExit() function declaration.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        PRE_TwoBrowsersClosingShutdownHistograms) {
   ui_test_utils::NavigateToURL(browser(), GURL("browser://version"));
@@ -102,4 +103,4 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest, ShutdownConfirmation) {
 
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

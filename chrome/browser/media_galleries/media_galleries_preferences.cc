@@ -23,6 +23,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_histograms.h"
@@ -398,7 +399,7 @@ base::string16 MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     if (!display_name.empty())
       return display_name;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // See chrome/browser/chromeos/fileapi/file_system_backend.cc
     base::FilePath download_path;
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,

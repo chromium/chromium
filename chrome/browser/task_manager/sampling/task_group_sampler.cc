@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -132,9 +133,9 @@ double TaskGroupSampler::RefreshCpuUsage() {
 int64_t TaskGroupSampler::RefreshSwappedMem() {
   DCHECK(worker_pool_sequenced_checker_.CalledOnValidSequence());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return process_metrics_->GetVmSwapBytes();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return 0;
 }

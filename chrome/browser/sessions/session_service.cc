@@ -19,6 +19,7 @@
 #include "base/stl_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -55,7 +56,7 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #endif
 
@@ -117,7 +118,7 @@ bool SessionService::ShouldNewWindowStartSession() {
   // ChromeOS and OSX have different ideas of application lifetime than
   // the other platforms.
   // On ChromeOS opening a new window should never start a new session.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!force_browser_not_alive_with_no_windows_)
     return false;
 #endif
@@ -588,7 +589,7 @@ void SessionService::Init() {
 
 bool SessionService::ShouldRestoreWindowOfType(
     sessions::SessionWindow::WindowType window_type) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Restore apps and app popups for ChromeOS alone.
   if (window_type == sessions::SessionWindow::TYPE_APP ||
       window_type == sessions::SessionWindow::TYPE_APP_POPUP)
@@ -917,7 +918,7 @@ bool SessionService::ShouldTrackChangesToWindow(
 bool SessionService::ShouldTrackBrowser(Browser* browser) const {
   if (browser->profile() != profile())
     return false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not track Crostini apps or terminal.  Apps will fail since VMs are not
   // restarted on restore, and we don't want terminal to force the VM to start.
   if (crostini::CrostiniAppIdFromAppName(browser->app_name()) ||

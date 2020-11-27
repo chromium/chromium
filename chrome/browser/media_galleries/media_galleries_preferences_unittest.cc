@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
@@ -40,7 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #endif
@@ -358,7 +359,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
   EnsureMediaDirectoriesExists mock_gallery_locations_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif
@@ -1223,7 +1224,7 @@ TEST_F(MediaGalleriesPreferencesTest, SetsDefaultGalleryTypeField) {
   // default_gallery field set.
 
   // No default galleries exist on CrOS so this test isn't relevant there.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath music_path;
   base::FilePath pictures_path;
   base::FilePath videos_path;
@@ -1274,7 +1275,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdatesDefaultGalleryType) {
   // rewrite the device ID in prefs to include the new path.
 
   // No default galleries exist on CrOS so this test isn't relevant there.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath old_music_path;
   base::FilePath old_pictures_path;
   base::FilePath old_videos_path;
@@ -1381,7 +1382,7 @@ TEST_F(MediaGalleriesPreferencesTest, UpdateAddsDefaultGalleryTypeIfMissing) {
   // MediaGalleriesPreferences is initialized, it assigns the proper one.
 
   // No default galleries exist on CrOS so this test isn't relevant there.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a new user added gallery.
   AddFixedGalleryWithExpectation("user_added", "UserAdded",
                                  MediaGalleryPrefInfo::kUserAdded);

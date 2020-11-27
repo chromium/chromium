@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -29,7 +30,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/tpm/stub_install_attributes.h"
 #endif
 
@@ -129,7 +130,7 @@ class ProxyPolicyTest : public testing::Test {
   MockConfigurationPolicyProvider provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
 #endif
 };

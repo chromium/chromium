@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -143,7 +144,7 @@ base::FilePath EnsureMediaDirectoriesExists::GetFakeLocalAppDataPath() const {
 #endif  // OS_WIN
 
 void EnsureMediaDirectoriesExists::Init() {
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
   return;
 #else
 
@@ -154,7 +155,7 @@ void EnsureMediaDirectoriesExists::Init() {
 #endif  // OS_MAC
 
   ChangeMediaPathOverrides();
-#endif  // OS_CHROMEOS || OS_ANDROID
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_ANDROID
 }
 
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {

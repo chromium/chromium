@@ -14,6 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -127,7 +128,7 @@ OAuth2AccessTokenManager* DeviceOAuth2TokenService::GetAccessTokenManager() {
   return token_manager_.get();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void DeviceOAuth2TokenService::SetServiceAccountEmail(
     const std::string& account_email) {
   store_->SetAccountEmail(account_email);

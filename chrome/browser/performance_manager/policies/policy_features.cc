@@ -8,8 +8,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
 #endif
 
@@ -22,7 +23,7 @@ const base::Feature kEmptyWorkingSet{"EmptyWorkingSet",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kTrimOnMemoryPressure{"TrimOnMemoryPressure",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -116,7 +117,7 @@ const base::FeatureParam<int> kDynamicTuningScaleInvisibleTimeSec = {
     &kDynamicTcmallocTuning, "DynamicTcmallocScaleInvisibleTimeSec", -1};
 #endif  // BUILDFLAG(USE_TCMALLOC)
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 const base::Feature kPageFreezingFromPerformanceManager{
@@ -124,7 +125,7 @@ const base::Feature kPageFreezingFromPerformanceManager{
 
 const base::Feature kUrgentDiscardingFromPerformanceManager{
   "UrgentDiscardingFromPerformanceManager",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT

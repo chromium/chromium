@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sessions/session_service_utils.h"
 
+#include "build/chromeos_buildflags.h"
+
 sessions::SessionWindow::WindowType WindowTypeForBrowserType(
     Browser::Type type) {
   switch (type) {
@@ -17,7 +19,7 @@ sessions::SessionWindow::WindowType WindowTypeForBrowserType(
       return sessions::SessionWindow::TYPE_DEVTOOLS;
     case Browser::TYPE_APP_POPUP:
       return sessions::SessionWindow::TYPE_APP_POPUP;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case Browser::TYPE_CUSTOM_TAB:
       // Session restore isn't supported for CUSTOM_TAB browser.
       // This method must never be called for this type.

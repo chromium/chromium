@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
@@ -26,9 +27,9 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/task_manager/sampling/arc_shared_sampler.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace task_manager {
 
@@ -212,11 +213,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   // subset of resources for all processes at once.
   scoped_refptr<SharedSampler> shared_sampler_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // A sampler shared with all instances of TaskGroup that hold ARC tasks and
   // calculates memory footprint for all processes at once.
   std::unique_ptr<ArcSharedSampler> arc_shared_sampler_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // This will be set to true while there are observers and the task manager is
   // running.

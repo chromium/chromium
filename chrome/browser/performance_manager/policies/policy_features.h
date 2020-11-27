@@ -6,8 +6,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
 #endif
 
@@ -22,7 +23,7 @@ namespace features {
 extern const base::Feature kEmptyWorkingSet;
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The trim on Memory Pressure feature will trim a process nodes working set
 // according to the parameters below.
@@ -112,7 +113,7 @@ extern const base::FeatureParam<int> kDynamicTuningTimeSec;
 extern const base::FeatureParam<int> kDynamicTuningScaleInvisibleTimeSec;
 #endif  // BUILDFLAG(USE_TCMALLOC)
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 // Enables freezing pages directly from PerformanceManager rather than via

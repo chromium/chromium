@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
@@ -104,7 +105,7 @@ class MediaFileSystemBackend : public storage::FileSystemBackend {
 
   std::unique_ptr<storage::AsyncFileUtil> native_media_file_util_;
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<DeviceMediaAsyncFileUtil> device_media_async_file_util_;
 #endif
 
