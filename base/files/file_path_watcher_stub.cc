@@ -20,7 +20,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   ~FilePathWatcherImpl() override = default;
 
   bool Watch(const FilePath& path,
-             bool recursive,
+             Type type,
              const FilePathWatcher::Callback& callback) override {
     return false;
   }

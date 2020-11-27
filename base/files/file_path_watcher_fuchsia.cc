@@ -18,7 +18,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   ~FilePathWatcherImpl() override {}
 
   bool Watch(const FilePath& path,
-             bool recursive,
+             Type type,
              const FilePathWatcher::Callback& callback) override;
 
   void Cancel() override;
@@ -31,7 +31,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 };
 
 bool FilePathWatcherImpl::Watch(const FilePath& path,
-                                bool recursive,
+                                Type type,
                                 const FilePathWatcher::Callback& callback) {
   DCHECK(!callback.is_null());
   DCHECK(callback_.is_null());

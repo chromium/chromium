@@ -36,11 +36,18 @@ FilePathWatcher::PlatformDelegate::~PlatformDelegate() {
 }
 
 bool FilePathWatcher::Watch(const FilePath& path,
-                            bool recursive,
+                            Type type,
                             const Callback& callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(path.IsAbsolute());
-  return impl_->Watch(path, recursive, callback);
+  return impl_->Watch(path, type, callback);
+}
+
+bool FilePathWatcher::Watch(const FilePath& path,
+                            bool recursive,
+                            const Callback& callback) {
+  return Watch(path, recursive ? Type::kRecursive : Type::kNonRecursive,
+               callback);
 }
 
 }  // namespace base

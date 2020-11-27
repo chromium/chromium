@@ -68,8 +68,11 @@ void DeviceManagerManual::StartWatching() {
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE,
       base::BindOnce(
-          &base::FilePathWatcher::Watch, base::Unretained(watcher_.get()),
-          base::FilePath(kDevInput), false,
+          static_cast<bool (base::FilePathWatcher::*)(
+              const base::FilePath&, bool,
+              const base::FilePathWatcher::Callback&)>(
+              &base::FilePathWatcher::Watch),
+          base::Unretained(watcher_.get()), base::FilePath(kDevInput), false,
           base::BindRepeating(&DeviceManagerManual::OnWatcherEventOnUiSequence,
                               base::SequencedTaskRunnerHandle::Get(),
                               weak_ptr_factory_.GetWeakPtr())),

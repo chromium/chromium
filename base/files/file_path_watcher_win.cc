@@ -27,13 +27,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
                             public base::win::ObjectWatcher::Delegate {
  public:
   FilePathWatcherImpl()
-      : handle_(INVALID_HANDLE_VALUE),
-        recursive_watch_(false) {}
+      : handle_(INVALID_HANDLE_VALUE), type_(Type::kNonRecursive) {}
   ~FilePathWatcherImpl() override;
 
   // FilePathWatcher::PlatformDelegate:
   bool Watch(const FilePath& path,
-             bool recursive,
+             Type type,
              const FilePathWatcher::Callback& callback) override;
   void Cancel() override;
 
@@ -70,8 +69,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   // ObjectWatcher to watch handle_ for events.
   base::win::ObjectWatcher watcher_;
 
-  // Set to true to watch the sub trees of the specified directory file path.
-  bool recursive_watch_;
+  // The type of watch requested.
+  Type type_;
 
   // Keep track of the last modified time of the file.  We use nulltime
   // to represent the file not existing.
@@ -91,14 +90,14 @@ FilePathWatcherImpl::~FilePathWatcherImpl() {
 }
 
 bool FilePathWatcherImpl::Watch(const FilePath& path,
-                                bool recursive,
+                                Type type,
                                 const FilePathWatcher::Callback& callback) {
   DCHECK(target_.value().empty());  // Can only watch one path.
 
   set_task_runner(SequencedTaskRunnerHandle::Get());
   callback_ = callback;
   target_ = path;
-  recursive_watch_ = recursive;
+  type_ = type;
 
   File::Info file_info;
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -151,7 +150,7 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
     ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
     file_exists = GetFileInfo(target_, &file_info);
   }
-  if (recursive_watch_) {
+  if (type_ == Type::kRecursive) {
     // Only the mtime of |target_| is tracked but in a recursive watch,
     // some other file or directory may have changed so all notifications
     // are passed through. It is possible to figure out which file changed
@@ -160,7 +159,7 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
     // http://qualapps.blogspot.com/2010/05/understanding-readdirectorychangesw.html
     callback_.Run(target_, false);
   } else if (file_exists && (last_modified_.is_null() ||
-             last_modified_ != file_info.last_modified)) {
+                             last_modified_ != file_info.last_modified)) {
     last_modified_ = file_info.last_modified;
     first_notification_ = Time::Now();
     callback_.Run(target_, false);
@@ -248,7 +247,7 @@ bool FilePathWatcherImpl::UpdateWatch() {
   std::vector<FilePath> child_dirs;
   FilePath watched_path(target_);
   while (true) {
-    if (!SetupWatchHandle(watched_path, recursive_watch_, &handle_))
+    if (!SetupWatchHandle(watched_path, type_ == Type::kRecursive, &handle_))
       return false;
 
     // Break if a valid handle is returned. Try the parent directory otherwise.
@@ -272,8 +271,10 @@ bool FilePathWatcherImpl::UpdateWatch() {
     watched_path = watched_path.Append(child_dirs.back());
     child_dirs.pop_back();
     HANDLE temp_handle = INVALID_HANDLE_VALUE;
-    if (!SetupWatchHandle(watched_path, recursive_watch_, &temp_handle))
+    if (!SetupWatchHandle(watched_path, type_ == Type::kRecursive,
+                          &temp_handle)) {
       return false;
+    }
     if (temp_handle == INVALID_HANDLE_VALUE)
       break;
     FindCloseChangeNotification(handle_);

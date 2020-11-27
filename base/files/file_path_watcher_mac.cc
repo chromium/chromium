@@ -24,11 +24,11 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   ~FilePathWatcherImpl() override = default;
 
   bool Watch(const FilePath& path,
-             bool recursive,
+             Type type,
              const FilePathWatcher::Callback& callback) override {
     // Use kqueue for non-recursive watches and FSEvents for recursive ones.
     DCHECK(!impl_.get());
-    if (recursive) {
+    if (type == Type::kRecursive) {
       if (!FilePathWatcher::RecursiveWatchAvailable())
         return false;
 #if !defined(OS_IOS)
@@ -38,7 +38,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
       impl_ = std::make_unique<FilePathWatcherKQueue>();
     }
     DCHECK(impl_.get());
-    return impl_->Watch(path, recursive, callback);
+    return impl_->Watch(path, type, callback);
   }
 
   void Cancel() override {
