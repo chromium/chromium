@@ -73,6 +73,7 @@
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
@@ -171,6 +172,14 @@ void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
 }
 
 class ExtensionPolicyTest : public PolicyTest {
+ public:
+  ExtensionPolicyTest() {
+#if defined(OS_CHROMEOS)
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kCameraSystemWebApp);
+#endif  // defined(OS_CHROMEOS)
+  }
+
  protected:
   void SetUp() override {
     // Set default verification mode for content verifier to be enabled.
@@ -374,6 +383,8 @@ class ExtensionPolicyTest : public PolicyTest {
       skip_scheduled_extension_checks_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

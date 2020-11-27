@@ -14,6 +14,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -26,6 +27,12 @@
 namespace policy {
 
 class SystemFeaturesPolicyTest : public PolicyTest {
+ public:
+  SystemFeaturesPolicyTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kCameraSystemWebApp);
+  }
+
  protected:
   base::string16 GetWebUITitle(const GURL& url) {
     content::WebContents* web_contents =
@@ -35,6 +42,9 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     return web_contents->GetTitle();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableCameraBeforeInstall) {
