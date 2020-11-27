@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "content/public/browser/navigation_handle.h"
@@ -15,7 +16,7 @@ namespace {
 
 SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
   switch (status) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       return SAD_TAB_KIND_KILLED_BY_OOM;
 #endif

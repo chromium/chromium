@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
@@ -149,7 +150,7 @@ void ShowPWAInstallBubble(
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
 // for the extension.
@@ -164,7 +165,7 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const base::string16& printer_name,
                                     base::OnceCallback<void(bool)> callback);
 
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
 

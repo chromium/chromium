@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -14,7 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -24,7 +25,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/native_widget_types.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ApplicationLaunchBrowserTest : public InProcessBrowserTest {
  public:
@@ -83,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest,
   EXPECT_TRUE(app_browser->is_focus_mode());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   display::Screen* screen = display::Screen::GetScreen();
   // Create 2 displays.
@@ -110,4 +111,4 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   gfx::NativeWindow window2 = browser2->window()->GetNativeWindow();
   EXPECT_EQ(display2, screen->GetDisplayNearestWindow(window2).id());
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

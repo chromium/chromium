@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -36,7 +37,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #endif
 
@@ -51,7 +52,7 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
   // alternative.
   if (profile->IsSystemProfile())
     return nullptr;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
@@ -258,7 +259,7 @@ Browser* LaunchSystemWebApp(Profile* profile,
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // LaunchSystemWebApp may be called with a profile associated with an
   // inactive (background) desktop (e.g. when multiple users are logged in).
   // Here we move the newly created browser window (or the existing one on the

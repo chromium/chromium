@@ -8,6 +8,7 @@
 #include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
@@ -52,7 +53,7 @@ class GuestBrowserCommandControllerTest
 };
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // F1-3 keys are reserved Chrome accelerators on Chrome OS.
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK, content::NativeWebKeyboardEvent(
@@ -109,7 +110,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
       -1, content::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::ET_KEY_PRESSED, ui::VKEY_F3, ui::DomCode::F3,
               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))));
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_AURA)
   // Ctrl+n, Ctrl+w are reserved while Ctrl+f is not.
@@ -142,7 +143,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   ASSERT_TRUE(browser()->is_type_app());
 
   // When is_type_app(), no keys are reserved.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK, content::NativeWebKeyboardEvent(ui::KeyEvent(
                     ui::ET_KEY_PRESSED, ui::VKEY_F1, ui::DomCode::F1, 0))));
@@ -155,7 +156,7 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       -1, content::NativeWebKeyboardEvent(ui::KeyEvent(
               ui::ET_KEY_PRESSED, ui::VKEY_F4, ui::DomCode::F4, 0))));
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_AURA)
   // The content::NativeWebKeyboardEvent constructor is available only when
@@ -228,7 +229,7 @@ TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {
 
   bool enabled = true;
   size_t profiles_count = 1U;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS uses system tray menu to handle multi-profiles.
   enabled = false;
   profiles_count = 2U;

@@ -26,7 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/memory/oom_memory_details.h"
 #endif
 
@@ -91,7 +91,7 @@ bool SadTab::ShouldShow(base::TerminationStatus status) {
   switch (status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
@@ -117,7 +117,7 @@ int SadTab::GetTitle() {
   if (!is_repeatedly_crashing_)
     return IDS_SAD_TAB_TITLE;
   switch (kind_) {
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       return IDS_SAD_TAB_RELOAD_TITLE;
 #endif
@@ -139,7 +139,7 @@ int SadTab::GetErrorCodeFormatString() {
 
 int SadTab::GetInfoMessage() {
   switch (kind_) {
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       return IDS_KILLED_TAB_BY_OOM_MESSAGE;
 #endif
@@ -176,7 +176,7 @@ std::vector<int> SadTab::GetSubMessages() {
     return std::vector<int>();
 
   switch (kind_) {
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       return std::vector<int>();
 #endif
@@ -218,7 +218,7 @@ void SadTab::RecordFirstPaint() {
     case SAD_TAB_KIND_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.OomDisplayed");
       break;
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillDisplayed.OOM");
       FALLTHROUGH;
@@ -280,7 +280,7 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
     case SAD_TAB_KIND_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.OomCreated");
       break;
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated.OOM");
       {

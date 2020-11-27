@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/platform_util.h"
@@ -49,7 +50,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/url_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -540,7 +541,7 @@ void Navigate(NavigateParams* params) {
     ShowSingletonTabOverwritingNTP(params->browser, std::move(*params));
     return;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_browser) {
     // Open OS settings in PWA, even when user types in URL bar.
     if (params->url.GetOrigin() ==
@@ -765,7 +766,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
   // chrome://settings.
   return host != chrome::kChromeUIAppLauncherPageHost &&
          host != chrome::kChromeUISettingsHost &&
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
          host != chrome::kChromeUIOSSettingsHost &&
 #endif
          host != chrome::kChromeUIHelpHost &&

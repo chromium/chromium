@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
@@ -393,14 +394,14 @@ TEST_F(SaveUpdateBubbleControllerTest, SignInPromoOK) {
                                         pending_password().password_value));
   controller()->OnSaveClicked();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(controller()->ReplaceToShowPromotionIfNeeded());
 #else
   EXPECT_TRUE(controller()->ReplaceToShowPromotionIfNeeded());
 #endif
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SaveUpdateBubbleControllerTest, SignInPromoCancel) {
   base::HistogramTester histogram_tester;
   PretendPasswordWaiting();
@@ -432,7 +433,7 @@ TEST_F(SaveUpdateBubbleControllerTest, SignInPromoDismiss) {
   EXPECT_FALSE(prefs()->GetBoolean(
       password_manager::prefs::kWasSignInPasswordPromoClicked));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Verify that URL keyed metrics are properly recorded.
 TEST_F(SaveUpdateBubbleControllerTest, RecordUKMs) {

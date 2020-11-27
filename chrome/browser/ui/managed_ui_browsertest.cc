@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,7 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #endif
 
@@ -51,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, ShouldDisplayManagedUiOnDesktop) {
                  base::Value("hello world"), nullptr);
   provider()->UpdateChromePolicy(policy_map);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(chrome::ShouldDisplayManagedUi(browser()->profile()));
 #else
   EXPECT_TRUE(chrome::ShouldDisplayManagedUi(browser()->profile()));
@@ -94,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabel) {
       chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using ManagedUiTestCros = policy::DevicePolicyCrosBrowserTest;
 IN_PROC_BROWSER_TEST_F(ManagedUiTestCros, GetManagedUiWebUILabel) {
   EXPECT_EQ(base::ASCIIToUTF16("Your <a target=\"_blank\" "

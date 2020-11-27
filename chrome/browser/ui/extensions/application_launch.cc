@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -192,7 +193,7 @@ ui::WindowShowState DetermineWindowShowState(
   if (chrome::IsRunningInForcedAppMode())
     return ui::SHOW_STATE_FULLSCREEN;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ash, LAUNCH_TYPE_FULLSCREEN launches in a maximized app window and
   // LAUNCH_TYPE_WINDOW launches in a default app window.
   extensions::LaunchType launch_type =
@@ -281,7 +282,7 @@ WebContents* OpenApplicationTab(Profile* profile,
     tab_helper->SetAppId(extension->id());
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ash, LAUNCH_FULLSCREEN launches in the OpenApplicationWindow function
   // i.e. it should not reach here.
   DCHECK(launch_type != extensions::LAUNCH_TYPE_FULLSCREEN);
@@ -294,7 +295,7 @@ WebContents* OpenApplicationTab(Profile* profile,
       !browser->window()->IsFullscreen()) {
     chrome::ToggleFullscreenMode(browser);
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return contents;
 }
 

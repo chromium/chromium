@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -51,7 +52,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/app_list/icon_standardizer.h"
 #endif
@@ -377,7 +378,7 @@ gfx::Rect AppBrowserController::GetDefaultBounds() const {
 
 bool AppBrowserController::ShouldShowTabContextMenuShortcut(
     int command_id) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1061822): Generalize ShouldShowTabContextMenuShortcut as
   // a SystemWebApp capability.
   if (system_app_type_ == SystemAppType::TERMINAL &&
@@ -508,7 +509,7 @@ void AppBrowserController::OnTabRemoved(content::WebContents* contents) {}
 gfx::ImageSkia AppBrowserController::GetFallbackAppIcon() const {
   gfx::ImageSkia page_icon = browser()->GetCurrentPageIcon().AsImageSkia();
   if (!page_icon.isNull()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
       return app_list::CreateStandardIconImage(page_icon);
 #endif

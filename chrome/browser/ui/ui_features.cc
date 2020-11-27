@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ui_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace features {
 
 // Enables showing the EV certificate details in the Page Info bubble.
@@ -127,7 +129,7 @@ const base::Feature kWebFooterExperiment{"WebFooterExperiment",
 const base::Feature kWebUITabStrip{"WebUITabStrip",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
 const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
@@ -137,5 +139,5 @@ const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
 // for pointing sticks (such as TrackPoints).
 const base::Feature kSeparatePointingStickSettings{
     "SeparatePointingStickSettings", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace features

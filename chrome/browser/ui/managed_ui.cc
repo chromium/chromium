@@ -5,13 +5,14 @@
 #include "chrome/browser/ui/managed_ui.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
@@ -22,7 +23,7 @@
 namespace chrome {
 
 bool ShouldDisplayManagedUi(Profile* profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show the UI in demo mode.
   if (chromeos::DemoSession::IsDeviceInDemoMode())
     return false;
@@ -63,7 +64,7 @@ base::string16 GetManagedUiWebUILabel(Profile* profile) {
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 base::string16 GetDeviceManagedUiWebUILabel() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();

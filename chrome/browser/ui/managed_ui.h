@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_MANAGED_UI_H_
 
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -30,7 +31,7 @@ base::string16 GetManagedUiMenuItemLabel(Profile* profile);
 // is managed. These strings contain HTML for an <a> element.
 base::string16 GetManagedUiWebUILabel(Profile* profile);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The label for the WebUI footnote for Managed UI indicating that the device
 // is mananged. These strings contain HTML for an <a> element.
 base::string16 GetDeviceManagedUiWebUILabel();

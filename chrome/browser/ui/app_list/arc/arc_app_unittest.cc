@@ -27,6 +27,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -2922,7 +2923,7 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnIconVersionUpdate) {
 }
 
 // TODO(crbug.com/1005069) Disabled on Chrome OS due to flake
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_IconLoadNonSupportedScales DISABLED_IconLoadNonSupportedScales
 #else
 #define MAYBE_IconLoadNonSupportedScales IconLoadNonSupportedScales

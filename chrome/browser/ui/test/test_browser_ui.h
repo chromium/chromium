@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace views {
@@ -91,7 +92,9 @@ class TestBrowserUi {
   // successfully shown.
   virtual bool VerifyUi() = 0;
 
-#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Can be called by VerifyUi() to ensure pixel correctness.
   bool VerifyPixelUi(views::Widget* widget,
                      const std::string& screenshot_prefix,
@@ -120,8 +123,10 @@ class TestBrowserUi {
   void ShowAndVerifyUi();
 
  private:
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
 #if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm_;
 #endif
 

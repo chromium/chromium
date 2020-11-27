@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,10 +31,10 @@
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #include "ui/display/test/display_manager_test_api.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using url::kAboutBlankURL;
 using content::WebContents;
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsMouseLocked());
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_AURA)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
 // These are flaky on linux_aura.
 // http://crbug.com/163931
 #define MAYBE_TestTabExitsMouseLockOnNavigation \
@@ -518,7 +519,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsMouseLocked());
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_AURA) || \
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+        defined(USE_AURA) ||                                \
     defined(OS_WIN) && defined(NDEBUG)
 // TODO(erg): linux_aura bringup: http://crbug.com/163931
 // Test is flaky on Windows: https://crbug.com/1124492
@@ -641,7 +643,7 @@ class ExperimentalFullscreenControllerInteractiveTest
 // where the window server's async handling of the fullscreen window state may
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
 #else
 #define MAYBE_FullscreenOnSecondDisplay FullscreenOnSecondDisplay
@@ -651,7 +653,7 @@ class ExperimentalFullscreenControllerInteractiveTest
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnSecondDisplay) {
   // Updates the display configuration to add a secondary display.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-801x802");
 #else
@@ -662,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                    display::DisplayList::Type::NOT_PRIMARY);
   display::Screen::SetScreenInstance(&screen);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   // Move the window to the first display (on the left).
@@ -694,11 +696,11 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   EXPECT_EQ(true, EvalJs(tab, request_fullscreen_script));
   enter_fullscreen_observer.Wait();
   EXPECT_TRUE(browser()->window()->IsFullscreen());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(gfx::Rect(801, 0, 801, 802), browser()->window()->GetBounds());
 #else
   EXPECT_EQ(gfx::Rect(901, 100, 801, 802), browser()->window()->GetBounds());
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Execute JS to exit fullscreen.
   FullscreenNotificationObserver exit_fullscreen_observer(browser());
@@ -713,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   EXPECT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::Screen::SetScreenInstance(original_screen);
 #endif  // !OS_CHROMEOS
 }
@@ -725,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
 // TODO(msw): Parameterize the maximized state and combine with the test above.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
   DISABLED_FullscreenOnSecondDisplayMaximized
 #else
@@ -738,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnSecondDisplayMaximized) {
   // Updates the display configuration to add a secondary display.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-801x802");
 #else
@@ -749,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                    display::DisplayList::Type::NOT_PRIMARY);
   display::Screen::SetScreenInstance(&screen);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
   // Move the window to the first display (on the left) and maximize it.
@@ -783,11 +785,11 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   EXPECT_EQ(true, EvalJs(tab, request_fullscreen_script));
   enter_fullscreen_observer.Wait();
   EXPECT_TRUE(browser()->window()->IsFullscreen());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(gfx::Rect(801, 0, 801, 802), browser()->window()->GetBounds());
 #else
   EXPECT_EQ(gfx::Rect(901, 100, 801, 802), browser()->window()->GetBounds());
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Execute JS to exit fullscreen.
   FullscreenNotificationObserver exit_fullscreen_observer(browser());
@@ -803,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   EXPECT_EQ(maximized_bounds, browser()->window()->GetBounds());
   EXPECT_TRUE(browser()->window()->IsMaximized());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::Screen::SetScreenInstance(original_screen);
 #endif  // !OS_CHROMEOS
 }
@@ -818,14 +820,14 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnScreensChange) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Install a mock screen object to be monitored by a new web contents.
   display::Screen* original_screen = display::Screen::GetScreen();
   display::ScreenBase screen;
   screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                    display::DisplayList::Type::PRIMARY);
   display::Screen::SetScreenInstance(&screen);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Open a new foreground tab that will observe the mock screen object.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -852,18 +854,18 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   FullscreenNotificationObserver fullscreen_observer(browser());
 
   // Update the display configuration to trigger window.onscreenschange.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-801x802");
 #else
   screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                    display::DisplayList::Type::NOT_PRIMARY);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   fullscreen_observer.Wait();
   EXPECT_TRUE(browser()->window()->IsFullscreen());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::Screen::SetScreenInstance(original_screen);
 #endif  // !OS_CHROMEOS
 }

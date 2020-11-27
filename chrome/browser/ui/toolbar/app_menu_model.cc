@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/banners/app_banner_manager.h"
@@ -83,11 +84,11 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(OS_CHROMEOS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -178,12 +179,12 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser) {
-#if defined(OS_CHROMEOS) && defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
     int help_string_id = IDS_GET_HELP;
 #else
     int help_string_id = IDS_HELP_PAGE;
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #else
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
@@ -226,7 +227,7 @@ void ToolsMenuModel::Build(Browser* browser) {
   AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   if (chrome::CanOpenTaskManager())
     AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddItemWithStringId(IDC_TAKE_SCREENSHOT, IDS_TAKE_SCREENSHOT);
 #endif
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -274,7 +275,7 @@ void AppMenuModel::Init() {
   Observe(tab_strip_model->GetActiveWebContents());
   UpdateZoomControls();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* const local_state = g_browser_process->local_state();
   if (local_state) {
     local_state_pref_change_registrar_.Init(local_state);
@@ -284,7 +285,7 @@ void AppMenuModel::Init() {
                             base::Unretained(this)));
     UpdateSettingsItemState();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool AppMenuModel::DoesCommandIdDismissMenu(int command_id) const {
@@ -834,7 +835,7 @@ void AppMenuModel::Build() {
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Always show this option if we're in tablet mode on Chrome OS.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kEnableRequestTabletSite) ||
@@ -859,7 +860,7 @@ void AppMenuModel::Build() {
   sub_menus_.push_back(std::make_unique<HelpMenuModel>(this, browser_));
   AddSubMenuWithStringId(IDC_HELP_MENU, IDS_HELP_MENU, sub_menus_.back().get());
 #else
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #else
   AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
@@ -873,7 +874,7 @@ void AppMenuModel::Build() {
 
   // On Chrome OS, similar UI is displayed in the system tray menu, instead of
   // this menu.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (chrome::ShouldDisplayManagedUi(browser_->profile())) {
     AddSeparator(ui::LOWER_SEPARATOR);
     const int kIconSize = 18;
@@ -885,7 +886,7 @@ void AppMenuModel::Build() {
             ui::NativeTheme::kColorId_HighlightedMenuItemForegroundColor,
             kIconSize));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   uma_action_recorded_ = false;
 }
@@ -981,7 +982,7 @@ void AppMenuModel::OnZoomLevelChanged(
   UpdateZoomControls();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AppMenuModel::UpdateSettingsItemState() {
   const base::ListValue* system_features_disable_list_pref = nullptr;
   PrefService* const local_state = g_browser_process->local_state();
@@ -999,4 +1000,4 @@ void AppMenuModel::UpdateSettingsItemState() {
   if (index != -1)
     SetEnabledAt(index, is_enabled);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

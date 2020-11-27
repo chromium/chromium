@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "build/branding_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
@@ -47,7 +48,7 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
 
 StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
 // Chrome OS has its own welcome flow provided by OOBE.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return StartupTabs();
 #else
   if (!profile)
@@ -67,7 +68,7 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
   standard_params.is_force_signin_enabled = signin_util::IsForceSigninEnabled();
 
   return GetStandardOnboardingTabsForState(standard_params);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(

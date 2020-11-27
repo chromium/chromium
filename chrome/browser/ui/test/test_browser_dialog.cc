@@ -11,9 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #endif
 
@@ -114,7 +115,9 @@ bool TestBrowserDialog::VerifyUi() {
 
   views::Widget* dialog_widget = *(added.begin());
 // TODO(https://crbug.com/958242) support Mac for pixel tests.
-#if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   dialog_widget->SetBlockCloseForTesting(true);
   // Deactivate before taking screenshot. Deactivated dialog pixel outputs
   // is more predictable than activated dialog.
@@ -195,7 +198,7 @@ std::string TestBrowserDialog::GetNonDialogName() {
 
 void TestBrowserDialog::UpdateWidgets() {
   widgets_.clear();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
     views::Widget::GetAllChildWidgets(root_window, &widgets_);
 #elif defined(TOOLKIT_VIEWS)

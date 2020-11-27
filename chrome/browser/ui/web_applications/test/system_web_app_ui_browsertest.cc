@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -29,7 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
@@ -442,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Use LoginManagerTest here instead of SystemWebAppManagerBrowserTest, because
 // it's less complicated to add SWA to LoginManagerTest than adding multi-logins
 // to SWA browsertest.
@@ -567,14 +568,14 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
       MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
           browser2->window()->GetNativeWindow(), account_id2_));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The following tests are disabled in DCHECK builds. LaunchSystemWebApp DCHECKs
 // if the wrong profile is used. EXPECT_DCHECK_DEATH (or its variants) aren't
 // reliable in browsertests, so we don't test this. This is okay because these
 // tests are used to verify that in release builds, LaunchSystemWebApp doesn't
 // crash and behaves reasonably (pick an appropriate profile).
-#if defined(OS_CHROMEOS) && !DCHECK_IS_ON()
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
@@ -646,12 +647,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
   EXPECT_TRUE(result_browser->profile()->IsGuestSession());
   EXPECT_TRUE(result_browser->profile()->IsPrimaryOTRProfile());
 }
-#endif  // defined(OS_CHROMEOS) && !DCHECK_IS_ON()
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
     SystemWebAppLinkCaptureBrowserTest);
 
-#if defined(OS_CHROMEOS) && !DCHECK_IS_ON()
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
     SystemWebAppLaunchProfileBrowserTest);
 

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
@@ -270,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlockWebContentsCreation) {
 }
 
 // TODO(crbug.com/1115886): Flaky on Mac ASAN and Chrome OS.
-#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || defined(OS_CHROMEOS)
+#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER)) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_BlockWebContentsCreationIncognito \
   DISABLED_BlockWebContentsCreationIncognito
 #else

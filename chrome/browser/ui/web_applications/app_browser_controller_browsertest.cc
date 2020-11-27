@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabLoadNoThemeChange) {
 }
 
 // App Popups are only used on Chrome OS. See https://crbug.com/1060917.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        WhiteThemeForSystemAppPopup) {
   InstallAndLaunchMockPopup();
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, InitialBounds) {
   InstallAndLaunchMockApp();
   EXPECT_EQ(app_browser_->window()->GetBounds(), gfx::Rect(64, 64, 652, 484));

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -30,7 +31,7 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/extensions/extension_installed_notification.h"
 #else
 #include "chrome/common/url_constants.h"
@@ -89,11 +90,11 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
       return;
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ExtensionInstalledNotification::Show(extension.get(), current_profile);
-#else  // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
     OpenAppInstalledUI(extension->id());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
   }
 
@@ -118,7 +119,7 @@ void ExtensionInstallUIDefault::OnInstallFailure(
 }
 
 void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notification always enabled on ChromeOS, so always handled in
   // OnInstallSuccess.
   NOTREACHED();

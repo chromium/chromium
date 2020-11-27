@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -27,7 +28,7 @@
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -92,7 +93,7 @@ std::unique_ptr<WebAppUiManager> WebAppUiManager::Create(Profile* profile) {
 
 // static
 bool WebAppUiManager::ShouldHideAppFromUser(const AppId& app_id) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return app_list::HideInLauncherById(app_id);
 #else
   return false;
@@ -183,7 +184,7 @@ void WebAppUiManagerImpl::UninstallAndReplaceIfExists(
       continue;
 
     if (!has_migrated) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // Grid position in app list.
       auto* app_list_syncable_service =
           app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
@@ -233,7 +234,7 @@ void WebAppUiManagerImpl::UninstallAndReplaceIfExists(
 }
 
 bool WebAppUiManagerImpl::CanAddAppToQuickLaunchBar() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
@@ -242,13 +243,13 @@ bool WebAppUiManagerImpl::CanAddAppToQuickLaunchBar() const {
 
 void WebAppUiManagerImpl::AddAppToQuickLaunchBar(const AppId& app_id) {
   DCHECK(CanAddAppToQuickLaunchBar());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeLauncherController does not exist in unit tests.
   if (auto* controller = ChromeLauncherController::instance()) {
     controller->PinAppWithID(app_id);
     controller->UpdateV1AppState(app_id);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,

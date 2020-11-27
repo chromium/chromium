@@ -4,6 +4,7 @@
 
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
@@ -561,7 +562,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
     OmniboxPedalProvider provider(client);
 
     EXPECT_EQ(provider.FindPedalMatch(input, base::UTF8ToUTF16("")), nullptr);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(orinj): Get ChromeOS to use the right dataset, but for now make this
     //  a soft failure so as to not block all other platforms. To ensure this
     //  is not going to cause failure in production, still test that English

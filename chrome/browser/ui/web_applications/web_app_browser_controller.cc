@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +28,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/apps/apk_web_app_service.h"
 
 namespace {
@@ -68,7 +69,7 @@ bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
   return display == DisplayMode::kWindowControlsOverlay;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool WebAppBrowserController::ShouldShowCustomTabBar() const {
   if (AppBrowserController::ShouldShowCustomTabBar())
     return true;
@@ -92,7 +93,7 @@ void WebAppBrowserController::OnRelationshipCheckComplete(
   browser()->window()->UpdateCustomTabBarVisibility(should_show_cct,
                                                     false /* animate */);
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void WebAppBrowserController::OnWebAppUninstalled(const AppId& app_id) {
   if (HasAppId() && app_id == GetAppId())
@@ -113,7 +114,7 @@ gfx::ImageSkia WebAppBrowserController::GetWindowAppIcon() const {
     return *app_icon_;
   app_icon_ = GetFallbackAppIcon();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon) &&
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           browser()->profile())) {
@@ -279,7 +280,7 @@ void WebAppBrowserController::OnReadIcon(const SkBitmap& bitmap) {
 
 void WebAppBrowserController::PerformDigitalAssetLinkVerification(
     Browser* browser) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   asset_link_handler_ =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
           browser->profile()->GetURLLoaderFactory());

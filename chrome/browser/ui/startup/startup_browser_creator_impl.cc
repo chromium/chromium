@@ -78,7 +78,7 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -112,7 +112,7 @@ void AppendTabs(const StartupTabs& from, StartupTabs* to) {
 }
 
 bool ShouldShowBadFlagsSecurityWarnings() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* local_state = g_browser_process->local_state();
   if (!local_state)
     return true;
@@ -315,11 +315,11 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   // administrative policy.
   bool promotional_tabs_enabled = true;
   const PrefService::Preference* enabled_pref = nullptr;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* local_state = g_browser_process->local_state();
   if (local_state)
     enabled_pref = local_state->FindPreference(prefs::kPromotionalTabsEnabled);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (enabled_pref && enabled_pref->IsManaged()) {
     // Presentation is managed; obey the policy setting.
     promotional_tabs_enabled = enabled_pref->GetValue()->GetBool();
@@ -332,10 +332,10 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   }
 
   bool welcome_enabled = true;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   welcome_enabled =
       welcome::IsEnabled(profile_) && welcome::HasModulesToShow(profile_);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool serve_extensions_page =
       extensions::ShouldShowExtensionsCheckupOnStartup(profile_);
@@ -573,7 +573,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
     InfoBarService* infobar_service =
         InfoBarService::FromWebContents(web_contents);
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Show the experimental lacros info bar. auto_expire must be set to false,
     // since otherwise an automated navigation [which can happen at launch] will
     // cause the info bar to disappear.
@@ -600,7 +600,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
       MacSystemInfoBarDelegate::Create(infobar_service);
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     if (!command_line_.HasSwitch(switches::kNoDefaultBrowserCheck)) {
       // The default browser prompt should only be shown after the first run.
       if (!is_first_run_)

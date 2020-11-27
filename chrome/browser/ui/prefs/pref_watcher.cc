@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +17,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_pref_names.h"
 #endif
 
@@ -55,7 +56,7 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kWebkitTabsToLinks,
     prefs::kWebKitTextAreasAreResizable,
     prefs::kWebKitWebSecurityEnabled,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::prefs::kAccessibilityFocusHighlightEnabled,
 #else
     prefs::kAccessibilityFocusHighlightEnabled,

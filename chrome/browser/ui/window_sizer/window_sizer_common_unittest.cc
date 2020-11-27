@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
@@ -121,7 +122,7 @@ void WindowSizerTestUtil::GetWindowBounds(const gfx::Rect& monitor1_bounds,
 
 #if !defined(OS_MAC)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Passing null for the browser parameter of GetWindowBounds makes the test skip
 // all Ash-specific logic, so there's no point running this on Chrome OS.
 TEST(WindowSizerTestCommon,
@@ -309,7 +310,7 @@ TEST(WindowSizerTestCommon,
     EXPECT_EQ("50,368 500x400", window_bounds.ToString());
   }
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test that the window is sized appropriately for the first run experience
 // where the default window bounds calculation is invoked.

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/sign_in_promo_bubble_controller.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -66,7 +67,7 @@ void SignInPromoBubbleControllerTest::Init() {
       new SignInPromoBubbleController(mock_delegate_->AsWeakPtr()));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SignInPromoBubbleControllerTest, SignInPromoOK) {
   Init();
   AccountInfo account;

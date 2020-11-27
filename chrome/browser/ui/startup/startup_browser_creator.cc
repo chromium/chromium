@@ -31,6 +31,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -79,7 +80,7 @@
 #include "extensions/common/switches.h"
 #include "printing/buildflags/buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/app_mode/app_launch_utils.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -253,7 +254,7 @@ void DumpBrowserHistograms(const base::FilePath& output_file) {
 // Returns whether |profile| can be opened during Chrome startup without
 // explicit user action.
 bool CanOpenProfileOnStartup(Profile* profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, the user has already chosen and logged into the profile before
   // Chrome starts up.
   return true;
@@ -278,10 +279,10 @@ bool CanOpenProfileOnStartup(Profile* profile) {
 }
 
 void ShowUserManagerOnStartup() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   UserManager::Show(base::FilePath(),
                     profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
@@ -294,10 +295,10 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
   if (command_line.HasSwitch(switches::kSilentLaunch))
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return profile->GetPrefs()->GetBoolean(
       prefs::kStartupBrowserWindowLaunchSuppressed);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return false;
 }
@@ -514,7 +515,7 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   // is starting Chrome for the first time. On Chrome OS, the sentinel is stored
   // in a location shared by all users and the check is meaningless. Query the
   // UserManager instead to determine whether the user is new.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_first_run =
       user_manager::UserManager::Get()->IsCurrentUserNew();
   // On ChromeOS restarts force the user to login again. The expectation is that
@@ -577,7 +578,7 @@ void StartupBrowserCreator::ClearLaunchedProfilesForTesting() {
 // static
 void StartupBrowserCreator::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kPromotionalTabsEnabled, true);
   registry->RegisterBooleanPref(prefs::kCommandLineFlagSecurityWarningsEnabled,
                                 true);
@@ -650,7 +651,7 @@ std::vector<GURL> StartupBrowserCreator::GetURLsFromCommandLine(
 
     const GURL settings_url = GURL(chrome::kChromeUISettingsURL);
     bool url_points_to_an_approved_settings_page = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // In ChromeOS, allow any settings page to be specified on the command line.
     url_points_to_an_approved_settings_page =
         url.GetOrigin() == settings_url.GetOrigin();
@@ -669,7 +670,7 @@ std::vector<GURL> StartupBrowserCreator::GetURLsFromCommandLine(
         url_points_to_an_approved_settings_page ||
         url == reset_settings_url_with_cct_hash;
 #endif  // defined(OS_WIN)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     ChildProcessSecurityPolicy* policy =
         ChildProcessSecurityPolicy::GetInstance();
@@ -733,7 +734,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     return false;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The browser will be launched after the user logs in.
   if (command_line.HasSwitch(chromeos::switches::kLoginManager))
@@ -773,7 +774,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     chrome::AttemptUserExit();
     return false;
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_X11)
   if (!features::IsUsingOzonePlatform()) {
@@ -803,7 +804,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     silent_launch = true;
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(features::kOnConnectNative) &&
       command_line.HasSwitch(switches::kNativeMessagingConnectHost) &&
       command_line.HasSwitch(switches::kNativeMessagingConnectExtension)) {
@@ -961,7 +962,7 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
     bool process_startup,
     Profile* last_used_profile,
     const Profiles& last_opened_profiles) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   const std::vector<GURL> urls_to_launch =
       StartupBrowserCreator::GetURLsFromCommandLine(command_line, cur_dir,
                                                     last_used_profile);
@@ -972,7 +973,7 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
             : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
     return true;
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome::startup::IsProcessStartup is_process_startup =
       process_startup ? chrome::startup::IS_PROCESS_STARTUP
@@ -1034,7 +1035,7 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
   for (Profile* profile : last_opened_profiles) {
     DCHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Skip any locked profile.
     if (!CanOpenProfileOnStartup(profile))
       continue;
@@ -1080,7 +1081,7 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
 // Note that this must be done after all profiles have
 // been launched so the observer knows about all profiles to wait before
 // activation this one.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_process_startup == chrome::startup::IS_PROCESS_STARTUP)
     ShowUserManagerOnStartup();
   else
@@ -1155,13 +1156,13 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
   }
   StartupBrowserCreator startup_browser_creator;
   Profiles last_opened_profiles;
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS multiple profiles doesn't apply.
   // If no browser windows are open, i.e. the browser is being kept alive in
   // background mode or for other processing, restore |last_opened_profiles|.
   if (chrome::GetTotalBrowserCount() == 0)
     last_opened_profiles = profile_manager->GetLastOpenedProfiles();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   startup_browser_creator.ProcessCmdLineImpl(command_line, cur_dir,
                                              /*process_startup=*/false, profile,
                                              last_opened_profiles);
@@ -1223,7 +1224,7 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
       user_data_dir);
 }
 
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 Profile* GetStartupProfile(const base::FilePath& user_data_dir,
                            const base::CommandLine& command_line) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1294,4 +1295,4 @@ Profile* GetFallbackStartupProfile() {
 
   return nullptr;
 }
-#endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)

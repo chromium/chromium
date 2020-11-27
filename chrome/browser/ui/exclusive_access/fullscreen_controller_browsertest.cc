@@ -7,6 +7,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -428,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   // Test Normal state <--> Browser fullscreen mode <--> Tab fullscreen mode.
   ToggleBrowserFullscreen();
   EXPECT_TRUE(context->IsFullscreen());
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool should_show_top_ui = true;
 #else
   bool should_show_top_ui = false;
@@ -437,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
 
   EnterActiveTabFullscreen();
   EXPECT_TRUE(context->IsFullscreen());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(browser()->window()->IsToolbarVisible());
 #else
   EXPECT_FALSE(browser()->window()->IsToolbarVisible());

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -29,7 +30,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
@@ -45,7 +46,7 @@ void AutomationManagerAura::Enable() {
   enabled_ = true;
   Reset(false);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Seed the views::AXAuraObjCache with per-display root windows so
   // GetTopLevelWindows() returns the correct values when automation is enabled
   // with multiple displays connected.
@@ -62,7 +63,7 @@ void AutomationManagerAura::Enable() {
   // ordering of two base::Singletons.
   cache_->SetDelegate(this);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* active_window = ash::window_util::GetActiveWindow();
   if (active_window) {
     views::AXAuraObjWrapper* focus = cache_->GetOrCreate(active_window);
@@ -162,7 +163,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
   } else {
     current_tree_serializer_ =
         std::make_unique<AuraAXTreeSerializer>(current_tree_.get());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::Shell* shell = ash::Shell::Get();
     // Windows within the overlay container get moved to the new monitor when
     // the primary display gets swapped.
@@ -170,7 +171,7 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
         shell->GetContainer(shell->GetPrimaryRootWindow(),
                             ash::kShellWindowId_OverlayContainer),
         cache_.get());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
 
@@ -248,7 +249,7 @@ void AutomationManagerAura::SendPendingEvents() {
 
 void AutomationManagerAura::PerformHitTest(
     const ui::AXActionData& original_action) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::AXActionData action = original_action;
   aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
   if (!root_window)

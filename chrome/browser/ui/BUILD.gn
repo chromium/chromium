@@ -5,6 +5,7 @@
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
@@ -36,7 +37,7 @@ static_library("ui") {
     "app_list/app_list_util.cc",
     "app_list/app_list_util.h",
 
-    # All other browser/ui/app_list files go under is_chromeos below.
+    # All other browser/ui/app_list files go under is_chromeos_ash below.
     "autofill/autofill_bubble_handler.h",
     "autofill/autofill_popup_controller.h",
     "autofill/autofill_popup_controller_impl.cc",
@@ -1569,14 +1570,14 @@ static_library("ui") {
     ]
     public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
 
-    if (use_ozone && !is_chromeos) {
+    if (use_ozone && !is_chromeos_ash) {
       deps += [
         "//ui/base:features",
         "//ui/ozone",
       ]
     }
 
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       deps += [ "//ui/base/ime/linux" ]
     }
 
@@ -1619,7 +1620,7 @@ static_library("ui") {
     deps += [ "//chrome/browser/supervised_user/supervised_user_error_page" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     assert(enable_extensions)
     assert(enable_supervised_users)
     assert(toolkit_views)
@@ -2830,7 +2831,7 @@ static_library("ui") {
     deps += [ "//ui/webui" ]
   }
 
-  if (is_win || is_mac || is_linux) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [
       "bookmarks/bookmark_bubble_sign_in_delegate.cc",
       "bookmarks/bookmark_bubble_sign_in_delegate.h",
@@ -3256,7 +3257,7 @@ static_library("ui") {
     }
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "views/apps/chrome_app_window_client_views_linux.cc",
       "views/first_run_dialog.cc",
@@ -3313,7 +3314,7 @@ static_library("ui") {
       ]
     }
     if (use_ozone) {
-      if (!is_linux) {
+      if (!is_linux || is_chromeos_lacros) {
         sources += [
           "views/frame/browser_desktop_window_tree_host_platform.cc",
           "views/frame/browser_desktop_window_tree_host_platform.h",
@@ -3321,7 +3322,7 @@ static_library("ui") {
       }
       sources += [ "views/frame/native_browser_frame_factory_ozone.cc" ]
     }
-    if (is_linux) {
+    if (is_linux || is_chromeos_lacros) {
       sources += [
         "views/frame/browser_desktop_window_tree_host_linux.cc",
         "views/frame/browser_desktop_window_tree_host_linux.h",
@@ -4164,7 +4165,7 @@ static_library("ui") {
 
     allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
 
-    if (is_linux) {
+    if (is_linux || is_chromeos_lacros) {
       sources += [
         "views/chrome_views_delegate_linux.cc",
         "views/frame/desktop_linux_browser_frame_view.cc",
@@ -4216,7 +4217,7 @@ static_library("ui") {
       sources += [ "views/chrome_views_delegate_win.cc" ]
     }
 
-    if (is_win || is_linux) {
+    if (is_win || (is_linux || is_chromeos_lacros)) {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
@@ -4225,7 +4226,7 @@ static_library("ui") {
 
     if (use_aura) {
       # These files can do Gtk+-based theming for builds with gtk enabled.
-      if (is_linux) {
+      if (is_linux || is_chromeos_lacros) {
         sources += [
           "views/chrome_browser_main_extra_parts_views_linux.cc",
           "views/chrome_browser_main_extra_parts_views_linux.h",
@@ -4248,7 +4249,7 @@ static_library("ui") {
       }
     }
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [
         "views/accessibility/accessibility_focus_highlight.cc",
         "views/accessibility/accessibility_focus_highlight.h",
@@ -4320,12 +4321,12 @@ static_library("ui") {
       "//ui/wm",
     ]
 
-    if (!is_chromeos && !chromeos_is_browser_only) {
+    if (!is_chromeos_ash && !is_chromeos_lacros) {
       sources +=
           [ "views/frame/browser_non_client_frame_view_factory_views.cc" ]
     }
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [
         "views/frame/desktop_browser_frame_aura.cc",
         "views/frame/desktop_browser_frame_aura.h",
@@ -4514,7 +4515,7 @@ static_library("ui") {
       "//services/device/public/mojom:usb",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "webui/print_preview/local_printer_handler_chromeos.cc",
         "webui/print_preview/local_printer_handler_chromeos.h",
@@ -4532,7 +4533,7 @@ static_library("ui") {
         "webui/print_preview/privet_printer_handler.h",
       ]
 
-      if (!is_chromeos) {
+      if (!is_chromeos_ash) {
         deps += [ "//chrome/common:service_process_mojom" ]
       }
     }
@@ -4728,7 +4729,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "ash/ash_test_util.cc",
       "ash/ash_test_util.h",
@@ -4759,7 +4760,7 @@ static_library("test_support") {
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   source_set("ash_test_support") {
     check_includes = false
     sources = [

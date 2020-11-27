@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -49,7 +50,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
 #endif
 
@@ -310,7 +311,7 @@ bool ChromeAppDelegate::CheckMediaAccessPermission(
 }
 
 int ChromeAppDelegate::PreferredIconSize() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use a size appropriate for the ash shelf (see ash::kShelfSize).
   return extension_misc::EXTENSION_ICON_MEDIUM;
 #else
@@ -369,7 +370,7 @@ bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
                                   bool reverse) {
   if (!for_lock_screen_app_)
     return false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return lock_screen_apps::StateController::Get()->HandleTakeFocus(web_contents,
                                                                    reverse);
 #else

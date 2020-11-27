@@ -72,7 +72,7 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
 
 bool TabRendererData::IsCrashed() const {
   return (crashed_status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED ||
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
           crashed_status ==
               base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM ||
 #endif

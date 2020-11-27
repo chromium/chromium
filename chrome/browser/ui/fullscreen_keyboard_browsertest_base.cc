@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -187,7 +188,7 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
   // On MACOSX, Command + Control + F is used.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(GetActiveBrowser(), ui::VKEY_F,
                                               true, false, false, true));
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   // A dedicated fullscreen key is used on Chrome OS, so send a fullscreen
   // command directly instead, to avoid constructing the key press.
   ASSERT_TRUE(chrome::ExecuteCommand(GetActiveBrowser(), IDC_FULLSCREEN));

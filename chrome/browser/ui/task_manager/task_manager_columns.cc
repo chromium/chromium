@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/nacl/common/buildflags.h"
 
@@ -30,7 +31,7 @@ const TableColumnData kColumns[] = {
      base::size("800 MiB") * kCharWidth,
      base::size("Memory Footprint") * 1.5 * kCharWidth, true, false, true},
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN, ui::TableColumn::RIGHT, -1, 0,
      base::size("800 MiB") * kCharWidth, -1, true, false, false},
 #endif

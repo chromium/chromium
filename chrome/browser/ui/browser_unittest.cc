@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser.h"
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -247,7 +248,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
   EXPECT_TRUE(otr_browser);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
   session_manager::SessionManager session_manager;
 

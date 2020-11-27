@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -51,7 +52,7 @@ TEST_F(SyncPromoUITest, ShouldShowSyncPromoSyncDisabled) {
 // Verifies that ShouldShowSyncPromo returns true if all conditions to
 // show the promo are met.
 TEST_F(SyncPromoUITest, ShouldShowSyncPromoSyncEnabled) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // No sync promo on CrOS.
   EXPECT_FALSE(SyncPromoUI::ShouldShowSyncPromo(profile_.get()));
 #else
