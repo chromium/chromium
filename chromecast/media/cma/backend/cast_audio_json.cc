@@ -98,7 +98,8 @@ CastAudioJsonProviderImpl::FileWatcher::~FileWatcher() = default;
 void CastAudioJsonProviderImpl::FileWatcher::SetTuningChangedCallback(
     TuningChangedCallback callback) {
   watcher_.Watch(
-      CastAudioJson::GetFilePathForTuning(), false /* recursive */,
+      CastAudioJson::GetFilePathForTuning(),
+      base::FilePathWatcher::Type::kNonRecursive,
       base::BindRepeating(&ReadFileRunCallback, std::move(callback)));
 }
 
