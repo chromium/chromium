@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
@@ -346,9 +347,13 @@ void PasswordCheckDelegate::StartPasswordCheck(
     return;
   }
 
+  // In case the Weakness Check feature is enabled start the check, and notify
+  // observers once done.
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordsWeaknessCheck)) {
-    insecure_credentials_manager_.StartWeakCheck();
+    insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
+        &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
+        weak_ptr_factory_.GetWeakPtr()));
   }
 
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
@@ -378,13 +383,15 @@ api::passwords_private::PasswordCheckStatus
 PasswordCheckDelegate::GetPasswordCheckStatus() const {
   api::passwords_private::PasswordCheckStatus result;
 
-  // Obtain the timestamp of the last completed check. This is 0.0 in case the
-  // check never completely ran before.
-  const double last_check_completed = profile_->GetPrefs()->GetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted);
-  if (last_check_completed) {
-    result.elapsed_time_since_last_check = std::make_unique<std::string>(
-        FormatElapsedTime(base::Time::FromDoubleT(last_check_completed)));
+  // Obtain the timestamp of the last completed password or weak check. This
+  // will be null in case no check has completely ran before.
+  base::Time last_check_completed =
+      std::max(base::Time::FromTimeT(profile_->GetPrefs()->GetDouble(
+                   password_manager::prefs::kLastTimePasswordCheckCompleted)),
+               last_completed_weak_check_);
+  if (!last_check_completed.is_null()) {
+    result.elapsed_time_since_last_check =
+        std::make_unique<std::string>(FormatElapsedTime(last_check_completed));
   }
 
   State state = bulk_leak_check_service_adapter_.GetBulkLeakCheckState();
@@ -455,18 +462,7 @@ void PasswordCheckDelegate::OnStateChanged(State state) {
   if (state == State::kIdle && std::exchange(is_check_running_, false)) {
     // When the service transitions from running into idle it has finished a
     // check.
-    profile_->GetPrefs()->SetDouble(
-        password_manager::prefs::kLastTimePasswordCheckCompleted,
-        base::Time::Now().ToDoubleT());
-
-    // In case the check run to completion delay the last Check Status update by
-    // a second. This avoids flickering of the UI if the full check ran from
-    // start to finish almost immediately.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(1));
+    RecordAndNotifyAboutCompletedCompromisedPasswordCheck();
     return;
   }
 
@@ -512,6 +508,29 @@ PasswordCheckDelegate::FindMatchingInsecureCredential(
   }
 
   return insecure_credential;
+}
+
+void PasswordCheckDelegate::
+    RecordAndNotifyAboutCompletedCompromisedPasswordCheck() {
+  profile_->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      base::Time::Now().ToDoubleT());
+
+  // Delay the last Check Status update by a second. This avoids flickering of
+  // the UI if the full check ran from start to finish almost immediately.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::TimeDelta::FromSeconds(1));
+}
+
+void PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck() {
+  last_completed_weak_check_ = base::Time::Now();
+  // Note: In contrast to the compromised password check we do not does not
+  // artificially delay the response, Since this check is expected to complete
+  // quickly.
+  NotifyPasswordCheckStatusChanged();
 }
 
 void PasswordCheckDelegate::NotifyPasswordCheckStatusChanged() {

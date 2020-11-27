@@ -8,6 +8,8 @@
 #include <map>
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
@@ -164,7 +166,7 @@ class InsecureCredentialsManager
 
   // Computes weak credentials in a separate thread and then passes the result
   // to OnWeakCheckDone.
-  void StartWeakCheck();
+  void StartWeakCheck(base::OnceClosure on_check_done = base::DoNothing());
 
   // Marks all saved credentials which have same username & password as
   // compromised.

@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -238,13 +239,15 @@ void InsecureCredentialsManager::Init() {
   compromised_credentials_reader_.Init();
 }
 
-void InsecureCredentialsManager::StartWeakCheck() {
+void InsecureCredentialsManager::StartWeakCheck(
+    base::OnceClosure on_check_done) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&BulkWeakCheck,
                      ExtractPasswords(presenter_->GetSavedPasswords())),
       base::BindOnce(&InsecureCredentialsManager::OnWeakCheckDone,
-                     weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
+                     weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer())
+          .Then(std::move(on_check_done)));
 }
 
 void InsecureCredentialsManager::SaveCompromisedCredential(

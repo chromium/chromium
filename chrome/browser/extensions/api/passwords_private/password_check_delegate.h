@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -122,6 +123,14 @@ class PasswordCheckDelegate
   FindMatchingInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) const;
 
+  // Invoked when a compromised password check completes. Records the current
+  // timestamp in `kLastTimePasswordCheckCompleted` pref.
+  void RecordAndNotifyAboutCompletedCompromisedPasswordCheck();
+
+  // Invoked when a weak password check completes. Records the current timestamp
+  // in `last_completed_weak_check_`.
+  void RecordAndNotifyAboutCompletedWeakPasswordCheck();
+
   // Tries to notify the PasswordsPrivateEventRouter that the password check
   // status has changed. Invoked after OnSavedPasswordsChanged and
   // OnStateChanged.
@@ -161,6 +170,9 @@ class PasswordCheckDelegate
 
   // Remembers whether a password check is running right now.
   bool is_check_running_ = false;
+
+  // Store when the last weak check was completed.
+  base::Time last_completed_weak_check_;
 
   // A scoped observer for |saved_passwords_presenter_|.
   ScopedObserver<password_manager::SavedPasswordsPresenter,
