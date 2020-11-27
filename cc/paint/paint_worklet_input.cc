@@ -40,8 +40,13 @@ bool PaintWorkletInput::PropertyKey::operator<(const PropertyKey& other) const {
       other.custom_property_name.has_value())
     return false;
   if (custom_property_name.has_value() &&
-      other.custom_property_name.has_value())
+      other.custom_property_name.has_value()) {
+    if (custom_property_name.value() == other.custom_property_name.value())
+      return element_id < other.element_id;
     return custom_property_name.value() < other.custom_property_name.value();
+  }
+  if (native_property_type.value() == other.native_property_type.value())
+    return element_id < other.element_id;
   return native_property_type.value() < other.native_property_type.value();
 }
 
