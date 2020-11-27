@@ -231,7 +231,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
     }
 
     /* package */ PaymentRequestService build() {
-        return PaymentRequestService.createIfParamsValid(mRenderFrameHost, mIsOffTheRecord,
+        return PaymentRequestService.createIfParamsValid(mRenderFrameHost,
                 mBrowserPaymentRequestFactory, mClient, mMethodData, mDetails, mOptions,
                 mGooglePayBridgeEligible, mOnClosedListener, mDelegate);
     }

@@ -162,8 +162,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
 
-        return PaymentRequestService.createPaymentRequest(mRenderFrameHost,
-                /*isOffTheRecord=*/delegate.isOffTheRecord(), delegate,
+        return PaymentRequestService.createPaymentRequest(mRenderFrameHost, delegate,
                 (paymentRequestService)
                         -> new ChromePaymentRequestService(paymentRequestService, delegate));
     }

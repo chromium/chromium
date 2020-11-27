@@ -346,20 +346,17 @@ public class PaymentRequestService
      * Create an instance of {@link PaymentRequest} that provides the Android PaymentRequest
      * service.
      * @param renderFrameHost The RenderFrameHost of the merchant page.
-     * @param isOffTheRecord Whether the merchant page is in a off-the-record (e.g., incognito,
-     *         guest mode) Tab.
      * @param delegate The delegate of this class.
      * @param browserPaymentRequestFactory The factory that generates BrowserPaymentRequest.
      * @return The created instance.
      */
     public static PaymentRequest createPaymentRequest(RenderFrameHost renderFrameHost,
-            boolean isOffTheRecord, Delegate delegate,
-            BrowserPaymentRequest.Factory browserPaymentRequestFactory) {
+            Delegate delegate, Factory browserPaymentRequestFactory) {
         return new MojoPaymentRequestGateKeeper(
                 (client, methodData, details, options, googlePayBridgeEligible, onClosedListener)
-                        -> createIfParamsValid(renderFrameHost, isOffTheRecord,
-                                browserPaymentRequestFactory, client, methodData, details, options,
-                                googlePayBridgeEligible, onClosedListener, delegate));
+                        -> createIfParamsValid(renderFrameHost, browserPaymentRequestFactory,
+                                client, methodData, details, options, googlePayBridgeEligible,
+                                onClosedListener, delegate));
     }
 
     /**
@@ -369,10 +366,10 @@ public class PaymentRequestService
     @VisibleForTesting
     @Nullable
     public static PaymentRequestService createIfParamsValid(RenderFrameHost renderFrameHost,
-            boolean isOffTheRecord, BrowserPaymentRequest.Factory browserPaymentRequestFactory,
-            @Nullable PaymentRequestClient client, @Nullable PaymentMethodData[] methodData,
-            @Nullable PaymentDetails details, @Nullable PaymentOptions options,
-            boolean googlePayBridgeEligible, Runnable onClosedListener, Delegate delegate) {
+            Factory browserPaymentRequestFactory, @Nullable PaymentRequestClient client,
+            @Nullable PaymentMethodData[] methodData, @Nullable PaymentDetails details,
+            @Nullable PaymentOptions options, boolean googlePayBridgeEligible,
+            Runnable onClosedListener, Delegate delegate) {
         assert renderFrameHost != null;
         assert browserPaymentRequestFactory != null;
         assert onClosedListener != null;
@@ -391,6 +388,7 @@ public class PaymentRequestService
             return null;
         }
 
+        boolean isOffTheRecord = delegate.isOffTheRecord();
         JourneyLogger journeyLogger = delegate.createJourneyLogger(isOffTheRecord, webContents);
 
         if (client == null) {

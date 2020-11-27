@@ -113,8 +113,7 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
 
-        return PaymentRequestService.createPaymentRequest(mRenderFrameHost,
-                /*isOffTheRecord=*/delegate.isOffTheRecord(), delegate,
+        return PaymentRequestService.createPaymentRequest(mRenderFrameHost, delegate,
                 (paymentRequestService)
                         -> new WebLayerPaymentRequestService(paymentRequestService, delegate));
     }
