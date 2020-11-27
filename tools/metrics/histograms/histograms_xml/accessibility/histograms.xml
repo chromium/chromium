@@ -554,7 +554,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.PercentageLanguageDetected"
-    units="%" expires_after="2020-12-01">
+    units="%" expires_after="2021-05-23">
   <owner>chrishall@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
