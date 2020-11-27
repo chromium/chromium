@@ -299,6 +299,7 @@ component("gfx") {
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//device/vr/buildflags",
     "//skia",
     "//third_party/zlib",
@@ -430,6 +431,7 @@ component("color_space") {
     ]
   }
   deps = [
+    "//build:chromeos_buildflags",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
   ]
@@ -467,6 +469,8 @@ source_set("native_widget_types") {
     ":gfx_export",
     "//base",
   ]
+
+  deps = [ "//build:chromeos_buildflags" ]
 }
 
 group("selection_bound") {
@@ -564,6 +568,7 @@ source_set("memory_buffer_sources") {
     ":native_widget_types",
     "//base",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//ui/gfx/geometry",
   ]
 
@@ -794,6 +799,7 @@ test("gfx_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//skia",
     "//skia:skcms",
     "//testing/gtest",
@@ -939,6 +945,7 @@ fuzzer_test("render_text_api_fuzzer") {
     ":gfx",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
   ]
 
   dict = "test/data/render_text/unicode_text_fuzzer.dict"

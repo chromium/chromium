@@ -20,6 +20,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
@@ -483,7 +484,7 @@ TEST_F(MessageCenterImplTest, PopupTimersControllerRestartOnUpdate) {
   popup_timers_controller->OnNotificationDisplayed("id1", DISPLAY_SOURCE_POPUP);
   ASSERT_EQ(popup_timers_controller->timer_finished(), 0);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const int dismiss_time =
       popup_timers_controller->GetNotificationTimeoutDefault();
 #else
@@ -842,7 +843,7 @@ TEST_F(MessageCenterImplTest, RemoveAllNotifications) {
   EXPECT_TRUE(NotificationsContain(notifications, "id2"));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(MessageCenterImplTest, RemoveAllNotificationsWithPinned) {
   NotifierId notifier_id1(NotifierType::APPLICATION, "app1");
   NotifierId notifier_id2(NotifierType::APPLICATION, "app2");

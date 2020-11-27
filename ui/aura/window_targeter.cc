@@ -4,6 +4,7 @@
 
 #include "ui/aura/window_targeter.h"
 
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/event_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -122,7 +123,7 @@ Window* WindowTargeter::FindTargetInRootWindow(Window* root_window,
     if (consumer)
       return static_cast<Window*>(consumer);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // If the initial touch is outside the window's display, target the root.
     // This is used for bezel gesture events (eg. swiping in from screen edge).
     display::Display display =
@@ -223,7 +224,7 @@ Window* WindowTargeter::FindTargetForLocatedEvent(Window* window,
     if (target) {
       window->ConvertEventToTarget(target, event);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (window->IsRootWindow() && event->HasNativeEvent()) {
         // If window is root, and the target is in a different host, we need to
         // convert the native event to the target's host as well. This happens

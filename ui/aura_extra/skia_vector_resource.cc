@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -40,7 +41,7 @@ std::unique_ptr<gfx::SkiaVectorAnimation> GetVectorAnimationNamed(
     return std::make_unique<gfx::SkiaVectorAnimation>(found->second);
 
   auto& rb = ui::ResourceBundle::GetSharedInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::ScaleFactor scale_factor_to_load = rb.GetMaxScaleFactor();
 #elif defined(OS_WIN)
   ui::ScaleFactor scale_factor_to_load = display::win::GetDPIScale() > 1.25

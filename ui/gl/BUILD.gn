@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -165,6 +166,7 @@ component("gl") {
   deps = [
     ":buildflags",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
 
     # ANGLE includes are used cross-platform.
     "//third_party/angle:includes",
@@ -579,7 +581,7 @@ test("gl_unittests") {
     sources += [ "gl_image_ahardwarebuffer_unittest.cc" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [ "gl_image_native_pixmap_unittest.cc" ]
   }
 

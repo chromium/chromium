@@ -42,6 +42,7 @@ source_set("vector_resource") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//cc/paint",
     "//third_party/zlib/google:compression_utils",
     "//ui/base",

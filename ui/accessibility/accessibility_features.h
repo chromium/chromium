@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_base_export.h"
 
 namespace features {
@@ -62,7 +63,7 @@ AX_BASE_EXPORT bool IsIChromeAccessibleEnabled();
 
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 AX_BASE_EXPORT extern const base::Feature kAccessibilityCursorColor;
 
 // Returns true if the accessibility cursor color feature is enabled, letting
@@ -75,7 +76,7 @@ AX_BASE_EXPORT extern const base::Feature kMagnifierNewFocusFollowing;
 
 // Returns true if the new magnifier focus following feature is enabled.
 AX_BASE_EXPORT bool IsMagnifierNewFocusFollowingEnabled();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,
 // rather than only provide descriptions for completely unlabeled images.
@@ -103,14 +104,14 @@ AX_BASE_EXPORT extern const base::Feature kEnableAriaElementReflection;
 // Returns true if ARIA element reflection is enabled.
 AX_BASE_EXPORT bool IsAriaElementReflectionEnabled();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables enhanced Select-to-speak features that allow users broader control
 // of TTS (pause, resume, skip between sentences and paragraphs).
 AX_BASE_EXPORT extern const base::Feature kSelectToSpeakNavigationControl;
 
 // Returns true if enhanced Select-to-speak features are enabled.
 AX_BASE_EXPORT bool IsSelectToSpeakNavigationControlEnabled();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features
 

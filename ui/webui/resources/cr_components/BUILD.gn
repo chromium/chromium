@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -90,7 +91,7 @@ preprocess_grit("preprocess_generated") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     in_files += [
       "chromeos/bluetooth/bluetooth_dialog.m.js",
       "chromeos/cellular_setup/activation_code_page.m.js",
@@ -157,7 +158,7 @@ preprocess_grit("preprocess_polymer2") {
     "managed_footnote/managed_footnote.html",
     "managed_footnote/managed_footnote.js",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     if (!optimize_webui) {
       in_files += [
         "chromeos/bluetooth/bluetooth_dialog.html",
@@ -305,7 +306,7 @@ group("closure_compile") {
     "omnibox:closure_compile",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "chromeos:closure_compile" ]
   }
 }
@@ -317,7 +318,7 @@ group("polymer3_elements") {
     "managed_footnote:managed_footnote_module",
     "omnibox:web_components",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     public_deps += [ "chromeos:polymer3_elements" ]
   }
 }

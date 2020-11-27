@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -51,7 +52,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // The part to be painted / sized.
   enum Part {
     kCheckbox,
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     kFrameTopArea,
 #endif
     kInnerSpinButton,

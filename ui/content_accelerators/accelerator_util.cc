@@ -5,6 +5,7 @@
 #include "ui/content_accelerators/accelerator_util.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -15,7 +16,7 @@ namespace ui {
 
 ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (::features::IsNewShortcutMappingEnabled()) {
     // TODO: This must be the same as below and it's simpler.
     // Cleanup if this change sticks.

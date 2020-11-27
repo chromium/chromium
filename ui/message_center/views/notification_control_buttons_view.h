@@ -7,6 +7,7 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/padded_button.h"
@@ -52,7 +53,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
 
   // views::View
   const char* GetClassName() const override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnThemeChanged() override;
 #endif
 

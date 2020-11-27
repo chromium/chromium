@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -149,7 +150,7 @@ const char* NotificationControlButtonsView::GetClassName() const {
   return kViewClassName;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void NotificationControlButtonsView::OnThemeChanged() {
   View::OnThemeChanged();
   SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(

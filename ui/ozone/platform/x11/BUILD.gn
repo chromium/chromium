@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//gpu/vulkan/features.gni")
 import("//ui/base/ui_features.gni")
@@ -37,6 +38,7 @@ source_set("x11") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//gpu/vulkan:buildflags",
     "//skia",
     "//ui/base:base",
@@ -68,7 +70,7 @@ source_set("x11") {
     "//ui/platform_window/x11",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ui/base/ime/chromeos" ]
   } else {
     sources += [

@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
@@ -44,7 +45,7 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/x11/x11_window.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/base/ime/chromeos/input_method_chromeos.h"
 #else
@@ -132,7 +133,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget) override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return std::make_unique<InputMethodChromeOS>(delegate);
 #else
     // This method is used by upper layer components (e.g: GtkUi) to determine
@@ -150,7 +151,7 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return std::make_unique<OSExchangeDataProviderNonBacked>();
 #else
     return std::make_unique<X11OSExchangeDataProviderOzone>();

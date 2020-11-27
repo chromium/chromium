@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skia_font_delegate.h"
@@ -227,7 +228,7 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     params.subpixel_positioning = false;
   } else if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kDisableFontSubpixelPositioning)) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
 #else
     // We want to enable subpixel positioning for fractional dsf.
@@ -235,7 +236,7 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
         std::abs(std::round(actual_query.device_scale_factor) -
                  actual_query.device_scale_factor) >
         std::numeric_limits<float>::epsilon();
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
     // To enable subpixel positioning, we need to disable hinting.
     if (params.subpixel_positioning)

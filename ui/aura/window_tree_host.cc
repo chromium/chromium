@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -408,7 +409,7 @@ void WindowTreeHost::CreateCompositor(const viz::FrameSinkId& frame_sink_id,
       context_factory, base::ThreadTaskRunnerHandle::Get(),
       ui::IsPixelCanvasRecordingEnabled(), use_external_begin_frame_control,
       force_software_compositor);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   compositor_->AddObserver(this);
 #endif
   if (!dispatcher()) {
@@ -507,7 +508,7 @@ void WindowTreeHost::OnDisplayMetricsChanged(const display::Display& display,
 // Chrome OS is handled in WindowTreeHostManager::OnDisplayMetricsChanged.
 // Chrome OS requires additional handling for the bounds that we do not need to
 // do for other OSes.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (metrics & DISPLAY_METRIC_DEVICE_SCALE_FACTOR &&
       display.id() == GetDisplayId())
     OnHostResizedInPixels(GetBoundsInPixels().size());

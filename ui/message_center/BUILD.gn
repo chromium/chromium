@@ -26,6 +26,7 @@ aggregate_vector_icons("message_center_vector_icons") {
 component("message_center") {
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/base",
     "//ui/strings",
     "//url",
@@ -172,6 +173,7 @@ if (enable_message_center) {
       ":test_support",
       "//base",
       "//base/test:test_support",
+      "//build:chromeos_buildflags",
       "//mojo/core/embedder",
       "//skia",
       "//testing/gmock",

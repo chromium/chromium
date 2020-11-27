@@ -40,7 +40,7 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
     auto format = buffer_format.first;
 
     // TODO(crbug.com/1127822): Investigate a better fix for this.
-#if !BUILDFLAG(IS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     // RGBA_8888 is the preferred format, except when running on ChromiumOS. See
     // crbug.com/1127558.
     if (format == gfx::BufferFormat::RGBA_8888)
@@ -50,7 +50,7 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
       // available, but for some reason Chromium gets broken when it's used.
       // Though,  we can import RGBX_8888 dma buffer to EGLImage successfully.
       // Enable that back when the issue is resolved.
-#endif  // !BUILDFLAG(IS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
     if (!image_format_alpha_ && format == gfx::BufferFormat::BGRA_8888)
       image_format_alpha_ = gfx::BufferFormat::BGRA_8888;

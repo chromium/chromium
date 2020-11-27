@@ -5,6 +5,7 @@
 #include "ui/aura/test/ui_controls_ozone.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace aura {
 namespace test {
@@ -203,7 +204,7 @@ bool UIControlsOzone::SendMouseClick(ui_controls::MouseButton type) {
                          ui_controls::kNoAccelerator);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool UIControlsOzone::SendTouchEvents(int action, int id, int x, int y) {
   return SendTouchEventsNotifyWhenDone(action, id, x, y, base::OnceClosure());
 }

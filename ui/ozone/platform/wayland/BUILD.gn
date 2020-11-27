@@ -202,7 +202,7 @@ source_set("wayland") {
     "//ui/platform_window/wm",
   ]
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux || is_chromeos_lacros) {
     deps += [ "//ui/base/ime/linux" ]
   }
 
@@ -217,8 +217,8 @@ source_set("wayland") {
     ]
   }
 
-  # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
-  if (chromeos_is_browser_only) {
+  # TODO(crbug.com/1052397): Rename is_chromeos_lacros to is_chromeos_lacros.
+  if (is_chromeos_lacros) {
     deps += [ "//chromeos/crosapi/cpp" ]
   }
 

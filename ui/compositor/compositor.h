@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host.h"
@@ -367,7 +368,9 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   void StopThroughtputTracker(TrackerId tracker_id) override;
   void CancelThroughtputTracker(TrackerId tracker_id) override;
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnCompleteSwapWithNewSize(const gfx::Size& size);
 #endif
 

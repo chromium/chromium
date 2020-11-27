@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/gfx_export.h"
 
 #if defined(OS_ANDROID)
@@ -103,7 +104,9 @@ class ViewAndroid;
 #endif
 class SkBitmap;
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern "C" {
 struct _AtkObject;
 typedef struct _AtkObject AtkObject;
@@ -204,7 +207,9 @@ typedef id NativeViewAccessible;
 #elif defined(OS_MAC)
 typedef NSFont* NativeFont;
 typedef id NativeViewAccessible;
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Linux doesn't have a native font type.
 typedef AtkObject* NativeViewAccessible;
 #else

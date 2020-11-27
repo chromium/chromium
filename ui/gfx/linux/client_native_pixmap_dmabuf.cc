@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/switches.h"
 
@@ -104,7 +105,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
 #endif
 
   bool disable_yuv_biplanar = true;
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
   // IsConfigurationSupported(SCANOUT_CPU_READ_WRITE) is used by the renderer
   // to tell whether the platform supports sampling a given format. Zero-copy
   // video capture and encoding requires gfx::BufferFormat::YUV_420_BIPLANAR to

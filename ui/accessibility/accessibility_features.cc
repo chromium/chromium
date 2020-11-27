@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace features {
 
@@ -76,7 +77,7 @@ bool IsIChromeAccessibleEnabled() {
 }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAccessibilityCursorColor{"AccessibilityCursorColor",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -90,7 +91,7 @@ const base::Feature kMagnifierNewFocusFollowing{
 bool IsMagnifierNewFocusFollowingEnabled() {
   return base::FeatureList::IsEnabled(::features::kMagnifierNewFocusFollowing);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{
     "AugmentExistingImageLabels", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -114,7 +115,7 @@ bool IsAriaElementReflectionEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kSelectToSpeakNavigationControl{
     "SelectToSpeakNavigationControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -122,6 +123,6 @@ bool IsSelectToSpeakNavigationControlEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kSelectToSpeakNavigationControl);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features

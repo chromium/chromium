@@ -25,7 +25,7 @@
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(jamescook): The nogncheck is to work around false-positive failures on
 // the code search bot. Remove after https://crrev.com/c/2432137 lands.
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
@@ -61,7 +61,7 @@ bool WaylandToplevelWindow::CreateShellSurface() {
     return false;
   }
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   shell_surface_->SetAppId(window_unique_id_);
 #else
   shell_surface_->SetAppId(wm_class_class_);
@@ -235,7 +235,7 @@ void WaylandToplevelWindow::SizeConstraintsChanged() {
 }
 
 std::string WaylandToplevelWindow::GetWindowUniqueId() const {
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   return window_unique_id_;
 #else
   return std::string();
@@ -377,7 +377,7 @@ void WaylandToplevelWindow::OnDragSessionClose(uint32_t dnd_action) {
 
 bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties) {
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto token = base::UnguessableToken::Create();
   window_unique_id_ =
       std::string(crosapi::kLacrosAppIdPrefix) + token.ToString();

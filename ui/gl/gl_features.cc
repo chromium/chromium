@@ -4,6 +4,8 @@
 
 #include "ui/gl/gl_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace features {
 
 // Use the passthrough command decoder by default.  This can be overridden with
@@ -13,8 +15,9 @@ namespace features {
 // Launched on Windows, still experimental on other platforms.
 const base::Feature kDefaultPassthroughCommandDecoder{
   "DefaultPassthroughCommandDecoder",
-#if defined(OS_WIN) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(CHROMECAST_BUILD))
+#if defined(OS_WIN) ||                                       \
+    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+     !defined(CHROMECAST_BUILD))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

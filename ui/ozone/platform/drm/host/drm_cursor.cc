@@ -8,11 +8,12 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 #endif
 
@@ -192,7 +193,7 @@ void DrmCursor::MoveCursor(const gfx::Vector2dF& delta) {
   if (window_ == gfx::kNullAcceleratedWidget)
     return;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::Vector2dF transformed_delta = delta;
   ui::CursorController::GetInstance()->ApplyCursorConfigForWindow(
       window_, &transformed_delta);
@@ -232,7 +233,7 @@ void DrmCursor::SetCursorLocationLocked(const gfx::PointF& location) {
       gfx::PointF(confined_bounds_.right() - 1, confined_bounds_.bottom() - 1));
 
   location_ = clamped_location;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::CursorController::GetInstance()->SetCursorLocation(location_);
 #endif
 }

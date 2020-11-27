@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
@@ -35,7 +36,7 @@ namespace features {
 // to be done via corner points. See https://crbug.com/720596 for details.
 const base::Feature kEnablePixelCanvasRecording {
   "enable-pixel-canvas-recording",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

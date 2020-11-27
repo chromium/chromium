@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_screen.h"
 #include "ui/aura/test/window_event_dispatcher_test_api.h"
@@ -91,7 +92,7 @@ TEST_F(WindowTreeHostTest,
   EXPECT_EQ(gfx::Rect(300, 400), host()->window()->bounds());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WindowTreeHostTest, HoldPointerMovesOnChildResizing) {
   aura::WindowEventDispatcher* dispatcher = host()->dispatcher();
 
@@ -115,7 +116,7 @@ TEST_F(WindowTreeHostTest, HoldPointerMovesOnChildResizing) {
 }
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests if scale factor changes take effect. Previously a scale factor change
 // wouldn't take effect without a bounds change. For context see
 // https://crbug.com/1087626

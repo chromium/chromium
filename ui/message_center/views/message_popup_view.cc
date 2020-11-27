@@ -5,6 +5,7 @@
 #include "ui/message_center/views/message_popup_view.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/display/display.h"
@@ -20,7 +21,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #endif
@@ -110,7 +111,9 @@ void MessagePopupView::AutoCollapse() {
 void MessagePopupView::Show() {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Make the widget explicitly activatable as TYPE_POPUP is not activatable by
   // default but we need focus for the inline reply textarea.
   params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
@@ -134,7 +137,7 @@ void MessagePopupView::Show() {
 
   widget->Init(std::move(params));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, this widget is shown in the shelf container. It means this
   // widget would inherit the parent's window targeter (ShelfWindowTarget) by
   // default. But it is not good for popup. So we override it with the normal

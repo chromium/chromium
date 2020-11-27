@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
@@ -74,7 +75,7 @@ js_library("png.m") {
 # platforms.
 js_library("cr_picture_types.m") {
   sources = []
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_types.m.js" ]
   }
   extra_deps = [ ":modulize" ]
@@ -95,7 +96,7 @@ group("polymer3_elements") {
 # platforms.
 js_library("cr_picture_pane.m") {
   sources = []
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_pane.m.js" ]
   }
   deps = [
@@ -111,7 +112,7 @@ js_library("cr_picture_pane.m") {
 # platforms.
 js_library("cr_camera.m") {
   sources = []
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_camera.m.js" ]
   }
   deps = [ ":png.m" ]
@@ -123,7 +124,7 @@ js_library("cr_camera.m") {
 # platforms.
 js_library("cr_picture_list.m") {
   sources = []
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_list.m.js" ]
   }
   deps = [

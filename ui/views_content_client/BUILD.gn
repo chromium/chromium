@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 component("views_content_client") {
@@ -18,7 +19,7 @@ component("views_content_client") {
     "views_content_main_delegate.h",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "views_content_client_main_parts_chromeos.cc" ]
   }
 
@@ -31,6 +32,7 @@ component("views_content_client") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//content",
     "//content/shell:content_shell_lib",
     "//third_party/icu",
@@ -53,7 +55,7 @@ component("views_content_client") {
       "views_content_client_main_parts_aura.h",
     ]
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [ "views_content_client_main_parts_desktop_aura.cc" ]
     }
 
@@ -63,7 +65,7 @@ component("views_content_client") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//ui/aura:test_support",
       "//ui/wm:test_support",

@@ -4,6 +4,7 @@
 
 #include "ui/views_content_client/views_content_client_main_parts_aura.h"
 
+#include "build/chromeos_buildflags.h"
 #include "ui/wm/core/wm_state.h"
 
 namespace ui {
@@ -20,7 +21,7 @@ ViewsContentClientMainPartsAura::~ViewsContentClientMainPartsAura() {
 void ViewsContentClientMainPartsAura::ToolkitInitialized() {
   ViewsContentClientMainParts::ToolkitInitialized();
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   wm_state_ = std::make_unique<::wm::WMState>();
 #endif
 }

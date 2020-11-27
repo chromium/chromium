@@ -14,10 +14,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/render_text.h"
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/test/test_discardable_memory_allocator.h"
 #endif
 
@@ -37,7 +40,9 @@ struct Environment {
                           TestTimeouts::Initialize(),
                           base::test::TaskEnvironment::MainThreadType::UI)) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // Some platforms require discardable memory to use bitmap fonts.
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator);
@@ -46,7 +51,9 @@ struct Environment {
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_ANDROID) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
 #endif
 

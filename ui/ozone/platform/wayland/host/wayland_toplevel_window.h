@@ -127,7 +127,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   bool is_active_ = false;
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Unique ID for this window. May be shared over non-Wayland IPC transports
   // (e.g. mojo) to identify the window.
   std::string window_unique_id_;

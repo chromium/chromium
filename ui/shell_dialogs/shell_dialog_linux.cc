@@ -5,6 +5,7 @@
 #include "ui/shell_dialogs/shell_dialog_linux.h"
 
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace {
@@ -26,7 +27,7 @@ const ShellDialogLinux* ShellDialogLinux::instance() {
 SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy) {
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   const ui::ShellDialogLinux* shell_dialogs = ui::ShellDialogLinux::instance();
   if (shell_dialogs)
     return shell_dialogs->CreateSelectFileDialog(listener, std::move(policy));

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 declare_args() {
   # Should ANGLE be linked statically?
   # False by default, enabling currently supported only on Android
@@ -23,7 +25,7 @@ declare_args() {
 
 declare_args() {
   enable_swiftshader = (is_win || is_linux || is_chromeos ||
-                        (is_mac && use_egl) || is_chromeos || is_fuchsia) &&
+                        (is_mac && use_egl) || is_chromeos_ash || is_fuchsia) &&
                        (target_cpu == "x86" || target_cpu == "x64" ||
                         target_cpu == "arm" || target_cpu == "arm64" ||
                         target_cpu == "mipsel" || target_cpu == "mips64el")

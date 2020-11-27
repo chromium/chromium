@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -38,7 +39,7 @@ std::unique_ptr<views::InkDrop> PaddedButton::CreateInkDrop() {
 void PaddedButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
   auto* theme = GetNativeTheme();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationButtonBackground)));
 #endif

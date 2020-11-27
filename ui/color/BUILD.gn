@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
@@ -82,7 +83,7 @@ component("mixers") {
 
   public_deps = [ "//base" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "cros/native_color_mixers.cc" ]
   } else if (is_fuchsia) {
     sources += [ "fuchsia/native_color_mixers.cc" ]

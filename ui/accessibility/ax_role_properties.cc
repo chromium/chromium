@@ -5,13 +5,14 @@
 #include "ui/accessibility/ax_role_properties.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
 
 namespace {
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr bool kExposeLayoutTableAsDataTable = true;
 #else
 constexpr bool kExposeLayoutTableAsDataTable = false;

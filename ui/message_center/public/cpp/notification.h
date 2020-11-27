@@ -15,6 +15,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -106,11 +107,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // notification. Optional.
   gfx::Image small_image;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If true, we simply use the raw |small_image| icon, ignoring accent color
   // styling. For example, this is used with raw icons received from Android.
   bool ignore_accent_color_for_small_image = false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Vector version of |small_image|.
   // Used by Notification::GenerateMaskedSmallIcon.
@@ -148,11 +149,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // depending on visual assistance systems.
   bool should_make_spoken_feedback_for_popup_updates = true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Flag if the notification is pinned. If true, the notification is pinned
   // and the user can't remove it.
   bool pinned = false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Vibration pattern to play when displaying the notification. There must be
   // an odd number of entries in this pattern when it's set: numbers of
@@ -384,15 +385,15 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   }
 
   bool pinned() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return optional_fields_.pinned;
 #else
     return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_pinned(bool pinned) { optional_fields_.pinned = pinned; }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Gets a text for spoken feedback.
   const base::string16& accessible_name() const {
@@ -441,7 +442,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // method explicitly, to avoid setting it accidentally.
   void SetSystemPriority();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_system_notification_warning_level(
       SystemNotificationWarningLevel warning_level) {
     system_notification_warning_level_ = warning_level;
@@ -450,7 +451,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   SystemNotificationWarningLevel system_notification_warning_level() const {
     return system_notification_warning_level_;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const std::string& custom_view_type() const { return custom_view_type_; }
   void set_custom_view_type(const std::string& custom_view_type) {
@@ -495,11 +496,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // used to register the factory in MessageViewFactory.
   std::string custom_view_type_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The warning level of a system notification.
   SystemNotificationWarningLevel system_notification_warning_level_ =
       SystemNotificationWarningLevel::NORMAL;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace message_center

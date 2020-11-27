@@ -32,6 +32,7 @@ component("ozone") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//ui/display",
     "//ui/events",
     "//ui/events/devices",

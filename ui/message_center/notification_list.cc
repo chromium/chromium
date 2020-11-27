@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
@@ -341,7 +342,7 @@ void NotificationList::PushNotification(
     // For critical ChromeOS system notifications, we ignore the standard quiet
     // mode behaviour and show the notification anyways.
     bool effective_quiet_mode = quiet_mode_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     effective_quiet_mode &= notification->system_notification_warning_level() !=
                             SystemNotificationWarningLevel::CRITICAL_WARNING;
 #endif

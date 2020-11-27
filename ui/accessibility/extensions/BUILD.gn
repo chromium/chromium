@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 
 group("extensions") {
@@ -9,14 +10,14 @@ group("extensions") {
     ":caretbrowsing",
     ":colorenhancer",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "chromevoxclassic:chromevox" ]
   }
 }
 
 group("extension_tests") {
   testonly = true
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps = [ "chromevoxclassic:chromevox_tests" ]
   }
 }

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_features.h"
@@ -944,7 +945,7 @@ void X11Window::QuitDragLoop() {
 
 gfx::Size X11Window::AdjustSizeForDisplay(
     const gfx::Size& requested_size_in_pixels) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We do not need to apply the workaround for the ChromeOS.
   return requested_size_in_pixels;
 #else

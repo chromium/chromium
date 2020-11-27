@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/webui/webui_features.gni")
@@ -40,7 +41,7 @@ grit("webui_resources_grd") {
   source = "../webui/resources/webui_resources.grd"
 
   deps = [ "//ui/webui/resources:modulize" ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ui/chromeos/colors:cros_colors_css" ]
   }
 
@@ -153,7 +154,7 @@ repack("repack_ui_test_pak_100_percent") {
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak",
       "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak",
@@ -176,7 +177,7 @@ repack("repack_ui_test_pak_100_percent") {
     deps += [ ":copy_ui_resources_100_percent" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//ui/chromeos/resources",
       "//ui/chromeos/strings",

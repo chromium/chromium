@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -156,7 +157,7 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
   modes_ = GetDrmModeVector(info->connector());
   is_hdr_capable_ =
       params->bits_per_channel() > 8 && params->color_space().IsHDR();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   is_hdr_capable_ =
       is_hdr_capable_ &&
       base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);

@@ -5,6 +5,7 @@
 #ifndef UI_AURA_CLIENT_DRAG_DROP_CLIENT_OBSERVER_H_
 #define UI_AURA_CLIENT_DRAG_DROP_CLIENT_OBSERVER_H_
 
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 
 namespace aura {
@@ -18,7 +19,7 @@ class AURA_EXPORT DragDropClientObserver {
   // Called when dragging ended.
   virtual void OnDragEnded() = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called when the set of currently selected drag operation changes during the
   // drag. |action| is a bitmask of the actions selected by the client. This is
   // to provide feedback during the operation, it does not take precedence over

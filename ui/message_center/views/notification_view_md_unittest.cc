@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_processor.h"
@@ -857,7 +858,7 @@ TEST_F(NotificationViewMDTest, MAYBE_DisableSlideForcibly) {
 }
 
 // Pinning notification is ChromeOS only feature.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(NotificationViewMDTest, SlideOutPinned) {
   notification_view()->SetIsNested();
@@ -940,7 +941,7 @@ TEST_F(NotificationViewMDTest, SnoozeButton) {
             notification_view()->GetControlButtonsView()->snooze_button());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(NotificationViewMDTest, ExpandLongMessage) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
@@ -1197,7 +1198,7 @@ TEST_F(NotificationViewMDTest, InlineSettings) {
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // By clicking settings button again, it will toggle. Skip this on ChromeOS as
   // the control_buttons_view gets hidden when the inline settings are shown.
   generator.ClickLeftButton();

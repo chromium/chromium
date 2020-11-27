@@ -57,6 +57,7 @@ component("shell_dialogs") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/base",
     "//ui/strings",
@@ -101,8 +102,8 @@ component("shell_dialogs") {
     sources += [ "select_file_dialog_fuchsia.cc" ]
   }
 
-  # TODO(crbug.com/1052397): Rename chromeos_is_browser_only.
-  if (chromeos_is_browser_only) {
+  # TODO(crbug.com/1052397): Rename is_chromeos_lacros.
+  if (is_chromeos_lacros) {
     sources += [
       "select_file_dialog_lacros.cc",
       "select_file_dialog_lacros.h",

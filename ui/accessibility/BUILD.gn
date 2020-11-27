@@ -74,6 +74,8 @@ component("ax_base") {
     "//ui/gfx/geometry",
     "//ui/strings",
   ]
+
+  deps = [ "//build:chromeos_buildflags" ]
 }
 
 #if (is_win) {

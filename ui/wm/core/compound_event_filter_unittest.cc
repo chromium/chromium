@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -21,12 +22,11 @@
 
 namespace {
 
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 base::TimeTicks GetTime() {
   return ui::EventTimeForNow();
 }
-#endif  // defined(OS_CHROMEOS) || defined(OS_WIN)
-
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 }
 
 namespace wm {
@@ -50,7 +50,7 @@ class ConsumeGestureEventFilter : public ui::EventHandler {
 
 typedef aura::test::AuraTestBase CompoundEventFilterTest;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A keypress only hides the cursor on ChromeOS (crbug.com/304296).
 TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
@@ -108,9 +108,9 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
 
   aura::Env::GetInstance()->RemovePreTargetHandler(compound_filter.get());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 // Touch visually hides the cursor on ChromeOS and Windows.
 TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
@@ -165,7 +165,7 @@ TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   EXPECT_FALSE(cursor_client.IsCursorVisible());
   aura::Env::GetInstance()->RemovePreTargetHandler(compound_filter.get());
 }
-#endif  // defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 
 // Tests that if an event filter consumes a gesture, then it doesn't focus the
 // window.

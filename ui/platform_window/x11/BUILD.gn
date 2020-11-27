@@ -13,6 +13,7 @@ component("x11") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/base",
     "//ui/base/x",
@@ -62,6 +63,7 @@ test("x11_unittests") {
     ":x11",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

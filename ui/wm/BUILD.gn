@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
@@ -65,6 +66,7 @@ component("wm") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/aura",
     "//ui/base",
@@ -85,7 +87,7 @@ component("wm") {
     "//ui/wm/public",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "core/ime_util_chromeos.cc",
       "core/ime_util_chromeos.h",
@@ -140,6 +142,7 @@ test("wm_unittests") {
     ":wm",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
@@ -163,7 +166,7 @@ test("wm_unittests") {
 
   data_deps = [ "//ui/resources:ui_test_pak_data" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "core/ime_util_chromeos_unittest.cc" ]
   }
 }

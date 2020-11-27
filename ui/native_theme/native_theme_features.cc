@@ -9,8 +9,8 @@
 
 namespace features {
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA) || \
-    BUILDFLAG(IS_LACROS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else

@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -146,12 +147,12 @@ gfx::Image Notification::GenerateMaskedSmallIcon(int dip_size,
   // masking and resizing.
   gfx::ImageSkia image = small_image().AsImageSkia();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool create_masked_image =
       !optional_fields_.ignore_accent_color_for_small_image;
 #else
   bool create_masked_image = false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (create_masked_image) {
     image = gfx::ImageSkiaOperations::CreateMaskedImage(

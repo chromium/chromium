@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/env.h"
@@ -25,7 +26,7 @@ namespace {
 // Returns true if the cursor should be hidden on touch events.
 // TODO(tdanderson|rsadam): Move this function into CursorClient.
 bool ShouldHideCursorOnTouch(const ui::TouchEvent& event) {
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   // Linux Aura does not hide the cursor on touch by default.

@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_linux || is_chromeos, "This file should only be referenced on Linux")
+assert(is_linux || is_chromeos_lacros || is_chromeos,
+       "This file should only be referenced on Linux")
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
