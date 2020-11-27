@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 
@@ -33,8 +34,12 @@ class TestPrinterConfigurer : public PrinterConfigurer {
 
   void MarkConfigured(const std::string& printer_id);
 
+  void AssignPrinterSetupResult(const std::string& printer_id,
+                                PrinterSetupResult result);
+
  private:
   base::flat_set<std::string> configured_printers_;
+  base::flat_map<std::string, PrinterSetupResult> assigned_results_;
 };
 
 }  // namespace chromeos

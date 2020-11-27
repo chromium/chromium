@@ -1094,6 +1094,14 @@ void CupsPrintersHandler::HandleAddDiscoveredPrinter(
     return;
   }
 
+  // We need a special case for USB printers here. We cannot query them
+  // directly, so we have to fall back to manual configuration here.
+  if (printer->IsUsbProtocol()) {
+    RejectJavascriptCallback(base::Value(callback_id),
+                             *GetCupsPrinterInfo(*printer));
+    return;
+  }
+
   // The mDNS record doesn't guarantee we can setup the printer.  Query it to
   // see if we want to try IPP.
   auto address = printer->GetHostAndPort();

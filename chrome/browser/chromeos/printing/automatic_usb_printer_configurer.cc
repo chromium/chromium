@@ -89,6 +89,10 @@ void AutomaticUsbPrinterConfigurer::SetupPrinter(const Printer& printer) {
 void AutomaticUsbPrinterConfigurer::OnSetupComplete(const Printer& printer,
                                                     PrinterSetupResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+  if (result == PrinterSetupResult::kPrinterIsNotAutoconfigurable) {
+    installation_manager_->PrinterIsNotAutoconfigurable(printer);
+    return;
+  }
   if (result != PrinterSetupResult::kSuccess) {
     LOG(ERROR) << "Unable to autoconfigure usb printer " << printer.id();
     return;

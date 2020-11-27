@@ -103,15 +103,10 @@ class CupsPrintersManager : public PrinterInstallationManager,
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Record that the given printers has been installed in CUPS for usage.
-  // Parameter |is_automatic| should be set to true if the printer was
-  // saved automatically (without requesting additional information
-  // from the user).
+  // Implementation of PrinterInstallationManager interface.
   void PrinterInstalled(const Printer& printer, bool is_automatic) override = 0;
-
-  // Returns true if |printer| is currently installed in CUPS with this
-  // configuration.
   bool IsPrinterInstalled(const Printer& printer) const override = 0;
+  void PrinterIsNotAutoconfigurable(const Printer& printer) override = 0;
 
   // Look for a printer with the given id in any class.  Returns a copy of the
   // printer if found, base::nullopt if not found.

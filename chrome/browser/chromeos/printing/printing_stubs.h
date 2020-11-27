@@ -29,6 +29,7 @@ class StubCupsPrintersManager : public CupsPrintersManager {
   void AddObserver(CupsPrintersManager::Observer* observer) override {}
   void RemoveObserver(CupsPrintersManager::Observer* observer) override {}
   void PrinterInstalled(const Printer& printer, bool is_automatic) override {}
+  void PrinterIsNotAutoconfigurable(const Printer& printer) override {}
   void RecordSetupAbandoned(const Printer& printer) override {}
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {}

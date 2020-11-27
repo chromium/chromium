@@ -16,7 +16,11 @@ TestPrinterConfigurer::~TestPrinterConfigurer() = default;
 void TestPrinterConfigurer::SetUpPrinter(const Printer& printer,
                                          PrinterSetupCallback callback) {
   MarkConfigured(printer.id());
-  std::move(callback).Run(PrinterSetupResult::kSuccess);
+  PrinterSetupResult result = PrinterSetupResult::kSuccess;
+  if (assigned_results_.count(printer.id())) {
+    result = assigned_results_[printer.id()];
+  }
+  std::move(callback).Run(result);
 }
 
 bool TestPrinterConfigurer::IsConfigured(const std::string& printer_id) const {
@@ -25,6 +29,12 @@ bool TestPrinterConfigurer::IsConfigured(const std::string& printer_id) const {
 
 void TestPrinterConfigurer::MarkConfigured(const std::string& printer_id) {
   configured_printers_.insert(printer_id);
+}
+
+void TestPrinterConfigurer::AssignPrinterSetupResult(
+    const std::string& printer_id,
+    PrinterSetupResult result) {
+  assigned_results_[printer_id] = result;
 }
 
 }  // namespace chromeos
