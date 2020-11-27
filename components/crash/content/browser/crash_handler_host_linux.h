@@ -20,6 +20,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if !defined(OS_ANDROID)
 #include "components/crash/core/app/breakpad_linux_impl.h"
@@ -119,7 +120,7 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
 
 #endif  // !defined(OS_ANDROID)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace crashpad {
 
@@ -178,6 +179,6 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
 
 }  // namespace crashpad
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_CRASH_HANDLER_HOST_LINUX_H_

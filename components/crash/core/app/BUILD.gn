@@ -70,6 +70,7 @@ static_library("app") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//content/public/common:content_descriptors",
   ]
 
@@ -152,6 +153,7 @@ if (is_win) {
 
     deps = [
       "//base",
+      "//build:chromeos_buildflags",
       "//components/browser_watcher:activity_report",
       "//components/gwp_asan/buildflags",
       "//third_party/crashpad/crashpad/client",

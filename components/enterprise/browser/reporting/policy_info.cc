@@ -8,6 +8,7 @@
 
 #include "base/json/json_writer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -135,7 +136,7 @@ void AppendExtensionPolicyInfoIntoProfileReport(
 void AppendMachineLevelUserCloudPolicyFetchTimestamp(
     em::ChromeUserProfileInfo* profile_info,
     policy::MachineLevelUserCloudPolicyManager* manager) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!manager || !manager->IsClientRegistered())
     return;
   auto* timestamp = profile_info->add_policy_fetched_timestamps();
@@ -143,7 +144,7 @@ void AppendMachineLevelUserCloudPolicyFetchTimestamp(
       policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType);
   timestamp->set_timestamp(
       manager->core()->client()->last_policy_timestamp().ToJavaTime());
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace enterprise_reporting

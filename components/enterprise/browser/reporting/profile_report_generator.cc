@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -43,11 +44,11 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   if (report_type == ReportType::kExtensionRequest) {
     delegate_->GetExtensionRequest(report_.get());
     report_->set_is_detail_available(true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Extension request is aggregated at the user level on CrOS.
     report_->set_name(name);
     delegate_->GetSigninUserInfo(report_.get());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     report_->set_name(name);
     report_->set_is_detail_available(true);
@@ -83,10 +84,10 @@ void ProfileReportGenerator::GetExtensionPolicyInfo() {
 }
 
 void ProfileReportGenerator::GetPolicyFetchTimestampInfo() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   AppendMachineLevelUserCloudPolicyFetchTimestamp(
       report_.get(), delegate_->GetCloudPolicyManager());
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace enterprise_reporting

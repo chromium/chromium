@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_APPLE)
 #include "base/mac/scoped_mach_port.h"
@@ -107,7 +108,7 @@ crashpad::CrashpadClient& GetCrashpadClient();
 
 // ChromeOS has its own, OS-level consent system; Chrome does not maintain a
 // separate Upload Consent on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables or disables crash report upload, taking the given consent to upload
 // into account. Consent may be ignored, uploads may not be enabled even with
@@ -122,7 +123,7 @@ void SetUploadConsent(bool consent);
 // Determines whether uploads are enabled or disabled. This information is only
 // available in the browser process.
 bool GetUploadsEnabled();
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 enum class ReportUploadState {
   NotUploaded,

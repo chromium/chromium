@@ -77,7 +77,7 @@ class TestMetricsLog : public MetricsLog {
 
 // Returns the expected hardware class for a metrics log.
 std::string GetExpectedHardwareClass() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Currently, we are relying on base/ implementation for functionality on our
   // side which can be fragile if in the future someone decides to change that.
   // This replicates the logic to get the hardware class for ChromeOS and this
@@ -187,19 +187,19 @@ TEST_F(MetricsLogTest, BasicRecord) {
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   system_profile->mutable_os()->set_name("Lacros");
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   system_profile->mutable_os()->set_name("CrOS");
 #else
   system_profile->mutable_os()->set_name(base::SysInfo::OperatingSystemName());
 #endif
   system_profile->mutable_os()->set_version(
       base::SysInfo::OperatingSystemVersion());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::KernelVersion());
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::OperatingSystemVersion());
 #elif defined(OS_ANDROID)

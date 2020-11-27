@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/permission_type.h"
 
 using content::PermissionType;
@@ -147,7 +148,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     *out = PermissionType::BACKGROUND_SYNC;
   } else if (type == ContentSettingsType::PLUGINS) {
     *out = PermissionType::FLASH;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER) {
     *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
 #endif
@@ -199,7 +200,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::BACKGROUND_SYNC:
     case ContentSettingsType::PLUGINS:
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
     case ContentSettingsType::SENSORS:

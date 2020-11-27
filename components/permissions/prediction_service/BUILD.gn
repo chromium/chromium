@@ -18,6 +18,7 @@ source_set("prediction_service") {
     "prediction_service_common.h",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/permissions:permissions_common",
     "//services/network/public/cpp:cpp",

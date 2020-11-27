@@ -27,7 +27,7 @@
 #include <windows.h>  // Needed for STATUS_* codes
 #endif
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/metrics/system_memory_stats_recorder.h"
 #endif
 
@@ -250,7 +250,7 @@ void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
       // TODO(wfh): Check if this should be a Kill or a Crash on Android.
       break;
 #endif
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       RecordChildKills(histogram_type);
       base::UmaHistogramExactLinear("BrowserRenderProcessHost.ChildKills.OOM",

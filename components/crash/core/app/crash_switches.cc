@@ -4,6 +4,8 @@
 
 #include "components/crash/core/app/crash_switches.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace crash_reporter {
 namespace switches {
 
@@ -20,7 +22,7 @@ const char kCrashpadHandler[] = "crashpad-handler";
 const char kCrashpadHandlerPid[] = "crashpad-handler-pid";
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A time_t. Passed by session_manager into the Chrome user session, indicating
 // that if Chrome crashes before the indicated time, session_manager will
 // consider this to be a crash-loop situation and log the user out. Chrome

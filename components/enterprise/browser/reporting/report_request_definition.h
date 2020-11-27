@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_REQUEST_DEFINITION_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_reporting {
@@ -16,7 +17,7 @@ namespace definition {
 // upload usage data to DM Server. By the reference to this macro, most classes
 // in enterprise_reporting namespace can share the same logic for various
 // operation systems.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using ReportRequest = enterprise_management::ChromeOsUserReportRequest;
 #else
 using ReportRequest = enterprise_management::ChromeDesktopReportRequest;

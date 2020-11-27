@@ -9,6 +9,7 @@
 
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/version_info/version_info.h"
@@ -40,7 +41,7 @@ void BrowserReportGenerator::Generate(ReportType report_type,
 }
 
 void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   report->set_browser_version(version_info::GetVersionNumber());
   report->set_channel(policy::ConvertToProtoChannel(delegate_->GetChannel()));
   delegate_->GenerateBuildStateInfo(report);

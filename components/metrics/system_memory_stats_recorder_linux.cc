@@ -31,7 +31,7 @@ namespace metrics {
   UMA_HISTOGRAM_LINEAR(name, sample, 2500, 50)
 
 void RecordMemoryStats(RecordMemoryStatsType type) {
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Record graphics GEM object size in a histogram with 50 MB buckets.
   int mem_gpu_mb = 0;
   bool mem_gpu_result = false;
@@ -58,7 +58,7 @@ void RecordMemoryStats(RecordMemoryStatsType type) {
     // On Intel, graphics objects are in anonymous pages, but on ARM they are
     // not. For a total "allocated count" add in graphics pages on ARM.
     int mem_allocated_mb = (memory.active_anon + memory.inactive_anon) / 1024;
-#if (defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)) && \
+#if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     defined(ARCH_CPU_ARM_FAMILY)
     mem_allocated_mb += mem_gpu_mb;
 #endif
@@ -83,7 +83,7 @@ void RecordMemoryStats(RecordMemoryStatsType type) {
       }
     }
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Record shared memory (used by renderer/GPU buffers).
     int mem_shmem_mb = memory.shmem / 1024;
     switch (type) {

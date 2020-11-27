@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
 }
@@ -25,9 +27,11 @@ source_set("browser") {
       "crash_handler_host_linux.cc",
       "crash_handler_host_linux.h",
     ]
+
+    deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     deps += [ "//third_party/crashpad/crashpad/client" ]
   }
 

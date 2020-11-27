@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 
 namespace enterprise_reporting {
 
@@ -35,7 +36,7 @@ ReportRequestQueueGenerator::ReportRequestQueueGenerator(
     ReportingDelegateFactory* delegate_factory)
     : maximum_report_size_(kMaximumReportSize),
       profile_report_generator_(delegate_factory) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Chrome OS, policy information needn't be uploaded to DM server.
   profile_report_generator_.set_policies_enabled(false);
 #endif

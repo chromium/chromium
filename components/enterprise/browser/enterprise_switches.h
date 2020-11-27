@@ -9,10 +9,11 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_ENTERPRISE_SWITCHES_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 extern const char kEnableChromeBrowserCloudManagement[];
 #endif
 

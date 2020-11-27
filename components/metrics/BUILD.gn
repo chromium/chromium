@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -127,7 +128,7 @@ static_library("metrics") {
     "//url",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ ":serialization" ]
   }
 
@@ -477,7 +478,7 @@ source_set("unit_tests") {
     deps += [ ":serialization" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/dbus:test_support",
       "//chromeos/network:test_support",

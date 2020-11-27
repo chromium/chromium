@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 namespace em = enterprise_management;
@@ -51,7 +52,7 @@ void ReportUploader::Upload() {
   auto callback = base::BindRepeating(&ReportUploader::OnRequestFinished,
                                       weak_ptr_factory_.GetWeakPtr());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   client_->UploadChromeOsUserReport(std::move(request), std::move(callback));
 #else
   client_->UploadChromeDesktopReport(std::move(request), std::move(callback));

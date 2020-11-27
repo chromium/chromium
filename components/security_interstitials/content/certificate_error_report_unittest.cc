@@ -17,6 +17,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/network_time/network_time_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/security_interstitials/content/cert_logger.pb.h"
@@ -286,7 +287,7 @@ TEST(ErrorReportTest, TestChromeChannelIncluded) {
   }
 }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the SetIsEnterpriseManaged() function populates
 // is_enterprise_managed correctly on Windows, and that value is correctly
 // extracted from the parsed report.

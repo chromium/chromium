@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -46,7 +47,7 @@ void ReportGenerator::CreateBasicRequest(
     basic_request->add_partial_report_types(
         em::PartialReportType::EXTENSION_REQUEST);
   } else {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     delegate_->SetAndroidAppInfos(basic_request.get());
 #else
     basic_request->set_computer_name(this->GetMachineName());

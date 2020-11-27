@@ -5,12 +5,13 @@
 #include "components/permissions/prediction_service/prediction_service_common.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace permissions {
 ClientFeatures_Platform GetCurrentPlatformProto() {
 #if defined(OS_WIN)
   return permissions::ClientFeatures_Platform_PLATFORM_WINDOWS;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return permissions::ClientFeatures_Platform_PLATFORM_LINUX;
 #elif defined(OS_ANDROID)
   return permissions::ClientFeatures_Platform_PLATFORM_ANDROID;
