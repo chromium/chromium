@@ -17,7 +17,7 @@ var cpuOveruseDetectionCheckbox = $('cpuoveruse-detection');
 startTestButton.onclick = startTest;
 
 function logError(err) {
-  console.error(err);
+  console.err(err);
 }
 
 function addNewVideoElement() {

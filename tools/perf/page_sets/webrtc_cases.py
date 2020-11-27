@@ -51,21 +51,6 @@ class DataChannel(WebrtcPage):
         description='Amount of data transferred by data channel in 10 seconds')
 
 
-class AudioCall(WebrtcPage):
-  """Why: Sets up a WebRTC audio call."""
-
-  def __init__(self, page_set, codec, tags):
-    super(AudioCall, self).__init__(
-        url='file://webrtc_cases/audio.html?codec=%s' % codec,
-        name='audio_call_%s_10s' % codec.lower(),
-        page_set=page_set, tags=tags)
-    self.codec = codec
-
-  def ExecuteTest(self, action_runner):
-    action_runner.ExecuteJavaScript('codecSelector.value="%s";' % self.codec)
-    action_runner.ClickElement('button[id="callButton"]')
-    action_runner.Wait(10)
-
 class CanvasCapturePeerConnection(WebrtcPage):
   """Why: Sets up a canvas capture stream connection to a peer connection."""
 
