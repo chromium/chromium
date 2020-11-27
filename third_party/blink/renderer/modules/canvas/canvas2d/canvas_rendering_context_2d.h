@@ -131,6 +131,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void setTextRendering(const String&);
 
   void setFontKerning(const String&);
+  void setFontStretch(const String&);
   void setFontVariantCaps(const String&);
 
   void fillText(const String& text, double x, double y);

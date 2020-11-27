@@ -73,15 +73,17 @@ class PLATFORM_EXPORT FontDescription {
   };
   static String ToString(GenericFamilyType);
 
-  enum Kerning { kAutoKerning, kNormalKerning, kNoneKerning };
-  static String ToString(Kerning);
-
   enum LigaturesState {
     kNormalLigaturesState,
     kDisabledLigaturesState,
     kEnabledLigaturesState
   };
   static String ToString(LigaturesState);
+
+  enum Kerning { kAutoKerning, kNormalKerning, kNoneKerning };
+  static String ToString(Kerning);
+
+  static String ToString(FontSelectionValue);
 
   enum FontVariantCaps {
     kCapsNormal,

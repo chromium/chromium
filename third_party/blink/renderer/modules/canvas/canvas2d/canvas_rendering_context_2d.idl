@@ -160,11 +160,12 @@ interface CanvasRenderingContext2D {
     attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
     attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
     attribute DOMString direction; // "inherit", "rtl", "ltr" (default: "inherit")
-    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textLetterSpacing; // length in pixel (default: 0)
-    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textWordSpacing; // length in pixel (default: 0)
     [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
+    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontStretch; // "ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded" (default: normal)
     [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontVariantCaps; // "normal", "small-caps", "all-small-caps", "petite-caps", "all-petite-caps", "unicase", "titling-caps" (default: "normal")
+    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textLetterSpacing; // length in pixel (default: 0)
     [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString textRendering; // "auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision" (default: auto)
+    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textWordSpacing; // length in pixel (default: 0)
 };
 
 CanvasRenderingContext2D includes CanvasPath;

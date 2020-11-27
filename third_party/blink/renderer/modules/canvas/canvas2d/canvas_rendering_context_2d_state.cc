@@ -105,6 +105,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       word_spacing_(other.word_spacing_),
       text_rendering_mode_(other.text_rendering_mode_),
       font_kerning_(other.font_kerning_),
+      font_stretch_(other.font_stretch_),
       font_variant_caps_(other.font_variant_caps_),
       realized_font_(other.realized_font_),
       is_transform_invertible_(other.is_transform_invertible_),
@@ -288,6 +289,16 @@ void CanvasRenderingContext2DState::SetFontKerning(
   FontDescription font_description(GetFontDescription());
   font_description.SetKerning(font_kerning);
   font_kerning_ = font_kerning;
+  SetFont(font_description, selector);
+}
+
+void CanvasRenderingContext2DState::SetFontStretch(
+    FontSelectionValue font_stretch,
+    FontSelector* selector) {
+  DCHECK(realized_font_);
+  FontDescription font_description(GetFontDescription());
+  font_description.SetStretch(font_stretch);
+  font_stretch_ = font_stretch;
   SetFont(font_description, selector);
 }
 

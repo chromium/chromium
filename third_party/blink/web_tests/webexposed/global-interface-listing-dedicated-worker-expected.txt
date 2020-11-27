@@ -995,6 +995,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter filter
 [Worker]     getter font
 [Worker]     getter fontKerning
+[Worker]     getter fontStretch
 [Worker]     getter fontVariantCaps
 [Worker]     getter globalAlpha
 [Worker]     getter globalCompositeOperation
@@ -1064,6 +1065,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter filter
 [Worker]     setter font
 [Worker]     setter fontKerning
+[Worker]     setter fontStretch
 [Worker]     setter fontVariantCaps
 [Worker]     setter globalAlpha
 [Worker]     setter globalCompositeOperation

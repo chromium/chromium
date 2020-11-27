@@ -500,6 +500,18 @@ String FontDescription::ToString(GenericFamilyType familyType) {
   return "Unknown";
 }
 
+String FontDescription::ToString(LigaturesState state) {
+  switch (state) {
+    case LigaturesState::kNormalLigaturesState:
+      return "Normal";
+    case LigaturesState::kDisabledLigaturesState:
+      return "Disabled";
+    case LigaturesState::kEnabledLigaturesState:
+      return "Enabled";
+  }
+  return "Unknown";
+}
+
 String FontDescription::ToString(Kerning kerning) {
   switch (kerning) {
     case Kerning::kAutoKerning:
@@ -512,15 +524,26 @@ String FontDescription::ToString(Kerning kerning) {
   return "Unknown";
 }
 
-String FontDescription::ToString(LigaturesState state) {
-  switch (state) {
-    case LigaturesState::kNormalLigaturesState:
-      return "Normal";
-    case LigaturesState::kDisabledLigaturesState:
-      return "Disabled";
-    case LigaturesState::kEnabledLigaturesState:
-      return "Enabled";
-  }
+String FontDescription::ToString(FontSelectionValue selection_value) {
+  if (selection_value == UltraCondensedWidthValue())
+    return "Ultra-Condensed";
+  else if (selection_value == ExtraCondensedWidthValue())
+    return "Extra-Condensed";
+  else if (selection_value == CondensedWidthValue())
+    return "Condensed";
+  else if (selection_value == SemiCondensedWidthValue())
+    return "Semi-Condensed";
+  else if (selection_value == NormalWidthValue())
+    return "Normal";
+  else if (selection_value == SemiExpandedWidthValue())
+    return "Semi-Expanded";
+  else if (selection_value == ExpandedWidthValue())
+    return "Expanded";
+  else if (selection_value == ExtraExpandedWidthValue())
+    return "Extra-Expanded";
+  else if (selection_value == UltraExpandedWidthValue())
+    return "Ultra-Expanded";
+
   return "Unknown";
 }
 

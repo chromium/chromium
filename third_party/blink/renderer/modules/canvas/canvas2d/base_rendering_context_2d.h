@@ -282,6 +282,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   String textRendering() const;
 
   String fontKerning() const;
+  String fontStretch() const;
   String fontVariantCaps() const;
 
   void Trace(Visitor*) const override;
@@ -406,6 +407,15 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   static const char kNormalKerningString[];
   static const char kNoneKerningString[];
   static const char kNormalVariantString[];
+  static const char kUltraCondensedString[];
+  static const char kExtraCondensedString[];
+  static const char kCondensedString[];
+  static const char kSemiCondensedString[];
+  static const char kNormalStretchString[];
+  static const char kSemiExpandedString[];
+  static const char kExpandedString[];
+  static const char kExtraExpandedString[];
+  static const char kUltraExpandedString[];
   static const char kSmallCapsVariantString[];
   static const char kAllSmallCapsVariantString[];
   static const char kPetiteVariantString[];

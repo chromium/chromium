@@ -536,6 +536,40 @@ void OffscreenCanvasRenderingContext2D::setFontKerning(
   ModifiableState().SetFontKerning(kerning, Host()->GetFontSelector());
 }
 
+void OffscreenCanvasRenderingContext2D::setFontStretch(
+    const String& font_stretch) {
+  if (!GetState().HasRealizedFont())
+    setFont(font());
+
+  String font_stretch_string = font_stretch.LowerASCII();
+  FontSelectionValue stretch_vale;
+  if (font_stretch_string == kUltraCondensedString)
+    stretch_vale = UltraCondensedWidthValue();
+  else if (font_stretch_string == kExtraCondensedString)
+    stretch_vale = ExtraCondensedWidthValue();
+  else if (font_stretch_string == kCondensedString)
+    stretch_vale = CondensedWidthValue();
+  else if (font_stretch_string == kSemiCondensedString)
+    stretch_vale = SemiCondensedWidthValue();
+  else if (font_stretch_string == kNormalStretchString)
+    stretch_vale = NormalWidthValue();
+  else if (font_stretch_string == kSemiExpandedString)
+    stretch_vale = SemiExpandedWidthValue();
+  else if (font_stretch_string == kExpandedString)
+    stretch_vale = ExpandedWidthValue();
+  else if (font_stretch_string == kExtraExpandedString)
+    stretch_vale = ExtraExpandedWidthValue();
+  else if (font_stretch_string == kUltraExpandedString)
+    stretch_vale = UltraExpandedWidthValue();
+  else
+    return;
+
+  if (GetState().GetFontStretch() == stretch_vale)
+    return;
+
+  ModifiableState().SetFontStretch(stretch_vale, Host()->GetFontSelector());
+}
+
 void OffscreenCanvasRenderingContext2D::setFontVariantCaps(
     const String& font_variant_caps_string) {
   if (!GetState().HasRealizedFont())

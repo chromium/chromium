@@ -36,6 +36,15 @@ const char BaseRenderingContext2D::kLtrDirectionString[] = "ltr";
 const char BaseRenderingContext2D::kAutoKerningString[] = "auto";
 const char BaseRenderingContext2D::kNormalKerningString[] = "normal";
 const char BaseRenderingContext2D::kNoneKerningString[] = "none";
+const char BaseRenderingContext2D::kUltraCondensedString[] = "ultra-condensed";
+const char BaseRenderingContext2D::kExtraCondensedString[] = "extra-condensed";
+const char BaseRenderingContext2D::kCondensedString[] = "condensed";
+const char BaseRenderingContext2D::kSemiCondensedString[] = "semi-condensed";
+const char BaseRenderingContext2D::kNormalStretchString[] = "normal";
+const char BaseRenderingContext2D::kSemiExpandedString[] = "semi-expanded";
+const char BaseRenderingContext2D::kExpandedString[] = "expanded";
+const char BaseRenderingContext2D::kExtraExpandedString[] = "extra-expanded";
+const char BaseRenderingContext2D::kUltraExpandedString[] = "ultra-expanded";
 const char BaseRenderingContext2D::kNormalVariantString[] = "normal";
 const char BaseRenderingContext2D::kSmallCapsVariantString[] = "small-caps";
 const char BaseRenderingContext2D::kAllSmallCapsVariantString[] =
@@ -2136,6 +2145,10 @@ void BaseRenderingContext2D::setTextBaseline(const String& s) {
 
 String BaseRenderingContext2D::fontKerning() const {
   return FontDescription::ToString(GetState().GetFontKerning());
+}
+
+String BaseRenderingContext2D::fontStretch() const {
+  return FontDescription::ToString(GetState().GetFontStretch());
 }
 
 String BaseRenderingContext2D::fontVariantCaps() const {
