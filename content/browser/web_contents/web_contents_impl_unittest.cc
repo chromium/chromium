@@ -604,16 +604,27 @@ TEST_F(WebContentsImplTest, CrossSiteBoundariesAfterCrash) {
   navigation_to_url2->ReadyToCommit();
 
   TestRenderFrameHost* new_rfh = main_test_rfh();
-  EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  EXPECT_EQ(nullptr, contents()->GetPendingMainFrame());
-  EXPECT_NE(orig_rfh, new_rfh);
-  EXPECT_EQ(orig_rvh_delete_count, 1);
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    EXPECT_TRUE(contents()->CrossProcessNavigationPending());
+    EXPECT_NE(nullptr, contents()->GetPendingMainFrame());
+    EXPECT_EQ(orig_rfh, new_rfh);
+    EXPECT_EQ(orig_rvh_delete_count, 0);
+  } else {
+    EXPECT_FALSE(contents()->CrossProcessNavigationPending());
+    EXPECT_EQ(nullptr, contents()->GetPendingMainFrame());
+    EXPECT_NE(orig_rfh, new_rfh);
+    EXPECT_EQ(orig_rvh_delete_count, 1);
+  }
 
   navigation_to_url2->Commit();
   SiteInstance* instance2 = contents()->GetSiteInstance();
 
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
-  EXPECT_EQ(new_rfh, main_rfh());
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    EXPECT_NE(new_rfh, main_rfh());
+  } else {
+    EXPECT_EQ(new_rfh, main_rfh());
+  }
   EXPECT_NE(instance1, instance2);
   EXPECT_EQ(nullptr, contents()->GetPendingMainFrame());
 
