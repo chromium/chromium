@@ -310,7 +310,7 @@ void Shell::PlatformExit() {
   views_delegate_ = nullptr;
   // delete platform_;
   // platform_ = nullptr;
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA)
   delete wm_state_;
   wm_state_ = nullptr;
 #endif

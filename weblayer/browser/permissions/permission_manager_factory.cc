@@ -71,7 +71,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<payments::PaymentHandlerPermissionContext>(
           browser_context);
 
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
@@ -92,7 +92,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.
   for (content::PermissionType type : content::GetAllPermissionTypes()) {
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !defined(OS_ANDROID)
     // PROTECTED_MEDIA_IDENTIFIER is only supported on Android/ChromeOS.
     if (type == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER)
       continue;
