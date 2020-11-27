@@ -7,6 +7,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/performance_manager/embedder/graph_features_helper.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/content_browser_test.h"
 
@@ -22,14 +23,13 @@ class PerformanceManagerBrowserTestHarness
   using Super = content::ContentBrowserTest;
 
  public:
-  PerformanceManagerBrowserTestHarness() = default;
+  PerformanceManagerBrowserTestHarness();
   PerformanceManagerBrowserTestHarness(
       const PerformanceManagerBrowserTestHarness&) = delete;
   PerformanceManagerBrowserTestHarness& operator=(
       const PerformanceManagerBrowserTestHarness&) = delete;
   ~PerformanceManagerBrowserTestHarness() override;
 
-  // gtest::Test:
   void SetUp() override;
 
   // content::BrowserTestBase:
@@ -37,7 +37,8 @@ class PerformanceManagerBrowserTestHarness
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // An additional seam that gets invoked as part of the PM initialization. This
-  // will be invoked on the PM sequence.
+  // will be invoked on the PM sequence. This will be called after graph
+  // features have been configured (see "graph_features_helper").
   virtual void OnGraphCreated(Graph* graph);
 
   // Creates a content shell with its own window, hosting a single tab that is
@@ -67,6 +68,20 @@ class PerformanceManagerBrowserTestHarness
         }));
     run_loop.Run();
   }
+
+  // Allows configuring which Graph features are initialized during "SetUp".
+  // This defaults to initializing no features. Features will be initialized
+  // before "OnGraphCreated" is called.
+  GraphFeaturesHelper& GetGraphFeaturesHelper() {
+    return graph_features_helper_;
+  }
+
+ private:
+  // This is called during "SetUp". It installs features on the graph and then
+  // delegates to "OnGraphCreated".
+  void OnGraphCreatedImpl(Graph* graph);
+
+  GraphFeaturesHelper graph_features_helper_;
 };
 
 }  // namespace performance_manager

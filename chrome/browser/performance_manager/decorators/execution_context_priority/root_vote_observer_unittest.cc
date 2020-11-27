@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/decorators/execution_context_priority/root_vote_observer.h"
 
-#include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -40,15 +39,20 @@ using MockFrameNodeObserver =
 
 class RootVoteObserverTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   RootVoteObserverTest() = default;
   ~RootVoteObserverTest() override = default;
+
+  void SetUp() override {
+    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    Super::SetUp();
+  }
 };
 
 }  // namespace
 
 TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
-  graph()->PassToGraph(
-      std::make_unique<execution_context::ExecutionContextRegistryImpl>());
   RootVoteObserver root_vote_observer;
 
   MockSinglePageInSingleProcessGraph mock_graph(graph());

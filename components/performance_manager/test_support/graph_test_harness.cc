@@ -34,6 +34,11 @@ GraphTestHarness::~GraphTestHarness() {
     graph_->TearDown();
 }
 
+void GraphTestHarness::SetUp() {
+  graph_features_helper_.ConfigureGraph(graph_.get());
+  OnGraphCreated(graph_.get());
+}
+
 void GraphTestHarness::TearDown() {
   base::RunLoop().RunUntilIdle();
 }

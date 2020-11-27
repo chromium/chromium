@@ -4,8 +4,8 @@
 
 #include "chrome/browser/performance_manager/decorators/execution_context_priority/ad_frame_voter.h"
 
-#include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -63,6 +63,8 @@ class GraphOwnedWrapper : public GraphOwned {
 
 class AdFrameVoterTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   AdFrameVoterTest() = default;
   ~AdFrameVoterTest() override = default;
 
@@ -70,9 +72,8 @@ class AdFrameVoterTest : public GraphTestHarness {
   AdFrameVoterTest& operator=(const AdFrameVoterTest&) = delete;
 
   void SetUp() override {
-    graph()->PassToGraph(
-        std::make_unique<execution_context::ExecutionContextRegistryImpl>());
-
+    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    Super::SetUp();
     auto wrapper = std::make_unique<GraphOwnedWrapper>();
     wrapper_ = wrapper.get();
     graph()->PassToGraph(std::move(wrapper));

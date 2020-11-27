@@ -29,10 +29,9 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   V8ContextTrackerTest() = default;
   ~V8ContextTrackerTest() override = default;
 
-  void OnGraphCreated(Graph* graph) override {
-    graph->PassToGraph(
-        std::make_unique<execution_context::ExecutionContextRegistryImpl>());
-    graph->PassToGraph(std::make_unique<V8ContextTracker>());
+  void SetUp() override {
+    GetGraphFeaturesHelper().EnableV8ContextTracker();
+    Super::SetUp();
   }
 
   void ExpectCounts(size_t v8_context_count,

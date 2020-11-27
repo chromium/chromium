@@ -4,7 +4,9 @@
 
 #include "components/performance_manager/test_support/test_harness_helper.h"
 
+#include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/performance_manager_impl.h"
 
@@ -19,8 +21,17 @@ void PerformanceManagerTestHarnessHelper::SetUp() {
   // Allow this to be called multiple times.
   if (perf_man_.get())
     return;
-  perf_man_ = PerformanceManagerImpl::Create(base::DoNothing());
+  base::RunLoop run_loop;
+  GraphImplCallback callback =
+      base::BindLambdaForTesting([&](GraphImpl* graph) {
+        graph_features_helper_.ConfigureGraph(graph);
+        if (graph_impl_callback_)
+          std::move(graph_impl_callback_).Run(graph);
+        run_loop.Quit();
+      });
+  perf_man_ = PerformanceManagerImpl::Create(std::move(callback));
   registry_ = PerformanceManagerRegistry::Create();
+  run_loop.Run();
 }
 
 void PerformanceManagerTestHarnessHelper::TearDown() {

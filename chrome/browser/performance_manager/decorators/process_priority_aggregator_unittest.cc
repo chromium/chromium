@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/decorators/process_priority_aggregator.h"
 
 #include "base/memory/ptr_util.h"
-#include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -22,9 +21,11 @@ static const char* kReason = FrameNodeImpl::kDefaultPriorityReason;
 
 class ProcessPriorityAggregatorTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   void SetUp() override {
-    graph()->PassToGraph(
-        std::make_unique<execution_context::ExecutionContextRegistryImpl>());
+    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    Super::SetUp();
     ppa_ = new ProcessPriorityAggregator();
     graph()->PassToGraph(base::WrapUnique(ppa_));
   }

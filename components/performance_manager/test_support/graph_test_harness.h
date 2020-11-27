@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
+#include "components/performance_manager/embedder/graph_features_helper.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -236,7 +237,22 @@ class GraphTestHarness : public ::testing::Test {
   }
 
   // testing::Test:
+  void SetUp() override;
   void TearDown() override;
+
+  // Allows configuring which Graph features are initialized during "SetUp".
+  // This defaults to initializing no features. Features will be initialized
+  // before "OnGraphCreated" is called.
+  GraphFeaturesHelper& GetGraphFeaturesHelper() {
+    return graph_features_helper_;
+  }
+
+  // A callback that will be invoked as part of the graph initialization
+  // during "SetUp". The same effect can be had by overriding "SetUp" in this
+  // case, because the graph lives on the same sequence as this fixture.
+  // However, to keep the various PM and Graph test fixtures similar in usage,
+  // this seam has been exposed.
+  virtual void OnGraphCreated(GraphImpl* graph) {}
 
  protected:
   void AdvanceClock(base::TimeDelta delta) { task_env_.FastForwardBy(delta); }
@@ -252,6 +268,7 @@ class GraphTestHarness : public ::testing::Test {
   void TearDownAndDestroyGraph();
 
  private:
+  GraphFeaturesHelper graph_features_helper_;
   content::BrowserTaskEnvironment task_env_;
   std::unique_ptr<TestGraphImpl> graph_;
 };
