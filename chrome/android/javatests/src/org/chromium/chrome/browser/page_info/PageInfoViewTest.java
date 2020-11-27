@@ -39,11 +39,14 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -431,6 +434,32 @@ public class PageInfoViewTest {
         onView(withId(R.id.page_info_permissions_row))
                 .check(matches(withEffectiveVisibility(GONE)));
         expectHasPermissions(url, false);
+    }
+
+    /**
+     * Tests that page info view is shown correctly for paint preview pages.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    public void testPaintPreview() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final ChromeActivity activity = mActivityTestRule.getActivity();
+            final Tab tab = activity.getActivityTab();
+            ChromePageInfoControllerDelegate pageInfoControllerDelegate =
+                    new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
+                            activity::getModalDialogManager,
+                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)) {
+                        @Override
+                        public boolean isShowingPaintPreviewPage() {
+                            return true;
+                        }
+                    };
+            PageInfoController.show(mActivityTestRule.getActivity(), tab.getWebContents(), null,
+                    PageInfoController.OpenedFromSource.MENU, pageInfoControllerDelegate,
+                    new ChromePermissionParamsListBuilderDelegate());
+        });
+        onView(withText(R.string.page_info_connection_paint_preview)).check(matches(isDisplayed()));
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.

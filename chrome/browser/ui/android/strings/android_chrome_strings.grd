@@ -2232,6 +2232,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PAGE_INFO_PREVIEW_LOAD_ORIGINAL" desc="This text, when clicked, loads the original page from its origin without any treatments. This text is shown in the page info bubble when the currently viewed page has been modified to be a lighter and faster version of the original page.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Load original page<ph name="END_LINK">&lt;/link&gt;</ph> from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>
       </message>
+      <message name="IDS_PAGE_INFO_CONNECTION_PAINT_PREVIEW" desc="Message to display in the page info bubble when viewing a preview of a page.">
+        You are viewing a preview of this page
+      </message>
 
       <!-- Sad tab page -->
       <message name="IDS_SAD_TAB_SUGGESTIONS" desc="The help message displayed on the sad tab page after a tab crashes.">

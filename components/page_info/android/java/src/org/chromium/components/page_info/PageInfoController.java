@@ -358,8 +358,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * Whether to show a 'Details' link to the connection info popup.
      */
     private boolean isConnectionDetailsLinkVisible() {
+        // If Paint Preview is being shown, it completely obstructs the WebContents and users
+        // cannot interact with it. Hence, showing connection details is not relevant.
         return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
-                && !mDelegate.isShowingPreview() && !mIsInternalPage;
+                && !mDelegate.isShowingPreview() && !mDelegate.isShowingPaintPreviewPage()
+                && !mIsInternalPage;
     }
 
     /**
@@ -403,6 +406,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         if (mContentPublisher != null) {
             messageBuilder.append(
                     mContext.getString(R.string.page_info_domain_hidden, mContentPublisher));
+        } else if (mDelegate.isShowingPaintPreviewPage()) {
+            messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
         } else if (mDelegate.isShowingPreview() && mDelegate.isPreviewPageInsecure()) {
             connectionInfoParams.summary = summary;
         } else if (mDelegate.getOfflinePageConnectionMessage() != null) {

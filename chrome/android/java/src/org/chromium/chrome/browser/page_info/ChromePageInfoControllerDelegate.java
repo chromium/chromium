@@ -28,12 +28,15 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.OfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
 import org.chromium.chrome.browser.previews.PreviewsUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsClient;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -232,6 +235,26 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             }
         }
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isShowingPaintPreviewPage() {
+        Tab tab = TabUtils.fromWebContents(mWebContents);
+        return tab != null && TabbedPaintPreview.get(tab).isShowing();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Nullable
+    public String getPaintPreviewPageConnectionMessage() {
+        if (!isShowingPaintPreviewPage()) return null;
+
+        return mContext.getString(R.string.page_info_connection_paint_preview);
     }
 
     /**
