@@ -438,8 +438,14 @@ TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
   EXPECT_FALSE(URLNeedsUserAgentType(
       non_user_agent_urls.ReplaceComponents(scheme_replacements)));
 
-  // Not a placeholder or normal URL.
-  EXPECT_TRUE(URLNeedsUserAgentType(GURL("about:blank?for=")));
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // about:blank pages.
+    EXPECT_FALSE(URLNeedsUserAgentType(GURL("about:blank")));
+  } else {
+    // Not a placeholder.
+    EXPECT_TRUE(URLNeedsUserAgentType(GURL("about:blank?for=")));
+  }
+  // Normal URL.
   EXPECT_TRUE(URLNeedsUserAgentType(GURL("http://www.0.com")));
 
   // file:// URL.

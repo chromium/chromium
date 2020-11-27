@@ -5,10 +5,15 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 
 #include "base/ios/ios_util.h"
+#include "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/navigation_test_util.h"
+#import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -58,7 +63,18 @@ ACTION_P(VerifyChildWebFrame, web_state) {
 
 namespace web {
 
-using WebFrameWebStateObserverInttest = WebTestWithWebState;
+class WebFrameWebStateObserverInttest : public WebTestWithWebState {
+ protected:
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/echo-query",
+        base::BindRepeating(&testing::HandlePageWithContents)));
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  net::EmbeddedTestServer test_server_;
+};
 
 // Web frame events should be registered on HTTP navigation.
 TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
@@ -66,12 +82,18 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
   web_state()->AddObserver(&observer);
   EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  LoadHtml(@"<p></p>", GURL("http://testurl1"));
+
+  test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
+
   EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
   EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  LoadHtml(@"<p></p>", GURL("http://testurl2"));
+
+  test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?secondPage"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "secondPage"));
+
   web_state()->RemoveObserver(&observer);
 }
 
@@ -79,14 +101,28 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTP) {
 TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
   testing::StrictMock<WebStateObserverMock> observer;
   web_state()->AddObserver(&observer);
+
   EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
-  LoadHtml(@"<p></p>", GURL("https://testurl1"));
+
+  // Load a first page to avoid having an item inserted during the |LoadHtml|.
+  test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
+
   EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
   EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
+
+  LoadHtml(@"<p></p>", GURL("https://testurl1"));
+
+  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+      .WillOnce(VerifyMainWebFrame(web_state()));
+  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
+      .WillOnce(VerifyMainWebFrame(web_state()));
+
   LoadHtml(@"<p></p>", GURL("https://testurl2"));
+
   web_state()->RemoveObserver(&observer);
 }
 
@@ -94,6 +130,13 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
 TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   testing::StrictMock<WebStateObserverMock> observer;
   web_state()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, WebFrameDidBecomeAvailable(web_state(), testing::_))
+      .WillOnce(VerifyMainWebFrame(web_state()));
+
+  // Load a first page to avoid having an item inserted during the |LoadHtml|.
+  test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 
   // The order in which the main and child frames become available is not
   // guaranteed due to the async nature of messaging. The following expectations
@@ -105,6 +148,9 @@ TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   EXPECT_CALL(observer,
               WebFrameDidBecomeAvailable(web_state(), Not(Truly(IsMainFrame))))
       .WillOnce(VerifyChildWebFrame(web_state()));
+  EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(), testing::_))
+      .WillOnce(VerifyMainWebFrame(web_state()));
+
   LoadHtml(@"<p><iframe/></p>", GURL("https://testurl1"));
 
   EXPECT_CALL(observer,
@@ -119,6 +165,7 @@ TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   EXPECT_CALL(observer, WebFrameWillBecomeUnavailable(web_state(),
                                                       Not(Truly(IsMainFrame))))
       .WillOnce(VerifyChildWebFrame(web_state()));
+
   LoadHtml(@"<p><iframe/></p>", GURL("https://testurl2"));
 
   web_state()->RemoveObserver(&observer);

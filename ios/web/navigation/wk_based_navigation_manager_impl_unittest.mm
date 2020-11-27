@@ -317,6 +317,9 @@ TEST_F(WKBasedNavigationManagerTest, ReusePendingItemForHistoryNavigation) {
 // Tests that AddPendingItem does not create a new NavigationItem if the new
 // pending item is a reload of app-specific URL.
 TEST_F(WKBasedNavigationManagerTest, ReusePendingItemForReloadAppSpecificURL) {
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage))
+    return;
+
   // Simulate a previous app-specific navigation.
   NSString* url = @"about:blank?for=chrome%3A%2F%2Fnewtab";
   [mock_wk_list_ setCurrentURL:url];

@@ -167,6 +167,11 @@ class ErrorPageTest : public WebTestWithWebState {
 #define MAYBE_BackForwardErrorPage FLAKY_BackForwardErrorPage
 #endif
 TEST_F(ErrorPageTest, MAYBE_BackForwardErrorPage) {
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // TODO(crbug.com/1151938): Check if the test can be re-enabled with higher
+    // version of WebKit.
+    return;
+  }
   test::LoadUrl(web_state(), server_.GetURL("/close-socket"));
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
 
@@ -220,7 +225,14 @@ TEST_F(ErrorPageTest, ReloadErrorPage) {
   server_responds_with_content_ = false;
   test::LoadUrl(web_state(), server_.GetURL("/echo-query?foo"));
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/echo-query?foo")));
-  ASSERT_FALSE(security_state_info());
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    ASSERT_TRUE(security_state_info());
+    ASSERT_TRUE(security_state_info()->visible_ssl_status);
+    EXPECT_EQ(SECURITY_STYLE_UNAUTHENTICATED,
+              security_state_info()->visible_ssl_status->security_style);
+  } else {
+    ASSERT_FALSE(security_state_info());
+  }
 
   // Reload the page, which should load without errors.
   server_responds_with_content_ = true;
@@ -244,8 +256,13 @@ TEST_F(ErrorPageTest, ReloadPageAfterServerIsDown) {
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/echo-query?foo")));
   ASSERT_TRUE(security_state_info());
   ASSERT_TRUE(security_state_info()->visible_ssl_status);
-  EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
-            security_state_info()->visible_ssl_status->security_style);
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    EXPECT_EQ(SECURITY_STYLE_UNAUTHENTICATED,
+              security_state_info()->visible_ssl_status->security_style);
+  } else {
+    EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
+              security_state_info()->visible_ssl_status->security_style);
+  }
 }
 
 // Sucessfully loads the page, goes back, stops the server, goes forward and
@@ -278,8 +295,13 @@ TEST_F(ErrorPageTest, GoForwardAfterServerIsDownAndReload) {
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/echo-query?foo")));
   ASSERT_TRUE(security_state_info());
   ASSERT_TRUE(security_state_info()->visible_ssl_status);
-  EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
-            security_state_info()->visible_ssl_status->security_style);
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    EXPECT_EQ(SECURITY_STYLE_UNAUTHENTICATED,
+              security_state_info()->visible_ssl_status->security_style);
+  } else {
+    EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
+              security_state_info()->visible_ssl_status->security_style);
+  }
 #endif  // TARGET_IPHONE_SIMULATOR
 }
 
@@ -304,8 +326,13 @@ TEST_F(ErrorPageTest, GoBackFromErrorPageAndForwardToErrorPage) {
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
   ASSERT_TRUE(security_state_info());
   ASSERT_TRUE(security_state_info()->visible_ssl_status);
-  EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
-            security_state_info()->visible_ssl_status->security_style);
+  if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    EXPECT_EQ(SECURITY_STYLE_UNAUTHENTICATED,
+              security_state_info()->visible_ssl_status->security_style);
+  } else {
+    EXPECT_EQ(SECURITY_STYLE_UNKNOWN,
+              security_state_info()->visible_ssl_status->security_style);
+  }
 }
 
 // Sucessfully loads the page, then loads the URL which fails to load, then

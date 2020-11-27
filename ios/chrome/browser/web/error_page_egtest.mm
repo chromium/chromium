@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/bind.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -63,6 +64,40 @@ std::string GetErrorMessage() {
                           std::cref(_serverRespondsWithContent))));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
+// Tests that the error page is correctly displayed after navigating back to it
+// multiple times. See http://crbug.com/944037 .
+- (void)testBackForwardErrorPage {
+  // Using ERR_CONNECTION_CLOSED doesn't work.
+  std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
+  self.serverRespondsWithContent = YES;
+
+  [ChromeEarlGrey loadURL:GURL("chrome://invalid")];
+  [ChromeEarlGrey waitForWebStateContainingText:errorText];
+  // Add some delay otherwise the back/forward navigations are occurring too
+  // fast.
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+
+  // Navigate to a page which responds.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
+  [ChromeEarlGrey waitForWebStateContainingText:"bar"];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:errorText];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+
+  [ChromeEarlGrey goForward];
+  [ChromeEarlGrey waitForWebStateContainingText:"bar"];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:errorText];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+
+  [ChromeEarlGrey goForward];
+  [ChromeEarlGrey waitForWebStateContainingText:"bar"];
 }
 
 // Loads the URL which fails to load, then sucessfully reloads the page.

@@ -998,9 +998,11 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
 
   test::LoadUrl(web_state(), url);
 
@@ -1013,7 +1015,7 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
                                          testing::CreateConnectionLostError(),
                                          /*is_post=*/false, /*is_otr=*/false,
                                          /*cert_status=*/0)));
-  DCHECK_EQ(item->GetTitle(), base::UTF8ToUTF16(kFailedTitle));
+  EXPECT_EQ(item->GetTitle(), base::UTF8ToUTF16(kFailedTitle));
 }
 
 // Tests navigation to a URL with /..; suffix. On iOS 12 and earlier this
@@ -1131,9 +1133,11 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
 
   test::LoadUrl(web_state(), url);
   NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
@@ -1177,9 +1181,11 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
 
   test::LoadUrl(web_state(), url);
   NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
@@ -1993,9 +1999,11 @@ TEST_F(WebStateObserverTest, FLAKY_FailedLoad) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // Load error page HTML by [WKWebView loadHTMLString:baseURL:].
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
 
   test::LoadUrl(web_state(), url);
 
@@ -2036,9 +2044,11 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
-  // Finally, the error page itself is loaded.
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  if (!base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
+    // Finally, the error page itself is loaded.
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
 
   test::LoadUrl(web_state(), url);
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{

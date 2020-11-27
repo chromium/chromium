@@ -4,6 +4,8 @@
 
 #include "ios/web/navigation/error_retry_state_machine.h"
 
+#include "base/test/scoped_feature_list.h"
+#import "ios/web/common/features.h"
 #include "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/web_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +21,15 @@ namespace {
 
 static const char kTestUrl[] = "http://test.com";
 
-typedef PlatformTest ErrorRetryStateMachineTest;
+class ErrorRetryStateMachineTest : public PlatformTest {
+ public:
+  ErrorRetryStateMachineTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kUseJSForErrorPage);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // Tests load failure during provisional navigation.
 TEST_F(ErrorRetryStateMachineTest, OfflineThenReload) {

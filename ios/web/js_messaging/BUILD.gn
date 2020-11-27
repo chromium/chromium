@@ -69,6 +69,7 @@ source_set("inttests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/testing:embedded_test_server_support",
     "//ios/web/common",
     "//ios/web/js_messaging",
     "//ios/web/public",
