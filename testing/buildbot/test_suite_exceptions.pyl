@@ -2722,6 +2722,9 @@
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
+        ],
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/794372
         'swarming': {
@@ -2729,6 +2732,9 @@
         },
       },
       'Linux ChromiumOS MSan Tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
+        ],
         # These are very slow on the Chrome OS MSAN trybot for some reason.
         # crbug.com/865455
         'swarming': {
