@@ -133,7 +133,8 @@ void SynchronousCompositorProxy::DemandDrawHw(
   if (hardware_draw_reply_) {
     // Did not swap.
     std::move(hardware_draw_reply_)
-        .Run(PopulateNewCommonParams(), 0u, 0u, base::nullopt, base::nullopt);
+        .Run(PopulateNewCommonParams(), 0u, 0u, base::nullopt, base::nullopt,
+             base::nullopt);
   }
 }
 
@@ -215,6 +216,7 @@ void SynchronousCompositorProxy::DoDemandDrawSw(
 
 void SynchronousCompositorProxy::SubmitCompositorFrame(
     uint32_t layer_tree_frame_sink_id,
+    const viz::LocalSurfaceId& local_surface_id,
     base::Optional<viz::CompositorFrame> frame,
     base::Optional<viz::HitTestRegionList> hit_test_region_list) {
   // Verify that exactly one of these is true.
@@ -225,9 +227,10 @@ void SynchronousCompositorProxy::SubmitCompositorFrame(
   if (hardware_draw_reply_) {
     // For viz the CF was submitted directly via CompositorFrameSink
     DCHECK(frame || viz_frame_submission_enabled_);
+    DCHECK(local_surface_id.is_valid());
     std::move(hardware_draw_reply_)
         .Run(std::move(common_renderer_params), layer_tree_frame_sink_id,
-             NextMetadataVersion(), std::move(frame),
+             NextMetadataVersion(), local_surface_id, std::move(frame),
              std::move(hit_test_region_list));
   } else if (software_draw_reply_) {
     DCHECK(frame);
@@ -332,10 +335,12 @@ void SynchronousCompositorProxy::SendDemandDrawHwAsyncReply(
     mojom::blink::SyncCompositorCommonRendererParamsPtr,
     uint32_t layer_tree_frame_sink_id,
     uint32_t metadata_version,
+    const base::Optional<viz::LocalSurfaceId>& local_surface_id,
     base::Optional<viz::CompositorFrame> frame,
     base::Optional<viz::HitTestRegionList> hit_test_region_list) {
   control_host_->ReturnFrame(layer_tree_frame_sink_id, metadata_version,
-                             std::move(frame), std::move(hit_test_region_list));
+                             local_surface_id, std::move(frame),
+                             std::move(hit_test_region_list));
 }
 
 void SynchronousCompositorProxy::SendBeginFrameResponse(

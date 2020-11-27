@@ -40,6 +40,7 @@ void SynchronousCompositorSyncCallBridge::RemoteClosedOnIOThread() {
 bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
     int layer_tree_frame_sink_id,
     uint32_t metadata_version,
+    base::Optional<viz::LocalSurfaceId> local_surface_id,
     base::Optional<viz::CompositorFrame> compositor_frame,
     base::Optional<viz::HitTestRegionList> hit_test_region_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -54,6 +55,7 @@ bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
   frame_futures_.pop_front();
 
   if (compositor_frame) {
+    DCHECK(local_surface_id);
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SynchronousCompositorSyncCallBridge::
                                       ProcessFrameMetadataOnUIThread,
@@ -61,6 +63,7 @@ bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
                                   compositor_frame->metadata.Clone()));
     frame_ptr->frame.reset(new viz::CompositorFrame);
     *frame_ptr->frame = std::move(*compositor_frame);
+    frame_ptr->local_surface_id = local_surface_id.value();
     frame_ptr->hit_test_region_list = std::move(hit_test_region_list);
   }
   future->SetFrame(std::move(frame_ptr));

@@ -58,8 +58,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   bool IsChildSurface(const viz::FrameSinkId& frame_sink_id);
   void DettachClient();
 
-  void SubmitChildCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
-                                  ChildFrame* child_frame);
+  void SubmitChildCompositorFrame(ChildFrame* child_frame);
   viz::FrameTimingDetailsMap TakeChildFrameTimingDetailsMap();
   gfx::Size GetChildFrameSize();
 

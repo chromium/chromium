@@ -10,6 +10,7 @@ import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -56,6 +57,7 @@ interface SynchronousCompositor {
       (SyncCompositorCommonRendererParams result,
        uint32 layer_tree_frame_sink_id,
        uint32 metadata_version,
+       viz.mojom.LocalSurfaceId? local_surface_id,
        viz.mojom.CompositorFrame? frame,
        viz.mojom.HitTestRegionList? hit_test_region_list);
 
@@ -143,6 +145,7 @@ interface SynchronousCompositorControlHost {
   // Response from DrawHwAsync.
   ReturnFrame(uint32 layer_tree_frame_sink_id,
               uint32 metadata_version,
+              viz.mojom.LocalSurfaceId? local_surface_id,
               viz.mojom.CompositorFrame? frame,
               viz.mojom.HitTestRegionList? hit_test_region_list);
 

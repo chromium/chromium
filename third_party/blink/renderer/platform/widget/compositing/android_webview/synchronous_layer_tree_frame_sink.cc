@@ -392,9 +392,14 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
   }
   // NOTE: submit_frame will be empty if viz_frame_submission_enabled_ enabled,
   // but it won't be used upstream
-  sync_client_->SubmitCompositorFrame(layer_tree_frame_sink_id_,
-                                      std::move(submit_frame),
-                                      client_->BuildHitTestData());
+  // Because OnDraw can synchronously override the viewport without going
+  // through commit and activation, we generate our own LocalSurfaceId by
+  // checking the submitted frame instead of using the one set here.
+  sync_client_->SubmitCompositorFrame(
+      layer_tree_frame_sink_id_,
+      viz_frame_submission_enabled_ ? local_surface_id_
+                                    : child_local_surface_id_,
+      std::move(submit_frame), client_->BuildHitTestData());
   did_submit_frame_ = true;
 }
 

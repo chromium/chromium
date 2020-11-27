@@ -264,6 +264,7 @@ enum BadMessageReason {
   ASGH_ASSOCIATED_INTERFACE_REQUEST = 236,
   ASGH_RECEIVED_CONTROL_MESSAGE = 237,
   CSDH_BAD_OWNER = 238,
+  SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID = 239,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

@@ -103,11 +103,17 @@ class SynchronousCompositorControlHost
   void ReturnFrame(
       uint32_t layer_tree_frame_sink_id,
       uint32_t metadata_version,
+      const base::Optional<viz::LocalSurfaceId>& local_surface_id,
       base::Optional<viz::CompositorFrame> frame,
       base::Optional<viz::HitTestRegionList> hit_test_region_list) override {
-    if (!bridge_->ReceiveFrameOnIOThread(layer_tree_frame_sink_id,
-                                         metadata_version, std::move(frame),
-                                         std::move(hit_test_region_list))) {
+    if (frame && (!local_surface_id || !local_surface_id->is_valid())) {
+      bad_message::ReceivedBadMessage(
+          process_id_, bad_message::SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID);
+      return;
+    }
+    if (!bridge_->ReceiveFrameOnIOThread(
+            layer_tree_frame_sink_id, metadata_version, local_surface_id,
+            std::move(frame), std::move(hit_test_region_list))) {
       bad_message::ReceivedBadMessage(
           process_id_, bad_message::SYNC_COMPOSITOR_NO_FUTURE_FRAME);
     }
@@ -192,8 +198,7 @@ SynchronousCompositorHost::DemandDrawHwAsync(
     const gfx::Rect& viewport_rect_for_tile_priority,
     const gfx::Transform& transform_for_tile_priority) {
   invalidate_needs_draw_ = false;
-  scoped_refptr<FrameFuture> frame_future =
-      new FrameFuture(rwhva_->GetLocalSurfaceId());
+  scoped_refptr<FrameFuture> frame_future = new FrameFuture();
   if (!allow_async_draw_) {
     allow_async_draw_ = allow_async_draw_ || IsReadyForSynchronousCall();
     auto frame_ptr = std::make_unique<Frame>();
@@ -227,6 +232,7 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
           transform_for_tile_priority);
   uint32_t layer_tree_frame_sink_id;
   uint32_t metadata_version = 0u;
+  base::Optional<viz::LocalSurfaceId> local_surface_id;
   base::Optional<viz::CompositorFrame> compositor_frame;
   base::Optional<viz::HitTestRegionList> hit_test_region_list;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
@@ -238,20 +244,30 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
     if (!IsReadyForSynchronousCall() ||
         !GetSynchronousCompositor()->DemandDrawHw(
             std::move(params), &common_renderer_params,
-            &layer_tree_frame_sink_id, &metadata_version, &compositor_frame,
-            &hit_test_region_list)) {
+            &layer_tree_frame_sink_id, &metadata_version, &local_surface_id,
+            &compositor_frame, &hit_test_region_list)) {
       return SynchronousCompositor::Frame();
     }
   }
 
   UpdateState(std::move(common_renderer_params));
 
-  if (!compositor_frame)
+  if (compositor_frame) {
+    if (!local_surface_id || !local_surface_id->is_valid()) {
+      bad_message::ReceivedBadMessage(
+          rwhva_->GetRenderWidgetHost()->GetProcess()->GetID(),
+          bad_message::SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID);
+      return SynchronousCompositor::Frame();
+    }
+  } else {
     return SynchronousCompositor::Frame();
+  }
 
   SynchronousCompositor::Frame frame;
   frame.frame.reset(new viz::CompositorFrame);
   frame.layer_tree_frame_sink_id = layer_tree_frame_sink_id;
+  if (local_surface_id)
+    frame.local_surface_id = local_surface_id.value();
   *frame.frame = std::move(*compositor_frame);
   frame.hit_test_region_list = std::move(hit_test_region_list);
   UpdateFrameMetaData(metadata_version, frame.frame->metadata.Clone());

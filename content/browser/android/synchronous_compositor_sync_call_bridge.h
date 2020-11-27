@@ -82,6 +82,7 @@ class SynchronousCompositorSyncCallBridge
   bool ReceiveFrameOnIOThread(
       int frame_sink_id,
       uint32_t metadata_version,
+      base::Optional<viz::LocalSurfaceId> local_surface_id,
       base::Optional<viz::CompositorFrame>,
       base::Optional<viz::HitTestRegionList> hit_test_region_list);
 

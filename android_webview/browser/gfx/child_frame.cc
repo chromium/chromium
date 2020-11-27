@@ -43,7 +43,7 @@ void ChildFrame::WaitOnFutureIfNeeded() {
   if (frame_ptr) {
     layer_tree_frame_sink_id = frame_ptr->layer_tree_frame_sink_id;
     frame = std::move(frame_ptr->frame);
-    local_surface_id = frame_future->local_surface_id();
+    local_surface_id = frame_ptr->local_surface_id;
     hit_test_region_list = std::move(frame_ptr->hit_test_region_list);
   }
   frame_future = nullptr;

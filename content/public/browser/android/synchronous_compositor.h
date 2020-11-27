@@ -57,6 +57,8 @@ class CONTENT_EXPORT SynchronousCompositor {
 
     uint32_t layer_tree_frame_sink_id;
     std::unique_ptr<viz::CompositorFrame> frame;
+    // Invalid if |frame| is nullptr.
+    viz::LocalSurfaceId local_surface_id;
     base::Optional<viz::HitTestRegionList> hit_test_region_list;
 
    private:
@@ -65,10 +67,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {
    public:
-    explicit FrameFuture(viz::LocalSurfaceId local_surface_id);
+    FrameFuture();
     void SetFrame(std::unique_ptr<Frame> frame);
     std::unique_ptr<Frame> GetFrame();
-    const viz::LocalSurfaceId& local_surface_id() { return local_surface_id_; }
 
    private:
     friend class base::RefCountedThreadSafe<FrameFuture>;
@@ -76,7 +77,6 @@ class CONTENT_EXPORT SynchronousCompositor {
 
     base::WaitableEvent waitable_event_;
     std::unique_ptr<Frame> frame_;
-    viz::LocalSurfaceId local_surface_id_;
 #if DCHECK_IS_ON()
     bool waited_ = false;
 #endif

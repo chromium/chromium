@@ -51,7 +51,7 @@ class ChildFrame {
   base::Optional<viz::HitTestRegionList> hit_test_region_list;
   // The id of the compositor this |frame| comes from.
   const viz::FrameSinkId frame_sink_id;
-  // local surface id of the frame, used with viz for webview
+  // Local surface id of the frame. Invalid if |frame| is null.
   viz::LocalSurfaceId local_surface_id;
   const gfx::Size viewport_size_for_tile_priority;
   const gfx::Transform transform_for_tile_priority;

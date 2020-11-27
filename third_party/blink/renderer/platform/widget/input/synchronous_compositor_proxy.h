@@ -59,6 +59,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   void Invalidate(bool needs_draw) final;
   void SubmitCompositorFrame(
       uint32_t layer_tree_frame_sink_id,
+      const viz::LocalSurfaceId& local_surface_id,
       base::Optional<viz::CompositorFrame> frame,
       base::Optional<viz::HitTestRegionList> hit_test_region_list) final;
   void SetNeedsBeginFrames(bool needs_begin_frames) final;
@@ -99,6 +100,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
       mojom::blink::SyncCompositorCommonRendererParamsPtr,
       uint32_t layer_tree_frame_sink_id,
       uint32_t metadata_version,
+      const base::Optional<viz::LocalSurfaceId>& local_surface_id,
       base::Optional<viz::CompositorFrame>,
       base::Optional<viz::HitTestRegionList> hit_test_region_list);
 
