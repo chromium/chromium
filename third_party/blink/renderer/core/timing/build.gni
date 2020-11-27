@@ -17,8 +17,6 @@ blink_core_sources_timing = [
   "layout_shift_attribution.h",
   "measure_memory/measure_memory_controller.cc",
   "measure_memory/measure_memory_controller.h",
-  "measure_memory/measure_memory_delegate.cc",
-  "measure_memory/measure_memory_delegate.h",
   "memory_info.cc",
   "memory_info.h",
   "performance.cc",

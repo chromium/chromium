@@ -71,4 +71,10 @@ void DocumentResourceCoordinator::OnFirstContentfulPaint(
   service_->OnFirstContentfulPaint(time_since_navigation_start);
 }
 
+void DocumentResourceCoordinator::OnWebMemoryMeasurementRequested(
+    WebMemoryMeasurementMode mode,
+    OnWebMemoryMeasurementRequestedCallback callback) {
+  service_->OnWebMemoryMeasurementRequested(mode, std::move(callback));
+}
+
 }  // namespace blink

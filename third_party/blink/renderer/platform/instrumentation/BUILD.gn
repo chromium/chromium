@@ -37,11 +37,11 @@ blink_platform_sources("instrumentation") {
     "use_counter.h",
   ]
 
-  deps = [
+  deps = [ "//services/service_manager/public/cpp" ]
+  public_deps = [
     "//components/performance_manager/public/mojom:mojom_blink",
-    "//services/service_manager/public/cpp",
+    "//third_party/blink/renderer/platform/heap:heap",
   ]
-  public_deps = [ "//third_party/blink/renderer/platform/heap:heap" ]
   allow_circular_includes_from = public_deps
 }
 

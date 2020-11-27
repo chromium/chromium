@@ -21,6 +21,11 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   USING_FAST_MALLOC(DocumentResourceCoordinator);
 
  public:
+  using WebMemoryMeasurementMode =
+      ::performance_manager::mojom::blink::WebMemoryMeasurement::Mode;
+  using OnWebMemoryMeasurementRequestedCallback = ::performance_manager::mojom::
+      blink::DocumentCoordinationUnit::OnWebMemoryMeasurementRequestedCallback;
+
   // Returns nullptr if instrumentation is not enabled.
   static std::unique_ptr<DocumentResourceCoordinator> MaybeCreate(
       const BrowserInterfaceBrokerProxy&);
@@ -35,6 +40,9 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   void OnNonPersistentNotificationCreated();
   void SetHadFormInteraction();
   void OnFirstContentfulPaint(base::TimeDelta time_since_navigation_start);
+  void OnWebMemoryMeasurementRequested(
+      WebMemoryMeasurementMode mode,
+      OnWebMemoryMeasurementRequestedCallback callback);
 
  private:
   explicit DocumentResourceCoordinator(const BrowserInterfaceBrokerProxy&);

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEASURE_MEMORY_MEASURE_MEMORY_CONTROLLER_H_
 
 #include "base/types/pass_key.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
@@ -17,7 +18,6 @@
 namespace blink {
 
 class LocalDOMWindow;
-class MemoryBreakdownEntry;
 class ScriptState;
 class ExceptionState;
 
@@ -30,21 +30,6 @@ class ExceptionState;
 class MeasureMemoryController final
     : public GarbageCollected<MeasureMemoryController> {
  public:
-  using Result = HeapVector<Member<MemoryBreakdownEntry>>;
-  using ResultCallback = base::OnceCallback<void(Result)>;
-
-  // PerformanceManager in blink/renderer/controller uses this interface
-  // to provide an implementation of memory measurement for dedicated workers.
-  //
-  // It will be removed in the future when performance.measureMemory switches
-  // to a mojo-based implementation that queries PerformanceManager in the
-  // browser process.
-  class V8MemoryReporter {
-   public:
-    virtual void GetMemoryUsage(MeasureMemoryController::ResultCallback,
-                                v8::MeasureMemoryExecution) = 0;
-  };
-
   // Private constructor guarded by PassKey. Use the StartMeasurement() wrapper
   // to construct the object and start the measurement.
   MeasureMemoryController(base::PassKey<MeasureMemoryController>,
@@ -58,13 +43,11 @@ class MeasureMemoryController final
 
   void Trace(Visitor* visitor) const;
 
-  // The entry point for injecting dependency on PerformanceManager.
-  CORE_EXPORT static void SetDedicatedWorkerMemoryReporter(V8MemoryReporter*);
-
  private:
   static bool IsMeasureMemoryAvailable(LocalDOMWindow* window);
   // Invoked when the memory of the main V8 isolate is measured.
-  void MainMeasurementComplete(Result);
+  void MeasurementComplete(
+      performance_manager::mojom::blink::WebMemoryMeasurementPtr);
 
   v8::Isolate* isolate_;
   ScopedPersistent<v8::Context> context_;

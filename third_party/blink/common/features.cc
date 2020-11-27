@@ -221,7 +221,7 @@ const base::Feature kV8OptimizeWorkersForPerformance{
 // Controls whether the implementation of the performance.measureMemory
 // web API uses PerformanceManager or not.
 const base::Feature kWebMeasureMemoryViaPerformanceManager{
-    "WebMeasureMemoryViaPerformanceManager", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebMeasureMemoryViaPerformanceManager", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables negotiation of experimental multiplex codec in SDP.
 const base::Feature kWebRtcMultiplexCodec{"WebRTC-MultiplexCodec",
