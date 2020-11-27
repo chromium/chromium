@@ -3881,6 +3881,7 @@ crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/gr
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-order-property-auto-placement-003.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-order-property-auto-placement-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-order-property-auto-placement-005.html [ Failure ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/percentage-size-indefinite-replaced.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/percentage-size-replaced-subitems-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/percentage-size-subitems-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/remove-svg-grid-item-001.html [ Failure ]

@@ -722,6 +722,9 @@ crbug.com/591099 external/wpt/css/css-flexbox/percentage-size-quirks-002.html [ 
 crbug.com/591099 external/wpt/css/css-flexbox/position-absolute-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/position-absolute-015.html [ Failure ]
 
+### external/wpt/css/css-grid/
+crbug.com/591099 external/wpt/css/css-grid/grid-items/percentage-size-indefinite-replaced.html [ Failure ]
+
 ### external/wpt/css/css-pseudo/
 crbug.com/591099 external/wpt/css/css-pseudo/active-selection-011.html [ Failure ]
 
