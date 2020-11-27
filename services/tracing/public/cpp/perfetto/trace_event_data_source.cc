@@ -1212,7 +1212,29 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // mojo message which can result in additional trace events).
   AutoThreadLocalBoolean thread_is_in_trace_event(GetThreadIsInTraceEventTLS());
 
-  AutoLockWithDeferredTaskPosting lock(lock_);
+  // It's safe to use this writer outside the lock because EmitTrackDescriptor()
+  // is either called (a) when startup tracing is set up (from the main thread)
+  // or (b) on the perfetto sequence. (a) is safe because the writer will not be
+  // destroyed before startup tracing set up is complete. (b) is safe because
+  // the writer is only destroyed on the perfetto sequence in this case.
+  perfetto::TraceWriter* writer;
+  bool privacy_filtering_enabled;
+#if defined(OS_ANDROID)
+  bool is_system_producer;
+#endif  // defined(OS_ANDROID)
+  {
+    AutoLockWithDeferredTaskPosting lock(lock_);
+    writer = trace_writer_.get();
+    privacy_filtering_enabled = privacy_filtering_enabled_;
+#if defined(OS_ANDROID)
+    is_system_producer =
+        producer_ == PerfettoTracedProcess::Get()->system_producer();
+#endif  // defined(OS_ANDROID)
+  }
+
+  if (!writer) {
+    return;
+  }
 
   int process_id = TraceLog::GetInstance()->process_id();
   if (process_id == base::kNullProcessId) {
@@ -1220,13 +1242,9 @@ void TraceEventDataSource::EmitTrackDescriptor() {
     return;
   }
 
-  if (!trace_writer_) {
-    return;
-  }
-
   std::string process_name = TraceLog::GetInstance()->process_name();
 
-  TracePacketHandle trace_packet = trace_writer_->NewTracePacket();
+  TracePacketHandle trace_packet = writer->NewTracePacket();
 
   trace_packet->set_sequence_flags(
       perfetto::protos::pbzero::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED);
@@ -1245,7 +1263,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 
   ProcessDescriptor* process = track_descriptor->set_process();
   process->set_pid(process_id);
-  if (!privacy_filtering_enabled_ && !process_name.empty()) {
+  if (!privacy_filtering_enabled && !process_name.empty()) {
     process->set_process_name(process_name);
   }
 
@@ -1259,8 +1277,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 #if defined(OS_ANDROID)
   // Host app package name is only recorded if privacy filtering is disabled or
   // this is a system trace.
-  if (!privacy_filtering_enabled_ ||
-      producer_ == PerfettoTracedProcess::Get()->system_producer()) {
+  if (!privacy_filtering_enabled || is_system_producer) {
     // Host app package name is used to group information from different
     // processes that "belong" to the same WebView app.
     // TODO(b/161983088): only write this for WebView since this information is
@@ -1276,7 +1293,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // TODO(eseckler): Set other fields on |chrome_process|.
 
   trace_packet = TracePacketHandle();
-  trace_writer_->Flush();
+  writer->Flush();
 }
 
 bool TraceEventDataSource::IsPrivacyFilteringEnabled() {
