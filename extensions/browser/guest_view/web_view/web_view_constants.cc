@@ -109,6 +109,7 @@ const char kInternalBaseURLForDataURL[] = "baseUrlForDataUrl";
 const char kInternalCurrentEntryIndex[] = "currentEntryIndex";
 const char kInternalEntryCount[] = "entryCount";
 const char kInternalProcessId[] = "processId";
+const char kInternalVisibleUrl[] = "visibleUrl";
 
 // Parameters to callback functions.
 const char kFindNumberOfMatches[] = "numberOfMatches";

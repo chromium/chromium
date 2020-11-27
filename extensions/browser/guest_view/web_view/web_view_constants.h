@@ -115,6 +115,7 @@ extern const char kInternalBaseURLForDataURL[];
 extern const char kInternalCurrentEntryIndex[];
 extern const char kInternalEntryCount[];
 extern const char kInternalProcessId[];
+extern const char kInternalVisibleUrl[];
 
 // Parameters to callback functions.
 extern const char kFindNumberOfMatches[];

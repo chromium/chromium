@@ -42,7 +42,6 @@ embedder.setUp_ = function(config) {
   embedder.closeSocketURL = embedder.baseGuestURL + '/close-socket';
   embedder.testImageBaseURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/';
-  embedder.virtualURL = 'http://virtualurl/';
   embedder.pluginURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/embed.html';
   embedder.mailtoTestURL = embedder.baseGuestURL +
@@ -2823,9 +2822,11 @@ function testLoadDataAPI() {
   var webview = new WebView();
   webview.src = 'about:blank';
 
+  const virtualURL = 'http://virtualurl/';
+
   var loadstopListener2 = function(e) {
     // Test the virtual URL.
-    embedder.test.assertEq(webview.src, embedder.virtualURL);
+    embedder.test.assertEq(webview.src, virtualURL);
 
     // Test that the image was loaded from the right source.
     webview.executeScript(
@@ -2846,10 +2847,11 @@ function testLoadDataAPI() {
 
     // Load a data URL containing a relatively linked image, with the
     // image's base URL specified, and a virtual URL provided.
-    webview.loadDataWithBaseUrl("data:text/html;base64,PGh0bWw+CiAgVGhpcyBpcy" +
-        "BhIHRlc3QuPGJyPgogIDxpbWcgc3JjPSJ0ZXN0LmJtcCI+PGJyPgo8L2h0bWw+Cg==",
+    let encodedData =
+        window.btoa('<html>This is a test.<br><img src="test.bmp"><br></html>');
+    webview.loadDataWithBaseUrl("data:text/html;base64," + encodedData,
                                 embedder.testImageBaseURL,
-                                embedder.virtualURL);
+                                virtualURL);
   };
 
   webview.addEventListener('loadstop', loadstopListener1);

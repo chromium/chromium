@@ -340,9 +340,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Stores whether the contents of the guest can be transparent.
   bool allow_transparency_;
 
-  // Stores the src URL of the WebView.
-  GURL src_;
-
   // Handles the JavaScript dialog requests.
   JavaScriptDialogHelper javascript_dialog_helper_;
 

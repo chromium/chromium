@@ -925,18 +925,16 @@ void WebViewGuest::DidFinishNavigation(
       return;
   }
 
-  if (navigation_handle->IsInMainFrame()) {
-    // For LoadDataWithBaseURL loads, |url| contains the data URL, but the
-    // virtual URL is needed in that case. So use WebContents::GetURL instead.
-    src_ = web_contents()->GetURL();
+  if (navigation_handle->IsInMainFrame() && pending_zoom_factor_) {
     // Handle a pending zoom if one exists.
-    if (pending_zoom_factor_) {
-      SetZoom(pending_zoom_factor_);
-      pending_zoom_factor_ = 0.0;
-    }
+    SetZoom(pending_zoom_factor_);
+    pending_zoom_factor_ = 0.0;
   }
+
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, src_.spec());
+  args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
+  args->SetString(webview::kInternalVisibleUrl,
+                  web_contents()->GetVisibleURL().spec());
   args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
   args->SetString(webview::kInternalBaseURLForDataURL,
                   web_contents()
@@ -1556,8 +1554,13 @@ void WebViewGuest::LoadURLWithParams(
     return;
   }
 
-  if (!force_navigation && (src_ == url))
-    return;
+  if (!force_navigation) {
+    content::NavigationEntry* last_committed_entry =
+        web_contents()->GetController().GetLastCommittedEntry();
+    if (last_committed_entry && last_committed_entry->GetURL() == url) {
+      return;
+    }
+  }
 
   GURL validated_url(url);
   web_contents()->GetMainFrame()->GetProcess()->FilterURL(false,
@@ -1575,8 +1578,6 @@ void WebViewGuest::LoadURLWithParams(
         content::NavigationController::UA_OVERRIDE_TRUE;
   }
   web_contents()->GetController().LoadURLWithParams(load_url_params);
-
-  src_ = validated_url;
 }
 
 void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
