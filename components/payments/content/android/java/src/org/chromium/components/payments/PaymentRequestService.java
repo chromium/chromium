@@ -19,7 +19,6 @@ import org.chromium.components.payments.BrowserPaymentRequest.Factory;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.CanMakePaymentQueryResult;
 import org.chromium.payments.mojom.HasEnrolledInstrumentQueryResult;
@@ -42,6 +41,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -200,6 +200,88 @@ public class PaymentRequestService
          */
         @Nullable
         String getTwaPackageName();
+
+        /**
+         * Gets the WebContents from a RenderFrameHost if the WebContents has not been destroyed;
+         * otherwise, return null.
+         * @param renderFrameHost The {@link RenderFrameHost} of any frame in which the intended
+         *         WebContents contains.
+         * @return The WebContents.
+         */
+        @Nullable
+        default WebContents getLiveWebContents(RenderFrameHost renderFrameHost) {
+            return PaymentRequestServiceUtil.getLiveWebContents(renderFrameHost);
+        }
+
+        /**
+         * Returns true for a valid URL from a secure origin.
+         * @param url The URL to check.
+         * @return Whether the origin of the URL is secure.
+         */
+        default boolean isOriginSecure(String url) {
+            return OriginSecurityChecker.isOriginSecure(url);
+        }
+
+        /**
+         * Creates a journey logger.
+         * @param isIncognito Whether the user profile is incognito.
+         * @param webContents The web contents where PaymentRequest API is invoked. Should not be
+         *         null.
+         */
+        default JourneyLogger createJourneyLogger(boolean isIncognito, WebContents webContents) {
+            return new JourneyLogger(isIncognito, webContents);
+        }
+
+        /**
+         * Builds a String that strips down |uri| to its scheme, host, and port.
+         * @param uri The URI to break down.
+         * @return Stripped-down String containing the essential bits of the URL, or the original
+         *         URL if it fails to parse it.
+         */
+        default String formatUrlForSecurityDisplay(String uri) {
+            return UrlFormatter.formatUrlForSecurityDisplay(uri);
+        }
+
+        /**
+         * @param webContents The WebContents to get site certificate chain from.
+         * @return The site certificate chain of the given WebContents.
+         */
+        default byte[][] getCertificateChain(WebContents webContents) {
+            return CertificateChainHelper.getCertificateChain(webContents);
+        }
+
+        /**
+         * Checks whether the page at the given URL should be allowed to use the web payment APIs.
+         * @param url The URL to check.
+         * @return Whether the page is allowed to use web payment APIs.
+         */
+        default boolean isOriginAllowedToUseWebPaymentApis(String url) {
+            return UrlUtil.isOriginAllowedToUseWebPaymentApis(url);
+        }
+
+        /**
+         * @param details The payment details to verify.
+         * @return Whether the details are valid.
+         */
+        default boolean validatePaymentDetails(PaymentDetails details) {
+            return PaymentValidator.validatePaymentDetails(details);
+        }
+
+        /**
+         * Creates an instance of {@link PaymentRequestSpec} that stores the given info.
+         * @param options The payment options, e.g., whether shipping is requested.
+         * @param details The payment details, e.g., the total amount.
+         * @param methodData The list of supported payment method identifiers and corresponding
+         *         payment
+         * method specific data.
+         * @param appLocale The current application locale.
+         * @return The payment request spec.
+         */
+        default PaymentRequestSpec createPaymentRequestSpec(PaymentOptions options,
+                PaymentDetails details, Collection<PaymentMethodData> methodData,
+                String appLocale) {
+            return new PaymentRequestSpec(options, details, methodData, appLocale);
+        }
     }
 
     /**
@@ -284,8 +366,9 @@ public class PaymentRequestService
      * @return An instance of {@link PaymentRequestService} only if the parameters are deemed
      *         valid; Otherwise, null.
      */
+    @VisibleForTesting
     @Nullable
-    private static PaymentRequestService createIfParamsValid(RenderFrameHost renderFrameHost,
+    public static PaymentRequestService createIfParamsValid(RenderFrameHost renderFrameHost,
             boolean isOffTheRecord, BrowserPaymentRequest.Factory browserPaymentRequestFactory,
             @Nullable PaymentRequestClient client, @Nullable PaymentMethodData[] methodData,
             @Nullable PaymentDetails details, @Nullable PaymentOptions options,
@@ -301,14 +384,14 @@ public class PaymentRequestService
             return null;
         }
 
-        WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
+        WebContents webContents = delegate.getLiveWebContents(renderFrameHost);
         if (webContents == null || webContents.isDestroyed()) {
             abortBeforeInstantiation(/*client=*/null, /*journeyLogger=*/null,
                     ErrorStrings.NO_WEB_CONTENTS, AbortReason.INVALID_DATA_FROM_RENDERER);
             return null;
         }
 
-        JourneyLogger journeyLogger = new JourneyLogger(isOffTheRecord, webContents);
+        JourneyLogger journeyLogger = delegate.createJourneyLogger(isOffTheRecord, webContents);
 
         if (client == null) {
             abortBeforeInstantiation(/*client=*/null, journeyLogger, ErrorStrings.INVALID_STATE,
@@ -316,7 +399,7 @@ public class PaymentRequestService
             return null;
         }
 
-        if (!OriginSecurityChecker.isOriginSecure(webContents.getLastCommittedUrl())) {
+        if (!delegate.isOriginSecure(webContents.getLastCommittedUrl())) {
             abortBeforeInstantiation(client, journeyLogger, ErrorStrings.NOT_IN_A_SECURE_ORIGIN,
                     AbortReason.INVALID_DATA_FROM_RENDERER);
             return null;
@@ -437,9 +520,8 @@ public class PaymentRequestService
 
         // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
         mPaymentRequestOrigin =
-                UrlFormatter.formatUrlForSecurityDisplay(mRenderFrameHost.getLastCommittedURL());
-        mTopLevelOrigin =
-                UrlFormatter.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
+                delegate.formatUrlForSecurityDisplay(mRenderFrameHost.getLastCommittedURL());
+        mTopLevelOrigin = delegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
         mPaymentOptions = options;
         mRequestShipping = mPaymentOptions.requestShipping;
@@ -449,7 +531,7 @@ public class PaymentRequestService
         mShippingType = mPaymentOptions.shippingType;
 
         mMerchantName = mWebContents.getTitle();
-        mCertificateChain = CertificateChainHelper.getCertificateChain(mWebContents);
+        mCertificateChain = delegate.getCertificateChain(mWebContents);
         mIsOffTheRecord = isOffTheRecord;
         mClient = client;
         mJourneyLogger = journeyLogger;
@@ -479,7 +561,7 @@ public class PaymentRequestService
         mBrowserPaymentRequest = factory.createBrowserPaymentRequest(this);
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
 
-        if (!UrlUtil.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
+        if (!mDelegate.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN);
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -518,7 +600,7 @@ public class PaymentRequestService
         mBrowserPaymentRequest.modifyQueryForQuotaCreatedIfNeeded(mQueryForQuota, mPaymentOptions);
 
         if (details == null || details.id == null || details.total == null
-                || !PaymentValidator.validatePaymentDetails(details)) {
+                || !mDelegate.validatePaymentDetails(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
@@ -530,7 +612,7 @@ public class PaymentRequestService
             return false;
         }
 
-        PaymentRequestSpec spec = new PaymentRequestSpec(mPaymentOptions, details,
+        PaymentRequestSpec spec = mDelegate.createPaymentRequestSpec(mPaymentOptions, details,
                 methodData.values(), LocaleUtils.getDefaultLocaleString());
         if (spec.getRawTotal() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -1079,7 +1161,7 @@ public class PaymentRequestService
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
-        if (!PaymentValidator.validatePaymentDetails(details)
+        if (!mDelegate.validatePaymentDetails(details)
                 || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             return ErrorStrings.INVALID_PAYMENT_DETAILS;
@@ -1129,8 +1211,7 @@ public class PaymentRequestService
         }
 
         // ID cannot be updated. Updating the total is optional.
-        if (details == null || details.id != null
-                || !PaymentValidator.validatePaymentDetails(details)
+        if (details == null || details.id != null || !mDelegate.validatePaymentDetails(details)
                 || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
