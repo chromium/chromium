@@ -10,10 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
@@ -55,10 +52,6 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-#if defined(OS_MAC)
-#include "chrome/browser/global_keyboard_shortcuts_mac.h"
-#endif
-
 namespace {
 
 ProfilePickerView* g_profile_picker_view = nullptr;
@@ -68,10 +61,6 @@ constexpr float kMaxRatioOfWorkArea = 0.9;
 
 constexpr base::TimeDelta kExtendedAccountInfoTimeout =
     base::TimeDelta::FromSeconds(10);
-
-constexpr int kSupportedAcceleratorCommands[] = {
-    IDC_CLOSE_TAB, IDC_CLOSE_WINDOW, IDC_EXIT, IDC_FULLSCREEN,
-    IDC_MINIMIZE_WINDOW};
 
 GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
@@ -156,7 +145,6 @@ ProfilePickerView::ProfilePickerView()
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_PRODUCT_NAME);
   set_use_custom_frame(false);
-  ConfigureAccelerators();
   // TODO(crbug.com/1063856): Add |RecordDialogCreation|.
 }
 
@@ -214,11 +202,16 @@ void ProfilePickerView::OnSystemProfileCreated(
 void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
                              Profile* system_profile) {
   DCHECK_EQ(state_, kInitializing);
-  CreateWebView(system_profile);
-  DCHECK(web_view_);
+  auto web_view = std::make_unique<views::WebView>(system_profile);
+  web_view->GetWebContents()->SetDelegate(this);
   // To record metrics using javascript, extensions are needed.
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_view_->GetWebContents());
+      web_view->GetWebContents());
+  // Set the member before adding to the hieararchy to make it easier for tests
+  // to detect that a new WebView has been created.
+  web_view_ = web_view.get();
+  AddChildView(std::move(web_view));
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 
   CreateDialogWidget(this, nullptr, nullptr);
 
@@ -317,7 +310,13 @@ void ProfilePickerView::OnProfileForSigninCreated(
   // Rebuild the view.
   // TODO(crbug.com/1126913): Add the simple toolbar with the back button.
   RemoveAllChildViews(true);
-  CreateWebView(profile);
+  auto web_view = std::make_unique<views::WebView>(profile);
+  web_view->GetWebContents()->SetDelegate(this);
+  // Set the member before adding to the hieararchy to make it easier for tests
+  // to detect that a new WebView has been created.
+  web_view_ = web_view.get();
+  AddChildView(std::move(web_view));
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_->LoadInitialURL(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
   web_view_->RequestFocus();
 }
@@ -361,57 +360,11 @@ gfx::Size ProfilePickerView::GetMinimumSize() const {
   return minimum_size;
 }
 
-bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  // Ignore presses of the Escape key. The profile picker may be Chrome's only
-  // top-level window, in which case we don't want presses of Esc to maybe quit
-  // the entire browser. This has higher priority than the default dialog Esc
-  // accelerator (which would otherwise close the window).
-  if (accelerator.key_code() == ui::VKEY_ESCAPE &&
-      accelerator.modifiers() == ui::EF_NONE) {
-    return true;
-  }
-
-  const auto& iter = accelerator_table_.find(accelerator);
-  DCHECK(iter != accelerator_table_.end());
-  int command_id = iter->second;
-  switch (command_id) {
-    case IDC_CLOSE_TAB:
-    case IDC_CLOSE_WINDOW:
-      // kEscKeyPressed is used although that shortcut is disabled (this is
-      // Ctrl-Shift-W instead).
-      GetWidget()->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
-      break;
-    case IDC_EXIT:
-      chrome::AttemptUserExit();
-      break;
-    case IDC_FULLSCREEN:
-      GetWidget()->SetFullscreen(!GetWidget()->IsFullscreen());
-      break;
-    case IDC_MINIMIZE_WINDOW:
-      GetWidget()->Minimize();
-      break;
-    default:
-      NOTREACHED() << "Unexpected command_id: " << command_id;
-      break;
-  }
-
-  return true;
-}
-
 bool ProfilePickerView::HandleContextMenu(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
-}
-
-bool ProfilePickerView::HandleKeyboardEvent(
-    content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
-  // Forward the keyboard event to AcceleratorPressed() through the
-  // FocusManager.
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
 }
 
 void ProfilePickerView::AddNewContents(
@@ -572,45 +525,4 @@ void ProfilePickerView::OnBrowserOpened(
       chrome::FindLastActiveWithProfile(signed_in_profile_being_created_);
   DCHECK(browser);
   std::move(finish_flow_callback).Run(browser);
-}
-
-void ProfilePickerView::ConfigureAccelerators() {
-  // By default, dialog views close when pressing escape. Override this
-  // behavior as the profile picker should not close in that case.
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-
-  const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
-  for (const auto& entry : accelerator_list) {
-    if (!base::Contains(kSupportedAcceleratorCommands, entry.command_id))
-      continue;
-    ui::Accelerator accelerator(entry.keycode, entry.modifiers);
-    accelerator_table_[accelerator] = entry.command_id;
-    AddAccelerator(accelerator);
-  }
-
-#if defined(OS_MAC)
-  // Check Mac-specific accelerators. Note: Chrome does not support dynamic or
-  // user-configured accelerators on Mac. Default static accelerators are used
-  // instead.
-  for (int command_id : kSupportedAcceleratorCommands) {
-    ui::Accelerator accelerator;
-    bool mac_accelerator_found =
-        GetDefaultMacAcceleratorForCommandId(command_id, &accelerator);
-    if (mac_accelerator_found) {
-      accelerator_table_[accelerator] = command_id;
-      AddAccelerator(accelerator);
-    }
-  }
-#endif  // OS_MAC
-}
-
-void ProfilePickerView::CreateWebView(Profile* profile) {
-  auto web_view = std::make_unique<views::WebView>(profile);
-  web_view->GetWebContents()->SetDelegate(this);
-  web_view->set_allow_accelerators(true);
-  // Set the member before adding to the hieararchy to make it easier for tests
-  // to detect that a new WebView has been created.
-  web_view_ = web_view.get();
-  AddChildView(std::move(web_view));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
 }

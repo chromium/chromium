@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -39,12 +38,12 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "url/gurl.h"
+#include "ui/views/view_observer.h"
 
 namespace {
 
@@ -69,6 +68,64 @@ AccountInfo FillAccountInfo(
   account_info.is_child_account = false;
   return account_info;
 }
+
+// Waits until a first non empty paint for given `url`.
+class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
+ public:
+  explicit FirstVisuallyNonEmptyPaintObserver(content::WebContents* contents,
+                                              const GURL& url)
+      : content::WebContentsObserver(contents), url_(url) {}
+
+  void DidFirstVisuallyNonEmptyPaint() override {
+    if (web_contents()->GetVisibleURL() == url_)
+      run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (IsExitConditionSatisfied()) {
+      return;
+    }
+    run_loop_.Run();
+    EXPECT_TRUE(IsExitConditionSatisfied())
+        << web_contents()->GetVisibleURL() << " != " << url_;
+  }
+
+ private:
+  bool IsExitConditionSatisfied() {
+    return (web_contents()->GetVisibleURL() == url_ &&
+            web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+  }
+
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  GURL url_;
+};
+
+class WebViewAddedWaiter : public views::ViewObserver {
+ public:
+  WebViewAddedWaiter(
+      views::View* top_view,
+      base::RepeatingCallback<views::WebView*()> current_web_view_getter)
+      : current_web_view_getter_(current_web_view_getter) {
+    observation_.Observe(top_view);
+  }
+  ~WebViewAddedWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ViewObserver:
+  void OnChildViewAdded(views::View* observed_view,
+                        views::View* child) override {
+    if (child == current_web_view_getter_.Run()) {
+      ASSERT_TRUE(child);
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::RepeatingCallback<views::WebView*()> current_web_view_getter_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
 
 class BrowserAddedWaiter : public BrowserListObserver {
  public:
@@ -199,14 +256,15 @@ class TestTabDialogs : public TabDialogs {
   base::RunLoop* run_loop_;
 };
 
-class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
+class ProfilePickerCreationFlowBrowserTest : public InProcessBrowserTest {
  public:
   ProfilePickerCreationFlowBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kProfilesUIRevamp);
+    feature_list_.InitWithFeatures(
+        {features::kProfilesUIRevamp, features::kNewProfilePicker}, {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -219,6 +277,26 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       content::BrowserContext* context) {
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&FakeUserPolicySigninService::Build));
+  }
+
+  views::View* view() { return ProfilePicker::GetViewForTesting(); }
+
+  views::WebView* web_view() { return ProfilePicker::GetWebViewForTesting(); }
+
+  void WaitForNewWebView() {
+    ASSERT_TRUE(view());
+    WebViewAddedWaiter(
+        view(),
+        base::BindRepeating(&ProfilePickerCreationFlowBrowserTest::web_view,
+                            base::Unretained(this)))
+        .Wait();
+    EXPECT_TRUE(web_view());
+  }
+
+  content::WebContents* web_contents() {
+    if (!web_view())
+      return nullptr;
+    return web_view()->GetWebContents();
   }
 
  private:
@@ -246,8 +324,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
   WaitForNewWebView();
   EXPECT_TRUE(ProfilePicker::IsOpen());
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/new-profile"));
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GURL("chrome://profile-picker/new-profile"))
+      .Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
@@ -265,8 +344,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
@@ -285,14 +365,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  FirstVisuallyNonEmptyPaintObserver(web_contents(),
+                                     GURL("chrome://sync-confirmation/"))
+      .Wait();
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
 
   // Check expectations when the profile creation flow is done.
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -327,8 +411,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Disable sync by setting the device as managed in prefs.
   Profile* profile_being_created =
@@ -352,8 +437,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Wait for the sign-in to propagate to the flow, resulting in new browser
   // getting opened.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
 
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
@@ -391,8 +478,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
@@ -409,14 +497,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  FirstVisuallyNonEmptyPaintObserver(web_contents(),
+                                     GURL("chrome://sync-confirmation/"))
+      .Wait();
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://settings/syncSetup"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://settings/syncSetup"))
+      .Wait();
 
   // Check expectations when the profile creation flow is done.
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -452,8 +544,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Simulate clicking on a link that opens in a new window.
   const GURL kURL("https://foo.google.com");
@@ -468,8 +561,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // A new pppup browser is displayed (with the specified URL).
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   EXPECT_EQ(new_browser->type(), Browser::TYPE_POPUP);
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    kURL);
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(), kURL)
+      .Wait();
 }
 
 // TODO(crbug.com/1144065): Flaky on multiple platforms.
@@ -512,8 +606,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
@@ -530,8 +625,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Instead of sync confirmation, a browser is displayed (with a login error).
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
 
   // Check expectations when the profile creation flow is done.
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -562,8 +659,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   Profile* profile_being_created =
       static_cast<Profile*>(web_view()->GetBrowserContext());
@@ -582,14 +680,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  FirstVisuallyNonEmptyPaintObserver(web_contents(),
+                                     GURL("chrome://sync-confirmation/"))
+      .Wait();
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
 
   // Check expectations when the profile creation flow is done.
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -638,8 +740,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
@@ -672,8 +775,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // The picker should be closed even before the enterprise confirmation but it
   // is closed asynchronously after opening the browser so after the NTP
   // renders, it is safe to check.
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // Now the sync consent screen is shown, simulate closing the UI with "Yes,
@@ -709,8 +814,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // The DICE navigation happens in a new web view (for the profile being
   // created), wait for it.
   WaitForNewWebView();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
 
   // Add an account - simulate a successful Gaia sign-in.
   Profile* profile_being_created =
@@ -743,8 +849,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // "Configure sync".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://settings/syncSetup"));
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://settings/syncSetup"))
+      .Wait();
 
   // Check expectations when the profile creation flow is done.
   EXPECT_FALSE(ProfilePicker::IsOpen());

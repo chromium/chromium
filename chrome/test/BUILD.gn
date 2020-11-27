@@ -3183,7 +3183,8 @@ if (!is_android) {
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
     }
 
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    if (is_win || is_mac ||
+        ((is_linux || is_chromeos_lacros) && !is_chromeos_lacros)) {
       sources +=
           [ "../browser/ui/views/profiles/profile_picker_view_browsertest.cc" ]
     }
@@ -6319,12 +6320,6 @@ if (!is_android) {
         "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
     }
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-      sources += [
-        "../browser/ui/views/profiles/profile_picker_test_base.cc",
-        "../browser/ui/views/profiles/profile_picker_test_base.h",
-      ]
-    }
   }
 
   proto_library("test_proto") {
@@ -6807,12 +6802,6 @@ if (!is_android) {
     if (enable_webui_tab_strip) {
       sources +=
           [ "../browser/ui/views/frame/webui_tab_strip_interactive_uitest.cc" ]
-    }
-
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-      sources += [
-        "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
-      ]
     }
   }
 }

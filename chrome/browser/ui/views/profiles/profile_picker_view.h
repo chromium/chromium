@@ -11,7 +11,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -73,7 +72,6 @@ class ProfilePickerView : public views::DialogDelegateView,
 
   // views::View;
   gfx::Size GetMinimumSize() const override;
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
@@ -85,9 +83,6 @@ class ProfilePickerView : public views::DialogDelegateView,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
                       bool* was_blocked) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
 
   // IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
@@ -109,21 +104,8 @@ class ProfilePickerView : public views::DialogDelegateView,
                        Profile* profile,
                        Profile::CreateStatus profile_create_status);
 
-  // Register basic keyboard accelerators such as closing the window (Alt-F4
-  // on Windows).
-  void ConfigureAccelerators();
-
-  // Creates and configures the internal web view, and adds it as a child view.
-  void CreateWebView(Profile* profile);
-
   ScopedKeepAlive keep_alive_;
   State state_ = State::kNotStarted;
-
-  // A mapping between accelerators and command IDs.
-  std::map<ui::Accelerator, int> accelerator_table_;
-
-  // Handler for unhandled key events from renderer.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // The current WebView object, owned by the view hierarchy.
   views::WebView* web_view_ = nullptr;
