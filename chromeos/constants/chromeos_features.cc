@@ -453,6 +453,10 @@ const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",
 const base::Feature kMediaAppPdfInInk{"MediaAppPdfInInk",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables support for multilingual assistive typing on Chrome OS.
+const base::Feature kMultilingualTyping{"MultilingualTyping",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable on-device grammar check service.
 const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
                                           base::FEATURE_DISABLED_BY_DEFAULT};

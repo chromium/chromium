@@ -202,6 +202,8 @@ extern const base::Feature kMediaAppPdfInInk;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kMultilingualTyping;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOnDeviceGrammarCheck;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;

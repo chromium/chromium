@@ -2561,6 +2561,9 @@ extern const char kMediaSessionNotificationsDescription[];
 extern const char kMeteredShowToggleName[];
 extern const char kMeteredShowToggleDescription[];
 
+extern const char kMultilingualTypingName[];
+extern const char kMultilingualTypingDescription[];
+
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 
