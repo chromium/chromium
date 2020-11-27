@@ -100,7 +100,8 @@ TEST_F(TestMojoConnectionManagerTest, ConnectWithLacrosChrome) {
   // so this test should NOT depend on the assumption.
   base::FilePathWatcher watcher;
   base::RunLoop run_loop1;
-  watcher.Watch(base::FilePath(socket_path), false,
+  watcher.Watch(base::FilePath(socket_path),
+                base::FilePathWatcher::Type::kNonRecursive,
                 base::BindRepeating(base::BindLambdaForTesting(
                     [&run_loop1](const base::FilePath& path, bool error) {
                       EXPECT_FALSE(error);
