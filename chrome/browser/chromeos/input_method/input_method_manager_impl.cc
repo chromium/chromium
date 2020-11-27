@@ -1255,13 +1255,6 @@ void InputMethodManagerImpl::SetImeKeyboardForTesting(ImeKeyboard* keyboard) {
   keyboard_.reset(keyboard);
 }
 
-void InputMethodManagerImpl::InitializeComponentExtensionForTesting(
-    std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate) {
-  component_extension_ime_manager_->Initialize(std::move(delegate));
-  util_.ResetInputMethods(
-      component_extension_ime_manager_->GetAllIMEAsInputMethodDescriptor());
-}
-
 void InputMethodManagerImpl::Observe(
     int type,
     const content::NotificationSource& source,
