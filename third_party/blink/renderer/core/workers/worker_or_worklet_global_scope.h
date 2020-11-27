@@ -156,6 +156,10 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
 
   virtual int GetOutstandingThrottledLimit() const;
 
+  // TODO(crbug.com/1146824): Remove this once PlzDedicatedWorker and
+  // PlzServiceWorker ship.
+  virtual bool IsInitialized() const = 0;
+
   Deprecation& GetDeprecation() { return deprecation_; }
 
  protected:

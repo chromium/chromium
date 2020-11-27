@@ -686,6 +686,11 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
     if (window->GetFrame())
       deprecation = &window->GetFrame()->GetPage()->GetDeprecation();
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
+    // TODO(crbug.com/1146824): Remove this once PlzDedicatedWorker and
+    // PlzServiceWorker ship.
+    if (!scope->IsInitialized()) {
+      return;
+    }
     deprecation = &scope->GetDeprecation();
   }
 
