@@ -377,12 +377,19 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, PRE_SelectedLanguage) {
       "en-US");
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   const std::string locale = "ru";
+  test::LanguageReloadObserver observer(welcome_screen());
   welcome_screen()->SetApplicationLocale(locale);
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
-  WaitForScreenExit();
+  observer.Wait();
+
   EXPECT_EQ(g_browser_process->local_state()->GetString(
                 language::prefs::kApplicationLocale),
             locale);
+  EXPECT_EQ(g_browser_process->GetApplicationLocale(), locale);
+
+  // We need to proceed otherwise welcome screen would reset language on the
+  // next show.
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  WaitForScreenExit();
 }
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, SelectedLanguage) {
@@ -390,6 +397,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, SelectedLanguage) {
   EXPECT_EQ(g_browser_process->local_state()->GetString(
                 language::prefs::kApplicationLocale),
             locale);
+  EXPECT_EQ(g_browser_process->GetApplicationLocale(), locale);
 }
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, A11yVirtualKeyboard) {
