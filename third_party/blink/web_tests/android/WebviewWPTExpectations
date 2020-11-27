@@ -1568,7 +1568,6 @@ crbug.com/1050754 external/wpt/css/cssom/CSSStyleSheet-constructable-baseURL.ten
 crbug.com/1050754 external/wpt/css/cssom/CSSStyleSheet-constructable-disallow-import.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/cssom/CSSStyleSheet-constructable-duplicate.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/cssom/CSSStyleSheet-constructable.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/css/cssom/border-shorthand-serialization.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/cssom/computed-style-002.html [ Failure ]
 crbug.com/1050754 external/wpt/css/cssom/computed-style-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/cssom/computed-style-004.html [ Failure ]

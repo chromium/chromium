@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1108,10 +1109,29 @@ String StylePropertySerializer::BorderPropertyValue(
     const StylePropertyShorthand& width,
     const StylePropertyShorthand& style,
     const StylePropertyShorthand& color) const {
-  const StylePropertyShorthand properties[3] = {width, style, color};
+  const CSSProperty* border_image_properties[] = {
+      &GetCSSPropertyBorderImageSource(), &GetCSSPropertyBorderImageSlice(),
+      &GetCSSPropertyBorderImageWidth(), &GetCSSPropertyBorderImageOutset(),
+      &GetCSSPropertyBorderImageRepeat()};
+
+  // If any of the border-image longhands differ from their initial
+  // specified values, we should not serialize to a border shorthand
+  // declaration.
+  for (const auto* border_image_property : border_image_properties) {
+    const CSSValue* value =
+        property_set_.GetPropertyCSSValue(*border_image_property);
+    const CSSValue* initial_specified_value =
+        To<Longhand>(*border_image_property).InitialValue();
+    if (value && !value->IsInitialValue() &&
+        *value != *initial_specified_value) {
+      return String();
+    }
+  }
+
+  const StylePropertyShorthand shorthand_properties[3] = {width, style, color};
   StringBuilder result;
-  for (size_t i = 0; i < base::size(properties); ++i) {
-    String value = GetCommonValue(properties[i]);
+  for (const auto& shorthand_property : shorthand_properties) {
+    const String value = GetCommonValue(shorthand_property);
     if (value.IsNull())
       return String();
     if (value == "initial")
