@@ -38,7 +38,6 @@ class PerformOnSingleElementActionTest : public testing::Test {
   base::MockCallback<PerformOnSingleElementAction::PerformAction> perform_;
   base::MockCallback<PerformOnSingleElementAction::PerformTimedAction>
       perform_timed_;
-  GetElementStatusProto proto_;
   UserData user_data_;
   ActionProto action_proto_;
   ClientIdProto client_id_;

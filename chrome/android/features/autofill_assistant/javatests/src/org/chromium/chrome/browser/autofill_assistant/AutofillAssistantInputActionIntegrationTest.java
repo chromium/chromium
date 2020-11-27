@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
+import org.chromium.chrome.browser.autofill_assistant.proto.ReleaseElementsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
@@ -533,6 +534,10 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setClientId(clientId)
                                          .setDelayInMs(0)
                                          .setValue(TextValue.newBuilder().setText("Value")))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setReleaseElements(
+                                 ReleaseElementsProto.newBuilder().addClientIds(clientId))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Done").addChoices(

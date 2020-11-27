@@ -22,6 +22,7 @@
 #include "components/autofill_assistant/browser/actions/popup_message_action.h"
 #include "components/autofill_assistant/browser/actions/presave_generated_password_action.h"
 #include "components/autofill_assistant/browser/actions/prompt_action.h"
+#include "components/autofill_assistant/browser/actions/release_elements_action.h"
 #include "components/autofill_assistant/browser/actions/save_generated_password_action.h"
 #include "components/autofill_assistant/browser/actions/select_option_action.h"
 #include "components/autofill_assistant/browser/actions/set_attribute_action.h"
@@ -330,6 +331,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
           delegate, action, action.check_element_is_on_top().client_id(),
           base::BindOnce(&WebController::CheckOnTop,
                          delegate->GetWebController()->GetWeakPtr()));
+    case ActionProto::ActionInfoCase::kReleaseElements:
+      return std::make_unique<ReleaseElementsAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);

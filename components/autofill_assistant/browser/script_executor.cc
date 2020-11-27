@@ -228,6 +228,7 @@ bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
     case ActionProto::ActionInfoCase::kFocusField:
     case ActionProto::ActionInfoCase::kWaitForElementToBecomeStable:
     case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
+    case ActionProto::ActionInfoCase::kReleaseElements:
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       return false;
   }

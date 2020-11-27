@@ -209,6 +209,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
       out << "CheckElementIsOnTop";
       break;
+    case ActionProto::ActionInfoCase::kReleaseElements:
+      out << "ReleaseElements";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

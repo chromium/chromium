@@ -634,6 +634,7 @@ message ActionProto {
     FocusFieldProto focus_field = 67;
     WaitForElementToBecomeStableProto wait_for_element_to_become_stable = 68;
     CheckElementIsOnTopProto check_element_is_on_top = 69;
+    ReleaseElementsProto release_elements = 70;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -2799,4 +2800,8 @@ message GetElementStatusProto {
     optional bool empty = 6;
     optional bool expected_empty_match = 7;
   }
+}
+
+message ReleaseElementsProto {
+  repeated ClientIdProto client_ids = 1;
 }
