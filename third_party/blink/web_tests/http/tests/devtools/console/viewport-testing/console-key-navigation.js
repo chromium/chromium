@@ -213,8 +213,8 @@
       name += '#' + element.id;
     if (element.getAttribute('aria-label'))
       name += ':' + element.getAttribute('aria-label');
-    else if (element.title)
-      name += ':' + element.title;
+    else if (UI.Tooltip.getContent(element))
+      name += ':' + UI.Tooltip.getContent(element);
     else if (element.textContent && element.textContent.length < 50) {
       name += ':' + element.textContent.replace('\u200B', '');
     } else if (element.className)
