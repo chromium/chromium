@@ -30,7 +30,8 @@ base::FilePathWatcher* CreateAndStartFilePathWatcher(
   DCHECK(!callback.is_null());
 
   std::unique_ptr<base::FilePathWatcher> watcher(new base::FilePathWatcher);
-  if (!watcher->Watch(watch_path, false /* recursive */, callback))
+  if (!watcher->Watch(watch_path, base::FilePathWatcher::Type::kNonRecursive,
+                      callback))
     return nullptr;
 
   return watcher.release();
