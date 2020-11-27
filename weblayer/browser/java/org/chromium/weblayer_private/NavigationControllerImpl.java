@@ -168,12 +168,6 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
                 mNativeNavigationController, index);
     }
 
-    public NavigationImpl getNavigationImplFromId(int id) {
-        StrictModeWorkaround.apply();
-        return NavigationControllerImplJni.get().getNavigationImplFromId(
-                mNativeNavigationController, id);
-    }
-
     @CalledByNative
     private NavigationImpl createNavigation(long nativeNavigationImpl) {
         return new NavigationImpl(mNavigationControllerClient, nativeNavigationImpl);
@@ -300,6 +294,5 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
         String getNavigationEntryDisplayUri(long nativeNavigationControllerImpl, int index);
         String getNavigationEntryTitle(long nativeNavigationControllerImpl, int index);
         boolean isNavigationEntrySkippable(long nativeNavigationControllerImpl, int index);
-        NavigationImpl getNavigationImplFromId(long nativeNavigationControllerImpl, int id);
     }
 }

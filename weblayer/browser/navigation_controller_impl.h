@@ -77,9 +77,6 @@ class NavigationControllerImpl : public NavigationController,
       JNIEnv* env,
       int index);
   bool IsNavigationEntrySkippable(JNIEnv* env, int index);
-  base::android::ScopedJavaGlobalRef<jobject> GetNavigationImplFromId(
-      JNIEnv* env,
-      int id);
 #endif
 
   bool should_delay_web_contents_deletion() {

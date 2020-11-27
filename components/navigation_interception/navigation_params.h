@@ -15,7 +15,6 @@ class NavigationParams {
  public:
   NavigationParams(const GURL& url,
                    const content::Referrer& referrer,
-                   int64_t navigation_id,
                    bool has_user_gesture,
                    bool is_post,
                    ui::PageTransition page_transition_type,
@@ -32,10 +31,6 @@ class NavigationParams {
   const GURL& url() const { return url_; }
   GURL& url() { return url_; }
   const content::Referrer& referrer() const { return referrer_; }
-
-  // The ID of the NavigationHandle that this instance corresponds to, or 0 if
-  // this instance was not constructed from a NavigationHandle.
-  int64_t navigation_id() const { return navigation_id_; }
   bool has_user_gesture() const { return has_user_gesture_; }
   bool is_post() const { return is_post_; }
   ui::PageTransition transition_type() const { return transition_type_; }
@@ -52,7 +47,6 @@ class NavigationParams {
 
   GURL url_;
   content::Referrer referrer_;
-  int64_t navigation_id_;
   bool has_user_gesture_;
   bool is_post_;
   ui::PageTransition transition_type_;

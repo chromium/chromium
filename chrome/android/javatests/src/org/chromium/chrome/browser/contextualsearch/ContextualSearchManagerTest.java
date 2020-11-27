@@ -2466,10 +2466,10 @@ public class ContextualSearchManagerTest {
                         sActivityTestRule.getActivity().getActivityTab()));
         final NavigationParams navigationParams = new NavigationParams(
                 "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
-                0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
-                PageTransition.LINK, false /* isRedirect */, true /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                false /* isPost */, true /* hasUserGesture */, PageTransition.LINK,
+                false /* isRedirect */, true /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -2496,16 +2496,16 @@ public class ContextualSearchManagerTest {
                         sActivityTestRule.getActivity().getActivityTab()));
 
         final NavigationParams initialNavigationParams = new NavigationParams("http://test.com", "",
-                0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
-                PageTransition.LINK, false /* isRedirect */, false /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                false /* isPost */, true /* hasUserGesture */, PageTransition.LINK,
+                false /* isRedirect */, false /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
         final NavigationParams redirectedNavigationParams = new NavigationParams(
                 "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
-                0 /* navigationId */, false /* isPost */, false /* hasUserGesture */,
-                PageTransition.LINK, true /* isRedirect */, true /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                false /* isPost */, false /* hasUserGesture */, PageTransition.LINK,
+                true /* isRedirect */, true /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -2535,10 +2535,10 @@ public class ContextualSearchManagerTest {
                         sActivityTestRule.getActivity().getActivityTab()));
         final NavigationParams navigationParams = new NavigationParams(
                 "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
-                0 /* navigationId */, false /* isPost */, false /* hasUserGesture */,
-                PageTransition.LINK, false /* isRedirect */, true /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                false /* isPost */, false /* hasUserGesture */, PageTransition.LINK,
+                false /* isRedirect */, true /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {

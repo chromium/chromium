@@ -10,7 +10,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
@@ -132,12 +131,11 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
         ExternalNavigationParams params =
                 buildExternalNavigationParams(navigationParams, redirectHandler, shouldCloseTab)
                         .build();
-        OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        mLastOverrideUrlLoadingResultType = result.getResultType();
+        @OverrideUrlLoadingResultType
+        int result = mExternalNavHandler.shouldOverrideUrlLoading(params).getResultType();
+        mLastOverrideUrlLoadingResultType = result;
 
-        mClient.onDecisionReachedForNavigation(navigationParams, result);
-
-        switch (mLastOverrideUrlLoadingResultType) {
+        switch (result) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 assert mExternalNavHandler.canExternalAppHandleUrl(url);
                 if (navigationParams.isMainFrame) {

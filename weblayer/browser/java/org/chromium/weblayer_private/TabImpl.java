@@ -511,10 +511,6 @@ public final class TabImpl extends ITab.Stub {
         return mWebContents;
     }
 
-    public NavigationControllerImpl getNavigationControllerImpl() {
-        return mNavigationController;
-    }
-
     // Public for tests.
     @VisibleForTesting
     public long getNativeTab() {

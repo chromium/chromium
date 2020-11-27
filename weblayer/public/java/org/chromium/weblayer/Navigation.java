@@ -145,43 +145,6 @@ public class Navigation extends IClientNavigation.Stub {
     }
 
     /**
-     * Whether this navigation resulted in an external intent being launched. Returns false if this
-     * navigation did not do so, or if that status is not yet known for this navigation.  This
-     * status is determined for a navigation when processing final (post redirect) HTTP response
-     * headers. This means the only time the embedder can know if the navigation resulted in an
-     * external intent being launched is in NavigationCallback.onNavigationFailed.
-     *
-     * @since 89
-     */
-    public boolean wasIntentLaunched() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            return mNavigationImpl.wasIntentLaunched();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Whether this navigation resulted in the user deciding whether an external intent should be
-     * launched (e.g., via a dialog). Returns false if this navigation did not resolve to such a
-     * user decision, or if that status is not yet known for this navigation.  This status is
-     * determined for a navigation when processing final (post redirect) HTTP response headers. This
-     * means the only time the embedder can know this status definitively is in
-     * NavigationCallback.onNavigationFailed.
-     *
-     * @since 89
-     */
-    public boolean isUserDecidingIntentLaunch() {
-        ThreadCheck.ensureOnUiThread();
-        try {
-            return mNavigationImpl.isUserDecidingIntentLaunch();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
      * Whether this navigation was stopped before it could complete because
      * NavigationController.stop() was called.
      *

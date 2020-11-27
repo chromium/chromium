@@ -10,9 +10,6 @@ import android.os.SystemClock;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingAsyncActionType;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.external_intents.RedirectHandler;
@@ -135,33 +132,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     public void onNavigationStarted(NavigationParams params) {
         if (params.hasUserGesture || params.hasUserGestureCarryover) {
             mLastNavigationWithUserGestureTime = SystemClock.elapsedRealtime();
-        }
-    }
-
-    @Override
-    public void onDecisionReachedForNavigation(
-            NavigationParams params, OverrideUrlLoadingResult overrideUrlLoadingResult) {
-        NavigationImpl navigation =
-                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
-
-        // As the navigation is still ongoing at this point there should be a NavigationImpl
-        // instance for it.
-        assert navigation != null;
-
-        switch (overrideUrlLoadingResult.getResultType()) {
-            case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
-                navigation.setIntentLaunched();
-                break;
-            case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
-                if (overrideUrlLoadingResult.getAsyncActionType()
-                        == OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH) {
-                    navigation.setIsUserDecidingIntentLaunch();
-                }
-                break;
-            case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
-            case OverrideUrlLoadingResultType.NO_OVERRIDE:
-            default:
-                break;
         }
     }
 

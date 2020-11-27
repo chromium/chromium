@@ -216,13 +216,6 @@ bool NavigationControllerImpl::IsNavigationEntrySkippable(JNIEnv* env,
                                                           int index) {
   return IsNavigationEntrySkippable(index);
 }
-
-base::android::ScopedJavaGlobalRef<jobject>
-NavigationControllerImpl::GetNavigationImplFromId(JNIEnv* env, int id) {
-  auto* navigation_impl = GetNavigationImplFromId(id);
-  return navigation_impl ? navigation_impl->java_navigation() : nullptr;
-}
-
 #endif
 
 void NavigationControllerImpl::WillRedirectRequest(

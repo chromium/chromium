@@ -33,8 +33,4 @@ interface INavigation {
   // @since 86
   boolean isPageInitiated() = 11;
   boolean isReload() = 12;
-
-  // @since 89
-  boolean wasIntentLaunched() = 13;
-  boolean isUserDecidingIntentLaunch() = 14;
 }
