@@ -552,6 +552,8 @@ base::Value ProfilePickerHandler::GetProfilesList() {
   const int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   for (const ProfileAttributesEntry* entry : entries) {
+    if (entry->IsGuest())
+      continue;
     auto profile_entry = std::make_unique<base::DictionaryValue>();
     profile_entry->SetKey("profilePath",
                           util::FilePathToValue(entry->GetPath()));
