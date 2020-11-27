@@ -17,7 +17,7 @@ shouldThrow("RTCPeerConnection()");
 shouldThrow("RTCSessionDescription()");
 shouldThrow("RTCIceCandidate()");
 
-shouldNotThrow("new RTCPeerConnection({iceServers:[{url:'stun://foobar.com:12345'}]}, null);");
+shouldNotThrow("new RTCPeerConnection({iceServers:[{url:'stun:foobar.com:12345'}]}, null);");
 shouldNotThrow("new RTCSessionDescription({type:'offer',sdp:'foobar'});");
 
 window.jsTestIsAsync = false;
