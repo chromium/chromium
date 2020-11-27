@@ -80,6 +80,7 @@ class JamfWriter(template_writer.TemplateWriter):
     policies = [policy for policy in policies if self.IsPolicySupported(policy)]
     output = {
         'title': self.config['bundle_id'],
+        'version': self.config['version'].split(".", 1)[0],
         'description': self.config['app_name'],
         'options': {
             'remove_empty_properties': True

@@ -60,7 +60,7 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
     return _JsonFormat(template)
 
   def _GetExpectedOutput(self, policy_name, policy_type, policy_caption,
-                         initial_type):
+                         initial_type, version):
     output = {
         'description': 'Google Chrome',
         'options': {
@@ -73,7 +73,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                 'type': policy_type
             }
         },
-        'title': 'com.google.chrome.ios'
+        'title': 'com.google.chrome.ios',
+        'version': version
     }
     if initial_type == 'int-enum' or initial_type == 'string-enum':
       output['properties'][policy_name]['enum'] = [1]
@@ -103,16 +104,22 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
     policy_json = self._GetTestPolicyTemplate('stringPolicy', 'string', '',
                                               'A string policy')
     expected = self._GetExpectedOutput('stringPolicy', 'string',
-                                       'A string policy', 'string')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'A string policy', 'string', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testIntPolicy(self):
     policy_json = self._GetTestPolicyTemplate('intPolicy', 'int', '',
                                               'An int policy')
     expected = self._GetExpectedOutput('intPolicy', 'integer', 'An int policy',
-                                       'int')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'int', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testIntPolicyWithMinAndMax(self):
@@ -150,27 +157,38 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                 'type': 'integer'
             }
         },
-        'title': 'com.google.chrome.ios'
+        'title': 'com.google.chrome.ios',
+        'version': '83'
     }
     expected_json = _JsonFormat(expected)
 
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected_json.strip())
 
   def testIntEnumPolicy(self):
     policy_json = self._GetTestPolicyTemplate('intPolicy', 'int-enum', '',
                                               'An int-enum policy')
     expected = self._GetExpectedOutput('intPolicy', 'integer',
-                                       'An int-enum policy', 'int-enum')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'An int-enum policy', 'int-enum', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testStringEnumPolicy(self):
     policy_json = self._GetTestPolicyTemplate('stringPolicy', 'string-enum', '',
                                               'A string-enum policy')
     expected = self._GetExpectedOutput('stringPolicy', 'string',
-                                       'A string-enum policy', 'string-enum')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'A string-enum policy', 'string-enum',
+                                       '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testStringEnumListPolicy(self):
@@ -179,40 +197,55 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                                               'A string-enum-list policy')
     expected = self._GetExpectedOutput('stringPolicy', 'array',
                                        'A string-enum-list policy',
-                                       'string-enum-list')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'string-enum-list', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testBooleanPolicy(self):
     policy_json = self._GetTestPolicyTemplate('booleanPolicy', 'main', '',
                                               'A boolean policy')
     expected = self._GetExpectedOutput('booleanPolicy', 'boolean',
-                                       'A boolean policy', 'main')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'A boolean policy', 'main', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testListPolicy(self):
     policy_json = self._GetTestPolicyTemplate('listPolicy', 'list', '',
                                               'A list policy')
     expected = self._GetExpectedOutput('listPolicy', 'array', 'A list policy',
-                                       'list')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'list', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testDictPolicy(self):
     policy_json = self._GetTestPolicyTemplate('dictPolicy', 'dict', 'object',
                                               'A dict policy')
     expected = self._GetExpectedOutput('dictPolicy', 'object', 'A dict policy',
-                                       'dict')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'dict', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testArrayDictPolicy(self):
     policy_json = self._GetTestPolicyTemplate('dictPolicy', 'dict', 'array',
                                               'A dict policy')
     expected = self._GetExpectedOutput('dictPolicy', 'array', 'A dict policy',
-                                       'dict')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'dict', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
   def testNestedArrayDict(self):
@@ -268,7 +301,8 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
                 }
             }
         },
-        'title': 'com.google.chrome.ios'
+        'title': 'com.google.chrome.ios',
+        'version': '83'
     }
 
     for i in range(0, 5):
@@ -278,15 +312,21 @@ class JamfWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
       }
 
     output_expected = _JsonFormat(expected)
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), output_expected.strip())
 
   def testExternalPolicy(self):
     policy_json = self._GetTestPolicyTemplate('externalPolicy', 'external', '',
                                               'A external policy')
     expected = self._GetExpectedOutput('externalPolicy', 'object',
-                                       'A external policy', 'external')
-    output = self.GetOutput(policy_json, {'_google_chrome': '1'}, 'jamf')
+                                       'A external policy', 'external', '83')
+    output = self.GetOutput(policy_json, {
+        '_google_chrome': '1',
+        'version': '83.0.4089.0'
+    }, 'jamf')
     self.assertEquals(output.strip(), expected.strip())
 
 
