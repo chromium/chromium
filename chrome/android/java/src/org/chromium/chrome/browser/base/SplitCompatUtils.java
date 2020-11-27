@@ -37,12 +37,13 @@ public class SplitCompatUtils {
     }
 
     /**
-     * Constructs a new instance of the given class name using the class loader from the context.
+     * Constructs a new instance of the given class name. If the application context class loader
+     * can load the class, that class loader will be used, otherwise the class loader from the
+     * passed in context will be used.
      */
     public static Object newInstance(Context context, String className) {
-        // TODO(crbug.com/1142589): If this crash fix works we can remove the context arg from here.
         Context appContext = ContextUtils.getApplicationContext();
-        if (appContext != null) {
+        if (appContext != null && canLoadClass(appContext.getClassLoader(), className)) {
             context = appContext;
         }
         try {
