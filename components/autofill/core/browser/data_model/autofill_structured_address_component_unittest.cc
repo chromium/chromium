@@ -1661,5 +1661,26 @@ TEST(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   VerifyTestValues(&older, older_values);
 }
 
+// Test the comparison of different Verification statuses.
+TEST(AutofillStructuredAddressAddressComponent,
+     TestIsLessSignificantVerificationStatus) {
+  EXPECT_TRUE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kParsed, VerificationStatus::kFormatted));
+  EXPECT_TRUE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kParsed, VerificationStatus::kServerParsed));
+  EXPECT_TRUE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kServerParsed, VerificationStatus::kObserved));
+  EXPECT_TRUE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kServerParsed, VerificationStatus::kUserVerified));
+  EXPECT_FALSE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kServerParsed, VerificationStatus::kFormatted));
+  EXPECT_FALSE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kServerParsed, VerificationStatus::kParsed));
+  EXPECT_FALSE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kObserved, VerificationStatus::kServerParsed));
+  EXPECT_FALSE(IsLessSignificantVerificationStatus(
+      VerificationStatus::kUserVerified, VerificationStatus::kServerParsed));
+}
+
 }  // namespace structured_address
 }  // namespace autofill

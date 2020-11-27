@@ -40,6 +40,8 @@ message AutofillProfileSpecifics {
     // This is currently only applicable to the full name, since users cannot
     // edit individual components of their name.
     USER_VERIFIED = 4;
+    // The token was parsed remotely.
+    SERVER_PARSED = 5;
   }
 
   optional string guid = 15;

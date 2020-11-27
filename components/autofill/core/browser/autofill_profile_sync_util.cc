@@ -48,6 +48,8 @@ VerificationStatus ConvertSpecificsToProfileVerificationStatus(
       return VerificationStatus::kObserved;
     case sync_pb::AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED:
       return VerificationStatus::kUserVerified;
+    case sync_pb::AutofillProfileSpecifics_VerificationStatus_SERVER_PARSED:
+      return VerificationStatus::kServerParsed;
   }
 }
 
@@ -67,6 +69,8 @@ ConvertProfileToSpecificsVerificationStatus(VerificationStatus profile_status) {
       return sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED;
     case (VerificationStatus::kUserVerified):
       return sync_pb::AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED;
+    case (VerificationStatus::kServerParsed):
+      return sync_pb::AutofillProfileSpecifics_VerificationStatus_SERVER_PARSED;
   }
 }
 

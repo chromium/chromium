@@ -49,7 +49,7 @@ const char* ProtoEnumToString(sync_pb::AppSpecifics::LaunchType launch_type) {
 const char* ProtoEnumToString(
     sync_pb::AutofillProfileSpecifics::VerificationStatus status) {
   ASSERT_ENUM_BOUNDS(sync_pb::AutofillProfileSpecifics, VerificationStatus,
-                     VERIFICATION_STATUS_UNSPECIFIED, USER_VERIFIED);
+                     VERIFICATION_STATUS_UNSPECIFIED, SERVER_PARSED);
   switch (status) {
     ENUM_CASE(sync_pb::AutofillProfileSpecifics,
               VERIFICATION_STATUS_UNSPECIFIED);
@@ -57,6 +57,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::AutofillProfileSpecifics, FORMATTED);
     ENUM_CASE(sync_pb::AutofillProfileSpecifics, OBSERVED);
     ENUM_CASE(sync_pb::AutofillProfileSpecifics, USER_VERIFIED);
+    ENUM_CASE(sync_pb::AutofillProfileSpecifics, SERVER_PARSED);
   }
   NOTREACHED();
   return "";

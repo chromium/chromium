@@ -135,7 +135,8 @@ void StreetAddress::ParseValueAndAssignSubcomponentsByFallbackMethod() {
 bool StreetAddress::HasNewerValuePrecendenceInMerging(
     const AddressComponent& newer_component) const {
   // If the newer component has a better verification status, use the newer one.
-  if (GetVerificationStatus() < newer_component.GetVerificationStatus())
+  if (IsLessSignificantVerificationStatus(
+          GetVerificationStatus(), newer_component.GetVerificationStatus()))
     return true;
 
   // If the verification statuses are the same, do not use the newer component
