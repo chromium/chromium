@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<style>
+.columns {
+  column-fill: auto;
+  column-width: 10ch;
+  orphans: 1;
+  widows: 1;
+  font-size: 20px;
+  line-height: 22px;
+  height: 90px;
+  margin-bottom: 1em;
+}
+.loose {
+  line-height: 24px;
+  height: 100px;
+}
+</style>
+<body>
+  <div class="columns">
+    123456789
+    12345
+    <span style="outline: auto">
+      789
+      123456789
+      <div>
+        123456789
+        123456789
+        123456789
+        123456789
+        123456789
+        123456789
+      </div>
+      123456789
+      123</span>
+    56789
+    123456789
+  </div>
+
+  <div class="columns loose">
+    123456789
+    12345
+    <span style="outline: auto">
+      789
+      123456789
+      <div>
+        123456789
+        123456789
+        123456789
+        123456789
+        123456789
+        123456789
+      </div>
+      123456789
+      123</span>
+    56789
+    123456789
+  </div>
+
+  <div class="columns">
+    123456789
+    12345
+    <span style="outline: 5px solid blue">
+      789
+      123456789
+      <div>
+        123456789
+        123456789
+        123456789
+        123456789
+        123456789
+        123456789
+      </div>
+      123456789
+      123</span>
+    56789
+    123456789
+  </div>
+</body>
