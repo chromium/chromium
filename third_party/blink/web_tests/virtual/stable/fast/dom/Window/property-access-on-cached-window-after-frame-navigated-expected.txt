@@ -57,6 +57,7 @@ PASS oldChildWindow.navigator.userActivation.isActive is newChildWindow.navigato
 PASS oldChildWindow.navigator.userAgent is newChildWindow.navigator.userAgent
 PASS oldChildWindow.navigator.vendor is newChildWindow.navigator.vendor
 PASS oldChildWindow.navigator.vendorSub is newChildWindow.navigator.vendorSub
+PASS oldChildWindow.navigator.webdriver is newChildWindow.navigator.webdriver
 PASS oldChildWindow.navigator.xr.ondevicechange is newChildWindow.navigator.xr.ondevicechange
 PASS oldChildWindow.onabort is newChildWindow.onabort
 PASS oldChildWindow.onafterprint is newChildWindow.onafterprint

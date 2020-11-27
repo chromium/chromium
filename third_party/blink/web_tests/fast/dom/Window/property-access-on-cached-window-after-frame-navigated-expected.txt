@@ -77,6 +77,7 @@ PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.x is newChildWindow.n
 PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.y is newChildWindow.navigator.virtualKeyboard.boundingRect.y
 PASS oldChildWindow.navigator.virtualKeyboard.ongeometrychange is newChildWindow.navigator.virtualKeyboard.ongeometrychange
 PASS oldChildWindow.navigator.virtualKeyboard.overlaysContent is newChildWindow.navigator.virtualKeyboard.overlaysContent
+PASS oldChildWindow.navigator.webdriver is newChildWindow.navigator.webdriver
 PASS oldChildWindow.navigator.xr.ondevicechange is newChildWindow.navigator.xr.ondevicechange
 PASS oldChildWindow.onabort is newChildWindow.onabort
 PASS oldChildWindow.onafterprint is newChildWindow.onafterprint

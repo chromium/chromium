@@ -4,8 +4,6 @@
 
 // https://w3c.github.io/webdriver/#interface
 
-[
-    RuntimeEnabled=AutomationControlled
-] interface mixin NavigatorAutomationInformation {
+interface mixin NavigatorAutomationInformation {
     readonly attribute boolean webdriver;
 };

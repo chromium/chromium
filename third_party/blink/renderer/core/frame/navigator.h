@@ -39,7 +39,9 @@ class CORE_EXPORT Navigator final : public NavigatorBase,
   // NavigatorCookies
   bool cookieEnabled() const;
 
-  bool webdriver() const { return true; }
+  bool webdriver() const {
+    return RuntimeEnabledFeatures::AutomationControlledEnabled();
+  }
 
   String productSub() const;
   String vendor() const;

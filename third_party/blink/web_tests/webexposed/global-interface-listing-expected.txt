@@ -5481,6 +5481,7 @@ interface Navigator
     getter vendorSub
     getter virtualKeyboard
     getter wakeLock
+    getter webdriver
     getter webkitPersistentStorage
     getter webkitTemporaryStorage
     getter xr

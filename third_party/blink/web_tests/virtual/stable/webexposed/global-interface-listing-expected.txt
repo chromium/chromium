@@ -4582,6 +4582,7 @@ interface Navigator
     getter vendor
     getter vendorSub
     getter wakeLock
+    getter webdriver
     getter webkitPersistentStorage
     getter webkitTemporaryStorage
     getter xr

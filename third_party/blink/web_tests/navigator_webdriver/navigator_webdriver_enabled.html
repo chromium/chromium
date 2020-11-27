@@ -10,6 +10,10 @@ test(function() {
 		"This test only works when run as a layout test!");
 }, "Prerequisites to running the rest of the tests");
 
+test(function () {
+  assert_false(window.navigator.webdriver);
+}, "Test if navigator.webdriver is false without automation");
+
 internals.runtimeFlags.automationControlledEnabled = true;
 
 test(function() {

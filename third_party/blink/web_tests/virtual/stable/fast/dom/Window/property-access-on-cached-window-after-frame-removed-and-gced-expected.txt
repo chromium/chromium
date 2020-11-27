@@ -33,6 +33,7 @@ PASS childWindow.navigator.userActivation.isActive is false
 PASS childWindow.navigator.userAgent is ''
 PASS childWindow.navigator.vendor is window.navigator.vendor
 PASS childWindow.navigator.vendorSub is ''
+PASS childWindow.navigator.webdriver is false
 PASS childWindow.onabort is null
 PASS childWindow.onafterprint is null
 PASS childWindow.onanimationend is null
