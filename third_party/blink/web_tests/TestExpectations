@@ -5917,11 +5917,6 @@ crbug.com/1042877 http/tests/security/mixedContent/strict-mode-via-pref-image-bl
 # Mixed content autoupgrades cause test to fail because test relied on http subresources to test a different origin, needs to be changed to not rely on HTTP URLs.
 crbug.com/1042877 http/tests/security/img-crossorigin-redirect-credentials.https.html [ Failure ]
 
-# Sheriff 2020-09-30
-crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation.https.html [ Pass Failure ]
-crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-custom-property-animation.https.html [ Pass Failure ]
-crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/two-element-custom-property-animation.https.html [ Pass Failure ]
-
 # Sheriff 2020-10-09
 crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
 crbug.com/1136726 [ Linux ] virtual/gpu-rasterization/images/imagemap-focus-ring-outline-color-not-inherited-from-map.html [ Failure ]
