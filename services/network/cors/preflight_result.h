@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORS_PREFLIGHT_RESULT_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CORS_PREFLIGHT_RESULT_H_
+#ifndef SERVICES_NETWORK_CORS_PREFLIGHT_RESULT_H_
+#define SERVICES_NETWORK_CORS_PREFLIGHT_RESULT_H_
 
 #include <memory>
 #include <string>
@@ -30,7 +30,7 @@ namespace cors {
 // Holds CORS-preflight request results, and provides access check methods.
 // Each instance can be cached by CORS-preflight cache.
 // See https://fetch.spec.whatwg.org/#concept-cache.
-class COMPONENT_EXPORT(NETWORK_CPP) PreflightResult final {
+class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
  public:
   static void SetTickClockForTesting(const base::TickClock* tick_clock);
 
@@ -101,4 +101,4 @@ class COMPONENT_EXPORT(NETWORK_CPP) PreflightResult final {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORS_PREFLIGHT_RESULT_H_
+#endif  // SERVICES_NETWORK_CORS_PREFLIGHT_RESULT_H_

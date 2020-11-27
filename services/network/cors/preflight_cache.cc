@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/cors/preflight_cache.h"
+#include "services/network/cors/preflight_cache.h"
 
 #include <iterator>
 

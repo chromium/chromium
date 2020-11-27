@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CORS_PREFLIGHT_CACHE_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CORS_PREFLIGHT_CACHE_H_
+#ifndef SERVICES_NETWORK_CORS_PREFLIGHT_CACHE_H_
+#define SERVICES_NETWORK_CORS_PREFLIGHT_CACHE_H_
 
 #include <map>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
-#include "services/network/public/cpp/cors/preflight_result.h"
+#include "services/network/cors/preflight_result.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/origin.h"
 
@@ -28,7 +28,7 @@ namespace cors {
 // https://fetch.spec.whatwg.org/#concept-cache.
 // TODO(toyoshim): We may consider to clear all cached entries when users'
 // network configuration is changed.
-class COMPONENT_EXPORT(NETWORK_CPP) PreflightCache final {
+class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
  public:
   PreflightCache();
   ~PreflightCache();
@@ -76,4 +76,4 @@ class COMPONENT_EXPORT(NETWORK_CPP) PreflightCache final {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CORS_PREFLIGHT_CACHE_H_
+#endif  // SERVICES_NETWORK_CORS_PREFLIGHT_CACHE_H_
