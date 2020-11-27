@@ -1365,7 +1365,11 @@ void GetKeyLocationsWithDB(std::unique_ptr<GetKeyLocationsState> state,
     if (rsa_key)
       token_ids.push_back(TokenId::kUser);
   }
-  if (token_ids.empty() && cert_db->GetPublicSlot().get()) {
+
+  // The "system" NSSCertDatabaseChromeOS instance reuses its "system slot" as
+  // "public slot", but that doesn't mean it's a user-specific slot.
+  if (token_ids.empty() && cert_db->GetPublicSlot().get() &&
+      cert_db->GetPublicSlot().get() != cert_db->GetSystemSlot().get()) {
     crypto::ScopedSECKEYPrivateKey rsa_key =
         crypto::FindNSSKeyFromPublicKeyInfoInSlot(
             public_key_vector, cert_db->GetPublicSlot().get());

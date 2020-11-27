@@ -183,6 +183,17 @@ class IsKeyOnTokenExecutionWaiter
   }
 };
 
+class GetKeyLocationsExecutionWaiter
+    : public ExecutionWaiter<const std::vector<TokenId>&> {
+ public:
+  GetKeyLocationsExecutionWaiter();
+  ~GetKeyLocationsExecutionWaiter();
+
+  const std::vector<TokenId>& key_locations() const {
+    return std::get<0>(result_callback_args());
+  }
+};
+
 }  // namespace test_util
 }  // namespace platform_keys
 }  // namespace chromeos
