@@ -1,3 +1,23 @@
 # tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Tests that are not compatible with same-site back-forward cache. To run these
+# tests, we have to disable same-site back-forward cache.
+crbug.com/1132180 http/tests/history/cross-origin-redirect-on-back.html [ Skip ]
+crbug.com/1132180 http/tests/history/dynamic-frame-creation-order-inline-scripts.html [ Skip ]
+crbug.com/1132180 http/tests/history/dynamic-frame-creation-order-onload-handler.html [ Skip ]
+crbug.com/1132180 http/tests/misc/resource-timing-iframe-restored-from-history.html [ Skip ]
+crbug.com/1132180 http/tests/misc/resource-timing-navigation-in-restored-iframe.html [ Skip ]
+crbug.com/1132180 http/tests/navigation/back-to-dynamic-iframe.html [ Skip ]
+crbug.com/1132180 http/tests/navigation/forward-to-fragment-fires-onload.html [ Skip ]
+
+# TODO(peria): Make these tests work with same-site back-forward cache.
+crbug.com/1150297 http/tests/navigation/back-during-child-frame-reload.html [ Timeout ]
+crbug.com/1150297 http/tests/navigation/post-frames-goback1.html [ Timeout ]
+crbug.com/1150297 http/tests/navigation/postredirect-frames-goback1.html [ Timeout ]
+
+# TODO(peria): Make these tests work with same-site browsing instance swap.
+crbug.com/1136383 http/tests/inspector-protocol/network/interception-download.js [ Failure ]
+crbug.com/1136383 virtual/sxg-subresource-disabled/http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Failure ]
+crbug.com/1136383 virtual/synchronous_html_parser/http/tests/inspector-protocol/network/interception-download.js [ Failure ]

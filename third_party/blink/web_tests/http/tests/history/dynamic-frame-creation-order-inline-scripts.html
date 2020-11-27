@@ -24,7 +24,10 @@
     <p>This is almost the same test as
     dynamic-frame-creation-order-onload-handler.html except that the dynamic
     frames are created from an inline script, rather than in response to an
-    onLoad event.
+    onload event.
+    </p>
+    <p>If we enable back-forward cache, back navigation doesn't run inline
+    script and thus this test fails.
     </p>
     <hr>
     <p>Frame creation order during this page load:</p>

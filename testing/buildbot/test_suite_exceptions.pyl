@@ -388,7 +388,7 @@
       },
       'linux-bfcache-rel': {
         'args': [
-          '--additional-driver-flag=--enable-features=BackForwardCache',
+          '--additional-driver-flag=--enable-features=BackForwardCache:enable_same_site/true',
           '--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-features=BackForwardCache',
         ],
       },
