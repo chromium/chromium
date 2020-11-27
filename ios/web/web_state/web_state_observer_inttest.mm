@@ -2095,7 +2095,6 @@ TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
           WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(error)));
 
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
-  EXPECT_CALL(observer_, TitleWasSet(web_state()));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
   EXPECT_CALL(observer_,
