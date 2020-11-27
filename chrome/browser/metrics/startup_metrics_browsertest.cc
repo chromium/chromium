@@ -4,9 +4,11 @@
 
 #include <set>
 
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -45,7 +47,18 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
   // Wait for all histograms to be recorded. The test will hang if an histogram
   // is not recorded.
   for (auto* const histogram : kStartupMetrics) {
-    while (!base::StatisticsRecorder::FindHistogram(histogram))
-      base::RunLoop().RunUntilIdle();
+    // Continue if histograms was already recorded.
+    if (base::StatisticsRecorder::FindHistogram(histogram))
+      continue;
+
+    // Else, wait until the histogram is recorded.
+    base::RunLoop run_loop;
+    base::StatisticsRecorder::SetCallback(
+        histogram,
+        base::BindLambdaForTesting(
+            [&](const char* histogram_name, uint64_t name_hash,
+                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+    run_loop.Run();
+    base::StatisticsRecorder::ClearCallback(histogram);
   }
 }
