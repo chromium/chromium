@@ -273,6 +273,14 @@ class LineLayoutItem {
     return layout_object_->CreatePositionWithAffinity(offset, affinity);
   }
 
+  PositionWithAffinity PositionAfterThis() const {
+    return layout_object_->PositionAfterThis();
+  }
+
+  PositionWithAffinity PositionBeforeThis() const {
+    return layout_object_->PositionBeforeThis();
+  }
+
   LineLayoutItem PreviousInPreOrder(const LayoutObject* stay_within) const {
     return LineLayoutItem(layout_object_->PreviousInPreOrder(stay_within));
   }

@@ -910,7 +910,7 @@ TEST_P(NGInlineCursorTest, PositionForPointInChildBlockChildren) {
       SetupCursor("<div id=root>a<b id=target><div>x</div></b></div>");
   const Element& target = *GetElementById("target");
   cursor.MoveTo(*target.GetLayoutObject());
-  EXPECT_EQ(PositionWithAffinity(Position(target, 0)),
+  EXPECT_EQ(PositionWithAffinity(Position::FirstPositionInNode(target)),
             cursor.PositionForPointInChild(PhysicalOffset()));
 }
 

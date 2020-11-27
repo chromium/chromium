@@ -62,7 +62,7 @@ int LayoutBR::CaretMaxOffset() const {
 
 PositionWithAffinity LayoutBR::PositionForPoint(const PhysicalOffset&) const {
   NOT_DESTROYED();
-  return CreatePositionWithAffinity(0);
+  return PositionBeforeThis();
 }
 
 Position LayoutBR::PositionForCaretOffset(unsigned offset) const {

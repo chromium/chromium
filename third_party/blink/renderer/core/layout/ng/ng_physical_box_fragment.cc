@@ -924,9 +924,8 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
   LogicalSize child_logical_size = converter.ToLogical(child.Size());
   LayoutUnit child_middle = child_logical_size.inline_size / 2;
   if (logical_point_in_child.inline_offset < child_middle)
-    return layout_object_->CreatePositionWithAffinity(child_node->NodeIndex());
-  return layout_object_->CreatePositionWithAffinity(child_node->NodeIndex() + 1,
-                                                    TextAffinity::kUpstream);
+    return child.GetLayoutObject()->PositionBeforeThis();
+  return child.GetLayoutObject()->PositionAfterThis();
 }
 
 UBiDiLevel NGPhysicalBoxFragment::BidiLevel() const {

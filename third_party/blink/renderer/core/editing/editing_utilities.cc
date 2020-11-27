@@ -1374,15 +1374,28 @@ PositionWithAffinity AdjustForEditingBoundary(
   const Node& node = *position.ComputeContainerNode();
   if (HasEditableStyle(node))
     return position_with_affinity;
+  // TODO(yosin): Once we fix |MostBackwardCaretPosition()| to handle
+  // positions other than |kOffsetInAnchor|, we don't need to use
+  // |adjusted_position|, e.g. <outer><inner contenteditable> with position
+  // before <inner> vs. outer@0[1].
+  // [1] editing/selection/click-outside-editable-div.html
+  const Position& adjusted_position = HasEditableStyle(*position.AnchorNode())
+                                          ? position.ToOffsetInAnchor()
+                                          : position;
   const Position& forward =
-      MostForwardCaretPosition(position, kCanCrossEditingBoundary);
+      MostForwardCaretPosition(adjusted_position, kCanCrossEditingBoundary);
   if (HasEditableStyle(*forward.ComputeContainerNode()))
     return PositionWithAffinity(forward);
   const Position& backward =
-      MostBackwardCaretPosition(position, kCanCrossEditingBoundary);
+      MostBackwardCaretPosition(adjusted_position, kCanCrossEditingBoundary);
   if (HasEditableStyle(*backward.ComputeContainerNode()))
     return PositionWithAffinity(backward);
-  return position_with_affinity;
+  return PositionWithAffinity(adjusted_position,
+                              position_with_affinity.Affinity());
+}
+
+PositionWithAffinity AdjustForEditingBoundary(const Position& position) {
+  return AdjustForEditingBoundary(PositionWithAffinity(position));
 }
 
 Position ComputePositionForNodeRemoval(const Position& position,

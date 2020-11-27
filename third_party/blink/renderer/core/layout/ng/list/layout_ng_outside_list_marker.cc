@@ -35,7 +35,7 @@ bool LayoutNGOutsideListMarker::NeedsOccupyWholeLine() const {
 
 PositionWithAffinity LayoutNGOutsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
-  return CreatePositionWithAffinity(0);
+  return PositionBeforeThis();
 }
 
 }  // namespace blink

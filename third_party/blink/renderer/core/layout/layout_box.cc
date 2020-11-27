@@ -6565,19 +6565,16 @@ PositionWithAffinity LayoutBox::PositionForPoint(
   // offset 0
   LayoutObject* first_child = SlowFirstChild();
   if (!first_child)
-    return CreatePositionWithAffinity(
-        NonPseudoNode() ? FirstPositionInOrBeforeNode(*NonPseudoNode())
-                        : Position());
+    return FirstPositionInOrBeforeThis();
 
   if (IsTable() && NonPseudoNode()) {
-    const Node& node = *NonPseudoNode();
     LayoutUnit x_in_block_direction = FlipForWritingMode(point.left);
     if (x_in_block_direction < 0 || x_in_block_direction > Size().Width() ||
         point.top < 0 || point.top > Size().Height()) {
       if (x_in_block_direction <= Size().Width() / 2) {
-        return CreatePositionWithAffinity(FirstPositionInOrBeforeNode(node));
+        return FirstPositionInOrBeforeThis();
       }
-      return CreatePositionWithAffinity(LastPositionInOrAfterNode(node));
+      return LastPositionInOrAfterThis();
     }
   }
 
@@ -6659,9 +6656,7 @@ PositionWithAffinity LayoutBox::PositionForPoint(
     return closest_layout_object->PositionForPoint(
         adjusted_point - closest_layout_object->PhysicalLocation());
   }
-  return CreatePositionWithAffinity(
-      NonPseudoNode() ? FirstPositionInOrBeforeNode(*NonPseudoNode())
-                      : Position());
+  return FirstPositionInOrBeforeThis();
 }
 
 DISABLE_CFI_PERF

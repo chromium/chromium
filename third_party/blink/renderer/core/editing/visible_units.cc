@@ -674,6 +674,14 @@ static PositionTemplate<Strategy> AdjustPositionForBackwardIteration(
       position.AnchorNode(), Strategy::CaretMaxOffset(*position.AnchorNode()));
 }
 
+// TODO(yosin): We should make |Most{Back,For}kwardCaretPosition()| to work for
+// positions other than |kOffsetInAnchor|. When we convert |position| to
+// |kOffsetInAnchor|, following tests are failed:
+//  * editing/execCommand/delete-non-editable-range-crash.html
+//  * editing/execCommand/keep_typing_style.html
+//  * editing/selection/skip-over-contenteditable.html
+// See also |AdjustForEditingBoundary()|. It has workaround for before/after
+// positions.
 template <typename Strategy>
 static PositionTemplate<Strategy> MostBackwardCaretPosition(
     const PositionTemplate<Strategy>& position,

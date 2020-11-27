@@ -986,6 +986,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
 PositionWithAffinity LayoutReplaced::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+
   LayoutUnit top;
   LayoutUnit bottom;
   std::tie(top, bottom) = SelectionTopAndBottom(*this);
@@ -1000,20 +1001,18 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
                                            : flipped_point_in_container.Y();
 
   if (block_direction_position < top)
-    return CreatePositionWithAffinity(
-        CaretMinOffset());  // coordinates are above
+    return PositionBeforeThis();  // coordinates are above
 
   if (block_direction_position >= bottom)
-    return CreatePositionWithAffinity(
-        CaretMaxOffset());  // coordinates are below
+    return PositionBeforeThis();  // coordinates are below
 
   if (GetNode()) {
     const bool is_at_left_side =
         line_direction_position <= LogicalLeft() + (LogicalWidth() / 2);
     const bool is_at_start = is_at_left_side == IsLtr(ResolvedDirection());
-    // TODO(crbug.com/827923): Stop creating positions using int offsets on
-    // non-text nodes.
-    return CreatePositionWithAffinity(is_at_start ? 0 : 1);
+    if (is_at_start)
+      return PositionBeforeThis();
+    return PositionAfterThis();
   }
 
   return LayoutBox::PositionForPoint(point);

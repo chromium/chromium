@@ -1318,15 +1318,18 @@ Position LayoutBlock::PositionForBox(InlineBox* box, bool start) const {
   if (!box)
     return Position();
 
-  if (!box->GetLineLayoutItem().NonPseudoNode())
-    return Position::EditingPositionOf(
-        NonPseudoNode(), start ? CaretMinOffset() : CaretMaxOffset());
+  Node* const node = box->GetLineLayoutItem().NonPseudoNode();
+  if (!node) {
+    if (start)
+      return Position::FirstPositionInOrBeforeNode(*NonPseudoNode());
+    return Position::LastPositionInOrAfterNode(*NonPseudoNode());
+  }
 
-  if (!box->IsInlineTextBox())
-    return Position::EditingPositionOf(
-        box->GetLineLayoutItem().NonPseudoNode(),
-        start ? box->GetLineLayoutItem().CaretMinOffset()
-              : box->GetLineLayoutItem().CaretMaxOffset());
+  if (!box->IsInlineTextBox()) {
+    if (start)
+      return Position::FirstPositionInOrBeforeNode(*node);
+    return Position::LastPositionInOrAfterNode(*node);
+  }
 
   auto* text_box = To<InlineTextBox>(box);
   return Position::EditingPositionOf(
@@ -1382,10 +1385,14 @@ PositionWithAffinity LayoutBlock::PositionForPointRespectingEditingBoundaries(
   LayoutUnit logical_left = IsHorizontalWritingMode()
                                 ? point_in_child_coordinates.left
                                 : point_in_child_coordinates.top;
-  if (logical_left < child_middle)
-    return ancestor->CreatePositionWithAffinity(child_node->NodeIndex());
-  return ancestor->CreatePositionWithAffinity(child_node->NodeIndex() + 1,
-                                              TextAffinity::kUpstream);
+  if (logical_left < child_middle) {
+    if (IsUserSelectContain(*ancestor->NonPseudoNode()))
+      return ancestor->PositionBeforeThis();
+    return child.PositionBeforeThis();
+  }
+  if (IsUserSelectContain(*ancestor->NonPseudoNode()))
+    return ancestor->PositionAfterThis();
+  return child.PositionAfterThis();
 }
 
 PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
@@ -1396,13 +1403,13 @@ PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
       point.ConvertToLogical({StyleRef().GetWritingMode(), ResolvedDirection()},
                              PhysicalSize(Size()), PhysicalSize());
   if (logical_offset.inline_offset < 0)
-    return CreatePositionWithAffinity(CaretMinOffset());
+    return FirstPositionInOrBeforeThis();
   if (logical_offset.inline_offset >= LogicalWidth())
-    return CreatePositionWithAffinity(CaretMaxOffset());
+    return LastPositionInOrAfterThis();
   if (logical_offset.block_offset < 0)
-    return CreatePositionWithAffinity(CaretMinOffset());
+    return FirstPositionInOrBeforeThis();
   if (logical_offset.block_offset >= LogicalHeight())
-    return CreatePositionWithAffinity(CaretMaxOffset());
+    return LastPositionInOrAfterThis();
   return PositionWithAffinity();
 }
 

@@ -20,7 +20,7 @@ bool LayoutNGInsideListMarker::IsOfType(LayoutObjectType type) const {
 PositionWithAffinity LayoutNGInsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
   NOT_DESTROYED();
-  return CreatePositionWithAffinity(0);
+  return PositionBeforeThis();
 }
 
 }  // namespace blink
