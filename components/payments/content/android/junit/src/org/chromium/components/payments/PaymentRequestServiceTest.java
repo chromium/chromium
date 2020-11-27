@@ -4,7 +4,9 @@
 
 package org.chromium.components.payments;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,10 +22,14 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
+import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -31,6 +37,8 @@ import org.chromium.payments.mojom.PaymentResponse;
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
     private final BrowserPaymentRequest mBrowserPaymentRequest;
+    private List<PaymentApp> mNotifiedPendingApps;
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
@@ -52,9 +60,51 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private MojoException mConnectionError;
     private boolean mIsUserGestureDefaultValue = true;
     private boolean mWaitForUpdatedDetailsDefaultValue;
+    private PaymentAppService mPaymentAppService;
+    private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
 
     public PaymentRequestServiceTest() {
+        mPaymentAppService = Mockito.mock(PaymentAppService.class);
+        Mockito.doAnswer((args) -> {
+                   mPaymentAppFactoryDelegate = args.getArgument(0);
+                   return null;
+               })
+                .when(mPaymentAppService)
+                .create(Mockito.any());
+
         mBrowserPaymentRequest = Mockito.mock(BrowserPaymentRequest.class);
+        Mockito.doReturn(true).when(mBrowserPaymentRequest).hasAvailableApps();
+        Mockito.doReturn(false)
+                .when(mBrowserPaymentRequest)
+                .disconnectIfExtraValidationFails(
+                        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.doReturn(true)
+                .when(mBrowserPaymentRequest)
+                .patchPaymentResponseIfNeeded(Mockito.any());
+        Mockito.doReturn(null)
+                .when(mBrowserPaymentRequest)
+                .showAppSelector(
+                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        Mockito.doReturn(true)
+                .when(mBrowserPaymentRequest)
+                .parseAndValidateDetailsFurtherIfNeeded(Mockito.any());
+        Mockito.doAnswer((args) -> {
+                   List<PaymentApp> pendingApps = args.getArgument(0);
+                   mNotifiedPendingApps = new ArrayList<>(pendingApps);
+                   return null;
+               })
+                .when(mBrowserPaymentRequest)
+                .notifyPaymentUiOfPendingApps(Mockito.any());
+    }
+
+    @Before
+    public void setUp() {
+        PaymentRequestService.resetShowingPaymentRequestForTest();
+    }
+
+    @After
+    public void tearDown() {
+        PaymentRequestService.resetShowingPaymentRequestForTest();
     }
 
     @Override
@@ -144,7 +194,26 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     private PaymentRequestServiceBuilder defaultBuilder() {
         return PaymentRequestServiceBuilder.defaultBuilder(
-                () -> mIsOnCloseListenerInvoked = true, /*client=*/this, mBrowserPaymentRequest);
+                ()
+                        -> mIsOnCloseListenerInvoked = true,
+                /*client=*/this, mPaymentAppService, mBrowserPaymentRequest);
+    }
+
+    private PaymentApp createDefaultPaymentApp() {
+        PaymentApp app = Mockito.mock(PaymentApp.class);
+        Mockito.doReturn(true).when(app).canMakePayment();
+        Mockito.doReturn(false).when(app).isAutofillInstrument();
+        return app;
+    }
+
+    private void queryPaymentApps() {
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(true);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
+    }
+
+    private PaymentDetails getDefaultDetails() {
+        return new PaymentDetails();
     }
 
     @Test
@@ -297,9 +366,127 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testDefaultParamsMakeCreationSuccess() {
+        Assert.assertNull(mPaymentAppFactoryDelegate);
         PaymentRequestService service = defaultBuilder().build();
         Assert.assertNotNull(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1)).onSpecValidated(Mockito.notNull());
         assertNoError();
+        Assert.assertNotNull(mPaymentAppFactoryDelegate);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testCanNotMakePaymentFailsPayment() {
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(false);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
+        assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+        assertClosed(true);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testNoPaymentAppFailsPayment() {
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
+        assertErrorAndReason(ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+        assertClosed(true);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testAppSelectorIsTriggeredOnShownAndAppsQueried() {
+        PaymentRequestService service = defaultBuilder().build();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .showAppSelector(
+                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        show(service);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .showAppSelector(
+                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        queryPaymentApps();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .showAppSelector(
+                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testUiIsNotifiedOfPendingAppsOnShownAndAppsQueried() {
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .notifyPaymentUiOfPendingApps(Mockito.any());
+        Assert.assertNull(mNotifiedPendingApps);
+        queryPaymentApps();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .notifyPaymentUiOfPendingApps(Mockito.any());
+        Assert.assertEquals(1, mNotifiedPendingApps.size());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testAppSelectorIsNotTriggeredOnAppsQueriedOnly() {
+        PaymentRequestService service = defaultBuilder().build();
+        queryPaymentApps();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .showAppSelector(
+                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        show(service);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .showAppSelector(
+                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testInvokeUiSkipMethodOnShownAndAppsQueried() {
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+        queryPaymentApps();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testWaitingForUpdatedDetailsDeterUiSkipMethod() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, true);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+        queryPaymentApps();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+        service.updateWith(getDefaultDetails());
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testCloseTeardownResources() {
+        PaymentRequestService service = defaultBuilder().build();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never()).close();
+        assertClosed(false);
+        service.close();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1)).close();
+        assertClosed(true);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testOnlyOneServiceCanBeShownGlobally() {
+        PaymentRequestService service1 = defaultBuilder().build();
+        show(service1);
+        assertNoError();
+        PaymentRequestService service2 = defaultBuilder().build();
+        show(service2);
+        assertErrorAndReason(ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
     }
 }

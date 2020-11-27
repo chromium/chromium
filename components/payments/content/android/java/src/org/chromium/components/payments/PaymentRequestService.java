@@ -282,6 +282,11 @@ public class PaymentRequestService
                 String appLocale) {
             return new PaymentRequestSpec(options, details, methodData, appLocale);
         }
+
+        /** @return The PaymentAppService that is used to create payment app for this service. */
+        default PaymentAppService getPaymentAppService() {
+            return PaymentAppService.getInstance();
+        }
     }
 
     /**
@@ -445,7 +450,7 @@ public class PaymentRequestService
     }
 
     private void startPaymentAppService() {
-        PaymentAppService service = PaymentAppService.getInstance();
+        PaymentAppService service = mDelegate.getPaymentAppService();
         mBrowserPaymentRequest.addPaymentAppFactories(service, /*delegate=*/this);
         service.create(/*delegate=*/this);
     }
@@ -999,6 +1004,11 @@ public class PaymentRequestService
             result.put(methodName, methodData);
         }
         return result;
+    }
+
+    @VisibleForTesting
+    public static void resetShowingPaymentRequestForTest() {
+        sShowingPaymentRequest = null;
     }
 
     /**
