@@ -8,27 +8,18 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "components/performance_manager/public/freezing/freezing.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/voting/voting.h"
 
 namespace performance_manager {
 
+class FreezingVoteDecorator;
 class PageNode;
 
 namespace freezing {
 
-enum class FreezingVoteValue {
-  kCannotFreeze,
-  kCanFreeze,
-};
-
-using FreezingVote =
-    voting::Vote<PageNode, FreezingVoteValue, FreezingVoteValue::kCannotFreeze>;
-using FreezingVoterId = voting::VoterId<FreezingVote>;
 using FreezingVoteReceipt = voting::VoteReceipt<FreezingVote>;
-using FreezingVotingChannel = voting::VotingChannel<FreezingVote>;
-using FreezingVoteObserver = voting::VoteObserver<FreezingVote>;
-using FreezingVoteConsumerDefaultImpl =
-    voting::VoteConsumerDefaultImpl<FreezingVote>;
 using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
 
 // An aggregator for freezing votes. It upstreams an aggregated vote to an
@@ -37,9 +28,14 @@ using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
 // kCanFreeze vote for this node. Any kCannotFreeze vote received will have
 // priority over the kCanFreeze votes and will prevent the PageNode from being
 // frozen.
-class FreezingVoteAggregator final : public FreezingVoteObserver {
+//
+// This is a GraphRegistered object, once created this instance can be
+// retrieved via:
+//     graph()->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>();
+class FreezingVoteAggregator final
+    : public FreezingVoteObserver,
+      public GraphRegisteredImpl<FreezingVoteAggregator> {
  public:
-  FreezingVoteAggregator();
   FreezingVoteAggregator(const FreezingVoteAggregator& rhs) = delete;
   FreezingVoteAggregator& operator=(const FreezingVoteAggregator& rhs) = delete;
   ~FreezingVoteAggregator() override;
@@ -61,7 +57,13 @@ class FreezingVoteAggregator final : public FreezingVoteObserver {
                          const PageNode* page_node) override;
 
  private:
+  friend class performance_manager::FreezingVoteDecorator;
+  friend class FreezingVoteAggregatorTest;
   friend class FreezingVoteAggregatorTestAccess;
+
+  // Private constructor, in practice the FreezingVoteDecorator is responsible
+  // for maintaining the lifetime of this object.
+  FreezingVoteAggregator();
 
   // Contains the freezing votes for a given PageNode.
   class FreezingVoteData {

@@ -4,10 +4,12 @@
 
 #include "components/performance_manager/graph/page_node_impl.h"
 
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -22,6 +24,10 @@ using PageNodeImplTest = GraphTestHarness;
 
 const std::string kHtmlMimeType = "text/html";
 const std::string kPdfMimeType = "application/pdf";
+
+static const freezing::FreezingVote kFreezingVote(
+    freezing::FreezingVoteValue::kCannotFreeze,
+    "cannot freeze");
 
 const PageNode* ToPublic(PageNodeImpl* page_node) {
   return page_node;
@@ -192,6 +198,21 @@ TEST_F(PageNodeImplTest, HadFormInteractions) {
   EXPECT_FALSE(page_node->had_form_interaction());
 }
 
+TEST_F(PageNodeImplTest, GetFreezingVote) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+
+  // This should be initialized to base::nullopt.
+  EXPECT_FALSE(page_node->freezing_vote());
+
+  page_node->set_freezing_vote(kFreezingVote);
+  ASSERT_TRUE(page_node->freezing_vote().has_value());
+  EXPECT_EQ(kFreezingVote, page_node->freezing_vote().value());
+
+  page_node->set_freezing_vote(base::nullopt);
+  EXPECT_FALSE(page_node->freezing_vote());
+}
+
 namespace {
 
 class LenientMockObserver : public PageNodeImpl::Observer {
@@ -217,6 +238,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnTitleUpdated, void(const PageNode*));
   MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
+  MOCK_METHOD1(OnFreezingVoteChanged, void(const PageNode*));
 
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
@@ -302,6 +324,11 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->OnFaviconUpdated();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
+  EXPECT_CALL(obs, OnFreezingVoteChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->set_freezing_vote(kFreezingVote);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
   // Release the page node and expect a call to "OnBeforePageNodeRemoved".
   EXPECT_CALL(obs, OnBeforePageNodeRemoved(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
@@ -334,6 +361,7 @@ TEST_F(PageNodeImplTest, PublicInterface) {
   EXPECT_EQ(page_node->main_frame_url(), public_page_node->GetMainFrameUrl());
   EXPECT_EQ(page_node->contents_mime_type(),
             public_page_node->GetContentsMimeType());
+  EXPECT_EQ(page_node->freezing_vote(), public_page_node->GetFreezingVote());
 }
 
 TEST_F(PageNodeImplTest, GetMainFrameNodes) {

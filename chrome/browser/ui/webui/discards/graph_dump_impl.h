@@ -117,14 +117,18 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::PageNode* page_node,
       const performance_manager::FrameNode* previous_opener,
       OpenedType previous_opened_type) override;
+  // Ignored.
   void OnIsVisibleChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnIsAudibleChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnIsLoadingChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnUkmSourceIdChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
+      const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnPageLifecycleStateChanged(
       const performance_manager::PageNode* page_node) override {}
@@ -139,12 +143,17 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnMainFrameDocumentChanged(
       const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnHadFormInteractionChanged(
       const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnTitleUpdated(const performance_manager::PageNode* page_node) override {
-  }  // Ignored.
+  }
   void OnFaviconUpdated(
       const performance_manager::PageNode* page_node) override;
+  // Ignored.
+  void OnFreezingVoteChanged(
+      const performance_manager::PageNode* page_node) override {}
 
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(

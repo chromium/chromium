@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/optional.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
@@ -145,6 +147,16 @@ class PageNode : public Node {
   // dereferenced on the UI thread.
   virtual const WebContentsProxy& GetContentsProxy() const = 0;
 
+  // Indicates if there's a freezing vote for this page node. This has 3
+  // possible values:
+  //   - base::nullopt: There's no active freezing vote for this page.
+  //   - freezing::FreezingVoteValue::kCanFreeze: There's one or more positive
+  //     freezing vote for this page and no negative vote.
+  //   - freezing::FreezingVoteValue::kCannotFreeze: There's at least one
+  //     negative freezing vote for this page.
+  virtual const base::Optional<freezing::FreezingVote>& GetFreezingVote()
+      const = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(PageNode);
 };
@@ -219,6 +231,9 @@ class PageNodeObserver {
   // not directly reflected on the node.
   virtual void OnFaviconUpdated(const PageNode* page_node) = 0;
 
+  // Called every time the aggregated freezing vote changes or gets invalidated.
+  virtual void OnFreezingVoteChanged(const PageNode* page_node) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(PageNodeObserver);
 };
@@ -250,6 +265,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnHadFormInteractionChanged(const PageNode* page_node) override {}
   void OnTitleUpdated(const PageNode* page_node) override {}
   void OnFaviconUpdated(const PageNode* page_node) override {}
+  void OnFreezingVoteChanged(const PageNode* page_node) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);

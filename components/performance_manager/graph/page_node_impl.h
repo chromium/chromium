@@ -12,10 +12,12 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "url/gurl.h"
@@ -97,6 +99,7 @@ class PageNodeImpl
   int64_t navigation_id() const;
   const std::string& contents_mime_type() const;
   bool had_form_interaction() const;
+  const base::Optional<freezing::FreezingVote>& freezing_vote() const;
 
   // Invoked to set/clear the opener of this page.
   void SetOpenerFrameNodeAndOpenedType(FrameNodeImpl* opener,
@@ -107,6 +110,7 @@ class PageNodeImpl
   void set_private_footprint_kb_estimate(
       uint64_t private_footprint_kb_estimate);
   void set_has_nonempty_beforeunload(bool has_nonempty_beforeunload);
+  void set_freezing_vote(base::Optional<freezing::FreezingVote> freezing_vote);
 
   void SetLifecycleStateForTesting(LifecycleState lifecycle_state) {
     SetLifecycleState(lifecycle_state);
@@ -190,6 +194,8 @@ class PageNodeImpl
   const GURL& GetMainFrameUrl() const override;
   bool HadFormInteraction() const override;
   const WebContentsProxy& GetContentsProxy() const override;
+  const base::Optional<freezing::FreezingVote>& GetFreezingVote()
+      const override;
 
   // NodeBase:
   void OnJoiningGraph() override;
@@ -297,6 +303,13 @@ class PageNodeImpl
       bool,
       &PageNodeObserver::OnHadFormInteractionChanged>
       had_form_interaction_{false};
+  // The freezing vote associated with this page, see the comment of to
+  // Page::GetFreezingVote for a description of the different values this can
+  // take.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      base::Optional<freezing::FreezingVote>,
+      &PageNodeObserver::OnFreezingVoteChanged>
+      freezing_vote_;
 
   // Storage for PageLoadTracker user data.
   std::unique_ptr<NodeAttachedData> page_load_tracker_data_;

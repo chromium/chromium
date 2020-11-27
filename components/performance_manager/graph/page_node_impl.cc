@@ -241,6 +241,12 @@ bool PageNodeImpl::had_form_interaction() const {
   return had_form_interaction_.value();
 }
 
+const base::Optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return freezing_vote_.value();
+}
+
 void PageNodeImpl::SetOpenerFrameNodeAndOpenedType(FrameNodeImpl* opener,
                                                    OpenedType opened_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -294,6 +300,12 @@ void PageNodeImpl::set_has_nonempty_beforeunload(
     bool has_nonempty_beforeunload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_nonempty_beforeunload_ = has_nonempty_beforeunload;
+}
+
+void PageNodeImpl::set_freezing_vote(
+    base::Optional<freezing::FreezingVote> freezing_vote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  freezing_vote_.SetAndMaybeNotify(this, freezing_vote);
 }
 
 void PageNodeImpl::OnJoiningGraph() {
@@ -419,6 +431,12 @@ bool PageNodeImpl::HadFormInteraction() const {
 
 const WebContentsProxy& PageNodeImpl::GetContentsProxy() const {
   return contents_proxy();
+}
+
+const base::Optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return freezing_vote();
 }
 
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {

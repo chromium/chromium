@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/performance_manager/decorators/freezing_vote_decorator.h"
+
+#include "base/optional.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+
+namespace performance_manager {
+
+FreezingVoteDecorator::FreezingVoteDecorator() {
+  freezing_vote_aggregator_.SetUpstreamVotingChannel(
+      vote_consumer_default_impl_.BuildVotingChannel());
+}
+
+FreezingVoteDecorator::~FreezingVoteDecorator() = default;
+
+void FreezingVoteDecorator::OnPassedToGraph(Graph* graph) {
+  graph->RegisterObject(&freezing_vote_aggregator_);
+}
+
+void FreezingVoteDecorator::OnTakenFromGraph(Graph* graph) {
+  graph->UnregisterObject(&freezing_vote_aggregator_);
+}
+
+void FreezingVoteDecorator::OnVoteSubmitted(
+    freezing::FreezingVoterId voter_id,
+    const PageNode* page_node,
+    const freezing::FreezingVote& vote) {
+  PageNodeImpl::FromNode(page_node)->set_freezing_vote(vote);
+}
+
+void FreezingVoteDecorator::OnVoteChanged(
+    freezing::FreezingVoterId voter_id,
+    const PageNode* page_node,
+    const freezing::FreezingVote& new_vote) {
+  PageNodeImpl::FromNode(page_node)->set_freezing_vote(new_vote);
+}
+
+void FreezingVoteDecorator::OnVoteInvalidated(
+    freezing::FreezingVoterId voter_id,
+    const PageNode* page_node) {
+  PageNodeImpl::FromNode(page_node)->set_freezing_vote(base::nullopt);
+}
+
+}  // namespace performance_manager
