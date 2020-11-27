@@ -95,7 +95,7 @@ class FileDestructionWatcher {
     // destroyed between the existence check and when we start watching, if the
     // order were reversed.
     EXPECT_TRUE(watcher_->Watch(
-        watched_file_path_, false /* recursive */,
+        watched_file_path_, base::FilePathWatcher::Type::kNonRecursive,
         base::BindRepeating(&FileDestructionWatcher::OnPathChanged,
                             base::Unretained(this))));
     CheckIfPathExists();
