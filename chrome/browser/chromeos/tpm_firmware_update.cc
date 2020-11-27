@@ -157,8 +157,8 @@ class AvailabilityChecker {
   static void StartOnBackgroundThread(
       base::FilePathWatcher* watcher,
       base::FilePathWatcher::Callback watch_callback) {
-    watcher->Watch(GetUpdateLocationFilePath(), false /* recursive */,
-                   watch_callback);
+    watcher->Watch(GetUpdateLocationFilePath(),
+                   base::FilePathWatcher::Type::kNonRecursive, watch_callback);
     watch_callback.Run(base::FilePath(), false /* error */);
   }
 
