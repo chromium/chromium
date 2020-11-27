@@ -43,6 +43,9 @@ namespace {
 
 const char kNoServiceError[] = "ImageCapture service unavailable.";
 
+const char kInvalidStateTrackError[] =
+    "The associated Track is in an invalid state";
+
 bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
   // "live". Also reject if the track is disabled or muted.
@@ -183,8 +186,7 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "The associated Track is in an invalid state."));
+        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
     return promise;
   }
 
@@ -216,8 +218,7 @@ ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "The associated Track is in an invalid state."));
+        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
     return promise;
   }
 
@@ -253,8 +254,7 @@ ScriptPromise ImageCapture::setOptions(ScriptState* script_state,
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "The associated Track is in an invalid state."));
+        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
     return promise;
   }
 
@@ -342,8 +342,7 @@ ScriptPromise ImageCapture::grabFrame(ScriptState* script_state) {
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "The associated Track is in an invalid state."));
+        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
     return promise;
   }
 
@@ -978,8 +977,7 @@ void ImageCapture::OnMojoGetPhotoState(
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError,
-        "The associated Track is in an invalid state."));
+        DOMExceptionCode::kOperationError, kInvalidStateTrackError));
     service_requests_.erase(resolver);
     return;
   }
