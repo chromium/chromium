@@ -160,13 +160,31 @@ TEST_F(KeepAliveTest, UnloadExtension) {
   run_loop.Run();
 }
 
-TEST_F(KeepAliveTest, Shutdown) {
+TEST_F(KeepAliveTest, ShutdownExtensionRegistry) {
   mojo::Remote<KeepAlive> keep_alive;
   CreateKeepAlive(keep_alive.BindNewPipeAndPassReceiver());
   EXPECT_EQ(1, GetKeepAliveCount());
   EXPECT_EQ(1u, GetActivities().count(mojo_activity_));
 
   ExtensionRegistry::Get(browser_context())->Shutdown();
+  // After a shutdown event, the KeepAliveImpl should not access its
+  // ProcessManager and so the keep-alive count should remain unchanged.
+  EXPECT_EQ(1, GetKeepAliveCount());
+  EXPECT_EQ(1u, GetActivities().count(mojo_activity_));
+
+  // Wait for |keep_alive| to disconnect.
+  base::RunLoop run_loop;
+  keep_alive.set_disconnect_handler(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(KeepAliveTest, ShutdownProcessManager) {
+  mojo::Remote<KeepAlive> keep_alive;
+  CreateKeepAlive(keep_alive.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(1, GetKeepAliveCount());
+  EXPECT_EQ(1u, GetActivities().count(mojo_activity_));
+
+  ProcessManager::Get(browser_context())->Shutdown();
   // After a shutdown event, the KeepAliveImpl should not access its
   // ProcessManager and so the keep-alive count should remain unchanged.
   EXPECT_EQ(1, GetKeepAliveCount());
