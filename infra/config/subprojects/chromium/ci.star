@@ -1075,6 +1075,11 @@ ci.chromium_builder(
     ),
     cores = 32,
     tree_closing = False,
+
+    # See https://crbug.com/1153349. In 3 hours, the android-official builder
+    # was able to complete only 98% of the target. This gives a bit more time to
+    # finish.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.chromium_builder(
