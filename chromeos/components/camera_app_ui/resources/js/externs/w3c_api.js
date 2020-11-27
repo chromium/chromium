@@ -2,15 +2,64 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(inker): Put it to the externs/browser/w3c_api.js of the upstream
-// Closure Compiler, uprev the one bundled in Chromium repo, and remove the
-// definition here.
+/* eslint-disable no-unused-vars, no-var, valid-jsdoc */
 
-/* eslint-disable valid-jsdoc */
+// TODO(b/172879638): Upstream the externs of BarcodeDetector to Closure
+// Compiler.
 
 /**
- * @see http://www.w3.org/TR/FileAPI/#arraybuffer-method-algo
- * @return {!Promise<!ArrayBuffer>}
- * @nosideeffects
+ * @typedef {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|ImageBitmap|
+ *     OffscreenCanvas}
  */
-Blob.prototype.arrayBuffer = function() {};
+var CanvasImageSource;
+
+/**
+ * @typedef {!CanvasImageSource|!Blob|!ImageData}
+ * @see https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#imagebitmapsource
+ */
+var ImageBitmapSource;
+
+/**
+ * @record
+ * @struct
+ */
+function BarcodeDetectorOptions() {}
+
+/** @type {!Array<string>} */
+BarcodeDetectorOptions.prototype.formats;
+
+/**
+ * @record
+ * @struct
+ */
+function DetectedBarcode() {}
+
+/** @type {!DOMRectReadOnly} */
+DetectedBarcode.prototype.boundingBox;
+
+/** @type {!Array<{x: number, y: number}>} */
+DetectedBarcode.prototype.cornerPoints;
+
+/** @type {string} */
+DetectedBarcode.prototype.format;
+
+/** @type {string} */
+DetectedBarcode.prototype.rawValue;
+
+/**
+ * @constructor
+ * @param {!BarcodeDetectorOptions=} barcodeDetectorOptions
+ * @see https://wicg.github.io/shape-detection-api/#barcode-detection-api
+ */
+function BarcodeDetector(barcodeDetectorOptions) {}
+
+/**
+ * @return {!Promise<!Array<string>>}
+ */
+BarcodeDetector.getSupportedFormats = function() {};
+
+/**
+ * @param {!ImageBitmapSource} image
+ * @return {!Promise<!Array<!DetectedBarcode>>}
+ */
+BarcodeDetector.prototype.detect = function(image) {};

@@ -46,6 +46,7 @@ export const State = {
   REVIEW_RESULT: 'review-result',
   REVIEW_VIDEO_RESULT: 'review-video-result',
   SAVE_METADATA: 'save-metadata',
+  SCAN_BARCODE: 'scan-barcode',
   SHOULD_HANDLE_INTENT_RESULT: 'should-handle-intent-result',
   SHOW_METADATA: 'show-metadata',
   SQUARE_PREVIEW: 'square-preview',

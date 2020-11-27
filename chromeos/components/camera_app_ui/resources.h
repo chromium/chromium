@@ -58,6 +58,7 @@ const struct {
     {"expert_preview_metadata", IDS_EXPERT_PREVIEW_METADATA},
     {"expert_save_metadata", IDS_EXPERT_SAVE_METADATA},
     {"expert_print_performance_logs", IDS_EXPERT_PRINT_PERFORMANCE_LOGS},
+    {"expert_scan_barcode", IDS_EXPERT_SCAN_BARCODE},
     {"error_msg_expert_mode_not_supported",
      IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED},
     {"feedback_button", IDS_FEEDBACK_BUTTON},

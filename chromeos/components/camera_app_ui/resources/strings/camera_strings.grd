@@ -336,6 +336,9 @@
       <message desc="Label for expert mode option: print performance logs." name="IDS_EXPERT_PRINT_PERFORMANCE_LOGS">
         Print performance logs
       </message>
+      <message desc="Label for expert mode option: scan barcode." name="IDS_EXPERT_SCAN_BARCODE">
+        Scan barcode
+      </message>
       <message desc="Error message when the device does not support expert mode but tries to enable it." name="IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED">
         Expert mode is not supported on this device
       </message>

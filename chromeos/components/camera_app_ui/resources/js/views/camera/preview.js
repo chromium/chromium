@@ -4,9 +4,11 @@
 
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
 import * as dom from '../../dom.js';
+import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
+import * as toast from '../../toast.js';
 import * as util from '../../util.js';
 import {windowController} from '../../window_controller/window_controller.js';
 
@@ -73,10 +75,20 @@ export class Preview {
      */
     this.resizeWindowTimeout_ = null;
 
+    /**
+     * @type {?BarcodeScanner}
+     * @private
+     */
+    this.scanner_ = null;
+
+
     window.addEventListener('resize', () => this.onWindowResize_());
 
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
       state.addObserver(s, this.updateShowMetadata_.bind(this));
+    });
+    [state.State.EXPERT, state.State.SCAN_BARCODE].forEach((s) => {
+      state.addObserver(s, this.updateScanBarcode_.bind(this));
     });
   }
 
@@ -150,7 +162,13 @@ export class Preview {
           this.onNewStreamNeeded_();
         }
       }, 100);
+      this.scanner_ = new BarcodeScanner(this.video_, (code) => {
+        // TODO(b/172879638): Show this with a actionable toast.
+        toast.showDebugMessage(code);
+      });
+      this.updateScanBarcode_();
       this.updateShowMetadata_();
+
       state.set(state.State.STREAMING, true);
     } catch (e) {
       await this.close();
@@ -164,13 +182,13 @@ export class Preview {
    * @return {!Promise}
    */
   async close() {
-    if (this.watchdog_) {
+    if (this.watchdog_ !== null) {
       clearInterval(this.watchdog_);
       this.watchdog_ = null;
     }
     // Pause video element to avoid black frames during transition.
     this.video_.pause();
-    if (this.stream_) {
+    if (this.stream_ !== null) {
       const track = this.stream_.getVideoTracks()[0];
       const {deviceId} = track.getSettings();
       track.stop();
@@ -180,7 +198,26 @@ export class Preview {
       }
       this.stream_ = null;
     }
+    if (this.scanner_ !== null) {
+      this.scanner_.stop();
+      this.scanner_ = null;
+    }
     state.set(state.State.STREAMING, false);
+  }
+
+  /**
+   * Checks whether to scan barcode on preview or not.
+   * @private
+   */
+  updateScanBarcode_() {
+    if (this.scanner_ === null) {
+      return;
+    }
+    if (state.get(state.State.EXPERT) && state.get(state.State.SCAN_BARCODE)) {
+      this.scanner_.start();
+    } else {
+      this.scanner_.stop();
+    }
   }
 
   /**
