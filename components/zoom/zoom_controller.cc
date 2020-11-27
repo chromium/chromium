@@ -38,9 +38,6 @@ double ZoomController::GetZoomLevelForWebContents(
 
 ZoomController::ZoomController(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      can_show_bubble_(true),
-      zoom_mode_(ZOOM_MODE_DEFAULT),
-      zoom_level_(1.0),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);
@@ -154,9 +151,9 @@ bool ZoomController::SetZoomLevelByClient(
       content::HostZoomMap::GetForWebContents(web_contents());
   DCHECK(zoom_map);
   DCHECK(!event_data_);
-  event_data_.reset(new ZoomChangedEventData(web_contents(), GetZoomLevel(),
-                                             zoom_level, zoom_mode_,
-                                             false /* can_show_bubble */));
+  event_data_ = std::make_unique<ZoomChangedEventData>(
+      web_contents(), GetZoomLevel(), zoom_level, zoom_mode_,
+      false /* can_show_bubble */);
   int process_id = web_contents()
                        ->GetMainFrame()
                        ->GetRenderViewHost()
@@ -203,9 +200,9 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
   double original_zoom_level = GetZoomLevel();
 
   DCHECK(!event_data_);
-  event_data_.reset(new ZoomChangedEventData(
+  event_data_ = std::make_unique<ZoomChangedEventData>(
       web_contents(), original_zoom_level, original_zoom_level, new_mode,
-      new_mode != ZOOM_MODE_DEFAULT));
+      new_mode != ZOOM_MODE_DEFAULT);
 
   switch (new_mode) {
     case ZOOM_MODE_DEFAULT: {
@@ -302,12 +299,12 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
   double old_zoom_level = zoom_map->GetZoomLevel(web_contents());
   double new_zoom_level = zoom_map->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));
-  event_data_.reset(new ZoomChangedEventData(web_contents(), old_zoom_level,
-                                             new_zoom_level, ZOOM_MODE_DEFAULT,
-                                             false /* can_show_bubble */));
+  event_data_ = std::make_unique<ZoomChangedEventData>(
+      web_contents(), old_zoom_level, new_zoom_level, ZOOM_MODE_DEFAULT,
+      false /* can_show_bubble */);
   // The call to ClearTemporaryZoomLevel() doesn't generate any events from
-  // HostZoomMap, but the call to UpdateState() at the end of this function
-  // will notify our observers.
+  // HostZoomMap, but the call to UpdateState() at the end of
+  // DidFinishNavigation will notify our observers.
   // Note: it's possible the render_process/view ids have disappeared (e.g.
   // if we navigated to a new origin), but this won't cause a problem in the
   // call below.

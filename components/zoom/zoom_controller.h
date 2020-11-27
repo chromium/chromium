@@ -173,10 +173,10 @@ class ZoomController : public content::WebContentsObserver,
   void UpdateState(const std::string& host);
 
   // True if changes to zoom level can trigger the zoom notification bubble.
-  bool can_show_bubble_;
+  bool can_show_bubble_ = true;
 
   // The current zoom mode.
-  ZoomMode zoom_mode_;
+  ZoomMode zoom_mode_ = ZOOM_MODE_DEFAULT;
 
   // Current zoom level.
   double zoom_level_;
