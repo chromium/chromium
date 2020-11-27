@@ -129,8 +129,9 @@ class TimeZoneMonitorLinuxImpl
     };
     for (size_t index = 0; index < base::size(kFilesToWatch); ++index) {
       file_path_watchers_.push_back(std::make_unique<base::FilePathWatcher>());
-      file_path_watchers_.back()->Watch(base::FilePath(kFilesToWatch[index]),
-                                        false, callback);
+      file_path_watchers_.back()->Watch(
+          base::FilePath(kFilesToWatch[index]),
+          base::FilePathWatcher::Type::kNonRecursive, callback);
     }
   }
 
