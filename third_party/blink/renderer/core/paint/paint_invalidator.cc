@@ -69,8 +69,7 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
         object.StyleRef().HasOutline()) ||
        // If this is a block-in-inline, it may need to paint outline.
        // See |StyleForContinuationOutline|.
-       (layout_block_flow && layout_block_flow->IsAnonymous() &&
-        !layout_block_flow->IsInline() && layout_block_flow->Continuation())))
+       (layout_block_flow && layout_block_flow->StyleForContinuationOutline())))
     context.painting_layer->SetNeedsPaintPhaseDescendantOutlines();
 }
 

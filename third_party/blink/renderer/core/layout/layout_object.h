@@ -1325,6 +1325,15 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return nullptr;
   }
+  // Returns the |ComputedStyle| to use for painting outlines. When |this| is
+  // a block in a continuation-chain, it may need to paint outlines if its
+  // ancestor inline boxes in the DOM tree has outlines.
+  const ComputedStyle* StyleForContinuationOutline() const {
+    NOT_DESTROYED();
+    if (UNLIKELY(IsAnonymous() && !IsInline()))
+      return SlowStyleForContinuationOutline();
+    return nullptr;
+  }
 
   bool IsFloating() const {
     NOT_DESTROYED();
@@ -3589,6 +3598,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   LayoutFlowThread* LocateFlowThreadContainingBlock() const;
   void RemoveFromLayoutFlowThreadRecursive(LayoutFlowThread*);
+
+  const ComputedStyle* SlowStyleForContinuationOutline() const;
 
   StyleDifference AdjustStyleDifference(StyleDifference) const;
 
