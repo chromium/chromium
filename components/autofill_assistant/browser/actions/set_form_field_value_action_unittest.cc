@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -44,6 +45,8 @@ using ::testing::WithArgs;
 class SetFormFieldValueActionTest : public testing::Test {
  public:
   void SetUp() override {
+    ON_CALL(mock_action_delegate_, GetWebController)
+        .WillByDefault(Return(&mock_web_controller_));
     set_form_field_proto_ = proto_.mutable_set_form_value();
     *set_form_field_proto_->mutable_element() = Selector({kFakeSelector}).proto;
     ON_CALL(mock_action_delegate_, GetUserData)
@@ -67,12 +70,12 @@ class SetFormFieldValueActionTest : public testing::Test {
     test_util::MockFindAnyElement(mock_action_delegate_);
     ON_CALL(mock_action_delegate_, SetValueAttribute(_, _, _))
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, SelectFieldValue(_, _))
+    ON_CALL(mock_web_controller_, SelectFieldValue(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
+    ON_CALL(mock_web_controller_, ScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
@@ -91,6 +94,7 @@ class SetFormFieldValueActionTest : public testing::Test {
  protected:
   Selector fake_selector_;
   MockActionDelegate mock_action_delegate_;
+  MockWebController mock_web_controller_;
   MockWebsiteLoginManager mock_website_login_manager_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ActionProto proto_;
@@ -248,7 +252,7 @@ TEST_F(SetFormFieldValueActionTest, KeyboardInputHasExpectedCallChain) {
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(
@@ -309,7 +313,7 @@ TEST_F(SetFormFieldValueActionTest, TextWithKeystrokeHasExpectedCallChain) {
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(
@@ -342,7 +346,7 @@ TEST_F(SetFormFieldValueActionTest,
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, fake_selector_);
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               SelectFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,

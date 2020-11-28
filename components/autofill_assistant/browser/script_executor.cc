@@ -344,12 +344,6 @@ void ScriptExecutor::FindAllElements(const Selector& selector,
   delegate_->GetWebController()->FindAllElements(selector, std::move(callback));
 }
 
-void ScriptExecutor::ScrollIntoView(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->ScrollIntoView(element, std::move(callback));
-}
-
 void ScriptExecutor::WaitUntilElementIsStable(
     int max_rounds,
     base::TimeDelta check_interval,
@@ -357,12 +351,6 @@ void ScriptExecutor::WaitUntilElementIsStable(
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   delegate_->GetWebController()->WaitUntilElementIsStable(
       element, max_rounds, check_interval, std::move(callback));
-}
-
-void ScriptExecutor::CheckOnTop(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->CheckOnTop(element, std::move(callback));
 }
 
 void ScriptExecutor::ClickOrTapElement(
@@ -563,12 +551,6 @@ void ScriptExecutor::SelectOption(
                                               std::move(callback));
 }
 
-void ScriptExecutor::HighlightElement(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->HighlightElement(element, std::move(callback));
-}
-
 void ScriptExecutor::ScrollToElementPosition(
     const Selector& selector,
     const TopPadding& top_padding,
@@ -645,18 +627,6 @@ void ScriptExecutor::SetAttribute(
                                               std::move(callback));
 }
 
-void ScriptExecutor::SelectFieldValue(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SelectFieldValue(element, std::move(callback));
-}
-
-void ScriptExecutor::FocusField(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->FocusField(element, std::move(callback));
-}
-
 void ScriptExecutor::SendKeyboardInput(
     const std::vector<UChar32>& codepoints,
     int key_press_delay_in_millisecond,
@@ -664,27 +634,6 @@ void ScriptExecutor::SendKeyboardInput(
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->SendKeyboardInput(
       element, codepoints, key_press_delay_in_millisecond, std::move(callback));
-}
-
-void ScriptExecutor::GetOuterHtml(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)>
-        callback) {
-  delegate_->GetWebController()->GetOuterHtml(element, std::move(callback));
-}
-
-void ScriptExecutor::GetOuterHtmls(
-    const ElementFinder::Result& elements,
-    base::OnceCallback<void(const ClientStatus&,
-                            const std::vector<std::string>&)> callback) {
-  delegate_->GetWebController()->GetOuterHtmls(elements, std::move(callback));
-}
-
-void ScriptExecutor::GetElementTag(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)>
-        callback) {
-  delegate_->GetWebController()->GetElementTag(element, std::move(callback));
 }
 
 void ScriptExecutor::ExpectNavigation() {
@@ -716,14 +665,6 @@ bool ScriptExecutor::WaitForNavigation(
       // No default to make compilation fail if not all cases are covered
   }
   return true;
-}
-
-void ScriptExecutor::GetDocumentReadyState(
-    const ElementFinder::Result& optional_frame_element,
-    base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-        callback) {
-  delegate_->GetWebController()->GetDocumentReadyState(optional_frame_element,
-                                                       std::move(callback));
 }
 
 void ScriptExecutor::WaitForDocumentReadyState(

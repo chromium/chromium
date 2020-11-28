@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 namespace action_delegate_util {
@@ -132,7 +133,8 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                      DOCUMENT_INTERACTIVE),
       actions);
   actions->emplace_back(
-      base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
+      base::BindOnce(&WebController::ScrollIntoView,
+                     delegate->GetWebController()->GetWeakPtr()));
   if (click_type != ClickType::JAVASCRIPT) {
     AddStepIgnoreTiming(
         base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
@@ -140,10 +142,10 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                        delegate->GetSettings().box_model_check_count,
                        delegate->GetSettings().box_model_check_interval),
         actions);
-    AddOptionalStep(
-        on_top,
-        base::BindOnce(&ActionDelegate::CheckOnTop, delegate->GetWeakPtr()),
-        actions);
+    AddOptionalStep(on_top,
+                    base::BindOnce(&WebController::CheckOnTop,
+                                   delegate->GetWebController()->GetWeakPtr()),
+                    actions);
   }
   actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
                                        delegate->GetWeakPtr(), click_type));
@@ -285,7 +287,8 @@ void PerformSendKeyboardInput(
   auto actions = std::make_unique<ElementActionVector>();
   if (use_focus) {
     actions->emplace_back(
-        base::BindOnce(&ActionDelegate::FocusField, delegate->GetWeakPtr()));
+        base::BindOnce(&WebController::FocusField,
+                       delegate->GetWebController()->GetWeakPtr()));
   } else {
     AddClickOrTapSequence(delegate, ClickType::CLICK, /* on_top=*/SKIP_STEP,
                           actions.get());
@@ -349,8 +352,9 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
         // instead of falling back to SetValueAttribute(""). This currently
         // fails in WebControllerBrowserTest.GetAndSetFieldValue. Fixing this
         // might fix b/148001624 as well.
-        actions->emplace_back(base::BindOnce(&ActionDelegate::SelectFieldValue,
-                                             delegate->GetWeakPtr()));
+        actions->emplace_back(
+            base::BindOnce(&WebController::SelectFieldValue,
+                           delegate->GetWebController()->GetWeakPtr()));
         actions->emplace_back(base::BindOnce(
             &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
             UTF8ToUnicode(value), key_press_delay_in_millisecond));
@@ -359,8 +363,9 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
         actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
                                              delegate->GetWeakPtr(),
                                              std::string()));
-        actions->emplace_back(base::BindOnce(&ActionDelegate::FocusField,
-                                             delegate->GetWeakPtr()));
+        actions->emplace_back(
+            base::BindOnce(&WebController::FocusField,
+                           delegate->GetWebController()->GetWeakPtr()));
         actions->emplace_back(base::BindOnce(
             &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
             UTF8ToUnicode(value), key_press_delay_in_millisecond));

@@ -7,6 +7,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -63,7 +64,7 @@ void WaitForDocumentAction::OnFindElement(
 }
 
 void WaitForDocumentAction::WaitForReadyState() {
-  delegate_->GetDocumentReadyState(
+  delegate_->GetWebController()->GetDocumentReadyState(
       optional_frame_element_ ? *optional_frame_element_
                               : ElementFinder::Result(),
       base::BindOnce(&WaitForDocumentAction::OnGetStartState,
@@ -107,7 +108,7 @@ void WaitForDocumentAction::OnWaitForStartState(
   action_stopwatch_.TransferToWaitTime(wait_time);
 
   if (status.proto_status() == TIMED_OUT) {
-    delegate_->GetDocumentReadyState(
+    delegate_->GetWebController()->GetDocumentReadyState(
         optional_frame_element_ ? *optional_frame_element_
                                 : ElementFinder::Result(),
         base::BindOnce(&WaitForDocumentAction::OnTimeoutInState,

@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -53,8 +54,8 @@ void HighlightElementAction::OnWaitForElement(
 
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&ActionDelegate::HighlightElement,
-                     delegate_->GetWeakPtr()),
+      base::BindOnce(&WebController::HighlightElement,
+                     delegate_->GetWebController()->GetWeakPtr()),
       base::BindOnce(&HighlightElementAction::OnHighlightElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

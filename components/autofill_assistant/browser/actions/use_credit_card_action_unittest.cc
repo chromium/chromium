@@ -62,6 +62,8 @@ class UseCreditCardActionTest : public testing::Test {
         credit_card_.guid());
     user_model_.SetValue(kModelIdentifier, card_value);
 
+    ON_CALL(mock_action_delegate_, GetWebController)
+        .WillByDefault(Return(&mock_web_controller_));
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
     ON_CALL(mock_action_delegate_, GetUserModel)
@@ -248,7 +250,7 @@ TEST_F(UseCreditCardActionTest, FillCreditCardRequiredFieldsFilled) {
 TEST_F(UseCreditCardActionTest, FillCreditCardWithFallback) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action = CreateUseCreditCardAction();
@@ -380,7 +382,7 @@ TEST_F(UseCreditCardActionTest, FillCreditCardWithFallback) {
 TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action = CreateUseCreditCardAction();
@@ -416,7 +418,7 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
@@ -444,7 +446,7 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
 TEST_F(UseCreditCardActionTest, SkippingAutofill) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action;
@@ -509,7 +511,7 @@ TEST_F(UseCreditCardActionTest,
        AutofillFailureWithRequiredFieldsLaunchesFallback) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseCreditCardAction();
@@ -567,7 +569,7 @@ TEST_F(UseCreditCardActionTest,
 TEST_F(UseCreditCardActionTest, FallbackForCardExpirationSucceeds) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseCreditCardAction();
@@ -611,7 +613,7 @@ TEST_F(UseCreditCardActionTest, FallbackForCardExpirationSucceeds) {
 }
 
 TEST_F(UseCreditCardActionTest, FallbackFails) {
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseCreditCardAction();

@@ -131,18 +131,12 @@ class ScriptExecutor : public ActionDelegate,
                    ElementFinder::Callback callback) const override;
   void FindAllElements(const Selector& selector,
                        ElementFinder::Callback callback) const override;
-  void ScrollIntoView(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void WaitUntilElementIsStable(
       int max_rounds,
       base::TimeDelta check_interval,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
       override;
-  void CheckOnTop(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void ClickOrTapElement(
       ClickType click_type,
       const ElementFinder::Result& element,
@@ -185,9 +179,6 @@ class ScriptExecutor : public ActionDelegate,
       SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void HighlightElement(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void ScrollToElementPosition(
       const Selector& selector,
       const TopPadding& top_padding,
@@ -213,36 +204,14 @@ class ScriptExecutor : public ActionDelegate,
       const std::string& value,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void SelectFieldValue(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void FocusField(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int key_press_delay_in_millisecond,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void GetOuterHtml(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) override;
-  void GetOuterHtmls(const ElementFinder::Result& elements,
-                     base::OnceCallback<void(const ClientStatus&,
-                                             const std::vector<std::string>&)>
-                         callback) override;
-  void GetElementTag(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) override;
   void ExpectNavigation() override;
   bool ExpectedNavigationHasStarted() override;
   bool WaitForNavigation(base::OnceCallback<void(bool)> callback) override;
-  void GetDocumentReadyState(
-      const ElementFinder::Result& optional_frame_element,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback) override;
   void WaitForDocumentReadyState(
       base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,

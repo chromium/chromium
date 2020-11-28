@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/test_util.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -23,12 +24,16 @@ using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::Return;
 
 class UploadDomActionTest : public testing::Test {
  public:
   UploadDomActionTest() {}
 
-  void SetUp() override {}
+  void SetUp() override {
+    ON_CALL(mock_action_delegate_, GetWebController)
+        .WillByDefault(Return(&mock_web_controller_));
+  }
 
  protected:
   void Run() {
@@ -48,6 +53,7 @@ class UploadDomActionTest : public testing::Test {
   }
 
   MockActionDelegate mock_action_delegate_;
+  MockWebController mock_web_controller_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   UploadDomProto proto_;
 };
@@ -88,7 +94,7 @@ TEST_F(UploadDomActionTest, CheckExpectedCallChain) {
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, selector);
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               GetOuterHtml(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "<html></html>"));
 
@@ -115,7 +121,7 @@ TEST_F(UploadDomActionTest, ReturnsEmptyStringForNotFoundElement) {
   EXPECT_CALL(mock_action_delegate_, FindElement(selector, _))
       .WillOnce(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  EXPECT_CALL(mock_action_delegate_, GetOuterHtml(_, _)).Times(0);
+  EXPECT_CALL(mock_web_controller_, GetOuterHtml(_, _)).Times(0);
 
   EXPECT_CALL(
       callback_,
@@ -148,7 +154,7 @@ TEST_F(UploadDomActionTest, MultipleDomUpload) {
   expected_result.dom_object.object_data.object_id = "fake_object_id";
 
   std::vector<std::string> fake_htmls{"<div></div>", "<span></span>"};
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               GetOuterHtmls(EqualsElement(expected_result), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), fake_htmls));
 

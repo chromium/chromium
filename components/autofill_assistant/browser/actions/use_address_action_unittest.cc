@@ -62,6 +62,8 @@ class UseAddressActionTest : public testing::Test {
     profile_value.mutable_profiles()->add_values()->set_guid(profile_.guid());
     user_model_.SetValue(kModelIdentifier, profile_value);
 
+    ON_CALL(mock_action_delegate_, GetWebController)
+        .WillByDefault(Return(&mock_web_controller_));
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
     ON_CALL(mock_action_delegate_, GetUserModel)
@@ -291,7 +293,7 @@ TEST_F(UseAddressActionTest, ValidationSucceeds) {
 }
 
 TEST_F(UseAddressActionTest, FallbackFails) {
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
@@ -371,7 +373,7 @@ TEST_F(UseAddressActionTest, FallbackFails) {
 TEST_F(UseAddressActionTest, FillAddressWithFallback) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
@@ -460,7 +462,7 @@ TEST_F(UseAddressActionTest,
        AutofillFailureWithRequiredFieldsLaunchesFallback) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
@@ -516,7 +518,7 @@ TEST_F(UseAddressActionTest,
 TEST_F(UseAddressActionTest, FallbackForPhoneSucceeds) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
@@ -559,7 +561,7 @@ TEST_F(UseAddressActionTest, FallbackForPhoneSucceeds) {
 TEST_F(UseAddressActionTest, ForcedFallbackWithKeystrokes) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto = CreateUseAddressAction();
@@ -595,7 +597,7 @@ TEST_F(UseAddressActionTest, ForcedFallbackWithKeystrokes) {
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
@@ -624,7 +626,7 @@ TEST_F(UseAddressActionTest, ForcedFallbackWithKeystrokes) {
 TEST_F(UseAddressActionTest, SkippingAutofill) {
   InSequence sequence;
 
-  ON_CALL(mock_action_delegate_, GetElementTag(_, _))
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
 
   ActionProto action_proto;

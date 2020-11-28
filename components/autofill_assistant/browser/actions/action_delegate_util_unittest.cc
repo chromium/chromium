@@ -19,6 +19,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::InSequence;
+using ::testing::Return;
 
 class ActionDelegateUtilTest : public testing::Test {
  public:
@@ -148,18 +149,21 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   auto expected_element =
       test_util::MockFindElement(*mock_delegate, expected_selector);
 
-  EXPECT_CALL(*mock_delegate, WaitUntilElementIsStable(
-                                  _, _, EqualsElement(expected_element), _))
+  EXPECT_CALL(*mock_delegate, WaitUntilDocumentIsInReadyState(_, _, _, _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(*mock_delegate, ScrollIntoView(_, _)).Times(0);
+  EXPECT_CALL(*mock_delegate, WaitUntilElementIsStable(
+                                  _, _, EqualsElement(expected_element), _))
+      .Times(0);
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
   auto actions = std::make_unique<ElementActionVector>();
-  AddStepIgnoreTiming(base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
-                                     mock_delegate->GetWeakPtr(), 1,
-                                     base::TimeDelta::FromMilliseconds(0)),
-                      actions.get());
+
+  AddStepIgnoreTiming(
+      base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
+                     mock_delegate->GetWeakPtr(),
+                     base::TimeDelta::FromMilliseconds(0), DOCUMENT_COMPLETE),
+      actions.get());
   actions->emplace_back(base::BindOnce(
       [](base::OnceCallback<void()> destroy_delegate,
          const ElementFinder::Result& element,
@@ -168,8 +172,10 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
         std::move(done).Run(OkClientStatus());
       },
       base::BindLambdaForTesting([&]() { mock_delegate.reset(); })));
-  actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollIntoView,
-                                       mock_delegate->GetWeakPtr()));
+  AddStepIgnoreTiming(base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
+                                     mock_delegate->GetWeakPtr(), 1,
+                                     base::TimeDelta::FromMilliseconds(0)),
+                      actions.get());
 
   FindElementAndPerform(mock_delegate.get(), expected_selector,
                         base::BindOnce(&PerformAll, std::move(actions)),

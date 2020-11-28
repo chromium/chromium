@@ -116,11 +116,6 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Scroll the |element| into view.
-  virtual void ScrollIntoView(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
   // Wait for the |element| to stop moving on the page. Fails with
   // ELEMENT_UNSTABLE.
   virtual void WaitUntilElementIsStable(
@@ -129,12 +124,6 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
           callback) = 0;
-
-  // Make sure that |element| is the topmost element at its center. Fails with
-  // ELEMENT_NOT_ON_TOP.
-  virtual void CheckOnTop(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Have the UI enter the prompt mode and make the given actions available.
   //
@@ -239,11 +228,6 @@ class ActionDelegate {
   virtual void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) = 0;
 
-  // Highlight the |element|.
-  virtual void HighlightElement(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
   // Get the value attribute of an |element| and return the result through
   // |callback|. If the lookup fails, the value will be empty. An empty result
   // does not mean an error.
@@ -275,16 +259,6 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Select the current value in a text |element|.
-  virtual void SelectFieldValue(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
-  // Focus the current |element|.
-  virtual void FocusField(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
   // Inputs the specified codepoints into |element|. Expects the |element| to
   // have focus. Returns the result through |callback|.
   virtual void SendKeyboardInput(
@@ -292,26 +266,6 @@ class ActionDelegate {
       int key_press_delay_in_millisecond,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
-  // Return the outerHTML of an |element|.
-  virtual void GetOuterHtml(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) = 0;
-
-  // Return the outerHTML of each element in |elements|. |elements| must contain
-  // the object ID of a JS array containing the elements.
-  virtual void GetOuterHtmls(
-      const ElementFinder::Result& elements,
-      base::OnceCallback<void(const ClientStatus&,
-                              const std::vector<std::string>&)> callback) = 0;
-
-  // Return the tag of the |element|. In case of an error, returns an empty
-  // string.
-  virtual void GetElementTag(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) = 0;
 
   // Make the next call to WaitForNavigation to expect a navigation event that
   // started after this call.
@@ -351,13 +305,6 @@ class ActionDelegate {
       DocumentReadyState min_ready_state,
       const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
-          callback) = 0;
-
-  // Gets the value of Document.readyState in |optional_frame_element| or, if
-  // it is empty, in the main document.
-  virtual void GetDocumentReadyState(
-      const ElementFinder::Result& optional_frame_element,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback) = 0;
 
   // Load |url| in the current tab. Returns immediately, before the new page has

@@ -86,20 +86,12 @@ class MockActionDelegate : public ActionDelegate {
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD2(ScrollIntoView,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
-
   MOCK_METHOD4(WaitUntilElementIsStable,
                void(int,
                     base::TimeDelta,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             base::TimeDelta)> callback));
-
-  MOCK_METHOD2(CheckOnTop,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
 
   MOCK_METHOD5(Prompt,
                void(std::unique_ptr<std::vector<UserAction>> user_actions,
@@ -222,14 +214,6 @@ class MockActionDelegate : public ActionDelegate {
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD2(SelectFieldValue,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
-
-  MOCK_METHOD2(FocusField,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
-
   void SendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int delay_in_millisecond,
@@ -242,22 +226,6 @@ class MockActionDelegate : public ActionDelegate {
                     int delay_in_millisecond,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)>& callback));
-
-  MOCK_METHOD2(GetOuterHtml,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&,
-                                            const std::string&)> callback));
-
-  MOCK_METHOD2(
-      GetOuterHtmls,
-      void(const ElementFinder::Result& elements,
-           base::OnceCallback<void(const ClientStatus&,
-                                   const std::vector<std::string>&)> callback));
-
-  MOCK_METHOD2(GetElementTag,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&,
-                                            const std::string&)> callback));
 
   MOCK_METHOD0(ExpectNavigation, void());
   MOCK_METHOD0(ExpectedNavigationHasStarted, bool());
@@ -311,18 +279,6 @@ class MockActionDelegate : public ActionDelegate {
 
   MOCK_METHOD1(OnWaitForWindowHeightChange,
                void(base::OnceCallback<void(const ClientStatus&)>& callback));
-
-  MOCK_METHOD2(
-      OnGetDocumentReadyState,
-      void(const ElementFinder::Result&,
-           base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>&));
-
-  void GetDocumentReadyState(
-      const ElementFinder::Result& optional_frame_element,
-      base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
-          callback) override {
-    OnGetDocumentReadyState(optional_frame_element, callback);
-  }
 
   MOCK_METHOD3(OnWaitForDocumentReadyState,
                void(DocumentReadyState,
