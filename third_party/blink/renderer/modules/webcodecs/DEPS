@@ -15,6 +15,7 @@ include_rules = [
     "+media/video",
 
     "+third_party/libyuv",
+    "+third_party/openh264",
 
     "+ui/gfx/color_space.h",
     "+ui/gfx/geometry/rect.h",

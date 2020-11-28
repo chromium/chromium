@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -59,6 +60,9 @@ blink_modules_sources("webcodecs") {
     "//media/mojo/mojom",
     "//third_party/libyuv:libyuv",
   ]
+  if (media_use_openh264) {
+    deps += [ "//third_party/openh264:encoder" ]
+  }
   public_deps = [
     "//third_party/blink/renderer/modules/mediastream:mediastream",
     "//third_party/blink/renderer/modules/webaudio:webaudio",
