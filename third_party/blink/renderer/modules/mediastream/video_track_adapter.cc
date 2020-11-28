@@ -22,6 +22,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -409,7 +410,11 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Do not drop frames if max frame rate hasn't been specified.
-  if (settings_.max_frame_rate() == 0.0f) {
+  if (settings_.max_frame_rate() == 0.0f ||
+      (base::FeatureList::IsEnabled(
+           features::kMediaStreamTrackUseConfigMaxFrameRate) &&
+       source_frame_rate > 0 &&
+       source_frame_rate <= settings_.max_frame_rate())) {
     last_time_stamp_ = frame.timestamp();
     return false;
   }
