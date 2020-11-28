@@ -35,6 +35,7 @@ class WebRemoteFrameClient;
 class WebString;
 class WebView;
 struct FramePolicy;
+struct FrameVisualProperties;
 struct WebFrameOwnerProperties;
 struct WebRect;
 
@@ -141,6 +142,9 @@ class WebRemoteFrame : public WebFrame {
 
   virtual void SetReplicatedAdFrameType(
       blink::mojom::AdFrameType ad_frame_type) = 0;
+
+  virtual void SetVisualProperties(
+      const blink::FrameVisualProperties& properties) = 0;
 
   virtual void DidStartLoading() = 0;
 

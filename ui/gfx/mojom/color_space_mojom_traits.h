@@ -374,7 +374,7 @@ struct EnumTraits<gfx::mojom::ColorSpaceRangeID, gfx::ColorSpace::RangeID> {
 };
 
 template <>
-struct COMPONENT_EXPORT(UI_GFX_MOJOM_TRAITS)
+struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     StructTraits<gfx::mojom::ColorSpaceDataView, gfx::ColorSpace> {
   static gfx::ColorSpace::PrimaryID primaries(const gfx::ColorSpace& input) {
     return input.primaries_;

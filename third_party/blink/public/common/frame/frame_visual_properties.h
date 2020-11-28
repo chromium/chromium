@@ -41,7 +41,10 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   // The size of the compositor viewport, to match the sub-frame's surface.
   gfx::Rect compositor_viewport;
 
+  // The screen's coordinate space.
   gfx::Rect screen_space_rect;
+
+  // The size of the frame in its parent's coordinate space.
   gfx::Size local_frame_size;
 
   // The time at which the viz::LocalSurfaceId used to submit this was

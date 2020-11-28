@@ -22,6 +22,7 @@ class Layer;
 namespace blink {
 
 class FrameOwner;
+struct FrameVisualProperties;
 class RemoteFrame;
 class RemoteFrameClientImpl;
 enum class WebFrameLoadType;
@@ -104,6 +105,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void SetReplicatedInsecureNavigationsSet(const WebVector<unsigned>&) override;
   void SetReplicatedAdFrameType(
       mojom::blink::AdFrameType ad_frame_type) override;
+  void SetVisualProperties(
+      const blink::FrameVisualProperties& properties) override;
   void DidStartLoading() override;
   bool IsIgnoredForHitTest() const override;
   void UpdateUserActivationState(

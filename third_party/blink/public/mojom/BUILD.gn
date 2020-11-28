@@ -380,6 +380,15 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.FrameVisualProperties"
+          cpp = "::blink::FrameVisualProperties"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/frame/frame_visual_properties_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.DeviceEmulationParams"
           cpp = "::blink::DeviceEmulationParams"
         },
@@ -784,6 +793,7 @@ mojom("mojom_core") {
     "frame/frame.mojom",
     "frame/frame_owner_properties.mojom",
     "frame/frame_policy.mojom",
+    "frame/frame_visual_properties.mojom",
     "frame/navigation_initiator.mojom",
 
     # transferable_message.mojom depends the other three messaging/ mojom files.
@@ -829,6 +839,7 @@ mojom("mojom_core") {
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//services/service_manager/public/mojom",
+    "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//third_party/blink/public/mojom/service_worker:storage",
     "//ui/base/mojom",
@@ -939,9 +950,13 @@ mojom("mojom_core") {
     ":android_mojo_bindings",
     ":mojom_platform",
     "//services/network/public/mojom",
+    "//services/viz/public/mojom",
     "//third_party/blink/public/mojom/service_worker:storage",
   ]
-  component_deps_blink = [ "//third_party/blink/renderer/platform" ]
+  component_deps_blink = [
+    "//services/viz/public/mojom",
+    "//third_party/blink/renderer/platform",
+  ]
 
   export_class_attribute = "BLINK_COMMON_EXPORT"
   export_define = "BLINK_COMMON_IMPLEMENTATION=1"

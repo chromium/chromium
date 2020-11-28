@@ -52,6 +52,11 @@ RenderFrameProxyHost::CreatedCallback& GetProxyHostCreatedCallback() {
   return *s_callback;
 }
 
+RenderFrameProxyHost::CreatedCallback& GetProxyHostDeletedCallback() {
+  static base::NoDestructor<RenderFrameProxyHost::DeletedCallback> s_callback;
+  return *s_callback;
+}
+
 // The (process id, routing id) pair that identifies one RenderFrameProxy.
 typedef std::pair<int32_t, int32_t> RenderFrameProxyHostID;
 typedef std::unordered_map<RenderFrameProxyHostID,
@@ -73,6 +78,12 @@ base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_proxy_map =
 void RenderFrameProxyHost::SetCreatedCallbackForTesting(
     const CreatedCallback& created_callback) {
   GetProxyHostCreatedCallback() = created_callback;
+}
+
+// static
+void RenderFrameProxyHost::SetDeletedCallbackForTesting(
+    const DeletedCallback& deleted_callback) {
+  GetProxyHostDeletedCallback() = deleted_callback;
 }
 
 // static
@@ -146,6 +157,9 @@ RenderFrameProxyHost::RenderFrameProxyHost(
 }
 
 RenderFrameProxyHost::~RenderFrameProxyHost() {
+  if (!GetProxyHostDeletedCallback().is_null())
+    GetProxyHostDeletedCallback().Run(this);
+
   if (GetProcess()->IsInitializedAndNotDead()) {
     // TODO(nasko): For now, don't send this IPC for top-level frames, as
     // the top-level RenderFrame will delete the RenderFrameProxy.
@@ -191,14 +205,6 @@ bool RenderFrameProxyHost::Send(IPC::Message* msg) {
 }
 
 bool RenderFrameProxyHost::OnMessageReceived(const IPC::Message& msg) {
-  // Crash reports trigerred by IPC messages for this proxy should be associated
-  // with the URL of the current RenderFrameHost that is being proxied.
-  ScopedActiveURL scoped_active_url(this);
-
-  if (cross_process_frame_connector_.get() &&
-      cross_process_frame_connector_->OnMessageReceived(msg))
-    return true;
-
   return false;
 }
 
@@ -604,6 +610,12 @@ void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
                                                      int32_t document_cookie) {
   RenderFrameHostImpl* rfh = frame_tree_node_->current_frame_host();
   rfh->delegate()->PrintCrossProcessSubframe(rect, document_cookie, rfh);
+}
+
+void RenderFrameProxyHost::SynchronizeVisualProperties(
+    const blink::FrameVisualProperties& frame_visual_properties) {
+  cross_process_frame_connector_->OnSynchronizeVisualProperties(
+      frame_visual_properties);
 }
 
 void RenderFrameProxyHost::FocusPage() {

@@ -73,6 +73,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
       public blink::mojom::RemoteMainFrameHost {
  public:
   using CreatedCallback = base::RepeatingCallback<void(RenderFrameProxyHost*)>;
+  using DeletedCallback = base::RepeatingCallback<void(RenderFrameProxyHost*)>;
 
   static RenderFrameProxyHost* FromID(int process_id, int routing_id);
   static RenderFrameProxyHost* FromFrameToken(
@@ -82,6 +83,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // Sets a callback to be called whenever any RenderFrameProxyHost is created.
   static void SetCreatedCallbackForTesting(
       const CreatedCallback& created_callback);
+
+  // Sets a callback to be called whenever any RenderFrameProxyHost is deleted.
+  static void SetDeletedCallbackForTesting(
+      const DeletedCallback& deleted_callback);
 
   RenderFrameProxyHost(SiteInstance* site_instance,
                        scoped_refptr<RenderViewHostImpl> render_view_host,
@@ -179,6 +184,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void Detach() override;
   void UpdateViewportIntersection(
       blink::mojom::ViewportIntersectionStatePtr intersection_state) override;
+  void SynchronizeVisualProperties(
+      const blink::FrameVisualProperties& frame_visual_properties) override;
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
@@ -211,10 +218,11 @@ class CONTENT_EXPORT RenderFrameProxyHost
   const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
 
  private:
-  // The interceptor needs access to frame_host_receiver_for_testing().
+  // These interceptor need access to frame_host_receiver_for_testing().
   friend class RouteMessageEventInterceptor;
   friend class OpenURLInterceptor;
   friend class UpdateViewportIntersectionMessageFilter;
+  friend class SynchronizeVisualPropertiesInterceptor;
 
   // Helper to retrieve the |AgentSchedulingGroup| this proxy host is associated
   // with.

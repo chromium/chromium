@@ -9,20 +9,22 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
-#include "ui/gfx/mojom/display_color_spaces.mojom.h"
+#include "ui/gfx/mojom/display_color_spaces.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage> {
+struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
+    EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage> {
   static gfx::mojom::ContentColorUsage ToMojom(gfx::ContentColorUsage input);
   static bool FromMojom(gfx::mojom::ContentColorUsage input,
                         gfx::ContentColorUsage* output);
 };
 
 template <>
-struct StructTraits<gfx::mojom::DisplayColorSpacesDataView,
-                    gfx::DisplayColorSpaces> {
+struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
+    StructTraits<gfx::mojom::DisplayColorSpacesDataView,
+                 gfx::DisplayColorSpaces> {
   static base::span<const gfx::ColorSpace> color_spaces(
       const gfx::DisplayColorSpaces& input);
   static base::span<const gfx::BufferFormat> buffer_formats(
