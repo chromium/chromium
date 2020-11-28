@@ -796,8 +796,9 @@ WebViewInternalLoadDataWithBaseUrlFunction::Run() {
       params->virtual_url ? *params->virtual_url : params->data_url;
 
   std::string error;
-  bool successful = guest_->LoadDataWithBaseURL(
-      params->data_url, params->base_url, virtual_url, &error);
+  bool successful = guest_->LoadDataWithBaseURL(GURL(params->data_url),
+                                                GURL(params->base_url),
+                                                GURL(virtual_url), &error);
   if (successful)
     return RespondNow(NoArguments());
   return RespondNow(Error(std::move(error)));

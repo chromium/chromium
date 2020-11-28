@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -61,6 +62,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -3256,6 +3258,51 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_testFindInMultipleWebViews) {
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestLoadDataAPI) {
   TestHelper("testLoadDataAPI", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestLoadDataAPIAccessibleResources) {
+  TestHelper("testLoadDataAPIAccessibleResources", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
+namespace {
+// Fails the test if a navigation is started in the given WebContents.
+class FailOnNavigation : public content::WebContentsObserver {
+ public:
+  explicit FailOnNavigation(content::WebContents* contents)
+      : content::WebContentsObserver(contents) {}
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    ADD_FAILURE() << "Unexpected navigation: " << navigation_handle->GetURL();
+  }
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDataAPINotRelativeToAnotherExtension) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const extensions::Extension* other_extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* embedder = GetEmbedderWebContents();
+  content::WebContents* guest = GetGuestWebContents();
+
+  FailOnNavigation fail_if_webview_navigates(guest);
+  ASSERT_TRUE(content::ExecuteScript(
+      embedder, content::JsReplace(
+                    "var webview = document.querySelector('webview'); "
+                    "webview.loadDataWithBaseUrl('data:text/html,hello', $1);",
+                    other_extension->url())));
+
+  // We expect the call to loadDataWithBaseUrl to fail and not cause a
+  // navigation. Since loadDataWithBaseUrl doesn't notify when it fails, we
+  // resort to a timeout here. If |fail_if_webview_navigates| doesn't see a
+  // navigation in that time, we consider the test to have passed.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
 }
 
 // This test verifies that the resize and contentResize events work correctly.

@@ -110,9 +110,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool allow_transparency() const { return allow_transparency_; }
 
   // Loads a data URL with a specified base URL and virtual URL.
-  bool LoadDataWithBaseURL(const std::string& data_url,
-                           const std::string& base_url,
-                           const std::string& virtual_url,
+  bool LoadDataWithBaseURL(const GURL& data_url,
+                           const GURL& base_url,
+                           const GURL& virtual_url,
                            std::string* error);
 
   // Begin or continue a find request.
