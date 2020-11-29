@@ -1,14 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
-<translation id="2077832278056815832">Закройте всплывающие подсказки или окна, связанные с другими приложениями, и повторите попытку.</translation>
-<translation id="2359808026110333948">Продолжить</translation>
-<translation id="2416359993254398973">Для этого сайта Chrome запрашивает разрешение на доступ к камере.</translation>
-<translation id="2987449669841041897">Этот сайт не может запросить разрешение</translation>
-<translation id="557283862590186398">Для этого сайта Chrome запрашивает разрешение на доступ к микрофону.</translation>
-<translation id="5860491529813859533">Включить</translation>
-<translation id="6092062101542170135">Чтобы продолжить, включите NFC в настройках Android.</translation>
-<translation id="6393863479814692971">Для этого сайта Chrome запрашивает разрешение на доступ к камере и микрофону.</translation>
-<translation id="6697947395630195233">Для этого сайта Chrome запрашивает доступ к данным о вашем местоположении.</translation>
-<translation id="7134415045456331657">Chrome запрашивает доступ к камере, чтобы создавать 3D-карты места, в котором вы находитесь.</translation>
 </translationbundle>
