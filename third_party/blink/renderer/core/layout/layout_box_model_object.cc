@@ -963,8 +963,11 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   // The location container for boxes is not always the containing block.
   LayoutObject* location_container =
       IsLayoutInline() ? Container() : To<LayoutBox>(this)->LocationContainer();
-  // Skip anonymous containing blocks.
+  // Skip anonymous containing blocks except for anonymous fieldset content box.
   while (sticky_container->IsAnonymous()) {
+    if (sticky_container->Parent() &&
+        sticky_container->Parent()->IsLayoutNGFieldset())
+      break;
     sticky_container = sticky_container->ContainingBlock();
   }
 
