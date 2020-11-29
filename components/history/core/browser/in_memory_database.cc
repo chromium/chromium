@@ -13,15 +13,12 @@
 
 namespace history {
 
-InMemoryDatabase::InMemoryDatabase() {}
+InMemoryDatabase::InMemoryDatabase()
+    : db_({.exclusive_locking = true, .page_size = 4096, .cache_size = 500}) {}
 
-InMemoryDatabase::~InMemoryDatabase() {
-}
+InMemoryDatabase::~InMemoryDatabase() = default;
 
 bool InMemoryDatabase::InitDB() {
-  // Set the database page size to 4K for better performance.
-  db_.set_page_size(4096);
-
   if (!db_.OpenInMemory()) {
     NOTREACHED() << "Cannot open databse " << GetDB().GetErrorMessage();
     return false;
