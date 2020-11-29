@@ -154,8 +154,16 @@ ShortcutsDatabase::Shortcut::~Shortcut() {
 // ShortcutsDatabase ----------------------------------------------------------
 
 ShortcutsDatabase::ShortcutsDatabase(const base::FilePath& database_path)
-    : database_path_(database_path) {
-}
+    : db_({// Run the database in exclusive mode. Nobody else should be
+           // accessing the database while we're running, and this will give
+           // somewhat improved perf.
+           .exclusive_locking = true,
+           // Set the database page size to something a little larger to give us
+           // better performance (we're typically seek rather than bandwidth
+           // limited). Must be a power of 2 and a max of 65536.
+           .page_size = 4096,
+           .cache_size = 500}),
+      database_path_(database_path) {}
 
 bool ShortcutsDatabase::Init() {
   db_.set_histogram_tag("Shortcuts");
@@ -163,16 +171,6 @@ bool ShortcutsDatabase::Init() {
   // To recover from corruption.
   db_.set_error_callback(
       base::BindRepeating(&DatabaseErrorCallback, &db_, database_path_));
-
-  // Set the database page size to something a little larger to give us
-  // better performance (we're typically seek rather than bandwidth limited).
-  // This only has an effect before any tables have been created, otherwise
-  // this is a NOP. Must be a power of 2 and a max of 8192.
-  db_.set_page_size(4096);
-
-  // Run the database in exclusive mode. Nobody else should be accessing the
-  // database while we're running, and this will give somewhat improved perf.
-  db_.set_exclusive_locking();
 
   // Attach the database to our index file.
   return db_.Open(database_path_) && EnsureTable();
