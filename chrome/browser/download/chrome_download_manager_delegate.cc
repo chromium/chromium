@@ -322,8 +322,9 @@ void HandleMixedDownloadInfoBarResult(
 
   // Otherwise, proceed as normal and check for a separate reservation with the
   // same target path. If such a reservation exists, cancel this reservation.
+  const base::FilePath target_path = target_info->target_path;
   DownloadPathReservationTracker::CheckDownloadPathForExistingDownload(
-      target_info->target_path, download_item,
+      target_path, download_item,
       base::BindOnce(&OnCheckExistingDownloadPathDone, std::move(target_info),
                      std::move(callback)));
 }
