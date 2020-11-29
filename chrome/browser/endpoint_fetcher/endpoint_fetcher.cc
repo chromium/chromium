@@ -294,7 +294,8 @@ static void JNI_EndpointFetcher_NativeFetchOAuth(
       // TODO(crbug.com/995852) Create a traffic annotation tag and configure it
       // as part of the EndpointFetcher call over JNI.
       NO_TRAFFIC_ANNOTATION_YET);
-  endpoint_fetcher->Fetch(
+  auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
+  endpoint_fetcher_ptr->Fetch(
       base::BindOnce(&OnEndpointFetcherComplete,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback),
                      // unique_ptr endpoint_fetcher is passed until the callback
@@ -321,7 +322,8 @@ static void JNI_EndpointFetcher_NativeFetchChromeAPIKey(
       base::android::ConvertJavaStringToUTF8(env, jcontent_type), jtimeout,
       base::android::ConvertJavaStringToUTF8(env, jpost_data), headers,
       NO_TRAFFIC_ANNOTATION_YET);
-  endpoint_fetcher->PerformRequest(
+  auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
+  endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&OnEndpointFetcherComplete,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback),
                      // unique_ptr endpoint_fetcher is passed until the callback
@@ -339,7 +341,8 @@ static void JNI_EndpointFetcher_NativeFetchWithNoAuth(
       ProfileAndroid::FromProfileAndroid(jprofile),
       GURL(base::android::ConvertJavaStringToUTF8(env, jurl)),
       NO_TRAFFIC_ANNOTATION_YET);
-  endpoint_fetcher->PerformRequest(
+  auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
+  endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&OnEndpointFetcherComplete,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback),
                      // unique_ptr endpoint_fetcher is passed until the callback
