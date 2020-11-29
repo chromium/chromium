@@ -78,30 +78,26 @@ HistoryDatabase::HistoryDatabase(
     DownloadInterruptReason download_interrupt_reason_none,
     DownloadInterruptReason download_interrupt_reason_crash)
     : DownloadDatabase(download_interrupt_reason_none,
-                       download_interrupt_reason_crash) {
-}
+                       download_interrupt_reason_crash),
+      db_({// Note that we don't set exclusive locking here. That's done by
+           // BeginExclusiveMode below which is called later (we have to be in
+           // shared mode to start out for the in-memory backend to read the
+           // data).
+           // TODO(1153459) Remove this dependency on normal locking mode. 
+           .exclusive_locking = false,
+           // Set the database page size to something a little larger to give us
+           // better performance (we're typically seek rather than bandwidth
+           // limited). Must be a power of 2 and a max of 65536.
+           .page_size = 4096,
+           // Set the cache size. The page size, plus a little extra, times this
+           // value, tells us how much memory the cache will use maximum.
+           // 1000 * 4kB = 4MB
+           .cache_size = 1000}) {}
 
-HistoryDatabase::~HistoryDatabase() {
-}
+HistoryDatabase::~HistoryDatabase() = default;
 
 sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   db_.set_histogram_tag("History");
-
-  // Set the database page size to something a little larger to give us
-  // better performance (we're typically seek rather than bandwidth limited).
-  // This only has an effect before any tables have been created, otherwise
-  // this is a NOP. Must be a power of 2 and a max of 8192.
-  db_.set_page_size(4096);
-
-  // Set the cache size. The page size, plus a little extra, times this
-  // value, tells us how much memory the cache will use maximum.
-  // 1000 * 4kB = 4MB
-  // TODO(brettw) scale this value to the amount of available memory.
-  db_.set_cache_size(1000);
-
-  // Note that we don't set exclusive locking here. That's done by
-  // BeginExclusiveMode below which is called later (we have to be in shared
-  // mode to start out for the in-memory backend to read the data).
 
   if (!db_.Open(history_name))
     return LogInitFailure(InitStep::OPEN);
@@ -284,8 +280,7 @@ int HistoryDatabase::CountUniqueDomainsVisited(base::Time begin_time,
 }
 
 void HistoryDatabase::BeginExclusiveMode() {
-  // We can't use set_exclusive_locking() since that only has an effect before
-  // the DB is opened.
+  // We need to use a PRAGMA statement here as the DB has already been created.
   ignore_result(db_.Execute("PRAGMA locking_mode=EXCLUSIVE"));
 }
 
