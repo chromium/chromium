@@ -968,6 +968,59 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithMixedEditability) {
   EXPECT_FALSE(InSameLine(position1, position2));
 }
 
+TEST_P(ParameterizedVisibleUnitsLineTest,
+       InSameLineWithGeneratedZeroWidthSpace) {
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 10px/1 Ahem; }"
+      "p { width: 4ch; white-space: pre-wrap;");
+  // We have ZWS before "abc" due by "pre-wrap".
+  const Position& after_zws = SetCaretTextToBody("<p id=t>    |abcd</p>");
+  const PositionWithAffinity after_zws_down =
+      PositionWithAffinity(after_zws, TextAffinity::kDownstream);
+  const PositionWithAffinity after_zws_up =
+      PositionWithAffinity(after_zws, TextAffinity::kUpstream);
+
+  EXPECT_EQ(
+      PositionWithAffinity(Position(*GetElementById("t")->firstChild(), 8),
+                           TextAffinity::kUpstream),
+      EndOfLine(after_zws_down));
+  EXPECT_EQ(after_zws_up, EndOfLine(after_zws_up));
+  EXPECT_FALSE(InSameLine(after_zws_up, after_zws_down));
+}
+
+TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 10px/1 Ahem; }"
+      "p { width: 4ch; }");
+  const SelectionInDOMTree& selection =
+      SetSelectionTextToBody(u8"<p id=t>abcd^\u200B|wxyz</p>");
+
+  const Position& after_zws = selection.Extent();
+  const PositionWithAffinity after_zws_down =
+      PositionWithAffinity(after_zws, TextAffinity::kDownstream);
+  const PositionWithAffinity after_zws_up =
+      PositionWithAffinity(after_zws, TextAffinity::kUpstream);
+
+  const Position& before_zws = selection.Base();
+  const PositionWithAffinity before_zws_down =
+      PositionWithAffinity(before_zws, TextAffinity::kDownstream);
+  const PositionWithAffinity before_zws_up =
+      PositionWithAffinity(before_zws, TextAffinity::kUpstream);
+
+  EXPECT_EQ(
+      PositionWithAffinity(Position(*GetElementById("t")->firstChild(), 9),
+                           TextAffinity::kUpstream),
+      EndOfLine(after_zws_down));
+  EXPECT_EQ(after_zws_up, EndOfLine(after_zws_up));
+  EXPECT_FALSE(InSameLine(after_zws_up, after_zws_down));
+
+  EXPECT_EQ(after_zws_up, EndOfLine(before_zws_down));
+  EXPECT_EQ(after_zws_up, EndOfLine(before_zws_up));
+  EXPECT_TRUE(InSameLine(before_zws_up, before_zws_down));
+}
+
 TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithBidi) {
   LoadAhem();
   InsertStyleElement("p { font: 30px/3 Ahem; }");

@@ -289,6 +289,63 @@ TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrapBetweenDeepTextNodes) {
              fragment_d, kAtTextOffset, base::Optional<unsigned>(wrap_offset));
 }
 
+TEST_F(NGCaretPositionTest, GeneratedZeroWidthSpace) {
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 10px/1 Ahem; }"
+      "p { width: 4ch; white-space: pre-wrap;");
+  // We have ZWS before "abc" due by "pre-wrap".
+  // text content is
+  //    [0..3] "   "
+  //    [4] ZWS
+  //    [5..8] "abcd"
+  SetBodyInnerHTML("<p id=t>    abcd</p>");
+  const Text& text = To<Text>(*GetElementById("t")->firstChild());
+  const Position after_zws(text, 4);  // before "a".
+
+  NGInlineCursor cursor;
+  cursor.MoveTo(*text.GetLayoutObject());
+
+  ASSERT_EQ(NGTextOffset(0, 4), cursor.Current().TextOffset());
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(after_zws, TextAffinity::kUpstream)),
+             cursor, kAtTextOffset, base::Optional<unsigned>(4));
+
+  cursor.MoveToNextForSameLayoutObject();
+  ASSERT_EQ(NGTextOffset(5, 9), cursor.Current().TextOffset());
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(after_zws, TextAffinity::kDownstream)),
+             cursor, kAtTextOffset, base::Optional<unsigned>(5));
+}
+
+TEST_F(NGCaretPositionTest, ZeroWidthSpace) {
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 10px/1 Ahem; }"
+      "p { width: 4ch;");
+  // dom and text content is
+  //    [0..3] "abcd"
+  //    [4] ZWS
+  //    [5..8] "wxyz"
+  SetBodyInnerHTML("<p id=t>abcd&#x200B;wxyz</p>");
+  const Text& text = To<Text>(*GetElementById("t")->firstChild());
+  const Position after_zws(text, 5);  // before "w".
+
+  NGInlineCursor cursor;
+  cursor.MoveTo(*text.GetLayoutObject());
+
+  ASSERT_EQ(NGTextOffset(0, 5), cursor.Current().TextOffset());
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(after_zws, TextAffinity::kUpstream)),
+             cursor, kAtTextOffset, base::Optional<unsigned>(4));
+
+  cursor.MoveToNextForSameLayoutObject();
+  ASSERT_EQ(NGTextOffset(5, 9), cursor.Current().TextOffset());
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(after_zws, TextAffinity::kDownstream)),
+             cursor, kAtTextOffset, base::Optional<unsigned>(5));
+}
+
 TEST_F(NGCaretPositionTest, InlineBlockBeforeContent) {
   SetInlineFormattingContext(
       "t",
