@@ -1143,22 +1143,6 @@ crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/relayout-abspos.htm
 
 ### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:
 
-# From NeverFixTests:
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-002.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-004.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-005.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-006.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-010b.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/inline-formatting-context-012.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/vertical-align-baseline-003.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/vertical-align-sub-001.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/linebox/vertical-align-super-001.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/normal-flow/blocks-017.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/normal-flow/inline-block-replaced-height-008.xht [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/normal-flow/inline-replaced-height-008.xht [ Skip ]
-
 # Lots of manual tests here; just skip everything - not too interesting for LayoutNGFragmentTraversal anyway:
 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/cascade/* [ Skip ]
 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/text/* [ Skip ]
