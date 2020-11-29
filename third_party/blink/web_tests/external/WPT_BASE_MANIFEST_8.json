@@ -73782,6 +73782,19 @@
         {}
        ]
       ],
+      "percentage-size-indefinite-replaced.html": [
+       "3610f2e2c992b075d203bc5bfceb400c7b4fca0d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "percentage-size-replaced-subitems-001.html": [
        "190277a1ed1e409540410eb43bf5be0d64c142cf",
        [
@@ -87669,7 +87682,7 @@
       ]
      ],
      "color-custom-property-animation.https.html": [
-      "5cbfee89c45dd37e165676a835ece3f6283d0957",
+      "729af95ceb8f206faa4b6e80059e774dbc8af095",
       [
        null,
        [
@@ -87918,7 +87931,7 @@
       ]
      ],
      "one-custom-property-animation.https.html": [
-      "ca746f5999b6f57a43499a91007325fa93524d17",
+      "25b1cef1882436679ed46a9da10bc403883ea7c5",
       [
        null,
        [
@@ -88867,7 +88880,7 @@
       ]
      ],
      "two-custom-property-animation.https.html": [
-      "9cd20272a35ca713e7916c2d6c15ae2a1aa7e912",
+      "6669076e909c273d2c63b34c91a29e443065a248",
       [
        null,
        [
@@ -88880,12 +88893,25 @@
       ]
      ],
      "two-element-custom-property-animation.https.html": [
-      "044650dcaffbca576977a6b2ce4ec61fb00cf70c",
+      "48b0f201d4b188fe9e62c33790cb7e478811b55e",
       [
        null,
        [
         [
          "/css/css-paint-api/two-element-custom-property-animation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "two-element-one-custom-property-animation.https.html": [
+      "1090185409d7a683b381ddb74a7d6ee4522fe108",
+      [
+       null,
+       [
+        [
+         "/css/css-paint-api/two-element-one-custom-property-animation-ref.html",
          "=="
         ]
        ],
@@ -154641,6 +154667,125 @@
          ]
         }
        },
+       "drawing-text-to-the-canvas": {
+        "canvas.2d.fontStretch.condensed.html": [
+         "2bda32082e3577757ca58dd460d0f0a478a7d647",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.expanded.html": [
+         "c679ccb57b955ff255c9c6fb02bc65323d9b6edd",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.extra-condensed.html": [
+         "a3a18c05c63143869a0bea7a2e93b69e796b14ca",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.extra-expanded.html": [
+         "4f1bf6838dd1fb37a1125c96437105b23f6fe2f2",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.normal.html": [
+         "b60d25f57942ed8a0325745a7994db513aeb6fde",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.semi-condensed.html": [
+         "c356ee176efa56305f9d32a681f975c9b9907ab8",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.semi-expanded.html": [
+         "bc9bb2bfa5121bdbe2e50937ff5f5f4fee4a60e7",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.ultra-condensed.html": [
+         "62af7780927a78e93b528eb15293ff4a99e73d92",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.fontStretch.ultra-expanded.html": [
+         "4faf47b07421b90a1d2e0842a58c2ad88c9c0df2",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ]
+       },
        "line-styles": {
         "canvas_linestyles_linecap_001.htm": [
          "583dbc9d134682a778569877e38513e07736dd82",
@@ -195483,7 +195628,7 @@
       []
      ],
      "color-custom-property-animation-ref.html": [
-      "3439cd9364560c870b09a394887daec5969b6bd4",
+      "d66536456ec321b5235b95a9c4239b082da399d0",
       []
      ],
      "geometry-background-image-001-ref.html": [
@@ -195639,11 +195784,15 @@
       []
      ],
      "two-custom-property-animation-ref.html": [
-      "1acef69f9413c154b2f527d3792f24bbbdb38643",
+      "fa364bde34988eaf021c762ffb9b5776f20df402",
       []
      ],
      "two-element-custom-property-animation-ref.html": [
-      "6c6d94575eceb892278d355278a0c1463c726168",
+      "37774e086f0ab9cc8b74fed23648df1f7da7b312",
+      []
+     ],
+     "two-element-one-custom-property-animation-ref.html": [
+      "530d3dc9a13ced598f3072ba8f79937410f0c473",
       []
      ],
      "valid-image-after-load-ref.html": [
@@ -217493,6 +217642,10 @@
      "e828b629858d07afd989b80894986315bac16cc7",
      []
     ],
+    "fail.woff": [
+     "33487cdbb4f2a88b2107c191cce051cb5a247e1f",
+     []
+    ],
     "math": {
      "axisheight5000-verticalarrow14000.woff": [
       "70f366a3d0b7ec891fc4041584a1ddea55b0bc42",
@@ -217845,6 +217998,10 @@
       []
      ]
     },
+    "pass.woff": [
+     "839bb20b12fee0e6f24f76ea58501aff76fa5a14",
+     []
+    ],
     "sileot-webfont.woff": [
      "81547578d36c7989db0a03127074a5f4b33768b4",
      []
@@ -220649,6 +220806,12 @@
           []
          ]
         }
+       },
+       "drawing-text-to-the-canvas": {
+        "canvas.2d.fontStretch-ref.html": [
+         "4b3b28baf9dcb1dea96611bfdbfbce0a0aba7c3c",
+         []
+        ]
        },
        "imagebitmap": {
         "common.sub.js": [
@@ -228200,10 +228363,6 @@
        ],
        "iframe-loading-lazy-expected.txt": [
         "fb8804941ba81b386e252e6f31002c5005f3b8fc",
-        []
-       ],
-       "iframe-loading-lazy-in-script-disabled-iframe-expected.txt": [
-        "3e45f16374002ae4a3297cc611848c7a5cfeff1a",
         []
        ],
        "iframe-loading-lazy-load-event-expected.txt": [
@@ -251625,7 +251784,7 @@
         []
        ],
        "executormarionette.py": [
-        "da8941b69e33b0986f999f286c4a64e584349ecc",
+        "675f8e0a43291fcbc4f6020eecd642a50bc412cc",
         []
        ],
        "executoropera.py": [
@@ -251800,7 +251959,7 @@
        []
       ],
       "testrunner.py": [
-       "961c40fc5b8099136f341d1263cd855180bff9bd",
+       "e5d7042c73b30d8d6280c2e231d9d81b9d0d8975",
        []
       ],
       "update": {
