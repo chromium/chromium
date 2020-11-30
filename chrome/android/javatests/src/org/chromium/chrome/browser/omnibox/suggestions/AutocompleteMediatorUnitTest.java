@@ -41,6 +41,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -441,6 +442,7 @@ public class AutocompleteMediatorUnitTest {
                 .start(profile, url, pageClassification, "test", 4, false, null, false);
     }
 
+    @DisabledTest(message = "Does not test what it says: http://crbug.com/1147443")
     @Test
     @SmallTest
     @UiThreadTest

@@ -691,38 +691,35 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             startZeroSuggest();
         } else {
             assert mRequestSuggestions == null : "Multiple omnibox requests in flight.";
-            mRequestSuggestions = () -> {
+            if (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox()) {
                 boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
-                mRequestSuggestions = null;
-
-                // There may be no tabs when searching form omnibox in overview mode. In that case,
-                // LocationBarDataProvider.getCurrentUrl() returns NTP url.
-                if (!mDataProvider.hasTab() && !mDataProvider.isInOverviewAndShowingOmnibox()) {
-                    // crbug.com/764749
-                    Log.w(TAG, "onTextChangedForAutocomplete: no tab");
-                    return;
-                }
-
                 Profile profile = mDataProvider.getProfile();
-                int cursorPosition = -1;
-                if (mUrlBarEditingTextProvider.getSelectionStart()
-                        == mUrlBarEditingTextProvider.getSelectionEnd()) {
-                    // Conveniently, if there is no selection, those two functions return -1,
-                    // exactly the same value needed to pass to start() to indicate no cursor
-                    // position.  Hence, there's no need to check for -1 here explicitly.
-                    cursorPosition = mUrlBarEditingTextProvider.getSelectionStart();
-                }
+                int cursorPosition = mUrlBarEditingTextProvider.getSelectionStart()
+                                == mUrlBarEditingTextProvider.getSelectionEnd()
+                        ? mUrlBarEditingTextProvider.getSelectionStart()
+                        : -1;
                 int pageClassification =
                         mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
-                mAutocomplete.start(profile, mDataProvider.getCurrentUrl(), pageClassification,
-                        textWithoutAutocomplete, cursorPosition, preventAutocomplete, null,
-                        mDelegate.didFocusUrlFromQueryTiles()
-                                || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE);
-            };
-            if (mNativeInitialized) {
-                mHandler.postDelayed(mRequestSuggestions, OMNIBOX_SUGGESTION_START_DELAY_MS);
+                String currentUrl = mDataProvider.getCurrentUrl();
+                boolean isQueryStartedFromTiles = mDelegate.didFocusUrlFromQueryTiles()
+                        || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE;
+
+                mRequestSuggestions = () -> {
+                    mRequestSuggestions = null;
+                    mAutocomplete.start(profile, currentUrl, pageClassification,
+                            textWithoutAutocomplete, cursorPosition, preventAutocomplete, null,
+                            isQueryStartedFromTiles);
+                };
+                if (mNativeInitialized) {
+                    mHandler.postDelayed(mRequestSuggestions, OMNIBOX_SUGGESTION_START_DELAY_MS);
+                } else {
+                    mDeferredNativeRunnables.add(mRequestSuggestions);
+                }
             } else {
-                mDeferredNativeRunnables.add(mRequestSuggestions);
+                // There may be no tabs when searching form omnibox in overview mode. In that case,
+                // LocationBarDataProvider.getCurrentUrl() returns NTP url.
+                // crbug.com/764749
+                Log.w(TAG, "onTextChangedForAutocomplete: no tab");
             }
         }
 
