@@ -18,11 +18,10 @@
 #endif
 
 namespace {
-// Padding used between the icon and the text labels.
-const CGFloat kIconTrailingPadding = 12;
 
-// Size of the icon image.
-const CGFloat kIconImageSize = 28;
+// Padding used between the |switchView| and the end of the |contentView|.
+const CGFloat kSwitchTrailingPadding = 22;
+
 }  // namespace
 
 @interface SettingsSwitchCell ()
@@ -92,7 +91,7 @@ const CGFloat kIconImageSize = 28;
     // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:_iconImageView.trailingAnchor
-                       constant:kIconTrailingPadding];
+                       constant:kTableViewImagePadding];
     _iconHiddenConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
@@ -108,7 +107,7 @@ const CGFloat kIconImageSize = 28;
 
       [_switchView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing],
+                         constant:-kSwitchTrailingPadding],
     ];
     _accessibilityConstraints = @[
       [_switchView.topAnchor
@@ -129,8 +128,10 @@ const CGFloat kIconImageSize = 28;
       [_iconImageView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor constraintEqualToConstant:kIconImageSize],
-      [_iconImageView.heightAnchor constraintEqualToConstant:kIconImageSize],
+      [_iconImageView.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
+      [_iconImageView.heightAnchor
+          constraintEqualToAnchor:_iconImageView.widthAnchor],
 
       [_iconImageView.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],

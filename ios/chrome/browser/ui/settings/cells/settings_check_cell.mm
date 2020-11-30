@@ -16,16 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Padding used between the image and the text labels.
-const CGFloat kTrailingImagePadding = 12;
-
-// Size of the icon images.
-const CGFloat kIconImageSize = 28;
-
-}  // namespace
-
 @interface SettingsCheckCell ()
 
 // The image view for the trailing image.
@@ -134,7 +124,7 @@ const CGFloat kIconImageSize = 28;
 
     _textWithTrailingContentsConstraint = [textLayoutGuide.trailingAnchor
         constraintEqualToAnchor:_trailingImageView.leadingAnchor
-                       constant:-kTrailingImagePadding];
+                       constant:-kTableViewImagePadding];
 
     _textNoLeadingImageConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor
@@ -142,7 +132,7 @@ const CGFloat kIconImageSize = 28;
 
     _textWithLeadingImageConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:_leadingImageView.trailingAnchor
-                       constant:kTableViewHorizontalSpacing];
+                       constant:kTableViewImagePadding];
 
     NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight];
@@ -158,9 +148,10 @@ const CGFloat kIconImageSize = 28;
       [_trailingImageView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
-      [_trailingImageView.widthAnchor constraintEqualToConstant:kIconImageSize],
+      [_trailingImageView.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
       [_trailingImageView.heightAnchor
-          constraintEqualToConstant:kIconImageSize],
+          constraintEqualToAnchor:_trailingImageView.widthAnchor],
       [_trailingImageView.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
       [_trailingImageView.leadingAnchor
@@ -171,8 +162,10 @@ const CGFloat kIconImageSize = 28;
       [_infoButton.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
-      [_infoButton.widthAnchor constraintEqualToConstant:kIconImageSize],
-      [_infoButton.heightAnchor constraintEqualToConstant:kIconImageSize],
+      [_infoButton.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
+      [_infoButton.heightAnchor
+          constraintEqualToAnchor:_infoButton.widthAnchor],
       [_infoButton.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
       [_infoButton.leadingAnchor
@@ -183,9 +176,10 @@ const CGFloat kIconImageSize = 28;
       [_activityIndicator.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
-      [_activityIndicator.widthAnchor constraintEqualToConstant:kIconImageSize],
+      [_activityIndicator.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
       [_activityIndicator.heightAnchor
-          constraintEqualToConstant:kIconImageSize],
+          constraintEqualToAnchor:_activityIndicator.widthAnchor],
       [_activityIndicator.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
@@ -193,8 +187,10 @@ const CGFloat kIconImageSize = 28;
       [_leadingImageView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_leadingImageView.widthAnchor constraintEqualToConstant:kIconImageSize],
-      [_leadingImageView.heightAnchor constraintEqualToConstant:kIconImageSize],
+      [_leadingImageView.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
+      [_leadingImageView.heightAnchor
+          constraintEqualToAnchor:_leadingImageView.widthAnchor],
       [_leadingImageView.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 

@@ -19,13 +19,11 @@
 
 namespace {
 
-// Padding used between the icon and the text labels.
-const CGFloat kIconTrailingPadding = 12;
-// Size of the icon image.
-const CGFloat kIconImageSize = 28;
 // Proportion of Cell's textLabel/detailTextLabel. This guarantees that the
 // textLabel occupies 75% of the row space and detailTextLabel occupies 25%.
 const CGFloat kCellLabelsWidthProportion = 3.0f;
+// Padding used between the detail text and the AccessoryType.
+const CGFloat kDetailTextTrailingPadding = 6;
 
 }  // namespace
 
@@ -73,7 +71,6 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
 
 @implementation TableViewDetailIconCell {
   UIImageView* _iconImageView;
-  UILayoutGuide* _labelContainerGuide;
   NSLayoutConstraint* _iconHiddenConstraint;
   NSLayoutConstraint* _iconVisibleConstraint;
 }
@@ -92,11 +89,6 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _iconImageView.hidden = YES;
     [contentView addSubview:_iconImageView];
-
-    // Constrain the labels inside a container view, to make width computations
-    // easier.
-    _labelContainerGuide = [[UILayoutGuide alloc] init];
-    [contentView addLayoutGuide:_labelContainerGuide];
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -117,12 +109,12 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
 
     // Set up the constraints for when the icon is visible and hidden.  One of
     // these will be active at a time, defaulting to hidden.
-    _iconHiddenConstraint = [_labelContainerGuide.leadingAnchor
+    _iconHiddenConstraint = [_textLabel.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
-    _iconVisibleConstraint = [_labelContainerGuide.leadingAnchor
+    _iconVisibleConstraint = [_textLabel.leadingAnchor
         constraintEqualToAnchor:_iconImageView.trailingAnchor
-                       constant:kIconTrailingPadding];
+                       constant:kTableViewImagePadding];
 
     // In case the two labels don't fit in width, have the |textLabel| be 3
     // times the width of the |detailTextLabel| (so 75% / 25%).
@@ -144,7 +136,8 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
       [_detailTextLabel.firstBaselineAnchor
           constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
       [_detailTextLabel.trailingAnchor
-          constraintEqualToAnchor:_labelContainerGuide.trailingAnchor],
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:-kDetailTextTrailingPadding],
       widthConstraint,
     ];
 
@@ -164,7 +157,7 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
       [_detailTextLabel.leadingAnchor
           constraintEqualToAnchor:_textLabel.leadingAnchor],
       [_detailTextLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_labelContainerGuide.trailingAnchor
+          constraintLessThanOrEqualToAnchor:contentView.trailingAnchor
                                    constant:-kTableViewHorizontalSpacing],
     ];
 
@@ -172,16 +165,10 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
       [_iconImageView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor constraintEqualToConstant:kIconImageSize],
-      [_iconImageView.heightAnchor constraintEqualToConstant:kIconImageSize],
-
-      // Fix the edges of the text labels.
-      [_textLabel.leadingAnchor
-          constraintEqualToAnchor:_labelContainerGuide.leadingAnchor],
-      [_labelContainerGuide.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing],
-
+      [_iconImageView.widthAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
+      [_iconImageView.heightAnchor
+          constraintEqualToAnchor:_iconImageView.widthAnchor],
       [_iconImageView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
       _iconHiddenConstraint,

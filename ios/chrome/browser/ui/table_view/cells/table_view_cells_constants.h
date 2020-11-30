@@ -47,6 +47,12 @@ extern const CGFloat kTableViewLabelVerticalTopSpacing;
 // The width taken by the accessory view when it is displayed.
 extern const CGFloat kTableViewAccessoryWidth;
 
+// Size of the icon image.
+extern const CGFloat kTableViewIconImageSize;
+
+// Padding used between the image and the text labels.
+extern const CGFloat kTableViewImagePadding;
+
 // A masked password string(e.g. "••••••••").
 extern NSString* const kMaskedPassword;
 
