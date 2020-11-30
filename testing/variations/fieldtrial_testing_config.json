@@ -842,6 +842,27 @@
             ]
         }
     ],
+    "AutofillNameSectionsWithRendererIds": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillNameSectionsWithRendererIds"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillProfileValidation": [
         {
             "platforms": [
@@ -899,6 +920,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillPruneSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillRefillWithRendererIds": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRefillWithRendererIds"
                     ]
                 }
             ]
