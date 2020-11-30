@@ -569,10 +569,8 @@ TEST_F(NGOutOfFlowLayoutPartTest, ChildBreakAfterAvoid) {
 
 // Tests that a positioned element with a negative top property moves the OOF
 // node to the previous fragmentainer and spans 3 columns.
-// TODO(bebeaudr): Figure out why this is crashing. https://crbug.com/1117625.
-TEST_F(
-    NGOutOfFlowLayoutPartTest,
-    DISABLED_PositionedFragmentationWithNegativeTopPropertyAndNewEmptyColumn) {
+TEST_F(NGOutOfFlowLayoutPartTest,
+       PositionedFragmentationWithNegativeTopPropertyAndNewEmptyColumn) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -588,7 +586,7 @@ TEST_F(
       </style>
       <div id="container">
         <div id="multicol">
-          <div class="rel" style="height: 60px; width: 32px;"></div>
+          <div style="height: 60px; width: 32px;"></div>
           <div class="rel">
             <div class="abs"></div>
           </div>
@@ -605,8 +603,8 @@ TEST_F(
         offset:0,20 size:5x20
       offset:508,0 size:492x40
         offset:0,0 size:32x20
-        offset:0,20 size:30x0
         offset:0,0 size:5x40
+        offset:0,20 size:30x0
       offset:1016,0 size:492x40
         offset:0,0 size:5x20
 )DUMP";

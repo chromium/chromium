@@ -1108,12 +1108,8 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
   // NGSimplifiedOOFLayoutAlgorithm::Layout, we can append new items to it.
   NGSimplifiedOOFLayoutAlgorithm algorithm(params, fragment, is_new_fragment);
 
-  for (const auto& result : results) {
-    // TODO(bebeaudr): Is the offset returned by OutOfFlowPositionedOffset the
-    // one to use?
-    algorithm.AppendOutOfFlowResult(result,
-                                    result->OutOfFlowPositionedOffset());
-  }
+  for (const auto& result : results)
+    algorithm.AppendOutOfFlowResult(result);
 
   if (is_new_fragment) {
     LogicalOffset offset;
