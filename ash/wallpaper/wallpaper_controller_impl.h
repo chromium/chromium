@@ -171,9 +171,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // Restores the wallpaper blur from lock state.
   void RestoreWallpaperBlurForLockState(float blur);
 
-  // A color filter should be applied on the wallpaper for overview, login,
-  // lock, OOBE and add user screens.
-  bool ShouldApplyColorFilter() const;
+  // A shield should be applied on the wallpaper for overview, login, lock, OOBE
+  // and add user screens.
+  bool ShouldApplyShield() const;
 
   // Returns whether the current wallpaper is allowed to be blurred on
   // lock/login screen. See https://crbug.com/775591.

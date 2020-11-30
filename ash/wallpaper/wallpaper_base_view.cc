@@ -4,31 +4,26 @@
 
 #include "ash/wallpaper/wallpaper_base_view.h"
 
-#include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/wallpaper_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
 namespace {
 
-// Gets the color filter based on the state. This is used for the login, lock,
+// Gets the shield color based on the state. This is used for the login, lock,
 // overview and tablet mode.
-SkColor GetWallpaperFilterColor() {
+SkColor GetWallpaperShieldColor() {
   return AshColorProvider::Get()->GetShieldLayerColor(
-      Shell::Get()->overview_controller()->InOverviewSession()
-          ? AshColorProvider::ShieldLayerType::kShield40
-          : AshColorProvider::ShieldLayerType::kShield80);
+      Shell::Get()->session_controller()->IsUserSessionBlocked()
+          ? AshColorProvider::ShieldLayerType::kShield80
+          : AshColorProvider::ShieldLayerType::kShield40);
 }
 
 }  // namespace
@@ -50,11 +45,6 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
     return;
 
   cc::PaintFlags flags;
-  if (controller->ShouldApplyColorFilter()) {
-    flags.setColorFilter(
-        SkColorFilters::Blend(GetWallpaperFilterColor(), SkBlendMode::kDarken));
-  }
-
   switch (layout) {
     case WALLPAPER_LAYOUT_CENTER_CROPPED: {
       // The dimension with the smallest ratio must be cropped, the other one
@@ -110,6 +100,9 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
       break;
     }
   }
+
+  if (controller->ShouldApplyShield())
+    canvas->FillRect(GetLocalBounds(), GetWallpaperShieldColor());
 }
 
 void WallpaperBaseView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
