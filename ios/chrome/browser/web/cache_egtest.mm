@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
+#include "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -109,6 +110,25 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
 @end
 
 @implementation CacheTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  // Features are enabled or disabled based on the name of the test that is
+  // running. This is done because it is inefficient to use
+  // ensureAppLaunchedWithConfiguration for each test.
+  if ([self isRunningTest:@selector
+            (testCachingBehaviorOnSelectOmniboxSuggestion)]) {
+    // Explicitly disable delay for feature OnDeviceHeadProviderNonIncognito,
+    // which will otherwise cause flakiness for this test in build iphone-device
+    // (crbug.com/1153136).
+    config.additional_args.push_back(
+        std::string("--enable-features=") +
+        std::string(omnibox::kOnDeviceHeadProviderNonIncognito.name) +
+        std::string(":DelayOnDeviceHeadSuggestRequestMs/0"));
+  }
+  return config;
+}
 
 // Tests caching behavior on navigate back and page reload. Navigate back should
 // use the cached page. Page reload should use cache-control in the request

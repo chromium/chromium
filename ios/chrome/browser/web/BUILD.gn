@@ -453,6 +453,7 @@ source_set("eg2_tests") {
     ":constants",
     ":eg_test_support+eg2",
     "//components/content_settings/core/common",
+    "//components/omnibox/common",
     "//components/strings",
     "//components/url_formatter",
     "//components/version_info:version_info",
