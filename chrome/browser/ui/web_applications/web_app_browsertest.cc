@@ -500,13 +500,19 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   sessions::TabRestoreService* const service =
       TabRestoreServiceFactory::GetForProfile(profile());
   ASSERT_GT(service->entries().size(), 0U);
+  sessions::TabRestoreService::Entry* entry = service->entries().front().get();
+  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
+  const auto* entry_win =
+      static_cast<sessions::TabRestoreService::Window*>(entry);
+  EXPECT_EQ(bounds, entry_win->bounds);
+
   service->RestoreMostRecentEntry(nullptr);
 
   content::WebContents* const restored_web_contents =
       new_contents_observer.GetWebContents();
   Browser* const restored_browser =
       chrome::FindBrowserWithWebContents(restored_web_contents);
-  EXPECT_EQ(restored_browser->window()->GetBounds(), bounds);
+  EXPECT_EQ(restored_browser->override_bounds(), bounds);
 }
 
 // Tests that using window.open to create a popup window out of scope results in
