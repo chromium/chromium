@@ -43,50 +43,42 @@ PrinterConfigurer* g_printer_configurer_for_test = nullptr;
 PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
                                                         int result_code) {
   DCHECK_GE(result_code, 0);
+  const std::string prefix = printer.make_and_model() + " setup result: ";
   switch (result_code) {
     case debugd::CupsResult::CUPS_SUCCESS:
-      PRINTER_LOG(DEBUG) << printer.make_and_model()
-                         << " Printer setup successful";
+      PRINTER_LOG(EVENT) << prefix << "Printer setup successful";
       return PrinterSetupResult::kSuccess;
     case debugd::CupsResult::CUPS_INVALID_PPD:
-      PRINTER_LOG(EVENT) << printer.make_and_model() << " PPD Invalid";
+      PRINTER_LOG(EVENT) << prefix << "PPD Invalid";
       return PrinterSetupResult::kInvalidPpd;
     case debugd::CupsResult::CUPS_LPADMIN_FAILURE:
-      PRINTER_LOG(ERROR) << printer.make_and_model()
-                         << " lpadmin-manual failed";
+      PRINTER_LOG(ERROR) << prefix << "lpadmin-manual failed";
       return PrinterSetupResult::kFatalError;
     case debugd::CupsResult::CUPS_AUTOCONF_FAILURE:
-      PRINTER_LOG(EVENT) << printer.make_and_model()
-                         << " lpadmin-autoconf failed";
+      PRINTER_LOG(ERROR) << prefix << "lpadmin-autoconf failed";
       return PrinterSetupResult::kFatalError;
     case debugd::CupsResult::CUPS_BAD_URI:
-      PRINTER_LOG(EVENT) << printer.make_and_model() << " Bad URI";
+      PRINTER_LOG(EVENT) << prefix << "Bad URI";
       return PrinterSetupResult::kBadUri;
     case debugd::CupsResult::CUPS_IO_ERROR:
-      PRINTER_LOG(EVENT) << printer.make_and_model() << " I/O error";
+      PRINTER_LOG(ERROR) << prefix << "I/O error";
       return PrinterSetupResult::kIoError;
     case debugd::CupsResult::CUPS_MEMORY_ALLOC_ERROR:
-      PRINTER_LOG(EVENT) << printer.make_and_model()
-                         << " Memory allocation error";
+      PRINTER_LOG(EVENT) << prefix << "Memory allocation error";
       return PrinterSetupResult::kMemoryAllocationError;
     case debugd::CupsResult::CUPS_PRINTER_UNREACHABLE:
-      PRINTER_LOG(EVENT) << printer.make_and_model()
-                         << " Printer is ureachable";
+      PRINTER_LOG(EVENT) << prefix << "Printer is ureachable";
       return PrinterSetupResult::kPrinterUnreachable;
     case debugd::CupsResult::CUPS_PRINTER_WRONG_RESPONSE:
-      PRINTER_LOG(EVENT) << printer.make_and_model()
-                         << " Unexpected response from printer";
+      PRINTER_LOG(EVENT) << prefix << "Unexpected response from printer";
       return PrinterSetupResult::kPrinterSentWrongResponse;
     case debugd::CupsResult::CUPS_PRINTER_NOT_AUTOCONF:
-      PRINTER_LOG(EVENT) << printer.make_and_model()
-                         << "Printer is not autoconfigurable";
+      PRINTER_LOG(EVENT) << prefix << "Printer is not autoconfigurable";
       return PrinterSetupResult::kPrinterIsNotAutoconfigurable;
     case debugd::CupsResult::CUPS_FATAL:
     default:
       // We have no idea.  It must be fatal.
-      PRINTER_LOG(ERROR) << printer.make_and_model()
-                         << " Unrecognized printer setup error: "
-                         << result_code;
+      PRINTER_LOG(ERROR) << prefix << "Unrecognized error: " << result_code;
       return PrinterSetupResult::kFatalError;
   }
 }
@@ -94,17 +86,21 @@ PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
 // Map D-Bus errors from the debug daemon client to D-Bus errors enumerated
 // in PrinterSetupResult.
 PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
+    const Printer& printer,
     DbusLibraryError dbus_error) {
   DCHECK_LT(dbus_error, 0);
-  static const base::NoDestructor<
-      base::flat_map<DbusLibraryError, PrinterSetupResult>>
-      kDbusErrorMap({
-          {DbusLibraryError::kNoReply, PrinterSetupResult::kDbusNoReply},
-          {DbusLibraryError::kTimeout, PrinterSetupResult::kDbusTimeout},
-      });
-  auto it = kDbusErrorMap->find(dbus_error);
-  return it != kDbusErrorMap->end() ? it->second
-                                    : PrinterSetupResult::kDbusError;
+  const std::string prefix = printer.make_and_model() + " setup result: ";
+  switch (dbus_error) {
+    case DbusLibraryError::kNoReply:
+      PRINTER_LOG(ERROR) << prefix << "D-Bus error - no reply";
+      return PrinterSetupResult::kDbusNoReply;
+    case DbusLibraryError::kTimeout:
+      PRINTER_LOG(ERROR) << prefix << "D-Bus error - timeout";
+      return PrinterSetupResult::kDbusTimeout;
+    default:
+      PRINTER_LOG(ERROR) << prefix << "Unknown D-Bus error";
+      return PrinterSetupResult::kDbusError;
+  }
 }
 
 // Records whether a |printer| contains a valid PpdReference defined as having
@@ -168,7 +164,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     PrinterSetupResult setup_result =
         result_code < 0
             ? PrinterSetupResultFromDbusErrorCode(
-                  static_cast<DbusLibraryError>(result_code))
+                  printer, static_cast<DbusLibraryError>(result_code))
             : PrinterSetupResultFromDbusResultCode(printer, result_code);
     std::move(cb).Run(setup_result);
   }
