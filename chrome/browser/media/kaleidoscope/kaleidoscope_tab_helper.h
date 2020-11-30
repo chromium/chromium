@@ -13,6 +13,7 @@ class KaleidoscopeTabHelper
       public content::WebContentsUserData<KaleidoscopeTabHelper> {
  public:
   static const char kKaleidoscopeNavigationHistogramName[];
+  static const char kKaleidoscopeOpenedMediaRecommendationHistogramName[];
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -27,10 +28,15 @@ class KaleidoscopeTabHelper
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
+  void WebContentsDestroyed() override;
 
   // A tab is Kaleidoscope derived if the tab was opened by Kaleidoscope and
   // remains on the same origin.
   bool IsKaleidoscopeDerived() const { return is_kaleidoscope_derived_; }
+
+  // A tab is successful if it had a Kaleidoscope session in it that resulted
+  // in the user opening another tab.
+  void MarkAsSuccessful() { was_successful_ = true; }
 
  private:
   friend class content::WebContentsUserData<KaleidoscopeTabHelper>;
@@ -39,8 +45,10 @@ class KaleidoscopeTabHelper
 
   void RecordMetricsOnNavigation(content::NavigationHandle* handle);
   void SetAutoplayOnNavigation(content::NavigationHandle* handle);
+  void OnKaleidoscopeSessionEnded();
 
   bool is_kaleidoscope_derived_ = false;
+  bool was_successful_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

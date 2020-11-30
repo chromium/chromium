@@ -241,7 +241,8 @@ KaleidoscopeUI::KaleidoscopeUI(content::WebUI* web_ui)
 }
 
 KaleidoscopeUI::~KaleidoscopeUI() {
-  metrics_recorder_->OnExitPage();
+  if (metrics_recorder_)
+    metrics_recorder_->OnExitPage();
 
   // Ensure that the provider is deleted before the metrics recorder, since the
   // provider has a pointer to the metrics recorder.

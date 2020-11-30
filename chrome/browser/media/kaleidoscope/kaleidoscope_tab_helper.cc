@@ -27,15 +27,18 @@ const url::Origin& KaleidoscopeUntrustedOrigin() {
   return *origin;
 }
 
-bool IsOpenedFromKaleidoscope(content::NavigationHandle* handle) {
+bool IsMediaItemOpenedFromKaleidoscope(content::NavigationHandle* handle) {
+  // Google MyActivity is excluded since it is opened from Kaleidoscope FRE
+  // and settings.
   return (handle->GetInitiatorOrigin() &&
           handle->GetInitiatorOrigin()->IsSameOriginWith(
-              KaleidoscopeUntrustedOrigin()));
+              KaleidoscopeUntrustedOrigin()) &&
+          handle->GetURL().host() != "myactivity.google.com");
 }
 
 bool ShouldAllowAutoplay(content::NavigationHandle* handle) {
   // If the initiating origin is Kaleidoscope then we should allow autoplay.
-  if (IsOpenedFromKaleidoscope(handle))
+  if (IsMediaItemOpenedFromKaleidoscope(handle))
     return true;
 
   // If the tab is Kaleidoscope then we should allow autoplay.
@@ -53,6 +56,10 @@ bool ShouldAllowAutoplay(content::NavigationHandle* handle) {
 const char KaleidoscopeTabHelper::kKaleidoscopeNavigationHistogramName[] =
     "Media.Kaleidoscope.Navigation";
 
+const char KaleidoscopeTabHelper::
+    kKaleidoscopeOpenedMediaRecommendationHistogramName[] =
+        "Media.Kaleidoscope.OpenedMediaRecommendation";
+
 KaleidoscopeTabHelper::KaleidoscopeTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
@@ -66,7 +73,7 @@ void KaleidoscopeTabHelper::ReadyToCommitNavigation(
   RecordMetricsOnNavigation(handle);
   SetAutoplayOnNavigation(handle);
 
-  if (IsOpenedFromKaleidoscope(handle)) {
+  if (IsMediaItemOpenedFromKaleidoscope(handle)) {
     is_kaleidoscope_derived_ = true;
     return;
   }
@@ -77,12 +84,33 @@ void KaleidoscopeTabHelper::ReadyToCommitNavigation(
   if (!current_origin.IsSameOriginWith(new_origin)) {
     is_kaleidoscope_derived_ = false;
   }
+
+  // If the user was on Kaleidoscope but no longer is then the session has been
+  // ended.
+  if (current_origin.IsSameOriginWith(KaleidoscopeOrigin()) &&
+      !new_origin.IsSameOriginWith(KaleidoscopeOrigin()) &&
+      handle->IsInMainFrame()) {
+    OnKaleidoscopeSessionEnded();
+  }
+}
+
+void KaleidoscopeTabHelper::WebContentsDestroyed() {
+  auto current_origin =
+      url::Origin::Create(web_contents()->GetLastCommittedURL());
+  if (current_origin.IsSameOriginWith(KaleidoscopeOrigin())) {
+    OnKaleidoscopeSessionEnded();
+  }
 }
 
 void KaleidoscopeTabHelper::RecordMetricsOnNavigation(
     content::NavigationHandle* handle) {
   // Only record metrics if this page was opened by Kaleidoscope.
-  if (IsOpenedFromKaleidoscope(handle)) {
+  if (IsMediaItemOpenedFromKaleidoscope(handle)) {
+    if (auto* opener = web_contents()->GetOpener()) {
+      auto* wc = content::WebContents::FromRenderFrameHost(opener);
+      KaleidoscopeTabHelper::FromWebContents(wc)->MarkAsSuccessful();
+    }
+
     base::UmaHistogramEnumeration(kKaleidoscopeNavigationHistogramName,
                                   KaleidoscopeNavigation::kNormal);
 
@@ -107,6 +135,13 @@ void KaleidoscopeTabHelper::SetAutoplayOnNavigation(
       &client);
   client->AddAutoplayFlags(url::Origin::Create(handle->GetURL()),
                            blink::mojom::kAutoplayFlagUserException);
+}
+
+void KaleidoscopeTabHelper::OnKaleidoscopeSessionEnded() {
+  base::UmaHistogramBoolean(kKaleidoscopeOpenedMediaRecommendationHistogramName,
+                            was_successful_);
+
+  was_successful_ = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(KaleidoscopeTabHelper)

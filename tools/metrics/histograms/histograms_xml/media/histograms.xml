@@ -2193,6 +2193,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Kaleidoscope.OpenedMediaRecommendation" enum="Boolean"
+    expires_after="2021-08-19">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded each time that Kaleidoscope is closed with whether the user opened
+    a media recommendation from Kaleidoscope during that session.
+  </summary>
+</histogram>
+
 <histogram name="Media.Kaleidoscope.TimeTakenToStartWatch" units="ms"
     expires_after="2021-08-19">
   <owner>beccahughes@chromium.org</owner>
