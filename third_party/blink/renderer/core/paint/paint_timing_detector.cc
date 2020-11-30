@@ -163,9 +163,6 @@ void PaintTimingDetector::NotifyImageFinished(
 void PaintTimingDetector::LayoutObjectWillBeDestroyed(
     const LayoutObject& object) {
   text_paint_timing_detector_->LayoutObjectWillBeDestroyed(object);
-
-  if (image_paint_timing_detector_)
-    image_paint_timing_detector_->LayoutObjectWillBeDestroyed(object);
 }
 
 void PaintTimingDetector::NotifyImageRemoved(
