@@ -7,8 +7,12 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   deps = [
     "//base:base_java",
+    "//components/embedder_support/android:util_java",
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
-  sources = [ "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/signin/ui/GoogleActivityController.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java",
+  ]
 }

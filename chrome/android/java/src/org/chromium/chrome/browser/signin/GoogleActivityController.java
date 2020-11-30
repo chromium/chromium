@@ -4,29 +4,10 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Browser;
-
-import org.chromium.components.embedder_support.util.UrlConstants;
-
 /**
-* Controls how Google uses Chrome data to personalize Search and other Google services.
-*/
-public class GoogleActivityController {
-    /**
-    * Opens the "Web & App Activity" settings that allows the user to control how Google uses Chrome
-    * browsing history.
-    * @param activity The activity to open the settings.
-    * @param accountName The account for which is requested.
-    */
-    public void openWebAndAppActivitySettings(Activity activity, String accountName) {
-        Intent intent = new Intent(
-                Intent.ACTION_VIEW, Uri.parse(UrlConstants.GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_URL));
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
-        intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-        intent.setPackage(activity.getPackageName());
-        activity.startActivity(intent);
-    }
-}
+ * Controls how Google uses Chrome data to personalize Search and other Google services.
+ * TODO(crbug.com/1153038): Remove this class after migrating the callers in //clank.
+ */
+@Deprecated
+public class GoogleActivityController
+        extends org.chromium.chrome.browser.signin.ui.GoogleActivityController {}
