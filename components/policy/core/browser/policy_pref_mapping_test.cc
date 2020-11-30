@@ -354,6 +354,9 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
                        const base::Value& policies,
                        PolicyLevel level) {
   PolicyMap policy_map;
+#if defined(OS_CHROMEOS)
+  SetEnterpriseUsersDefaults(&policy_map);
+#endif  // defined(OS_CHROMEOS)
   for (const auto& it : policies.DictItems()) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
     ASSERT_TRUE(policy_details);

@@ -4850,7 +4850,7 @@
     "policy_pref_mapping_test": [
       {
         "policies": { "QuickUnlockModeAllowlist": ["PIN"] },
-        "prefs": { "quick_unlock_mode_whitelist": {} }
+        "prefs": { "quick_unlock_mode_whitelist": { "value": ["PIN"]} }
       }
     ]
   },
@@ -4860,7 +4860,7 @@
     "policy_pref_mapping_test": [
       {
         "policies": { "QuickUnlockModeWhitelist": ["PIN"] },
-        "prefs": { "quick_unlock_mode_whitelist": {} }
+        "prefs": { "quick_unlock_mode_whitelist": { "value": ["PIN"]} }
       }
     ]
   },
