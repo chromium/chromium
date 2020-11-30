@@ -222,9 +222,6 @@ def main():
   if (usage_restriction is not None and version != VERSION3):
     print("The usage field can only be be set in Version 3 token.")
     sys.exit(1)
-  if (usage_restriction is not None and not is_third_party):
-    print("Only third party token supports alternative usage restriction.")
-    sys.exit(1)
   if (usage_restriction not in USAGE_RESTRICTION):
     print("Only empty string and \"subset\" are supported in the usage field.")
     sys.exit(1)
