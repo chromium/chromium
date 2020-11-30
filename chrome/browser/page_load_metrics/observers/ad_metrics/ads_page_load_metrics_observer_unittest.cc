@@ -142,7 +142,8 @@ FrameDataMap MakeFrameDataMap(int process_id,
 
   for (const auto& entry : data) {
     content::GlobalFrameRoutingId global_id(process_id, entry.frame_id);
-    performance_manager::v8_memory::V8DetailedMemoryFrameData frame_data;
+    performance_manager::v8_memory::V8DetailedMemoryExecutionContextData
+        frame_data;
     frame_data.set_v8_bytes_used(entry.bytes_used);
     data_map[global_id] = frame_data;
   }

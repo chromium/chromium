@@ -35,6 +35,8 @@ void PerformanceManagerBrowserTestHarness::SetUp() {
   base::Lock lock;
   base::ConditionVariable cv(&lock);
   bool graph_initialization_complete = false;
+  PerformanceManagerLifetime::SetDecoratorsOverrideForTesting(
+      Decorators::kNone);
   PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
       base::BindLambdaForTesting([&](Graph* graph) {
         OnGraphCreatedImpl(graph);

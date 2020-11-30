@@ -5,7 +5,7 @@
 #include "chrome/browser/performance_manager/decorators/execution_context_priority/root_vote_observer.h"
 
 #include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/voting.h"
@@ -17,7 +17,6 @@ namespace execution_context_priority {
 
 namespace {
 
-using execution_context::ExecutionContextRegistry;
 using testing::_;
 
 static const char kReason[] = "test reason";
@@ -58,10 +57,8 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame = mock_graph.frame;
 
-  auto* execution_context_registry =
-      ExecutionContextRegistry::GetFromGraph(graph());
   auto* execution_context =
-      execution_context_registry->GetExecutionContextForFrameNode(frame.get());
+      execution_context::ExecutionContext::From(frame.get());
 
   MockFrameNodeObserver obs;
   graph()->AddFrameNodeObserver(&obs);

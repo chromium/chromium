@@ -17,8 +17,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "components/performance_manager/public/graph/frame_node.h"
-#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -27,6 +25,14 @@
 #include "third_party/blink/public/mojom/performance_manager/v8_detailed_memory_reporter.mojom.h"
 
 namespace performance_manager {
+
+namespace execution_context {
+class ExecutionContext;
+}  // namespace execution_context
+
+class Graph;
+class FrameNode;
+class WorkerNode;
 
 namespace v8_memory {
 
@@ -41,17 +47,18 @@ namespace v8_memory {
 // when no more V8DetailedMemoryRequest objects exist.
 //
 // When measurements are available the decorator attaches them to
-// V8DetailedMemoryFrameData and V8DetailedMemoryProcessData objects that can
-// be retrieved with V8DetailedMemoryFrameData::ForFrameNode and
-// V8DetailedMemoryProcessData::ForProcessNode. V8DetailedMemoryProcessData
-// objects can be cleaned up when V8DetailedMemoryRequest objects are deleted
-// so callers must save the measurements they are interested in before
-// releasing their V8DetailedMemoryRequest.
+// V8DetailedMemoryExecutionContextData and V8DetailedMemoryProcessData objects
+// that can be retrieved with V8DetailedMemoryExecutionContextData::ForFrameNode
+// ForWorkerNode and ForExecutionContext, and V8DetailedMemoryProcessData::
+// ForProcessNode. V8DetailedMemoryProcessData objects can be cleaned up when
+// V8DetailedMemoryRequest objects are deleted so callers must save the
+// measurements they are interested in before releasing their
+// V8DetailedMemoryRequest.
 //
 // Callers can be notified when a request is available by implementing
 // V8DetailedMemoryObserver.
 //
-// V8DetailedMemoryRequest, V8DetailedMemoryFrameData and
+// V8DetailedMemoryRequest, V8DetailedMemoryExecutionContextData and
 // V8DetailedMemoryProcessData must all be accessed on the graph sequence, and
 // V8DetailedMemoryObserver::OnV8MemoryMeasurementAvailable will be called on
 // this sequence. To request memory measurements from another sequence use the
@@ -73,7 +80,8 @@ namespace v8_memory {
 //           " reported " << data->unassociated_v8_bytes_used() <<
 //           " bytes of V8 memory that wasn't associated with a frame.";
 //       for (auto* frame_node : process_node->GetFrameNodes()) {
-//         auto* frame_data = V8DetailedMemoryFrameData::ForFrame(frame_node);
+//         auto* frame_data =
+//             V8DetailedMemoryExecutionContextData::ForFrame(frame_node);
 //         if (frame_data) {
 //           LOG(INFO) << "Frame " << frame_node->GetFrameToken().value() <<
 //               " reported " << frame_data->v8_bytes_used() <<
@@ -138,7 +146,7 @@ namespace v8_memory {
 //           " bytes of V8 memory that wasn't associated with a frame.";
 //       for (std::pair<
 //             content::GlobalFrameRoutingId,
-//             V8DetailedMemoryFrameData
+//             V8DetailedMemoryExecutionContextData
 //           > frame_and_data : frame_data) {
 //         const auto* frame = RenderFrameHost::FromID(frame_and_data.first);
 //         if (!frame) {
@@ -270,12 +278,12 @@ class V8DetailedMemoryDecorator
 //////////////////////////////////////////////////////////////////////////////
 // The following classes report results from memory measurements.
 
-class V8DetailedMemoryFrameData {
+class V8DetailedMemoryExecutionContextData {
  public:
-  V8DetailedMemoryFrameData() = default;
-  virtual ~V8DetailedMemoryFrameData() = default;
+  V8DetailedMemoryExecutionContextData() = default;
+  virtual ~V8DetailedMemoryExecutionContextData() = default;
 
-  bool operator==(const V8DetailedMemoryFrameData& other) const {
+  bool operator==(const V8DetailedMemoryExecutionContextData& other) const {
     return v8_bytes_used_ == other.v8_bytes_used_;
   }
 
@@ -290,12 +298,18 @@ class V8DetailedMemoryFrameData {
   // Returns frame data for the given node, or nullptr if no measurement has
   // been taken. The returned pointer must only be accessed on the graph
   // sequence and may go invalid at any time after leaving the calling scope.
-  static const V8DetailedMemoryFrameData* ForFrameNode(const FrameNode* node);
+  static const V8DetailedMemoryExecutionContextData* ForFrameNode(
+      const FrameNode* node);
+  static const V8DetailedMemoryExecutionContextData* ForWorkerNode(
+      const WorkerNode* node);
+  static const V8DetailedMemoryExecutionContextData* ForExecutionContext(
+      const execution_context::ExecutionContext* ec);
 
  private:
   friend class WebMemoryAggregatorTest;
   // Creates frame data for the given node.
-  static V8DetailedMemoryFrameData* CreateForTesting(const FrameNode* node);
+  static V8DetailedMemoryExecutionContextData* CreateForTesting(
+      const FrameNode* node);
 
   uint64_t v8_bytes_used_ = 0;
 };
@@ -336,7 +350,8 @@ class V8DetailedMemoryObserver : public base::CheckedObserver {
   // the process, and can go invalid at any time after returning from this
   // method. Per-frame measurements can be read by walking the graph from
   // |process_node| to find frame nodes, and calling
-  // V8DetailedMemoryFrameData::ForFrameNode to retrieve the measurement data.
+  // V8DetailedMemoryExecutionContextData::ForFrameNode to retrieve the
+  // measurement data.
   virtual void OnV8MemoryMeasurementAvailable(
       const ProcessNode* process_node,
       const V8DetailedMemoryProcessData* process_data) = 0;
@@ -564,9 +579,12 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
 // observer.
 class V8DetailedMemoryObserverAnySeq : public base::CheckedObserver {
  public:
-  // TODO(crbug.com/1096617): Should use FrameToken here instead of routing id.
-  using FrameDataMap =
-      base::flat_map<content::GlobalFrameRoutingId, V8DetailedMemoryFrameData>;
+  // TODO(crbug.com/1096617): Should use ExecutionContext tokens here. We should
+  // potentially also split "main" content from "isolated world" content, and
+  // have a detailed V8ContextToken map for those who care about all the
+  // details.
+  using FrameDataMap = base::flat_map<content::GlobalFrameRoutingId,
+                                      V8DetailedMemoryExecutionContextData>;
 
   // Called on the observer's sequence when a measurement is available for the
   // process with ID |render_process_host_id|. The notification includes the

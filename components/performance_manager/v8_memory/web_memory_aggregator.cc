@@ -49,7 +49,8 @@ mojom::WebMemoryMeasurementPtr BuildMemoryUsageResult(
         requesting_frame->GetURL().GetOrigin()) {
       continue;
     }
-    auto* data = v8_memory::V8DetailedMemoryFrameData::ForFrameNode(frame_node);
+    auto* data = v8_memory::V8DetailedMemoryExecutionContextData::ForFrameNode(
+        frame_node);
     if (!data) {
       continue;
     }

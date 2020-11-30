@@ -100,6 +100,13 @@ class GraphFeaturesHelper {
     return *this;
   }
 
+  // Helper to enable the minimal set of features required for a content_shell
+  // browser to work.
+  constexpr GraphFeaturesHelper& EnableMinimal() {
+    EnableExecutionContextRegistry();
+    return *this;
+  }
+
   // Helper to enable the default set of features. This is only intended for use
   // from production code.
   constexpr GraphFeaturesHelper& EnableDefault() {

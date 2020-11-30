@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/decorators/execution_context_priority/ad_frame_voter.h"
 
 #include "components/performance_manager/public/execution_context/execution_context.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -20,9 +19,7 @@ namespace {
 
 const execution_context::ExecutionContext* GetExecutionContext(
     const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
+  return execution_context::ExecutionContext::From(frame_node);
 }
 
 // Both the voting channel and the AdFrameVoter are expected live on the graph,

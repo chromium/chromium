@@ -15,10 +15,14 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/execution_context/execution_context_attached_data.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -155,14 +159,14 @@ bool g_test_eager_measurement_requests_enabled = false;
 // V8DetailedMemoryProcessData: Public accessor to the measurement results held
 //     in a NodeAttachedProcessData, which owns it.
 //
-// NodeAttachedFrameData: Private class that holds the measurement results for
-//     a frame. Owned by the FrameNode; created when a measurement result
-//     arrives.
+// ExecutionContextAttachedData: Private class that holds the measurement
+//     results for an execution context. Owned by the ExecutionContext; created
+//     when a measurement result arrives.
 //     TODO(b/1080672): Currently this lives forever; should be cleaned up when
 //     there are no more measurements scheduled.
 //
-// V8DetailedMemoryFrameData: Public accessor to the measurement results held
-//     in a NodeAttachedFrameData, which owns it.
+// V8DetailedMemoryExecutionContextData: Public accessor to the measurement
+//     results held in a ExecutionContextAttachedData, which owns it.
 //
 // V8DetailedMemoryObserver: Callers can implement this and register with
 //     V8DetailedMemoryDecorator::AddObserver() to be notified when
@@ -180,27 +184,31 @@ bool g_test_eager_measurement_requests_enabled = false;
 //     on the same sequence as the V8DetailedMemoryRequestAnySeq.
 
 ////////////////////////////////////////////////////////////////////////////////
-// NodeAttachedFrameData
+// ExecutionContextAttachedData
 
-class NodeAttachedFrameData
-    : public ExternalNodeAttachedDataImpl<NodeAttachedFrameData> {
+class ExecutionContextAttachedData
+    : public execution_context::ExecutionContextAttachedData<
+          ExecutionContextAttachedData> {
  public:
-  explicit NodeAttachedFrameData(const FrameNode* frame_node) {}
-  ~NodeAttachedFrameData() override = default;
+  explicit ExecutionContextAttachedData(
+      const execution_context::ExecutionContext* ec) {}
+  ~ExecutionContextAttachedData() override = default;
 
-  NodeAttachedFrameData(const NodeAttachedFrameData&) = delete;
-  NodeAttachedFrameData& operator=(const NodeAttachedFrameData&) = delete;
+  ExecutionContextAttachedData(const ExecutionContextAttachedData&) = delete;
+  ExecutionContextAttachedData& operator=(const ExecutionContextAttachedData&) =
+      delete;
 
-  const V8DetailedMemoryFrameData* data() const {
+  const V8DetailedMemoryExecutionContextData* data() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return data_available_ ? &data_ : nullptr;
   }
 
  private:
   friend class NodeAttachedProcessData;
-  friend class performance_manager::v8_memory::V8DetailedMemoryFrameData;
+  friend class performance_manager::v8_memory::
+      V8DetailedMemoryExecutionContextData;
 
-  V8DetailedMemoryFrameData data_;
+  V8DetailedMemoryExecutionContextData data_;
   bool data_available_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -481,10 +489,10 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
     auto it = associated_memory.find(frame_node->GetFrameToken());
     if (it == associated_memory.end()) {
       // No data for this node, clear any data associated with it.
-      NodeAttachedFrameData::Destroy(frame_node);
+      ExecutionContextAttachedData::Destroy(frame_node);
     } else {
-      NodeAttachedFrameData* frame_data =
-          NodeAttachedFrameData::GetOrCreate(frame_node);
+      ExecutionContextAttachedData* frame_data =
+          ExecutionContextAttachedData::GetOrCreate(frame_node);
       frame_data->data_available_ = true;
       frame_data->data_.set_v8_bytes_used(it->second->bytes_used);
       // Zero out this datum as its usage has been consumed.
@@ -678,14 +686,14 @@ void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
   // If this request was made from off-sequence, notify its off-sequence
   // observers with a copy of the process and frame data.
   if (off_sequence_request_.MaybeValid()) {
-    using FrameAndData =
-        std::pair<content::GlobalFrameRoutingId, V8DetailedMemoryFrameData>;
+    using FrameAndData = std::pair<content::GlobalFrameRoutingId,
+                                   V8DetailedMemoryExecutionContextData>;
     std::vector<FrameAndData> all_frame_data;
     process_node->VisitFrameNodes(base::BindRepeating(
         [](std::vector<FrameAndData>* all_frame_data,
            const FrameNode* frame_node) {
           const auto* frame_data =
-              V8DetailedMemoryFrameData::ForFrameNode(frame_node);
+              V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
           if (frame_data) {
             all_frame_data->push_back(std::make_pair(
                 frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),
@@ -855,17 +863,33 @@ void V8DetailedMemoryRequestOneShot::OnOwnerUnregistered() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// V8DetailedMemoryFrameData
+// V8DetailedMemoryExecutionContextData
 
-const V8DetailedMemoryFrameData* V8DetailedMemoryFrameData::ForFrameNode(
-    const FrameNode* node) {
-  auto* node_data = NodeAttachedFrameData::Get(node);
+// static
+const V8DetailedMemoryExecutionContextData*
+V8DetailedMemoryExecutionContextData::ForFrameNode(const FrameNode* node) {
+  const auto* ec = execution_context::ExecutionContext::From(node);
+  return ForExecutionContext(ec);
+}
+
+// static
+const V8DetailedMemoryExecutionContextData*
+V8DetailedMemoryExecutionContextData::ForWorkerNode(const WorkerNode* node) {
+  const auto* ec = execution_context::ExecutionContext::From(node);
+  return ForExecutionContext(ec);
+}
+
+// static
+const V8DetailedMemoryExecutionContextData*
+V8DetailedMemoryExecutionContextData::ForExecutionContext(
+    const execution_context::ExecutionContext* ec) {
+  auto* node_data = ExecutionContextAttachedData::Get(ec);
   return node_data ? node_data->data() : nullptr;
 }
 
-V8DetailedMemoryFrameData* V8DetailedMemoryFrameData::CreateForTesting(
-    const FrameNode* node) {
-  auto* node_data = NodeAttachedFrameData::GetOrCreate(node);
+V8DetailedMemoryExecutionContextData*
+V8DetailedMemoryExecutionContextData::CreateForTesting(const FrameNode* node) {
+  auto* node_data = ExecutionContextAttachedData::GetOrCreate(node);
   node_data->data_available_ = true;
   return &node_data->data_;
 }
@@ -947,7 +971,7 @@ base::Value V8DetailedMemoryDecorator::DescribeFrameNodeData(
     const FrameNode* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* const frame_data =
-      V8DetailedMemoryFrameData::ForFrameNode(frame_node);
+      V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
   if (!frame_data)
     return base::Value();
 
@@ -1325,14 +1349,14 @@ void V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable(
   DCHECK(process_node);
   DCHECK_ON_GRAPH_SEQUENCE(process_node->GetGraph());
 
-  using FrameAndData =
-      std::pair<content::GlobalFrameRoutingId, V8DetailedMemoryFrameData>;
+  using FrameAndData = std::pair<content::GlobalFrameRoutingId,
+                                 V8DetailedMemoryExecutionContextData>;
   std::vector<FrameAndData> all_frame_data;
   process_node->VisitFrameNodes(base::BindRepeating(
       [](std::vector<FrameAndData>* all_frame_data,
          const FrameNode* frame_node) {
         const auto* frame_data =
-            V8DetailedMemoryFrameData::ForFrameNode(frame_node);
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
         if (frame_data) {
           all_frame_data->push_back(std::make_pair(
               frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),

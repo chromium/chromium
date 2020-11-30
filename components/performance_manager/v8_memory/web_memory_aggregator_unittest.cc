@@ -33,6 +33,8 @@ using WebMemoryAggregatorPMTest = V8MemoryPerformanceManagerTestHarness;
 
 class WebMemoryAggregatorTest : public GraphTestHarness {
  public:
+  using Super = GraphTestHarness;
+
   // Wrapper for the browsing instance id to improve test readability.
   struct BrowsingInstance {
     int id;
@@ -67,6 +69,8 @@ class WebMemoryAggregatorTest : public GraphTestHarness {
 };
 
 void WebMemoryAggregatorTest::SetUp() {
+  GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+  Super::SetUp();
   process_ = CreateNode<ProcessNodeImpl>();
   page_ = CreateNode<PageNodeImpl>();
 }
@@ -86,7 +90,7 @@ FrameNodeImpl* WebMemoryAggregatorTest::AddFrameNode(
       process_.get(), page_.get(), parent, frame_tree_node_id, frame_routing_id,
       blink::LocalFrameToken(), browsing_instance_id.id);
   frame->OnNavigationCommitted(GURL(url), /*same document*/ true);
-  V8DetailedMemoryFrameData::CreateForTesting(frame.get())
+  V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get())
       ->set_v8_bytes_used(memory_usage.bytes);
   frames_.push_back(std::move(frame));
   return frames_.back().get();

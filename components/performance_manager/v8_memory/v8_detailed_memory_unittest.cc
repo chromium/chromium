@@ -105,6 +105,10 @@ constexpr base::TimeDelta kMinTimeBetweenRequests =
 class V8DetailedMemoryDecoratorTest : public GraphTestHarness,
                                       public V8MemoryTestBase {
  public:
+  V8DetailedMemoryDecoratorTest() {
+    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+  }
+
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner()
       override {
     return task_env().GetMainThreadTaskRunner();
@@ -584,14 +588,14 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleIsolatesInRenderer) {
   task_env().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&reporter);
 
-  ASSERT_TRUE(V8DetailedMemoryFrameData::ForFrameNode(frame1.get()));
-  EXPECT_EQ(
-      1001u,
-      V8DetailedMemoryFrameData::ForFrameNode(frame1.get())->v8_bytes_used());
-  ASSERT_TRUE(V8DetailedMemoryFrameData::ForFrameNode(frame2.get()));
-  EXPECT_EQ(
-      1002u,
-      V8DetailedMemoryFrameData::ForFrameNode(frame2.get())->v8_bytes_used());
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
+  EXPECT_EQ(1001u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
+                ->v8_bytes_used());
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get()));
+  EXPECT_EQ(1002u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get())
+                ->v8_bytes_used());
 }
 
 TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
@@ -639,14 +643,14 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   task_env().FastForwardBy(kMinTimeBetweenRequests * 1.5);
   Mock::VerifyAndClearExpectations(&reporter);
 
-  ASSERT_TRUE(V8DetailedMemoryFrameData::ForFrameNode(frame1.get()));
-  EXPECT_EQ(
-      1001u,
-      V8DetailedMemoryFrameData::ForFrameNode(frame1.get())->v8_bytes_used());
-  ASSERT_TRUE(V8DetailedMemoryFrameData::ForFrameNode(frame2.get()));
-  EXPECT_EQ(
-      1002u,
-      V8DetailedMemoryFrameData::ForFrameNode(frame2.get())->v8_bytes_used());
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
+  EXPECT_EQ(1001u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
+                ->v8_bytes_used());
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get()));
+  EXPECT_EQ(1002u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get())
+                ->v8_bytes_used());
 
   // Now verify that data is cleared for any frame that doesn't get an update,
   // plus verify that unknown frame data toes to unassociated bytes.
@@ -660,11 +664,12 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   task_env().FastForwardBy(kMinTimeBetweenRequests);
   Mock::VerifyAndClearExpectations(&reporter);
 
-  ASSERT_TRUE(V8DetailedMemoryFrameData::ForFrameNode(frame1.get()));
-  EXPECT_EQ(
-      1003u,
-      V8DetailedMemoryFrameData::ForFrameNode(frame1.get())->v8_bytes_used());
-  EXPECT_FALSE(V8DetailedMemoryFrameData::ForFrameNode(frame2.get()));
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
+  EXPECT_EQ(1003u,
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
+                ->v8_bytes_used());
+  EXPECT_FALSE(
+      V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get()));
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
   EXPECT_EQ(2233u, V8DetailedMemoryProcessData::ForProcessNode(process.get())
                        ->unassociated_v8_bytes_used());

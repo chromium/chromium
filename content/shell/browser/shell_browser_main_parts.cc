@@ -192,7 +192,7 @@ int ShellBrowserMainParts::PreCreateThreads() {
 void ShellBrowserMainParts::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          performance_manager::Decorators::kNone, base::DoNothing());
+          performance_manager::Decorators::kMinimal, base::DoNothing());
 }
 
 void ShellBrowserMainParts::PreMainMessageLoopRun() {

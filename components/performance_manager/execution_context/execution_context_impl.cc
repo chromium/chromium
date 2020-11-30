@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 
 namespace performance_manager {
 namespace execution_context {
@@ -177,6 +178,19 @@ blink::ExecutionContextToken ToExecutionContextToken(
   // that all types are handled.
   NOTREACHED();
   return blink::ExecutionContextToken();
+}
+
+// Declared in execution_context.h.
+// static
+const ExecutionContext* ExecutionContext::From(const FrameNode* frame_node) {
+  return ExecutionContextRegistry::GetExecutionContextForFrameNode(frame_node);
+}
+
+// Declared in execution_context.h.
+// static
+const ExecutionContext* ExecutionContext::From(const WorkerNode* worker_node) {
+  return ExecutionContextRegistry::GetExecutionContextForWorkerNode(
+      worker_node);
 }
 
 const ExecutionContext* GetOrCreateExecutionContextForFrameNode(

@@ -36,11 +36,32 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
   return additional_graph_created_callback.get();
 }
 
-void DefaultGraphCreatedCallback(
-    GraphCreatedCallback external_graph_created_callback,
-    GraphImpl* graph) {
+base::Optional<Decorators>* GetDecoratorsOverride() {
+  static base::NoDestructor<base::Optional<Decorators>> decorators_override;
+  return decorators_override.get();
+}
+
+void OnGraphCreated(Decorators decorators,
+                    GraphCreatedCallback external_graph_created_callback,
+                    GraphImpl* graph) {
   GraphFeaturesHelper features_helper;
-  features_helper.EnableDefault();
+
+  auto decorators_override = *GetDecoratorsOverride();
+  if (decorators_override)
+    decorators = *decorators_override;
+
+  switch (decorators) {
+    case Decorators::kNone:
+      break;
+    case Decorators::kMinimal:
+      features_helper.EnableMinimal();
+      break;
+    case Decorators::kDefault:
+      features_helper.EnableDefault();
+      break;
+  }
+
+  // Install required features on the graph.
   features_helper.ConfigureGraph(graph);
 
   // Run graph created callbacks.
@@ -49,36 +70,15 @@ void DefaultGraphCreatedCallback(
     std::move(*GetAdditionalGraphCreatedCallback()).Run(graph);
 }
 
-void NullGraphCreatedCallback(
-    GraphCreatedCallback external_graph_created_callback,
-    GraphImpl* graph) {
-  std::move(external_graph_created_callback).Run(graph);
-  if (*GetAdditionalGraphCreatedCallback())
-    std::move(*GetAdditionalGraphCreatedCallback()).Run(graph);
-}
-
-base::OnceCallback<void(GraphImpl*)> AddDecorators(
-    Decorators decorators,
-    GraphCreatedCallback graph_created_callback) {
-  switch (decorators) {
-    case Decorators::kNone:
-      return base::BindOnce(&NullGraphCreatedCallback,
-                            std::move(graph_created_callback));
-    case Decorators::kDefault:
-      return base::BindOnce(&DefaultGraphCreatedCallback,
-                            std::move(graph_created_callback));
-  }
-  NOTREACHED();
-  return {};
-}
-
 }  // namespace
 
 PerformanceManagerLifetime::PerformanceManagerLifetime(
     Decorators decorators,
     GraphCreatedCallback graph_created_callback)
     : performance_manager_(PerformanceManagerImpl::Create(
-          AddDecorators(decorators, std::move(graph_created_callback)))),
+          base::BindOnce(&OnGraphCreated,
+                         decorators,
+                         std::move(graph_created_callback)))),
       performance_manager_registry_(
           performance_manager::PerformanceManagerRegistry::Create()) {}
 
@@ -95,11 +95,18 @@ void PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
   *GetAdditionalGraphCreatedCallback() = std::move(graph_created_callback);
 }
 
+// static
+void PerformanceManagerLifetime::SetDecoratorsOverrideForTesting(
+    base::Optional<Decorators> decorators_override) {
+  *GetDecoratorsOverride() = decorators_override;
+}
+
 std::unique_ptr<PerformanceManager>
 CreatePerformanceManagerWithDefaultDecorators(
     GraphCreatedCallback graph_created_callback) {
   return PerformanceManagerImpl::Create(
-      AddDecorators(Decorators::kDefault, std::move(graph_created_callback)));
+      base::BindOnce(&OnGraphCreated, Decorators::kDefault,
+                     std::move(graph_created_callback)));
 }
 
 void DestroyPerformanceManager(std::unique_ptr<PerformanceManager> instance) {

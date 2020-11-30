@@ -46,9 +46,9 @@ class ExecutionContextRegistryImpl
       const blink::LocalFrameToken& token) override;
   const WorkerNode* GetWorkerNodeByWorkerToken(
       const blink::WorkerToken& token) override;
-  const ExecutionContext* GetExecutionContextForFrameNode(
+  const ExecutionContext* GetExecutionContextForFrameNodeImpl(
       const FrameNode* frame_node) override;
-  const ExecutionContext* GetExecutionContextForWorkerNode(
+  const ExecutionContext* GetExecutionContextForWorkerNodeImpl(
       const WorkerNode* worker_node) override;
 
   size_t GetExecutionContextCountForTesting() const {

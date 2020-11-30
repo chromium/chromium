@@ -17,7 +17,17 @@ class Graph;
 
 using GraphCreatedCallback = base::OnceCallback<void(Graph*)>;
 
-enum class Decorators { kNone, kDefault };
+enum class Decorators {
+  // Installs no additional graph features. Mostly intended for unittests,
+  // where tests pick and choose exactly which decorators they want.
+  kNone,
+  // Installs the minimal set of graph features required for content_shell to
+  // work.
+  kMinimal,
+  // Installs the default set of graph features shipped with a full-featured
+  // Chromium browser.
+  kDefault
+};
 
 // A helper class that manages the lifetime of PerformanceManager
 // and PerformanceManagerRegistry.
@@ -29,6 +39,12 @@ class PerformanceManagerLifetime {
   // Allows specifying an additional callback that will be invoked in tests.
   static void SetAdditionalGraphCreatedCallbackForTesting(
       GraphCreatedCallback graph_created_callback);
+
+  // Allows setting an override for the initialization mode that will be
+  // used in tests. This needs to be set before PerformanceManagerLifetime is
+  // created. In browser tests this occurs as part of Chrome browser main parts.
+  static void SetDecoratorsOverrideForTesting(
+      base::Optional<Decorators> decorators_override);
 
  private:
   std::unique_ptr<PerformanceManager> performance_manager_;

@@ -50,6 +50,12 @@ class ExecutionContext {
   using Observer = ExecutionContextObserver;
   using ObserverDefaultImpl = ExecutionContextObserverDefaultImpl;
 
+  // Syntactic sugar for converting from a node to the corresponding
+  // ExecutionContext.
+  static const ExecutionContext* From(const ExecutionContext* ec) { return ec; }
+  static const ExecutionContext* From(const FrameNode* frame_node);
+  static const ExecutionContext* From(const WorkerNode* worker_node);
+
   ExecutionContext() = default;
   ExecutionContext(const ExecutionContext&) = delete;
   ExecutionContext& operator=(const ExecutionContext&) = delete;

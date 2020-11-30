@@ -80,9 +80,28 @@ class DummyExecutionContextForLookup : public ExecutionContext {
 ExecutionContextRegistry::ExecutionContextRegistry() = default;
 
 ExecutionContextRegistry::~ExecutionContextRegistry() = default;
+
 // static
 ExecutionContextRegistry* ExecutionContextRegistry::GetFromGraph(Graph* graph) {
   return GraphRegisteredImpl<ExecutionContextRegistryImpl>::GetFromGraph(graph);
+}
+
+// static
+const ExecutionContext*
+ExecutionContextRegistry::GetExecutionContextForFrameNode(
+    const FrameNode* frame_node) {
+  auto* ec_registry = GetFromGraph(frame_node->GetGraph());
+  DCHECK(ec_registry);
+  return ec_registry->GetExecutionContextForFrameNodeImpl(frame_node);
+}
+
+// static
+const ExecutionContext*
+ExecutionContextRegistry::GetExecutionContextForWorkerNode(
+    const WorkerNode* worker_node) {
+  auto* ec_registry = GetFromGraph(worker_node->GetGraph());
+  DCHECK(ec_registry);
+  return ec_registry->GetExecutionContextForWorkerNodeImpl(worker_node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,13 +162,13 @@ const WorkerNode* ExecutionContextRegistryImpl::GetWorkerNodeByWorkerToken(
 }
 
 const ExecutionContext*
-ExecutionContextRegistryImpl::GetExecutionContextForFrameNode(
+ExecutionContextRegistryImpl::GetExecutionContextForFrameNodeImpl(
     const FrameNode* frame_node) {
   return GetOrCreateExecutionContextForFrameNode(frame_node);
 }
 
 const ExecutionContext*
-ExecutionContextRegistryImpl::GetExecutionContextForWorkerNode(
+ExecutionContextRegistryImpl::GetExecutionContextForWorkerNodeImpl(
     const WorkerNode* worker_node) {
   return GetOrCreateExecutionContextForWorkerNode(worker_node);
 }
