@@ -3,3 +3,9 @@ bartekn@chromium.org
 haraken@chromium.org
 lizeb@chromium.org
 palmer@chromium.org
+
+# For PCScan specific changes:
+per-file pcscan*=bikineev@chromium.org
+per-file pcscan*=mlippautz@chromium.org
+per-file object_bitmap*=bikineev@chromium.org
+per-file object_bitmap*=mlippautz@chromium.org
