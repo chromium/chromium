@@ -295,8 +295,10 @@ public class AssistantOnboardingCoordinatorTest {
         });
         CustomTabActivity activity = ApplicationTestUtils.waitForActivityWithClass(
                 CustomTabActivity.class, Stage.RESUMED, () -> spans[0].onClick(termsMessage));
-        CriteriaHelper.pollUiThread(
-                () -> activity.getActivityTab().getUrlString().equals(expectedTermsUrl));
+        CriteriaHelper.pollUiThread(() -> {
+            return activity.getActivityTab() != null
+                    && activity.getActivityTab().getUrlString().equals(expectedTermsUrl);
+        });
         activity.finish();
     }
 
@@ -362,7 +364,10 @@ public class AssistantOnboardingCoordinatorTest {
         String url = mActivity.getResources()
                              .getText(R.string.autofill_assistant_google_terms_url)
                              .toString();
-        CriteriaHelper.pollUiThread(() -> activity.getActivityTab().getUrlString().equals(url));
+        CriteriaHelper.pollUiThread(() -> {
+            return activity.getActivityTab() != null
+                    && activity.getActivityTab().getUrlString().equals(url);
+        });
         activity.finish();
     }
 
