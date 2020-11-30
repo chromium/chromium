@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1018656279737460067">لغو شده</translation>
+<translation id="1059913517121127803">اسکن شروع نشد</translation>
 <translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
 <translation id="1075811647922107217">اندازه صفحه</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
-<translation id="1734367976349034509">این دستگاه توسط سازمانی مدیریت می‌شود</translation>
+<translation id="1743558184855585519">وقتی باتری به این محدوده برسد، فرسوده به‌حساب می‌آید</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1930797645656624981">‏سرویس روش ورودی سیستم‌عامل Chrome</translation>
 <translation id="1947737735496445907">چاپ‌شده</translation>
 <translation id="1979103255016296513">مهلت تغییر گذرواژه به پایان رسید</translation>
 <translation id="1980044825731880088">‏سرعت CPU</translation>
-<translation id="2049639323467105390">این دستگاه توسط <ph name="DOMAIN" /> مدیریت می‌شود.</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکن</translation>
+<translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">‏انتخاب پوشه در برنامه Files…</translation>
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
+<translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4985509611418653372">اجرا</translation>
 <translation id="5168185087976003268">سلامت باتری</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">مدیریت شده</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">در «مرکز راهنمایی» اطلاعات بیشتری کسب کنید</translation>
+<translation id="5719918614880940190">‏این مورد میزان استفاده از CPU را اندازه‌گیری می‌کند و مجموع همه هسته‌ها است</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />، نسخه <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع فایل</translation>
+<translation id="7441459999606975924">استفاده از باتری موجب کاهش ظرفیت آن می‌شود</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7855434858642800953">فایل اسکن‌شده ذخیره شد!</translation>
+<translation id="7928373994957558460">نمایش مکان فایل</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>
+<translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
+<translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
 <translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">تأیید تغییر</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
+<translation id="8845001906332463065">دریافت راهنمایی</translation>
 <translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>

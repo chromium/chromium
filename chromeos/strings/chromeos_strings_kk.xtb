@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1018656279737460067">Бас тартылды</translation>
+<translation id="1059913517121127803">Сканерлеуді қосу мүмкін болмады.</translation>
 <translation id="1071587090247825784">Брандмаэур анықталды.</translation>
 <translation id="1075811647922107217">Бет өлшемі</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1204296502688602597">DNS кідірісі</translation>
 <translation id="1238612778414822719">HTTPS кідірісі</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS түрлендіргіші бар</translation>
-<translation id="1734367976349034509">Бұл құрылғыны ұйым басқарады</translation>
+<translation id="1743558184855585519">Батарея шегіне жеткенде, толықтай отырды дегенді білдіреді.</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
 <translation id="1930797645656624981">Chrome OS енгізу әдісі қызметі</translation>
 <translation id="1947737735496445907">Басып шығарылған</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
 <translation id="1980044825731880088">Орталық процессор жылдамдығы</translation>
-<translation id="2049639323467105390">Бұл құрылғыны <ph name="DOMAIN" /> басқарады.</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Іздеу</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4932733599132424254">Күні</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="5168185087976003268">Батарея күйі</translation>
@@ -118,6 +121,7 @@
 <translation id="54609108002486618">Басқарылады</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
+<translation id="5719918614880940190">Бұл орталық процессорды қолдану трафигін есептейді және ол – барлық ядролар жинағы.</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, нұсқасы: <ph name="MILESTONE_VERSION" />)</translation>
@@ -153,6 +157,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файл түрі</translation>
+<translation id="7441459999606975924">Қолданған сайын, батареялардың заряды отыра береді.</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
@@ -160,6 +165,7 @@
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7855434858642800953">Сканерленген файл сақталды!</translation>
+<translation id="7928373994957558460">Файл орнын көрсету</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
@@ -172,6 +178,8 @@
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше есептік жазбаға кіру үшін есептік жазба қосыңыз. Барлық кірілген есептік жазбаларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді есептік жазбалар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>
+<translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
+<translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8475690821716466388">WiFi желісі WEP PSK әлсіз протоколымен қорғалған.</translation>
 <translation id="8477551185774834963">DNS кідірісі рұқсат етілетін шектен сәл жоғары.</translation>
 <translation id="871560550817059752">Сәтсіз: сия бітіп қалды</translation>
@@ -181,6 +189,7 @@
 <translation id="8747900814994928677">Өзгерісті растау</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
+<translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8910721771319628100">Әдепкі желі кідірісі шекті мәннен асады.</translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>

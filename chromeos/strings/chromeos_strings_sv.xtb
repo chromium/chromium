@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
+<translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
 <translation id="1204296502688602597">DNS-latens</translation>
 <translation id="1238612778414822719">HTTPS-fördröjning</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver finns</translation>
-<translation id="1734367976349034509">Enheten är företagshanterad</translation>
+<translation id="1743558184855585519">Batteriet anses förbrukat när det når gränsen</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1930797645656624981">Tjänst för inmatningsmetod för Chrome OS</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="1980044825731880088">CPU-hastighet</translation>
-<translation id="2049639323467105390">Den här enheten hanteras av <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} försök kvar}other{<ph name="ERROR_MESSAGE" /> {0} försök kvar}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Sök</translation>
+<translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2872961005593481000">Stäng av</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
@@ -119,6 +120,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Läs mer i hjälpcentret</translation>
+<translation id="5719918614880940190">Detta mäter CPU-användningen och är en sammanställning av alla kärnor</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtyp</translation>
+<translation id="7441459999606975924">Batterikapaciteten avtar genom användning</translation>
 <translation id="7561454561030345039">Den här åtgärden hanteras av administratören</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
@@ -173,6 +176,8 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>
 <translation id="8364946094152050673">Inga namnservrar har angetts</translation>
+<translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
+<translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
 <translation id="8475690821716466388">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
 <translation id="871560550817059752">Misslyckades – slut på bläck</translation>
@@ -182,6 +187,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8747900814994928677">Bekräfta ändring</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8910721771319628100">Tröskelvärdet för latens överskreds för standardnätverket</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>

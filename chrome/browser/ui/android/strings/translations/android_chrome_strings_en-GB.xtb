@@ -371,6 +371,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Resetting wipes your history of data savings, including the list of visited sites.</translation>
+<translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="3701167022068948696">Fix now</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
@@ -979,6 +980,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7810647596859435254">Open with…</translation>
+<translation id="7815484226266492798">Long screenshot</translation>
 <translation id="7821588508402923572">Your data savings will appear here</translation>
 <translation id="7844171778363018843">No data selected to sync</translation>
 <translation id="7846296061357476882">Google services</translation>
@@ -1051,6 +1053,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8266862848225348053">Download location</translation>
 <translation id="8274165955039650276">See downloads</translation>
+<translation id="8281886186245836920">Skip</translation>
 <translation id="8284326494547611709">Captions</translation>
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> and more sites</translation>
@@ -1153,6 +1156,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065383040763568503">Stored data that Chrome doesn't think is important (e.g. sites with no saved settings or that you don't visit often)</translation>
 <translation id="9069543557624799859">Download will start at <ph name="TIME" />.</translation>
+<translation id="9069999660519089861">No unread pages</translation>
 <translation id="9070377983101773829">Start voice search</translation>
 <translation id="9074336505530349563">To get personalised content suggested by Google, sign in and turn on sync</translation>
 <translation id="9086302186042011942">Syncing</translation>

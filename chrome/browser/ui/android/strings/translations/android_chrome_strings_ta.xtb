@@ -371,6 +371,7 @@
 <translation id="363596933471559332">சேமிக்கப்பட்டுள்ள நற்சான்றிதழ்களைப் பயன்படுத்தி, இணையதளங்களில் தானாகவே உள்நுழையவும். இந்த அம்சம் முடக்கப்பட்டிருக்கும் போது, ஒவ்வொரு முறையும் இணையதளத்தில் உள்நுழைவதற்கு முன்பும் சரிபார்க்கும்படி கேட்கப்படுவீர்கள்.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">மீட்டமைத்தால், பார்வையிட்ட தளங்களின் பட்டியல் உட்பட டேட்டா சேமிப்புகளின் வரலாறு அழிக்கப்படும்.</translation>
+<translation id="3687645719033307815">இந்தப் பக்கத்தின் மாதிரிக்காட்சியைப் பார்க்கிறீர்கள்</translation>
 <translation id="3692944402865947621">சேமிப்பிடம் இல்லாததால், <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="3701167022068948696">இப்போதே சரிசெய்</translation>
 <translation id="371230970611282515">ஆபத்தான நிகழ்வுகள் ஏற்படுவதற்கு முன்பு அவற்றைக் கணித்து உங்களுக்கு எச்சரிக்கை அனுப்பும்.</translation>
@@ -491,6 +492,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
 <translation id="4605958867780575332">உருப்படி அகற்றப்பட்டது: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">பக்கங்களைப் பின்னர் பார்ப்பதற்குச் சேமித்து அதற்கான நினைவூட்டலைப் பெறலாம்</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 களவாடப்பட்ட கடவுச்சொல்}other{# களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
@@ -973,10 +975,12 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறை}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறைகள்}}</translation>
 <translation id="7778840695157240389">புதிய கட்டுரைகளைப் பார்க்க பின்னர் வந்து பாருங்கள்</translation>
 <translation id="7786595606756654269">குரல் மூலம் இணையத்தில் தேடுவதற்கும் நீங்கள் திறந்திருக்கும் தளங்களைப் பயன்படுத்துவதற்கும் உதவுவதன் மூலம் Google Assistant உங்கள் அனுபவத்தை இன்னும் சிறப்பாக்குகிறது. Google Assistant மூலம் நீங்கள் பயன்படுத்தும் தளங்களின் URLலையும் உள்ளடக்கங்களையும் அது உள்வாங்கிக் கொள்ளும்.</translation>
+<translation id="7790349552933995572">முகப்புத் திரை</translation>
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> தாவல்கள் மீட்டெடுக்கப்பட்டன</translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7810647596859435254">இதன் மூலம் திற…</translation>
+<translation id="7815484226266492798">நீண்ட ஸ்கிரீன்ஷாட்</translation>
 <translation id="7821588508402923572">உங்கள் டேட்டா சேமிப்புகள் இங்கே தோன்றும்</translation>
 <translation id="7844171778363018843">ஒத்திசைக்க தரவு எதுவும் தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="7846296061357476882">Google சேவைகள்</translation>
@@ -1049,6 +1053,7 @@
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8266862848225348053">பதிவிறக்க இருப்பிடம்</translation>
 <translation id="8274165955039650276">பதிவிறக்கங்களைக் காட்டு</translation>
+<translation id="8281886186245836920">தவிர்</translation>
 <translation id="8284326494547611709">வசனங்கள்</translation>
 <translation id="8310344678080805313">நிலையான தாவல்கள்</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> மற்றும் பல தளங்கள்</translation>
@@ -1129,7 +1134,7 @@
 <translation id="8920114477895755567">பெற்றோர்களின் விவரங்களுக்காகக் காத்திருக்கிறது.</translation>
 <translation id="8922289737868596582">பக்கங்களை ஆஃப்லைனில் பயன்படுத்த, மேலும் விருப்பங்கள் பொத்தானுக்குச் சென்று, அவற்றைப் பதிவிறக்கவும்</translation>
 <translation id="8928626432984354940">புக்மார்க் கோப்புறைகளின் பட்டியல் பாதித் திரையில் காட்டப்படுகிறது</translation>
-<translation id="8937267401510745927">பணிகளை நிறைவுசெய்ய உங்களுக்கு உதவும் வகையில் நீங்கள் Assistantடைப் பயன்படுத்தும் தளங்களின் URLகளையும் உள்ளடக்கங்களையும் Assistant மூலம் சமர்ப்பிக்கும் தகவல்களையும் Google பெறும். இந்தத் தகவல்கள் உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கக்கூடும். Chrome அமைப்புகளுக்குச் சென்று Assistantடை முடக்கலாம்.</translation>
+<translation id="8937267401510745927">பணிகளை நிறைவுசெய்ய உங்களுக்கு உதவும் வகையில் நீங்கள் Assistantடைப் பயன்படுத்தும் தளங்களின் URLகளையும் உள்ளடக்கங்களையும் Assistant மூலம் சமர்ப்பிக்கும் தகவல்களையும் Google பெறும். இந்தத் தகவல்கள் உங்கள் Google கணக்கில் சேமிக்கப்படலாம். Chrome அமைப்புகளுக்குச் சென்று Assistantடை முடக்கலாம்.</translation>
 <translation id="8937772741022875483">உங்கள் Chrome செயல்பாட்டை டிஜிட்டல் வெல்பீயிங்கிலிருந்து நீக்கவா?</translation>
 <translation id="8942627711005830162">வேறு சாளரத்தில் திற</translation>
 <translation id="8951232171465285730">Chrome உங்கள் <ph name="MEGABYTES" /> மெ.பை. அளவைச் சேமித்தது</translation>
@@ -1151,6 +1156,7 @@
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="9065383040763568503">முக்கியமில்லை என்று Chrome கருதும் சேமிக்கப்பட்ட தரவுகள் (எ.கா. சேமித்த அமைப்புகள் இல்லாத/அடிக்கடி நீங்கள் பார்க்காத தளங்கள்)</translation>
 <translation id="9069543557624799859"><ph name="TIME" />க்குப் பதிவிறக்கம் தொடங்கும்.</translation>
+<translation id="9069999660519089861">படிக்காத பக்கங்கள் எதுவுமில்லை</translation>
 <translation id="9070377983101773829">குரல் தேடலைத் தொடங்கு</translation>
 <translation id="9074336505530349563">Google பரிந்துரைக்கும் பிரத்யேக உள்ளடக்கத்தைப் பெற, உள்நுழைந்து, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="9086302186042011942">ஒத்திசைக்கிறது</translation>

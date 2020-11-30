@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Сиз баш баккан бардык барактардагы мазмунду бөгөттөө</translation>
 <translation id="1143142264369994168">Тастыктамага кол коюучу</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome компьютериңизден зыяндуу программа тапкан жок • 1 мүнөт мурун текшерилди}other{Chrome компьютериңизден зыяндуу программа тапкан жок • {NUM_MINS} мүнөт мурун текшерилди}}</translation>
-<translation id="1145292499998999162">Плагин бөгөттөлдү</translation>
 <translation id="1145593918056169051">Принтер токтотулду</translation>
 <translation id="114721135501989771">Google'дун акылдуу жөндөөлөрүн Chrome'до колдонуңуз</translation>
 <translation id="1147322039136785890">Эми түзмөктү <ph name="SUPERVISED_USER_NAME" /> алсын</translation>
@@ -336,6 +335,7 @@
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" тармагы талап кылган тастыктама же орнотулган эмес, же жарактан чыккан. Жаңы тастыктама алып, кайра туташып көрүңүз.</translation>
 <translation id="1375321115329958930">Сакталган сырсөздөр</translation>
 <translation id="137651782282853227">Сакталган даректер бул жерде көрүнөт</translation>
+<translation id="1376771218494401509">&amp;Терезенин аталышын коюңуз...</translation>
 <translation id="1377600615067678409">Азырынча өткөрүп жиберүү</translation>
 <translation id="1378613616312864539">Бул жөндөөнү <ph name="NAME" /> көзөмөлдөп жатат</translation>
 <translation id="1380028686461971526">Тармакка автоматтык түрдө туташуу</translation>
@@ -727,7 +727,6 @@
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" кеңейтүүсү автоматтык түрдө өчтү.</translation>
 <translation id="1802624026913571222">Уйку режимине капкагы жабылып турганда өтсүн</translation>
 <translation id="1802687198411089702">Бул баракча жооп бербей жатат. Аны күтсөңүз же болбосо чыгып кетсеңиз болот.</translation>
-<translation id="1802931390041703523">Flash бул баракта бөгөттөлгөн</translation>
 <translation id="1803531841600994172">Которула турган тил</translation>
 <translation id="1803545009660609783">Кайра үйрөтүү</translation>
 <translation id="1805738995123446102">Фондогу өтмөк микрофонуңузду колдонууда</translation>
@@ -1151,6 +1150,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2288735659267887385">Атайын мүмкүнчүлүктөрдүн жөндөөлөрү</translation>
 <translation id="2289270750774289114">Сайт жакын жердеги Bluetooth түзмөктөрүн колдонгону жатканда уруксат суралсын (сунушталат)</translation>
 <translation id="2290615375132886363">Планшет режиминде чабыттоо баскычтары</translation>
+<translation id="229182044471402145">Эч нерсе табылган жок.</translation>
 <translation id="2292848386125228270"><ph name="PRODUCT_NAME" /> кызматын кадимки колдонуучу катары жандырыңыз. Эгер ага суперколдонуучу катары киргиңиз келсе, браузердин параметрин "--no-sandbox" деп белгилеп, кайра жандырыңыз.</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> орнотосузбу?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> нерсе табылды</translation>
@@ -2758,7 +2758,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4124823734405044952">Коопсуздук ачкычыңыз баштапкы абалга келтирилди</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="412730574613779332">Спандекс</translation>
-<translation id="412940972494182898">Бул жолу Flash иштетилсин</translation>
 <translation id="4130199216115862831">Түзмөк таржымалы</translation>
 <translation id="4130207949184424187">Бул кеңейтүү, Omnibox'тон кандайдыр бир нерсе изделип жатканда, көрсөтүлө турган бетти өзгөрттү.</translation>
 <translation id="4130750466177569591">Макул</translation>
@@ -3184,6 +3183,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4651484272688821107">Онлайн компоненти демо режиминдеги ресурстар менен жүктөлбөй калды.</translation>
 <translation id="4652935475563630866">Камеранын жөндөөлөрүнө өзгөртүүлөр киргизилгендиктен Parallels Desktop'ту кайра иштетүү керек. Улантуу үчүн Parallels Desktop'ту кайра иштетиңиз.</translation>
 <translation id="4653405415038586100">Linux'ту конфигурациялоо катасы</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 начар сырсөз}other{{NUM_WEAK} начар сырсөз}}</translation>
 <translation id="4657914796247705218">TrackPoint ылдамдыгы</translation>
 <translation id="465878909996028221">Серепчидеги башка дарекке багыттамада http, https жана файл протоколдору гана колдоого алынат.</translation>
 <translation id="4659077111144409915">Негизги аккаунт</translation>
@@ -4262,6 +4262,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5946591249682680882">Кабарлоо ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Файл талданбай жатат</translation>
 <translation id="5950819593680344519">Chrome компьютериңизден зыяндуу программа тапкан жок • Кечээ текшерилди</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> жергиликтүү ариптерди колдонгусу келет</translation>
 <translation id="5951624318208955736">Монитор</translation>
 <translation id="5955282598396714173">Сырсөзүңүздүн мөөнөтү бүтүп калды. Аны өзгөртүү үчүн чыгып, кайра кириңиз.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -4966,6 +4967,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6785518634832172390">PIN код 12 же андан азыраак сандан турушу керек</translation>
 <translation id="6786747875388722282">Кеңейтүүлөр</translation>
 <translation id="6787839852456839824">Ыкчам баскычтар</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# байланыш жеткиликсиз. Алар менен Nearby Share аркылуу бөлүшүү үчүн байланыштарыңызга алардын Google аккаунту менен байланышкан электрондук почта дарегин кошуңуз.}other{# байланыш жеткиликсиз. Алар менен Nearby Share аркылуу бөлүшүү үчүн байланыштарыңызга алардын Google аккаунту менен байланышкан электрондук почта дарегин кошуңуз.}}</translation>
 <translation id="6788210894632713004">Топтомдон чыгарыла элек кеңейтүү</translation>
 <translation id="6789592661892473991">Туурасынан бөлүү</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
@@ -5012,6 +5014,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="683373380308365518">Шамдагай жана коопсуз серепчиге которулуу</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртуу үчүн сырсөзүңүздү кайра киргизиңиз.</translation>
 <translation id="6838034009068684089">Сайт терезени ачып, экрандарыңызга жайгаштырганы жатканда уруксат суралсын (сунушталат)</translation>
+<translation id="6838694093138907871">Жараксыз код. Кайра аракет кылыңыз.</translation>
 <translation id="6839225236531462745">Тастыктаманы жок кылуу катасы</translation>
 <translation id="6839916869147598086">Аккаунтка кирүү өзгөрдү</translation>
 <translation id="6840155290835956714">Жөнөтүүдөн мурун суроо</translation>
@@ -5252,6 +5255,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7093866338626856921">Төмөнкүчө аталган түзмөктөр менен дайындарды алмашуу: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C түзмөгү (аркасындагы сол жактагы оюкча)</translation>
 <translation id="7098447629416471489">Башка сакталган издөө каражаттары бул жерде көрүнөт</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 уурдалган сырсөз бар}other{{NUM_COMPROMISED} уурдалган сырсөз бар}}</translation>
 <translation id="7099337801055912064">Көлөмдүү PPD жүктөлбөйт. Көлөмү 250 Кб ашпашы керек.</translation>
 <translation id="7102687220333134671">Автоматтык жаңыртуулар күйгүзүлгөн</translation>
 <translation id="7102832101143475489">Сурамдын күтүү мөөнөтү аяктады</translation>
@@ -5691,6 +5695,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7635048370253485243">Администраторуңуз кадап койду</translation>
 <translation id="763632859238619983">Бардык сайттарга төлөм иштеткичтерин орнотууга тыюу салынсын</translation>
 <translation id="7636919061354591437">Ушул түзмөккө орнотуу</translation>
+<translation id="7637593984496473097">Дискте орун аз</translation>
 <translation id="7638605456503525968">Сериялык порттор</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> уруксаты бар сайттарга автоматтык түрдө сакталган сырсөздөр менен киргизет.</translation>
 <translation id="7642778300616172920">Купуя мазмун жашырылсын</translation>
@@ -6016,7 +6021,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7974566588408714340">Кайра <ph name="EXTENSIONNAME" /> колдонуп көрүңүз</translation>
 <translation id="7974936243149753750">Камтылбаган аймак</translation>
 <translation id="7975504106303186033">Бул Chrome Education түзмөгүн окуу аккаунтуна каттаңыз. Жаңы аккаунтту каттоо үчүн g.co/workspace/edusignup бөлүмүнө өтүңүз.</translation>
-<translation id="7977404132325989121">Терезенин &amp;аталышын коюңуз…</translation>
 <translation id="7978412674231730200">Жеке ачкыч</translation>
 <translation id="7978450511781612192">Сиз Google аккаунтуңуздан чыгарыласыз. Кыстармаларыңыз, таржымалыңыз, сырсөздөрүңүз жана башка жөндөөлөр мындан ары шайкештирилбейт.</translation>
 <translation id="7980084013673500153">Мүлк ID: <ph name="ASSET_ID" /></translation>
@@ -6258,6 +6262,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8253198102038551905">Тармак касиеттерин ачуу үчүн "+" дегенди чыкылдатыңыз</translation>
 <translation id="8255451560461371599">Эч кандай фон жок</translation>
 <translation id="8256319818471787266">Балтек</translation>
+<translation id="8257435388931378346"><ph name="ACTION" /> которуштуруу аракетин дайындоо</translation>
 <translation id="8257950718085972371">Камераны колдонуу мүмкүнчүлүгү бөгөттөлө берсин</translation>
 <translation id="8259239505248583312">Кеттик!</translation>
 <translation id="8260864402787962391">Чычкан</translation>
@@ -6521,6 +6526,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8584280235376696778">&amp;Видеону жаңы өтмөктө ачуу</translation>
 <translation id="8584427708066927472">Сырсөз бул түзмөктөн өчүрүлдү</translation>
 <translation id="8585480574870650651">Crostini'ни өчүрүү</translation>
+<translation id="8585841788766257444">Төмөнкү тизмедеги сайттарда демейки эмес, ыңгайлаштырылган жөндөө колдонулат</translation>
 <translation id="8588866096426746242">Профилдин статистикасын көрсөтүү</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – гарнитурада VR режими колдонулууда</translation>
 <translation id="8590375307970699841">Автоматтык жаңыртууларды орнотуу</translation>
@@ -6581,7 +6587,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8648408795949963811">Түнкү режимдин түс температурасы</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> төмөнкү аракеттерди аткарганы жатат: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> жана башкалар</translation>
 <translation id="8650543407998814195">Эски профилиңизге мындан ары кире албасаңыз да, аны өчүрүп салсаңыз болот.</translation>
-<translation id="865118751078059229">Терезенин &amp;аталышын коюңуз…</translation>
 <translation id="8651585100578802546">Бул бетти күчтөп кайра жүктөө</translation>
 <translation id="8652400352452647993">Топтом кеңейтүүсүндөгү ката</translation>
 <translation id="8654151524613148204">Файлдын көлөмү компьютериңиз үчүн өтө чоң болгондуктан, аны менен иштей албайсыз. Кечиресиз.</translation>
@@ -6885,7 +6890,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="897414447285476047">Начар байланыштан улам файл толук жүктөлүп алынбай калды.</translation>
 <translation id="897525204902889653">Карантин кызматы</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" жана башка 1 өтмөк}other{"<ph name="TAB_TITLE" />" жана башка # өтмөк}}</translation>
-<translation id="8976520271376534479">Flash бул баракта бөгөттөлгөн.</translation>
 <translation id="8977811652087512276">Сырсөз туура эмес же файл бузук</translation>
 <translation id="8978154919215542464">Күйүк – баарын шайкештирүү</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> сайтында</translation>
@@ -6957,6 +6961,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9044646465488564462">Тармакка туташпай калды: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Кирүүгө аракет кылып жаткан барактын веб дарегин Google'га жөнөтөт</translation>
 <translation id="9046895021617826162">Туташпай калды</translation>
+<translation id="9048868107467198961">Коопсуздук маселелери табылган жок</translation>
 <translation id="9050666287014529139">Купуя сөз айкашы</translation>
 <translation id="9052208328806230490"><ph name="EMAIL" /> каттоо эсеби аркылуу принтерлериңизди <ph name="CLOUD_PRINT_NAME" /> менен каттадыңыз.</translation>
 <translation id="9052404922357793350">Бөгөттөөнү улантуу</translation>
@@ -7003,6 +7008,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9102610709270966160">Кеңейтүүнү иштетүү</translation>
 <translation id="9103479157856427471">Жакындатылган экранды баскычтоп менен жылдыруу</translation>
 <translation id="9103868373786083162">Артка кайрылуу үчүн басыңыз, таржымалды көрүү үчүн мазмундук меню</translation>
+<translation id="9108035152087032312">&amp;Терезенин аталышын коюңуз...</translation>
 <translation id="9108072915170399168">Учурда дайын-даректердин өткөрүлүшү "Интернетсиз" деп коюлган</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education Купуялык эскертүүсүндө<ph name="LINK_END" /> G Suite for Education колдонуучуларына жана ата-энелерге кызмат тарабынан кайсы дайын-даректер, эмне үчүн чогултулары жана алардын иштетилүүсү тууралуу түшүнүндүрмө берилет.</translation>
 <translation id="9108808586816295166">Коопсуз DNS ар дайым жеткиликтүү болбошу мүмкүн</translation>

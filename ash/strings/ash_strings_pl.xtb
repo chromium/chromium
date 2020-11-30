@@ -91,6 +91,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
 <translation id="1782199038061388045">tłumaczenie</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
+<translation id="1804572139604454141">Nagrywanie zostało zakończone z powodu krytycznie małej ilości miejsca na dysku</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1812997170047690955">Co widać na moim ekranie?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -722,7 +723,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7837740436429729974">Czas minął</translation>
 <translation id="7842569679327885685">Ostrzeżenie: funkcja eksperymentalna</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
-<translation id="7860671499921112077">Aby otworzyć Przegląd, przesuń 3 palcami w górę</translation>
+<translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>

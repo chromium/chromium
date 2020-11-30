@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1018656279737460067">Annulleret</translation>
+<translation id="1059913517121127803">Kunne ikke begynde at scanne</translation>
 <translation id="1071587090247825784">En firewall blev registreret</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
+<translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Ukendt fejl.</translation>
 <translation id="1204296502688602597">DNS-forsinkelse</translation>
 <translation id="1238612778414822719">HTTPS-forsinkelse</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Stoppet – Mangler blæk</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver er til stede</translation>
-<translation id="1734367976349034509">Denne enhed er virksomhedsadministreret</translation>
+<translation id="1743558184855585519">Batteriet anses som opbrugt, når det har nået grænsen</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1930797645656624981">Indtastningsmetodetjeneste for Chrome OS</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="1980044825731880088">CPU-hastighed</translation>
-<translation id="2049639323467105390">Denne enhed administreres af <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scan</translation>
+<translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="3008341117444806826">OPDATER</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
+<translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="5168185087976003268">Batteriets tilstand</translation>
@@ -118,6 +121,7 @@
 <translation id="54609108002486618">Administreret</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Få flere oplysninger i Hjælp</translation>
+<translation id="5719918614880940190">Dette måler CPU-forbruget og er en sammenlægning af alle kerner</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
@@ -153,6 +157,7 @@
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
+<translation id="7441459999606975924">Batteritiden forværres med tiden</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
@@ -160,6 +165,7 @@
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den scannede fil er gemt.</translation>
+<translation id="7928373994957558460">Se filplacering</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
@@ -172,6 +178,8 @@
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8364946094152050673">Navneserverne er ikke angivet</translation>
+<translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" /> administreres af en virksomhed</translation>
+<translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
 <translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er en smule højere end den tilladte grænse</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
@@ -181,6 +189,7 @@
 <translation id="8747900814994928677">Bekræft ændring</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1059913517121127803">Pokretanje skeniranja nije uspjelo</translation>
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
@@ -25,13 +26,11 @@
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutnost DNS prevoditelja</translation>
-<translation id="1734367976349034509">Ovim uređajem upravlja tvrtka</translation>
 <translation id="1905710495812624430">Premašen je maksimalan dopušteni broj pokušaja.</translation>
 <translation id="1930797645656624981">Usluga načina unosa OS-a Chrome</translation>
 <translation id="1947737735496445907">Ispisano</translation>
 <translation id="1979103255016296513">Zakašnjela promjena zaporke</translation>
 <translation id="1980044825731880088">Brzina procesora</translation>
-<translation id="2049639323467105390">Ovim uređajem upravlja <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
@@ -100,6 +99,7 @@
 <translation id="4832079907277790330">Odaberi mapu u aplikaciji Datoteke...</translation>
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema papira</translation>
+<translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="5168185087976003268">Zdravlje baterije</translation>
@@ -161,6 +161,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7690294790491645610">Potvrdite novu zaporku</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Skenirana datoteka je spremljena!</translation>
+<translation id="7928373994957558460">Prikaži lokaciju datoteke</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>
@@ -182,6 +183,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8747900814994928677">Potvrda promjena</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Zadano</translation>
+<translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8910721771319628100">Zadana mreža iznad praga latencije</translation>
 <translation id="8919837981463578619">Nije uspjelo – nema ladice</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>

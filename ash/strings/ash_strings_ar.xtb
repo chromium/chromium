@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">التمرير لليمين</translation>
 <translation id="1782199038061388045">الترجمة</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
+<translation id="1804572139604454141">تم إنهاء التسجيل نتيجة لانخفاض مساحة القرص.</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="1812997170047690955">ماذا يظهر على شاشتي؟</translation>
 <translation id="1823873187264960516">الإيثرنت: <ph name="ADDRESS" /></translation>
@@ -888,7 +889,7 @@
 <translation id="9201374708878217446">حالة الاتصال <ph name="CONNECTION_STATUS" />، يديرها المشرف</translation>
 <translation id="9210037371811586452">جارٍ الخروج من وضع سطح المكتب الموحد</translation>
 <translation id="9211681782751733685">الوقت المتبقي حتى يتم شحن البطارية بالكامل<ph name="TIME_REMAINING" />.</translation>
-<translation id="9215934040295798075">تعيين خلفية</translation>
+<translation id="9215934040295798075">ضبط الخلفية</translation>
 <translation id="921989828232331238">قفّل أحد الوالدين جهازك لليوم</translation>
 <translation id="9220525904950070496">إزالة الحساب</translation>
 <translation id="923686485342484400">‏للخروج اضغط على Ctrl Shift Q مرتين.</translation>

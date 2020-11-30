@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">किसी भी पेज पर आपकी देखी गई सामग्री पर रोक लगाएं</translation>
 <translation id="1143142264369994168">प्रमाणपत्र हस्ताक्षरकर्ता</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • 1 मिनट पहले जांच की गई}one{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • {NUM_MINS} मिनट पहले जांच की गई}other{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • {NUM_MINS} मिनट पहले जांच की गई}}</translation>
-<translation id="1145292499998999162">प्लग इन अवरोधित</translation>
 <translation id="1145593918056169051">प्रिंटर बंद हो गया है</translation>
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
@@ -337,6 +336,7 @@
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" के लिए ज़रूरी प्रमाणपत्र या तो इंस्टॉल नहीं है या अब मान्य नहीं है.  कृपया नया प्रमाणपत्र पाएं और फिर से कनेक्ट करने की कोशिश करें.</translation>
 <translation id="1375321115329958930">सेव किए गए पासवर्ड</translation>
 <translation id="137651782282853227">सहेजे गए पते यहां दिखाई देंगे</translation>
+<translation id="1376771218494401509">&amp;विंडो को कोई नाम दें...</translation>
 <translation id="1377600615067678409">अभी के लिए छोड़ें</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> इस सेटिंग को नियंत्रित कर रहा है</translation>
 <translation id="1380028686461971526">नेटवर्क से अपने-आप कनेक्ट हो</translation>
@@ -728,7 +728,6 @@
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" एक्सटेंशन अपने आप अक्षम हो गया था.</translation>
 <translation id="1802624026913571222">कवर बंद होने पर, डिवाइस को नींद मोड में ले जाएं</translation>
 <translation id="1802687198411089702">पेज काम नहीं कर रहा है. आप इंतज़ार कर सकते हैं या बाहर निकल सकते हैं.</translation>
-<translation id="1802931390041703523">इस पेज पर फ़्लैश ब्लॉक कर दिया गया था</translation>
 <translation id="1803531841600994172">वह भाषा जिसमें अनुवाद करना है</translation>
 <translation id="1803545009660609783">फिर से सिखाएं</translation>
 <translation id="1805738995123446102">बैकग्राउंड टैब आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
@@ -1152,6 +1151,7 @@
 <translation id="2288735659267887385">सुलभता सेटिंग</translation>
 <translation id="2289270750774289114">जब कोई साइट आस-पास के ब्लूटूथ डिवाइस को खोजना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="2290615375132886363">टैबलेट मोड में नेविगेशन बटन</translation>
+<translation id="229182044471402145">कोई भी मिलता-जुलता फ़ॉन्ट नहीं मिला.</translation>
 <translation id="2292848386125228270">कृपया <ph name="PRODUCT_NAME" /> को सामान्‍य उपयोगकर्ता की तरह शुरू करें. अगर आपको डेवलपमेंट के लिए रूट के रूप में चलाना है, तो --no-sandbox फ़्लैग के साथ फिर से चलाएं.</translation>
 <translation id="2294358108254308676">क्या आप <ph name="PRODUCT_NAME" /> को इंस्‍टॉल करना चाहते हैं?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> नतीजे</translation>
@@ -2758,7 +2758,6 @@
 <translation id="4124823734405044952">आपकी सुरक्षा कुंजी रीसेट कर दी गई है</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="412730574613779332">स्‍पैंडेक्‍स</translation>
-<translation id="412940972494182898">इस बार फ़्लैश चलाएं</translation>
 <translation id="4130199216115862831">डिवाइस लॉग</translation>
 <translation id="4130207949184424187">इस एक्सटेंशन ने यह बदल दिया है कि जब आप ऑम्निबॉक्स से खोजते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="4130750466177569591">मैं सहमत हूं</translation>
@@ -3184,6 +3183,7 @@
 <translation id="4651484272688821107">डेमो मोड संसाधनों के साथ ऑनलाइन हिस्से लोड नहीं किए जा सके.</translation>
 <translation id="4652935475563630866">कैमरे की सेटिंग में बदलाव करने के लिए, Parallels Desktop का फिर से लॉन्च होना ज़रूरी है. आगे बढ़ने के लिए, Parallels Desktop को फिर से लॉन्च करें.</translation>
 <translation id="4653405415038586100">Linux को कॉन्फ़िगर करने में गड़बड़ी हुई</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 कमज़ोर पासवर्ड}one{{NUM_WEAK} कमज़ोर पासवर्ड}other{{NUM_WEAK} कमज़ोर पासवर्ड}}</translation>
 <translation id="4657914796247705218">TrackPoint की रफ़्तार</translation>
 <translation id="465878909996028221">ब्राउज़र रीडायरेक्ट के लिए सिर्फ़ एचटीटीपी, एचटीटीपीएस और फ़ाइल प्रोटोकॉल काम करते हैं.</translation>
 <translation id="4659077111144409915">प्राथमिक खाता</translation>
@@ -4263,6 +4263,7 @@
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">फ़ाइल को पार्स नहीं किया जा सका</translation>
 <translation id="5950819593680344519">Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • 1 दिन पहले जांच की गई</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> स्थानीय फ़ॉन्ट इस्तेमाल करना चाहता है</translation>
 <translation id="5951624318208955736">मॉनिटर</translation>
 <translation id="5955282598396714173">आपके पासवर्ड की समय-सीमा खत्म हो गई है. इसे बदलने के लिए कृपया साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="5955304353782037793">ऐप्लिकेशन</translation>
@@ -4967,6 +4968,7 @@
 <translation id="6785518634832172390">पासवर्ड 12 या उससे कम अंक का होना चाहिए</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
 <translation id="6787839852456839824">कीबोर्ड शॉर्टकट</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# संपर्क उपलब्ध नहीं है. इस संपर्क के साथ आस-पास शेयर करने की सुविधा का इस्तेमाल करने के लिए, इस संपर्क के Google खाते से जुड़ा ईमेल पता अपने संपर्कों में जोड़ें.}one{# संपर्क उपलब्ध नहीं है. इस संपर्क के साथ आस-पास शेयर करने की सुविधा का इस्तेमाल करने के लिए, इस संपर्क के Google खाते से जुड़ा ईमेल पता अपने संपर्कों में जोड़ें.}other{# संपर्क उपलब्ध नहीं हैं. इन संपर्कों के साथ आस-पास शेयर करने की सुविधा का इस्तेमाल करने के लिए, इन संपर्कों के Google खाते से जुड़े ईमेल पते अपने संपर्कों में जोड़ें.}}</translation>
 <translation id="6788210894632713004">पैक नहीं किया गया एक्सटेंशन</translation>
 <translation id="6789592661892473991">हाॅरिज़ॉन्टल (बाईं से दाईं ओर) रूप से छोटे-छोटे हिस्सों में बांटें यानी स्प्लिट करें</translation>
 <translation id="6790428901817661496">चलाएं</translation>
@@ -5013,6 +5015,7 @@
 <translation id="683373380308365518">किसी स्मार्ट और सुरक्षित ब्राउज़र पर जाएं</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>
 <translation id="6838034009068684089">जब कोई साइट, विंडो को खोलकर आपकी स्क्रीन पर लगाना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
+<translation id="6838694093138907871">कोड गलत है, कृपया फिर से कोशिश करें.</translation>
 <translation id="6839225236531462745">प्रमाणपत्र हटाने की गड़बड़ी</translation>
 <translation id="6839916869147598086">साइन इन बदल गया है</translation>
 <translation id="6840155290835956714">भेजने से पहले पूछें</translation>
@@ -5253,6 +5256,7 @@
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> नामक डिवाइस से डेटा का लेन-देन करें</translation>
 <translation id="7098389117866926363">USB-C डिवाइस (पीछे बायां पोर्ट)</translation>
 <translation id="7098447629416471489">सेव किए गए दूसरे सर्च इंजन यहां दिखाई देंगे</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 पासवर्ड या तो हैक हुआ है या चोरी हुआ है}one{{NUM_COMPROMISED} पासवर्ड या तो हैक हुआ है या चोरी हुआ है}other{{NUM_COMPROMISED} पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं}}</translation>
 <translation id="7099337801055912064">बड़ा पीपीडी लोड नहीं किया जा सकता. आकार 250 केबी से ज़्यादा नहीं होना चाहिए.</translation>
 <translation id="7102687220333134671">ऑटोमैटिक अपडेट चालू हैं</translation>
 <translation id="7102832101143475489">अनुरोध का समय खत्म हो गया</translation>
@@ -5537,7 +5541,7 @@
 <translation id="7443806024147773267">अपने Google खाते में साइन इन करके जब चाहें अपने पासवर्ड को ऐक्सेस करें</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> बंद करें</translation>
 <translation id="7448430327655618736">ऐप्लिकेशन को अपने आप इंस्टॉल करें</translation>
-<translation id="7448538354405258275">ग्राहक सेवा प्रतिनिधि, सेवा को चालू करने में मदद के लिए, ईआईडी नंबर इस्तेमाल कर सकता है.</translation>
+<translation id="7448538354405258275">सेवा को चालू करने में आपकी मदद के लिए, ग्राहक सेवा प्रतिनिधि ईआईडी नंबर इस्तेमाल कर सकता है.</translation>
 <translation id="7449752890690775568">क्या आप पासवर्ड हटाना चाहते हैं?</translation>
 <translation id="7450761244949417357">अभी <ph name="ALTERNATIVE_BROWSER_NAME" /> में खुल रहा है</translation>
 <translation id="7453008956351770337">इस प्रिंटर को चुनकर, आप नीचे दिए गए एक्सटेंशन को अपने प्रिंटर के लिए एक्सेस करने की अनुमति दे रहे हैं:</translation>
@@ -5692,6 +5696,7 @@
 <translation id="7635048370253485243">आपके एडमिन ने पिन किया</translation>
 <translation id="763632859238619983">किसी भी साइट को भुगतान हैंडलर इंस्टॉल करने की अनुमति नहीं दें</translation>
 <translation id="7636919061354591437">इस डिवाइस पर इंस्टॉल करें</translation>
+<translation id="7637593984496473097">डिस्क में स्टोर करने के लिए जगह नहीं बची है</translation>
 <translation id="7638605456503525968">सीरियल पोर्ट</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />   सहेजे गए पासवर्ड से आपको योग्य साइट में अपने आप प्रवेश करा देता है.</translation>
 <translation id="7642778300616172920">संवेदनशील सामग्री छिपाएं</translation>
@@ -6016,7 +6021,6 @@
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> का उपयोग करके फिर से प्रयास करें</translation>
 <translation id="7974936243149753750">ओवरस्कैन</translation>
 <translation id="7975504106303186033">किसी 'शिक्षा के लिए G Suite' खाते में इस Chrome Education डिवाइस का नाम दर्ज करना ज़रूरी है. नए खाते के लिए, कृपया g.co/workspace/edusignup पर जाकर, साइन अप करें.</translation>
-<translation id="7977404132325989121">&amp;इस विंडो को कोई नाम दें...</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
 <translation id="7978450511781612192">इससे आप अपने Google खातों से साइन आउट हो जाएंगे. आपके बुकमार्क, इतिहास, पासवर्ड और कई चीज़ें अब सिंक नहीं की जाएंगी.</translation>
 <translation id="7980084013673500153">एसेट आईडी: <ph name="ASSET_ID" /></translation>
@@ -6259,6 +6263,7 @@
 <translation id="8253198102038551905">नेटवर्क प्रॉपर्टी पाने के लिए '+' बटन पर क्‍लिक करें</translation>
 <translation id="8255451560461371599">कोई बैकग्राउंड नहीं</translation>
 <translation id="8256319818471787266">स्‍पार्की</translation>
+<translation id="8257435388931378346"><ph name="ACTION" /> के लिए स्विच तय करें</translation>
 <translation id="8257950718085972371">कैमरे की एक्सेस ब्लॉक करना जारी रखें</translation>
 <translation id="8259239505248583312">आइए शुरू करें</translation>
 <translation id="8260864402787962391">माउस</translation>
@@ -6522,6 +6527,7 @@
 <translation id="8584280235376696778">वीडियो नए टैब में &amp;खोलें</translation>
 <translation id="8584427708066927472">पासवर्ड को इस डिवाइस से मिटा दिया गया है</translation>
 <translation id="8585480574870650651">Crostini हटाएं</translation>
+<translation id="8585841788766257444">नीचे दी गई साइटें, डिफ़ॉल्ट के बजाय कस्टम सेटिंग को फ़ॉलो करती हैं</translation>
 <translation id="8588866096426746242">प्रोफ़ाइल आंकड़े दिखाएं</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR हेडसेट को दिखा रहा है</translation>
 <translation id="8590375307970699841">स्वचालित अपडेट सेट अप करें</translation>
@@ -6582,7 +6588,6 @@
 <translation id="8648408795949963811">नाइट लाइट कलर टेंपरेचर</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> इनके लिए अनुमति चाहता है: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, वगैरह</translation>
 <translation id="8650543407998814195">हालांकि अब आप अपनी पुरानी प्रोफ़ाइल एक्सेस नहीं कर सकते हैं, लेकिन फिर भी आप उसे हटा सकते हैं.</translation>
-<translation id="865118751078059229">&amp;इस विंडो को कोई नाम दें...</translation>
 <translation id="8651585100578802546">इस पेज को ज़बरदस्ती फिर से लोड करें</translation>
 <translation id="8652400352452647993">पैक एक्‍सटेंशन गड़बड़ी</translation>
 <translation id="8654151524613148204">फ़ाइल आपके कंप्‍यूटर द्वारा संभाले जाने के लिए बहुत बड़ी है. क्षमा करें.</translation>
@@ -6887,7 +6892,6 @@
 <translation id="897414447285476047">कनेक्शन में समस्या आने के कारण गंतव्य फ़ाइल अधूरी रह गई थी.</translation>
 <translation id="897525204902889653">क्वॉरंटीन सेवा</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" और 1 अन्य टैब}one{"<ph name="TAB_TITLE" />" और # अन्य टैब}other{"<ph name="TAB_TITLE" />" और # अन्य टैब}}</translation>
-<translation id="8976520271376534479">इस पेज पर फ़्लैश ब्लॉक कर दिया गया था.</translation>
 <translation id="8977811652087512276">गलत पासवर्ड या खराब फ़ाइल</translation>
 <translation id="8978154919215542464">चालू - सब कुछ सिंक करें</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> पर</translation>
@@ -6959,6 +6963,7 @@
 <translation id="9044646465488564462">नेटवर्क से कनेक्ट करने में विफल रहा: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">आप जिस पेज पर जाने की कोशिश कर रहे हैं उसका वेब पता Google को भेजती है</translation>
 <translation id="9046895021617826162">कनेक्ट करना विफल</translation>
+<translation id="9048868107467198961">सुरक्षा से जुड़ी कोई भी समस्या नहीं मिली</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>
 <translation id="9052208328806230490">आपने अपने प्रिंटर को खाता <ph name="EMAIL" /> का उपयोग करके <ph name="CLOUD_PRINT_NAME" /> के साथ पंजीकृत किया है </translation>
 <translation id="9052404922357793350">ब्लॉक करना जारी रखें</translation>
@@ -7005,6 +7010,7 @@
 <translation id="9102610709270966160">एक्‍सटेंशन चालू करें</translation>
 <translation id="9103479157856427471">ज़ूम इन की गई स्क्रीन को कीबोर्ड के फ़ोकस के हिसाब से बदलना</translation>
 <translation id="9103868373786083162">वापस जाने के लिए इसे दबाएं, इतिहास देखने के लिए संदर्भ मेन्यू पर जाएं</translation>
+<translation id="9108035152087032312">&amp;विंडो को कोई नाम दें...</translation>
 <translation id="9108072915170399168">मौजूदा डेटा खर्च सेटिंग में इंटरनेट का इस्तेमाल नहीं होगा</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />'शिक्षा के लिए G Suite' के निजता नोटिस<ph name="LINK_END" /> का काम 'शिक्षा के लिए G Suite' के उपयोगकर्ताओं और अभिभावक की मदद करना है. इससे उन्हें यह समझने में मदद मिलती है कि प्रॉडक्ट किस डेटा को इकट्ठा करता है, क्यों इकट्ठा करता है, और इकट्ठा किए गए डेटा के साथ क्या किया जाता है.</translation>
 <translation id="9108808586816295166">हो सकता है कि सुरक्षित डीएनएस हर समय उपलब्ध न हो</translation>

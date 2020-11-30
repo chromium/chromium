@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1018656279737460067">Preklicano</translation>
+<translation id="1059913517121127803">Ni bilo mogoče začeti optično brati</translation>
 <translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
+<translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
 <translation id="1238612778414822719">Zakasnitev HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisotnost razreševalnika DNS</translation>
-<translation id="1734367976349034509">To napravo upravlja podjetje</translation>
+<translation id="1743558184855585519">Baterija se smatra kot izrabljena, ko doseže omejitev števila polnjenj.</translation>
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
 <translation id="1930797645656624981">Storitev načina vnosa v okolju OS Chrome</translation>
 <translation id="1947737735496445907">Natisnjeno</translation>
 <translation id="1979103255016296513">Rok za spremembo gesla je potekel</translation>
 <translation id="1980044825731880088">Hitrost CPE-ja</translation>
-<translation id="2049639323467105390">To napravo upravlja <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Še {0} poskusi}other{<ph name="ERROR_MESSAGE" /> Še {0} poskusov}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Išči</translation>
+<translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Zaustavitev</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4890353053343094602">Takoj izberite novo</translation>
 <translation id="4917889632206600977">Ustavljeno – zmanjkalo je papirja</translation>
+<translation id="4921665434385737356">Napolnjeno <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Izvedi</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
@@ -119,6 +122,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="54609108002486618">Upravljan</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Preberite več o tem v centru za pomoč.</translation>
+<translation id="5719918614880940190">Meri uporabo CPE-ja in predstavlja združene podatke za vsa jedra.</translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, različica <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
+<translation id="7441459999606975924">Zmogljivost baterij sčasoma upade.</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
@@ -161,6 +166,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7855434858642800953">Optično prebrana datoteka je shranjena.</translation>
+<translation id="7928373994957558460">Pokaži lokacijo datoteke</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
@@ -173,6 +179,8 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
 <translation id="8352772353338965963">Dodajte račun za prijavo z več računi. Do vseh prijavljenih računov je mogoče dostopati brez gesla, zato to funkcijo uporabljajte samo z zaupanja vrednimi računi.</translation>
 <translation id="8364946094152050673">Prazni imenski strežniki</translation>
+<translation id="8395584934117017006">To napravo <ph name="DEVICE_TYPE" /> upravlja podjetje.</translation>
+<translation id="8398927464629426868">Trenutna hitrost polnjenja ali praznjenja baterije naprave.</translation>
 <translation id="8475690821716466388">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
 <translation id="871560550817059752">Napaka – zmanjkalo je črnila</translation>
@@ -182,6 +190,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8747900814994928677">Potrditev spremembe</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Privzeto</translation>
+<translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8910721771319628100">Privzeto omrežje je nad pragom zakasnitve</translation>
 <translation id="8919837981463578619">Napaka – ni pladnja</translation>
 <translation id="8928727111548978589">Napaka – zmanjkalo je papirja</translation>

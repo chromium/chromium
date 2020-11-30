@@ -9,6 +9,8 @@
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1119069657431255176">Bzip2-komprimiertes Tar-Archiv</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
+<translation id="112387589102719461">Englisch (USA) mit „Programmer Dvorak“-Tastatur</translation>
+<translation id="1134697384939541955">Englisch (USA) mit erweiterter Tastatur</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" /> gefunden.
     <ph name="LINE_BREAK1" />
     Nicht genügend Platz im lokalen Speicher. Zusätzlich <ph name="FILE_SIZE" /> erforderlich.
@@ -23,6 +25,7 @@
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1190144681599273207">Zum Abrufen dieser Datei werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
 <translation id="1201402288615127009">Weiter</translation>
+<translation id="1210831758834677569">Lao</translation>
 <translation id="1243314992276662751">Hochladen</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1293556467332435079">Dateien</translation>
@@ -36,34 +39,46 @@
 <translation id="1378727793141957596">Willkommen bei Google Drive!</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
+<translation id="1404323374378969387">Norwegisch</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1435838927755162558">Ordner für Parallels Desktop freigeben</translation>
 <translation id="1439494416798956626">Verschoben nach <ph name="FOLDER_NAME" />.</translation>
 <translation id="1464724975715666883">1 Fehler</translation>
 <translation id="1467432559032391204">Links</translation>
+<translation id="1471718551822868769">Slowakisch</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" konnte nicht hochgeladen werden. In Ihrem Google Drive-Konto ist nicht genügend Speicherplatz frei.</translation>
+<translation id="1482884275703521657">Finnisch</translation>
 <translation id="148466539719134488">Schweizerdeutsch</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" kann nicht umbenannt werden. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="1499943022354839699">Englisch (USA) mit Dvorak-Tastatur</translation>
 <translation id="1538729222189715449">Linux-Dateien werden geöffnet…</translation>
 <translation id="1547964879613821194">Kanadisches Englisch</translation>
 <translation id="1556189134700913550">Auf alle anwenden</translation>
 <translation id="1561842594491319104">Chrome-Geräte</translation>
 <translation id="1572585716423026576">Als Hintergrund festlegen</translation>
+<translation id="1576937952766665062">Bengalisch (Transliteration)</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="162175252992296058">Portugiesisch mit internationaler US-amerikanischer Tastatur</translation>
+<translation id="1641780993263690097">Chinesisch (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> Dateien werden offline verfügbar gemacht</translation>
 <translation id="164969095109328410">Chrome-Gerät</translation>
 <translation id="1665611772925418501">Die Datei konnte nicht geändert werden.</translation>
 <translation id="1673103856845176271">Auf die Datei konnte aus Sicherheitsgründen nicht zugegriffen werden.</translation>
 <translation id="169515659049020177">Umschalttaste</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gezippt...</translation>
+<translation id="1729953886957086472">Deutsch (Deutschland)</translation>
+<translation id="1730235522912993863">Chinesisch (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> Elemente kopiert.</translation>
 <translation id="174173592514158117">Alle Google Play-Ordner anzeigen</translation>
+<translation id="1742316578210444689">Hebräisch (Transliteration)</translation>
+<translation id="1747761757048858544">Niederländisch (Niederlande)</translation>
 <translation id="174937106936716857">Gesamtanzahl der Dateien</translation>
 <translation id="1775381402323441512">Videoinformationen</translation>
 <translation id="180035236176489073">Sie müssen online sein, um auf diese Dateien zugreifen zu können.</translation>
 <translation id="1807938677607439181">Alle Dateien</translation>
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
+<translation id="1812302367230252929">Amharisch (Transliteration)</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Vorsicht:<ph name="END_BOLD" />Hierbei handelt es sich um Temporärdateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Informationen werden geladen…</translation>
@@ -72,6 +87,7 @@
 <translation id="1847880352285315359">Gespeichert</translation>
 <translation id="1853795129690976061">Dieser Ordner wird für Linux freigegeben</translation>
 <translation id="1864756863218646478">Die Datei wurde nicht gefunden.</translation>
+<translation id="1920670151694390848">Malayalam (Transliteration)</translation>
 <translation id="1924372192547904021">"<ph name="DRIVE_NAME" />" wurde formatiert</translation>
 <translation id="1931134289871235022">Slowakisch</translation>
 <translation id="1933345018156373194">Unerwarteter Fehler beim Verschieben: <ph name="ERROR_MESSAGE" /></translation>
@@ -82,16 +98,23 @@
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
+<translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">RAR-Archiv</translation>
+<translation id="2037845485764049925">Russisch</translation>
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2070909990982335904">Namen, die mit einem Punkt beginnen, sind für das System reserviert. Wählen Sie einen anderen Namen aus.</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2085470240340828803">Eine Datei mit dem Namen "<ph name="FILENAME" />" existiert bereits. Was möchten Sie tun?</translation>
 <translation id="2121825465123208577">Größe anpassen</translation>
+<translation id="2125607626296734455">Khmer</translation>
+<translation id="2142680004883808240">Russisch mit phonetischer Tastatur (YaZHert)</translation>
 <translation id="2163152940313951844">Ungültiges Zeichen: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2184934335987813305">Portugiesisch mit internationaler US-amerikanischer PC-Tastatur</translation>
 <translation id="2198315389084035571">Chinesisch (vereinfacht)</translation>
 <translation id="2208158072373999562">ZIP-Archiv</translation>
+<translation id="22085916256174561">Koreanisch</translation>
+<translation id="2208919847696382164">Mit Linux installieren</translation>
 <translation id="2225536596944493418">Möchten Sie wirklich <ph name="NUMBER_OF_ITEMS" /> Elemente löschen?</translation>
 <translation id="2230062665678605299">Ordner "<ph name="FOLDER_NAME" />" kann nicht erstellt werden. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Verschoben.</translation>
@@ -100,10 +123,12 @@
 <translation id="2303301624314357662">Datei "<ph name="FILE_NAME" />" wird geöffnet.</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finden Sie im Chrome Web Store eine App, mit der Sie diesen Dateityp öffnen können.</translation>
+<translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="2352947182261340447">Nicht genug Platz im lokalen Speicher.</translation>
 <translation id="2377319039870049694">Zur Listenansicht wechseln</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> Ordner für Linux freigegeben</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> Dateien ausgewählt</translation>
+<translation id="2389832672041313158">Burmesisch (Myanmar)</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> verfügbar</translation>
 <translation id="2425665904502185219">Gesamtdateigröße</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> Elemente werden in den Ordner "<ph name="FOLDER_NAME" />" kopiert</translation>
@@ -111,6 +136,7 @@
 <translation id="2453576648990281505">Datei bereits vorhanden</translation>
 <translation id="2464079411014186876">Eiscreme</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2500392669976258912">Gujarati (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> Einträge gelöscht</translation>
 <translation id="2541377937973966830">Inhalte in diesem Ordner sind schreibgeschützt. Einige Aktionen werden nicht unterstützt.</translation>
@@ -120,27 +146,36 @@
 <translation id="2562685439590298522">Google Docs</translation>
 <translation id="2563185590376525700">Frosch</translation>
 <translation id="2572501073504669105">Sie können den Dateizugriff offline verfügbar machen, wenn Sie keine Internetverbindung haben.</translation>
+<translation id="2578394532502990878">Tamil (phonetisch)</translation>
+<translation id="2579959351793446050">Oriya</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-Video</translation>
 <translation id="2620090360073999360">Google Drive ist momentan nicht erreichbar.</translation>
 <translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melden Sie sich ab<ph name="END_LINK" /> und melden Sie sich dann erneut an.</translation>
 <translation id="2649120831653069427">Regenbogenfisch</translation>
 <translation id="2661146741306740526">16 x 9</translation>
+<translation id="2663066752008346276">Burmesisch (Myanmar) mit Myansan-Tastatur</translation>
 <translation id="2664412712123763093">Dateispeicherort</translation>
 <translation id="2672394958563893062">Ein Fehler ist aufgetreten. Klicken Sie, um von vorn zu beginnen.</translation>
 <translation id="2676946222714718093">Läuft gerade auf:</translation>
+<translation id="2718540689505416944">App mit Linux installieren</translation>
+<translation id="2724954091494693138">Türkisch mit F-Tastatur</translation>
+<translation id="2732839045120506979">Vietnamesisch (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop erlauben, Dateien im Ordner „<ph name="FOLDER_NAME" />“ zu ändern</translation>
 <translation id="2771816809568414714">Käse</translation>
 <translation id="2781645665747935084">Belgisch</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
 <translation id="2787047795752739979">Original überschreiben</translation>
+<translation id="2830077785865012357">Chinesisch (Zhuyin)</translation>
 <translation id="2843806747483486897">Standardeinstellungen ändern...</translation>
 <translation id="2850124913210091882">Sichern</translation>
+<translation id="2873951654529031587">Papierkorb</translation>
 <translation id="288024221176729610">Tschechisch</translation>
 <translation id="2887525882758501333">PDF-Dokument</translation>
 <translation id="2888807692577297075">Keine Elemente für &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; gefunden</translation>
 <translation id="2894654529758326923">Informationen</translation>
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2902734494705624966">USA – erweitert</translation>
+<translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estnisch</translation>
 <translation id="2925966894897775835">Tabellen</translation>
 <translation id="2938685643439809023">Mongolisch</translation>
@@ -150,9 +185,11 @@
 <translation id="2951236788251446349">Qualle</translation>
 <translation id="2984337792991268709">Heute <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> konnte nicht gesichert werden</translation>
+<translation id="299638574917407533">Französisch (Kanada)</translation>
 <translation id="3003633581067744647">Zur Miniaturansicht wechseln</translation>
 <translation id="3007214526293698309">Verhältnis korrigieren</translation>
 <translation id="303198083543495566">Längen- und Breitengrad</translation>
+<translation id="3047197340186497470">Chinesisch (Dayi)</translation>
 <translation id="3057861065630527966">Fotos und Videos sichern</translation>
 <translation id="3067790092342515856">Windows-Dateien</translation>
 <translation id="3078461028045006476">Teilen mit <ph name="EXTENSION_NAME" /></translation>
@@ -162,6 +199,7 @@
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3197563288998582412">UK – Dvorak</translation>
 <translation id="3202131003361292969">Pfad</translation>
+<translation id="3205852408225871810">Portugiesisch (Brasilien)</translation>
 <translation id="3224239078034945833">Kanadisch – mehrsprachig</translation>
 <translation id="3236289833370040187">Die Eigentümerschaft geht auf <ph name="DESTINATION_DOMAIN" /> über.</translation>
 <translation id="3241720467332021590">Irisch</translation>
@@ -169,28 +207,35 @@
 <translation id="3248185426436836442">Ausstehend</translation>
 <translation id="3252266817569339921">Französisch</translation>
 <translation id="3254434849914415189">Wählen Sie eine Standard-App für <ph name="FILE_TYPE" />-Dateien:</translation>
+<translation id="3255159654094949700">Arabisch</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ konnte nicht geöffnet werden</translation>
 <translation id="3280431534455935878">In Vorbereitung</translation>
 <translation id="3280987981688031357">Schallplatte</translation>
 <translation id="3296763833017966289">Georgisch</translation>
+<translation id="3307875152560779385">Ukrainisch</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> wird gezippt...</translation>
 <translation id="3335337277364016868">Aufnahmejahr</translation>
 <translation id="3353984535370177728">Ordner zum Hochladen auswählen</translation>
 <translation id="3356580349448036450">Fertig</translation>
+<translation id="3382143449143186018">Nepalesisch mit InScript-Tastatur</translation>
+<translation id="3408236822532681288">Deutsch (Deutschland) mit Neo 2-Tastatur</translation>
 <translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchten Sie fortfahren?</translation>
 <translation id="3437801641691368414">Erstellungszeit</translation>
+<translation id="3455931012307786678">Estnisch</translation>
 <translation id="3466147780910026086">Mediengerät wird durchsucht...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> Fotos auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
 <translation id="3470502288861289375">Wird kopiert...</translation>
 <translation id="3473378059788601120">Kopiert nach <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google-Tabellendokument</translation>
+<translation id="3486821258960016770">Mongolisch</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> Fehler</translation>
 <translation id="3522708245912499433">Portugiesisch</translation>
 <translation id="3524311639100184459">Vorsicht: Dies sind temporäre Dateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3549797760399244642">Zu drive.google.com wechseln...</translation>
 <translation id="3553048479571901246">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, kopieren Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
+<translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
 <translation id="357479282490346887">Litauisch</translation>
 <translation id="3603385196401704894">Kanadisches Französisch</translation>
 <translation id="3606220979431771195">Türkisch-F</translation>
@@ -204,6 +249,7 @@
 <translation id="3645531960514756307">Ordner loslösen</translation>
 <translation id="3685122418104378273">Die Google Drive-Synchronisierung ist bei der mobilen Datennutzung standardmäßig deaktiviert.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
+<translation id="3691184985318546178">Singhalesisch</translation>
 <translation id="3726463242007121105">Dieses Gerät kann nicht geöffnet werden, da das zugehörige Dateisystem nicht unterstützt wird.</translation>
 <translation id="3741243925913727067">Fotos und Videos des Mediengeräts auf Google Drive sichern</translation>
 <translation id="3749289110408117711">Dateiname</translation>
@@ -223,17 +269,25 @@
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
 <translation id="386548886866354912">Mit <ph name="EXTENSION_NAME" /> packen</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
+<translation id="3899991606604168269">Französisch (Kanada) mit mehrsprachiger Tastatur</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Auf folgendem Gerät wiedergeben:</translation>
 <translation id="3943857333388298514">Einfügen</translation>
+<translation id="3952872973865944257">Telugu (phonetisch)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Audio-Player</translation>
+<translation id="3973925058222872294">Englisch (Vereinigtes Königreich)</translation>
+<translation id="3975895378829046965">Bengalisch (phonetisch)</translation>
 <translation id="4002066346123236978">Titel</translation>
+<translation id="4017788180641807848">Englisch (USA) mit Workman-Tastatur</translation>
+<translation id="4092890906744441904">Irisch</translation>
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4158739975813877944">Wiedergabeliste öffnen</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
 <translation id="4193154014135846272">Google-Dokument</translation>
 <translation id="4197674956721858839">Auswahl zippen</translation>
+<translation id="4202378258276439759">Spanisch (Lateinamerika)</translation>
+<translation id="4202977638116331303">Georgisch</translation>
 <translation id="421017592316736757">Sie müssen online sein, um auf diese Datei zugreifen zu können.</translation>
 <translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wählen Sie bitte einen anderen Namen aus.</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> werden gesichert</translation>
@@ -241,14 +295,20 @@
 <translation id="4290535918735525311">1 Ordner für Linux freigegeben</translation>
 <translation id="4299729908419173967">Portugiesisch (Brasilien)</translation>
 <translation id="4309915981827077375">Allgemeine Informationen</translation>
+<translation id="432252891123397018">Rumänisch mit Standardtastatur</translation>
+<translation id="4325128273762811722">Slowenisch</translation>
 <translation id="4326192123064055915">Kaffee</translation>
 <translation id="4336032328163998280">Fehler beim Kopieren. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4348495354623233847">Sorani-Tastatur nach arabischem Layout</translation>
+<translation id="4363958938297989186">Russisch mit phonetischer Tastatur</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4372884569765913867">1 x 1</translation>
 <translation id="4394214039309501350">Externer Link</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4477002475007461989">Rumänisch</translation>
 <translation id="4477219268485577442">Bulgarisch – phonetisch</translation>
+<translation id="4509667233588080747">Englisch (USA) mit internationaler Workman-Tastatur</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4527800702232535228">Dieser Ordner ist für Parallels Desktop freigegeben</translation>
 <translation id="4552678318981539154">Mehr Speicherplatz erwerben</translation>
@@ -260,12 +320,15 @@
 <translation id="4594543368593301662">Ergebnisse für <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" kopiert</translation>
 <translation id="4631887759990505102">Musiker</translation>
+<translation id="4646813851450205600">Tschechisch mit Qwerty-Tastatur</translation>
 <translation id="4656293982926141856">Auf diesem Computer</translation>
 <translation id="4669606053856530811">Mitglieder von "<ph name="SOURCE_NAME" />" verlieren den Zugriff, sofern Sie diese Dateien nicht mit ihnen teilen.</translation>
 <translation id="4690246192099372265">Schwedisch</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Affe</translation>
+<translation id="469612310041132144">Chinesisch (Quick/vereinfachtes Cangjie)</translation>
 <translation id="4697043402264950621">Die Dateiliste wurde in aufsteigender Reihenfolge nach "<ph name="COLUMN_NAME" />" sortiert.</translation>
+<translation id="4706042980341760088">Tamil mit Schreibmaschinentastatur</translation>
 <translation id="4711094779914110278">Türkisch</translation>
 <translation id="4712283082407695269">„<ph name="PATH" />“ wird geöffnet</translation>
 <translation id="4713544552769165154">Diese Datei wurde für einen Computer mit Macintosh-Software entwickelt und ist nicht mit Ihrem Chrome OS-Gerät kompatibel. Suchen Sie im <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> nach einer geeigneten Ersatz-App. <ph name="BEGIN_LINK_HELP" />Weitere Informationen<ph name="END_LINK_HELP" /></translation>
@@ -276,6 +339,7 @@
 <translation id="4737050008115666127">Landung</translation>
 <translation id="4747271164117300400">Mazedonisch</translation>
 <translation id="4759238208242260848">Downloads</translation>
+<translation id="4779041693283480986">Portugiesisch (Portugal)</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint-Präsentation</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -283,6 +347,7 @@
 <translation id="4801956050125744859">Beide behalten</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4823651846660089135">Gerät ist schreibgeschützt</translation>
+<translation id="4826849268470072925">Tamil (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> Elemente ausgewählt</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
@@ -301,6 +366,7 @@
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Der Name darf höchstens <ph name="MAX_LENGTH" /> Zeichen lang sein</translation>
 <translation id="4973970068702235170">Fehler beim Zippen, unerwarteter Fehler: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4984616446166309645">Japanisch</translation>
 <translation id="4988205478593450158">Soll "<ph name="FILE_NAME" />" wirklich gelöscht werden?</translation>
 <translation id="498902553138568924">Roter Schmetterling</translation>
 <translation id="4992066212339426712">Stummschaltung aufheben</translation>
@@ -310,12 +376,15 @@
 <translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchten Sie ihn abbrechen?</translation>
 <translation id="5036159836254554629">Freigabe für Parallels Desktop verwalten</translation>
 <translation id="5038625366300922036">Mehr...</translation>
+<translation id="5044852990838351217">Armenisch</translation>
+<translation id="5059127710849015030">Nepalesisch (Transliteration)</translation>
 <translation id="5061708541166515394">Kontrast</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> an Dateien werden gelöscht</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> Elemente werden in den Ordner "<ph name="FOLDER_NAME" />" verschoben</translation>
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
 <translation id="5098629044894065541">Hebräisch</translation>
+<translation id="5110329002213341433">Englisch (Kanada)</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polnisch</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
@@ -330,6 +399,7 @@
 <translation id="5170477580121653719">Verbleibender Speicherplatz in Google Drive: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5177526793333269655">Miniaturbildansicht</translation>
 <translation id="5194713942430106590">Klicken, um die Spalte in aufsteigender Reihenfolge zu sortieren.</translation>
+<translation id="5211614973734216083">Färöisch</translation>
 <translation id="5218183485292899140">Schweizer Französisch</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5253070652067921974">Erstellt von</translation>
@@ -353,10 +423,12 @@
 <translation id="5358764674931277">Framerate</translation>
 <translation id="5368191757080475556">Ordner für Linux freigeben</translation>
 <translation id="5402367795255837559">Braille</translation>
+<translation id="541890217011173530">Sorani-Tastatur nach englischem Layout</translation>
 <translation id="5428105026674456456">Spanisch</translation>
 <translation id="5438282218546237410">Für "<ph name="SEARCH_TERM" />" gibt es keine Ergebnisse.</translation>
 <translation id="5449551289610225147">Ungültiges Passwort</translation>
 <translation id="5469868506864199649">Italienisch</translation>
+<translation id="5489067830765222292">Lettisch</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>
@@ -364,8 +436,11 @@
 <translation id="5524517123096967210">Die Datei konnte nicht gelesen werden.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-Bild</translation>
 <translation id="5534520101572674276">Größe wird berechnet.</translation>
+<translation id="554153475311314364">Griechisch (Transliteration)</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
+<translation id="5602622065581044566">Bulgarisch mit phonetischer Tastatur</translation>
 <translation id="5605830556594064952">USA – Dvorak</translation>
+<translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
 <translation id="5649768706273821470">Anhören</translation>
 <translation id="5678784840044122290">Die Linux-Anwendung ist in Ihrem Terminal verfügbar. Möglicherweise sehen Sie auch ein Symbol in Ihrem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
@@ -373,13 +448,17 @@
    Schließen Sie alle Dateien in dem Archiv bzw. auf dem virtuellen Datenträger und probieren Sie es dann noch einmal.</translation>
 <translation id="5691596662111998220">Hoppla, <ph name="FILE_NAME" /> existiert nicht mehr.</translation>
 <translation id="5700087501958648444">Audioinformationen</translation>
+<translation id="5724172041621205163">Thai mit Pattachote-Tastatur</translation>
 <translation id="5731409020711461763">1 neues Foto</translation>
 <translation id="5752453871435543420">Chrome OS-Cloud-Sicherung</translation>
 <translation id="5756666464756035725">Ungarisch – QWERTY</translation>
+<translation id="5763377084591234761">Deutsch (Schweiz)</translation>
+<translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Löschen und formatieren</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5788127256798019331">Google Play-Dateien</translation>
 <translation id="5790193330357274855">Kasachisch</translation>
+<translation id="5804245609861364054">Kannada (Transliteration)</translation>
 <translation id="5817397429773072584">Chinesisch (traditionell)</translation>
 <translation id="5818003990515275822">Koreanisch</translation>
 <translation id="5819442873484330149">Hangul 3 Set (Final)</translation>
@@ -392,6 +471,7 @@
 <translation id="5911887972742538906">Bei der Installation Ihrer Linux-Anwendung ist ein Fehler aufgetreten.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Unerwarteter Fehler beim Kopieren: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5926082595146149752">Niederländisch (Niederlande) mit internationaler US-amerikanischer PC-Tastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> Elemente</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
@@ -402,20 +482,27 @@
 <translation id="604001903249547235">Cloudsicherung</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6074825444536523002">Google-Formular</translation>
+<translation id="6079871810119356840">Ungarisch mit Qwerty-Tastatur</translation>
 <translation id="6096979789310008754">Die Sucheingabe wurde gelöscht. Alle Dateien und Ordner werden angezeigt.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" verschoben</translation>
 <translation id="6129953537138746214">Leertaste</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> wird verschoben...</translation>
+<translation id="613750717151263950">Japanisch mit US-Tastatur</translation>
 <translation id="6146563240635539929">Videos</translation>
 <translation id="6150853954427645995">Wenn Sie diese Datei zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Datei und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>
 <translation id="6164412158936057769">Schmetterlinge</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6187719147498869044">Ungarisch</translation>
 <translation id="6189412234224385711">Öffnen mit <ph name="EXTENSION_NAME" /></translation>
 <translation id="6199801702437275229">Speicherplatzangaben werden abgerufen...</translation>
 <translation id="6205710420833115353">Einige Vorgänge dauern länger als erwartet. Möchten Sie sie abbrechen?</translation>
+<translation id="6220423280121890987">Punjabi</translation>
+<translation id="6224240818060029162">Dänisch</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatieren</translation>
 <translation id="6227235786875481728">Diese Datei kann nicht wiedergegeben werden.</translation>
+<translation id="6241349547798190358">Niederländisch (Belgien)</translation>
 <translation id="6248400709929739064">Untertitel aktivieren</translation>
+<translation id="6269630227984243955">Malaiisch</translation>
 <translation id="6287852322318138013">App zum Öffnen der Datei auswählen</translation>
 <translation id="6339145975392024142">US-amerikanisch (PC)</translation>
 <translation id="6346310558342052870">Zugriff eingeschränkt</translation>
@@ -426,6 +513,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> Elemente</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="642282551015776456">Dieser Name darf nicht als Datei- oder Ordnername verwendet werden.</translation>
+<translation id="6423031066725912715">Vietnamesisch mit TCVN-Tastatur</translation>
 <translation id="6485131920355264772">Angaben zum Speicherplatz konnten nicht abgerufen werden.</translation>
 <translation id="6509122719576673235">Norwegisch</translation>
 <translation id="6527303717912515753">Teilen</translation>
@@ -442,19 +530,23 @@
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
 <translation id="6657585470893396449">Passwort</translation>
+<translation id="6673674183150363784">Französisch (Frankreich) mit Bépo-Tastatur</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6718273304615422081">Wird gezippt...</translation>
 <translation id="6751256176799620176">1 Ordner ausgewählt</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linux-Freigabe verwalten</translation>
+<translation id="6806796368146926706">Alphanumerisch mit japanischer Tastatur</translation>
 <translation id="6808193438228982088">Fuchs</translation>
 <translation id="6820687829547641339">Gzip-komprimiertes Tar-Archiv</translation>
 <translation id="6823166707458800069">Alle in diesem Ordner gespeicherten Dateien werden automatisch online gesichert.</translation>
 <translation id="6825883775269213504">Russisch</translation>
 <translation id="6827236167376090743">Dieses Video läuft immer weiter und weiter...</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> wurde aus der Auswahl entfernt.</translation>
+<translation id="6861394552169064235">Persisch</translation>
 <translation id="6862635236584086457">Alle in diesem Ordner gespeicherten Dateien werden automatisch online gesichert.</translation>
+<translation id="6864328437977279120">Sanskrit</translation>
 <translation id="6876155724392614295">Fahrrad</translation>
 <translation id="6878261347041253038">Devanagari-Tastatur (phonetisch)</translation>
 <translation id="6885780034956018177">Schnecke</translation>
@@ -468,20 +560,28 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> gefunden</translation>
 <translation id="6935521024859866267">Auf dem Kopf</translation>
+<translation id="6949408524333579394">Serbisch (Transliteration)</translation>
 <translation id="696203921837389374">Synchronisierung über mobile Daten aktivieren</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6970230597523682626">Bulgarisch</translation>
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="6978611942794658017">Diese Datei wurde für Computer entwickelt, die mit Windows-Software betrieben werden. Die Datei ist nicht kompatibel mit Ihrem Chrome OS-Gerät. Suchen Sie im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6989942356279143254">Schwedisch</translation>
 <translation id="6990081529015358884">Sie haben keinen freien Speicherplatz mehr.</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> Ordner ausgewählt</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installation fehlgeschlagen</translation>
+<translation id="7031639531908619281">Türkisch</translation>
+<translation id="7037472120706603960">Tamil (Transliteration)</translation>
 <translation id="7040138676081995583">Öffnen mit...</translation>
+<translation id="7075931588889865715">Thai mit TIS 820-2531-Tastatur</translation>
+<translation id="7086590977277044826">Tamil mit InScript-Tastatur</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> Elemente ausgewählt</translation>
+<translation id="7103992300314999525">Mazedonisch</translation>
 <translation id="7106346894903675391">Mehr Speicherplatz erwerben...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;Ablage durchsuchen&lt;/em&gt;</translation>
+<translation id="7135561821015524160">Kannada (phonetisch)</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
@@ -490,33 +590,42 @@
 <translation id="7248671827512403053">App</translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
 <translation id="7283041136720745563">Ihr Google Drive-Kontingent ist zu klein.</translation>
+<translation id="7294063083760278948">Telugu (Transliteration)</translation>
 <translation id="7295662345261934369">Mit anderen teilen</translation>
+<translation id="7309413087278791451">Deutsch (Belgien)</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
+<translation id="7343393116438664539">Vietnamesisch (Telex)</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> Elemente werden kopiert...</translation>
 <translation id="7375951387215729722">Die Dateiliste wurde in absteigender Reihenfolge nach "<ph name="COLUMN_NAME" />" sortiert.</translation>
+<translation id="7408870451288633753">Tschechisch</translation>
 <translation id="7417453074306512035">Äthiopische Tastatur</translation>
 <translation id="7417705661718309329">Google-Karte</translation>
 <translation id="7460898608667578234">Ukrainisch</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> gefunden
     <ph name="LINE_BREAK1" />
     Bereit für die Sicherung auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="7495372004724182530">Malayalam (phonetisch)</translation>
 <translation id="7505167922889582512">Versteckte Dateien anzeigen</translation>
 <translation id="7508545000531937079">Diashow</translation>
 <translation id="751507702149411736">Weißrussisch</translation>
+<translation id="7532029025027028521">Persisch (Transliteration)</translation>
 <translation id="7544830582642184299">Sie geben Linux-Apps die Berechtigung, auf Dateien in Google Drive zuzugreifen. Änderungen werden mit Ihren anderen Geräten synchronisiert.</translation>
 <translation id="7544853251252956727">Zufallsmix</translation>
+<translation id="7547780573915868306">Litauisch</translation>
 <translation id="7547811415869834682">Niederländisch</translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
 <translation id="7553492409867692754">Sie geben Linux-Apps die Berechtigung, auf Dateien im Ordner „<ph name="FOLDER_NAME" />“ zuzugreifen</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Einen Moment bitte</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> wird offline bereitgestellt</translation>
+<translation id="7600126690270271294">Serbisch</translation>
 <translation id="7603724359189955920">Gitter</translation>
 <translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Geben Sie einen anderen Namen ein und versuchen Sie es erneut.</translation>
 <translation id="7628656427739290098">Zu <ph name="PERCENT" /> % abgeschlossen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> Elemente werden verschoben...</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht und alle vorhandenen Partitionen entfernt. Dies schließt ggf. auch Partitionen ein, die nicht sichtbar sind. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7695430100978772476">"<ph name="DRIVE_NAME" />" konnte nicht formatiert werden</translation>
 <translation id="770015031906360009">Griechisch</translation>
@@ -525,6 +634,7 @@
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7730494089396812859">Details der Cloudsicherung anzeigen</translation>
 <translation id="7748626145866214022">Auf der Aktionsleiste sind weitere Optionen verfügbar. Drücken Sie Alt + A, um den Fokus auf die Aktionsleiste zu setzen.</translation>
+<translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7774365994322694683">Vogel</translation>
 <translation id="7788080748068240085">Wenn Sie "<ph name="FILE_NAME" />" offline speichern möchten, müssen Sie <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
@@ -534,6 +644,8 @@
 <translation id="7799329977874311193">HTML-Dokument</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7806708061868529807">Hebräisch</translation>
+<translation id="78104721049218340">Thai mit Kedmanee-Tastatur</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> gefunden.
     <ph name="LINE_BREAK1" />
     Ihr Google Drive-Kontingent ist zu klein. Zusätzliche <ph name="FILE_SIZE" /> sind erforderlich.
@@ -544,7 +656,9 @@
 <translation id="7846076177841592234">Auswahl aufheben</translation>
 <translation id="7853966320808728790">Französisch – Bépo</translation>
 <translation id="7864662577698025113">Neuen Dienst hinzufügen</translation>
+<translation id="7868774406711971383">Polnisch</translation>
 <translation id="7873831373602885875">Speichern in "<ph name="FOLDER_NAME" />" nicht möglich. Alle Änderungen werden im Ordner "Downloads" in <ph name="DOWNLOADS_FOLDER" /> gespeichert.</translation>
+<translation id="7874321682039004450">Philippinisch</translation>
 <translation id="7881969471599061635">Untertitel deaktivieren</translation>
 <translation id="78946041517601018">Geteilte Ablagen</translation>
 <translation id="7908793776359722643">Durch die Formatierung einer Partition werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
@@ -553,6 +667,8 @@
 <translation id="7943385054491506837">USA – Colemak</translation>
 <translation id="7953739707111622108">Dieses Gerät kann nicht geöffnet werden, da das Dateisystem nicht erkannt wurde.</translation>
 <translation id="7969525169268594403">Slowenisch</translation>
+<translation id="7972920761225148017">Französisch (Schweiz)</translation>
+<translation id="7980421588063892270">Englisch (USA) mit Colemak-Tastatur</translation>
 <translation id="7982283708762922719">Größe</translation>
 <translation id="8008366997883261463">Jack Russell</translation>
 <translation id="8028993641010258682">Größe</translation>
@@ -565,18 +681,21 @@
 <translation id="8079530767338315840">Wiederholen</translation>
 <translation id="8106045200081704138">Für mich freigegeben</translation>
 <translation id="8116072619078571545">Wasser mit Eis</translation>
+<translation id="8128733386027980860">Englisch (Vereinigtes Königreich) mit Dvorak-Tastatur</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit Ihnen geteilt. Sie können die Datei nicht löschen, da Sie nicht der Inhaber sind.</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8153607920959057464">Diese Datei kann nicht angezeigt werden.</translation>
 <translation id="8154842056504218462">Alle Einträge wurden ausgewählt.</translation>
 <translation id="8157684860301034423">Fehler beim Abrufen der App-Informationen.</translation>
 <translation id="8157939133946352716">7 x 5</translation>
+<translation id="8175731104491895765">Französisch (Belgien)</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
 <translation id="8208580316430297579">Artwork</translation>
 <translation id="8223479393428528563">Wenn Sie diese Dateien zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Dateien und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8261506727792406068">Löschen</translation>
+<translation id="8261561378965667560">Chinesisch (Array)</translation>
 <translation id="8269755669432358899">Erweiterte Dateiinformationen minimieren</translation>
 <translation id="8280151743281770066">Armenisch – phonetisch</translation>
 <translation id="8294431847097064396">Quelle</translation>
@@ -585,43 +704,59 @@
 <translation id="8312871300878166382">In Ordner einfügen</translation>
 <translation id="8329978297633540474">Unformatierter Text</translation>
 <translation id="8335587457941836791">Von Ablage loslösen</translation>
+<translation id="8335837413233998004">Weißrussisch</translation>
 <translation id="8336153091935557858">Gestern <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Es ist bereits eine Datei oder ein Verzeichnis mit dem gleichen Namen vorhanden.</translation>
+<translation id="8372852072747894550">Griechisch</translation>
 <translation id="8382450452152102026">In <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">Abmessungen</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Ungültiger Name</translation>
+<translation id="8463494891489624050">Vietnamesisch (VIQR)</translation>
 <translation id="8466234950814670489">Tar-Archiv</translation>
 <translation id="8475647382427415476">"<ph name="FILENAME" />" konnte nicht in Google Drive synchronisiert werden. Google Drive versucht es später erneut.</translation>
 <translation id="8477649328507734757">Kreise</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
+<translation id="853494022971700746">Französisch (Frankreich)</translation>
+<translation id="8545476925160229291">Englisch (USA)</translation>
+<translation id="8549186985808798022">Italienisch</translation>
 <translation id="8551494947769799688">Lettisch</translation>
+<translation id="8560515948038859357">Kantonesisch</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8569764466147087991">Zu öffnende Datei auswählen</translation>
+<translation id="8577897833047451336">Kroatisch</translation>
+<translation id="8578308463707544055">Indonesisch</translation>
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> Elemente werden synchronisiert...</translation>
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
+<translation id="8609695766746872526">Isländisch</translation>
 <translation id="8669949407341943408">Verschieben...</translation>
 <translation id="8698464937041809063">Google-Zeichnung</translation>
+<translation id="8713112442029511308">Maltesisch</translation>
 <translation id="8714406895390098252">Fahrrad</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="8775404590947523323">Ihre Änderungen werden automatisch gespeichert.<ph name="BREAKS" />Um eine Kopie des Originalbilds beizubehalten, deaktivieren Sie die Funktion "Original überschreiben".</translation>
 <translation id="8808686172382650546">Katze</translation>
 <translation id="8810671769985673465">Fehler beim Zippen, Element bereits vorhanden: "<ph name="FILE_NAME" />"</translation>
+<translation id="8813284582615685103">Spanisch (Spanien)</translation>
 <translation id="8834164572807951958">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf die Kopie dieser Elemente.</translation>
+<translation id="8857149712089373752">Nepalesisch mit phonetischer Tastatur</translation>
 <translation id="8860454412039442620">Excel-Tabelle</translation>
+<translation id="8866284467018526531">Arabisch (Transliteration)</translation>
 <translation id="8900820606136623064">Ungarisch</translation>
 <translation id="8919081441417203123">Dänisch</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
+<translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="9017798300203431059">Russisch – phonetisch</translation>
 <translation id="9034924485347205037">Linux-Dateien</translation>
 <translation id="9035012421917565900">Diese Elemente können nicht in "<ph name="DESTINATION_NAME" />" zurückverschoben werden. Diese Aktion lässt sich also nicht rückgängig machen.</translation>
 <translation id="9038620279323455325">Die Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Wählen Sie einen anderen Namen aus.</translation>
 <translation id="9064939804718829769">Übertragung wird durchgeführt...</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
+<translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>
 <translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für Sie sicherer zu machen. Früher konnten Sie von jeder beliebigen Website aufgefordert werden, eine Erweiterung zu Ihrem Browser hinzuzufügen. In neueren Versionen von Google Chrome müssen Sie Chrome ausdrücklich mitteilen, dass Sie diese Erweiterungen installieren möchten, indem Sie sie über die Seite "Erweiterungen" hinzufügen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
@@ -631,8 +766,12 @@
 <translation id="9131598836763251128">Eine oder mehrere Dateien auswählen</translation>
 <translation id="9133055936679483811">Fehler beim Zippen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">Diese Datei wurde für Computer entwickelt, die mit Macintosh-Software betrieben werden. Die Datei ist nicht kompatibel mit Ihrem Chrome OS-Gerät. Suchen Sie im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
+<translation id="9144340019284012223">Katalanisch</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9154418932169119429">Dieses Bild ist offline nicht verfügbar.</translation>
+<translation id="9172592259078059678">Gujarati (Transliteration)</translation>
+<translation id="9173120999827300720">Englisch (USA) mit internationaler Tastatur</translation>
+<translation id="9189836632794948435">Kasachisch</translation>
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>

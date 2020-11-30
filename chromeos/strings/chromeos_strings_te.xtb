@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1018656279737460067">రద్దయింది</translation>
+<translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
 <translation id="1075811647922107217">పేజీ పరిమాణం</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
 <translation id="1238612778414822719">HTTPS ప్రతిస్పందన సమయం</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
 <translation id="1703835215927279855">లెటర్</translation>
 <translation id="1706391837335750954">DNS రిసాల్వర్ అందుబాటులో ఉంది</translation>
-<translation id="1734367976349034509">ఈ పరికరం సంస్థ ద్వారా నిర్వహించబడుతోంది</translation>
+<translation id="1743558184855585519">బ్యాటరీ ఒకసారి దాని పరిధిని చేరుకోగానే అది వినియోగించబడినదిగా పరిగణించబడుతుంది</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1930797645656624981">Chrome OS ఇన్‌పుట్ విధానం సేవ</translation>
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
 <translation id="1979103255016296513">పాస్‌వర్డ్‌ మార్చాల్సిన గడువు ముగిసింది</translation>
 <translation id="1980044825731880088">CPU వేగం</translation>
-<translation id="2049639323467105390">ఈ పరికరం <ph name="DOMAIN" /> ద్వారా నిర్వహించబడుతుంది.</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నం మిగిలి ఉంది}other{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చెయ్యండి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Files యాప్‌లో ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="5168185087976003268">బ్యాటరీ సామర్థ్యం</translation>
@@ -118,6 +121,7 @@
 <translation id="54609108002486618">నిర్వహించబడింది</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
+<translation id="5719918614880940190">ఇది CPU వినియోగాన్ని లెక్కిస్తుంది, అలాగే ఇది అన్ని కోర్‌ల సముదాయం</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" />)</translation>
@@ -153,6 +157,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
+<translation id="7441459999606975924">వినియోగంతో బ్యాటరీల సామర్థ్యం క్షీణిస్తుంది</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
@@ -160,6 +165,7 @@
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7855434858642800953">స్కాన్ చేయబడిన ఫైల్ సేవ్ చేయబడింది!</translation>
+<translation id="7928373994957558460">ఫైల్ లొకేషన్‌ను చూపు</translation>
 <translation id="7936303884198020182">పేరుతో సర్వర్‌లు కనుగొనబడలేదు</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
@@ -172,6 +178,8 @@
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8352772353338965963">బహుళ సైన్ ఇన్ కోసం ఖాతాను జోడించండి. అన్ని సైన్ ఇన్ చేసిన ఖాతాలను పాస్‌వర్డ్ లేకుండానే యాక్సెస్‌ చేయవచ్చు. కాబ‌ట్టి ఈ ఫీచ‌ర్‌ను విశ్వసనీయ ఖాతాలతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>
+<translation id="8395584934117017006">ఈ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
+<translation id="8398927464629426868">పరికరం ప్రస్తుతం ఛార్జ్ అవుతున్న లేదా డిశ్చార్జ్ అవుతున్న రేట్</translation>
 <translation id="8475690821716466388">బలహీనమైన ప్రోటోకాల్ WEP PSKతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="8477551185774834963">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి కొద్దిగా మించి ఉంది</translation>
 <translation id="871560550817059752">విఫలమైంది - ఇంక్ అయిపోయింది</translation>
@@ -181,6 +189,7 @@
 <translation id="8747900814994928677">మార్పును నిర్ధారించండి</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
+<translation id="8845001906332463065">సహాయం పొందండి</translation>
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>

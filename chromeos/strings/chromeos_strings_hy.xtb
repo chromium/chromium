@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
+<translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
+<translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
 <translation id="1238612778414822719">HTTPS-ի հապաղում</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
-<translation id="1734367976349034509">Այս սարքը կառավարվում է կազմակերպության կողմից</translation>
+<translation id="1743558184855585519">Մարտկոցը լիցքը համարվում է սպառված, երբ դրա մակարդակը հասնում է սահմանաչափին</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1930797645656624981">Chrome OS-ում ներածման եղանակի ծառայություն</translation>
 <translation id="1947737735496445907">Տպված է</translation>
 <translation id="1979103255016296513">Գաղտնաբառի փոփոխման ժամկետն անցել է</translation>
 <translation id="1980044825731880088">CPU-ի արագությունը</translation>
-<translation id="2049639323467105390">Այս սարքը կառավարվում է <ph name="DOMAIN" />-ի կողմից:</translation>
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}one{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}other{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Որոնել</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
+<translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">Կառավարվող</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />՝ <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Իմանալ ավելին Օգնության կենտրոնում</translation>
+<translation id="5719918614880940190">Սա չափում է CPU-ի օգտագործումը և միավորում բոլոր ցուցանիշները</translation>
 <translation id="5832805196449965646">Ավելացնել անձ</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, տարբերակ <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
+<translation id="7441459999606975924">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7855434858642800953">Սկանավորված ֆայլը պահված է</translation>
+<translation id="7928373994957558460">Ցուցադրել ֆայլի հասցեն</translation>
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8352772353338965963">Ավելացնել հաշիվ բազմակի մուտքի համակարգում: Բոլոր մուտք գործած հաշիվները մատչելի են առանց գաղտնաբառի մուտքագրման, ուստի այս գործառույթը պետք է միայն օգտագործվի վստահելի հաշիվների հետ:</translation>
 <translation id="8364946094152050673">DNS սերվերները դատարկ են</translation>
+<translation id="8395584934117017006">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է կազմակերպության կողմից</translation>
+<translation id="8398927464629426868">Սարքի ընթացիկ լիցքավորման կամ լիցքաթափման արագությունը</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
+<translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>

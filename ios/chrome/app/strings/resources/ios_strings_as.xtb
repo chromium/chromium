@@ -424,6 +424,7 @@
 <translation id="5659593005791499971">ইমেইল</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">সংস্কৰণ <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5690398455483874150">{count,plural, =1{এতিয়া ১ খন Chromeৰ ৱিণ্ড দেখুৱাই থকা হৈছে}one{এতিয়া {count} খন Chromeৰ ৱিণ্ড দেখুৱাই থকা হৈছে}other{এতিয়া {count} খন Chromeৰ ৱিণ্ড দেখুৱাই থকা হৈছে}}</translation>
 <translation id="5706552126692816153">১দিনৰ পূর্বে সক্ৰিয় আছিল</translation>
 <translation id="5711039611392265845">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পর্কীয় অধিক ছেটিংসমূহৰ বাবে <ph name="BEGIN_LINK" />ছিংক কৰক আৰু Google সেৱাসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="5724941645893276623">ব্যক্তিগতভাৱে ৱেব ব্ৰাউজ কৰিবলৈ এটা নতুন টেব যোগ দিয়ক</translation>

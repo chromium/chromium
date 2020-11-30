@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1018656279737460067">Dibatalkan</translation>
+<translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
@@ -25,12 +27,12 @@
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
-<translation id="1734367976349034509">Perangkat ini dikelola perusahaan</translation>
+<translation id="1743558184855585519">Daya baterai akan dianggap habis jika telah mencapai batas</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
 <translation id="1930797645656624981">Layanan Metode Masukan Chrome OS</translation>
 <translation id="1947737735496445907">Tercetak</translation>
 <translation id="1979103255016296513">Perubahan sandi melewati batas waktu</translation>
-<translation id="2049639323467105390">Perangkat ini dikelola oleh <ph name="DOMAIN" />.</translation>
+<translation id="1980044825731880088">Kecepatan CPU</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
@@ -39,13 +41,16 @@
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> upaya tersisa</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
+<translation id="2461822463642141190">Arus</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percobaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percobaan lagi}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Pindai</translation>
+<translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnostik Konektivitas</translation>
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
 <translation id="3188257591659621405">File saya</translation>
@@ -97,8 +102,10 @@
 <translation id="4832079907277790330">Pilih folder di aplikasi File ...</translation>
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
+<translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4985509611418653372">Jalankan</translation>
+<translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="520299634122159966">Tidak ada pemindai yang tersedia</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
 Ketuk mikrofon untuk bertanya apa saja.</translation>
@@ -114,8 +121,11 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5457599981699367932">Login sebagai Tamu</translation>
 <translation id="54609108002486618">Terkelola</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Pelajari lebih lanjut di Pusat Bantuan</translation>
+<translation id="5719918614880940190">Ini mengukur penggunaan CPU, dan merupakan gabungan dari semua inti</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6048107060512778456">Gagal - Kertas macet</translation>
 <translation id="6050189528197190982">Abu-Abu</translation>
@@ -148,6 +158,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Jenis file</translation>
+<translation id="7441459999606975924">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="7561454561030345039">Tindakan ini dikelola oleh administrator Anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
@@ -155,6 +166,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">File yang dipindai telah disimpan.</translation>
+<translation id="7928373994957558460">Tampilkan lokasi file</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="808894953321890993">Ubah sandi</translation>
@@ -167,6 +179,8 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>
+<translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
+<translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
 <translation id="8475690821716466388">Jaringan Wi-Fi diamankan dengan protokol WEP PSK yang lemah</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>
@@ -176,9 +190,11 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8747900814994928677">Konfirmasi perubahan</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
+<translation id="9088306295921699330">Penggunaan saat ini</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>

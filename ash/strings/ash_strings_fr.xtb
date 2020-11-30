@@ -91,6 +91,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1771761307086386028">Vers la droite</translation>
 <translation id="1782199038061388045">traduction</translation>
 <translation id="1787955149152357925">Désactivé</translation>
+<translation id="1804572139604454141">Enregistrement interrompu, car l'espace sur le disque est presque saturé</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1812997170047690955">Éléments affichés à l'écran</translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3236488194889173876">Aucun réseau mobile disponible</translation>
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a été déplacée du Bureau <ph name="ACTIVE_DESK" /> au Bureau <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Que sais-tu faire ?</translation>
+<translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289674678944039601">En charge via un adaptateur</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3294437725009624529">Invité</translation>
@@ -340,6 +342,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4212472694152630271">Authentification par code</translation>
 <translation id="4215497585250573029">Paramètres de VPN</translation>
 <translation id="4217571870635786043">Dictée</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, appli installée, en pause</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="425364040945105958">Aucune carte SIM</translation>
@@ -761,6 +764,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8142699993796781067">Réseau privé</translation>
 <translation id="8152092012181020186">Appuyez sur Ctrl+W pour fermer l'élément.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ce paramètre est géré par votre administrateur.</translation>
+<translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8170567869359129153">Réseau mobile. Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Les notifications sont masquées.</translation>
@@ -826,6 +830,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8755498163081687682">Valider votre identité : <ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres de VPN</translation>
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, appli installée, bloquée</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi </translation>

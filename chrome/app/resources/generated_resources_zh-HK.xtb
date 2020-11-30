@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">封鎖您瀏覽的任何網頁內容</translation>
 <translation id="1143142264369994168">憑證簽署者</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：1 分鐘前}other{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：{NUM_MINS} 分鐘前}}</translation>
-<translation id="1145292499998999162">已封鎖外掛程式</translation>
 <translation id="1145593918056169051">打印機已停止運作</translation>
 <translation id="114721135501989771">在 Chrome 中體驗 Google 的智能功能</translation>
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
@@ -336,6 +335,7 @@
 <translation id="1374844444528092021">網絡「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
 <translation id="1375321115329958930">已儲存的密碼</translation>
 <translation id="137651782282853227">已儲存的地址會在這裡顯示</translation>
+<translation id="1376771218494401509">為視窗命名…(&amp;W)</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1378613616312864539">此設定目前受「<ph name="NAME" />」控制</translation>
 <translation id="1380028686461971526">自動連線至網絡</translation>
@@ -727,7 +727,6 @@
 <translation id="1799071797295057738">系統已自動停用「<ph name="EXTENSION_NAME" />」擴充程式。</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
-<translation id="1802931390041703523">已禁止在此網頁上執行 Flash。</translation>
 <translation id="1803531841600994172">翻譯目標語言</translation>
 <translation id="1803545009660609783">重新調校</translation>
 <translation id="1805738995123446102">背景分頁正在使用您的麥克風</translation>
@@ -1151,6 +1150,7 @@
 <translation id="2288735659267887385">無障礙功能設定</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2290615375132886363">平板電腦導覽按鈕</translation>
+<translation id="229182044471402145">找不到相符的字型。</translation>
 <translation id="2292848386125228270">請以一般使用者身分啟動 <ph name="PRODUCT_NAME" />。如要以 root 身份作開發用途，請使用「--no-sandbox」標籤重新執行 Chrome。</translation>
 <translation id="2294358108254308676">您要安裝「<ph name="PRODUCT_NAME" />」嗎？</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> 項結果</translation>
@@ -2757,7 +2757,6 @@
 <translation id="4124823734405044952">您的安全密鑰已重設</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="412730574613779332">彈力俠</translation>
-<translation id="412940972494182898">只限這次允許執行 Flash</translation>
 <translation id="4130199216115862831">裝置記錄</translation>
 <translation id="4130207949184424187">擴充功能已變更您使用網址列搜尋時所顯示的頁面。</translation>
 <translation id="4130750466177569591">我同意</translation>
@@ -3183,6 +3182,7 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入網上組件。</translation>
 <translation id="4652935475563630866">Parallels Desktop 需要重新啟動，相機設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 個安全性弱的密碼}other{{NUM_WEAK} 個安全性弱的密碼}}</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
 <translation id="4659077111144409915">主要帳戶</translation>
@@ -4262,6 +4262,7 @@
 <translation id="5946591249682680882">報告 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">無法剖析檔案</translation>
 <translation id="5950819593680344519">Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：昨天</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> 要求使用本機字型</translation>
 <translation id="5951624318208955736">顯示器</translation>
 <translation id="5955282598396714173">您的密碼已過期。如要變更密碼，請先登出然後重新登入。</translation>
 <translation id="5955304353782037793">應用程式</translation>
@@ -4966,6 +4967,7 @@
 <translation id="6785518634832172390">PIN 不可超出 12 個數字</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將他們的 Google 帳戶電郵地址加入您的通訊錄。}other{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將他們的 Google 帳戶電郵地址加入您的通訊錄。}}</translation>
 <translation id="6788210894632713004">已解除壓縮的擴充程式</translation>
 <translation id="6789592661892473991">水平分割</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -5012,6 +5014,7 @@
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
+<translation id="6838694093138907871">代碼無效，請再試一次。</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
@@ -5252,6 +5255,7 @@
 <translation id="7093866338626856921">與名稱為「<ph name="HOSTNAMES" />」的裝置交換數據</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
 <translation id="7098447629416471489">已儲存的搜尋引擎將會在這裡顯示</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 個密碼被盜用}other{{NUM_COMPROMISED} 個密碼被盜用}}</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。檔案上限為 250KB。</translation>
 <translation id="7102687220333134671">已開啟自動更新功能</translation>
 <translation id="7102832101143475489">要求逾時</translation>
@@ -5691,6 +5695,7 @@
 <translation id="7635048370253485243">已由管理員固定</translation>
 <translation id="763632859238619983">不允許任何網站安裝付款處理常式</translation>
 <translation id="7636919061354591437">在此裝置上安裝</translation>
+<translation id="7637593984496473097">磁碟空間不足</translation>
 <translation id="7638605456503525968">序列連接埠</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 會使用您已儲存的密碼，自動登入符合資格的網站。</translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
@@ -6016,7 +6021,6 @@
 <translation id="7974566588408714340">使用「<ph name="EXTENSIONNAME" />」重試</translation>
 <translation id="7974936243149753750">溢出掃描</translation>
 <translation id="7975504106303186033">您必須將此 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 g.co/workspace/edusignup。</translation>
-<translation id="7977404132325989121">為視窗命名…(&amp;N)</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7978450511781612192">此操作會將您登出 Google 帳戶。系統將不會繼續將書籤、記錄、密碼和其他同步至您的 Google 帳戶。</translation>
 <translation id="7980084013673500153">資產識別碼：<ph name="ASSET_ID" /></translation>
@@ -6258,6 +6262,7 @@
 <translation id="8253198102038551905">按一下 [+] 以取得網絡屬性</translation>
 <translation id="8255451560461371599">無背景圖片</translation>
 <translation id="8256319818471787266">小黃</translation>
+<translation id="8257435388931378346">指派「<ph name="ACTION" />」開關</translation>
 <translation id="8257950718085972371">繼續封鎖存取相機</translation>
 <translation id="8259239505248583312">開始使用</translation>
 <translation id="8260864402787962391">滑鼠</translation>
@@ -6521,6 +6526,7 @@
 <translation id="8584280235376696778">在新分頁中開啟影片(&amp;O)</translation>
 <translation id="8584427708066927472">已從此裝置中刪除密碼</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
+<translation id="8585841788766257444">下列網站採用的是自訂設定，而非預設設定</translation>
 <translation id="8588866096426746242">顯示設定檔統計資料</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 將 VR 內容投放緊去眼罩度</translation>
 <translation id="8590375307970699841">設定自動更新</translation>
@@ -6581,7 +6587,6 @@
 <translation id="8648408795949963811">「夜燈模式」色溫</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 需要你批准：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />等等</translation>
 <translation id="8650543407998814195">您無法再存取舊設定檔，但可將其移除。</translation>
-<translation id="865118751078059229">為視窗命名…(&amp;N)</translation>
 <translation id="8651585100578802546">強制重新載入這個網頁</translation>
 <translation id="8652400352452647993">封裝擴充程式錯誤</translation>
 <translation id="8654151524613148204">抱歉，檔案過大，您的裝置無法處理。</translation>
@@ -6885,7 +6890,6 @@
 <translation id="897414447285476047">由於發生連線問題，因此目標檔案並未下載完成。</translation>
 <translation id="897525204902889653">隔離服務</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個標籤}other{「<ph name="TAB_TITLE" />」和另外 # 個標籤}}</translation>
-<translation id="8976520271376534479">已禁止在此網頁上執行 Flash。</translation>
 <translation id="8977811652087512276">密碼不正確或檔案損毀</translation>
 <translation id="8978154919215542464">開啟 - 同步所有內容</translation>
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
@@ -6957,6 +6961,7 @@
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">將您嘗試瀏覽的網頁網址傳送至 Google</translation>
 <translation id="9046895021617826162">連線失敗</translation>
+<translation id="9048868107467198961">找不到任何安全問題</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9052208328806230490">您已透過 <ph name="EMAIL" /> 帳戶並使用 <ph name="CLOUD_PRINT_NAME" /> 為您的打印機註冊</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>
@@ -7003,6 +7008,7 @@
 <translation id="9102610709270966160">啟用擴充程式</translation>
 <translation id="9103479157856427471">放大的螢幕畫面會追蹤鍵盤焦點</translation>
 <translation id="9103868373786083162">按下即可返回上一頁，內容選單會顯示記錄</translation>
+<translation id="9108035152087032312">為視窗命名…(&amp;W)</translation>
 <translation id="9108072915170399168">目前嘅數據用量設定係「唔用互聯網」</translation>
 <translation id="9108692355621501797">《<ph name="LINK_BEGIN" />G Suite 教育版私隱聲明<ph name="LINK_END" />》旨在幫助「G Suite 教育版」使用者和家長瞭解產品收集的資料類型、原因和用途。</translation>
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>

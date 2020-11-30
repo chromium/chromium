@@ -371,6 +371,7 @@
 <translation id="363596933471559332">स्टोर किए गए क्रेडेंशियल का इस्तेमाल करके वेबसाइटों में अपने आप साइन इन करें. सुविधा के बंद होने पर, किसी वेबसाइट में साइन इन करने से पहले आपसे हर बार पुष्टि करने को कहा जाएगा.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">रीसेट करने से आपकी देखी गई साइटों की सूची के साथ ही, डेटा बचाने का आपका इतिहास हमेशा के लिए मिट जाता है.</translation>
+<translation id="3687645719033307815">आप इस पेज की झलक देख रहे हैं</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> डाउनलोड नहीं हो सकी क्योंकि स्टोर करने की जगह नहीं मिली.</translation>
 <translation id="3701167022068948696">अभी ठीक करें</translation>
 <translation id="371230970611282515">नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाता है. साथ ही, उनके बारे में आपको चेतावनी देता है.</translation>
@@ -979,6 +980,7 @@
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7810647596859435254">इसमें खोलें…</translation>
+<translation id="7815484226266492798">लंबा स्क्रीनशॉट</translation>
 <translation id="7821588508402923572">बचाया गया डेटा यहां दिखाई देगा</translation>
 <translation id="7844171778363018843">सिंक करने के लिए कोई भी डेटा नहीं चुना गया</translation>
 <translation id="7846296061357476882">Google की सेवाएं</translation>
@@ -1051,6 +1053,7 @@
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8266862848225348053">डाउनलोड सेव करने की जगह</translation>
 <translation id="8274165955039650276">डाउनलोड देखें</translation>
+<translation id="8281886186245836920">अभी नहीं</translation>
 <translation id="8284326494547611709">कैप्शन</translation>
 <translation id="8310344678080805313">मानक टैब</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> और कई साइटें</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9065383040763568503">सेव किया गया ऐसा डेटा जो Chrome के हिसाब से ज़रूरी नहीं है (उदाहरण के लिए, ऐसी साइटें जिनमें कोई भी सेटिंग सेव नहीं की गई है या जिन पर आप अक्सर नहीं जाते)</translation>
 <translation id="9069543557624799859">डाउनलोड <ph name="TIME" /> पर शुरू होगा.</translation>
+<translation id="9069999660519089861">सभी लेख पढ़ लिए गए हैं</translation>
 <translation id="9070377983101773829">बोलकर खोज चालू करें</translation>
 <translation id="9074336505530349563">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>

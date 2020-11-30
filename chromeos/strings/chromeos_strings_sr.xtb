@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1059913517121127803">Покретање скенирања није успело</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
 <translation id="1238612778414822719">HTTPS кашњење</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Заустављено – нема више мастила</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Присутан је DNS разрешивач</translation>
-<translation id="1734367976349034509">Овим уређајем управља предузеће</translation>
+<translation id="1743558184855585519">Батерија се сматра потрошеном када достигне ограничење</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
 <translation id="1930797645656624981">Услуга метода уноса за Chrome ОС</translation>
 <translation id="1947737735496445907">Одштампано</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
 <translation id="1980044825731880088">Брзина процесора</translation>
-<translation id="2049639323467105390">Овим уређајем управља домен <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
+<translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2872961005593481000">Искључи</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4890353053343094602">Одмах одаберите нову</translation>
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
+<translation id="4921665434385737356">Напуњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4985509611418653372">Покрени</translation>
 <translation id="5168185087976003268">Стање батерије</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">Управљани</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Сазнајте више у центру за помоћ</translation>
+<translation id="5719918614880940190">Овим се мери коришћење процесора и збир је свих језгара</translation>
 <translation id="5832805196449965646">Додај особу</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип датотеке</translation>
+<translation id="7441459999606975924">Капацитет батерије се смањује током коришћења</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Велико HTTPS кашњење</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">Потврдите нову лозинку</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Скенирани фајл је сачуван!</translation>
+<translation id="7928373994957558460">Прикажи локацију датотеке</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">Задаци штампања</translation>
 <translation id="8352772353338965963">Додајте налог за вишеструко пријављивање. Свим пријављеним налозима се може приступити без лозинке, па ову функцију треба користити само са поузданим налозима.</translation>
 <translation id="8364946094152050673">Празни сервери за имена</translation>
+<translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
+<translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8475690821716466388">WiFi мрежа је обезбеђена слабим протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>
 <translation id="871560550817059752">Није успело – нема више мастила</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">Потврдите промену</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
+<translation id="8845001906332463065">Затражите помоћ</translation>
 <translation id="8910721771319628100">Подразумевана мрежа премашује граничну вредност за кашњење</translation>
 <translation id="8919837981463578619">Није успело – недостаје фиока</translation>
 <translation id="8928727111548978589">Није успело – нема више папира</translation>

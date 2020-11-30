@@ -374,7 +374,7 @@
 <translation id="3594207934078151302">Blaga morsko-zelena</translation>
 <translation id="3599054940393788245">Ne nalazi se unutar matematičkog izraza</translation>
 <translation id="360241989769010433">Zahvale</translation>
-<translation id="3616016838842055984">Ako dođete do stavke na koju želite kliknuti, pritisnite tipku za pretraživanje i razmak. Isprobajte sada da nastavite.</translation>
+<translation id="3616016838842055984">Ako dođete do stavke na koju želite kliknuti, pritisnite tipke za pretraživanje i razmak. Isprobajte sada da nastavite.</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3622350485154495700">Dodirnite dvaput jednim prstom</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{kratkouzlazni akcenat}one{# kratkouzlazni akcenat}few{# kratkouzlazna akcenta}other{# kratkouzlaznih akcenata}}</translation>
@@ -887,7 +887,7 @@
 <translation id="762020119231868829">Pauzira sve medijske vidžete koji trenutno reproduciraju sadržaj</translation>
 <translation id="7625690649919402823">Sljedeća tabela</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Stepen <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Pritisnite tipku za pretraživanje i strelicu udesno da pronađete područje za vježbanje ili dugme za sljedeću lekciju. Zatim pritisnite tipku za pretraživanje i razmak da ga aktivirate.</translation>
+<translation id="7637342083105831460">Pritisnite tipku za pretraživanje i strelicu udesno da pronađete područje za vježbanje ili dugme za sljedeću lekciju. Zatim pritisnite tipke za pretraživanje i razmak da ga aktivirate.</translation>
 <translation id="7639968568612851608">Tamnosiva</translation>
 <translation id="7663318257180412551">Naslov 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{sat}one{sat}few{sata}other{sati}}</translation>
@@ -914,6 +914,7 @@
 <translation id="7810781339813764006">Sljedeća grupa</translation>
 <translation id="7813616274030162878">Meni prekidača za pristup</translation>
 <translation id="7839679365527550018">Prethodna riječ</translation>
+<translation id="7842115774595115751">Omogući kontrole navigacije</translation>
 <translation id="7846634333498149051">Tastatura</translation>
 <translation id="7851816175263618915">Neki znakovi interpunkcije</translation>
 <translation id="7871691770940645922">Virtualni Brailleov ekran</translation>
@@ -1027,14 +1028,14 @@
 <translation id="8693391540059827073">Moje omiljeno godišnje doba</translation>
 <translation id="8696284982970258155">svijetlozelena</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{uspravna crta}one{# uspravna crta}few{# uspravne crte}other{# uspravnih crta}}</translation>
-<translation id="8741370088760768424">Savjet: pritisnite tipku za pretraživanje i razmak da aktivirate trenutno odabranu stavku.</translation>
+<translation id="8741370088760768424">Savjet: pritisnite tipke za pretraživanje i razmak da aktivirate trenutno odabranu stavku.</translation>
 <translation id="8743786158317878347">unos strukturiranog sadržaja, kao što su tabele</translation>
 <translation id="8747966237988593539">Uređena lista</translation>
 <translation id="8749988712346667988">Srebrna</translation>
 <translation id="875769700429317857">Završeno je preuzimanje fajla <ph name="FILE_NAME" /></translation>
 <translation id="8767968232364267681">Sljedeći naslov 4. nivoa</translation>
 <translation id="8770473310765924354">napuštanje strukturiranog sadržaja, na primjer, tablica</translation>
-<translation id="8775203254697638994">Ponekad će biti potrebno da odaberete stavku na padajućoj listi. Da to uradite, prvo proširite listu pritiskom na tipku za pretraživanje i razmak. Zatim odaberite stavku pomoću strelica nagore i nadolje. Na kraju, suzite listu pritiskom na tipku za pretraživanje i razmak.</translation>
+<translation id="8775203254697638994">Ponekad će biti potrebno da odaberete stavku na padajućoj listi. Da to uradite, prvo proširite listu pritiskom na tipke za pretraživanje i razmak. Zatim odaberite stavku pomoću strelica nagore i nadolje. Na kraju, suzite listu pritiskom na tipke za pretraživanje i razmak.</translation>
 <translation id="8779057862865475116">Nema prethodnog linka</translation>
 <translation id="8796411681063377102">Sljedeći naslov 3. nivoa</translation>
 <translation id="8823311177246872527"><ph name="CURRENTPAGE" />. stranica od <ph name="TOTALPAGES" /></translation>

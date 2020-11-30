@@ -91,6 +91,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1771761307086386028">Egin eskuinera</translation>
 <translation id="1782199038061388045">itzulpena</translation>
 <translation id="1787955149152357925">Desaktibatuta</translation>
+<translation id="1804572139604454141">Grabatzeari utzi egin zaio, oso toki gutxi dagoelako memorian</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1812997170047690955">Zer dago pantailan?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -185,7 +186,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
-<translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /></translation>
+<translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
 <translation id="28232023175184696">Ezin da konektatu Internetera. Berriro saiatzeko, sakatu hau.</translation>

@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
+<translation id="1175697296044146566">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="1238612778414822719">HTTPS-viive</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706391837335750954">DNS-ratkaisija paikalla</translation>
-<translation id="1734367976349034509">Tämä laite on yrityksen hallinnoima.</translation>
+<translation id="1743558184855585519">Akkua pidetään kulutettuna, kun se saavuttaa rajan</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1930797645656624981">Chrome-käyttöjärjestelmän syöttöpalvelu</translation>
 <translation id="1947737735496445907">Tulostettu</translation>
 <translation id="1979103255016296513">Salasanan vaihto myöhässä</translation>
 <translation id="1980044825731880088">Suorittimen nopeus</translation>
-<translation id="2049639323467105390">Tätä laitetta hallinnoi <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Peruuta tulostustyö</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} yritys jäljellä}other{<ph name="ERROR_MESSAGE" /> {0} yritystä jäljellä}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Etsi</translation>
+<translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
@@ -119,6 +120,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Katso lisätietoja ohjekeskuksesta</translation>
+<translation id="5719918614880940190">Tämä mittaa prosessorin käyttöä ja tarkoittaa kaikkien ytimien yhteissummaa</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
+<translation id="7441459999606975924">Akun kapasiteetti pienenee käytön myötä</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
@@ -173,6 +176,8 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
 <translation id="8364946094152050673">Nimipalvelimet tyhjiä</translation>
+<translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
+<translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8475690821716466388">Wi-Fi-verkko on suojattu heikolla WEP PSK -protokollalla</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
@@ -182,6 +187,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8747900814994928677">Vahvista muutos</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Oletus</translation>
+<translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>
 <translation id="8919837981463578619">Epäonnistui – Lokero puuttuu</translation>
 <translation id="8928727111548978589">Epäonnistui – Paperi loppu</translation>

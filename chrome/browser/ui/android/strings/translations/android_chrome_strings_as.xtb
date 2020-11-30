@@ -371,6 +371,7 @@
 <translation id="363596933471559332">সঞ্চয় কৰি থোৱা বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে ৱেবছাইটসমূহত ছাইন ইন কৰক। এই সুবিধাটো অফ কৰি থোৱা থাকিলে আপুনি কোনো এটা ৱেবছাইটত ছাইন ইন কৰাৰ পূর্বে প্ৰতিবাৰে আপোনাৰ পৰিচয় সত্যাপন কৰিবলৈ কোৱা হ’ব।</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">ৰিছেট কৰিলে আপুনি চোৱা ছাইটসমূহৰ সূচীক অন্তৰ্ভুক্ত কৰি ডেটা সঞ্চয় কৰা আপোনাৰ ইতিহাস স্থায়ীভাৱে মচি পেলোৱা হয়৷</translation>
+<translation id="3687645719033307815">আপুনি এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন চাই আছে</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল কিয়নো ষ্ট'ৰেজৰ অৱস্থান ঢুকি পাব পৰাত নাই।</translation>
 <translation id="3701167022068948696">এতিয়াই সমাধান কৰক</translation>
 <translation id="371230970611282515">বিপজ্জনক ঘটনাবোৰৰ সম্পর্কে অনুমান কৰে আৰু সেইবোৰ ঘটাৰ পূর্বে আপোনাক সকীয়নি দিয়ে।</translation>
@@ -491,6 +492,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটো <ph name="CREATION_TIME" />ৰ আৰু এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>
 <translation id="4605958867780575332">আঁতৰোৱা বস্তু: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">পৰৱৰ্তী সময়ৰ কাৰণে পৃষ্ঠাসমূহ ছেভ কৰি ৰাখক আৰু এটা ৰিমাইণ্ডাৰ পাওক</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> খোলক</translation>
 <translation id="4634124774493850572">পাছৱৰ্ড দিয়ক</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{১ টা হেক হোৱা পাছৱৰ্ড}one{# টা হেক হোৱা পাছৱৰ্ড}other{# টা হেক হোৱা পাছৱৰ্ড}}</translation>
@@ -972,10 +974,12 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}}</translation>
 <translation id="7778840695157240389">নতুন কাহিনীৰ বাবে পাছত আকৌ চাওক</translation>
 <translation id="7786595606756654269">ৱেবত সন্ধান কৰিবলৈ আৰু আপুনি খোলা ছাইটৰ সৈতে জড়িত কৰি ৰাখিবলৈ Google Assistantএ কণ্ঠধ্বনিৰ এক উন্নত অভিজ্ঞতা প্ৰদান কৰে। Google Assistantএ আপুনি ছাইটসমূহৰ সৈতে ব্যৱহাৰ কৰা URL আৰু সমল লাভ কৰিব।</translation>
+<translation id="7790349552933995572">গৃহ স্ক্ৰীন</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> টা টেব পুনঃস্থাপন কৰা হ’ল</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
+<translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
 <translation id="7821588508402923572">আপোনাৰ কিমান ডেটা ৰাহি হৈছে ইয়াত দেখা যাব</translation>
 <translation id="7844171778363018843">ছিংক কৰিবলৈ কোনো ডেটা বাছনি কৰা হোৱা নাই</translation>
 <translation id="7846296061357476882">Google সেৱাসমূহ</translation>
@@ -1048,6 +1052,7 @@
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8266862848225348053">ডাউনল’ডৰ অৱস্থান</translation>
 <translation id="8274165955039650276">ডাউনল’ড কৰাবোৰ চাওক</translation>
+<translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="8310344678080805313">মান্য টেব</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> আৰু অধিক ছাইট</translation>
@@ -1149,6 +1154,7 @@
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9065383040763568503">Chromeএ গুৰুত্বপূৰ্ণ বুলি গণ্য নকৰা ষ্ট’ৰ কৰি ৰখা ডেটা (যেনে, এনে ছাইট যিবিলাকৰ ছেটিংসমূহ ছেভ কৰি ৰখা হোৱা নাই অথবা যিবিলাক আপুনি সঘনাই নাচায়)</translation>
 <translation id="9069543557624799859">ডাউনল’ডটো <ph name="TIME" />ত আৰম্ভ হ’ব।</translation>
+<translation id="9069999660519089861">কোনো নপঢ়া পৃষ্ঠা নাই</translation>
 <translation id="9070377983101773829">কণ্ঠধ্বনিৰ জৰিয়তে সন্ধান আৰম্ভ কৰক</translation>
 <translation id="9074336505530349563">Googleএ পৰামৰ্শ কৰা ব্যক্তিগতকৰণ কৰা সমল পাবলৈ ছাইন ইন কৰি ছিংক অন কৰক</translation>
 <translation id="9086302186042011942">ছিংক কৰি থকা হৈছে</translation>

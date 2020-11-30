@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
 <translation id="1782199038061388045">การแปล</translation>
 <translation id="1787955149152357925">ปิด</translation>
+<translation id="1804572139604454141">การบันทึกสิ้นสุดแล้วเนื่องจากพื้นที่ในดิสก์เกือบเต็มแล้ว</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1812997170047690955">รายการที่อยู่ในหน้าจอของฉัน</translation>
 <translation id="1823873187264960516">อีเทอร์เน็ต: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@
 <translation id="3236488194889173876">ไม่มีเครือข่ายมือถือพร้อมใช้งาน</translation>
 <translation id="3249513730522716925">ย้ายหน้าต่าง <ph name="WINDOW_TITLE" /> จากเดสก์ <ph name="ACTIVE_DESK" /> ไปยังเดสก์ <ph name="TARGET_DESK" /> แล้ว</translation>
 <translation id="3255483164551725916">เธอทำอะไรได้บ้าง</translation>
+<translation id="3269597722229482060">คลิกขวา</translation>
 <translation id="3289674678944039601">กำลังชาร์จผ่านอะแดปเตอร์</translation>
 <translation id="3290356915286466215">ไม่ปลอดภัย</translation>
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
@@ -340,6 +342,7 @@
 <translation id="4212472694152630271">เปลี่ยนไปใช้ PIN</translation>
 <translation id="4215497585250573029">การตั้งค่า VPN</translation>
 <translation id="4217571870635786043">การพิมพ์ตามคำบอก</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="425364040945105958">ไม่มีซิม</translation>
@@ -761,6 +764,7 @@
 <translation id="8142699993796781067">เครือข่ายส่วนบุคคล</translation>
 <translation id="8152092012181020186">กด Ctrl + W เพื่อปิด</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
+<translation id="8155628902202578800">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">เครือข่ายมือถือ ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">ซ่อนการแจ้งเตือนไว้</translation>
@@ -826,6 +830,7 @@
 <translation id="8755498163081687682">ยืนยันตัวตนของคุณ: <ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="875593634123171288">แสดงการตั้งค่า VPN</translation>
 <translation id="8759408218731716181">ไม่สามารถตั้งค่าการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีได้</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, ถูกบล็อก</translation>
 <translation id="8785070478575117577">เชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" /> <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
 <translation id="1071587090247825784">cortafuegos detectado</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -14,9 +16,9 @@
 <translation id="1398634363027580500">Latencia de HTTPS muy alta</translation>
 <translation id="1413240736185167732">No se ha podido imprimir - Error de filtro</translation>
 <translation id="1468664791493211953">Ofertas</translation>
-<translation id="1476467821656042872"><ph name="MANAGER" /> gestiona este dispositivo, y es posible que monitorice tu actividad.</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> gestiona este dispositivo y es posible que monitorice tu actividad.</translation>
 <translation id="1478594628797167447">Escáner</translation>
-<translation id="1499900233129743732"><ph name="MANAGER" /> gestiona a este usuario, y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> gestiona a este usuario y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos)</translation>
@@ -25,12 +27,12 @@
 <translation id="1662989795263954667">Detenido: sin tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolución de DNS presente</translation>
-<translation id="1734367976349034509">Este es un dispositivo administrado por la empresa</translation>
+<translation id="1743558184855585519">Cuando la batería llega al límite, se considera que está vacía</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1930797645656624981">Servicio de método de introducción de Chrome OS</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
-<translation id="2049639323467105390">Este dispositivo está gestionado por <ph name="DOMAIN" /></translation>
+<translation id="1980044825731880088">Velocidad de CPU</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
@@ -39,13 +41,16 @@
 <translation id="2364498172489649528">Aprobado</translation>
 <translation id="2375079107209812402">Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Enviar informe de opinión</translation>
+<translation id="2461822463642141190">Actual</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
+<translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
@@ -97,8 +102,10 @@
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
+<translation id="4921665434385737356">Se ha cargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
+<translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
@@ -113,8 +120,11 @@
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Administrado</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Más información en el Centro de Ayuda</translation>
+<translation id="5719918614880940190">Mide el uso de la CPU combinando todos los núcleos</translation>
 <translation id="5832805196449965646">Añadir perfil</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6048107060512778456">No se ha podido imprimir - Atasco de papel</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
@@ -141,12 +151,13 @@
 <translation id="6766275201586212568">Errores de resoluciones de DNS</translation>
 <translation id="6768237774506518020">Tasa de errores de resolución de DNS alta</translation>
 <translation id="6839141349259399400">¿No se puede establecer conexión con ningún escáner?</translation>
-<translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, sus contraseñas y su correo electrónico.</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
+<translation id="7441459999606975924">La capacidad de las baterías disminuye con el uso</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
@@ -154,6 +165,7 @@
 <translation id="7690294790491645610">Confirma la nueva contraseña</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Archivo escaneado guardado.</translation>
+<translation id="7928373994957558460">Mostrar ubicación del archivo</translation>
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
@@ -166,6 +178,8 @@
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>
+<translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>
+<translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
 <translation id="8475690821716466388">La red Wi-Fi está protegida con un protocolo poco seguro WEP PSK</translation>
 <translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>
@@ -175,9 +189,11 @@
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8910721771319628100">La red predeterminada supera el umbral de latencia</translation>
 <translation id="8919837981463578619">No se ha podido imprimir - Falta una bandeja</translation>
 <translation id="8928727111548978589">No se ha podido imprimir - Sin papel</translation>
+<translation id="9088306295921699330">Uso actual</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

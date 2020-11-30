@@ -371,6 +371,7 @@
 <translation id="363596933471559332">സൂക്ഷിച്ചിരിക്കുന്ന ക്രെഡൻഷ്യലുകൾ ഉപയോഗിച്ച് വെബ്‌സൈറ്റുകളിലേക്ക് സ്വയമേവ സൈൻ ഇൻ ചെയ്യുക. ഫീച്ചർ ഓഫായിരിക്കുമ്പോൾ, ഒരു വെബ്‌സൈറ്റിലേക്ക് സൈൻ ഇൻ ചെയ്യുന്നതിനുമുമ്പ് പരിശോധിച്ചുറപ്പിക്കാൻ ഓരോ തവണയും നിങ്ങളോടാവശ്യപ്പെടും.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">പുനഃസജ്ജീകരിക്കുന്നത്, സന്ദർശിച്ച സൈറ്റുകളുടെ ലിസ്‌റ്റ് അടക്കമുള്ള ഡാറ്റ ലാഭിക്കൽ ചരിത്രത്തെ മായ്ക്കുന്നു.</translation>
+<translation id="3687645719033307815">നിങ്ങൾ ഈ പേജിന്റെ പ്രിവ്യൂ ആണ് കാണുന്നത്</translation>
 <translation id="3692944402865947621">സ്റ്റോറേജ് ലൊക്കേഷൻ കണ്ടെത്താനാകാത്തതിനാൽ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
 <translation id="3701167022068948696">ഇപ്പോൾ പരിഹരിക്കുക</translation>
 <translation id="371230970611282515">അപകടകരമായ ഇവന്റുകൾ നടക്കുന്നതിന് മുമ്പ് അവ പ്രവചിക്കുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
@@ -491,6 +492,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ഈ ഓഫ്‌ലൈൻ പേജ് <ph name="CREATION_TIME" /> -ന് സൃഷ്‌ടിച്ചതാണ്, അതിനാൽ ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="4605958867780575332">നീക്കംചെയ്‌ത ഇനം: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">പിന്നീട് വായിക്കുന്നതിന് പേജുകൾ സംരക്ഷിച്ച് റിമൈൻഡർ നേടുക</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> തുറക്കുക</translation>
 <translation id="4634124774493850572">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ}}</translation>
@@ -973,10 +975,12 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="7778840695157240389">പുതിയ സ്‌റ്റോറികൾക്ക് പിന്നീട് വീണ്ടും പരിശോധിക്കൂ</translation>
 <translation id="7786595606756654269">വെബിൽ തിരയാനും നിങ്ങൾ തുറന്ന സൈറ്റുകളുമായി ഇടപഴകാനും Google Assistant മികച്ച ശബ്‌ദാനുഭവം നൽകുന്നു. നിങ്ങൾ Google Assistant ഉപയോഗിക്കുന്ന സൈറ്റുകളുടെ URL-ഉം അവയുടെ ഉള്ളടക്കവും ഇതിന് ലഭിക്കും.</translation>
+<translation id="7790349552933995572">ഹോം സ്ക്രീൻ</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
 <translation id="7810647596859435254">ഇത് ഉപയോഗിച്ച് തുറക്കുക...</translation>
+<translation id="7815484226266492798">നീളത്തിലുള്ള സ്ക്രീന്‍ഷോട്ട്</translation>
 <translation id="7821588508402923572">നിങ്ങൾ ലാഭിച്ച ഡാറ്റ ഇവിടെ ദൃശ്യമാവും</translation>
 <translation id="7844171778363018843">സമന്വയിപ്പിക്കാൻ ഡാറ്റ തിരഞ്ഞെടുത്തില്ല</translation>
 <translation id="7846296061357476882">Google സേവനങ്ങൾ</translation>
@@ -1049,6 +1053,7 @@
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8266862848225348053">ഡൗൺലോഡ് ലൊക്കേഷൻ</translation>
 <translation id="8274165955039650276">ഡൗൺലോഡുകൾ കാണുക</translation>
+<translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
 <translation id="8284326494547611709">അടിക്കുറിപ്പുകൾ</translation>
 <translation id="8310344678080805313">സ്റ്റാൻഡേർഡ് ടാബുകൾ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ഡൊമെയ്‌നും കൂടുതൽ സൈറ്റുകളും</translation>
@@ -1151,6 +1156,7 @@
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9065383040763568503">Chrome അപ്രധാനമായി കാണുന്ന സംഭരിച്ച ഡാറ്റ (ഉദാ: ക്രമീകരണം സംരക്ഷിച്ചിട്ടില്ലാത്തതോ നിങ്ങൾ ഇടയ്‌ക്കിടെ സന്ദർശിക്കാത്തതോ ആയ സൈറ്റുകൾ)</translation>
 <translation id="9069543557624799859"><ph name="TIME" />-ന് ഡൗൺലോഡ് ആരംഭിക്കും.</translation>
+<translation id="9069999660519089861">വായിക്കാത്ത പേജുകൾ ഇല്ല</translation>
 <translation id="9070377983101773829">ശബ്ദ തിരയൽ ആരംഭിക്കുക</translation>
 <translation id="9074336505530349563">Google നിർദേശിക്കുന്ന വ്യക്തിപരമാക്കിയ ഉള്ളടക്കം ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="9086302186042011942">സമന്വയിപ്പിക്കുന്നു</translation>

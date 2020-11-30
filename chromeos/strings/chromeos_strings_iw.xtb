@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1018656279737460067">בוטל</translation>
+<translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
 <translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
-<translation id="1734367976349034509">המכשיר הזה מנוהל על ידי ארגון</translation>
+<translation id="1743558184855585519">הסוללה נחשבת לריקה לאחר שהיא מגיעה למגבלה</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1930797645656624981">‏שירות שיטת הקלט של Chrome OS</translation>
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="1980044825731880088">‏המהירות של יחידת העיבוד המרכזית (CPU)</translation>
-<translation id="2049639323467105390">מכשיר זה מנוהל על ידי <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />. נותר ניסיון אחד ({0})}two{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}many{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}other{<ph name="ERROR_MESSAGE" />. נותרו {0} ניסיונות}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">סריקה</translation>
+<translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="3008341117444806826">רענון</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">בחירת תיקייה מהאפליקציה 'קבצים'…</translation>
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
+<translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4985509611418653372">הרצה</translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">מידע נוסף זמין במרכז העזרה</translation>
+<translation id="5719918614880940190">‏מדד של השימוש ביחידת העיבוד המרכזית (CPU), הנצבר מכל הליבות</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
+<translation id="7441459999606975924">קיבולת של סוללות יורדת ככל שמשתמשים בהן</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7855434858642800953">נשמר הקובץ שנסרק!</translation>
+<translation id="7928373994957558460">הצגת מיקום הקובץ</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>
+<translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> זה מנוהל על ידי ארגון</translation>
+<translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">אישור השינוי</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
+<translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>

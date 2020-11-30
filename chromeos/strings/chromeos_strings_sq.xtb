@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
+<translation id="1175697296044146566">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
@@ -25,12 +26,12 @@
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
-<translation id="1734367976349034509">Kjo pajisje menaxhohet nga ndërmarrja</translation>
+<translation id="1743558184855585519">Bateria konsiderohet e konsumuar pasi të arrijë kufirin</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1930797645656624981">Shërbimi i metodës së hyrjes së Chrome OS</translation>
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1979103255016296513">Afati i ndryshimit të fjalëkalimit ka kaluar</translation>
-<translation id="2049639323467105390">Kjo pajisje menaxhohet nga <ph name="DOMAIN" />.</translation>
+<translation id="1980044825731880088">Shpejtësia e njësisë CPU</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
@@ -39,13 +40,16 @@
 <translation id="2364498172489649528">Kaloi</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
+<translation id="2461822463642141190">Rryma</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skano</translation>
+<translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnostikimi i lidhshmërisë</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
@@ -99,6 +103,7 @@
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
+<translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="520299634122159966">Nuk ka skanerë</translation>
 <translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
 <translation id="5222676887888702881">Dil</translation>
@@ -113,8 +118,11 @@
 <translation id="5457599981699367932">Shfleto si vizitor</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Mëso më shumë në "Qendrën e ndihmës"</translation>
+<translation id="5719918614880940190">Kjo mat përdorimin e CPU-së dhe është një përmbledhje e të gjitha të dhënave kryesore</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="5895138241574237353">Rinis</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6048107060512778456">Dështoi - Bllokim letre</translation>
 <translation id="6050189528197190982">Shkalla gri</translation>
@@ -147,6 +155,7 @@
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
+<translation id="7441459999606975924">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
@@ -166,6 +175,8 @@
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>
+<translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
+<translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
 <translation id="871560550817059752">Dështoi - Nuk ka bojë</translation>
@@ -175,9 +186,11 @@
 <translation id="8747900814994928677">Konfirmo ndryshimin</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
+<translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8910721771319628100">Rrjeti i parazgjedhur është mbi pragun e vonesës</translation>
 <translation id="8919837981463578619">Dështoi - Tabakaja mungon</translation>
 <translation id="8928727111548978589">Dështoi - Nuk ka letër</translation>
+<translation id="9088306295921699330">Përdorimi aktual</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>

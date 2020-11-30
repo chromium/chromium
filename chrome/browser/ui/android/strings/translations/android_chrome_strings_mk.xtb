@@ -371,6 +371,7 @@
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Ако се ресетира, ќе се избрише историјата на заштеден интернет, заедно со списокот со посетени сајтови.</translation>
+<translation id="3687645719033307815">Гледате преглед на страницава</translation>
 <translation id="3692944402865947621">Преземањето на <ph name="FILE_NAME" /> не успеа бидејќи локацијата за складирање не е достапна.</translation>
 <translation id="3701167022068948696">Поправи сега</translation>
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
@@ -979,6 +980,7 @@
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7810647596859435254">Отвори со…</translation>
+<translation id="7815484226266492798">Копче за долга слика од екранот</translation>
 <translation id="7821588508402923572">Заштедата на сообраќајот ќе се појави тука</translation>
 <translation id="7844171778363018843">Не се избрани податоци за синхронизација</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
@@ -1051,6 +1053,7 @@
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8266862848225348053">Локација за преземањата</translation>
 <translation id="8274165955039650276">Видете ги преземањата</translation>
+<translation id="8281886186245836920">Прескокни</translation>
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="8310344678080805313">Стандардни картички</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> и други сајтови</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9065383040763568503">Складирани податоци за кои Chrome смета дека не се важни (на пр., сајтови без зачувани поставки или коишто не ги посетувате често)</translation>
 <translation id="9069543557624799859">Преземањето ќе започне во <ph name="TIME" />.</translation>
+<translation id="9069999660519089861">Нема непрочитани страници</translation>
 <translation id="9070377983101773829">Започнете гласовно пребарување</translation>
 <translation id="9074336505530349563">За да добивате персонализирани содржини предложени од Google, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="9086302186042011942">Синхронизирање</translation>

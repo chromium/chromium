@@ -91,6 +91,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1771761307086386028">Desplazar a la derecha</translation>
 <translation id="1782199038061388045">traducción</translation>
 <translation id="1787955149152357925">No</translation>
+<translation id="1804572139604454141">Se ha dejado de grabar porque queda muy poco espacio en disco</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
 <translation id="1812997170047690955">¿Qué hay en mi pantalla?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3236488194889173876">No hay ninguna red móvil disponible</translation>
 <translation id="3249513730522716925">La ventana <ph name="WINDOW_TITLE" /> se ha movido del escritorio <ph name="ACTIVE_DESK" /> al escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">¿Qué puedes hacer?</translation>
+<translation id="3269597722229482060">Clic derecho</translation>
 <translation id="3289674678944039601">Cargando mediante adaptador de CA</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3294437725009624529">Invitado</translation>
@@ -341,6 +343,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Ajustes de VPN</translation>
 <translation id="4217571870635786043">Dictado</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, pausada</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">Sin SIM</translation>
@@ -762,6 +765,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8142699993796781067">Red privada</translation>
 <translation id="8152092012181020186">Pulsa Ctrl + W para cerrar.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Este ajuste lo gestiona tu administrador.</translation>
+<translation id="8155628902202578800">Abre el cuadro de diálogo con información de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Idioma: <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Red móvil. Intensidad de la señal de <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Las notificaciones están ocultas.</translation>
@@ -827,6 +831,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Muestra la configuración de VPN</translation>
 <translation id="8759408218731716181">No se puede configurar el inicio de sesión múltiple</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, aplicación instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

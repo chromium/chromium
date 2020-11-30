@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Block content on any page that you visit</translation>
 <translation id="1143142264369994168">Certificate Signer</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome didn't find harmful software on your computer • Checked 1 minute ago}other{Chrome didn't find harmful software on your computer • Checked {NUM_MINS} minutes ago}}</translation>
-<translation id="1145292499998999162">Plug-in blocked</translation>
 <translation id="1145593918056169051">Printer has stopped</translation>
 <translation id="114721135501989771">Get Google smarts in Chrome</translation>
 <translation id="1147322039136785890">Now it's <ph name="SUPERVISED_USER_NAME" />'s turn</translation>
@@ -336,6 +335,7 @@
 <translation id="1374844444528092021">The certificate required by network "<ph name="NETWORK_NAME" />" is either not installed or is no longer valid.  Please get a new certificate and try connecting again.</translation>
 <translation id="1375321115329958930">Saved Passwords</translation>
 <translation id="137651782282853227">Saved addresses will appear here</translation>
+<translation id="1376771218494401509">Name &amp;Window…</translation>
 <translation id="1377600615067678409">Skip for now</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> is controlling this setting</translation>
 <translation id="1380028686461971526">Auto connect to network</translation>
@@ -727,7 +727,6 @@
 <translation id="1799071797295057738">The extension "<ph name="EXTENSION_NAME" />" was automatically disabled.</translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
 <translation id="1802687198411089702">The page isn't responding. You can wait for it or exit.</translation>
-<translation id="1802931390041703523">Flash was blocked on this page</translation>
 <translation id="1803531841600994172">Language to translate into</translation>
 <translation id="1803545009660609783">Retrain</translation>
 <translation id="1805738995123446102">Background tab is using your microphone</translation>
@@ -1151,6 +1150,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2288735659267887385">Accessibility settings</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2290615375132886363">Tablet navigation buttons</translation>
+<translation id="229182044471402145">No matching font found.</translation>
 <translation id="2292848386125228270">Please start <ph name="PRODUCT_NAME" /> as a normal user. If you need to run as root for development, re-run with the – no-sandbox flag.</translation>
 <translation id="2294358108254308676">Do you want to install <ph name="PRODUCT_NAME" />?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> results</translation>
@@ -2758,7 +2758,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4124823734405044952">Your security key has been reset</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="412730574613779332">Speedy</translation>
-<translation id="412940972494182898">Run Flash this time</translation>
 <translation id="4130199216115862831">Device Log</translation>
 <translation id="4130207949184424187">This extension has changed the page that is shown when you search from the Omnibox.</translation>
 <translation id="4130750466177569591">I agree</translation>
@@ -3184,6 +3183,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4651484272688821107">Could not load online component with demo mode resources.</translation>
 <translation id="4652935475563630866">The change in camera setting requires Parallels Desktop to relaunch. Relaunch Parallels Desktop to proceed.</translation>
 <translation id="4653405415038586100">Error configuring Linux</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 weak password}other{{NUM_WEAK} weak passwords}}</translation>
 <translation id="4657914796247705218">TrackPoint speed</translation>
 <translation id="465878909996028221">Only http, https and file protocols are supported for browser redirects.</translation>
 <translation id="4659077111144409915">Primary account</translation>
@@ -4263,6 +4263,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5946591249682680882">Report ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Unable to parse file</translation>
 <translation id="5950819593680344519">Chrome didn't find harmful software on your computer • Checked yesterday</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> wants to use local fonts</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5955282598396714173">Your password has expired. Please sign out then sign in again to change it.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -4967,6 +4968,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6785518634832172390">PIN must be 12 digits or less</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787839852456839824">Keyboard shortcuts</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# contact is not available. To use Nearby Share with them, add the email address associated with their Google Account to your contacts.}other{# contacts are not available. To use Nearby Share with them, add the email address associated with their Google Account to your contacts.}}</translation>
 <translation id="6788210894632713004">Unpacked extension</translation>
 <translation id="6789592661892473991">Split horizontal</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -5013,6 +5015,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Ask when a site wants to open and place windows on your screens (recommended)</translation>
+<translation id="6838694093138907871">Invalid code. Please try again.</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
 <translation id="6840155290835956714">Ask before sending</translation>
@@ -5253,6 +5256,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7093866338626856921">Exchange data with the devices named: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7098447629416471489">Other saved search engines will appear here</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 compromised password}other{{NUM_COMPROMISED} compromised passwords}}</translation>
 <translation id="7099337801055912064">Can’t load large PPD. Maximum size is 250 KB.</translation>
 <translation id="7102687220333134671">Automatic updates are turned on</translation>
 <translation id="7102832101143475489">The request timed out</translation>
@@ -5692,6 +5696,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7635048370253485243">Pinned by your administrator</translation>
 <translation id="763632859238619983">Do not allow any site to install payment handlers</translation>
 <translation id="7636919061354591437">Install on this device</translation>
+<translation id="7637593984496473097">Not enough disk space</translation>
 <translation id="7638605456503525968">Serial ports</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatically signs you in to eligible sites with passwords that you saved.</translation>
 <translation id="7642778300616172920">Hide sensitive content</translation>
@@ -6017,7 +6022,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7974566588408714340">Retry using <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
 <translation id="7975504106303186033">You must enrol this Chrome Education device into an education account. To sign up for a new account, please visit g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Name window…</translation>
 <translation id="7978412674231730200">Private key</translation>
 <translation id="7978450511781612192">This will sign you out of your Google accounts. Your bookmarks, history, passwords and more will no longer be synced.</translation>
 <translation id="7980084013673500153">Asset ID: <ph name="ASSET_ID" /></translation>
@@ -6260,6 +6264,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
 <translation id="8255451560461371599">No background</translation>
 <translation id="8256319818471787266">Sparky</translation>
+<translation id="8257435388931378346">Assign switch <ph name="ACTION" /></translation>
 <translation id="8257950718085972371">Continue blocking camera access</translation>
 <translation id="8259239505248583312">Let's go</translation>
 <translation id="8260864402787962391">Mouse</translation>
@@ -6523,6 +6528,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8584280235376696778">&amp;Open video in new tab</translation>
 <translation id="8584427708066927472">Password deleted from this device</translation>
 <translation id="8585480574870650651">Remove Crostini</translation>
+<translation id="8585841788766257444">Sites listed below follow a custom setting instead of the default</translation>
 <translation id="8588866096426746242">Show profile stats</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR presenting to headset</translation>
 <translation id="8590375307970699841">Set up automatic updates</translation>
@@ -6583,7 +6589,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8648408795949963811">Night Light colour temperature</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wants to: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> and more</translation>
 <translation id="8650543407998814195">Although you can no longer access your old profile, you can still remove it.</translation>
-<translation id="865118751078059229">&amp;Name window…</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>
 <translation id="8652400352452647993">Pack extension error</translation>
 <translation id="8654151524613148204">The file is too large for your computer to handle. Sorry.</translation>
@@ -6887,7 +6892,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="897414447285476047">Destination file was incomplete due to a connection issue.</translation>
 <translation id="897525204902889653">Quarantine Service</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
-<translation id="8976520271376534479">Flash was blocked on this page.</translation>
 <translation id="8977811652087512276">Incorrect password or corrupt file</translation>
 <translation id="8978154919215542464">On – sync everything</translation>
 <translation id="897939795688207351">On <ph name="ORIGIN" /></translation>
@@ -6959,6 +6963,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Sends the web address of the page that you're trying to reach to Google</translation>
 <translation id="9046895021617826162">Connection failed</translation>
+<translation id="9048868107467198961">No security issues found</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052208328806230490">You have registered your printers with <ph name="CLOUD_PRINT_NAME" />, using the account <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continue blocking</translation>
@@ -7005,6 +7010,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9102610709270966160">Enable Extension</translation>
 <translation id="9103479157856427471">Zoomed-in screen follows keyboard focus</translation>
 <translation id="9103868373786083162">Press to go back, context menu to see history</translation>
+<translation id="9108035152087032312">Name &amp;window…</translation>
 <translation id="9108072915170399168">Current data usage setting is Without Internet</translation>
 <translation id="9108692355621501797">The <ph name="LINK_BEGIN" />G Suite for Education privacy notice<ph name="LINK_END" /> is meant to help G Suite for Education users and parents understand what data the product collects, why it is collected and what is done with it.</translation>
 <translation id="9108808586816295166">Secure DNS may not be available all the time</translation>

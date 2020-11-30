@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Cancelados</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
 <translation id="1075811647922107217">Tamaño da páxina</translation>
+<translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Presenza do solucionador de DNS</translation>
-<translation id="1734367976349034509">Este dispositivo xestiónao unha empresa</translation>
+<translation id="1743558184855585519">Considérase que a batería está esgotada cando alcanza o límite</translation>
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
 <translation id="1930797645656624981">Servizo do método de introdución de texto de Chrome OS</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Produciuse un atraso no cambio de contrasinal</translation>
 <translation id="1980044825731880088">Velocidade da CPU</translation>
-<translation id="2049639323467105390">Este dispositivo está xestionado por <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Máis configuracións</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
+<translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
@@ -119,6 +120,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="54609108002486618">Dispositivo xestionado</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Máis información no Centro de Axuda</translation>
+<translation id="5719918614880940190">Mide o uso da CPU sumando o de todos os núcleos</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
+<translation id="7441459999606975924">A capacidade das baterías diminúe co uso</translation>
 <translation id="7561454561030345039">O teu administrador xestiona esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
@@ -173,6 +176,8 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
 <translation id="8364946094152050673">Os servidores de nomes están baleiros</translation>
+<translation id="8395584934117017006">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por unha empresa</translation>
+<translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
@@ -182,6 +187,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>

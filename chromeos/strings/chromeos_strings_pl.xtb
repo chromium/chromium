@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1018656279737460067">Anulowano</translation>
+<translation id="1059913517121127803">Nie udało się rozpocząć skanowania</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
+<translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
 <translation id="1204296502688602597">Opóźnienie DNS</translation>
 <translation id="1238612778414822719">Opóźnienie HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
-<translation id="1734367976349034509">Tym urządzeniem zarządza firma</translation>
+<translation id="1743558184855585519">Kiedy bateria osiągnie limit, uważana jest za zużytą</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1930797645656624981">Usługa Metoda wprowadzania Chrome OS</translation>
 <translation id="1947737735496445907">Wydrukowano</translation>
 <translation id="1979103255016296513">Zaległa zmiana hasła</translation>
 <translation id="1980044825731880088">Częstotliwość taktowania CPU</translation>
-<translation id="2049639323467105390">To urządzenie jest zarządzane przez: <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Pozostała {0} próba.}few{<ph name="ERROR_MESSAGE" /> Pozostały {0} próby.}many{<ph name="ERROR_MESSAGE" /> Pozostało {0} prób.}other{<ph name="ERROR_MESSAGE" /> Pozostało {0} próby.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skanuj</translation>
+<translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Wybierz Folder w aplikacji Pliki...</translation>
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
+<translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Uruchom</translation>
 <translation id="5168185087976003268">Kondycja baterii</translation>
@@ -119,6 +122,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="54609108002486618">Zarządzany</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Dowiedz się więcej w Centrum pomocy</translation>
+<translation id="5719918614880940190">To narzędzie mierzy obciążenie procesora (wszystkich rdzeni)</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ pliku</translation>
+<translation id="7441459999606975924">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
@@ -161,6 +166,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7855434858642800953">Zeskanowany plik został zapisany.</translation>
+<translation id="7928373994957558460">Pokaż lokalizację pliku</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
@@ -173,6 +179,8 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>
 <translation id="8364946094152050673">Puste serwery nazw</translation>
+<translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
+<translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
 <translation id="8475690821716466388">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP PSK</translation>
 <translation id="8477551185774834963">Opóźnienie DNS nieco przekracza dopuszczalny próg</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
@@ -182,6 +190,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8747900814994928677">Potwierdź zmianę</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Domyślny</translation>
+<translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>

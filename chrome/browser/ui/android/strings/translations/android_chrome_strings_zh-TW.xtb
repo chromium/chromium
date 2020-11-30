@@ -371,6 +371,7 @@
 <translation id="363596933471559332">自動使用已儲存的憑證登入網站。如果關閉這項功能，每次在您登入網站之前，網站一律會要求驗證。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">如果確認重設，系統會清除你的數據用量節省記錄，包括你造訪過的網站清單。</translation>
+<translation id="3687645719033307815">目前顯示的是這個網頁的預覽畫面</translation>
 <translation id="3692944402865947621">無法連線至儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
@@ -491,6 +492,7 @@
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">這個離線版網頁是於 <ph name="CREATION_TIME" />建立，可能會和線上版本有所不同。</translation>
 <translation id="4605958867780575332">已移除項目：<ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">儲存頁面以便稍後閱讀並接收提醒</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 組密碼遭外洩}other{有 # 組密碼遭外洩}}</translation>
@@ -973,10 +975,12 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="7778840695157240389">請稍後再返回查看是否有新的報導</translation>
 <translation id="7786595606756654269">Google 助理可提供更好的語音體驗，方便你搜尋網路及瀏覽網站。當你在網站上使用 Google 助理時，系統會將網站的網址和內容傳送給 Google 助理。</translation>
+<translation id="7790349552933995572">主畫面</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">已還原 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7810647596859435254">選擇開啟工具…</translation>
+<translation id="7815484226266492798">長螢幕截圖</translation>
 <translation id="7821588508402923572">你省下的數據流量會顯示在這裡</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846296061357476882">Google 服務</translation>
@@ -1049,6 +1053,7 @@
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8266862848225348053">下載位置</translation>
 <translation id="8274165955039650276">查看已下載的內容</translation>
+<translation id="8281886186245836920">略過</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8310344678080805313">標準分頁</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> 和其他網站</translation>
@@ -1151,6 +1156,7 @@
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065383040763568503">Chrome 認定為不重要的已儲存資料 (例如未儲存任何設定的網站，或是你不常造訪的網站)</translation>
 <translation id="9069543557624799859">下載作業會在<ph name="TIME" />開始。</translation>
+<translation id="9069999660519089861">沒有任何未讀取的網頁</translation>
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074336505530349563">如要取得個人化的 Google 推薦內容，請登入並開啟同步處理功能</translation>
 <translation id="9086302186042011942">正在同步處理</translation>

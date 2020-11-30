@@ -16,7 +16,7 @@
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Aquí aparecerán os marcadores que gardases noutros dispositivos.</translation>
 <translation id="1113597929977215864">Mostrar vista simplificada</translation>
-<translation id="1118561384561215815">Obter axuda ao realizar tarefas</translation>
+<translation id="1118561384561215815">Obter axuda para realizar tarefas na Web</translation>
 <translation id="1123070903960493543">A túa forma de interactuar con Chrome, as opcións de configuración que seleccionases e os detalles sobre os fallos de Chrome</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -371,6 +371,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="363596933471559332">Iniciar sesión automaticamente nos sitios web coas credenciais almacenadas. Cando a función estea desactivada, solicitaráseche sempre a verificación antes de iniciar sesión nun sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">O restablecemento borra o historial de aforro de datos, incluída a lista de sitios visitados.</translation>
+<translation id="3687645719033307815">Estás vendo unha vista previa desta páxina</translation>
 <translation id="3692944402865947621">Produciuse un erro ao descargar <ph name="FILE_NAME" /> porque non se pode acceder á localización do almacenamento.</translation>
 <translation id="3701167022068948696">Corrixir agora</translation>
 <translation id="371230970611282515">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia.</translation>
@@ -979,6 +980,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestanas restauradas</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7810647596859435254">Abrir con…</translation>
+<translation id="7815484226266492798">Captura de pantalla longa</translation>
 <translation id="7821588508402923572">A cifra de aforro de datos aparecerá aquí</translation>
 <translation id="7844171778363018843">Non se seleccionaron datos para sincronizalos</translation>
 <translation id="7846296061357476882">Servizos de Google</translation>
@@ -1051,6 +1053,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8266862848225348053">Localización das descargas</translation>
 <translation id="8274165955039650276">Ver descargas</translation>
+<translation id="8281886186245836920">Omitir</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8310344678080805313">Pestanas estándar</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> e máis sitios</translation>
@@ -1153,6 +1156,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome non considera importantes (por exemplo, de sitios sen configuración gardada ou que non visitas a miúdo)</translation>
 <translation id="9069543557624799859">Hora de inicio da descarga: <ph name="TIME" />.</translation>
+<translation id="9069999660519089861">Non hai páxinas sen ler</translation>
 <translation id="9070377983101773829">Comeza a busca por voz</translation>
 <translation id="9074336505530349563">Inicia sesión e activa a sincronización para recibir contido personalizado suxerido por Google</translation>
 <translation id="9086302186042011942">Sincronizando</translation>

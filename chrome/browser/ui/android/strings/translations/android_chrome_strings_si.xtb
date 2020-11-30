@@ -371,6 +371,7 @@
 <translation id="363596933471559332">ගබඩා කළ අක්තපත්‍ර භාවිතයෙන් වෙබ් අඩවි වෙත ස්වයංක්‍රියව පුරනය වන්න. විශේෂාංගය ක්‍රියාවිරහිත කර ඇති විට, ඔබ වෙබ් අඩවියකට පුරන සෑම විටම ඔබට සත්‍යාපනය කිරීමට පවසනු ඇත.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">යළි පිහිටුවීමෙන් පිවිසි අඩවි ලැයිස්තුව ඇතුළු, ඔබේ දත්ත සුරැකුම් ඉතිහාසය මකයි.</translation>
+<translation id="3687645719033307815">ඔබ මෙම පිටුවේ පෙරදසුනක් නරඹමින් සිටී</translation>
 <translation id="3692944402865947621">ආචයන ස්ථානයට ළඟා වීමට නොහැකි වීම නිසා, <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
 <translation id="3701167022068948696">දැන් නිරාකරණ කරන්න</translation>
 <translation id="371230970611282515">අනතුරුදායක සිදුවීම් සිදු වීමට පෙර ඒවා පුරෝකථන කර ඔබට අවවාද කරයි.</translation>
@@ -979,6 +980,7 @@
 <translation id="7798392620021911922">ටැබ <ph name="TAB_COUNT" />ක් ප්‍රතිසාධනය කරන ලදි</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7810647596859435254">විවෘත කරන්න...</translation>
+<translation id="7815484226266492798">දිගු තිර රුව</translation>
 <translation id="7821588508402923572">ඔබගේ දත්ත සුරැකුම් මෙහි දිස් වනු ඇත</translation>
 <translation id="7844171778363018843">සමමුහුර්ත කිරීමට දත්ත තෝරා නැත</translation>
 <translation id="7846296061357476882">Google සේවා</translation>
@@ -1051,6 +1053,7 @@
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8266862848225348053">බාගැනීම් ස්ථානය</translation>
 <translation id="8274165955039650276">බාගැනීම් බලන්න</translation>
+<translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8284326494547611709">සිරස්තල</translation>
 <translation id="8310344678080805313">සම්මත ටැබ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> සහ තව අඩවි</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9065383040763568503">Chrome වැදගත් යැයි නොසිතන ගබඩා කළ දත්ත (උදා: සුරැකූ සැකසීම් නැති හෝ ඔබ නිතර නොපිවිසෙන අඩවි)</translation>
 <translation id="9069543557624799859">බාගැනීම <ph name="TIME" />ට ආරම්භ වනු ඇත.</translation>
+<translation id="9069999660519089861">නොකියවූ පිටු නැත</translation>
 <translation id="9070377983101773829">හඬ සෙවීම අරඹන්න</translation>
 <translation id="9074336505530349563">Google විසින් යෝජනා කරන ලද පෞද්ගලීකරණය කළ අන්තර්ගතය ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="9086302186042011942">සමමු වෙමින්</translation>

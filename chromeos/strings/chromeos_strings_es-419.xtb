@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -19,18 +21,18 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administra a este usuario y es posible que administre la configuración y supervise la actividad del usuario de forma remota.</translation>
 <translation id="150962533380566081">PUK no válida.</translation>
 <translation id="1510238584712386396">Selector</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> conversaciones)</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos)</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
-<translation id="1734367976349034509">Este dispositivo está administrado por una empresa</translation>
+<translation id="1743558184855585519">Se considera que la batería está agotada una vez que se alcanza el límite</translation>
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1930797645656624981">Servicio de método de entrada del Sistema operativo Chrome</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Está pendiente el cambio de contraseña</translation>
-<translation id="2049639323467105390"><ph name="DOMAIN" /> administra esta cuenta.</translation>
+<translation id="1980044825731880088">Velocidad de la CPU</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancelar el trabajo de impresión</translation>
@@ -39,13 +41,16 @@
 <translation id="2364498172489649528">Aprobado</translation>
 <translation id="2375079107209812402">Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
+<translation id="2461822463642141190">Actual</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
+<translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3091839911843451378">Error: La impresora se detuvo</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
@@ -97,8 +102,10 @@
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
+<translation id="4921665434385737356">Se cargó <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
+<translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
@@ -114,8 +121,11 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Gestionado</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Más información en el Centro de ayuda</translation>
+<translation id="5719918614880940190">Este valor mide el uso de la CPU y es una combinación de todos los núcleos</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6048107060512778456">Error: Se atascó el papel</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
@@ -148,6 +158,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />. Los administradores pueden configurarlo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
+<translation id="7441459999606975924">La capacidad de la batería se reduce con el uso</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
@@ -155,6 +166,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Se guardó el archivo escaneado</translation>
+<translation id="7928373994957558460">Mostrar ubicación del archivo</translation>
 <translation id="7936303884198020182">no se encontraron servidores de nombres</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
@@ -167,6 +179,8 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Agrega una cuenta para el acceso múltiple. Puedes acceder a todas las cuentas abiertas sin una contraseña, por lo que esta función solo debe utilizarse con cuentas de confianza.</translation>
 <translation id="8364946094152050673">los servidores de nombres están vacíos</translation>
+<translation id="8395584934117017006">Este dispositivo <ph name="DEVICE_TYPE" /> está administrado por una empresa</translation>
+<translation id="8398927464629426868">La tasa en la que el dispositivo se está cargando o descargando</translation>
 <translation id="8475690821716466388">la red Wi-Fi está protegida con el protocolo de PSK WEP (poco seguro)</translation>
 <translation id="8477551185774834963">la latencia de DNS supera ligeramente el umbral permitido</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>
@@ -176,9 +190,11 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
+<translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8910721771319628100">la red predeterminada supera el umbral de latencia</translation>
 <translation id="8919837981463578619">Error: Falta la bandeja</translation>
 <translation id="8928727111548978589">Error: No hay papel</translation>
+<translation id="9088306295921699330">Uso actual</translation>
 <translation id="910415269708673980">Actualizar ticket para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

@@ -371,6 +371,7 @@
 <translation id="363596933471559332">Аўтаматычна ўваходзіць на вэб-сайты, выкарыстоўваючы захаваныя ўліковыя даныя. Калі функцыя выключана, кожны раз пры ўваходзе на вэб-сайт у вас будуць патрабаваць спраўджання.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Скід прывядзе да выдалення захаваных даных, у тым ліку спіса наведаных сайтаў.</translation>
+<translation id="3687645719033307815">Вам паказваецца перадпрагляд гэтай старонкі</translation>
 <translation id="3692944402865947621">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />": месца захоўвання недаступнае.</translation>
 <translation id="3701167022068948696">Выправіць</translation>
 <translation id="371230970611282515">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца.</translation>
@@ -979,6 +980,7 @@
 <translation id="7798392620021911922">Адноўлена ўкладак: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7810647596859435254">Адкрыць з дапамогай…</translation>
+<translation id="7815484226266492798">Доўгі здымак экрана</translation>
 <translation id="7821588508402923572">Тут будзе паказвацца аб'ём сэканомленага трафіка</translation>
 <translation id="7844171778363018843">Не выбраны даныя для сінхранізацыі</translation>
 <translation id="7846296061357476882">Сэрвісы Google</translation>
@@ -1051,6 +1053,7 @@
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8266862848225348053">Размяшчэнне спамповак</translation>
 <translation id="8274165955039650276">Паказаць спампоўкі</translation>
+<translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="8310344678080805313">Стандартныя ўкладкі</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> і іншыя сайты</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9065383040763568503">Захаваныя даныя, якія Chrome не лічыць важнымі (напрыклад, сайты, налады якіх не захаваны або якія вы наведваеце рэдка)</translation>
 <translation id="9069543557624799859">Спампоўванне пачнецца ў <ph name="TIME" />.</translation>
+<translation id="9069999660519089861">Няма непрачытаных старонак</translation>
 <translation id="9070377983101773829">Пачаць галасавы пошук</translation>
 <translation id="9074336505530349563">Каб Google рэкамендаваў вам персаналізаванае змесціва, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>

@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1018656279737460067">Atcelts</translation>
+<translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
+<translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
 <translation id="1204296502688602597">DNS latentums</translation>
 <translation id="1238612778414822719">HTTPS latentums</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
-<translation id="1734367976349034509">Šo ierīci pārvalda uzņēmums</translation>
+<translation id="1743558184855585519">Akumulators tiek uzskatīts par tukšu, kad tiek sasniegts ierobežojums.</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1930797645656624981">Chrome OS ievades metodes pakalpojums</translation>
 <translation id="1947737735496445907">Izdrukāts</translation>
 <translation id="1979103255016296513">Paroles maiņa ir nokavēta</translation>
 <translation id="1980044825731880088">Centrālā procesora ātrums</translation>
-<translation id="2049639323467105390">Šo ierīci pārvalda vietne <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Atlicis {0} mēģinājums.}zero{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}one{<ph name="ERROR_MESSAGE" />. Atlicis {0} mēģinājums.}other{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Meklēt</translation>
+<translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
+<translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
 <translation id="5168185087976003268">Akumulatora stāvoklis</translation>
@@ -119,6 +122,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Uzzināt vairāk palīdzības centrā</translation>
+<translation id="5719918614880940190">Nosaka centrālā procesora lietojumu un atspoguļo visu rādītāju apkopojumu.</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faila tips</translation>
+<translation id="7441459999606975924">Lietošanas laikā akumulatora kapacitāte samazinās.</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
@@ -161,6 +166,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7855434858642800953">Skenētais fails ir saglabāts!</translation>
+<translation id="7928373994957558460">Parādīt faila atrašanās vietu</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
@@ -173,6 +179,8 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
 <translation id="8364946094152050673">Tukši nosaukumu serveri</translation>
+<translation id="8395584934117017006">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda uzņēmums.</translation>
+<translation id="8398927464629426868">Ātrums, ar kādu pašlaik notiek ierīces uzlāde vai izlāde.</translation>
 <translation id="8475690821716466388">Wi-Fi tīkls aizsargā nedrošs protokols WEP PSK</translation>
 <translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
 <translation id="871560550817059752">Neizdevās — beigusies tinte</translation>
@@ -182,6 +190,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8747900814994928677">Apstiprināt izmaiņas</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
+<translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>

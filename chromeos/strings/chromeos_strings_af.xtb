@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1018656279737460067">Gekanselleer</translation>
+<translation id="1059913517121127803">Kon nie skandering begin nie</translation>
 <translation id="1071587090247825784">Brandmuur is bespeur</translation>
 <translation id="1075811647922107217">Bladsygrootte</translation>
+<translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1204296502688602597">DNS-traagheid</translation>
 <translation id="1238612778414822719">HTTPS-traaagheid</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Gestop – ink is op</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
-<translation id="1734367976349034509">Hierdie toestel is onder ondernemingbestuur</translation>
+<translation id="1743558184855585519">Die battery word as verbruik beskou sodra dit die limiet bereik</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1930797645656624981">Chrome-bedryfstelsel se invoermetodediens</translation>
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1980044825731880088">CPU-spoed</translation>
-<translation id="2049639323467105390">Die toestel word deur <ph name="DOMAIN" /> bestuur.</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skandeer</translation>
+<translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
+<translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Laat loop</translation>
 <translation id="5168185087976003268">Batterygesondheid</translation>
@@ -119,6 +122,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="54609108002486618">Bestuur</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Kom meer te wete in die Hulpsentrum</translation>
+<translation id="5719918614880940190">Dit meet die CPU-gebruik en is 'n samevoeging van alle kerns</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, weergawe <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Lêertipe</translation>
+<translation id="7441459999606975924">Batterye se kapasiteit neem af met gebruik</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
@@ -161,6 +166,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Geskandeerde lêer is gestoor!</translation>
+<translation id="7928373994957558460">Wys lêerligging</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
@@ -173,6 +179,8 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
+<translation id="8395584934117017006">Hierdie <ph name="DEVICE_TYPE" /> word deur 'n onderneming bestuur</translation>
+<translation id="8398927464629426868">Die koers waarteen die toestel tans laai of ontlaai</translation>
 <translation id="8475690821716466388">Wi-fi-netwerk is met swak protokol WEP PSK beveilig</translation>
 <translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
@@ -182,6 +190,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8747900814994928677">Bevestig verandering</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Verstek</translation>
+<translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>

@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
+<translation id="1059913517121127803">Skanlash ishga tushmadi</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
+<translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Toʻxtatildi – Siyoh tugadi</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS vositasi mavjud</translation>
-<translation id="1734367976349034509">Bu korporativ qurilma</translation>
+<translation id="1743558184855585519">Batareya sikl limitiga yetganda eskirgan hisoblanadi</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
 <translation id="1930797645656624981">Chrome OS matn kiritish xizmati</translation>
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="1980044825731880088">CPU tezligi</translation>
-<translation id="2049639323467105390">Bu qurilma <ph name="DOMAIN" /> tomonidan boshqariladi</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Qidiruv</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4890353053343094602">Tezda yangi parol tanlang</translation>
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat oldi.</translation>
 <translation id="4932733599132424254">Sana</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
 <translation id="5168185087976003268">Quvvat darajasi</translation>
@@ -119,6 +122,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Batafsil axborotni Yordam markazidan oling</translation>
+<translation id="5719918614880940190">Bunda butun CPU tezligi va barcha yandolar faoliyati tekshiriladi</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versiya: <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fayl turi</translation>
+<translation id="7441459999606975924">Batareya sigʻimi ishlatilishi davomida kamayadi</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS kechikishi yuqori</translation>
@@ -161,6 +166,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7855434858642800953">Skanerlangan fayl saqlandi!</translation>
+<translation id="7928373994957558460">Fayl joylashuvini chiqarish</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
@@ -173,6 +179,8 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
+<translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> korporativ domen boshqaruvida</translation>
+<translation id="8398927464629426868">Qurilmamaning quvvat olish yoki sarflash koʻrsatkichi</translation>
 <translation id="8475690821716466388">WiFi tarmoq zaif WEP PSK protokoli bilan himoyalangan</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
 <translation id="871560550817059752">Bajarilmadi - Rang tugadi</translation>
@@ -182,6 +190,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8747900814994928677">Almashtiruvni tasdiqlang</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standart</translation>
+<translation id="8845001906332463065">Yordam</translation>
 <translation id="8910721771319628100">Birlamchi tarmoq kutish vaqti baland</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>
 <translation id="8928727111548978589">Bajarilmadi - Qogʻoz tugadi</translation>

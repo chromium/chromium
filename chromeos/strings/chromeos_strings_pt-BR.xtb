@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
+<translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
@@ -16,22 +18,21 @@
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
-<translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário e pode gerenciar configurações e monitorar a atividade do usuário remotamente.</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="150962533380566081">PUK inválida.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> linhas de execução)</translation>
+<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads)</translation>
 <translation id="1641857168437328880">Alimentador de documentos (unilateral)</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
-<translation id="1734367976349034509">Este dispositivo é gerenciado por uma empresa</translation>
+<translation id="1743558184855585519">A bateria é considerada consumida ao atingir o limite</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
 <translation id="1930797645656624981">Serviço de método de entrada do Chrome OS</translation>
 <translation id="1947737735496445907">Impresso</translation>
 <translation id="1979103255016296513">O prazo para a alteração de senha foi ultrapassado</translation>
 <translation id="1980044825731880088">Velocidade da CPU</translation>
-<translation id="2049639323467105390">Este dispositivo é gerenciado por <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Verificar</translation>
+<translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Selecionar a pasta no app Arquivos…</translation>
 <translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="4917889632206600977">Parado (sem papel)</translation>
+<translation id="4921665434385737356"><ph name="RATE" /> carregados em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="5168185087976003268">Integridade da bateria</translation>
@@ -119,6 +122,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saiba mais na Central de Ajuda</translation>
+<translation id="5719918614880940190">Isso mede o uso da CPU e é uma agregação de todos os núcleos</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />. Os administradores podem configurar o dispositivo remotamente.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de arquivo</translation>
+<translation id="7441459999606975924">A capacidade das baterias diminui com o uso</translation>
 <translation id="7561454561030345039">Essa ação é gerenciada pelo administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latência de HTTPS alta</translation>
@@ -161,6 +166,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7690294790491645610">Confirmar nova senha</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Arquivo digitalizado salvo.</translation>
+<translation id="7928373994957558460">Mostrar localização do arquivo</translation>
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="808894953321890993">Alterar senha</translation>
@@ -173,6 +179,8 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
 <translation id="8352772353338965963">Adicione uma conta de login múltiplo. Todas as contas conectadas podem ser acessadas sem uma senha; portanto esse recurso só deve ser usado com contas confiáveis.</translation>
 <translation id="8364946094152050673">Servidores de nomes vazios</translation>
+<translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerenciado por uma empresa</translation>
+<translation id="8398927464629426868">A velocidade em que o dispositivo carrega ou descarrega atualmente</translation>
 <translation id="8475690821716466388">A rede Wi-Fi é protegida pelo protocolo fraco WEP PSK</translation>
 <translation id="8477551185774834963">Latência do DNS um pouco acima do limite permitido</translation>
 <translation id="871560550817059752">Falha - Sem tinta</translation>
@@ -182,6 +190,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8747900814994928677">Confirmar alteração</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Padrão</translation>
+<translation id="8845001906332463065">Ajuda</translation>
 <translation id="8910721771319628100">Rede padrão acima do limite de latência</translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>
 <translation id="8928727111548978589">Falha - Sem papel</translation>

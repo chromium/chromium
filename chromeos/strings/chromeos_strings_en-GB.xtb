@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1018656279737460067">Cancelled</translation>
+<translation id="1059913517121127803">Couldn't start scanning</translation>
 <translation id="1071587090247825784">Firewall detected</translation>
 <translation id="1075811647922107217">Page size</translation>
+<translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
 <translation id="1204296502688602597">DNS latency</translation>
 <translation id="1238612778414822719">HTTPS latency</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Stopped – out of ink</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS resolver present</translation>
-<translation id="1734367976349034509">This device is enterprise managed</translation>
+<translation id="1743558184855585519">The battery is considered consumed once it reaches the limit</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1930797645656624981">Chrome OS Input Method Service</translation>
 <translation id="1947737735496445907">Printed</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1980044825731880088">CPU speed</translation>
-<translation id="2049639323467105390">This device is managed by <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scan</translation>
+<translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="3008341117444806826">REFRESH</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
+<translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="5168185087976003268">Battery health</translation>
@@ -119,6 +122,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="54609108002486618">Managed</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Find out more in the Help Centre</translation>
+<translation id="5719918614880940190">This measures the CPU usage, and is an aggregation of all cores</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">File type</translation>
+<translation id="7441459999606975924">The battery's capacity declines with usage</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
@@ -161,6 +166,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Scanned file saved!</translation>
+<translation id="7928373994957558460">Show file location</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="808894953321890993">Change password</translation>
@@ -173,6 +179,8 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>
+<translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
+<translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8475690821716466388">Wi-Fi network is secured with weak protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS latency slightly above allowable threshold</translation>
 <translation id="871560550817059752">Failed – Out of ink</translation>
@@ -182,6 +190,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8747900814994928677">Confirm change</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
+<translation id="8845001906332463065">Get help</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>

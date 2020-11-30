@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
+<translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
 <translation id="1204296502688602597">Затрымка DNS</translation>
 <translation id="1238612778414822719">Затрымка HTTPS</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Спынена: скончылася чарніла</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наяўнасць DNS-рэзолвера</translation>
-<translation id="1734367976349034509">Прылада знаходзіцца пад кіраваннем арганізацыі</translation>
+<translation id="1743558184855585519">Калі ліміт на колькасць перазарадак дасягнуты, акумулятар лічыцца зрасходаваным</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
 <translation id="1930797645656624981">Сэрвіс метадаў уводу Chrome OS</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1979103255016296513">Пратэрмінавана змена пароля</translation>
 <translation id="1980044825731880088">Хуткасць ЦП</translation>
-<translation id="2049639323467105390">Гэта прылада знаходзіцца пад кіраваннем <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Пошук</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
@@ -119,6 +120,7 @@
 <translation id="54609108002486618">Пад кіраваннем</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Даведацца больш у Даведачным цэнтры</translation>
+<translation id="5719918614880940190">Замервае выкарыстанне працэсара (даныя даюцца па ўсіх ядрах разам)</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тып файла</translation>
+<translation id="7441459999606975924">Ёмістасць акумулятараў зніжаецца па меры іх выкарыстання</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
@@ -173,6 +176,8 @@
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
+<translation id="8395584934117017006">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе арганізацыя</translation>
+<translation id="8398927464629426868">Цяперашняя хуткасць зарадкі або разрадкі прылады</translation>
 <translation id="8475690821716466388">Сетка Wi-Fi абаронена слабым пратаколам WEP PSK</translation>
 <translation id="8477551185774834963">Затрымка DNS крыху перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="871560550817059752">Збой: скончылася чарніла</translation>
@@ -182,6 +187,7 @@
 <translation id="8747900814994928677">Пацвярджэнне змен</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандартна</translation>
+<translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>

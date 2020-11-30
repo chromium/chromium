@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Megszakítva</translation>
 <translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
+<translation id="1175697296044146566">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli.</translation>
 <translation id="1195447618553298278">Ismeretlen hiba.</translation>
 <translation id="1204296502688602597">DNS várakozási ideje</translation>
 <translation id="1238612778414822719">Várakozási idő HTTPS esetén</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-névfeloldó működik</translation>
-<translation id="1734367976349034509">Az eszközt a vállalat felügyeli</translation>
+<translation id="1743558184855585519">Az akkumulátor lemerültnek tekinthető, ha elérte a korlátot</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1930797645656624981">Chrome OS beviteli módszere szolgáltatás</translation>
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
 <translation id="1980044825731880088">CPU-sebesség</translation>
-<translation id="2049639323467105390">Ezt az eszközt a(z) <ph name="DOMAIN" /> domain kezeli.</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}other{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Keresés</translation>
+<translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
@@ -119,6 +120,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="54609108002486618">Kezelt</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">További információ a Súgóban</translation>
+<translation id="5719918614880940190">Ez méri a processzorhasználatot, az összes magot egybevéve.</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fájltípus</translation>
+<translation id="7441459999606975924">Az akkumulátorok kapacitása egyre csökken a folyamatos használattal</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Hosszú várakozási idő HTTPS esetén</translation>
@@ -173,6 +176,8 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>
+<translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
+<translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének mértéke</translation>
 <translation id="8475690821716466388">A Wi-Fi-hálózat gyenge protokollal (WEP PSK) van biztosítva</translation>
 <translation id="8477551185774834963">A DNS várakozási ideje kissé az engedélyezhető határérték felett van</translation>
 <translation id="871560550817059752">Sikertelen – Kifogyott a tinta</translation>
@@ -182,6 +187,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
+<translation id="8845001906332463065">Súgó</translation>
 <translation id="8910721771319628100">Az alapértelmezett hálózat túllépi a várakozási idő határértékét</translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>

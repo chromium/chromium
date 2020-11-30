@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1059913517121127803">無法開始掃瞄</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
+<translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
 <translation id="1238612778414822719">HTTPS 延遲時間</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
-<translation id="1734367976349034509">此裝置受企業管理</translation>
+<translation id="1743558184855585519">當電池到達上限時，即表示已耗盡電力</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1930797645656624981">Chrome 作業系統輸入方法服務</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1979103255016296513">變更密碼已逾期</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
-<translation id="2049639323467105390">這部裝置由 <ph name="DOMAIN" /> 管理。</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">掃瞄</translation>
+<translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
+<translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="5168185087976003268">電池狀態</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">受管理</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">詳情請瀏覽說明中心</translation>
+<translation id="5719918614880940190">此數據測量 CPU 使用情況，並且為所有核心的彙整資料</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">檔案類型</translation>
+<translation id="7441459999606975924">電池容量會隨使用時間增加而下降</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7855434858642800953">已儲存掃瞄的檔案！</translation>
+<translation id="7928373994957558460">顯示檔案位置</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="808894953321890993">變更密碼</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>
+<translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企業管理</translation>
+<translation id="8398927464629426868">裝置目前的充電或放電率</translation>
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網絡</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
 <translation id="871560550817059752">失敗 - 墨水已用完</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">確認變更</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">預設</translation>
+<translation id="8845001906332463065">取得說明</translation>
 <translation id="8910721771319628100">預設網絡超過延遲門檻</translation>
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>

@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
 <translation id="1782199038061388045">번역</translation>
 <translation id="1787955149152357925">꺼짐</translation>
+<translation id="1804572139604454141">디스크 공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="1812997170047690955">화면에 표시된 내용 찾아보기</translation>
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@
 <translation id="3236488194889173876">사용할 수 있는 모바일 네트워크 없음</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> 창이 <ph name="ACTIVE_DESK" /> 데스크에서 <ph name="TARGET_DESK" /> 데스크로 이동했습니다.</translation>
 <translation id="3255483164551725916">무엇을 할 수 있어?</translation>
+<translation id="3269597722229482060">마우스 오른쪽 버튼 클릭</translation>
 <translation id="3289674678944039601">어댑터를 통해 충전 중</translation>
 <translation id="3290356915286466215">비보안</translation>
 <translation id="3294437725009624529">게스트</translation>
@@ -340,6 +342,7 @@
 <translation id="4212472694152630271">PIN으로 전환</translation>
 <translation id="4215497585250573029">VPN 설정</translation>
 <translation id="4217571870635786043">음성기록</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, 설치된 앱, 일시중지됨</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="425364040945105958">SIM 없음</translation>
@@ -565,7 +568,7 @@
 <translation id="6297287540776456956">스타일러스를 사용하여 영역을 선택하세요.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />(이)가 <ph name="ROTATION" />(으)로 회전되었습니다.</translation>
 <translation id="6315170314923504164">음성</translation>
-<translation id="6338485349199627913"><ph name="DISPLAY_NAME" />는 <ph name="MANAGER" />에서 관리하는 세션입니다.</translation>
+<translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
@@ -686,7 +689,7 @@
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">취침 시간</translation>
-<translation id="7551643184018910560">임시보관함에 고정</translation>
+<translation id="7551643184018910560">실행기에 고정</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
 <translation id="7564874036684306347">창을 다른 데스크톱으로 이동하면 예기치 못한 동작이 나타날 수 있습니다. 이후의 알림, 창, 대화상자가 데스크톱 간에 분할될 수 있습니다.</translation>
 <translation id="7569509451529460200">점자와 ChromeVox가 사용 설정되었습니다.</translation>
@@ -761,6 +764,7 @@
 <translation id="8142699993796781067">사설 네트워크</translation>
 <translation id="8152092012181020186">닫으려면 Ctrl + W를 누릅니다.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 관리자가 관리하는 설정입니다.</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
 <translation id="8170567869359129153">모바일 네트워크, 신호 강도: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">알림이 숨겨져 있음</translation>
@@ -826,6 +830,7 @@
 <translation id="8755498163081687682">본인 확인: <ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다</translation>
 <translation id="875593634123171288">VPN 설정 표시</translation>
 <translation id="8759408218731716181">멀티 로그인을 설정할 수 없음</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, 설치된 앱, 차단됨</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />에 연결</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

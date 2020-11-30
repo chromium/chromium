@@ -94,6 +94,7 @@
 <translation id="3306688585798492231">Встроенный дисплей</translation>
 <translation id="335581015389089642">Озвучивание</translation>
 <translation id="3389286852084373014">Сообщение слишком длинное</translation>
+<translation id="3406306243914553062">HTML-контент</translation>
 <translation id="348799646910989694">Временное хранилище автоматически скрыто</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Остался 1 день}one{Остался # день}few{Осталось # дня}many{Осталось # дней}other{Осталось # дня}}</translation>

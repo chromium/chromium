@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1059913517121127803">Pokretanje skeniranja nije uspjelo</translation>
 <translation id="1071587090247825784">Otkriven je zaštitni zid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
+<translation id="1175697296044146566">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1204296502688602597">Latentnost DNS-a</translation>
 <translation id="1238612778414822719">HTTPs latentnost</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS razrješivač je prisutan</translation>
-<translation id="1734367976349034509">Ovim uređajem upravlja preduzeće</translation>
+<translation id="1743558184855585519">Smatra se da je baterija potrošena kada se dostigne ograničenje</translation>
 <translation id="1905710495812624430">Prekoračen je maksimalan broj dozvoljenih pokušaja.</translation>
 <translation id="1930797645656624981">Usluga načina unosa Chrome OS-a</translation>
 <translation id="1947737735496445907">Odštampano</translation>
 <translation id="1979103255016296513">Vrijeme za promjenu lozinke je isteklo</translation>
 <translation id="1980044825731880088">Brzina CPU-a</translation>
-<translation id="2049639323467105390">Ovim uređajem upravlja domena <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostala su još {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostalo je još {0} pokušaja}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
+<translation id="2570743873672969996">Pokretanje testa <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
+<translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
@@ -119,6 +122,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saznajte više u Centru za pomoć</translation>
+<translation id="5719918614880940190">Ovim se mjeri korištenje CPU-a i predstavlja zbir svih jezgri</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
+<translation id="7441459999606975924">Kapacitet baterija opada s korištenjem</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
@@ -161,6 +166,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Skenirani fajl je sačuvan!</translation>
+<translation id="7928373994957558460">Prikaži lokaciju fajla</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server naziva</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="808894953321890993">Promijenite lozinku</translation>
@@ -173,6 +179,8 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
 <translation id="8364946094152050673">Prazni serveri naziva</translation>
+<translation id="8395584934117017006">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja preduzeće</translation>
+<translation id="8398927464629426868">Brzina kojom se uređaj trenutno puni ili prazni</translation>
 <translation id="8475690821716466388">WiFi mreža je zaštićena slabim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Latentnost DNS-a je malo iznad dozvoljenog praga</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
@@ -182,6 +190,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8747900814994928677">Potvrdite promjenu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Zadano</translation>
+<translation id="8845001906332463065">Potražite pomoć</translation>
 <translation id="8910721771319628100">Zadana mreža je iznad praga latentnosti</translation>
 <translation id="8919837981463578619">Nije uspjelo – nedostaje ladica</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>

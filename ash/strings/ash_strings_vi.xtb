@@ -17,7 +17,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
 <translation id="1119348796022671382">Chế độ màu theo giao diện dùng các màu trích xuất từ hình nền để tạo màu nhẹ nhàng cho giao diện.</translation>
-<translation id="112308213915226829">Tự động ẩn giá</translation>
+<translation id="112308213915226829">Tự động ẩn kệ</translation>
 <translation id="1153356358378277386">Thiết bị được ghép nối</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -91,6 +91,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1771761307086386028">Cuộn sang phải</translation>
 <translation id="1782199038061388045">dịch</translation>
 <translation id="1787955149152357925">Tắt</translation>
+<translation id="1804572139604454141">Quá trình ghi đã kết thúc do dung lượng ổ đĩa quá thấp</translation>
 <translation id="181103072419391116">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="1812997170047690955">Trên màn hình của tôi có nội dung gì?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -185,7 +186,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2718395828230677721">Ánh sáng đêm</translation>
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
-<translation id="2778650143428714839"><ph name="MANAGER" /> quản lý <ph name="DEVICE_TYPE" /></translation>
+<translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="28232023175184696">Không thể kết nối Internet. Hãy nhấp để thử lại.</translation>
@@ -199,8 +200,8 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2903844815300039659">Đã kết nối tới <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Ảnh chụp màn hình</translation>
 <translation id="2942350706960889382">Phóng to ở vị trí cố định</translation>
-<translation id="2942516765047364088">Vị trí giá</translation>
-<translation id="2946119680249604491">Thêm kết nối</translation>
+<translation id="2942516765047364088">Vị trí kệ</translation>
+<translation id="2946119680249604491">Thêm đường kết nối</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
@@ -238,6 +239,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3236488194889173876">Không có mạng di động nào</translation>
 <translation id="3249513730522716925">Đã di chuyển cửa sổ <ph name="WINDOW_TITLE" /> từ Không gian làm việc <ph name="ACTIVE_DESK" /> sang Không gian làm việc <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Bạn có thể làm gì?</translation>
+<translation id="3269597722229482060">Nhấp chuột phải</translation>
 <translation id="3289674678944039601">Đang sạc qua bộ sạc</translation>
 <translation id="3290356915286466215">Không bảo mật</translation>
 <translation id="3294437725009624529">Khách</translation>
@@ -340,6 +342,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4212472694152630271">Chuyển sang mã PIN</translation>
 <translation id="4215497585250573029">Cài đặt mạng riêng ảo (VPN)</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã tạm dừng</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="425364040945105958">Không có SIM</translation>
@@ -686,7 +689,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
-<translation id="7551643184018910560">Ghim vào giá</translation>
+<translation id="7551643184018910560">Ghim vào kệ</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
@@ -761,6 +764,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8142699993796781067">Mạng riêng</translation>
 <translation id="8152092012181020186">Nhấn tổ hợp phím Ctrl + W để đóng.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Quản trị viên của bạn quản lý tùy chọn cài đặt này.</translation>
+<translation id="8155628902202578800">Mở hộp thoại thông tin cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Đang dùng <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Mạng di động. Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Đã ẩn thông báo.</translation>
@@ -826,6 +830,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8755498163081687682">Xác minh danh tính của bạn: <ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
 <translation id="875593634123171288">Hiển thị các tùy chọn cài đặt VPN</translation>
 <translation id="8759408218731716181">Không thể thiết lập đăng nhập nhiều tài khoản</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã bị chặn</translation>
 <translation id="8785070478575117577">Kết nối với <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

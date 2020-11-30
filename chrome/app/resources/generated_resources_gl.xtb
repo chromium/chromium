@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Bloquear o contido en calquera páxina que visites</translation>
 <translation id="1143142264369994168">Titular do certificado</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome non atopou software daniño no teu ordenador • Última comprobación: hai 1 minuto}other{Chrome non atopou software daniño no teu ordenador • Última comprobación: hai {NUM_MINS} minutos}}</translation>
-<translation id="1145292499998999162">Bloqueouse o plugin</translation>
 <translation id="1145593918056169051">A impresora deixou de funcionar</translation>
 <translation id="114721135501989771">Obter tecnoloxía de Google en Chrome</translation>
 <translation id="1147322039136785890">Agora é a quenda de <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -336,6 +335,7 @@
 <translation id="1374844444528092021">O certificado requirido pola rede "<ph name="NETWORK_NAME" />" non está instalado ou xa non é válido. Obtén un novo certificado e tenta conectarte de novo.</translation>
 <translation id="1375321115329958930">Contrasinais gardados</translation>
 <translation id="137651782282853227">Os enderezos gardados aparecerán aquí</translation>
+<translation id="1376771218494401509">Nome da &amp;ventá...</translation>
 <translation id="1377600615067678409">Omitir polo momento</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> controla esta opción de configuración</translation>
 <translation id="1380028686461971526">Conectarse á rede de forma automática</translation>
@@ -726,7 +726,6 @@
 <translation id="1799071797295057738">A extensión <ph name="EXTENSION_NAME" /> desactivouse automaticamente.</translation>
 <translation id="1802624026913571222">Activar suspensión cando se peche a tapa</translation>
 <translation id="1802687198411089702">A páxina non responde. Podes esperar ou saír da páxina.</translation>
-<translation id="1802931390041703523">Bloqueouse Flash nesta páxina</translation>
 <translation id="1803531841600994172">Idioma ao que queres traducir</translation>
 <translation id="1803545009660609783">Volver crear</translation>
 <translation id="1805738995123446102">Hai unha pestana en segundo plano que está utilizando o micrófono</translation>
@@ -1150,6 +1149,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2288735659267887385">Configuración de accesibilidade</translation>
 <translation id="2289270750774289114">Preguntar cando un sitio web queira detectar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2290615375132886363">Botóns de navegación da tableta</translation>
+<translation id="229182044471402145">Non se atopou ningún tipo de letra que cumpra os requisitos.</translation>
 <translation id="2292848386125228270">Inicia <ph name="PRODUCT_NAME" /> como usuario normal. Se precisas executalo como raíz para o desenvolvemento, volve executalo coa función experimental --no-sandbox.</translation>
 <translation id="2294358108254308676">Queres instalar <ph name="PRODUCT_NAME" />?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
@@ -2757,7 +2757,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4124823734405044952">Restableceuse a túa chave de seguranza</translation>
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="412730574613779332">Spandex</translation>
-<translation id="412940972494182898">Executar Flash esta vez</translation>
 <translation id="4130199216115862831">Rexistro do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensión cambiou a páxina que se mostra ao buscar desde Omnibox.</translation>
 <translation id="4130750466177569591">Acepto</translation>
@@ -3183,6 +3182,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4651484272688821107">Non se puido cargar o compoñente en liña cos recursos do modo de demostración.</translation>
 <translation id="4652935475563630866">Para cambiar a configuración da cámara, é necesario reiniciar Parallels Desktop. Reiníciao para continuar.</translation>
 <translation id="4653405415038586100">Produciuse un erro ao configurar Linux</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 contrasinal pouco seguro}other{{NUM_WEAK} contrasinais pouco seguros}}</translation>
 <translation id="4657914796247705218">Velocidade de TrackPoint</translation>
 <translation id="465878909996028221">Só se poden redirixir a outro navegador os URL que utilicen os protocolos http, https e de ficheiro.</translation>
 <translation id="4659077111144409915">Conta principal</translation>
@@ -4261,6 +4261,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Non se pode analizar o ficheiro</translation>
 <translation id="5950819593680344519">Chrome non atopou software daniño no teu ordenador • Última comprobación: onte</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> quere usar tipos de letra locais</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5955282598396714173">O teu contrasinal caducou. Pecha sesión e volve iniciala para cambialo.</translation>
 <translation id="5955304353782037793">aplicación</translation>
@@ -4965,6 +4966,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6785518634832172390">O PIN debe ter como máximo 12 díxitos</translation>
 <translation id="6786747875388722282">Extensións</translation>
 <translation id="6787839852456839824">Atallos do teclado</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# contacto non está dispoñible. Para utilizar con el a función Compartir por Nearby, engade aos teus contactos os enderezos de correo electrónico asociados ás súas Contas de Google.}other{# contactos non están dispoñibles. Para utilizar con eles a función Compartir por Nearby, engade aos teus contactos os enderezos de correo electrónico asociados ás súas Contas de Google.}}</translation>
 <translation id="6788210894632713004">Extensión descomprimida</translation>
 <translation id="6789592661892473991">Dividir horizontalmente</translation>
 <translation id="6790428901817661496">Reproducir</translation>
@@ -5011,6 +5013,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="683373380308365518">Cambiar a un navegador intelixente e seguro</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Preguntar cando un sitio queira abrir e colocar ventás nas túas pantallas (recomendado)</translation>
+<translation id="6838694093138907871">O código non é válido. Téntao de novo.</translation>
 <translation id="6839225236531462745">Erro de eliminación do certificado</translation>
 <translation id="6839916869147598086">O inicio de sesión cambiou</translation>
 <translation id="6840155290835956714">Preguntar antes de enviar</translation>
@@ -5251,6 +5254,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7093866338626856921">Intercambiar datos cos dispositivos denominados: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porto esquerdo posterior)</translation>
 <translation id="7098447629416471489">Outros motores de busca gardados aparecerán aquí</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 contrasinal vulnerado}other{{NUM_COMPROMISED} contrasinais vulnerados}}</translation>
 <translation id="7099337801055912064">Non se poden cargar PPD grandes. O tamaño máximo é de 250 kB.</translation>
 <translation id="7102687220333134671">As actualizacións automáticas están activadas</translation>
 <translation id="7102832101143475489">Esgotouse o tempo de espera da solicitude</translation>
@@ -5690,6 +5694,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7635048370253485243">Fixada polo teu administrador</translation>
 <translation id="763632859238619983">Non permitir os sitios instalen indicadores de pago</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>
+<translation id="7637593984496473097">Non queda espazo suficiente no disco</translation>
 <translation id="7638605456503525968">Portos de serie</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automaticamente nos sitios aptos cos contrasinais que gardaches.</translation>
 <translation id="7642778300616172920">Ocultar contido confidencial</translation>
@@ -6015,7 +6020,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7974566588408714340">Tentar de novo usando <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Sobrevarrido</translation>
 <translation id="7975504106303186033">Debes inscribir este dispositivo de Chrome Education nunha conta de centro educativo. Se queres rexistrarte para conseguir unha nova conta, visita g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">Escoller &amp;nome da ventá…</translation>
 <translation id="7978412674231730200">Clave privada</translation>
 <translation id="7978450511781612192">Desta forma pecharase sesión nas túas Contas de Google. Deixarán de sincronizarse os marcadores, o historial, os contrasinais e outros datos.</translation>
 <translation id="7980084013673500153">Código de identificación do recurso: <ph name="ASSET_ID" /></translation>
@@ -6257,6 +6261,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8253198102038551905">Facer clic en "+" para obter as propiedades da rede</translation>
 <translation id="8255451560461371599">Sen fondo</translation>
 <translation id="8256319818471787266">Cadelo</translation>
+<translation id="8257435388931378346">Asignar o interruptor <ph name="ACTION" /></translation>
 <translation id="8257950718085972371">Continuar bloqueando o acceso á cámara</translation>
 <translation id="8259239505248583312">Vamos aló</translation>
 <translation id="8260864402787962391">Rato</translation>
@@ -6520,6 +6525,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8584280235376696778">Abrir &amp;vídeo na pestana nova</translation>
 <translation id="8584427708066927472">Eliminouse o contrasinal deste dispositivo</translation>
 <translation id="8585480574870650651">Quitar Crostini</translation>
+<translation id="8585841788766257444">Aplicarase unha opción de configuración personalizada en lugar da predeterminada aos sitios que se indican a continuación</translation>
 <translation id="8588866096426746242">Mostrar estatísticas do perfil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" />: enviando contido de RV a un visor</translation>
 <translation id="8590375307970699841">Configurar actualizacións automáticas</translation>
@@ -6580,7 +6586,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8648408795949963811">Temperatura da cor da luz nocturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> require permisos para: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> etc.</translation>
 <translation id="8650543407998814195">Aínda que non podes acceder ao teu perfil antigo, podes eliminalo.</translation>
-<translation id="865118751078059229">Escoller &amp;nome da ventá…</translation>
 <translation id="8651585100578802546">Forzar recarga desta páxina</translation>
 <translation id="8652400352452647993">Produciuse un erro na extensión do paquete</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o ordenador o poida manexar.</translation>
@@ -6884,7 +6889,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="897414447285476047">O ficheiro de destino está incompleto debido a un problema de conexión.</translation>
 <translation id="897525204902889653">Servizo de corentena</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 pestana máis}other{"<ph name="TAB_TITLE" />" e # pestanas máis}}</translation>
-<translation id="8976520271376534479">Bloqueouse Flash nesta páxina.</translation>
 <translation id="8977811652087512276">O contrasinal é incorrecto ou o ficheiro está danado</translation>
 <translation id="8978154919215542464">Activado: sincronizar todo</translation>
 <translation id="897939795688207351">En <ph name="ORIGIN" /></translation>
@@ -6956,6 +6960,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envía a Google o enderezo web da páxina á que tentas acceder</translation>
 <translation id="9046895021617826162">Erro na conexión</translation>
+<translation id="9048868107467198961">Non se atopou ningún problema de seguranza</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
 <translation id="9052208328806230490">Rexistraches as túas impresoras con <ph name="CLOUD_PRINT_NAME" /> utilizando a conta <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continuar bloqueando</translation>
@@ -7002,6 +7007,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9102610709270966160">Activar extensión</translation>
 <translation id="9103479157856427471">Achegar zona da pantalla na que esteas escribindo</translation>
 <translation id="9103868373786083162">Preme para retroceder e acceder ao menú contextual para ver o historial</translation>
+<translation id="9108035152087032312">Nome da &amp;ventá...</translation>
 <translation id="9108072915170399168">A configuración de uso de datos actual é Sen Internet</translation>
 <translation id="9108692355621501797">O <ph name="LINK_BEGIN" />Aviso de privacidade de G Suite for Education<ph name="LINK_END" /> pretende axudarlles aos usuarios de G Suite for Education e aos pais a entender os datos que recompila o produto, os motivos polos que se recompilan e para que se utilizan.</translation>
 <translation id="9108808586816295166">O DNS seguro pode non estar dispoñible continuamente</translation>

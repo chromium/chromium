@@ -371,6 +371,7 @@
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">重設將會清除您儲存資料的記錄，包括瀏覽過的網站清單。</translation>
+<translation id="3687645719033307815">您正在預覽此網頁的預覽畫面</translation>
 <translation id="3692944402865947621">無法存取儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
@@ -979,6 +980,7 @@
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
+<translation id="7815484226266492798">長螢幕截圖</translation>
 <translation id="7821588508402923572">節省的數據會在這裡顯示</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846296061357476882">Google 服務</translation>
@@ -1051,6 +1053,7 @@
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8266862848225348053">下載檔案儲存位置</translation>
 <translation id="8274165955039650276">查看已下載的內容</translation>
+<translation id="8281886186245836920">略過</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8310344678080805313">標準分頁</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> 和其他網站</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065383040763568503">已儲存 Chrome 認定為不重要的資料 (例如未儲存任何設定的網站，或您不常瀏覽的網站)</translation>
 <translation id="9069543557624799859">下載將會在 <ph name="TIME" />開始。</translation>
+<translation id="9069999660519089861">沒有未讀網頁</translation>
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074336505530349563">如要接收 Google 建議的個人化內容，請登入並開啟同步處理功能</translation>
 <translation id="9086302186042011942">正在同步處理</translation>

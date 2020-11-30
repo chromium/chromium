@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">Прокрутити праворуч</translation>
 <translation id="1782199038061388045">переклад</translation>
 <translation id="1787955149152357925">Вимкнено</translation>
+<translation id="1804572139604454141">Запис завершився через критично малий обсяг пам'яті на диску</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1812997170047690955">Що на моєму екрані?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@
 <translation id="3236488194889173876">Немає мобільних мереж</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
+<translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
 <translation id="3289674678944039601">Заряджання через адаптер</translation>
 <translation id="3290356915286466215">Не захищено</translation>
 <translation id="3294437725009624529">Гість</translation>
@@ -340,6 +342,7 @@
 <translation id="4212472694152630271">Ввести PIN-код</translation>
 <translation id="4215497585250573029">Налаштування VPN</translation>
 <translation id="4217571870635786043">Диктування</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="425364040945105958">Немає SIM-карти</translation>
@@ -761,6 +764,7 @@
 <translation id="8142699993796781067">Приватна мережа</translation>
 <translation id="8152092012181020186">Щоб закрити вкладку, натисніть Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Цим налаштуванням керує адміністратор.</translation>
+<translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Мобільна мережа. Рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Сповіщення сховано.</translation>
@@ -826,6 +830,7 @@
 <translation id="8755498163081687682">Потрібне підтвердження: сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="875593634123171288">Показати налаштування VPN</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, установлений додаток, заблоковано</translation>
 <translation id="8785070478575117577">Підключитися: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

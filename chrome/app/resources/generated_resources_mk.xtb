@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Блокирајте ги содржините на сите страници што ги посетувате</translation>
 <translation id="1143142264369994168">Потписник на сертификат</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред 1 минута}one{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред {NUM_MINS} минута}other{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред {NUM_MINS} минути}}</translation>
-<translation id="1145292499998999162">Приклучокот е блокиран</translation>
 <translation id="1145593918056169051">Печатачот запре</translation>
 <translation id="114721135501989771">Добијте ги паметните опции на Google во Chrome</translation>
 <translation id="1147322039136785890">Сега <ph name="SUPERVISED_USER_NAME" /> е на ред</translation>
@@ -337,6 +336,7 @@
 <translation id="1374844444528092021">Сертификатот што го бара мрежата „<ph name="NETWORK_NAME" />“ или не е инсталиран или повеќе не е важечки. Земете нов сертификат и обидете се повторно да се поврзете.</translation>
 <translation id="1375321115329958930">Зачувани лозинки</translation>
 <translation id="137651782282853227">Зачуваните адреси ќе се појават тука</translation>
+<translation id="1376771218494401509">Именувајте го &amp;прозорецот…</translation>
 <translation id="1377600615067678409">Прескокни засега</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> ја контролира поставкава</translation>
 <translation id="1380028686461971526">Автоматско поврзување на мрежа</translation>
@@ -728,7 +728,6 @@
 <translation id="1799071797295057738">Екстензијата „<ph name="EXTENSION_NAME" />“ беше автоматски оневозможена.</translation>
 <translation id="1802624026913571222">Режим во мирување кога капакот е затворен</translation>
 <translation id="1802687198411089702">Страницава не реагира. Може да почекате или да излезете.</translation>
-<translation id="1802931390041703523">Flash беше блокиран на страницава</translation>
 <translation id="1803531841600994172">Јазик на кој треба да се преведе</translation>
 <translation id="1803545009660609783">Повторно обучи</translation>
 <translation id="1805738995123446102">Картичка во заднина го користи вашиот микрофон</translation>
@@ -1152,6 +1151,7 @@
 <translation id="2288735659267887385">Поставки за пристапност</translation>
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2290615375132886363">Копчиња за навигација во режим на таблет</translation>
+<translation id="229182044471402145">Не е најден фонт што се совпаѓа</translation>
 <translation id="2292848386125228270">Стартувајте го <ph name="PRODUCT_NAME" /> како нормален корисник. Ако треба да го активирате како администратор за развој, повторно стартувајте го со знамето --no-sandbox.</translation>
 <translation id="2294358108254308676">Дали сакате да инсталирате <ph name="PRODUCT_NAME" />?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> резултати</translation>
@@ -2759,7 +2759,6 @@
 <translation id="4124823734405044952">Вашиот безбедносен клуч е ресетиран</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="412730574613779332">Spandex</translation>
-<translation id="412940972494182898">Изврши го Flash овој пат</translation>
 <translation id="4130199216115862831">Дневник на уредот</translation>
 <translation id="4130207949184424187">Екстензијата ја смени страницата што се прикажува кога пребарувате од Omnibox.</translation>
 <translation id="4130750466177569591">Се согласувам</translation>
@@ -3185,6 +3184,7 @@
 <translation id="4651484272688821107">Не може да се вчита онлајн компонентата со ресурси во демо-режим.</translation>
 <translation id="4652935475563630866">Промената во поставката за камерата бара рестартирање на Parallels Desktop. Рестартирајте ја Parallels Desktop за да продолжите.</translation>
 <translation id="4653405415038586100">Грешка при конфигурирање на Linux</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 слаба лозинка}one{{NUM_WEAK} слаба лозинка}other{{NUM_WEAK} слаби лозинки}}</translation>
 <translation id="4657914796247705218">Брзина на TrackPoint</translation>
 <translation id="465878909996028221">Само http, https и протоколите за датотеки се поддржани за пренасочувања на прелистувачот.</translation>
 <translation id="4659077111144409915">Примарна сметка</translation>
@@ -4263,6 +4263,7 @@
 <translation id="5946591249682680882">Пријави ИД <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Не може да ја анализира датотеката</translation>
 <translation id="5950819593680344519">Chrome не најде штетен софтвер на вашиот компјутер • Проверено вчера</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> сака да користи локални фонтови</translation>
 <translation id="5951624318208955736">Монитор</translation>
 <translation id="5955282598396714173">Лозинката истече. Одјавете се и повторно најавете се за да ја промените.</translation>
 <translation id="5955304353782037793">апликација</translation>
@@ -4967,6 +4968,7 @@
 <translation id="6785518634832172390">PIN-кодот мора да има 12 цифри или помалку</translation>
 <translation id="6786747875388722282">Наставки</translation>
 <translation id="6787839852456839824">Кратенки на тастатура</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# контакт не е достапен. За да користите „Споделување во близина“ со него, додајте ја адресата на е-пошта поврзана со неговата сметка на Google во вашите контакти.}one{# контакт не е достапен. За да користите „Споделување во близина“ со нив, додајте ги адресите на е-пошта поврзани со нивните сметки на Google во вашите контакти.}other{# контакти не се достапни. За да користите „Споделување во близина“ со нив, додајте ги адресите на е-пошта поврзани со нивните сметки на Google во вашите контакти.}}</translation>
 <translation id="6788210894632713004">Неотпакувана екстензија</translation>
 <translation id="6789592661892473991">Подели хоризонтално</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
@@ -5013,6 +5015,7 @@
 <translation id="683373380308365518">Префрлете се на паметен и безбеден прелистувач</translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Прашувај кога некој сајт сака да отвора и поставува прозорци на екраните (препорачано)</translation>
+<translation id="6838694093138907871">Неважечки код. Обидете се повторно.</translation>
 <translation id="6839225236531462745">Грешка при бришење сертификат</translation>
 <translation id="6839916869147598086">Најавувањето се промени</translation>
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
@@ -5253,6 +5256,7 @@
 <translation id="7093866338626856921">Разменете податоци со уредите наречени: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-Ц уред (лева порта на задната страна)</translation>
 <translation id="7098447629416471489">Другите зачувани пребарувачи ќе се појават тука</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 компромитирана лозинка}one{{NUM_COMPROMISED} компромитирана лозинка}other{{NUM_COMPROMISED} компромитирани лозинки}}</translation>
 <translation id="7099337801055912064">Не може да се вчита голема PPD-датотека. Максималната големина е 250 KB.</translation>
 <translation id="7102687220333134671">Автоматските ажурирања се вклучени</translation>
 <translation id="7102832101143475489">Барањето истече</translation>
@@ -5692,6 +5696,7 @@
 <translation id="7635048370253485243">Закачено од администраторот</translation>
 <translation id="763632859238619983">Не дозволувајте сајтовите да инсталираат ракувачи за плаќања</translation>
 <translation id="7636919061354591437">Инсталирај на уредов</translation>
+<translation id="7637593984496473097">Нема доволно простор на дискот</translation>
 <translation id="7638605456503525968">Сериски порти</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> автоматски ве најавува на соодветни страници со лозинките што сте ги зачувале.</translation>
 <translation id="7642778300616172920">Сокривај ги чувствителните содржини</translation>
@@ -6017,7 +6022,6 @@
 <translation id="7974566588408714340">Обидете се повторно со користење <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Прелевање</translation>
 <translation id="7975504106303186033">Мора да го регистрирате уредов за Chrome Education во сметка на Education. За да се регистрирате за нова сметка, одете на g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Именувајте го прозорецот…</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
 <translation id="7978450511781612192">Ова ќе ве одјави од вашите сметки на Google. Обележувачите, историјата, лозинките и друго веќе нема да се синхронизираат.</translation>
 <translation id="7980084013673500153">ИД на средство: <ph name="ASSET_ID" /></translation>
@@ -6259,6 +6263,7 @@
 <translation id="8253198102038551905">Кликнете на „+" за да ги добиете својствата на мрежата</translation>
 <translation id="8255451560461371599">Без заднина</translation>
 <translation id="8256319818471787266">Џеки</translation>
+<translation id="8257435388931378346">Доделете прекинувач за „<ph name="ACTION" />“</translation>
 <translation id="8257950718085972371">Продолжи со блокирање пристап до фотоапарат</translation>
 <translation id="8259239505248583312">Да започнеме</translation>
 <translation id="8260864402787962391">Глувче</translation>
@@ -6525,6 +6530,7 @@
 <translation id="8584280235376696778">&amp;Отвори видео во нова картичка</translation>
 <translation id="8584427708066927472">Лозинката е избришана од уредов</translation>
 <translation id="8585480574870650651">Отстранување на Crostini</translation>
+<translation id="8585841788766257444">Сајтовите наведени подолу следат приспособена наместо стандардната поставка</translation>
 <translation id="8588866096426746242">Покажи статистики за профилот</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR-содржини се прикажуваат преку слушалки</translation>
 <translation id="8590375307970699841">Постави автоматски ажурирања</translation>
@@ -6585,7 +6591,6 @@
 <translation id="8648408795949963811">Температура на бојата на „Ноќното светло“</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> сака да: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
 <translation id="8650543407998814195">Иако веќе не може да пристапувате до стариот профил, сѐ уште може да го отстраните.</translation>
-<translation id="865118751078059229">&amp;Именувајте го прозорецот…</translation>
 <translation id="8651585100578802546">Принуди повторно вчитување на страницата</translation>
 <translation id="8652400352452647993">Грешка на екстензијата на пакетот</translation>
 <translation id="8654151524613148204">Датотеката е премногу голема за вашиот компјутер да се справи со неа. Се извинуваме.</translation>
@@ -6890,7 +6895,6 @@
 <translation id="897414447285476047">Целната датотека не е целосна поради проблем со врската.</translation>
 <translation id="897525204902889653">Услуга за карантин</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и уште 1 картичка}one{„<ph name="TAB_TITLE" />“ и уште # картичка}other{„<ph name="TAB_TITLE" />“ и уште # картички}}</translation>
-<translation id="8976520271376534479">Flash беше блокиран на страницава.</translation>
 <translation id="8977811652087512276">Неточна лозинка или оштетена датотека</translation>
 <translation id="8978154919215542464">Вклучено - синхронизирај сѐ</translation>
 <translation id="897939795688207351">На <ph name="ORIGIN" /></translation>
@@ -6962,6 +6966,7 @@
 <translation id="9044646465488564462">Не успеа да се поврзе на мрежа: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Ја испраќа интернет-адресата на страницата до којашто се обидувате да стигнете до Google</translation>
 <translation id="9046895021617826162">Поврзувањето не успеа</translation>
+<translation id="9048868107467198961">Не се најдени безбедносни проблеми</translation>
 <translation id="9050666287014529139">Пристапна фраза</translation>
 <translation id="9052208328806230490">Ги регистриравте вашите печатачи со <ph name="CLOUD_PRINT_NAME" /> користејќи ја сметката <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Продолжи со блокирање</translation>
@@ -7008,6 +7013,7 @@
 <translation id="9102610709270966160">Овозможи екстензија</translation>
 <translation id="9103479157856427471">Зумираниот екран го следи фокусот на тастатурата</translation>
 <translation id="9103868373786083162">Притиснете за да се вратите назад, контекстуално мени за да ја видите историјата</translation>
+<translation id="9108035152087032312">Именувајте го &amp;прозорецот…</translation>
 <translation id="9108072915170399168">Моменталната поставка за користење интернет е „Без интернет“</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />„Известувањето за приватност“ за G Suite for Education<ph name="LINK_END" /> има за цел да им помогне на корисниците на G Suite for Education и нивните родители да разберат кои податоци ги прибира производот, зошто се прибираат и што се прави со нив.</translation>
 <translation id="9108808586816295166">Безбедниот DNS можеби не е достапен во секое време</translation>

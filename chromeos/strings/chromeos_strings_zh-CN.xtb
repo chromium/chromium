@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
 <translation id="1195447618553298278">未知错误。</translation>
@@ -14,9 +15,9 @@
 <translation id="1398634363027580500">HTTPS 延迟非常高</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1468664791493211953">优惠</translation>
-<translation id="1476467821656042872"><ph name="MANAGER" /> 管理此设备，而且或许能监控您的活动。</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> 负责管理此设备，而且也许能够监控您的活动。</translation>
 <translation id="1478594628797167447">扫描器</translation>
-<translation id="1499900233129743732"><ph name="MANAGER" /> 管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程）</translation>
@@ -25,12 +26,11 @@
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
-<translation id="1734367976349034509">此设备是受企业管理的设备</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1930797645656624981">Chrome 操作系统输入法服务</translation>
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
-<translation id="2049639323467105390">此设备由 <ph name="DOMAIN" /> 管理。</translation>
+<translation id="1980044825731880088">CPU 速度</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
@@ -39,6 +39,7 @@
 <translation id="2364498172489649528">通过</translation>
 <translation id="2375079107209812402">剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
+<translation id="2461822463642141190">电流</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
@@ -46,6 +47,7 @@
 <translation id="2872961005593481000">关机</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">网络连接诊断</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3188257591659621405">我的文件</translation>
@@ -97,8 +99,10 @@
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">运行</translation>
+<translation id="5168185087976003268">电池寿命</translation>
 <translation id="520299634122159966">无可用的扫描器</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
 请尝试通过点按麦克风图标向我提问。</translation>
@@ -114,8 +118,10 @@
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">托管</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">前往帮助中心了解详情</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
+<translation id="5982592372228113572">（<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6048107060512778456">失败 - 卡纸了</translation>
 <translation id="6050189528197190982">灰度</translation>
@@ -142,7 +148,7 @@
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="6839141349259399400">无法连接到扫描器？</translation>
-<translation id="7028979494427204405"><ph name="MANAGER" /> 管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
@@ -155,6 +161,7 @@
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7855434858642800953">扫描的文件已保存！</translation>
+<translation id="7928373994957558460">显示文件位置</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="808894953321890993">更改密码</translation>
@@ -176,9 +183,11 @@
 <translation id="8747900814994928677">确认更改</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">默认</translation>
+<translation id="8845001906332463065">获取帮助</translation>
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
+<translation id="9088306295921699330">目前用量</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="9111102763498581341">解锁</translation>

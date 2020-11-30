@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Imeghairiwa</translation>
 <translation id="1071587090247825784">Kinga mtandao imetambuliwa</translation>
 <translation id="1075811647922107217">Ukubwa wa ukurasa</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1204296502688602597">Muda wa Kusubiri wa DNS</translation>
 <translation id="1238612778414822719">Muda wa kusubiri maombi ya HTTPS</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
 <translation id="1703835215927279855">Barua</translation>
 <translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
-<translation id="1734367976349034509">Kifaa hiki kinadhibitiwa kibiashara</translation>
+<translation id="1743558184855585519">Betri huchukuliwa kwamba imetumika ikishafikia kikomo</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
 <translation id="1930797645656624981">Huduma ya Mbinu ya Kuingiza Data kwenye Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="1947737735496445907">Imechapishwa</translation>
 <translation id="1979103255016296513">Muda wa kubadilisha nenosiri umeisha</translation>
 <translation id="1980044825731880088">Kasi ya CPU</translation>
-<translation id="2049639323467105390">Kifaa hiki kinadhibitiwa na <ph name="DOMAIN" /> .</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} ya kujaribu}other{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} za kujaribu}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Tafuta</translation>
+<translation id="2570743873672969996">Inatekeleza jaribio la <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Programu</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
@@ -118,6 +119,7 @@
 <translation id="54609108002486618">Imedhibitiwa</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Pata maelezo zaidi katika Kituo cha Usaidizi</translation>
+<translation id="5719918614880940190">Kipengele hiki hupima matumizi ya kiini cha kompyuta (CPU) na ni ujumlisho wa viini vyote</translation>
 <translation id="5832805196449965646">Ongeza Mtumiaji Mwingine</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" />)</translation>
@@ -153,6 +155,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Aina ya faili</translation>
+<translation id="7441459999606975924">Nguvu za betri hupungua kadri inavyotumiwa</translation>
 <translation id="7561454561030345039">Kitendo hiki kinadhibitiwa na msimamizi wako</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Muda mwingi wa kusubiri maombi ya HTTPS</translation>
@@ -172,6 +175,8 @@
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8352772353338965963">Ongeza akaunti ya uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja. Akaunti zote zilizoingiwa zinaweza kufikiwa bila nenosiri, hivyo kipengee hiki lazima kitumike kwenye akaunti zinazoaminika pekee.</translation>
 <translation id="8364946094152050673">Seva za majina hazina kitu</translation>
+<translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> hii inasimamiwa na biashara</translation>
+<translation id="8398927464629426868">Kiwango cha sasa cha kifaa cha kuchaji au kutumia chaji</translation>
 <translation id="8475690821716466388">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP PSK</translation>
 <translation id="8477551185774834963">Muda wa kusubiri wa DNS umezidi kidogo kiwango cha juu kinachoruhusiwa</translation>
 <translation id="871560550817059752">Haijakamilika - Wino umeisha</translation>
@@ -181,6 +186,7 @@
 <translation id="8747900814994928677">Thibitisha mabadiliko</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Chaguomsingi</translation>
+<translation id="8845001906332463065">Pata usaidizi</translation>
 <translation id="8910721771319628100">Muda wa kusubiri wa mtandao chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8919837981463578619">Haijakamilika - Trei haipo</translation>
 <translation id="8928727111548978589">Haijakamilika - Karatasi zimeisha</translation>

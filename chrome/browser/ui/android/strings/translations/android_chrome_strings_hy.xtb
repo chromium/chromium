@@ -371,6 +371,7 @@
 <translation id="363596933471559332">Ավտոմատ կերպով մուտք գործել կայքեր՝ պահված մուտքային տվյալների օգնությամբ: Եթե այս գործառույթն անջատված է, ապա ամեն անգամ կայք մտնելիս ձեզանից կպահանջվի հաստատում:</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />՝ <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Վերակայման արդյունքում կջնջվի թրաֆիկի տնտեսման պատմությունը, ներառյալ այցելած կայքերի ցանկը:</translation>
+<translation id="3687645719033307815">Դուք նախադիտում եք այս էջը</translation>
 <translation id="3692944402865947621">Չհաջողվեց ներբեռնել «<ph name="FILE_NAME" />» ֆայլը, քանի որ պահեստն անհասանելի է։</translation>
 <translation id="3701167022068948696">Ուղղել</translation>
 <translation id="371230970611282515">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
@@ -979,6 +980,7 @@
 <translation id="7798392620021911922">Վերականգնվել է <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7810647596859435254">Բացել հավելվածով…</translation>
+<translation id="7815484226266492798">Երկար սքրինշոթ</translation>
 <translation id="7821588508402923572">Թրաֆիկի տնտեսման մասին տվյալները կցուցադրվեն այստեղ</translation>
 <translation id="7844171778363018843">Համաժամացման համար տվյալներ չեն ընտրվել</translation>
 <translation id="7846296061357476882">Google-ի ծառայություններ</translation>
@@ -1051,6 +1053,7 @@
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8266862848225348053">Ներբեռնումների պանակը</translation>
 <translation id="8274165955039650276">Դիտել ներբեռնումները</translation>
+<translation id="8281886186245836920">Բաց թողնել</translation>
 <translation id="8284326494547611709">Ենթագրեր</translation>
 <translation id="8310344678080805313">Ստանդարտ ներդիրներ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> և այլ կայքեր</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9065383040763568503">Պահված տվյալները, որոնք ըստ Chrome-ի կարևոր չեն (օր.՝ առանց պահված կարգավորումների կայքերը կամ այն կայքերը, որոնք վաղուց չեք այցելել)</translation>
 <translation id="9069543557624799859">Ներբեռնումը կսկսվի <ph name="TIME" />-ին։</translation>
+<translation id="9069999660519089861">Չկարդացված էջեր չկան</translation>
 <translation id="9070377983101773829">Սկսել ձայնային որոնումը</translation>
 <translation id="9074336505530349563">Google-ից անհատականացված բովանդակություն ստանալու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="9086302186042011942">Համաժամացում</translation>

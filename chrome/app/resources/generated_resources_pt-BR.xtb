@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Bloquear conteúdo em qualquer página visitada</translation>
 <translation id="1143142264369994168">Signatário do certificado</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{O Chrome não encontrou softwares nocivos no computador • Verificado 1 minuto atrás}one{O Chrome não encontrou softwares nocivos no computador • Verificado {NUM_MINS} minuto atrás}other{O Chrome não encontrou softwares nocivos no computador • Verificado {NUM_MINS} minutos atrás}}</translation>
-<translation id="1145292499998999162">Plug-in bloqueado</translation>
 <translation id="1145593918056169051">A impressora parou</translation>
 <translation id="114721135501989771">A tecnologia Google no Chrome</translation>
 <translation id="1147322039136785890">Agora, entregue o dispositivo para <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -337,6 +336,7 @@
 <translation id="1374844444528092021">O certificado exigido pela rede "<ph name="NETWORK_NAME" />" não está instalado ou não é mais válido. Obtenha um novo certificado e tente se conectar novamente.</translation>
 <translation id="1375321115329958930">Senhas salvas</translation>
 <translation id="137651782282853227">Os endereços salvos são exibidos aqui</translation>
+<translation id="1376771218494401509">Nomear a janela…</translation>
 <translation id="1377600615067678409">Ignorar por enquanto</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> está controlando essa configuração</translation>
 <translation id="1380028686461971526">Conectar-se automaticamente à rede</translation>
@@ -728,7 +728,6 @@
 <translation id="1799071797295057738">A extensão "<ph name="EXTENSION_NAME" />" foi desativada automaticamente.</translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
-<translation id="1802931390041703523">O Flash foi bloqueado nesta página</translation>
 <translation id="1803531841600994172">Idioma de destino</translation>
 <translation id="1803545009660609783">Treinar novamente</translation>
 <translation id="1805738995123446102">A guia em segundo plano está usando o microfone</translation>
@@ -1152,6 +1151,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2288735659267887385">Configurações de acessibilidade</translation>
 <translation id="2289270750774289114">Perguntar quando um site quer descobrir dispositivos Bluetooth nas proximidades (recomendado)</translation>
 <translation id="2290615375132886363">Botões de navegação do tablet</translation>
+<translation id="229182044471402145">Nenhuma fonte encontrada.</translation>
 <translation id="2292848386125228270">Inicie o <ph name="PRODUCT_NAME" /> como um usuário normal. Se precisar executar como raiz para desenvolvimento, execute novamente com a sinalização --no-sandbox.</translation>
 <translation id="2294358108254308676">Quer instalar o <ph name="PRODUCT_NAME" />?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
@@ -2760,7 +2760,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4124823734405044952">Sua chave de segurança foi redefinida</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="412730574613779332">Mascarado</translation>
-<translation id="412940972494182898">Executar Flash desta vez</translation>
 <translation id="4130199216115862831">Registro do dispositivo</translation>
 <translation id="4130207949184424187">Esta extensão alterou a página que é exibida quando você pesquisa na Omnibox.</translation>
 <translation id="4130750466177569591">Aceito</translation>
@@ -3186,6 +3185,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4651484272688821107">Não foi possível carregar o componente on-line com recursos do modo de demonstração.</translation>
 <translation id="4652935475563630866">A mudança na configuração da câmera exige que você reinicialize o Parallels Desktop. Faça isso para continuar.</translation>
 <translation id="4653405415038586100">Erro ao configurar o Linux</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 senha fraca}one{{NUM_WEAK} senha fraca}other{{NUM_WEAK} senhas fracas}}</translation>
 <translation id="4657914796247705218">Velocidade do TrackPoint</translation>
 <translation id="465878909996028221">Apenas os protocolos http, https e file são compatíveis com redirecionamentos do navegador.</translation>
 <translation id="4659077111144409915">Conta principal</translation>
@@ -4266,6 +4266,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5946591249682680882">Código de relatório <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Não foi possível analisar o arquivo</translation>
 <translation id="5950819593680344519">O Chrome não encontrou softwares nocivos no computador • Verificado ontem</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> quer usar fontes locais</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5955282598396714173">Sua senha expirou. Saia e faça login novamente para alterá-la.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -4971,6 +4972,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6785518634832172390">O PIN precisa ter 12 dígitos ou menos</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787839852456839824">Atalhos do teclado</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o "Compartilhar por proximidade" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="6788210894632713004">Extensão descompactada</translation>
 <translation id="6789592661892473991">Divisão horizontal</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
@@ -5017,6 +5019,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="683373380308365518">Mudar para um navegador inteligente e seguro</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Perguntar quando um site quiser abrir e posicionar janelas nas suas telas (recomendado)</translation>
+<translation id="6838694093138907871">Código inválido, tente novamente.</translation>
 <translation id="6839225236531462745">Erro de exclusão do certificado</translation>
 <translation id="6839916869147598086">O login mudou</translation>
 <translation id="6840155290835956714">Perguntar antes de enviar</translation>
@@ -5257,6 +5260,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7093866338626856921">Trocar dados com os dispositivos chamados: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta traseira da esquerda)</translation>
 <translation id="7098447629416471489">Outros mecanismos de pesquisa salvos serão exibidos aqui</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 senha comprometida}one{{NUM_COMPROMISED} senha comprometida}other{{NUM_COMPROMISED} senhas comprometidas}}</translation>
 <translation id="7099337801055912064">Não é possível carregar um PPD grande. O tamanho máximo é 250 KB.</translation>
 <translation id="7102687220333134671">As atualizações automáticas estão ativadas</translation>
 <translation id="7102832101143475489">A solicitação expirou</translation>
@@ -5696,6 +5700,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7635048370253485243">Fixada pelo administrador</translation>
 <translation id="763632859238619983">Não permitir que nenhum site instale gerenciadores de pagamento</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>
+<translation id="7637593984496473097">Não há espaço em disco suficiente</translation>
 <translation id="7638605456503525968">Portas seriais</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> conecta você automaticamente a sites qualificados com as senhas que você salvou.</translation>
 <translation id="7642778300616172920">Ocultar conteúdo sensível</translation>
@@ -6021,7 +6026,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7974566588408714340">Tentar novamente usando <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
 <translation id="7975504106303186033">Inscreva este dispositivo Chrome Education em uma conta de ensino. Para criar uma nova conta, acesse g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Nomear a janela…</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7978450511781612192">Isso desconectará você das suas Contas do Google. Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados.</translation>
 <translation id="7980084013673500153">Código do recurso: <ph name="ASSET_ID" /></translation>
@@ -6264,6 +6268,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8253198102038551905">Clique em "+" para ver as propriedades da rede</translation>
 <translation id="8255451560461371599">Sem plano de fundo</translation>
 <translation id="8256319818471787266">Totó</translation>
+<translation id="8257435388931378346">Atribuir interruptor para <ph name="ACTION" /></translation>
 <translation id="8257950718085972371">Continuar bloqueando o acesso à câmera</translation>
 <translation id="8259239505248583312">Vamos lá</translation>
 <translation id="8260864402787962391">Mouse</translation>
@@ -6527,6 +6532,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8584280235376696778">&amp;Abrir vídeo em uma nova guia</translation>
 <translation id="8584427708066927472">A senha foi excluída deste dispositivo</translation>
 <translation id="8585480574870650651">Remover Crostini</translation>
+<translation id="8585841788766257444">Os sites listados abaixo seguem uma configuração personalizada em vez do padrão</translation>
 <translation id="8588866096426746242">Mostrar estatísticas do perfil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - apresentação de RV no headset</translation>
 <translation id="8590375307970699841">Configurar atualizações automáticas</translation>
@@ -6587,7 +6593,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8648408795949963811">Temperatura da cor do "Modo noturno"</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quer <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
 <translation id="8650543407998814195">Embora você não possa mais acessar seu perfil antigo, ainda é possível removê-lo.</translation>
-<translation id="865118751078059229">&amp;Nomear a janela…</translation>
 <translation id="8651585100578802546">Forçar carregamento desta página</translation>
 <translation id="8652400352452647993">Erro de extensão de pacote</translation>
 <translation id="8654151524613148204">O arquivo é muito grande para seu computador administrar.</translation>
@@ -6892,7 +6897,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="897414447285476047">O arquivo de destino estava incompleto devido a um problema de conexão.</translation>
 <translation id="897525204902889653">Serviço de quarentena</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 guia}one{"<ph name="TAB_TITLE" />" e mais # guia}other{"<ph name="TAB_TITLE" />" e mais # guias}}</translation>
-<translation id="8976520271376534479">O Flash foi bloqueado nesta página.</translation>
 <translation id="8977811652087512276">Senha incorreta ou arquivo corrompido</translation>
 <translation id="8978154919215542464">Ativado - sincronizar tudo</translation>
 <translation id="897939795688207351">Em <ph name="ORIGIN" /></translation>
@@ -6964,6 +6968,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9044646465488564462">Falha na conexão à rede: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Envia ao Google o endereço da Web da página que você está tentando acessar</translation>
 <translation id="9046895021617826162">Falha na conexão</translation>
+<translation id="9048868107467198961">Nenhum problema de segurança encontrado</translation>
 <translation id="9050666287014529139">Senha</translation>
 <translation id="9052208328806230490">Você registrou suas impressoras com <ph name="CLOUD_PRINT_NAME" /> utilizando a conta <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Continuar bloqueando</translation>
@@ -7010,6 +7015,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9102610709270966160">Ativar extensão</translation>
 <translation id="9103479157856427471">A tela com zoom segue o foco do teclado</translation>
 <translation id="9103868373786083162">Pressione para voltar ao menu de contexto e ver o histórico</translation>
+<translation id="9108035152087032312">Nomear a janela…</translation>
 <translation id="9108072915170399168">A configuração atual de uso de dados é "Sem Internet"</translation>
 <translation id="9108692355621501797">O <ph name="LINK_BEGIN" />Aviso de privacidade do G Suite for Education<ph name="LINK_END" /> tem a finalidade de ajudar os usuários e os pais deles a entender quais são os dados coletados pelo produto, o motivo da coleta e o que é feito com eles.</translation>
 <translation id="9108808586816295166">DNS seguro pode não estar disponível o tempo todo</translation>

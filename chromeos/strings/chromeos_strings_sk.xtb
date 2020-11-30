@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Zrušené</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
+<translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1204296502688602597">Latencia DNS</translation>
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
-<translation id="1734367976349034509">Toto zariadenie je spravované organizáciou</translation>
+<translation id="1743558184855585519">Keď batéria dosiahne tento limit, považuje sa to za koniec jej životnosti</translation>
 <translation id="1905710495812624430">Maximálny počet povolených pokusov bol prekročený.</translation>
 <translation id="1930797645656624981">Služba metódy vstupu systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytlačené</translation>
 <translation id="1979103255016296513">Uplynul termín zmeny hesla</translation>
 <translation id="1980044825731880088">Rýchlosť procesora</translation>
-<translation id="2049639323467105390">Toto zariadenie je spravované doménou <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Ďalšie nastavenia</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus.}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy.}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhľadať</translation>
+<translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
@@ -119,6 +120,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Ďalšie informácie v centre pomoci</translation>
+<translation id="5719918614880940190">Meria využitie procesora a ide o agregáciu všetkých jadier</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzia <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ súboru</translation>
+<translation id="7441459999606975924">Kapacita batérií sa znižuje používaním</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
@@ -173,6 +176,8 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>
+<translation id="8395584934117017006">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
+<translation id="8398927464629426868">Rýchlosť, akou sa zariadenie momentálne nabíja či vybíja</translation>
 <translation id="8475690821716466388">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Latencia servera DNS mierne prekračuje povolenú úroveň</translation>
 <translation id="871560550817059752">Nepodarilo sa – minul sa atrament</translation>
@@ -182,6 +187,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8747900814994928677">Potvrdenie zmeny</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predvolené</translation>
+<translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>

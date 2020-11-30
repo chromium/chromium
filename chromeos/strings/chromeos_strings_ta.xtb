@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
 <translation id="1075811647922107217">பக்க அளவு</translation>
+<translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
 <translation id="1204296502688602597">DNS தாமதம்</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
@@ -25,12 +26,12 @@
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
-<translation id="1734367976349034509">இந்தச் சாதனத்தை நிர்வகிப்பது: நிறுவனம்</translation>
+<translation id="1743558184855585519">பேட்டரி அதன் வரம்பை அடைந்ததும் முழுவதுமாக உபயோகப்படுத்தப்பட்டதாகக் கருதப்படுகிறது</translation>
 <translation id="1905710495812624430">அனுமதிக்கப்பட்ட அதிகபட்ச முயற்சிகளைக் கடந்துவிட்டீர்கள்.</translation>
 <translation id="1930797645656624981">Chrome OS உள்ளீட்டு முறை சேவை</translation>
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
-<translation id="2049639323467105390"><ph name="DOMAIN" /> ஆல் இந்த சாதனம் நிர்வகிக்கப்படுகிறது.</translation>
+<translation id="1980044825731880088">CPU வேகம்</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
@@ -39,13 +40,16 @@
 <translation id="2364498172489649528">வெற்றி</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> முயற்சிகள் மீதமுள்ளன</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
+<translation id="2461822463642141190">தற்போதைய மின் உபயோகம்</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} முயற்சி மீதமுள்ளது}other{<ph name="ERROR_MESSAGE" /> {0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான கோப்புறையைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">இணைப்புநிலையைக் கண்டறிதல்</translation>
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
@@ -99,6 +103,7 @@
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4932733599132424254">தேதி</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
+<translation id="5168185087976003268">பேட்டரி நிலை</translation>
 <translation id="520299634122159966">ஸ்கேனர்கள் எதுவும் இல்லை</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>
@@ -114,8 +119,11 @@
 <translation id="5457599981699367932">கெஸ்டாக உலாவுங்கள்</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">உதவி மையத்தில் மேலும் அறிக</translation>
+<translation id="5719918614880940190">இது CPU பயன்பாட்டையும் அனைத்துக் கோர்களின் ஒருங்கிணைத்தலையும் அளவிடுகிறது</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6048107060512778456">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6050189528197190982">கிரேஸ்கேல்</translation>
@@ -148,6 +156,7 @@
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">கோப்பு வகை</translation>
+<translation id="7441459999606975924">உபயோகத்தால் பேட்டரிகளின் திறன் குறைகிறது</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
@@ -167,6 +176,8 @@
 <translation id="8347227221149377169">அச்சுப் பணிகள்</translation>
 <translation id="8352772353338965963">பல உள்நுழைவுக்குக் கணக்கைச் சேர்க்கவும். உள்நுழைந்த அனைத்து கணக்குகளையும் கடவுச்சொல் இல்லாமலே அணுகலாம் என்பதால் இந்த அம்சத்தை நம்பகமான கணக்குகளுடன் மட்டுமே பயன்படுத்த வேண்டும்.</translation>
 <translation id="8364946094152050673">பெயர் சேவையகங்கள் காலியாக உள்ளன</translation>
+<translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
+<translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
 <translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
 <translation id="871560550817059752">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
@@ -176,9 +187,11 @@
 <translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
+<translation id="8845001906332463065">உதவி பெறுக</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
 <translation id="8919837981463578619">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8928727111548978589">காகிதம் இல்லாததால் அச்சிட முடியவில்லை</translation>
+<translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">பூட்டைத் திற</translation>

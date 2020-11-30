@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Blockera innehåll på alla sidor du besöker</translation>
 <translation id="1143142264369994168">Certifikatsignerare</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes för 1 minut sedan}other{Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes för {NUM_MINS} minuter sedan}}</translation>
-<translation id="1145292499998999162">Pluginprogrammet har blockerats</translation>
 <translation id="1145593918056169051">Skrivaren har stannat</translation>
 <translation id="114721135501989771">Få Google-teknik i Chrome</translation>
 <translation id="1147322039136785890">Nu kan <ph name="SUPERVISED_USER_NAME" /> ta över</translation>
@@ -336,6 +335,7 @@
 <translation id="1374844444528092021">Det certifikat som krävs av nätverket <ph name="NETWORK_NAME" /> är inte installerat eller inte längre giltigt. Hämta ett nytt certifikat och försök ansluta igen.</translation>
 <translation id="1375321115329958930">Sparade lösenord</translation>
 <translation id="137651782282853227">Sparade adresser visas här</translation>
+<translation id="1376771218494401509">Namnge fönstret …</translation>
 <translation id="1377600615067678409">Hoppa över nu</translation>
 <translation id="1378613616312864539">Den här inställningen styrs av <ph name="NAME" /></translation>
 <translation id="1380028686461971526">Anslut till ett nätverk automatiskt</translation>
@@ -727,7 +727,6 @@
 <translation id="1799071797295057738">Tillägget <ph name="EXTENSION_NAME" /> har inaktiverats automatiskt.</translation>
 <translation id="1802624026913571222">Aktivera viloläge när fodralet stängs</translation>
 <translation id="1802687198411089702">Sidan svarar inte. Vänta tills den svarar eller avbryt.</translation>
-<translation id="1802931390041703523">Flash är blockerat på den här sidan</translation>
 <translation id="1803531841600994172">Språk att översätta till</translation>
 <translation id="1803545009660609783">Träna om</translation>
 <translation id="1805738995123446102">En flik i bakgrunden använder din mikrofon</translation>
@@ -1151,6 +1150,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2288735659267887385">Inställningar för tillgänglighet</translation>
 <translation id="2289270750774289114">Fråga när en webbplats försöker söka efter Bluetooth-enheter i närheten (rekommenderas)</translation>
 <translation id="2290615375132886363">Navigeringsknappar för surfplatteläge</translation>
+<translation id="229182044471402145">Inget matchande teckensnitt hittades.</translation>
 <translation id="2292848386125228270">Starta <ph name="PRODUCT_NAME" /> som vanlig användare. Om du behöver köra som systemadministratör startar du om med flaggan --no-sandbox.</translation>
 <translation id="2294358108254308676">Vill du installera <ph name="PRODUCT_NAME" />?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultat</translation>
@@ -2758,7 +2758,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4124823734405044952">Säkerhetsnyckeln har återställts</translation>
 <translation id="4124935795427217608">Enhörning</translation>
 <translation id="412730574613779332">Superhjälte</translation>
-<translation id="412940972494182898">Kör Flash den här gången</translation>
 <translation id="4130199216115862831">Enhetslogg</translation>
 <translation id="4130207949184424187">Det här tillägget har ändrat vilken sida som visas när du söker i adressfältet.</translation>
 <translation id="4130750466177569591">Jag godkänner</translation>
@@ -3184,6 +3183,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4651484272688821107">Det gick inte att läsa in onlinekomponenten med resurser för demoläge.</translation>
 <translation id="4652935475563630866">Ändringen av kamerainställning kräver att Parallels Desktop startas om. Starta om Parallels Desktop för att fortsätta.</translation>
 <translation id="4653405415038586100">Det gick inte att konfigurera Linux</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 svagt lösenord}other{{NUM_WEAK} svaga lösenord}}</translation>
 <translation id="4657914796247705218">Hastighet för TrackPoint</translation>
 <translation id="465878909996028221">Endast protokollen http, https och file stöds för omdirigeringar till en annan webbläsare.</translation>
 <translation id="4659077111144409915">Primärt konto</translation>
@@ -4263,6 +4263,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Det gick inte att analysera filen</translation>
 <translation id="5950819593680344519">Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes i går</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> vill använda lokala teckensnitt</translation>
 <translation id="5951624318208955736">Skärm</translation>
 <translation id="5955282598396714173">Lösenordet har upphört att gälla. Logga ut och logga sedan in igen innan du ändrar det.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -4967,6 +4968,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6785518634832172390">Pinkoden får ha högst 12 siffror</translation>
 <translation id="6786747875388722282">Tillägg</translation>
 <translation id="6787839852456839824">Kortkommandon</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# kontakt är inte tillgänglig. Lägg till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter om du vill använda Närdelning med dem.}other{# kontakter är inte tillgängliga. Lägg till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter om du vill använda Närdelning med dem.}}</translation>
 <translation id="6788210894632713004">Okomprimerat tillägg</translation>
 <translation id="6789592661892473991">Dela vågrätt</translation>
 <translation id="6790428901817661496">Spela</translation>
@@ -5013,6 +5015,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="683373380308365518">Byt till en smart och säker webbläsare</translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Fråga när en webbplats vill öppna fönster och placera ut dem på skärmen (rekommenderas)</translation>
+<translation id="6838694093138907871">Ogiltig kod. Försök igen.</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
 <translation id="6839916869147598086">Inloggning fungerar annorlunda</translation>
 <translation id="6840155290835956714">Fråga innan något skickas</translation>
@@ -5253,6 +5256,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7093866338626856921">Utväxla data med enheterna <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
 <translation id="7098447629416471489">Andra sparade sökmotorer visas här</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{1 utsatt lösenord}other{{NUM_COMPROMISED} utsatta lösenord}}</translation>
 <translation id="7099337801055912064">PPD-filen var för stor att läsa in. Storleksgränsen är 250 kB.</translation>
 <translation id="7102687220333134671">Automatiska uppdateringar har aktiverats</translation>
 <translation id="7102832101143475489">Begäran tog för lång tid</translation>
@@ -5692,6 +5696,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7635048370253485243">Fäst av administratören</translation>
 <translation id="763632859238619983">Tillåt inte att betalningshanterare installeras av någon webbplats</translation>
 <translation id="7636919061354591437">Installera på den här enheten</translation>
+<translation id="7637593984496473097">Det finns inte tillräckligt med utrymme på hårddisken</translation>
 <translation id="7638605456503525968">Serieportar</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> loggar automatiskt in på godkända webbplatser med de lösenord du sparat.</translation>
 <translation id="7642778300616172920">Dölj känsligt innehåll</translation>
@@ -6017,7 +6022,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7974566588408714340">Försök igen med <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Överskanning</translation>
 <translation id="7975504106303186033">Du måste registrera den här Chrome Education-enheten i ett utbildningskonto. Du kan registrera dig för ett nytt konto på g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Namnge fönstret …</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
 <translation id="7978450511781612192">Du loggas ut från dina Google-konton. Bokmärken, historik, lösenord och annan information synkroniseras inte längre.</translation>
 <translation id="7980084013673500153">Tillgångs-id: <ph name="ASSET_ID" /></translation>
@@ -6260,6 +6264,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8253198102038551905">Klicka på + för att hämta nätverksegenskaperna</translation>
 <translation id="8255451560461371599">Ingen bakgrund</translation>
 <translation id="8256319818471787266">Ludde</translation>
+<translation id="8257435388931378346">Tilldela reglaget <ph name="ACTION" /></translation>
 <translation id="8257950718085972371">Fortsätt att blockera kameraåtkomsten</translation>
 <translation id="8259239505248583312">Då kör vi</translation>
 <translation id="8260864402787962391">Mus</translation>
@@ -6523,6 +6528,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8584280235376696778">&amp;Öppna video i ny flik</translation>
 <translation id="8584427708066927472">Lösenordet har raderats från den här enheten</translation>
 <translation id="8585480574870650651">Ta bort Crostini</translation>
+<translation id="8585841788766257444">Webbplatser som listas nedan följer en anpassad inställning i stället för standardinställningen</translation>
 <translation id="8588866096426746242">Visa profilstatistik</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR-innehåll avsett för VR-kikare visas</translation>
 <translation id="8590375307970699841">Konfigurera automatiska uppdateringar</translation>
@@ -6583,7 +6589,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8648408795949963811">Färgtemperatur för Nattljus</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vill <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> med mera</translation>
 <translation id="8650543407998814195">Du har inte längre åtkomst till den gamla profilen, men du kan fortfarande ta bort den.</translation>
-<translation id="865118751078059229">&amp;Namnge fönstret …</translation>
 <translation id="8651585100578802546">Tvinga webbläsaren att hämta sidan igen</translation>
 <translation id="8652400352452647993">Fel vid paketering av tillägg</translation>
 <translation id="8654151524613148204">Filen är för stor för att din dator ska kunna hantera den.</translation>
@@ -6887,7 +6892,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="897414447285476047">Hela målfilen laddades inte ned på grund av ett anslutningsfel.</translation>
 <translation id="897525204902889653">Karantäntjänst</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> och 1 flik till}other{<ph name="TAB_TITLE" /> och # flikar till}}</translation>
-<translation id="8976520271376534479">Flash är blockerat på den här sidan.</translation>
 <translation id="8977811652087512276">Felaktigt lösenord eller skadad fil</translation>
 <translation id="8978154919215542464">På – synkronisera allt</translation>
 <translation id="897939795688207351">På <ph name="ORIGIN" /></translation>
@@ -6959,6 +6963,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9044646465488564462">Det gick inte att ansluta till nätverket: <ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">Skickar webbadresserna till sidor som du försöker nå till Google</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
+<translation id="9048868107467198961">Inga säkerhetsproblem hittades</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9052208328806230490">Du har registrerat dina skrivare med <ph name="CLOUD_PRINT_NAME" /> och du använde kontot <ph name="EMAIL" /></translation>
 <translation id="9052404922357793350">Fortsätt blockera</translation>
@@ -7005,6 +7010,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9102610709270966160">Aktivera tillägget</translation>
 <translation id="9103479157856427471">Helskärmsförstoringen följer tangentbordsfokus</translation>
 <translation id="9103868373786083162">Tryck här om du vill återgå till föregående, visa historiken med snabbmenyn</translation>
+<translation id="9108035152087032312">Namnge fönstret …</translation>
 <translation id="9108072915170399168">Den aktuella inställningen för dataanvändning är Utan internet</translation>
 <translation id="9108692355621501797">I <ph name="LINK_BEGIN" />sekretessmeddelandet för G Suite for Education<ph name="LINK_END" /> förklarar vi för användare av G Suite for Education och föräldrar vilken data produkten samlar in, varför den samlas in och vad som händer med den.</translation>
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>

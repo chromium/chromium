@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1018656279737460067">Жокко чыгарылды</translation>
+<translation id="1059913517121127803">Скандалып башталган жок</translation>
 <translation id="1071587090247825784">Тармактык коргоо аныкталды</translation>
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат.</translation>
 <translation id="1195447618553298278">Белгисиз ката.</translation>
 <translation id="1204296502688602597">DNS күтүү убакыты</translation>
 <translation id="1238612778414822719">HTTPS күтүү убакыты</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
-<translation id="1734367976349034509">Бул түзмөк ишкана тарабынан башкарылат</translation>
+<translation id="1743558184855585519">Чекке жеткенде батарея сарпталды деп эсептелет</translation>
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
 <translation id="1930797645656624981">Chrome OS киргизүү ыкмасынын кызматы</translation>
 <translation id="1947737735496445907">Басып чыгарылды</translation>
 <translation id="1979103255016296513">Сырсөздү өзгөртүү мөөнөтү бүттү</translation>
 <translation id="1980044825731880088">CPU ылдамдыгы</translation>
-<translation id="2049639323467105390">Бул түзмөктү <ph name="DOMAIN" /> башкарат.</translation>
 <translation id="2080070583977670716">Дагы жөндөөлөр</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} аракет калды}other{<ph name="ERROR_MESSAGE" /> {0} аракет калды}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скандоо</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Files колдонмосунда папка тандоо...</translation>
 <translation id="4890353053343094602">Дароо жаңы сырсөз тандаңыз</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
 <translation id="5168185087976003268">Батареянын иштөө мөөнөтү</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">Башкарылуучу</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Жардам борборунан көбүрөөк маалымат алуу</translation>
+<translation id="5719918614880940190">Бул процессордун колдонулушун ченеп, бардык зымдардын бириктирилген жери болуп эсептелет</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-версия)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлдын түрү</translation>
+<translation id="7441459999606975924">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="7561454561030345039">Бул аракетти администраторуңуз башкарат</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS күтүү убакыты жогору</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7805768142964895445">Статусу</translation>
 <translation id="7855434858642800953">Скандалган файл сакталды.</translation>
+<translation id="7928373994957558460">Файл сакталган жерди көрсөтүү</translation>
 <translation id="7936303884198020182">Ысым серверлери табылган жок</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="8352772353338965963">Бир нече профиль менен кирүү үчүн каттоо эсебин кошуңуз. Катталган бардык аккаунттарына кирүүдө сырсөз талап кылынбагандыктан, бул мүмкүнчүлүктү ишенимдүү каттоо эсептери гана колдонушу керек.</translation>
 <translation id="8364946094152050673">Ысым серверлери бош</translation>
+<translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
+<translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
 <translation id="8475690821716466388">WiFi тармагынын WEP PSK протоколунун коопсуздугу начар</translation>
 <translation id="8477551185774834963">DNS күтүү убакыты уруксат берилген босогодон бир аз жогору</translation>
 <translation id="871560550817059752">Басылып чыгарылган жок - Сыя түгөнүп калды</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">Өзгөртүүнү ырастоо</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Демейки</translation>
+<translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8910721771319628100">Демейки тармак күтүү убакытынын босогосунан жогору</translation>
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>

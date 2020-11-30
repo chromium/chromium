@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1059913517121127803">Сканирането не бе стартирано</translation>
 <translation id="1071587090247825784">Установена е защитна стена</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
+<translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
 <translation id="1204296502688602597">Забавяне на DNS</translation>
 <translation id="1238612778414822719">Забавяне на HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
-<translation id="1734367976349034509">Това устройство се управлява корпоративно</translation>
+<translation id="1743558184855585519">Батерията се смята за изразходвана, когато достигне лимита</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1930797645656624981">Услуга за метод на въвеждане в Chrome OS</translation>
 <translation id="1947737735496445907">Отпечатано</translation>
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="1980044825731880088">Скорост на процесора</translation>
-<translation id="2049639323467105390">Това устройство се управлява от <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Сканиране</translation>
+<translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
+<translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="5168185087976003268">Състояние на батерията</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Научете повече в Помощния център</translation>
+<translation id="5719918614880940190">Това измерва използването на процесора и е обща стойност за всички ядра</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлов тип</translation>
+<translation id="7441459999606975924">Капацитетът на батерията намалява с течение на използването ѝ</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7855434858642800953">Сканираният файл е запазен!</translation>
+<translation id="7928373994957558460">Показване на местоположението на файла</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
+<translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
+<translation id="8398927464629426868">Скоростта, с която устройството се зарежда или разрежда в момента</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е защитена със слабия протокол WEP PSK</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
+<translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>

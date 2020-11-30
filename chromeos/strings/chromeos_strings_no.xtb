@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1018656279737460067">Avbrutt</translation>
+<translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
+<translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolveren er til stede</translation>
-<translation id="1734367976349034509">Denne enheten er administrert av en bedrift</translation>
+<translation id="1743558184855585519">Batteriet anses som oppbrukt når grensen er nådd</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1930797645656624981">Tjeneste for Chrome OS-inndatametode</translation>
 <translation id="1947737735496445907">Skrevet ut</translation>
 <translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
 <translation id="1980044825731880088">CPU-hastighet</translation>
-<translation id="2049639323467105390">Denne enheten administreres av <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}other{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skann</translation>
+<translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
 <translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
+<translation id="4921665434385737356">Ladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="5168185087976003268">Batterihelse</translation>
@@ -118,7 +121,8 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5457599981699367932">Surf som gjest</translation>
 <translation id="54609108002486618">Administrert</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Finn ut mer i Brukerstøtte</translation>
+<translation id="5551702563755460533">Finn ut mer i brukerstøtten</translation>
+<translation id="5719918614880940190">Dette er en sammenstilt måling av CPU-bruken for alle kjernene</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
+<translation id="7441459999606975924">Batterikapasiteten avtar med bruken</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
@@ -161,6 +166,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den skannede filen er lagret!</translation>
+<translation id="7928373994957558460">Vis filplassering</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="808894953321890993">Endre passord</translation>
@@ -173,6 +179,8 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>
+<translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
+<translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8475690821716466388">Wi-Fi-nettverket er sikret med den svake protokollen WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
@@ -182,6 +190,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8910721771319628100">Tidsforsinkelsen for standardnettverket er over grenseverdien</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>

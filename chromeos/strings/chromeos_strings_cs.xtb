@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1018656279737460067">Zrušeno</translation>
+<translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
 <translation id="1075811647922107217">Velikost stránky</translation>
+<translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Neznámá chyba.</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Přítomnost resolveru DNS</translation>
-<translation id="1734367976349034509">Toto zařízení je spravováno organizací</translation>
+<translation id="1743558184855585519">Až baterie dosáhne tohoto limitu, bude považována za vybitou</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
 <translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1980044825731880088">Rychlost procesoru</translation>
-<translation id="2049639323467105390">Zařízení je spravováno doménou <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhledat</translation>
+<translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Vyberte složku v aplikaci Soubory…</translation>
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
+<translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="5168185087976003268">Opotřebení baterie</translation>
@@ -119,6 +122,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Další informace v centru nápovědy</translation>
+<translation id="5719918614880940190">Tento údaj měří využití procesoru a jedná se o agregaci všech jader</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ souboru</translation>
+<translation id="7441459999606975924">Kapacita baterie se používáním snižuje</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
@@ -161,6 +166,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7855434858642800953">Naskenovaný soubor byl uložen</translation>
+<translation id="7928373994957558460">Zobrazit umístění souboru</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
@@ -173,6 +179,8 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
 <translation id="8352772353338965963">Přidat účet do vícenásobného přihlášení. Ke všem přihlášeným účtům lze přistupovat bez zadání hesla, proto byste tuto funkci měli používat pouze s důvěryhodnými účty.</translation>
 <translation id="8364946094152050673">Prázdné názvové servery</translation>
+<translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
+<translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8475690821716466388">Síť Wi-Fi je zabezpečena slabým protokolem WEP PSK</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>
 <translation id="871560550817059752">Tisk selhal – došel inkoust</translation>
@@ -182,6 +190,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8747900814994928677">Potvrdit změnu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Výchozí</translation>
+<translation id="8845001906332463065">Nápověda</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
 <translation id="8919837981463578619">Tisk selhal – chybí zásobník</translation>
 <translation id="8928727111548978589">Tisk selhal – došel papír</translation>

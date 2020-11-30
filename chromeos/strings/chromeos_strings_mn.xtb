@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
+<translation id="1059913517121127803">Скан хийхийг эхлүүлж чадсангүй</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
 <translation id="1075811647922107217">Хуудасны хэмжээ</translation>
+<translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
 <translation id="1204296502688602597">DNS-н хоцролт</translation>
 <translation id="1238612778414822719">HTTPS хоцролт</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
-<translation id="1734367976349034509">Энэ төхөөрөмжийг байгууллагаас удирддаг</translation>
+<translation id="1743558184855585519">Батарейг хязгаарт хүрмэгц хэрэглэсэн гэж үзнэ</translation>
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
 <translation id="1930797645656624981">Chrome OS-н оруулах аргын үйлчилгээ</translation>
 <translation id="1947737735496445907">Хэвлэсэн</translation>
 <translation id="1979103255016296513">Нууц үг солих хугацаа хэтэрсэн</translation>
 <translation id="1980044825731880088">Төв процессорын нэгжийн хурд</translation>
-<translation id="2049639323467105390">Энэ төхөөрөмжийг <ph name="DOMAIN" /> удирдан ажиллаж байна .</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}other{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Шалгах</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
 <translation id="5168185087976003268">Батарей барилт</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">Удирдсан</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
+<translation id="5719918614880940190">Энэ нь CPU-н ашиглалтыг хэмждэг бөгөөд бүх цөмийн хуримтлал юм</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, хувилбар <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг. Администраторууд төхөөрөмжийг алсаас тохируулж магадгүй.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлын төрөл</translation>
+<translation id="7441459999606975924">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7855434858642800953">Скан хийсэн файлыг хадгалсан!</translation>
+<translation id="7928373994957558460">Файлын байршлыг харуулах</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
 <translation id="8352772353338965963">Олон хэрэглэгч бүхий нэвтрэх хэсэгт бүртгэл нэмж оруулах. Бүх нэвтэрсэн бүртгэлүүд нууц үггүйгээр нэвтрэх боломжтой учраас энэ горимыг зөвхөн итгэл хүлээсэн бүртгэлүүдэд ашиглахыг зөвлөж байна.</translation>
 <translation id="8364946094152050673">DNS хоосон байна</translation>
+<translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
+<translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
 <translation id="871560550817059752">Амжилтгүй болсон - Бэх дууссан</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
+<translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8910721771319628100">Өгөгдмөл сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>

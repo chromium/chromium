@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1018656279737460067">Atšaukta</translation>
+<translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
+<translation id="1175697296044146566">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
 <translation id="1204296502688602597">DNS delsa</translation>
 <translation id="1238612778414822719">HTTPS delsa</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
-<translation id="1734367976349034509">Šis įrenginys valdomas įmonės</translation>
+<translation id="1743558184855585519">Akumuliatorius laikomas išeikvotu, kai pasiekia apribojimą</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1930797645656624981">„Chrome“ OS įvesties metodo paslauga</translation>
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="1980044825731880088">Centrinio procesoriaus sparta</translation>
-<translation id="2049639323467105390">Įrenginys valdomas „<ph name="DOMAIN" />“.</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
+<translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
+<translation id="4921665434385737356">Įkrauta: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
@@ -119,6 +122,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="54609108002486618">Valdoma</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Sužinokite daugiau pagalbos centre</translation>
+<translation id="5719918614880940190">Tai įvertina centrinio procesoriaus naudojimą ir nurodo apibendrintus visų branduolių duomenis</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5982592372228113572">(„<ph name="BOARD_NAME" />“, <ph name="MILESTONE_VERSION" /> versija)</translation>
@@ -154,6 +158,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Failo tipas</translation>
+<translation id="7441459999606975924">Akumuliatoriaus galia mažėja jį naudojant</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
@@ -161,6 +166,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7855434858642800953">Nuskaitytas failas išsaugotas!</translation>
+<translation id="7928373994957558460">Rodyti failo vietą</translation>
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
@@ -173,6 +179,8 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>
 <translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>
+<translation id="8395584934117017006">Šį „<ph name="DEVICE_TYPE" />“ įrenginį valdo įmonė</translation>
+<translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8475690821716466388">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP PSK</translation>
 <translation id="8477551185774834963">DNS delsa šiek tiek viršija leistiną slenksčio vertę</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
@@ -182,6 +190,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
+<translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>
 <translation id="8928727111548978589">Nepavyko – baigėsi popierius</translation>

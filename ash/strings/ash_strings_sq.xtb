@@ -91,6 +91,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
 <translation id="1782199038061388045">përkthimi</translation>
 <translation id="1787955149152357925">Joaktive</translation>
+<translation id="1804572139604454141">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës së diskut</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1812997170047690955">Çfarë ka në ekranin tim?</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3236488194889173876">Nuk disponohet asnjë rrjet celular</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
+<translation id="3269597722229482060">Kliko me butonin djathtas</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
 <translation id="3294437725009624529">Vizitor</translation>
@@ -340,6 +342,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4212472694152630271">Kalo te kodi PIN</translation>
 <translation id="4215497585250573029">Cilësimet e VPN-së</translation>
 <translation id="4217571870635786043">Diktimi</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, aplikacioni i instaluar, në pauzë</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="425364040945105958">Nuk ka kartë SIM</translation>
@@ -761,6 +764,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8142699993796781067">Rrjet privat</translation>
 <translation id="8152092012181020186">Shtyp Ctrl + W për ta mbyllur</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ky cilësim menaxhohet nga administratori yt.</translation>
+<translation id="8155628902202578800">Hap dialogun e informacioneve për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">Rrjeti celular. Fuqia e sinjalit prej <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">Njoftimet janë të fshehura.</translation>
@@ -826,6 +830,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>
 <translation id="8759408218731716181">Identifikimi i shumëfishtë nuk mund të konfigurohet</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, aplikacion i instaluar, i bllokuar</translation>
 <translation id="8785070478575117577">Lidhu me <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

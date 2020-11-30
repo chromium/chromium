@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="1782199038061388045">অনুবাদ</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
+<translation id="1804572139604454141">ডিস্কৰ ঠাই সাংঘাতিকভাৱে কমি যোৱাৰ কাৰণে ৰেকৰ্ডিং সমাপ্ত হৈছে</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1812997170047690955">মোৰ স্ক্ৰীণত কি আছে?</translation>
 <translation id="1823873187264960516">ইথাৰনেট: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@
 <translation id="3236488194889173876">কোনো ম'বাইল নেটৱর্ক নাই</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ৱিণ্ড’খন <ph name="ACTIVE_DESK" /> ডেস্কৰ পৰা <ph name="TARGET_DESK" />লৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="3255483164551725916">আপুনি কি কৰিব পাৰে?</translation>
+<translation id="3269597722229482060">সোঁফালে ক্লিক কৰক</translation>
 <translation id="3289674678944039601">এডাপ্টৰেৰে চাৰ্জ হৈ আছে</translation>
 <translation id="3290356915286466215">অসুৰক্ষিত</translation>
 <translation id="3294437725009624529">অতিথি</translation>
@@ -339,6 +341,7 @@
 <translation id="4212472694152630271">পিনলৈ সলনি কৰক</translation>
 <translation id="4215497585250573029">ভিপিএনৰ ছেটিংসমূহ</translation>
 <translation id="4217571870635786043">শ্ৰুতলিপি</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্‌, পজ কৰি থোৱা</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="425364040945105958">ছিম নাই</translation>
@@ -757,6 +760,7 @@
 <translation id="8142699993796781067">ব্যক্তিগত নেটৱর্ক</translation>
 <translation id="8152092012181020186">বন্ধ কৰিবলৈ Ctrl + W টিপক৷</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে।</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে তথ্যৰ ডায়লগ খোলক</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যৱহাৰ কৰি থকা হৈছে</translation>
 <translation id="8170567869359129153">ম’বাইল নেটৱৰ্ক। <ph name="SIGNAL_STRENGTH" />ৰ ছিগনেলৰ ক্ষমতা</translation>
 <translation id="8192202700944119416">জাননীবোৰ লুকুৱাই ৰখা হৈছে।</translation>
@@ -822,6 +826,7 @@
 <translation id="8755498163081687682">আপোনাৰ পৰিচয় সত্যাপন কৰক: <ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
 <translation id="875593634123171288">VPN ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="8759408218731716181">একাধিক প্ৰ’ফাইল ব্যৱহাৰ কৰিব পৰা সুবিধাটো ছেট আপ কৰিব নোৱাৰি</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্, অৱৰোধিত</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />ত সংযোগ কৰক</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>

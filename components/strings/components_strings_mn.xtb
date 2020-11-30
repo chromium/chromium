@@ -91,7 +91,7 @@
 <translation id="1270502636509132238">Авах төрөл</translation>
 <translation id="1281476433249504884">Гарах цаасыг зэрэгцүүлэх тавцан 1</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
-<translation id="1292701964462482250">"Таны компьютер дээрх программ хангамж Chrome-г вэбэд аюулгүй холбогдохыг зогсоож байна" (зөвхөн Windows компьютерт боломжтой)</translation>
+<translation id="1292701964462482250">"Таны компьютер дээрх программ хангамж Chrome-г вебэд аюулгүй холбогдохыг зогсоож байна" (зөвхөн Windows компьютерт боломжтой)</translation>
 <translation id="1294154142200295408">Тушаалын мөрийн хувилбар</translation>
 <translation id="129553762522093515">Саяхан хаагдсан</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Күүкигээ устгана уу<ph name="END_LINK" /></translation>
@@ -911,7 +911,6 @@
 <translation id="4524805452350978254">Картыг удирдах</translation>
 <translation id="4542971377163063093">Гарах цаасны тавиур 6</translation>
 <translation id="455113658016510503">A9</translation>
-<translation id="4552089082226364758">Гэрэл</translation>
 <translation id="4558551763791394412">Өргөтгөлүүдээ идэвхгүй болгоно уу.</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="457875822857220463">Хүргэлт</translation>
@@ -1603,7 +1602,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Таны <ph name="DEVICE_NAME" />-г удирдаж байна</translation>
 <translation id="7407424307057130981">&lt;p&gt;Таны Windows компьютерт Superfish программ хангамж байгаа тохиолдолд та тус алдааг харах болно.&lt;/p&gt;
-      &lt;p&gt;Тус программ хангамжийг түр хугацаанд идэвхгүй болгохын тулд эдгээр алхмыг дагаснаар та вэбэд хандах боломжтой болно. Танд админы эрх шаардлагатай.&lt;/p&gt;
+      &lt;p&gt;Тус программ хангамжийг түр хугацаанд идэвхгүй болгохын тулд эдгээр алхмыг дагаснаар та вебэд хандах боломжтой болно. Танд админы эрх шаардлагатай.&lt;/p&gt;
       &lt;ol&gt;
       &lt;li&gt;&lt;strong&gt;Эхлүүлэх&lt;/strong&gt; гэснийг дараад дараа нь &lt;strong&gt;"Дотоод үйлчилгээг харах"&lt;/strong&gt; гэснийг олоод сонгоно уу
       &lt;li&gt;&lt;strong&gt;VisualDiscovery&lt;/strong&gt;-г сонгоно уу
@@ -1612,12 +1611,10 @@
       &lt;li&gt;&lt;strong&gt;Хэрэгжүүлэх&lt;/strong&gt; гэснийг товшоод дараа нь &lt;strong&gt;OK&lt;/strong&gt; гэснийг дарна уу
       &lt;li&gt;Тус программ хангамжийг компьютерээсээ хэрхэн бүрмөсөн устгах талаар мэдэж авахын тулд &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-н тусламжийн төвд&lt;/a&gt;-д зочилно уу
       &lt;/ol&gt;</translation>
-<translation id="7409836189476010449">Flash-г ажиллуулах</translation>
 <translation id="741007362987735528">Өргөн-Формат</translation>
 <translation id="7416351320495623771">Нууц үгийг удирдах...</translation>
 <translation id="7419106976560586862">Профайлын зам</translation>
 <translation id="7437289804838430631">Харилцагчийн мэдээлэл нэмэх</translation>
-<translation id="7438976808740265764">Flash Тоглуулагчийг 2020 оны 12 дугаар сараас хойш ашиглах боломжгүй болно.</translation>
 <translation id="7440140511386898319">Офлайн үедээ судлах</translation>
 <translation id="7441627299479586546">Буруу тохиргооны зүйл</translation>
 <translation id="7442725080345379071">Цайвар улбар шар</translation>

@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1018656279737460067">Откажано</translation>
+<translation id="1059913517121127803">Не можеше да се започне со скенирање</translation>
 <translation id="1071587090247825784">Откриен е заштитен ѕид</translation>
 <translation id="1075811647922107217">Големина на страницата</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">DNS-латентност</translation>
 <translation id="1238612778414822719">Латенција на HTTPS</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Запрено - нема мастило</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Има DNS-одредувач</translation>
-<translation id="1734367976349034509">Со уредов управува претпријатие</translation>
+<translation id="1743558184855585519">Батеријата се смета за потрошена штом ќе го достигне ограничувањето</translation>
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1930797645656624981">Услуга за метод за внесување во Chrome OS</translation>
 <translation id="1947737735496445907">Отпечатено</translation>
 <translation id="1979103255016296513">Измина рокот за промена на лозинката</translation>
 <translation id="1980044825731880088">Брзина на CPU</translation>
-<translation id="2049639323467105390">Овој уред е управуван од <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Уште {0} обид}one{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}other{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
+<translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2872961005593481000">Исклучи</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Изберете папка во апликацијата „Датотеки“…</translation>
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
+<translation id="4921665434385737356">Наполнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="5168185087976003268">Состојба на батеријата</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">Управуван</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Дознајте повеќе во „Центарот за помош“</translation>
+<translation id="5719918614880940190">Ова го мери користењето на CPU и претставува збир од сите јадра</translation>
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Вид датотека</translation>
+<translation id="7441459999606975924">Капацитетот на батеријата се намалува со користењето</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
@@ -161,6 +166,7 @@
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7855434858642800953">Скенираната датотека е зачувана.</translation>
+<translation id="7928373994957558460">Прикажи ја локацијата на датотеката</translation>
 <translation id="7936303884198020182">Не се најдени сервери за име</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
@@ -173,6 +179,8 @@
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8352772353338965963">Додајте сметка за повеќекратно најавување. Сите најавени сметки се достапни без лозинка, така што оваа можност треба да се користи само со сметки на кои им се верува.</translation>
 <translation id="8364946094152050673">Празни сервери за име</translation>
+<translation id="8395584934117017006">Организација управува со овој <ph name="DEVICE_TYPE" /></translation>
+<translation id="8398927464629426868">Брзината со која уредот се полни или празни во моментов</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е обезбедена со слаб протокол WEP PSK</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
@@ -182,6 +190,7 @@
 <translation id="8747900814994928677">Потврдете ја измената</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандардно</translation>
+<translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>

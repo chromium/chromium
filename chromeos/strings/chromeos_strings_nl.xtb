@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1018656279737460067">Geannuleerd</translation>
+<translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1071587090247825784">Firewall waargenomen</translation>
 <translation id="1075811647922107217">Paginagrootte</translation>
+<translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1204296502688602597">DNS-wachttijd</translation>
 <translation id="1238612778414822719">HTTPS-wachttijd</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
-<translation id="1734367976349034509">Dit apparaat wordt beheerd door een onderneming</translation>
+<translation id="1743558184855585519">De batterij wordt als verbruikt beschouwd zodra deze de limiet bereikt</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1930797645656624981">Invoermethodeservice voor Chrome OS</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="1980044825731880088">CPU-snelheid</translation>
-<translation id="2049639323467105390">Dit apparaat wordt beheerd door <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Scannen</translation>
+<translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
@@ -100,9 +102,10 @@
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
+<translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
-<translation id="5168185087976003268">Batterijstatus</translation>
+<translation id="5168185087976003268">Batterijprestaties</translation>
 <translation id="520299634122159966">Geen beschikbare scanners</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
@@ -119,6 +122,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="54609108002486618">Beheerd</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Meer informatie in het Helpcentrum</translation>
+<translation id="5719918614880940190">Dit meet het CPU-gebruik en is het totaal voor alle kernen</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Bestandstype</translation>
+<translation id="7441459999606975924">De batterijcapaciteit gaat achteruit naarmate een batterij langer wordt gebruikt</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Lage HTTPS-wachttijd</translation>
@@ -161,6 +166,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Gescand bestand opgeslagen.</translation>
+<translation id="7928373994957558460">Bestandslocatie weergeven</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
@@ -173,6 +179,8 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
+<translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
+<translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-wachttijd is iets langer dan de toelaatbare drempel</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
@@ -182,6 +190,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standaard</translation>
+<translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor wachttijd</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>

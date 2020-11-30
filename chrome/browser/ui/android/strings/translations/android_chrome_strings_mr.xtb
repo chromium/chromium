@@ -491,6 +491,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
 <translation id="4605958867780575332">आयटम काढला: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">पेज नंतर वाचण्यासाठी सेव्ह करा आणि रिमाइंडर मिळवा</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{एक धोक्यात असलेला पासवर्ड}other{# धोक्यात असलेले पासवर्ड}}</translation>
@@ -973,6 +974,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}}</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
 <translation id="7786595606756654269">वेबवर शोधण्यासाठी आणि तुम्ही उघडलेल्या साइटसह गुंतण्यासाठी Google Assistant आणखी चांगला व्हॉइस अनुभव देते. Google Assistant ला URL आणि तुम्ही त्यासह वापरत असलेल्या साइटचा आशय मिळेल.</translation>
+<translation id="7790349552933995572">होम स्क्रीन</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टॅब रिस्टोअर केले</translation>
 <translation id="780301667611848630">नाही, नको</translation>
@@ -1049,6 +1051,7 @@
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8266862848225348053">डाउनलोड करण्याचे स्थान</translation>
 <translation id="8274165955039650276">डाउनलोड पाहा</translation>
+<translation id="8281886186245836920">वगळा</translation>
 <translation id="8284326494547611709">मथळे</translation>
 <translation id="8310344678080805313">मानक टॅब</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> आणि आणखी साइट</translation>
@@ -1129,6 +1132,7 @@
 <translation id="8920114477895755567">पालकांच्या तपशीलांसाठी प्रतीक्षा करत आहोत.</translation>
 <translation id="8922289737868596582">पेज ऑफलाइन वापरता येण्यासाठी ती अधिक पर्यायांमधून डाउनलोड करा</translation>
 <translation id="8928626432984354940">अर्ध्या उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
+<translation id="8937267401510745927">तुम्हाला टास्क पूर्ण करण्यात मदत करण्यासाठी, तुम्ही ज्या साइटवर Assistant वापरता त्यांच्या URL आणि आशय, तसेच तुम्ही Assistant द्वारे सबमिट करता ती माहिती Google मिळवेल. ही माहिती तुमच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. तुम्ही Chrome सेटिंग्जमध्ये Assistant बंद करू शकता.</translation>
 <translation id="8937772741022875483">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाकायची का?</translation>
 <translation id="8942627711005830162">इतर विंडोमध्ये उघडा</translation>
 <translation id="8951232171465285730">Chrome ने तुमच्यासाठी <ph name="MEGABYTES" /> MB सेव्ह केले</translation>

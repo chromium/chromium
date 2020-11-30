@@ -490,6 +490,7 @@
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="4605958867780575332">हटाइएको वस्तु: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">यी पृष्ठहरू पछि पढ्ने प्रयोजनका लागि सुरक्षित गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> खोल्नुहोस्</translation>
 <translation id="4634124774493850572">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{अरूले देखेको १ पासवर्ड फेला पर्‍यो}other{अरूले देखेका # वटा पासवर्ड फेला परे}}</translation>
@@ -972,6 +973,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}}</translation>
 <translation id="7778840695157240389">नयाँ समाचार हेर्न पछि फर्केर आउनुहोस्</translation>
 <translation id="7786595606756654269">Google Assistant ले वेबमा खोज्दा तथा आफूले खोलेका साइटहरू चलाउँदा बोलेरै प्रयोग गर्न सकिने अझ राम्रा सुविधाहरू उपलब्ध गराउँछ। Google सहायकले तपाईंले सहायक प्रयोग गर्ने साइटका URL र सामग्रीहरू प्राप्त गर्ने छ।</translation>
+<translation id="7790349552933995572">होम स्क्रिन</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरिए</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
@@ -1048,6 +1050,7 @@
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8266862848225348053">स्थान डाउनलोड गर्नुहोस्</translation>
 <translation id="8274165955039650276">डाउनलोडहरू हेर्नुहोस्</translation>
+<translation id="8281886186245836920">त्याग्नुहोस्</translation>
 <translation id="8284326494547611709">क्याप्सन</translation>
 <translation id="8310344678080805313">मानक ट्याबहरू</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> र थप साइटहरू</translation>

@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1018656279737460067">Tühistatud</translation>
+<translation id="1059913517121127803">Skannimist ei saanud alustada</translation>
 <translation id="1071587090247825784">Tuvastati tulemüür</translation>
 <translation id="1075811647922107217">Lehe suurus</translation>
+<translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
 <translation id="1204296502688602597">DNS-i latentsusaeg</translation>
 <translation id="1238612778414822719">HTTPS-i latentsusaeg</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Peatati – tint on otsas</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
-<translation id="1734367976349034509">Seda seadet haldab ettevõte</translation>
+<translation id="1743558184855585519">Aku loetakse kasutatuks, kui selle laetuse tase jõuab selle limiidini</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1930797645656624981">Chrome OS sisestusmeetodi teenus</translation>
 <translation id="1947737735496445907">Prinditud</translation>
 <translation id="1979103255016296513">Parooli muutmise tähtaeg on möödunud</translation>
 <translation id="1980044825731880088">Protsessori kiirus</translation>
-<translation id="2049639323467105390">Seadet haldab <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Tühista prinditöö</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} katse jäänud}other{<ph name="ERROR_MESSAGE" />, {0} katset jäänud}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Kontrolli</translation>
+<translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4890353053343094602">Valige kohe uus</translation>
 <translation id="4917889632206600977">Peatatud – paber on otsas</translation>
+<translation id="4921665434385737356">Laeti <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundi jooksul.</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="4985509611418653372">Käitati</translation>
 <translation id="5168185087976003268">Aku seisukord</translation>
@@ -119,6 +122,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="54609108002486618">Hallatud</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Vaadake lisateavet Abikeskusest</translation>
+<translation id="5719918614880940190">See mõõdab protsessori kasutust ja on koondnäitaja kõikide tuumade kohta.</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faili tüüp</translation>
+<translation id="7441459999606975924">Akude maht väheneb kasutuse käigus</translation>
 <translation id="7561454561030345039">Seda toimingut haldab administraator.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Pikk HTTPS-i latentsusaeg</translation>
@@ -161,6 +166,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7690294790491645610">Kinnitage uus parool</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7855434858642800953">Skannitud fail on salvestatud.</translation>
+<translation id="7928373994957558460">Kuva faili asukoht</translation>
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
@@ -173,6 +179,8 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
 <translation id="8364946094152050673">Tühjad nimeserverid</translation>
+<translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
+<translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
 <translation id="8477551185774834963">DNS-i latentsusaeg ületab veidi lubatud piiri</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
@@ -182,6 +190,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
+<translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8910721771319628100">Vaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8919837981463578619">Ebaõnnestus – salv puudub</translation>
 <translation id="8928727111548978589">Ebaõnnestus – paber on otsas</translation>

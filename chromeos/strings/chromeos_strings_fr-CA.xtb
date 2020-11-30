@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de la page</translation>
+<translation id="1175697296044146566">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erreur inconnue.</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
@@ -25,13 +26,12 @@
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1703835215927279855">Lettre</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
-<translation id="1734367976349034509">Cet appareil est géré par une entreprise</translation>
+<translation id="1743558184855585519">On considère que la pile est épuisée lorsqu'elle atteint la limite</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1930797645656624981">Service de méthode d'entrée Chrome OS</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1980044825731880088">Vitesse du processeur</translation>
-<translation id="2049639323467105390">Cet appareil est géré par <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
@@ -44,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Rechercher</translation>
+<translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
@@ -119,6 +120,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="54609108002486618">Géré</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">En savoir plus dans notre centre d'aide</translation>
+<translation id="5719918614880940190">Il s'agit d'une mesure de l'usage du processeur, une agrégation de tous les cœurs</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +156,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Type de fichier</translation>
+<translation id="7441459999606975924">La capacité des piles décline avec l'usage</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
@@ -173,6 +176,8 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>
+<translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
+<translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP PSK</translation>
 <translation id="8477551185774834963">La latence du DNS dépasse un peu le seuil acceptable</translation>
 <translation id="871560550817059752">Échec : à court d'encre</translation>
@@ -182,6 +187,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8747900814994928677">Confirmer la modification</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Par défaut</translation>
+<translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8910721771319628100">Le seuil de latence du réseau par défaut est trop élevé</translation>
 <translation id="8919837981463578619">Échec : bac manquant</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>

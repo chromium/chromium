@@ -371,6 +371,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="363596933471559332">Connexion automatique à des sites Web à l'aide d'identifiants enregistrés. Lorsque la fonctionnalité est désactivée, une vérification est effectuée avant chaque connexion à un site Web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">La réinitialisation efface l'historique de vos économies de données, y compris la liste des sites consultés.</translation>
+<translation id="3687645719033307815">Vous regardez un aperçu de cette page</translation>
 <translation id="3692944402865947621">Impossible de télécharger <ph name="FILE_NAME" />, car aucun emplacement de stockage n'a été trouvé.</translation>
 <translation id="3701167022068948696">Corriger maintenant</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
@@ -979,6 +980,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets restaurés</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
+<translation id="7815484226266492798">Capture d'écran longue</translation>
 <translation id="7821588508402923572">Vos économies de données s'afficheront ici</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>
 <translation id="7846296061357476882">Services Google</translation>
@@ -1051,6 +1053,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8266862848225348053">Dossier de téléchargement</translation>
 <translation id="8274165955039650276">Afficher les téléchargements</translation>
+<translation id="8281886186245836920">Passer</translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8310344678080805313">Onglets standard</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> et d'autres sites</translation>
@@ -1153,6 +1156,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065383040763568503">Les données stockées que Chrome ne considère pas comme importantes (comme les sites qui n'ont pas de paramètres enregistrés ou que vous ne consultez pas souvent)</translation>
 <translation id="9069543557624799859">Le téléchargement commencera à <ph name="TIME" />.</translation>
+<translation id="9069999660519089861">Aucune page non lue</translation>
 <translation id="9070377983101773829">Démarrer la recherche vocale</translation>
 <translation id="9074336505530349563">Pour obtenir du contenu personnalisé suggéré par Google, connectez-vous et activez la synchronisation</translation>
 <translation id="9086302186042011942">Synchronisation en cours...</translation>

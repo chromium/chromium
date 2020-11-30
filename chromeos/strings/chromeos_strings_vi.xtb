@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1018656279737460067">Đã hủy</translation>
+<translation id="1059913517121127803">Không thể bắt đầu quét</translation>
 <translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
 <translation id="1075811647922107217">Kích thước trang</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="1238612778414822719">Độ trễ HTTPS</translation>
@@ -25,12 +27,12 @@
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Tồn tại trình phân giải hệ thống tên miền (DNS)</translation>
-<translation id="1734367976349034509">Thiết bị này do doanh nghiệp quản lý</translation>
+<translation id="1743558184855585519">Pin được xem là hết thời gian sử dụng sau khi đạt đến giới hạn này</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
-<translation id="2049639323467105390">Thiết bị này được <ph name="DOMAIN" /> quản lý.</translation>
+<translation id="1980044825731880088">Tốc độ CPU</translation>
 <translation id="2080070583977670716">Cài đặt khác</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
@@ -39,13 +41,16 @@
 <translation id="2364498172489649528">Đã đạt</translation>
 <translation id="2375079107209812402">Còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
+<translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Quét</translation>
+<translation id="2570743873672969996">Đang chạy kiểm tra <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Chẩn đoán kết nối</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
@@ -97,8 +102,10 @@
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
+<translation id="4921665434385737356">Đã sạc <ph name="RATE" /> trong <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
 <translation id="4985509611418653372">Chạy</translation>
+<translation id="5168185087976003268">Tình trạng pin</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
 Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>
@@ -114,8 +121,11 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
+<translation id="5719918614880940190">Số liệu này đo mức sử dụng CPU và là số liệu tổng hợp của tất cả các lõi</translation>
 <translation id="5832805196449965646">Thêm người</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6048107060512778456">Không thành công – Kẹt giấy</translation>
 <translation id="6050189528197190982">Thang độ xám</translation>
@@ -148,6 +158,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Loại tệp</translation>
+<translation id="7441459999606975924">Dung lượng pin sụt giảm cùng với mức sử dụng</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
@@ -155,6 +166,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7855434858642800953">Đã lưu tệp được quét!</translation>
+<translation id="7928373994957558460">Hiển thị vị trí tệp</translation>
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
 <translation id="8041089156583427627">Gửi phản hồi</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
@@ -167,6 +179,8 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
 <translation id="8364946094152050673">Máy chủ định danh trống</translation>
+<translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
+<translation id="8398927464629426868">Tốc độ sạc hoặc xả pin hiện tại của thiết bị</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
@@ -176,9 +190,11 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8747900814994928677">Xác nhận thay đổi</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Mặc định</translation>
+<translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
+<translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>

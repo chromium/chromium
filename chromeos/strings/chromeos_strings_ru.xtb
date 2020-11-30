@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1018656279737460067">Отменено</translation>
+<translation id="1059913517121127803">Не удалось начать сканирование.</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
+<translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
 <translation id="1204296502688602597">Задержка DNS</translation>
 <translation id="1238612778414822719">Время ожидания HTTPS</translation>
@@ -25,12 +27,12 @@
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
-<translation id="1734367976349034509">Это корпоративное устройство</translation>
+<translation id="1743558184855585519">Батарея считается израсходованной, когда достигнут предел по количеству циклов перезарядки</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1930797645656624981">Выбор способа ввода в Chrome OS</translation>
 <translation id="1947737735496445907">Напечатано</translation>
 <translation id="1979103255016296513">Истек срок изменения пароля</translation>
-<translation id="2049639323467105390">Это устройство находится в домене <ph name="DOMAIN" />.</translation>
+<translation id="1980044825731880088">Скорость ЦП</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
@@ -39,13 +41,16 @@
 <translation id="2364498172489649528">Завершено</translation>
 <translation id="2375079107209812402">Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
+<translation id="2461822463642141190">Расход энергии</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Искать</translation>
+<translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
@@ -97,8 +102,10 @@
 <translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
+<translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Проверить</translation>
+<translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
@@ -114,8 +121,11 @@
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Подробнее в Справочном центре</translation>
+<translation id="5719918614880940190">Использование ЦП всеми ядрами</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6048107060512778456">Сбой: застряла бумага</translation>
 <translation id="6050189528197190982">Оттенки серого</translation>
@@ -148,6 +158,7 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файла</translation>
+<translation id="7441459999606975924">Емкость батареи со временем уменьшается</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
@@ -155,6 +166,7 @@
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7855434858642800953">Отсканированный файл сохранен.</translation>
+<translation id="7928373994957558460">Показать, где сохранен файл</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
@@ -167,6 +179,8 @@
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8352772353338965963">Добавить аккаунт в систему множественного входа. Для доступа к аккаунтам, в которые выполнен вход, пароль не требуется, поэтому эту функцию следует использовать только для надежных аккаунтов.</translation>
 <translation id="8364946094152050673">Не указаны серверы доменных имен.</translation>
+<translation id="8395584934117017006">Этим устройством <ph name="DEVICE_TYPE" /> управляет организация.</translation>
+<translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
@@ -176,9 +190,11 @@
 <translation id="8747900814994928677">Подтверждение изменений</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
+<translation id="8845001906332463065">Справка</translation>
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
+<translation id="9088306295921699330">Используется</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>

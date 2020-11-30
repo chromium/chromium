@@ -9,6 +9,8 @@
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1119069657431255176">‏أرشيف tar مضغوط ببرنامج Bzip2</translation>
 <translation id="1120073797882051782">الهانغولية روماجا</translation>
+<translation id="112387589102719461">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح المطوّر الأمريكية Dvorak</translation>
+<translation id="1134697384939541955">الإنجليزية (الولايات المتحدة) باستخدام لوحة المفاتيح الموسَّعة</translation>
 <translation id="1148097584170732637">تم العثور على <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     لا توجد مساحة كافية في مساحة التخزين المحلية. ويتطلب وجود <ph name="FILE_SIZE" /> إضافي.
@@ -23,6 +25,7 @@
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1190144681599273207">سيؤدي جلب هذا الملف إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
 <translation id="1201402288615127009">التالي</translation>
+<translation id="1210831758834677569">اللاوية</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1293556467332435079">ملفات</translation>
@@ -36,34 +39,46 @@
 <translation id="1378727793141957596">‏مرحبًا بك في Google Drive!</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
+<translation id="1404323374378969387">النرويجية</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1439494416798956626">تم النقل إلى <ph name="FOLDER_NAME" />.</translation>
 <translation id="1464724975715666883">خطأ واحد.</translation>
 <translation id="1467432559032391204">اليسار</translation>
+<translation id="1471718551822868769">السلوفاكية</translation>
 <translation id="1474339897586437869">‏لم يتم تحميل "<ph name="FILENAME" />". حيث لا توجد لديك مساحة فارغة كافية في Google Drive.</translation>
+<translation id="1482884275703521657">الفنلندية</translation>
 <translation id="148466539719134488">السويسرية</translation>
 <translation id="1497522201463361063">تعذرت إعادة تسمية "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="1538729222189715449">‏جارٍ فتح ملفات نظام التشغيل Linux...</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">تطبيق على الكل</translation>
 <translation id="1561842594491319104">‏أجهزة Chrome</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
+<translation id="1576937952766665062">تحويل صوتي إلى اللغة البنغالية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
+<translation id="162175252992296058">البرتغالية باستخدام لوحة المفاتيح الأمريكية الدولية</translation>
+<translation id="1641780993263690097">‏الصينية باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="1646019627374511909">جارٍ إتاحة <ph name="NUMBER_OF_ITEMS" /> ملف بلا إنترنت</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
 <translation id="1665611772925418501">تعذر تعديل على الملف.</translation>
 <translation id="1673103856845176271">تعذر الدخول إلى الملف لأسباب تتعلق بالأمان.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">جارٍ ضغط <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
+<translation id="1729953886957086472">الألمانية (ألمانيا)</translation>
+<translation id="1730235522912993863">‏الصينية باستخدام لوحة مفاتيح Cangjie</translation>
 <translation id="1731889557567069540">تم نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
 <translation id="174173592514158117">‏عرض جميع مجلدات Play</translation>
+<translation id="1742316578210444689">تحويل صوتي إلى اللغة العبرية</translation>
+<translation id="1747761757048858544">الهولندية (هولندا)</translation>
 <translation id="174937106936716857">إجمالي عدد الملفات</translation>
 <translation id="1775381402323441512">معلومات الفيديو</translation>
 <translation id="180035236176489073">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذه الملفات.</translation>
 <translation id="1807938677607439181">كل الملفات</translation>
 <translation id="1810764548349082891">لا تتوفر معاينة</translation>
+<translation id="1812302367230252929">تحويل صوتي إلى اللغة الأمهرية</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />تنبيه:<ph name="END_BOLD" />  هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">بطريق</translation>
 <translation id="183183971458492120">جارٍ تحميل المعلومات...</translation>
@@ -72,6 +87,7 @@
 <translation id="1847880352285315359">تم الحفظ</translation>
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
 <translation id="1864756863218646478">تعذر العثور على الملف.</translation>
+<translation id="1920670151694390848">تحويل صوتي إلى اللغة الماليالامية</translation>
 <translation id="1924372192547904021">تم ضبط <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">السلوفاكية</translation>
 <translation id="1933345018156373194">تعذَّر النقل، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
@@ -82,16 +98,22 @@
 <translation id="1995337122023280937">الانتقال إلى موقع الملف</translation>
 <translation id="2001796770603320721">‏الإدارة في Drive</translation>
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
+<translation id="2025955442973426285">التغرينية</translation>
 <translation id="2028997212275086731">‏أرشيف RAR</translation>
+<translation id="2037845485764049925">الروسية</translation>
 <translation id="2046702855113914483">رامن</translation>
 <translation id="2070909990982335904">الأسماء البادئة بنقطة محجوزة للنظام. يرجى اختيار اسم آخر.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2084108471225856927">إعدادات الجهاز</translation>
 <translation id="2085470240340828803">هناك ملف بالاسم "<ph name="FILENAME" />" موجود فعلاً. ما الإجراء الذي تريد تنفيذه؟</translation>
 <translation id="2121825465123208577">تغيير الحجم</translation>
+<translation id="2125607626296734455">الخميرية</translation>
+<translation id="2142680004883808240">‏الروسية باستخدام لوحة مفاتيح YaZHert الصوتية</translation>
 <translation id="2163152940313951844">حرف غير صالح: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2184934335987813305">البرتغالية باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="2198315389084035571">الصينية المبسطة</translation>
 <translation id="2208158072373999562">‏أرشيف Zip</translation>
+<translation id="22085916256174561">الكورية</translation>
 <translation id="2208919847696382164">‏تثبيت باستخدام نظام التشغيل Linux</translation>
 <translation id="2225536596944493418">هل تريد بالتأكيد حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر؟</translation>
 <translation id="2230062665678605299">تعذر إنشاء المجلد "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -101,10 +123,12 @@
 <translation id="2303301624314357662">جارٍ فتح ملف <ph name="FILE_NAME" />.</translation>
 <translation id="2305020378527873881">تم إخراج <ph name="VOLUME_NAME" />.</translation>
 <translation id="2325650632570794183">‏نوع الملف هذا غير متوافق. يُرجى الانتقال إلى سوق Chrome الإلكتروني للعثور على تطبيق يمكنه فتح هذا النوع من الملفات.</translation>
+<translation id="2326539130272988168">البلغارية</translation>
 <translation id="2352947182261340447">لا تتوفر مساحة كافية في مساحة التخزين المحلية.</translation>
 <translation id="2377319039870049694">تبديل إلى عرض القائمة</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> من المجلَّدات المشتركة مع نظام التشغيل Linux.</translation>
 <translation id="2378075407703503998">تم اختيار <ph name="SELCTED_FILE_COUNT" /> من الملفات</translation>
+<translation id="2389832672041313158">البورمية/ميانمار</translation>
 <translation id="240770291734945588">مساحة التخزين المتاحة هي <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">إجمالي حجم الملف</translation>
 <translation id="2428749644083375155">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر إلى <ph name="FOLDER_NAME" /></translation>
@@ -112,6 +136,7 @@
 <translation id="2453576648990281505">الملف موجود فعلاً</translation>
 <translation id="2464079411014186876">آيس كريم</translation>
 <translation id="2468402215065996499">تماغوتشي</translation>
+<translation id="2500392669976258912">الغوجاراتية الصوتية</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547">تم حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="2541377937973966830">محتوى هذا الملف للقراءة فقط. وبعض النشاطات غير متاحة فيه.</translation>
@@ -121,20 +146,26 @@
 <translation id="2562685439590298522">المستندات</translation>
 <translation id="2563185590376525700">ضفدع</translation>
 <translation id="2572501073504669105">يمكنك إتاحة الوصول إلى الملفات عند عدم توفّر اتصال بالإنترنت لديك.</translation>
+<translation id="2578394532502990878">التاميلية الصوتية</translation>
+<translation id="2579959351793446050">الأوديا</translation>
 <translation id="2614589611416690597">ملف فيديو <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏لا يمكن الوصول إلى Google Drive في الوقت الحالي.</translation>
 <translation id="2638942478653899953">‏تعذر الوصول إلى Google Drive. يُرجى <ph name="BEGIN_LINK" />الخروج<ph name="END_LINK" /> ثم تسجيل الدخول مرة أخرى.</translation>
 <translation id="2649120831653069427">أسماك رينبو فيش</translation>
 <translation id="2661146741306740526">16x9</translation>
+<translation id="2663066752008346276">البورمية/ميانمار باستخدام لوحة مفاتيح ميانمار ميانسان</translation>
 <translation id="2664412712123763093">موقع الملف</translation>
 <translation id="2672394958563893062">حدث خطأ. انقر لإعادة التشغيل من البداية.</translation>
 <translation id="2676946222714718093">التشغيل بواسطة</translation>
 <translation id="2718540689505416944">‏تثبيت التطبيق باستخدام نظام التشغيل Linux</translation>
+<translation id="2724954091494693138">‏التركية باستخدام لوحة مفاتيح F</translation>
+<translation id="2732839045120506979">‏الفيتنامية باستخدام لوحة مفاتيح VNI</translation>
 <translation id="2735623501230989521">‏يمكنك منح نظام Parallels Desktop الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="2771816809568414714">جبن</translation>
 <translation id="2781645665747935084">البلجيكية</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2787047795752739979">استبدال الملف الأصلي</translation>
+<translation id="2830077785865012357">‏الصينية باستخدام لوحة مفاتيح Zhuyin</translation>
 <translation id="2843806747483486897">تغيير الإجراء التلقائي...</translation>
 <translation id="2850124913210091882">النسخ الاحتياطي</translation>
 <translation id="288024221176729610">التشيكية</translation>
@@ -143,6 +174,7 @@
 <translation id="2894654529758326923">المعلومات</translation>
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2902734494705624966">أمريكية موسعة</translation>
+<translation id="290843123675549676">المراثية</translation>
 <translation id="2923240520113693977">الإستونية</translation>
 <translation id="2925966894897775835">جداول البيانات</translation>
 <translation id="2938685643439809023">المنغولية</translation>
@@ -152,9 +184,11 @@
 <translation id="2951236788251446349">قنديل البحر</translation>
 <translation id="2984337792991268709">اليوم <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994669386200004489">تعذر الاحتفاظ بنسخة احتياطية للملف <ph name="FILE_NAME" /></translation>
+<translation id="299638574917407533">الفرنسية (كندا)</translation>
 <translation id="3003633581067744647">التبديل إلى عرض الصورة المصغّرة</translation>
 <translation id="3007214526293698309">إصلاح النسبة</translation>
 <translation id="303198083543495566">الجغرافيا</translation>
+<translation id="3047197340186497470">‏الصينية باستخدام نظام Dayi</translation>
 <translation id="3057861065630527966">نسخ الصور والفيديوهات احتياطيًا</translation>
 <translation id="3067790092342515856">‏ملفات نظام التشغيل Windows</translation>
 <translation id="3078461028045006476">مشاركة مع <ph name="EXTENSION_NAME" /></translation>
@@ -164,6 +198,7 @@
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="3197563288998582412">‏البريطانية Dvorak</translation>
 <translation id="3202131003361292969">المسار</translation>
+<translation id="3205852408225871810">البرتغالية (البرازيل)</translation>
 <translation id="3224239078034945833">كندي متعدد اللغات</translation>
 <translation id="3236289833370040187">سيتم نقل الملكية إلى <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">الأيرلندية</translation>
@@ -171,28 +206,35 @@
 <translation id="3248185426436836442">معلَّق</translation>
 <translation id="3252266817569339921">الفرنسية</translation>
 <translation id="3254434849914415189">اختر التطبيق التلقائي لملفات <ph name="FILE_TYPE" />:</translation>
+<translation id="3255159654094949700">العربية</translation>
 <translation id="3264582393905923483">السياق</translation>
 <translation id="3272909651715601089">تعذّر فتح "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">جارٍ التحضير</translation>
 <translation id="3280987981688031357">أسطوانة موسيقية</translation>
 <translation id="3296763833017966289">الجورجية</translation>
+<translation id="3307875152560779385">الأوكرانية</translation>
 <translation id="3326821416087822643">جارٍ ضغط <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">عام التسجيل</translation>
 <translation id="3353984535370177728">حدد مجلدًا لتحميله</translation>
 <translation id="3356580349448036450">مكتمل</translation>
+<translation id="3382143449143186018">‏النيبالية باستخدام لوحة مفاتيح InScript</translation>
+<translation id="3408236822532681288">‏الألمانية (ألمانيا) باستخدام لوحة مفاتيح Neo 2</translation>
 <translation id="3414856743105198592">يؤدي تنسيق الوسائط القابلة للإزالة إلى مسح جميع البيانات. هل تريد المتابعة؟</translation>
 <translation id="3437801641691368414">وقت الإنشاء</translation>
+<translation id="3455931012307786678">الإستونية</translation>
 <translation id="3466147780910026086">جارٍ فحص جهاز الوسائط...</translation>
 <translation id="3468522857997926824">‏تم نسخ <ph name="FILE_COUNT" /> من الصور احتياطيًا في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3470502288861289375">جارٍ النسخ...</translation>
 <translation id="3473378059788601120">تم النسخ إلى <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">‏جدول بيانات Google</translation>
+<translation id="3486821258960016770">المنغولية</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> من الأخطاء.</translation>
 <translation id="3522708245912499433">البرتغالية</translation>
 <translation id="3524311639100184459">تنبيه: هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">المجلد</translation>
 <translation id="3549797760399244642">‏جارٍالانتقال إلى drive.google.com...</translation>
 <translation id="3553048479571901246">‏لفتح الملفات باستخدام <ph name="APP_NAME" />، يُرجى نسخها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
+<translation id="3556731189587832921">الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الدولية</translation>
 <translation id="357479282490346887">الليتوانية</translation>
 <translation id="3603385196401704894">الفرنسية الكندية</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
@@ -206,6 +248,7 @@
 <translation id="3645531960514756307">إزالة تثبيت علامة تبويب المجلد</translation>
 <translation id="3685122418104378273">‏يتم إيقاف مزامنة Google Drive بشكل تلقائي، عند استخدام بيانات الجوّال.</translation>
 <translation id="3689865792480713551">إلغاء <ph name="ACTIVITY_DESCRIPTION" /></translation>
+<translation id="3691184985318546178">السنهالية</translation>
 <translation id="3726463242007121105">لا يمكن فتح الجهاز لأن نظام الملفات غير متوافق.</translation>
 <translation id="3741243925913727067">‏يمكنك نسخ الصور والفيديوهات بجهاز الوسائط احتياطيًا على Google Drive.</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
@@ -225,17 +268,25 @@
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="386548886866354912">تجميع مع <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">الوصف</translation>
+<translation id="3899991606604168269">الفرنسية (كندا) باستخدام لوحة مفاتيح متعددة اللغات</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">تشغيل على</translation>
 <translation id="3943857333388298514">لصق</translation>
+<translation id="3952872973865944257">التيلوغوية الصوتية</translation>
 <translation id="3958548648197196644">كيوي</translation>
 <translation id="3966388904776714213">‏مشغل Audio player</translation>
+<translation id="3973925058222872294">الإنجليزية (المملكة المتحدة)</translation>
+<translation id="3975895378829046965">البنغالية الصوتية</translation>
 <translation id="4002066346123236978">العنوان</translation>
+<translation id="4017788180641807848">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman</translation>
+<translation id="4092890906744441904">الأيرلندية</translation>
 <translation id="4124935795427217608">أحادي القرن</translation>
 <translation id="4158739975813877944">فتح قائمة التشغيل</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
 <translation id="4193154014135846272">‏مستند Google</translation>
 <translation id="4197674956721858839">تحديد ملف مضغوط</translation>
+<translation id="4202378258276439759">الإسبانية (أمريكا اللاتينية)</translation>
+<translation id="4202977638116331303">الجورجية</translation>
 <translation id="421017592316736757">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذا الملف.</translation>
 <translation id="4212740939091998969">المجلَّد الذي يحمل الاسم "<ph name="FOLDER_NAME" />" موجود مسبقًا. يُرجى اختيار اسم آخر.</translation>
 <translation id="4215448920900139318">جارٍ الاحتفاظ بنسخة احتياطية من <ph name="FILE_COUNT" /></translation>
@@ -243,14 +294,20 @@
 <translation id="4290535918735525311">‏تمت مشاركة مجلد واحد مع نظام التشغيل Linux</translation>
 <translation id="4299729908419173967">البرازيلية</translation>
 <translation id="4309915981827077375">معلومات عامة</translation>
+<translation id="432252891123397018">الرومانية باستخدام لوحة مفاتيح عادية</translation>
+<translation id="4325128273762811722">السلوفينية</translation>
 <translation id="4326192123064055915">قهوة</translation>
 <translation id="4336032328163998280">تعذّر إتمام عملية النسخ. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4348495354623233847">السورانية الكردية باستخدام لوحة مفاتيح عربية</translation>
+<translation id="4363958938297989186">الروسية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="4364327530094270451">شمام</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">رابط خارجي</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4470564870223067757">المجموعة رقم 2 الهانغولية</translation>
+<translation id="4477002475007461989">الرومانية</translation>
 <translation id="4477219268485577442">بلغارية صوتية</translation>
+<translation id="4509667233588080747">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman الدولية</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
 <translation id="4527800702232535228">‏تمّت مشاركة هذا المجلد مع نظام Parallels Desktop.</translation>
 <translation id="4552678318981539154">شراء المزيد من مساحة التخزين</translation>
@@ -262,12 +319,15 @@
 <translation id="4594543368593301662">يتم عرض نتائج عن <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">جارٍ نسخ <ph name="FILE_NAME" /> إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">الفنان</translation>
+<translation id="4646813851450205600">‏التشيكية باستخدام لوحة مفاتيح Qwerty</translation>
 <translation id="4656293982926141856">هذا الكمبيوتر</translation>
 <translation id="4669606053856530811">سيفقد أعضاء '<ph name="SOURCE_NAME" />' إمكانية الوصول ما لم تتم مشاركة هذه العناصر معهم.</translation>
 <translation id="4690246192099372265">السويدية</translation>
 <translation id="4693155481716051732">سوشي</translation>
 <translation id="4694604912444486114">قرد</translation>
+<translation id="469612310041132144">‏الصينية باستخدام لوحة مفاتيح Quick</translation>
 <translation id="4697043402264950621">تم ترتيب قائمة الملف تصاعديًا حسب <ph name="COLUMN_NAME" />.</translation>
+<translation id="4706042980341760088">التاميلية باستخدام لوحة مفاتيح الآلة الكاتبة</translation>
 <translation id="4711094779914110278">التركية</translation>
 <translation id="4712283082407695269">جارٍ فتح "<ph name="PATH" />"</translation>
 <translation id="4713544552769165154">‏تم تصميم هذا الملف لجهاز كمبيوتر يستخدم برنامج  Macintosh. وهو غير متوافق مع جهازك الذي يعمل بنظام تشغيل Chrome. يُرجى البحث في <ph name="BEGIN_LINK" />سوق Chrome الإلكتروني<ph name="END_LINK" /> للحصول على تطبيق بديل مناسب.<ph name="BEGIN_LINK_HELP" />مزيد من المعلومات<ph name="END_LINK_HELP" /></translation>
@@ -278,6 +338,7 @@
 <translation id="4737050008115666127">هبوط</translation>
 <translation id="4747271164117300400">المقدونية</translation>
 <translation id="4759238208242260848">الملفات التي تم تنزيلها</translation>
+<translation id="4779041693283480986">البرتغالية (البرتغال)</translation>
 <translation id="4779136857077979611">كرات الأرز</translation>
 <translation id="4784330909746505604">‏عرض تقديمي من PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> كيلوبايت</translation>
@@ -285,6 +346,7 @@
 <translation id="4801956050125744859">الاحتفاظ بالاثنتين</translation>
 <translation id="4804827417948292437">أفوكادو</translation>
 <translation id="4823651846660089135">الجهاز للقراءة فقط</translation>
+<translation id="4826849268470072925">‏التاميلية باستخدام لوحة مفاتيح ITRANS</translation>
 <translation id="4839847978919684242">تم اختيار <ph name="SELCTED_FILES_COUNT" /> من العناصر</translation>
 <translation id="4843566743023903107">‏أجهزة Chromebase</translation>
 <translation id="4850886885716139402">عرض</translation>
@@ -303,6 +365,7 @@
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4973523518332075481">يرجى استخدام اسم يحتوي على <ph name="MAX_LENGTH" /> حرف أو أقل</translation>
 <translation id="4973970068702235170">تعذَّر الضغط، خطأ غير متوقع: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4984616446166309645">اليابانية</translation>
 <translation id="4988205478593450158">هل تريد بالتأكيد حذف "<ph name="FILE_NAME" />"؟</translation>
 <translation id="498902553138568924">فراشة حمراء</translation>
 <translation id="4992066212339426712">إعادة الصوت</translation>
@@ -312,12 +375,15 @@
 <translation id="5024856940085636730">توجد عملية تستغرق وقتًا أكثر من المتوقع. هل ترغب في إيقافها؟</translation>
 <translation id="5036159836254554629">‏إدارة المشاركة في نظام Parallels Desktop</translation>
 <translation id="5038625366300922036">مشاهدة المزيد...</translation>
+<translation id="5044852990838351217">الأرمينية</translation>
+<translation id="5059127710849015030">تحويل صوتي إلى اللغة النيبالية</translation>
 <translation id="5061708541166515394">التباين</translation>
 <translation id="5068919226082848014">بيتزا</translation>
 <translation id="5081517858322016911">سيتم حذف <ph name="TOTAL_FILE_SIZE" /> من حجم الملفات.</translation>
 <translation id="508423945471810158">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
 <translation id="5098629044894065541">العبرية</translation>
+<translation id="5110329002213341433">الإنجليزية (كندا)</translation>
 <translation id="5123433949759960244">كرة السلة</translation>
 <translation id="5129662217315786329">البولندية</translation>
 <translation id="5144820558584035333">المجموعة رقم 3 الهانغولية (390)</translation>
@@ -332,6 +398,7 @@
 <translation id="5170477580121653719">‏المساحة المتبقية في Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">عرض الصور المصغرة</translation>
 <translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
+<translation id="5211614973734216083">الفاروية</translation>
 <translation id="5218183485292899140">الفرنسية السويسرية</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5253070652067921974">مُنشئ الملف:</translation>
@@ -355,10 +422,12 @@
 <translation id="5358764674931277">عدد اللقطات في الثانية</translation>
 <translation id="5368191757080475556">‏مشاركة المجلد مع نظام التشغيل Linux</translation>
 <translation id="5402367795255837559">لغة برايل</translation>
+<translation id="541890217011173530">السورانية الكردية باستخدام لوحة مفاتيح إنجليزية</translation>
 <translation id="5428105026674456456">الإسبانية</translation>
 <translation id="5438282218546237410">لا توجد نتائج تخص <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
 <translation id="5469868506864199649">الإيطالية</translation>
+<translation id="5489067830765222292">اللاتفية</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="5500122897333236901">الأيسلندية</translation>
 <translation id="5508696409934741614">نقاط</translation>
@@ -366,8 +435,11 @@
 <translation id="5524517123096967210">تعذرت قراءة الملف.</translation>
 <translation id="5533102081734025921">صورة <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">جارٍ حساب الحجم</translation>
+<translation id="554153475311314364">تحويل صوتي إلى اللغة اليونانية</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5605830556594064952">‏الأمريكية Dvorak</translation>
+<translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5649768706273821470">استماع</translation>
 <translation id="5678784840044122290">‏سيكون تطبيق Linux متاحًا ضمن الوحدة الطرفية وقد يعرض أيضًا رمزًا في مشغِّل التطبيقات.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />لا يمكن قطع الاتصال من أرشيف أو قرص افتراضي<ph name="END_BOLD" />
@@ -375,13 +447,17 @@
    يُرجى إغلاق جميع الملفات في الأرشيف أو القرص الافتراضي، ثم إعادة المحاولة.</translation>
 <translation id="5691596662111998220">عذرًا، لم يعد <ph name="FILE_NAME" /> متوفرًا.</translation>
 <translation id="5700087501958648444">معلومات الملف الصوتي</translation>
+<translation id="5724172041621205163">‏التايلاندية باستخدام لوحة مفاتيح Pattachote</translation>
 <translation id="5731409020711461763">صورة واحدة جديدة</translation>
 <translation id="5752453871435543420">‏النسخ الاحتياطي في السحابة الإلكترونية عبر نظام التشغيل Chrome</translation>
 <translation id="5756666464756035725">‏QWERTY المجرية</translation>
+<translation id="5763377084591234761">الألمانية (سويسرا)</translation>
+<translation id="5775750595919327203">الأردية</translation>
 <translation id="5776325638577448643">المحو والتنسيق</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5788127256798019331">‏ملفات Play</translation>
 <translation id="5790193330357274855">الكازاخية</translation>
+<translation id="5804245609861364054">تحويل صوتي إلى اللغة الكنادية</translation>
 <translation id="5817397429773072584">الصينية التقليدية</translation>
 <translation id="5818003990515275822">الكورية</translation>
 <translation id="5819442873484330149">المجموعة رقم 3 الهانغولية (النهائية)</translation>
@@ -394,6 +470,7 @@
 <translation id="5911887972742538906">‏حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
 <translation id="5912396950572065471">التنسيق</translation>
 <translation id="5913638992615760742">تعذَّر إتمام عملية النسخ، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5926082595146149752">الهولندية (هولندا) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
@@ -404,20 +481,27 @@
 <translation id="604001903249547235">النسخ الاحتياطي عبر السحابة الإلكترونية.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6074825444536523002">‏نموذج Google</translation>
+<translation id="6079871810119356840">‏المجرية باستخدام لوحة مفاتيح Qwerty</translation>
 <translation id="6096979789310008754">تم محو نص البحث، ويتم عرض جميع الملفات والمجلدات.</translation>
 <translation id="610101264611565198">جارِ نقل <ph name="FILE_NAME" /> إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6133173853026656527">جارٍ نقل <ph name="FILE_NAME" />...</translation>
+<translation id="613750717151263950">اليابانية باستخدام لوحة مفاتيح الولايات المتحدة</translation>
 <translation id="6146563240635539929">فيديوهات</translation>
 <translation id="6150853954427645995">لحفظ هذا الملف للاستخدام بلا إنترنت، عاود الاتصال بالإنترنت، وانقر بزر الماوس الأيمن على الملف، ثم حدد الخيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">فراشات</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
+<translation id="6187719147498869044">المجرية</translation>
 <translation id="6189412234224385711">فتح باستخدام <ph name="EXTENSION_NAME" /></translation>
 <translation id="6199801702437275229">في انتظار معلومات المساحة...</translation>
 <translation id="6205710420833115353">تستغرق بعض العمليات وقتًا أطول من المتوقع. هل تريد إيقافها؟</translation>
+<translation id="6220423280121890987">البنجابية</translation>
+<translation id="6224240818060029162">الدانمركية</translation>
 <translation id="6224253798271602650">تنسيق <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">يتعذر تشغيل هذا الملف.</translation>
+<translation id="6241349547798190358">الهولندية (بلجيكا)</translation>
 <translation id="6248400709929739064">تفعيل الترجمات المصاحبة</translation>
+<translation id="6269630227984243955">الملايوية</translation>
 <translation id="6287852322318138013">حدد تطبيقًا لفتح هذا الملف من خلاله</translation>
 <translation id="6339145975392024142">الأمريكية الدولية (الكمبيوتر الشخصي)</translation>
 <translation id="6346310558342052870">تم تقييد عملية الوصول</translation>
@@ -428,6 +512,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> من العناصر</translation>
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
 <translation id="642282551015776456">لا يمكن استخدام هذا الاسم كملف باسم مجلد</translation>
+<translation id="6423031066725912715">‏الفيتنامية باستخدام لوحة مفاتيح TCVN</translation>
 <translation id="6485131920355264772">تعذّر جلب معلومات المساحة</translation>
 <translation id="6509122719576673235">النرويجية</translation>
 <translation id="6527303717912515753">مشاركة</translation>
@@ -444,19 +529,23 @@
 <translation id="6643016212128521049">محو</translation>
 <translation id="6650726141019353908">فراشة وردية</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
+<translation id="6673674183150363784">‏الفرنسية (فرنسا) باستخدام لوحة مفاتيح Bépo</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6718273304615422081">جارٍ الضغط...</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6806699711453372963">‏إدارة المشاركة في Linux</translation>
+<translation id="6806796368146926706">الأبجدية الرقمية باستخدام لوحة المفاتيح اليابانية</translation>
 <translation id="6808193438228982088">ثعلب</translation>
 <translation id="6820687829547641339">‏أرشيف tar مضغوط ببرنامج Gzip</translation>
 <translation id="6823166707458800069">يتم الاحتفاظ بنسخة احتياطية من جميع الملفات المحفوظة في هذا المجلد تلقائيًا على الإنترنت.</translation>
 <translation id="6825883775269213504">الروسية</translation>
 <translation id="6827236167376090743">سيستمر تشغيل هذا الفيديو إلى نهاية الفيلم.</translation>
 <translation id="6847101934483209767">تمت إزالة <ph name="ENTRY_NAME" /> من الاختيار.</translation>
+<translation id="6861394552169064235">الفارسية</translation>
 <translation id="6862635236584086457">جميع الملفات المحفوظة في هذا المجلد يتم الاحتفاظ بنسخة احتياطية منها تلقائيًا على الإنترنت</translation>
+<translation id="6864328437977279120">السنسكريتية</translation>
 <translation id="6876155724392614295">دراجة</translation>
 <translation id="6878261347041253038">لوحة المفاتيح الديفانغارية (صوتية)</translation>
 <translation id="6885780034956018177">حلزون</translation>
@@ -470,20 +559,28 @@
     <ph name="LINE_BREAK1" />
     تم العثور على <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">رأسًا على عقب</translation>
+<translation id="6949408524333579394">تحويل صوتي إلى اللغة الصربية</translation>
 <translation id="696203921837389374">تفعيل المزامنة عبر بيانات الجوّال</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6970230597523682626">البلغارية</translation>
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6978611942794658017">‏تم تصميم هذا الملف لأجهزة الكمبيوتر باستخدام برنامج Windows. هذا غير متوافق مع جهازك الذي يعمل بنظام التشغيل Chrome OS. يُرجى البحث في سوق Chrome الإلكتروني للحصول على تطبيق بديل مناسب.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
 <translation id="6998711733709403587">تم اختيار <ph name="SELCTED_FOLDERS_COUNT" /> من المجلدات</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
+<translation id="7031639531908619281">التركية</translation>
+<translation id="7037472120706603960">تحويل صوتي إلى اللغة التاميلية</translation>
 <translation id="7040138676081995583">فتح باستخدام...</translation>
+<translation id="7075931588889865715">‏التايلاندية باستخدام لوحة مفاتيح TIS 820-2531</translation>
+<translation id="7086590977277044826">‏التاميلية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> من العناصر المحددة</translation>
+<translation id="7103992300314999525">المقدونية</translation>
 <translation id="7106346894903675391">شراء المزيد من مساحة التخزين...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;البحث في Drive&lt;/em&gt;</translation>
+<translation id="7135561821015524160">الكنادية الصوتية</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> غيغابايت</translation>
@@ -492,33 +589,42 @@
 <translation id="7248671827512403053">تطبيق</translation>
 <translation id="7268659760406822741">الخدمات المتوفرة</translation>
 <translation id="7283041136720745563">‏حصة Google Drive ليست كبيرة بشكلٍ كافٍ.</translation>
+<translation id="7294063083760278948">تحويل صوتي إلى اللغة التيلوغوية</translation>
 <translation id="7295662345261934369">المشاركة مع الآخرين</translation>
+<translation id="7309413087278791451">الألمانية (بلجيكا)</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
+<translation id="7343393116438664539">‏الفيتنامية باستخدام لوحة مفاتيح Telex</translation>
 <translation id="7359359531237882347">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7375951387215729722">تم ترتيب قائمة الملف تنازليًا حسب <ph name="COLUMN_NAME" />.</translation>
+<translation id="7408870451288633753">التشيكية</translation>
 <translation id="7417453074306512035">لوحة المفاتيح الإثيوبية</translation>
 <translation id="7417705661718309329">‏خريطة Google</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
 <translation id="7489215562877293245">‏تم العثور على <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     جاهز للاحتفاظ بنسخة احتياطية في <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="7495372004724182530">الماليالامية الصوتية</translation>
 <translation id="7505167922889582512">إظهار الملفات المخفية</translation>
 <translation id="7508545000531937079">عرض الشرائح</translation>
 <translation id="751507702149411736">البيلاروسية</translation>
+<translation id="7532029025027028521">تحويل صوتي إلى اللغة الفارسية</translation>
 <translation id="7544830582642184299">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في Google Drive. وستتمّ مزامنة التغييرات مع الأجهزة الأخرى.</translation>
 <translation id="7544853251252956727">ترتيب عشوائي</translation>
+<translation id="7547780573915868306">الليتوانية</translation>
 <translation id="7547811415869834682">الهولندية</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">انتظر قليلاً</translation>
 <translation id="7592775719802218421">إتاحة <ph name="FILE_NAME" /> بدون اتصال بالإنترنت</translation>
+<translation id="7600126690270271294">الصربية</translation>
 <translation id="7603724359189955920">شبكات</translation>
 <translation id="7627790789328695202">عذرًا، <ph name="FILE_NAME" /> موجود من قبل. يمكنك إعادة تسميته وإعادة المحاولة.</translation>
 <translation id="7628656427739290098">اكتملت العملية بنسبة <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7654209398114106148">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7663224033570512922">الهندية</translation>
 <translation id="7693909743393669729">ستؤدي تهيئة محرك أقراص إلى محو جميع البيانات المخزَّنة عليه وإزالة جميع الأقسام الحالية، بما فيها الأقسام التي قد تكون غير مرئية. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7695430100978772476">تعذّر ضبط <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">اليونانية</translation>
@@ -527,6 +633,7 @@
 <translation id="7724603315864178912">قص</translation>
 <translation id="7730494089396812859">عرض تفاصيل النسخ الاحتياطي عبر السحابة الإلكترونية</translation>
 <translation id="7748626145866214022">‏تتوفر مزيد من الخيارات على شريط الإجراءات. يُرجى الضغط على "Alt + A" لتركيز هذا الشريط.</translation>
+<translation id="7760449188139285140">‏الصينية باستخدام لوحة مفاتيح Wubi</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7774365994322694683">طائر</translation>
 <translation id="7788080748068240085">لحفظ "<ph name="FILE_NAME" />" بلا إنترنت، يجب توفير مساحة إضافية تبلغ <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
@@ -536,6 +643,8 @@
 <translation id="7799329977874311193">‏مستند HTML</translation>
 <translation id="7801354353640549019">‏أجهزة Chromebook</translation>
 <translation id="7805768142964895445">الحالة</translation>
+<translation id="7806708061868529807">العبرية</translation>
+<translation id="78104721049218340">‏التايلاندية باستخدام لوحة مفاتيح Kedmanee</translation>
 <translation id="7821462174190887129">‏تم العثور على <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     حصة Google Drive ليست كبيرة بشكلٍ كافٍ. يتطلب وجود <ph name="FILE_SIZE" /> إضافي.
@@ -546,7 +655,9 @@
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7853966320808728790">‏BÉPO الفرنسية</translation>
 <translation id="7864662577698025113">إضافة خدمة جديدة</translation>
+<translation id="7868774406711971383">البولندية</translation>
 <translation id="7873831373602885875">يتعذَّر الحفظ في <ph name="FOLDER_NAME" />. وسيتم حفظ جميع التعديلات في <ph name="DOWNLOADS_FOLDER" /> في مجلَّد مجلد "المحتوى الذي تم تنزيله".</translation>
+<translation id="7874321682039004450">الفلبينية</translation>
 <translation id="7881969471599061635">إيقاف الترجمات المصاحبة</translation>
 <translation id="78946041517601018">‏مساحات Drive المشتركة</translation>
 <translation id="7908793776359722643">ستؤدي تهيئة قسم إلى محو جميع البيانات المخزَّنة فيه. ولا يمكن التراجع عن هذا الإجراء.</translation>
@@ -555,6 +666,8 @@
 <translation id="7943385054491506837">‏الأمريكية Colemak</translation>
 <translation id="7953739707111622108">لا يمكن فتح الجهاز لعدم التعرف على نظام الملفات.</translation>
 <translation id="7969525169268594403">السلوفينية</translation>
+<translation id="7972920761225148017">الفرنسية (سويسرا)</translation>
+<translation id="7980421588063892270">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Colemak</translation>
 <translation id="7982283708762922719">الارتفاع</translation>
 <translation id="8008366997883261463">كلب</translation>
 <translation id="8028993641010258682">الحجم</translation>
@@ -567,18 +680,21 @@
 <translation id="8079530767338315840">تكرار</translation>
 <translation id="8106045200081704138">تمت مشاركتها معي</translation>
 <translation id="8116072619078571545">ماء مثلج</translation>
+<translation id="8128733386027980860">‏الإنجليزية (المملكة المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="8137331602592933310">تمت مشاركة "<ph name="FILENAME" />" معك. لا يمكنك حذفه، نظرًا لأنك لا تمتلكه.</translation>
 <translation id="8151638057146502721">إعداد</translation>
 <translation id="8153607920959057464">يتعذر عرض هذا الملف.</translation>
 <translation id="8154842056504218462">تم اختيار جميع الإدخالات.</translation>
 <translation id="8157684860301034423">تعذّر جلب معلومات التطبيق.</translation>
 <translation id="8157939133946352716">7x5</translation>
+<translation id="8175731104491895765">الفرنسية (بلجيكا)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">طراز الجهاز</translation>
 <translation id="8208580316430297579">عمل فني</translation>
 <translation id="8223479393428528563">لحفظ هذه الملفات بلا اتصال، عليك العودة للاتصال انقر بزر الماوس الأيمن على الملفات، وحدد خيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8261561378965667560">‏الصينية باستخدام لوحة مفاتيح Array</translation>
 <translation id="8269755669432358899">تصغير لوحات التعليقات على الملفات</translation>
 <translation id="8280151743281770066">أرمينية صوتية</translation>
 <translation id="8294431847097064396">المصدر</translation>
@@ -587,43 +703,59 @@
 <translation id="8312871300878166382">لصق في مجلد</translation>
 <translation id="8329978297633540474">نص عادي</translation>
 <translation id="8335587457941836791">إزالة التثبيت من الرف</translation>
+<translation id="8335837413233998004">البيلاروسية</translation>
 <translation id="8336153091935557858">الأمس <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">هناك ملف أو دليل موجود بهذا الاسم فعلاً.</translation>
+<translation id="8372852072747894550">اليونانية</translation>
 <translation id="8382450452152102026">إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="8395901698320285466">الأبعاد</translation>
 <translation id="8437209419043462667">الأمريكية</translation>
 <translation id="8456681095658380701">اسم غير صالح</translation>
+<translation id="8463494891489624050">‏الفيتنامية باستخدام لوحة مفاتيح VIQR</translation>
 <translation id="8466234950814670489">‏أرشيف Tar</translation>
 <translation id="8475647382427415476">‏تعذر على Google Drive مزامنة "<ph name="FILENAME" />" في الوقت الحالي. وسيعيد Google Drive المحاولة لاحقًا.</translation>
 <translation id="8477649328507734757">دوران</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8521441079177373948">المملكة المتحدة</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
+<translation id="853494022971700746">الفرنسية (فرنسا)</translation>
+<translation id="8545476925160229291">الإنجليزية (الولايات المتحدة)</translation>
+<translation id="8549186985808798022">الإيطالية</translation>
 <translation id="8551494947769799688">اللاتفية</translation>
+<translation id="8560515948038859357">الكانتونية</translation>
 <translation id="8561206103590473338">فيل</translation>
 <translation id="8569764466147087991">اختيار ملف لفتحه</translation>
+<translation id="8577897833047451336">الكرواتية</translation>
+<translation id="8578308463707544055">الإندونيسية</translation>
 <translation id="8579285237314169903">جارٍ مزامنة <ph name="NUMBER_OF_FILES" /> من البنود...</translation>
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
+<translation id="8609695766746872526">الآيسلندية</translation>
 <translation id="8669949407341943408">جارٍ النقل...</translation>
 <translation id="8698464937041809063">‏رسم Google</translation>
+<translation id="8713112442029511308">المالطية</translation>
 <translation id="8714406895390098252">دراجة</translation>
 <translation id="8719721339511222681">تم اختيار <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">الكرواتية</translation>
 <translation id="8775404590947523323">يتم حفظ التعديلات تلقائيًا.<ph name="BREAKS" />للاحتفاظ بنسخة من الصورة الأصلية، يجب إلغاء اختيار "استبدال الملف الأصلي"</translation>
 <translation id="8808686172382650546">قط</translation>
 <translation id="8810671769985673465">تعذّر الضغط، العناصر الموجودة هي: "<ph name="FILE_NAME" />"</translation>
+<translation id="8813284582615685103">الإسبانية (إسبانيا)</translation>
 <translation id="8834164572807951958">سيحصل أعضاء '<ph name="DESTINATION_NAME" />' على إمكانية الوصول إلى نسخة من هذه العناصر.</translation>
+<translation id="8857149712089373752">النيبالية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="8860454412039442620">‏جدول بيانات Excel</translation>
+<translation id="8866284467018526531">تحويل صوتي إلى اللغة العربية</translation>
 <translation id="8900820606136623064">المجرية</translation>
 <translation id="8919081441417203123">الدانماركية</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
+<translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="9017798300203431059">روسية صوتية</translation>
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
 <translation id="9035012421917565900">لا يمكن نقل العناصر مرة أخرى إلى '<ph name="DESTINATION_NAME" />'، لذلك لن تتمكن من التراجع عن هذا الإجراء.</translation>
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9064939804718829769">جارٍ النقل...</translation>
 <translation id="9065203028668620118">تعديل</translation>
+<translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>
 <translation id="9110990317705400362">‏نحن نبحث باستمرار عن طرق من شأنها زيادة أمان تجربة تصفحك. في السابق، كان من الممكن لأي موقع إلكتروني أن يطالبك بتثبيت إضافة في متصفحك. أما في أحدث إصدارات Google Chrome، فيجب أن تبلغ Chrome صراحة أنك تريد تثبيت هذه الإضافات عن طريق إضافتها عبر صفحة الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">فتح القفل</translation>
@@ -633,8 +765,12 @@
 <translation id="9131598836763251128">اختيار ملف واحد أو أكثر</translation>
 <translation id="9133055936679483811">تعذّر الضغط. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">‏تم تصميم هذا الملف لأجهزة الكمبيوتر التي تستخدم برنامج Macintosh. هذا غير متوافق مع جهازك الذي يعمل بنظام تشغيل Chrome. يُرجى البحث في سوق Chrome الإلكتروني للحصول على تطبيق بديل مناسب.</translation>
+<translation id="9144340019284012223">الكتالانية</translation>
 <translation id="9148058034647219655">إنهاء</translation>
 <translation id="9154418932169119429">هذه الصورة غير متاحة بلا إنترنت.</translation>
+<translation id="9172592259078059678">تحويل صوتي إلى اللغة الغوجاراتية</translation>
+<translation id="9173120999827300720">الإنجليزية (الولايات المتحدة) باستخدام لوحة المفاتيح الدولية</translation>
+<translation id="9189836632794948435">الكازاخية</translation>
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="9219908252191632183">قمري</translation>

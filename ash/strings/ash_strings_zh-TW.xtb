@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1782199038061388045">翻譯</translation>
 <translation id="1787955149152357925">關閉</translation>
+<translation id="1804572139604454141">磁碟空間嚴重不足，因此已停止錄製</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="1812997170047690955">我的畫面內容有什麼資訊？</translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@
 <translation id="3236488194889173876">沒有可用的行動網路</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移動到桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你會做些什麼？</translation>
+<translation id="3269597722229482060">按一下滑鼠右鍵</translation>
 <translation id="3289674678944039601">正在透過變壓器充電</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
@@ -340,6 +342,7 @@
 <translation id="4212472694152630271">切換為 PIN 碼</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">語音輸入</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />，已安裝的應用程式，已暫停</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="425364040945105958">沒有 SIM 卡</translation>
@@ -761,6 +764,7 @@
 <translation id="8142699993796781067">私人網路</translation>
 <translation id="8152092012181020186">按下 Ctrl + W 即可關閉。</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 這項設定是由系統管理員管理。</translation>
+<translation id="8155628902202578800">開啟 <ph name="USER_EMAIL_ADDRESS" /> 的資訊對話方塊</translation>
 <translation id="8167567890448493835">使用<ph name="LOCALE_NAME" /></translation>
 <translation id="8170567869359129153">行動網路。訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8192202700944119416">已隱藏通知。</translation>
@@ -826,6 +830,7 @@
 <translation id="8755498163081687682">驗證身分：<ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />，已安裝的應用程式，已封鎖</translation>
 <translation id="8785070478575117577">連線至「<ph name="NETWORK_NAME" />」</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

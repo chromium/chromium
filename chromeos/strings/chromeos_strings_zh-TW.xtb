@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1059913517121127803">無法開始掃描</translation>
 <translation id="1071587090247825784">已偵測到防火牆</translation>
 <translation id="1075811647922107217">網頁大小</translation>
+<translation id="1175697296044146566">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲</translation>
 <translation id="1238612778414822719">HTTPS 延遲</translation>
@@ -14,9 +16,9 @@
 <translation id="1398634363027580500">非常高的 HTTPS 延遲</translation>
 <translation id="1413240736185167732">失敗 - 無法使用過濾器</translation>
 <translation id="1468664791493211953">優惠</translation>
-<translation id="1476467821656042872"><ph name="MANAGER" /> 是這個裝置的管理員，且可能有權監控你的活動。</translation>
+<translation id="1476467821656042872"><ph name="MANAGER" /> 管理這個裝置，且可能有權監控你的活動。</translation>
 <translation id="1478594628797167447">掃描器</translation>
-<translation id="1499900233129743732"><ph name="MANAGER" /> 是這個使用者的管理員，且可從遠端管理設定及監控使用者活動。</translation>
+<translation id="1499900233129743732"><ph name="MANAGER" /> 管理這位使用者，且可從遠端管理設定及監控使用者活動。</translation>
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒)</translation>
@@ -25,12 +27,12 @@
 <translation id="1662989795263954667">已停止 - 墨水已用盡</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
-<translation id="1734367976349034509">這個裝置受到企業管理</translation>
+<translation id="1743558184855585519">一旦電池用量達到上限，即表示已耗盡電力</translation>
 <translation id="1905710495812624430">超過嘗試次數上限。</translation>
 <translation id="1930797645656624981">Chrome 作業系統輸入法服務</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1979103255016296513">已超過密碼變更期限</translation>
-<translation id="2049639323467105390">這個裝置由 <ph name="DOMAIN" /> 管理。</translation>
+<translation id="1980044825731880088">CPU 速度</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -39,13 +41,16 @@
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2375079107209812402">剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="2391082728065870591">傳送意見回饋報告</translation>
+<translation id="2461822463642141190">目前耗電量</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">掃描</translation>
+<translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">連線診斷工具</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
 <translation id="3188257591659621405">我的檔案</translation>
@@ -97,8 +102,10 @@
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4917889632206600977">已停止 - 紙張用盡</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4985509611418653372">執行</translation>
+<translation id="5168185087976003268">電池壽命：</translation>
 <translation id="520299634122159966">沒有可用的掃描器</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>
@@ -114,8 +121,11 @@
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">前往說明中心瞭解詳情</translation>
+<translation id="5719918614880940190">這項數據測量的是 CPU 用量，並顯示所有核心的匯總值</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
 <translation id="6050189528197190982">灰階</translation>
@@ -142,12 +152,13 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">高 DNS 解析失敗率</translation>
 <translation id="6839141349259399400">無法連線至掃描器嗎？</translation>
-<translation id="7028979494427204405"><ph name="MANAGER" /> 是這個裝置的管理員，且可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
+<translation id="7028979494427204405"><ph name="MANAGER" /> 管理這個裝置，且可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
 <translation id="714876143603641390">LAN 連線狀態</translation>
 <translation id="7162487448488904999">相片庫</translation>
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">檔案類型</translation>
+<translation id="7441459999606975924">隨著裝置的使用時間增加，電池電量會逐漸減少</translation>
 <translation id="7561454561030345039">這個動作是由系統管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">高 HTTPS 延遲</translation>
@@ -155,6 +166,7 @@
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7855434858642800953">已儲存掃描好的檔案！</translation>
+<translation id="7928373994957558460">顯示檔案位置</translation>
 <translation id="7936303884198020182">找不到任何名稱伺服器</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="808894953321890993">變更密碼</translation>
@@ -167,6 +179,8 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議你只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">名稱伺服器空白</translation>
+<translation id="8395584934117017006">這部 <ph name="DEVICE_TYPE" /> 是由企業管理</translation>
+<translation id="8398927464629426868">裝置目前的充電或放電速率</translation>
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網路</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
@@ -176,9 +190,11 @@
 <translation id="8747900814994928677">確認變更</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">預設</translation>
+<translation id="8845001906332463065">尋求協助</translation>
 <translation id="8910721771319628100">預設網路超過延遲門檻</translation>
 <translation id="8919837981463578619">失敗 - 缺少紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張用盡</translation>
+<translation id="9088306295921699330">目前用量</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="9111102763498581341">解除鎖定</translation>

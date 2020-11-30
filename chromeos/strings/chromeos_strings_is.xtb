@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1018656279737460067">Hætt við</translation>
+<translation id="1059913517121127803">Ekki tókst að skanna</translation>
 <translation id="1071587090247825784">Eldveggur greindist</translation>
 <translation id="1075811647922107217">Síðustærð</translation>
+<translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
 <translation id="1204296502688602597">DNS-biðtími</translation>
 <translation id="1238612778414822719">HTTPS-biðtími</translation>
@@ -25,13 +27,12 @@
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
-<translation id="1734367976349034509">Þessu tæki er stýrt af fyrirtæki</translation>
+<translation id="1743558184855585519">Rafhlaðan telst tóm þegar hún nær takmörkunum</translation>
 <translation id="1905710495812624430">Farið var yfir hámarksfjölda tilrauna.</translation>
 <translation id="1930797645656624981">Innfærsluaðferð Chrome OS þjónustu</translation>
 <translation id="1947737735496445907">Prentað</translation>
 <translation id="1979103255016296513">Breyting á aðgangsorði komin fram yfir tíma</translation>
 <translation id="1980044825731880088">Hraði örgjörva</translation>
-<translation id="2049639323467105390">Þessu tæki er stjórnað af <ph name="DOMAIN" />.</translation>
 <translation id="2080070583977670716">Fleiri stillingar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Hætta við prentverk</translation>
@@ -44,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Leita</translation>
+<translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
@@ -100,6 +102,7 @@
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
+<translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4985509611418653372">Keyra</translation>
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
@@ -119,6 +122,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="54609108002486618">Stjórnað</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Frekari upplýsingar er að finna í Hjálparmiðstöðinni</translation>
+<translation id="5719918614880940190">Þetta mælir örgjörvanotkun og er samansafn allra kjarna</translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" />)</translation>
@@ -154,6 +158,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Skráargerð</translation>
+<translation id="7441459999606975924">Hleðslugeta rafhlöðunnar minnkar með notkun</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
@@ -161,6 +166,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7855434858642800953">Skönnuð skrá vistuð!</translation>
+<translation id="7928373994957558460">Sýna staðsetningu skráar</translation>
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
@@ -173,6 +179,8 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8347227221149377169">Prentverk</translation>
 <translation id="8352772353338965963">Bæta reikningi við innskráningu á marga reikninga. Hægt er að fá aðgang að öllum innskráðum reikningum án aðgangsorðs og því ætti aðeins að nota þennan eiginleika með traustum reikningum.</translation>
 <translation id="8364946094152050673">Auðir nafnaþjónar</translation>
+<translation id="8395584934117017006">Þessu <ph name="DEVICE_TYPE" /> tæki er stjórnað af fyrirtæki</translation>
+<translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
@@ -182,6 +190,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8747900814994928677">Staðfesta breytingu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Sjálfgefið</translation>
+<translation id="8845001906332463065">Fá hjálp</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>
 <translation id="8928727111548978589">Mistókst – pappír vantar</translation>

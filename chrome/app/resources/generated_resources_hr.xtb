@@ -134,7 +134,6 @@
 <translation id="1140746652461896221">Blokiraj sadržaj na bilo kojoj posjećenoj stranici</translation>
 <translation id="1143142264369994168">Potpisnik certifikata</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome nije pronašao štetni softver na vašem računalu • provjereno prije jednu minutu}one{Chrome nije pronašao štetni softver na vašem računalu • provjereno prije {NUM_MINS} minutu}few{Chrome nije pronašao štetni softver na vašem računalu • provjereno prije {NUM_MINS} minute}other{Chrome nije pronašao štetni softver na vašem računalu • provjereno prije {NUM_MINS} minuta}}</translation>
-<translation id="1145292499998999162">Dodatak je blokiran</translation>
 <translation id="1145593918056169051">Pisač je zaustavljen</translation>
 <translation id="114721135501989771">Googleove značajke za Chrome</translation>
 <translation id="1147322039136785890">Sada je na redu: <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -729,7 +728,6 @@
 <translation id="1799071797295057738">Proširenje "<ph name="EXTENSION_NAME" />" automatski je onemogućeno.</translation>
 <translation id="1802624026913571222">U mirovanje kada se zatvori poklopac.</translation>
 <translation id="1802687198411089702">Stranica ne reagira. Možete je pričekati ili napustiti.</translation>
-<translation id="1802931390041703523">Na ovoj je stranici blokiran Flash</translation>
 <translation id="1803531841600994172">Jezik na koji se prevodi</translation>
 <translation id="1803545009660609783">Ponovo uvježbaj</translation>
 <translation id="1805738995123446102">Pozadinska kartica upotrebljava mikrofon</translation>
@@ -1153,6 +1151,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2288735659267887385">Postavke pristupačnosti</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2290615375132886363">Gumbi za kretanje na tabletu</translation>
+<translation id="229182044471402145">Nije pronađen podudaran font.</translation>
 <translation id="2292848386125228270">Pokrenite <ph name="PRODUCT_NAME" /> kao običan korisnik. Ako ga trebate pokrenuti kao korijenski direktorij radi razvoja, pokrenite ga ponovo s oznakom --no-sandbox.</translation>
 <translation id="2294358108254308676">Želite li instalirati program <ph name="PRODUCT_NAME" />?</translation>
 <translation id="2295864384543949385">Rezultata: <ph name="NUM_RESULTS" /></translation>
@@ -2760,7 +2759,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4124823734405044952">Vaš sigurnosni ključ vraćen je na zadano</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="412730574613779332">Elastični</translation>
-<translation id="412940972494182898">Pokreni Flash ovaj put</translation>
 <translation id="4130199216115862831">Zapisnik uređaja</translation>
 <translation id="4130207949184424187">Ovo proširenje promijenilo je stranicu koja se prikazuje prilikom pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="4130750466177569591">Slažem se</translation>
@@ -4265,6 +4263,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5946591249682680882">ID izvješća <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">Nije moguće analizirati datoteku</translation>
 <translation id="5950819593680344519">Chrome nije pronašao štetni softver na vašem računalu • provjereno jučer</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> želi koristiti lokalne fontove</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5955282598396714173">Zaporka je istekla. Odjavite se pa se ponovo prijavite da biste je promijenili.</translation>
 <translation id="5955304353782037793">apl</translation>
@@ -5694,6 +5693,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7635048370253485243">Prikvačio vaš administrator</translation>
 <translation id="763632859238619983">Ne dopusti nijednoj web-lokaciji instalaciju rukovatelja plaćanjem</translation>
 <translation id="7636919061354591437">Instaliraj na ovom uređaju</translation>
+<translation id="7637593984496473097">Nema dovoljno prostora na disku</translation>
 <translation id="7638605456503525968">Serijski priključci</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> može upotrijebiti spremljene zaporke kako bi vas automatski prijavio na web-lokacije koje ispunjavaju uvjete.</translation>
 <translation id="7642778300616172920">Sakrij osjetljiv sadržaj</translation>
@@ -6019,7 +6019,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7974566588408714340">Pokušaj ponovo pomoću proširenja <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Rubno područje zaslona</translation>
 <translation id="7975504106303186033">Ovaj uređaj Chromea za obrazovanje morate prijaviti na račun za Education. Da biste se registrirali za novi račun, posjetite g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Postavljanje naziva prozora...</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
 <translation id="7978450511781612192">Time ćete se odjaviti s Google računa. Vaše se oznake, povijest, zaporke i druge postavke više neće sinkronizirati.</translation>
 <translation id="7980084013673500153">ID uređaja: <ph name="ASSET_ID" /></translation>
@@ -6585,7 +6584,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8648408795949963811">Temperatura boje za Noćno svjetlo</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> želi: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> i još mnogo toga</translation>
 <translation id="8650543407998814195">Iako više ne možete pristupiti svojem starom profilu, možete ga ukloniti.</translation>
-<translation id="865118751078059229">&amp;Postavljanje naziva prozora...</translation>
 <translation id="8651585100578802546">Ponovo prisilno učitaj ovu stranicu</translation>
 <translation id="8652400352452647993">Pogreška proširenja paketa</translation>
 <translation id="8654151524613148204">Nažalost, datoteka je prevelika da bi ju vaše računalo obradilo.</translation>
@@ -6891,7 +6889,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="897414447285476047">Odredišna datoteka bila je nepotpuna zbog problema s vezom.</translation>
 <translation id="897525204902889653">Usluga karantene</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />"}=1{„<ph name="TAB_TITLE" />" i još jedna kartica}one{„<ph name="TAB_TITLE" />" i još # kartica}few{„<ph name="TAB_TITLE" />" i još # kartice}other{„<ph name="TAB_TITLE" />" i još # kartica}}</translation>
-<translation id="8976520271376534479">Na ovoj je stranici blokiran Flash.</translation>
 <translation id="8977811652087512276">Netočna zaporka ili oštećena datoteka</translation>
 <translation id="8978154919215542464">Uključeno – sinkronizacija svega</translation>
 <translation id="897939795688207351">Na <ph name="ORIGIN" /></translation>

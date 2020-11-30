@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1071587090247825784">Güvenlik duvarı algılandı</translation>
 <translation id="1075811647922107217">Sayfa boyutu</translation>
+<translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
@@ -25,12 +26,12 @@
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
-<translation id="1734367976349034509">Bu cihaz kuruluş tarafından yönetiliyor</translation>
+<translation id="1743558184855585519">Pil, şarj döngüsü sınırına ulaştığında ömrünü tamamladığı kabul edilir</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1930797645656624981">Chrome OS Giriş Yöntemi Hizmeti</translation>
 <translation id="1947737735496445907">Yazdırıldı</translation>
 <translation id="1979103255016296513">Şifre değişikliği zamanı geçti</translation>
-<translation id="2049639323467105390">Bu cihaz <ph name="DOMAIN" /> tarafından yönetiliyor.</translation>
+<translation id="1980044825731880088">CPU Hızı</translation>
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
@@ -39,13 +40,16 @@
 <translation id="2364498172489649528">Başarılı oldu</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> deneme hakkınız kaldı</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
+<translation id="2461822463642141190">Mevcut güç tüketimi</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}other{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Tara</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3083667275341675831">Bağlantı Teşhisi</translation>
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
@@ -99,6 +103,7 @@
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
+<translation id="5168185087976003268">Pil gücü</translation>
 <translation id="520299634122159966">Kullanılabilir tarayıcı yok</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
@@ -114,8 +119,11 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5457599981699367932">Misafir olarak Göz At</translation>
 <translation id="54609108002486618">Yönetilen</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">Yardım Merkezi'nden daha fazla bilgi edinebilirsiniz</translation>
+<translation id="5719918614880940190">Bu, tüm çekirdeklerin toplamı olup CPU kullanımını ölçer</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6048107060512778456">İşlem başarısız - Kağıt sıkışması</translation>
 <translation id="6050189528197190982">Gri Tonlama</translation>
@@ -148,6 +156,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Dosya türü</translation>
+<translation id="7441459999606975924">Pil kullanıldıkça kapasitesi azalır</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
@@ -167,6 +176,8 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
+<translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
+<translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8475690821716466388">Kablosuz ağ, zayıf bir protokol olan WEP PSK ile güvenlik altına alınmış</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
@@ -176,9 +187,11 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8747900814994928677">Değişikliği onaylayın</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
+<translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>
 <translation id="8928727111548978589">İşlem başarısız - Kağıt yok</translation>
+<translation id="9088306295921699330">Mevcut kullanım</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
