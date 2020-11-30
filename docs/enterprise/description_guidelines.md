@@ -12,6 +12,7 @@ how various product names and the like should be referenced.
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`
+* Android: `<ph name="ANDROID_NAME">Android</ph>`
 * macOS: `<ph name="MAC_OS_NAME">macOS</ph>`
 * Windows: `<ph name="MS_WIN_NAME">Microsoft® Windows®</ph>`
 * Microsoft ActiveDirectory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`

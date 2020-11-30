@@ -10712,17 +10712,13 @@
       'id': 165,
       'caption': '''Use built-in DNS client''',
       'tags': [],
-      'desc': '''Controls whether the built-in DNS client is used in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      'desc': '''This policy controls which software stack is used to communicate with the DNS server: the Operating System DNS client, or <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s built-in DNS client. This policy does not affect which DNS servers are used: if, for example, the operating system is configured to use an enterprise DNS server, that same server would be used by the built-in DNS client. It also does not control if DNS-over-HTTPS is used; <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will always use the built-in resolver for DNS-over-HTTPS requests. Please see the <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME">DnsOverHttpsMode</ph> policy for information on controlling DNS-over-HTTPS.
 
-      This does not affect which DNS servers are used; just the software stack which is used to communicate with them. For example if the operating system is configured to use an enterprise DNS server, that same server would be used by the built-in DNS client. It is however possible that the built-in DNS client will address servers in different ways by using more modern DNS-related protocols such as DNS-over-TLS.
+      If this policy is set to Enabled, the built-in DNS client will be used, if available.
 
-      This policy has no effect on DNS-over-HTTPS. Please see the <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME">DnsOverHttpsMode</ph> policy to change that behavior.
+      If this policy is set to Disabled, the built-in DNS client will only be used when DNS-over-HTTPS is in use.
 
-      If this policy is set to true, the built-in DNS client will be used, if available.
-
-      If this policy is set to false, the built-in DNS client will never be used.
-
-      If this policy is left not set, the built-in DNS client will be enabled by default on macOS, Android (when neither Private DNS nor VPN are enabled) and ChromeOS, and the users will be able to change whether the built-in DNS client is used by editing chrome://flags or specifying a command-line flag.''',
+      If this policy is left unset, the built-in DNS client will be enabled by default on <ph name="MAC_OS_NAME">macOS</ph>, <ph name="ANDROID_NAME">Android</ph> (when neither Private DNS nor VPN are enabled) and <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
     },
     {
       'name': 'DnsOverHttpsMode',
