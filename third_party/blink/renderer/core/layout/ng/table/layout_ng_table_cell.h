@@ -89,6 +89,8 @@ class CORE_EXPORT LayoutNGTableCell
 
   LayoutBlock* StickyContainer() const override;
 
+  void InvalidatePaint(const PaintInvalidatorContext&) const override;
+
   // LayoutBlockFlow methods end.
 
   // LayoutNGTableCellInterface methods start.

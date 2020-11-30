@@ -136,6 +136,8 @@ blink_core_sources_paint = [
   "ng/ng_paint_fragment.h",
   "ng/ng_paint_fragment_traversal.cc",
   "ng/ng_paint_fragment_traversal.h",
+  "ng/ng_table_cell_paint_invalidator.cc",
+  "ng/ng_table_cell_paint_invalidator.h",
   "ng/ng_table_painters.cc",
   "ng/ng_table_painters.h",
   "ng/ng_text_fragment_painter.cc",

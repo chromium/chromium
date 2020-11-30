@@ -46,6 +46,11 @@ wtf_size_t LayoutNGTable::ColumnCount() const {
   return cached_layout_result->TableColumnCount();
 }
 
+bool LayoutNGTable::HasCollapsedBorders() const {
+  NOT_DESTROYED();
+  return cached_table_borders_ && cached_table_borders_->IsCollapsed();
+}
+
 void LayoutNGTable::SetCachedTableBorders(
     scoped_refptr<const NGTableBorders> table_borders) {
   NOT_DESTROYED();
@@ -77,14 +82,33 @@ void LayoutNGTable::SetCachedTableColumnConstraints(
 void LayoutNGTable::GridBordersChanged() {
   NOT_DESTROYED();
   InvalidateCachedTableBorders();
-  // If borders change, table fragment must be regenerated.
-  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse)
+  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
+    SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+        PaintInvalidationReason::kStyle);
+    // If borders change, table fragment must be regenerated.
     SetNeedsLayout(layout_invalidation_reason::kTableChanged);
+  }
 }
 
 void LayoutNGTable::TableGridStructureChanged() {
   NOT_DESTROYED();
   InvalidateCachedTableBorders();
+}
+
+bool LayoutNGTable::HasBackgroundForPaint() const {
+  NOT_DESTROYED();
+  if (StyleRef().HasBackground())
+    return true;
+  DCHECK_GT(PhysicalFragmentCount(), 0u);
+  const NGTableFragmentData::ColumnGeometries* column_geometries =
+      GetPhysicalFragment(0)->TableColumnGeometries();
+  if (column_geometries) {
+    for (const auto& column_geometry : *column_geometries) {
+      if (column_geometry.node.Style().HasBackground())
+        return true;
+    }
+  }
+  return false;
 }
 
 void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {

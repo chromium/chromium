@@ -66,6 +66,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   // might have changed.
   void TableGridStructureChanged();
 
+  // Table paints column backgrounds.
+  // Returns true if table, or columns' style.HasBackground().
+  bool HasBackgroundForPaint() const;
+
   // LayoutBlock methods start.
 
   const char* GetName() const override {
@@ -147,11 +151,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
-  // Used in table painting for invalidation. Should not be needed by NG.
-  bool HasCollapsedBorders() const final {
-    NOTREACHED();
-    return false;
-  }
+  bool HasCollapsedBorders() const final;
 
   bool HasColElements() const final {
     NOTREACHED();

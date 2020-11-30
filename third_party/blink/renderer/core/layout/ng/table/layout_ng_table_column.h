@@ -57,6 +57,10 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 
+  void InsertedIntoTree() override;
+
+  void WillBeRemovedFromTree() override;
+
   bool VisualRectRespectsVisibility() const final {
     NOT_DESTROYED();
     return false;

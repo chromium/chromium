@@ -49,6 +49,26 @@ void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   }
 }
 
+void LayoutNGTableColumn::InsertedIntoTree() {
+  NOT_DESTROYED();
+  LayoutBox::InsertedIntoTree();
+  DCHECK(Table());
+  if (StyleRef().HasBackground()) {
+    Table()->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+        PaintInvalidationReason::kBackground);
+  }
+}
+
+void LayoutNGTableColumn::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  LayoutBox::WillBeRemovedFromTree();
+  DCHECK(Table());
+  if (StyleRef().HasBackground()) {
+    Table()->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+        PaintInvalidationReason::kBackground);
+  }
+}
+
 bool LayoutNGTableColumn::IsChildAllowed(LayoutObject* child,
                                          const ComputedStyle& style) const {
   NOT_DESTROYED();

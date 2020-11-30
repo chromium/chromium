@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_table_cell_paint_invalidator.h"
 
 namespace blink {
 
@@ -137,6 +138,12 @@ LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
 LayoutBlock* LayoutNGTableCell::StickyContainer() const {
   NOT_DESTROYED();
   return Table();
+}
+
+void LayoutNGTableCell::InvalidatePaint(
+    const PaintInvalidatorContext& context) const {
+  NOT_DESTROYED();
+  NGTableCellPaintInvalidator(*this, context).InvalidatePaint();
 }
 
 bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
