@@ -141,11 +141,18 @@ body > header {
 
 .show-unset-checkbox,
 .search-field-container {
+  flex: 0 1 200px;
   margin-inline-start: auto;
 }
 
-.search-field-container {
-  flex: 0 1 200px;
+.show-unset-checkbox > label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.show-unset-checkbox > label > input {
+  margin: 0;
 }
 
 .no-policy:not([hidden]) {
