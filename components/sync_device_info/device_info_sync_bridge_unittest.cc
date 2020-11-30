@@ -42,6 +42,7 @@ using sync_pb::ModelTypeState;
 using testing::_;
 using testing::AllOf;
 using testing::IsEmpty;
+using testing::IsNull;
 using testing::Matcher;
 using testing::NotNull;
 using testing::Pair;
@@ -1310,6 +1311,110 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldNotifyWhenDeviceInfoIsSynced) {
   EXPECT_CALL(callback, Run());
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityChangeList());
+}
+
+// This test mimics the case when OnSyncStarting is called before the metadata
+// is loaded from the storage.
+TEST_F(DeviceInfoSyncBridgeTest,
+       ShouldCleanUpMetadataOnInvalidCacheGuidAfterReadMetadata) {
+  const std::string kInvalidCacheGuid = "invalid_cache_guid";
+
+  DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
+  specifics.set_cache_guid(kInvalidCacheGuid);
+
+  ModelTypeState model_type_state = StateWithEncryption("ekn");
+  model_type_state.set_cache_guid(kInvalidCacheGuid);
+
+  WriteToStoreWithMetadata({specifics}, model_type_state);
+
+  InitializeBridge();
+  ASSERT_FALSE(
+      bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
+  ASSERT_FALSE(bridge()->IsRecentLocalCacheGuid(kInvalidCacheGuid));
+
+  EXPECT_CALL(*processor(), IsTrackingMetadata).WillRepeatedly(Return(false));
+  bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
+
+  EXPECT_TRUE(
+      bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
+  EXPECT_FALSE(bridge()->IsRecentLocalCacheGuid(kInvalidCacheGuid));
+  EXPECT_THAT(bridge()->GetLocalDeviceInfoProvider()->GetLocalDeviceInfo(),
+              IsNull());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*processor(), ModelReadyToSync)
+      .WillOnce([this, &run_loop](std::unique_ptr<MetadataBatch> batch) {
+        // Mimic CTBMTP behaviour on invalid cache GUID.
+        std::unique_ptr<MetadataChangeList> change_list =
+            bridge()->CreateMetadataChangeList();
+        change_list->ClearMetadata(CacheGuidForSuffix(kLocalSuffix));
+        change_list->ClearModelTypeState();
+        bridge()->ApplyStopSyncChanges(std::move(change_list));
+
+        bridge()->OnSyncStarting(
+            TestDataTypeActivationRequest(SyncMode::kFull));
+
+        run_loop.Quit();
+      });
+  run_loop.Run();
+
+  EXPECT_TRUE(
+      bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
+  EXPECT_FALSE(bridge()->IsRecentLocalCacheGuid(kInvalidCacheGuid));
+  EXPECT_THAT(bridge()->GetLocalDeviceInfoProvider()->GetLocalDeviceInfo(),
+              IsNull());
+}
+
+// This test mimics the opposite case when OnSyncStarting is called after the
+// metadata is loaded from the storage.
+TEST_F(DeviceInfoSyncBridgeTest,
+       ShouldCleanUpMetadataOnInvalidCacheGuidAfterSyncStarting) {
+  const std::string kInvalidCacheGuid = "invalid_cache_guid";
+
+  DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
+  specifics.set_cache_guid(kInvalidCacheGuid);
+
+  ModelTypeState model_type_state = StateWithEncryption("ekn");
+  model_type_state.set_cache_guid(kInvalidCacheGuid);
+
+  WriteToStoreWithMetadata({specifics}, model_type_state);
+  InitializeBridge();
+  ASSERT_FALSE(
+      bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
+  ASSERT_FALSE(bridge()->IsRecentLocalCacheGuid(kInvalidCacheGuid));
+
+  // Wait until the metadata is loaded.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*processor(), IsTrackingMetadata).WillOnce(Return(true));
+  EXPECT_CALL(*processor(), ModelReadyToSync)
+      .WillOnce([&run_loop](std::unique_ptr<MetadataBatch> batch) {
+        run_loop.Quit();
+      });
+  run_loop.Run();
+
+  EXPECT_FALSE(
+      bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
+  EXPECT_TRUE(bridge()->IsRecentLocalCacheGuid(kInvalidCacheGuid));
+  EXPECT_THAT(bridge()->GetLocalDeviceInfoProvider()->GetLocalDeviceInfo(),
+              NotNull());
+
+  // Mimic CTBMTP behaviour on invalid cache GUID.
+  EXPECT_CALL(*processor(), IsTrackingMetadata).WillRepeatedly(Return(false));
+  bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
+
+  std::unique_ptr<MetadataChangeList> change_list =
+      bridge()->CreateMetadataChangeList();
+  change_list->ClearMetadata(CacheGuidForSuffix(kLocalSuffix));
+  change_list->ClearModelTypeState();
+  bridge()->ApplyStopSyncChanges(std::move(change_list));
+
+  bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
+
+  // Check that the cache GUID is in recent devices.
+  EXPECT_TRUE(
+      bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
+  EXPECT_THAT(bridge()->GetLocalDeviceInfoProvider()->GetLocalDeviceInfo(),
+              IsNull());
 }
 
 }  // namespace

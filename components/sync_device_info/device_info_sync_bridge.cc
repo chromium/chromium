@@ -558,7 +558,8 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   // dropped. In that case, MergeSyncData() will eventually follow.
   if (!change_processor()->IsTrackingMetadata()) {
     // In this scenario, ApplyStopSyncChanges() should have been exercised.
-    DCHECK(local_cache_guid_.empty());
+    // However OnSyncStarting() must have been called during ModelReadyToSync().
+    DCHECK(!local_cache_guid_.empty());
     DCHECK(all_data_.empty());
     return;
   }
