@@ -214,6 +214,9 @@ class NetworkHandler : public DevToolsDomainHandler,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
       const base::Optional<std::string>& response_headers_text);
+  void OnTrustTokenOperationDone(
+      const std::string& devtools_request_id,
+      const network::mojom::TrustTokenOperationResult& result);
 
   bool enabled() const { return enabled_; }
 

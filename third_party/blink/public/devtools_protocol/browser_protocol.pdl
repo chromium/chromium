@@ -5553,6 +5553,36 @@ domain Network
       # available, such as in the case of HTTP/2 or QUIC.
       optional string headersText
 
+  # Fired exactly once for each Trust Token operation. Depending on
+  # the type of the operation and whether the operation succeeded or
+  # failed, the event is fired before the corresponding request was sent
+  # or after the response was received.
+  experimental event trustTokenOperationDone
+    parameters
+      # Detailed success or error status of the operation.
+      # 'AlreadyExists' also signifies a successful operation, as the result
+      # of the operation already exists und thus, the operation was abort
+      # preemptively (e.g. a cache hit).
+      enum status
+        Ok
+        InvalidArgument
+        FailedPrecondition
+        ResourceExhausted
+        AlreadyExists
+        Unavailable
+        BadResponse
+        InternalError
+        UnknownError
+        FulfilledLocally
+      TrustTokenOperationType type
+      RequestId requestId
+      # Top level origin. The context in which the operation was attempted.
+      optional string topLevelOrigin
+      # Origin of the issuer in case of a "Issuance" or "Redemption" operation.
+      optional string issuerOrigin
+      # The number of obtained Trust Tokens on a successful "Issuance" operation.
+      optional integer issuedTokenCount
+
   experimental type CrossOriginOpenerPolicyValue extends string
     enum
       SameOrigin

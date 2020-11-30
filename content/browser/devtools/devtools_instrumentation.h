@@ -172,6 +172,11 @@ void OnCorsPreflightRequestCompleted(
     int32_t render_frame_id,
     const base::UnguessableToken& devtools_request_id,
     const network::URLLoaderCompletionStatus& status);
+void OnTrustTokenOperationDone(
+    int32_t process_id,
+    int32_t routing_id,
+    const std::string& devtools_request_id,
+    const network::mojom::TrustTokenOperationResultPtr result);
 
 std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
     NavigationHandle* navigation_handle);

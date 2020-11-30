@@ -2661,5 +2661,67 @@ void NetworkHandler::LoadNetworkResource(
   callback->sendFailure(Response::ServerError("Target not supported"));
 }
 
+namespace {
+
+String GetTrustTokenOperationStatus(
+    network::mojom::TrustTokenOperationStatus status) {
+  switch (status) {
+    case network::mojom::TrustTokenOperationStatus::kOk:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::Ok;
+    case network::mojom::TrustTokenOperationStatus::kInvalidArgument:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          InvalidArgument;
+    case network::mojom::TrustTokenOperationStatus::kFailedPrecondition:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          FailedPrecondition;
+    case network::mojom::TrustTokenOperationStatus::kResourceExhausted:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          ResourceExhausted;
+    case network::mojom::TrustTokenOperationStatus::kAlreadyExists:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          AlreadyExists;
+    case network::mojom::TrustTokenOperationStatus::kUnavailable:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          Unavailable;
+    case network::mojom::TrustTokenOperationStatus::kBadResponse:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          BadResponse;
+    case network::mojom::TrustTokenOperationStatus::kInternalError:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          InternalError;
+    case network::mojom::TrustTokenOperationStatus::kUnknownError:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          UnknownError;
+    case network::mojom::TrustTokenOperationStatus::
+        kOperationSuccessfullyFulfilledLocally:
+      return protocol::Network::TrustTokenOperationDone::StatusEnum::
+          FulfilledLocally;
+  }
+}
+
+}  // namespace
+
+void NetworkHandler::OnTrustTokenOperationDone(
+    const std::string& devtools_request_id,
+    const network::mojom::TrustTokenOperationResult& result) {
+  if (!enabled_)
+    return;
+
+  Maybe<String> top_level_origin;
+  if (result.top_level_origin) {
+    top_level_origin = result.top_level_origin->Serialize();
+  }
+  Maybe<String> issuer;
+  if (result.issuer) {
+    issuer = result.issuer->Serialize();
+  }
+
+  frontend()->TrustTokenOperationDone(
+      GetTrustTokenOperationStatus(result.status),
+      GetTrustTokenOperationType(result.type), devtools_request_id,
+      std::move(top_level_origin), std::move(issuer),
+      result.issued_token_count);
+}
+
 }  // namespace protocol
 }  // namespace content

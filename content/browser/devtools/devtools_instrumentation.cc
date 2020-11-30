@@ -761,6 +761,24 @@ void OnCorsPreflightRequestCompleted(
                    protocol::Network::ResourceTypeEnum::Preflight, status);
 }
 
+void OnTrustTokenOperationDone(
+    int32_t process_id,
+    int32_t routing_id,
+    const std::string& devtools_request_id,
+    const network::mojom::TrustTokenOperationResultPtr result) {
+  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
+  if (ftn) {
+    DispatchToAgents(ftn, &protocol::NetworkHandler::OnTrustTokenOperationDone,
+                     devtools_request_id, *result);
+    return;
+  }
+
+  // See comment on DispatchToWorkerAgents in OnRequestWillBeSentExtraInfo.
+  DispatchToWorkerAgents(process_id, routing_id,
+                         &protocol::NetworkHandler::OnTrustTokenOperationDone,
+                         devtools_request_id, *result);
+}
+
 namespace {
 std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
     net::CookieInclusionStatus status) {

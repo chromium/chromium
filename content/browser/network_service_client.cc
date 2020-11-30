@@ -267,8 +267,8 @@ void NetworkServiceClient::OnTrustTokenOperationDone(
     int32_t routing_id,
     const std::string& devtools_request_id,
     network::mojom::TrustTokenOperationResultPtr result) {
-  // TODO(crbug.com/1126824): Implement by forwarding to a
-  //                          devtools_instrumentation method.
+  devtools_instrumentation::OnTrustTokenOperationDone(
+      process_id, routing_id, devtools_request_id, std::move(result));
 }
 
 }  // namespace content
