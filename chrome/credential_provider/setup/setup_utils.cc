@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include "base/files/file_util.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/common/chrome_version.h"
@@ -29,11 +31,42 @@ const char kUninstall[] = "uninstall";
 const char kEnableStats[] = "enable-stats";
 const char kDisableStats[] = "disable-stats";
 
+const char kInstallerData[] = "installerdata";
+
 const char kStandaloneInstall[] = "standalone";
 }  // namespace switches
 
+namespace {
+
+// Path to the msi json value inside the dictionary which is parsed from
+// installer data argument in the command line.
+const char kMsiJsonPath[] = "distribution.msi";
+
+// The registry name which is saved to indicate installation source.
+const wchar_t kMsiInstall[] = L"msi";
+
+// Parses the json data and returns it as a dictionary. If the json data isn't
+// valid, returns nullptr.
+base::DictionaryValue* ParseDistributionPreferences(
+    const std::string& json_data) {
+  JSONStringValueDeserializer json(json_data);
+  std::string error;
+  std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
+  if (!root.get()) {
+    LOGFN(WARNING) << "Failed to parse initial prefs file: " << error;
+    return nullptr;
+  }
+  if (!root->is_dict()) {
+    LOGFN(WARNING) << "Failed to parse installer data file";
+    return nullptr;
+  }
+  return static_cast<base::DictionaryValue*>(root.release());
+}
+
+}  // namespace
+
 StandaloneInstallerConfigurator::StandaloneInstallerConfigurator()
-    : is_standalone_installation_(false) {}
+    : is_msi_installation_(false) {}
 
 StandaloneInstallerConfigurator::~StandaloneInstallerConfigurator() {}
 
@@ -51,21 +84,43 @@ StandaloneInstallerConfigurator* StandaloneInstallerConfigurator::Get() {
   return *GetInstanceStorage();
 }
 
-// Sets the installer source for GCPW. When installed through standalone
-// installer, |kStandaloneInstall| switch is present in the commandline
-// arguments.
+// Sets the installer source for GCPW. When installed through MSI,
+// contains installer data file name as argument.
 void StandaloneInstallerConfigurator::ConfigureInstallationType(
     const base::CommandLine& cmdline) {
-  base::string16 standalone_install16 =
-      base::UTF8ToUTF16(switches::kStandaloneInstall);
+  // There are following scenarios for installations:
+  // First time install from MSI
+  // First time install from EXE
+  // MSIs before this kMsiInstall registry gets auto-updated
+  // MSIs with kMsiInstall registry gets auto-updated
+  // EXEs with kMsiInstall registry gets auto-updated
+
+  // |kStandaloneInstall| indicates fresh installation.
   if (cmdline.HasSwitch(switches::kStandaloneInstall)) {
-    is_standalone_installation_ = true;
-    HRESULT hr = SetUpdaterClientsAppPathFlag(standalone_install16, 1);
-    if (FAILED(hr))
-      LOGFN(ERROR) << "SetGlobalFlag failed" << putHR(hr);
-  } else if (GetUpdaterClientsAppPathFlagOrDefault(standalone_install16, 0)) {
-    is_standalone_installation_ = true;
+    base::Value* is_msi = nullptr;
+    if (cmdline.HasSwitch(switches::kInstallerData)) {
+      base::FilePath prefs_path(
+          cmdline.GetSwitchValuePath(switches::kInstallerData));
+
+      if (InitializeFromInstallerData(prefs_path))
+        is_msi = installer_data_dictionary_->FindPath(kMsiJsonPath);
+    }
+
+    is_msi_installation_ = false;
+    if (is_msi && is_msi->is_bool() && is_msi->GetBool()) {
+      is_msi_installation_ = true;
+    }
+  } else {
+    // Honor the registry if it is found, otherwise fall back to MSI
+    // installation.
+    is_msi_installation_ =
+        GetUpdaterClientsAppPathFlagOrDefault(kMsiInstall, 1);
   }
+
+  HRESULT hr =
+      SetUpdaterClientsAppPathFlag(kMsiInstall, is_msi_installation_ ? 1 : 0);
+  if (FAILED(hr))
+    LOGFN(ERROR) << "SetGlobalFlag failed" << putHR(hr);
 }
 
 base::string16 StandaloneInstallerConfigurator::GetCurrentDate() {
@@ -84,14 +139,14 @@ base::string16 StandaloneInstallerConfigurator::GetCurrentDate() {
 }
 
 bool StandaloneInstallerConfigurator::IsStandaloneInstallation() const {
-  return is_standalone_installation_;
+  return !is_msi_installation_;
 }
 
 HRESULT StandaloneInstallerConfigurator::AddUninstallKey(
     const base::FilePath& install_path) {
   LOGFN(VERBOSE);
 
-  if (!is_standalone_installation_)
+  if (is_msi_installation_)
     return S_OK;
 
   std::wstring uninstall_reg = kRegUninstall;
@@ -240,6 +295,30 @@ HRESULT StandaloneInstallerConfigurator::RemoveUninstallKey() {
     return hr;
   }
   return S_OK;
+}
+
+bool StandaloneInstallerConfigurator::InitializeFromInstallerData(
+    base::FilePath prefs_path) {
+  std::string json_data;
+  if (base::PathExists(prefs_path) &&
+      !base::ReadFileToString(prefs_path, &json_data)) {
+    LOGFN(ERROR) << "Failed to read preferences from " << prefs_path.value();
+    return false;
+  }
+
+  if (json_data.empty()) {
+    LOGFN(WARNING) << "Installer data is empty!";
+    return false;
+  }
+
+  installer_data_dictionary_.reset(ParseDistributionPreferences(json_data));
+
+  if (!installer_data_dictionary_) {
+    LOGFN(WARNING) << "Installer data is empty!";
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace credential_provider

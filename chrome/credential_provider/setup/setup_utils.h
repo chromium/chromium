@@ -11,6 +11,11 @@
 #include "base/files/file.h"
 #include "base/win/windows_types.h"
 
+namespace base {
+class DictionaryValue;
+class FilePath;
+}  // namespace base
+
 namespace credential_provider {
 
 namespace switches {
@@ -36,7 +41,11 @@ extern const char kUninstall[];
 extern const char kEnableStats[];
 extern const char kDisableStats[];
 
+// Switch that indicates the fresh installation.
 extern const char kStandaloneInstall[];
+
+// Dynamic install parameter switch which is only set for MSIs.
+extern const char kInstallerData[];
 
 }  // namespace switches
 
@@ -63,10 +72,17 @@ class StandaloneInstallerConfigurator {
 
   base::string16 GetCurrentDate();
 
-  bool is_standalone_installation_;
-};
+  // Parse the provided installer data argument and load into
+  // |installer_data_dictionary_|.
+  bool InitializeFromInstallerData(base::FilePath prefs_path);
 
-bool IsStandaloneInstallation(const base::CommandLine& command_line);
+  // Indicates that GCPW installation source is MSI.
+  bool is_msi_installation_;
+
+  // Dictionary is parsed from the installer data argument which is set only for
+  // MSIs.
+  std::unique_ptr<base::DictionaryValue> installer_data_dictionary_;
+};
 
 }  // namespace credential_provider
 
