@@ -684,8 +684,9 @@ void FuchsiaVideoDecoder::SendInputPacket(
 
   DCHECK(in_flight_input_packets_.find(packet.buffer_index()) ==
          in_flight_input_packets_.end());
+  const size_t buffer_index = packet.buffer_index();
   in_flight_input_packets_.insert_or_assign(
-      packet.buffer_index(), InputDecoderPacket{std::move(packet)});
+      buffer_index, InputDecoderPacket{std::move(packet)});
 }
 
 void FuchsiaVideoDecoder::ProcessEndOfStream() {
