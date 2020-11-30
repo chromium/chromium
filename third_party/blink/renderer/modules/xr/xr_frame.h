@@ -26,6 +26,7 @@ class XRImageTrackingResult;
 class XRInputSource;
 class XRLightEstimate;
 class XRLightProbe;
+class XRPlaneSet;
 class XRPose;
 class XRReferenceSpace;
 class XRRigidTransform;
@@ -35,24 +36,23 @@ class XRTransientInputHitTestResult;
 class XRTransientInputHitTestSource;
 class XRView;
 class XRViewerPose;
-class XRWorldInformation;
 
 class XRFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRFrame(XRSession* session, XRWorldInformation* world_information);
+  explicit XRFrame(XRSession* session);
 
   XRSession* session() const { return session_; }
 
   XRViewerPose* getViewerPose(XRReferenceSpace*, ExceptionState&);
   XRPose* getPose(XRSpace*, XRSpace*, ExceptionState&);
-  XRWorldInformation* worldInformation() const { return world_information_; }
   XRAnchorSet* trackedAnchors() const;
   XRLightEstimate* getLightEstimate(XRLightProbe*, ExceptionState&) const;
   XRDepthInformation* getDepthInformation(
       XRView* view,
       ExceptionState& exception_state) const;
+  XRPlaneSet* detectedPlanes(ExceptionState& exception_state) const;
 
   void Trace(Visitor*) const override;
 
@@ -96,8 +96,6 @@ class XRFrame final : public ScriptWrappable {
       const blink::TransformationMatrix& native_origin_from_anchor,
       XRSpace* space,
       ExceptionState& exception_state);
-
-  Member<XRWorldInformation> world_information_;
 
   const Member<XRSession> session_;
 

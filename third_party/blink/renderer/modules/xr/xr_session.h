@@ -48,6 +48,8 @@ class XRHitTestOptionsInit;
 class XRHitTestSource;
 class XRImageTrackingResult;
 class XRLightProbe;
+class XRPlaneSet;
+class XRPlaneManager;
 class XRReferenceSpace;
 class XRRenderState;
 class XRRenderStateInit;
@@ -58,8 +60,6 @@ class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
 class XRWebGLLayer;
-class XRWorldInformation;
-class XRWorldTrackingState;
 
 using XRSessionFeatureSet = HashSet<device::mojom::XRSessionFeature>;
 
@@ -80,6 +80,8 @@ class XRSession final
   static constexpr char kNoSpaceSpecified[] = "No XRSpace specified.";
   static constexpr char kAnchorsFeatureNotSupported[] =
       "Anchors feature is not supported by the session.";
+  static constexpr char kPlanesFeatureNotSupported[] =
+      "Plane detection feature is not supported by the session.";
 
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
   // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from
@@ -122,7 +124,6 @@ class XRSession final
   XRDOMOverlayState* domOverlayState() const { return dom_overlay_state_; }
   const String visibilityState() const;
   XRRenderState* renderState() const { return render_state_; }
-  XRWorldTrackingState* worldTrackingState() { return world_tracking_state_; }
 
   // ARCore by default returns textures in RGBA half-float HDR format and no
   // other runtimes support reflection mapping, so just return this until we
@@ -337,6 +338,8 @@ class XRSession final
 
   XRDepthInformation* GetDepthInformation() const;
 
+  XRPlaneSet* GetDetectedPlanes() const;
+
   // Creates presentation frame based on current state of the session.
   // State currently used in XRFrame creation is mojo_from_viewer_ and
   // world_information_. The created XRFrame also stores a reference to this
@@ -430,6 +433,10 @@ class XRSession final
       const device::mojom::blink::XRAnchorsData* tracked_anchors_data,
       double timestamp);
 
+  void ProcessPlaneInformation(
+      const device::mojom::blink::XRPlaneDetectionData* detected_planes_data,
+      double timestamp);
+
   void CleanUpUnusedHitTestSources();
 
   void ProcessHitTestData(
@@ -458,8 +465,7 @@ class XRSession final
   XRVisibilityState visibility_state_ = XRVisibilityState::VISIBLE;
   String visibility_state_string_;
   Member<XRRenderState> render_state_;
-  Member<XRWorldTrackingState> world_tracking_state_;
-  Member<XRWorldInformation> world_information_;
+
   Member<XRLightProbe> world_light_probe_;
   HeapVector<Member<XRRenderStateInit>> pending_render_state_;
 
@@ -533,6 +539,8 @@ class XRSession final
   // maps and notify the device about hit test sources that are no longer alive.
   HashSet<uint64_t> hit_test_source_ids_;
   HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
+
+  Member<XRPlaneManager> plane_manager_;
 
   uint32_t view_parameters_id_ = 0;
   HeapVector<Member<XRViewData>> views_;

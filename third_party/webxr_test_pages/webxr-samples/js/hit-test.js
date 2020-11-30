@@ -179,7 +179,7 @@ function hitTestPlane(frame, ray, plane, frameOfReference) {
 
 // multiple planes hit test
 export function hitTest(frame, ray, frameOfReference) {
-  const planes = frame.worldInformation.detectedPlanes;
+  const planes = frame.detectedPlanes;
 
   let hit_test_results = [];
   planes.forEach(plane => {

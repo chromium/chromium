@@ -1,39 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/xr/xr_world_information.h"
+#include "third_party/blink/renderer/modules/xr/xr_plane_manager.h"
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_plane.h"
+#include "third_party/blink/renderer/modules/xr/xr_plane_set.h"
 
 namespace blink {
 
-XRWorldInformation::XRWorldInformation(XRSession* session)
+XRPlaneManager::XRPlaneManager(base::PassKey<XRSession> pass_key,
+                               XRSession* session)
     : session_(session) {}
 
-void XRWorldInformation::Trace(Visitor* visitor) const {
-  visitor->Trace(plane_ids_to_planes_);
-  visitor->Trace(session_);
-  ScriptWrappable::Trace(visitor);
-}
-
-XRPlaneSet* XRWorldInformation::detectedPlanes() const {
-  DVLOG(3) << __func__;
-
-  HeapHashSet<Member<XRPlane>> result;
-
-  if (is_detected_planes_null_)
-    return nullptr;
-
-  for (auto& plane_id_and_plane : plane_ids_to_planes_) {
-    result.insert(plane_id_and_plane.value);
-  }
-
-  return MakeGarbageCollected<XRPlaneSet>(result);
-}
-
-void XRWorldInformation::ProcessPlaneInformation(
+void XRPlaneManager::ProcessPlaneInformation(
     const device::mojom::blink::XRPlaneDetectionData* detected_planes_data,
     double timestamp) {
   TRACE_EVENT0("xr", __FUNCTION__);
@@ -79,11 +60,10 @@ void XRWorldInformation::ProcessPlaneInformation(
 
   // Then, copy over the planes that were not updated but are still present.
   for (const auto& plane_id : detected_planes_data->all_planes_ids) {
-    auto it_updated = updated_planes.find(plane_id);
-
     // If the plane was already updated, there is nothing to do as it was
-    // already moved to |updated_planes|. Otherwise just copy it over as-is.
-    if (it_updated == updated_planes.end()) {
+    // already moved to |updated_planes|. If it's not updated, just copy it over
+    // as-is.
+    if (!base::Contains(updated_planes, plane_id)) {
       auto it = plane_ids_to_planes_.find(plane_id);
       DCHECK(it != plane_ids_to_planes_.end());
       updated_planes.insert(plane_id, it->value);
@@ -91,6 +71,23 @@ void XRWorldInformation::ProcessPlaneInformation(
   }
 
   plane_ids_to_planes_.swap(updated_planes);
+}
+
+XRPlaneSet* XRPlaneManager::GetDetectedPlanes() const {
+  if (is_detected_planes_null_)
+    return nullptr;
+
+  HeapHashSet<Member<XRPlane>> result;
+  for (auto& plane_id_and_plane : plane_ids_to_planes_) {
+    result.insert(plane_id_and_plane.value);
+  }
+
+  return MakeGarbageCollected<XRPlaneSet>(result);
+}
+
+void XRPlaneManager::Trace(Visitor* visitor) const {
+  visitor->Trace(session_);
+  visitor->Trace(plane_ids_to_planes_);
 }
 
 }  // namespace blink

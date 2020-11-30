@@ -56,8 +56,8 @@ blink_modules_sources("xr") {
     "xr_object_space.h",
     "xr_plane.cc",
     "xr_plane.h",
-    "xr_plane_detection_state.cc",
-    "xr_plane_detection_state.h",
+    "xr_plane_manager.cc",
+    "xr_plane_manager.h",
     "xr_plane_set.cc",
     "xr_plane_set.h",
     "xr_pose.cc",
@@ -101,10 +101,6 @@ blink_modules_sources("xr") {
     "xr_webgl_layer.cc",
     "xr_webgl_layer.h",
     "xr_webgl_rendering_context.h",
-    "xr_world_information.cc",
-    "xr_world_information.h",
-    "xr_world_tracking_state.cc",
-    "xr_world_tracking_state.h",
   ]
 
   deps = [

@@ -10,10 +10,6 @@
 ] interface XRFrame {
   [SameObject] readonly attribute XRSession session;
 
-  // More details about the real-world understanding APIs can be found here:
-  // https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
-  [RuntimeEnabled=WebXRPlaneDetection] readonly attribute XRWorldInformation worldInformation;
-
   [RuntimeEnabled=WebXRAnchors]
   readonly attribute XRAnchorSet trackedAnchors;
   [RuntimeEnabled=WebXRAnchors, CallWith=ScriptState, RaisesException, MeasureAs=XRFrameCreateAnchor]
@@ -35,4 +31,9 @@
 
   [RuntimeEnabled=WebXRImageTracking, RaisesException]
   FrozenArray<XRImageTrackingResult> getImageTrackingResults();
+
+  // More details about the real-world understanding APIs can be found here:
+  // https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
+  [RuntimeEnabled=WebXRPlaneDetection, RaisesException]
+  readonly attribute XRPlaneSet? detectedPlanes;
 };

@@ -20,7 +20,6 @@ modules_idl_files = [
   "xr_light_estimate.idl",
   "xr_light_probe.idl",
   "xr_plane.idl",
-  "xr_plane_detection_state.idl",
   "xr_plane_set.idl",
   "xr_pose.idl",
   "xr_ray.idl",
@@ -41,8 +40,6 @@ modules_idl_files = [
   "xr_viewport.idl",
   "xr_webgl_binding.idl",
   "xr_webgl_layer.idl",
-  "xr_world_information.idl",
-  "xr_world_tracking_state.idl",
 ]
 
 modules_callback_function_idl_files = [ "xr_frame_request_callback.idl" ]

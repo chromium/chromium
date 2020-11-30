@@ -10446,9 +10446,9 @@ interface XRDepthInformation
     method getDepth
 interface XRFrame
     attribute @@toStringTag
+    getter detectedPlanes
     getter session
     getter trackedAnchors
-    getter worldInformation
     method constructor
     method createAnchor
     method getDepthInformation
@@ -10526,10 +10526,6 @@ interface XRPlane
     getter polygon
     method constructor
     method createAnchor
-interface XRPlaneDetectionState
-    attribute @@toStringTag
-    getter enabled
-    method constructor
 interface XRPlaneSet
     attribute @@toStringTag
     getter size
@@ -10594,7 +10590,6 @@ interface XRSession : EventTarget
     getter preferredReflectionFormat
     getter renderState
     getter visibilityState
-    getter worldTrackingState
     method cancelAnimationFrame
     method constructor
     method end
@@ -10674,14 +10669,6 @@ interface XRWebGLLayer : XRLayer
     getter ignoreDepthValues
     method constructor
     method getViewport
-interface XRWorldInformation
-    attribute @@toStringTag
-    getter detectedPlanes
-    method constructor
-interface XRWorldTrackingState
-    attribute @@toStringTag
-    getter planeDetectionState
-    method constructor
 interface XSLTProcessor
     attribute @@toStringTag
     method clearParameters

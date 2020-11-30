@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
@@ -40,7 +41,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_input_source_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_sources_change_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
-#include "third_party/blink/renderer/modules/xr/xr_plane.h"
+#include "third_party/blink/renderer/modules/xr/xr_plane_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_ray.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
@@ -51,8 +52,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-#include "third_party/blink/renderer/modules/xr/xr_world_information.h"
-#include "third_party/blink/renderer/modules/xr/xr_world_tracking_state.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
@@ -241,6 +240,7 @@ constexpr char XRSession::kNoRigidTransformSpecified[];
 constexpr char XRSession::kUnableToRetrieveMatrix[];
 constexpr char XRSession::kNoSpaceSpecified[];
 constexpr char XRSession::kAnchorsFeatureNotSupported[];
+constexpr char XRSession::kPlanesFeatureNotSupported[];
 
 class XRSession::XRSessionResizeObserverDelegate final
     : public ResizeObserver::Delegate {
@@ -322,8 +322,10 @@ XRSession::XRSession(
       mode_(mode),
       environment_integration_(
           mode == device::mojom::blink::XRSessionMode::kImmersiveAr),
-      world_information_(MakeGarbageCollected<XRWorldInformation>(this)),
       enabled_features_(std::move(enabled_features)),
+      plane_manager_(
+          MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
+                                               this)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       input_receiver_(this, xr->GetExecutionContext()),
@@ -346,9 +348,6 @@ XRSession::XRSession(
   default_framebuffer_scale_ = base::ClampToRange(
       device_config->default_framebuffer_scale, kMinDefaultFramebufferScale,
       kMaxDefaultFramebufferScale);
-
-  world_tracking_state_ = MakeGarbageCollected<XRWorldTrackingState>(
-      IsFeatureEnabled(device::mojom::XRSessionFeature::PLANE_DETECTION));
 
   DVLOG(2) << __func__
            << ": supports_viewport_scaling_=" << supports_viewport_scaling_;
@@ -1123,6 +1122,16 @@ void XRSession::ProcessAnchorsData(
       << " anchors that have not been updated";
 }
 
+void XRSession::ProcessPlaneInformation(
+    const device::mojom::blink::XRPlaneDetectionData* detected_planes_data,
+    double timestamp) {
+  plane_manager_->ProcessPlaneInformation(detected_planes_data, timestamp);
+}
+
+XRPlaneSet* XRSession::GetDetectedPlanes() const {
+  return plane_manager_->GetDetectedPlanes();
+}
+
 void XRSession::CleanUpUnusedHitTestSources() {
   auto unused_hit_test_source_ids = GetIdsOfUnusedHitTestSources(
       hit_test_source_ids_to_hit_test_sources_, hit_test_source_ids_);
@@ -1747,8 +1756,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     const device::mojom::blink::XRFrameDataPtr& frame_data) {
   // Update objects that might change on per-frame basis.
   if (frame_data) {
-    world_information_->ProcessPlaneInformation(
-        frame_data->detected_planes_data.get(), timestamp);
+    ProcessPlaneInformation(frame_data->detected_planes_data.get(), timestamp);
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
     ProcessHitTestData(frame_data->hit_test_subscription_results.get());
     ProcessDepthData(std::move(frame_data->depth_data));
@@ -1760,7 +1768,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
       world_light_probe_->ProcessLightEstimationData(light_data, timestamp);
     }
   } else {
-    world_information_->ProcessPlaneInformation(nullptr, timestamp);
+    ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
     ProcessDepthData(nullptr);
@@ -1936,8 +1944,7 @@ base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
 XRFrame* XRSession::CreatePresentationFrame() {
   DVLOG(2) << __func__;
 
-  XRFrame* presentation_frame =
-      MakeGarbageCollected<XRFrame>(this, world_information_);
+  XRFrame* presentation_frame = MakeGarbageCollected<XRFrame>(this);
   return presentation_frame;
 }
 
@@ -2287,8 +2294,6 @@ bool XRSession::HasPendingActivity() const {
 void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(xr_);
   visitor->Trace(render_state_);
-  visitor->Trace(world_tracking_state_);
-  visitor->Trace(world_information_);
   visitor->Trace(world_light_probe_);
   visitor->Trace(pending_render_state_);
   visitor->Trace(end_session_resolver_);
@@ -2303,6 +2308,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(create_anchor_promises_);
   visitor->Trace(request_hit_test_source_promises_);
   visitor->Trace(reference_spaces_);
+  visitor->Trace(plane_manager_);
   visitor->Trace(anchor_ids_to_anchors_);
   visitor->Trace(anchor_ids_to_pending_anchor_promises_);
   visitor->Trace(prev_base_layer_);

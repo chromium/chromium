@@ -365,7 +365,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                         new XRRigidTransform(arObject.hitPoint),
                         arObject.space);
         } else {
-          if(!event.frame.worldInformation.detectedPlanes) {
+          if(!event.frame.detectedPlanes) {
             console.log("No planes detected, placing an anchor at origin.");
             addARObjectAt(event.frame,
                           null,
@@ -374,7 +374,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             return;
           }
 
-          console.log("Detected some planes, length:", event.frame.worldInformation.detectedPlanes.length);
+          console.log("Detected some planes, length:", event.frame.detectedPlanes.length);
 
           // Otherwise we'll use the target ray from the input source that generated
           // this event to fire off a new hit test.
@@ -494,7 +494,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         let pose = frame.getViewerPose(xrRefSpace);
 
-        let detected_planes = frame.worldInformation.detectedPlanes;
+        let detected_planes = frame.detectedPlanes;
 
         // Check if any of the old planes is no longer present in detected planes set.
         // If it's no longer present, it was removed - clean up after.

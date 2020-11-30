@@ -2197,8 +2197,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_plane.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_plane.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_plane_detection_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_plane_detection_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_plane_set.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_plane_set.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_pose.cc",
@@ -2235,10 +2233,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_binding.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_world_information.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_world_information.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_world_tracking_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_world_tracking_state.h",
 ]
 
 generated_namespace_sources_in_modules = []
