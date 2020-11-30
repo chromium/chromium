@@ -46095,6 +46095,7 @@ from previous Chrome versions.
   <int value="13" label="Cryptohome missing from disk"/>
   <int value="14" label="Authentication disabled for user"/>
   <int value="15" label="TPM firmware update is required"/>
+  <int value="16" label="Cryptohome is corrupted"/>
 </enum>
 
 <enum name="LoginIsKnownUser">
@@ -46195,6 +46196,10 @@ from previous Chrome versions.
     User cancelled the password change prompt. Chrome OS has to continue to send
     the user through the online flow until user updates their cryptohome
     password or agrees to start the new cryptohome.
+  </int>
+  <int value="9" label="SamlPwdSyncTokenValidationFailed"/>
+  <int value="10" label="UnrecoverableCryptohome">
+    Cryptohome was corrupted and deemed unrecoverable.
   </int>
 </enum>
 

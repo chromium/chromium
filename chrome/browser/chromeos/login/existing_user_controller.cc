@@ -935,6 +935,15 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
     ForceOnlineLoginForAccountId(last_login_attempt_account_id_);
     RecordReauthReason(last_login_attempt_account_id_,
                        ReauthReason::MISSING_CRYPTOHOME);
+  } else if (is_known_user &&
+             failure.reason() == AuthFailure::UNRECOVERABLE_CRYPTOHOME) {
+    // TODO(chromium:1140868, dlunev): for now we route unrecoverable the same
+    // way as missing because it is removed under the hood in cryptohomed when
+    // the condition met. We should surface that up and deal with it on the
+    // chromium level, including making the decision user-driven.
+    ForceOnlineLoginForAccountId(last_login_attempt_account_id_);
+    RecordReauthReason(last_login_attempt_account_id_,
+                       ReauthReason::UNRECOVERABLE_CRYPTOHOME);
   } else {
     // Check networking after trying to login in case user is
     // cached locally or the local admin account.

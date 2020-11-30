@@ -133,6 +133,8 @@ const char* AuthStateToString(CryptohomeAuthenticator::AuthState state) {
       return "OFFLINE_NO_MOUNT";
     case CryptohomeAuthenticator::TPM_UPDATE_REQUIRED:
       return "TPM_UPDATE_REQUIRED";
+    case CryptohomeAuthenticator::OFFLINE_MOUNT_UNRECOVERABLE:
+      return "OFFLINE_MOUNT_UNRECOVERABLE";
   }
   return "UNKNOWN";
 }
@@ -996,6 +998,12 @@ void CryptohomeAuthenticator::Resolve() {
           base::BindOnce(&CryptohomeAuthenticator::OnAuthFailure, this,
                          AuthFailure(AuthFailure::TPM_UPDATE_REQUIRED)));
       break;
+    case OFFLINE_MOUNT_UNRECOVERABLE:
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CryptohomeAuthenticator::OnAuthFailure, this,
+                         AuthFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME)));
+      break;
     default:
       NOTREACHED();
       break;
@@ -1076,6 +1084,13 @@ CryptohomeAuthenticator::ResolveCryptohomeFailureState() {
   if (current_state_->cryptohome_code() ==
       cryptohome::MOUNT_ERROR_TPM_UPDATE_REQUIRED) {
     return TPM_UPDATE_REQUIRED;
+  }
+
+  if (current_state_->cryptohome_code() ==
+      cryptohome::MOUNT_ERROR_VAULT_UNRECOVERABLE) {
+    // Surface up if the mount attempt failed because the vault is
+    // unrecoverable.
+    return OFFLINE_MOUNT_UNRECOVERABLE;
   }
 
   // Return intermediate states in the following case:

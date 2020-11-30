@@ -765,6 +765,18 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOfflineNoMount) {
   RunResolve(auth_.get());
 }
 
+TEST_F(CryptohomeAuthenticatorTest, ResolveOfflineMountUnrecoverable) {
+  // Set up state as though a cryptohome mount attempt has occurred
+  // and has been rejected because the vault is unrecoverable.
+  state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_VAULT_UNRECOVERABLE);
+
+  EXPECT_EQ(CryptohomeAuthenticator::OFFLINE_MOUNT_UNRECOVERABLE,
+            SetAndResolveState(auth_.get(), state_.release()));
+
+  ExpectLoginFailure(AuthFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME));
+  RunResolve(auth_.get());
+}
+
 TEST_F(CryptohomeAuthenticatorTest, ResolveCreateNew) {
   // Set up state as though a cryptohome mount attempt has occurred
   // and been rejected because the user doesn't exist; additionally,

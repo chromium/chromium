@@ -52,6 +52,9 @@ enum ReauthReason {
   // SAML password sync token validation failed.
   SAML_PASSWORD_SYNC_TOKEN_VALIDATION_FAILED = 9,
 
+  // Corrupted cryptohome
+  UNRECOVERABLE_CRYPTOHOME = 10,
+
   // Must be the last value in this list.
   NUM_REAUTH_FLOW_REASONS,
 };

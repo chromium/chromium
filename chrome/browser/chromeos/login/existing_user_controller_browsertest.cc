@@ -1243,6 +1243,21 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
   EXPECT_TRUE(user->force_online_signin());
 }
 
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
+                       CryptohomeUnrecoverable) {
+  SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::UNRECOVERABLE_CRYPTOHOME);
+
+  WaitForGaiaPageLoad();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            test_user_.account_id.GetUserEmail());
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(test_user_.account_id);
+  ASSERT_TRUE(user);
+  EXPECT_TRUE(user->force_online_signin());
+}
+
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, TpmError) {
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::TPM_ERROR);
 

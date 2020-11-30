@@ -69,6 +69,7 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   const KioskAppType app_type_;
   bool use_guest_mount_;
   Delegate* delegate_;
+  int failed_mount_attempts_;
   std::unique_ptr<CryptohomedChecker> cryptohomed_checker_;
   std::unique_ptr<LoginPerformer> login_performer_;
 

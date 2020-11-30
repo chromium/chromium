@@ -369,6 +369,8 @@ MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
       return MOUNT_ERROR_REMOVE_FAILED;
     case CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED:
       return MOUNT_ERROR_TPM_UPDATE_REQUIRED;
+    case CRYPTOHOME_ERROR_VAULT_UNRECOVERABLE:
+      return MOUNT_ERROR_VAULT_UNRECOVERABLE;
     // TODO(crbug.com/797563): Split the error space and/or handle everything.
     case CRYPTOHOME_ERROR_LOCKBOX_SIGNATURE_INVALID:
     case CRYPTOHOME_ERROR_LOCKBOX_CANNOT_SIGN:

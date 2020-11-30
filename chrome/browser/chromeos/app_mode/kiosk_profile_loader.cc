@@ -53,6 +53,8 @@ KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
   }
 }
 
+constexpr int kFailedMountRetries = 3;
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +140,8 @@ KioskProfileLoader::KioskProfileLoader(const AccountId& app_account_id,
     : account_id_(app_account_id),
       app_type_(app_type),
       use_guest_mount_(use_guest_mount),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      failed_mount_attempts_(0) {}
 
 KioskProfileLoader::~KioskProfileLoader() {}
 
@@ -181,6 +184,8 @@ void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
   login_performer_->set_delegate(NULL);
   ignore_result(login_performer_.release());
 
+  failed_mount_attempts_ = 0;
+
   // If we are launching a demo session, we need to start MountGuest with the
   // guest username; this is because there are several places in the cros code
   // which rely on the username sent to cryptohome to be $guest. Back in Chrome
@@ -197,6 +202,17 @@ void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
 }
 
 void KioskProfileLoader::OnAuthFailure(const AuthFailure& error) {
+  failed_mount_attempts_++;
+  if (error.reason() == AuthFailure::UNRECOVERABLE_CRYPTOHOME &&
+      failed_mount_attempts_ < kFailedMountRetries) {
+    // If the cryptohome mount failed due to corruption of the on disk state -
+    // try again: we always ask to "create" cryptohome and the corrupted one
+    // was deleted under the hood.
+    LoginAsKioskAccount();
+    return;
+  }
+  failed_mount_attempts_ = 0;
+
   SYSLOG(ERROR) << "Kiosk auth failure: error=" << error.GetErrorString();
   KioskAppLaunchError::SaveCryptohomeFailure(error);
   ReportLaunchResult(LoginFailureToKioskAppLaunchError(error));
