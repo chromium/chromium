@@ -19,8 +19,10 @@
   function didShowScriptSource(shownSourceFrame) {
     sourceFrame = shownSourceFrame;
     textEditor = sourceFrame._textEditor;
-    // We are probably still updating the editor in current callstack, so postponing the test execution.
-    setImmediate(textEditorUpdated);
+    // We are probably still updating the editor in current callstack, so postpone the test execution.
+    queueMicrotask(() => {
+      textEditorUpdated();
+    });
   }
 
   function textEditorUpdated(sourceFrame) {

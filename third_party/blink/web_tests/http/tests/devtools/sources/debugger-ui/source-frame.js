@@ -44,7 +44,7 @@
         // Messages can contain live locations.
         await TestRunner.waitForPendingLiveLocationUpdates();
         TestRunner.addResult('Message added to source frame: ' + message.text());
-        setImmediate(function() {
+        queueMicrotask(() => {
           Console.ConsoleView.clearConsole();
         });
       }
