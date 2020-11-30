@@ -111,9 +111,9 @@
 
 - (NSString*)displayNameForFile:(NSURL*)inFileURL
 {
-  NSString *name;
-  LSCopyDisplayNameForURL((CFURLRef)inFileURL, (CFStringRef *)&name);
-  return [name autorelease];
+  NSString *name = nil;
+  [inFileURL getResourceValue:&name forKey:NSURLLocalizedNameKey error:nil];
+  return name;
 }
 
 //

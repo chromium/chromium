@@ -350,6 +350,8 @@
   return ([self isEqualToString:@"about:blank"] || [self isEqualToString:@""]);
 }
 
+// Begin Google Modified
+#if 0
 // Excluded character list comes from RFC2396 and by examining Safari's behaviour
 - (NSString*)unescapedURI
 {
@@ -359,5 +361,7 @@
                                                                             kCFStringEncodingUTF8);
   return unescapedURI ? [unescapedURI autorelease] : self;
 }
+#endif
+// End Google Modified
 
 @end

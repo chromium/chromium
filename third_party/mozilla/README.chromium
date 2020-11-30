@@ -37,3 +37,8 @@ Local modifications:
 - NSWorkspace(CaminoDefaultBrowserAdditions) methods defaultBrowserURL,
   defaultFeedViewerURL, and urlOfApplicationWithIdentifier: removed since they
   are unused in Chrome and rely on deprecated APIs as of 10.10.
+- -[NSWorkspace(CaminoDefaultBrowserAdditions) displayNameForFile] was modified
+  to use the NSURLLocalizedNameKey rather than LSCopyDisplayNameForURL(), which
+  is deprecated as of 10.11.
+- -[NString(CaminoURLStringUtils) unescapedURI] was removed because it used
+  a deprecated CFString function.
