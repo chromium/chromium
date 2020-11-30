@@ -1470,11 +1470,10 @@
     const caller = getCaller();
 
     /**
-     * The <webview> resides in the <files-safe-media type="image"> shadow DOM,
-     * which is a child of the #quick-view shadow DOM.
+     * The <files-safe-media type="image"> element is a shadow DOM child of
+     * the #quick-view element, and has a shadow DOM child <webview>.
      */
-    const webView =
-        ['#quick-view', 'files-safe-media[type="image"]', 'webview'];
+    const filesSafeMedia = ['#quick-view', 'files-safe-media[type="image"]'];
 
     // Open Files app on Downloads containing ENTRIES.rawNef.
     const appId = await setupAndWaitUntilReady(
@@ -1495,6 +1494,7 @@
       return;
     }
     await repeatUntil(async () => {
+      const webView = filesSafeMedia.concat(['webview']);
       return checkWebViewImageLoaded(await remoteCall.callRemoteTestUtil(
           'deepQueryAllElements', appId, [webView, ['display']]));
     });
@@ -1506,6 +1506,21 @@
     // Check: the correct mimeType should be displayed.
     const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
     chrome.test.assertEq('image/tiff', mimeType);
+
+    // Get the fileSafeMedia element preview thumbnail image size.
+    const element = await remoteCall.waitForElement(appId, filesSafeMedia);
+    const image = new Image();
+    image.src = element.attributes.src;
+    image.onload = () => {
+      image.imageSize = image.naturalWidth + ' x ' + image.naturalHeight;
+    };
+
+    // Check: the preview thumbnail should have an orientiated size.
+    await repeatUntil(async () => {
+      if (!image.complete || image.imageSize !== '120 x 160') {
+        return pending(caller, 'Waiting for preview thumbnail size.');
+      }
+    });
   };
 
   /**
