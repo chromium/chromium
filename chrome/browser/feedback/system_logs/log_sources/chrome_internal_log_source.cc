@@ -46,8 +46,10 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
 #endif
 
@@ -77,6 +79,7 @@ constexpr char kChromeEnrollmentTag[] = "ENTERPRISE_ENROLLED";
 constexpr char kHWIDKey[] = "HWID";
 constexpr char kSettingsKey[] = "settings";
 constexpr char kLocalStateSettingsResponseKey[] = "Local State: settings";
+constexpr char kLTSChromeVersionPrefix[] = "LTS ";
 constexpr char kArcStatusKey[] = "CHROMEOS_ARC_STATUS";
 constexpr char kMonitorInfoKey[] = "monitor_info";
 constexpr char kAccountTypeKey[] = "account_type";
@@ -215,6 +218,22 @@ void PopulateEntriesAsync(SystemLogsResponse* response) {
 }
 #endif  // defined(OS_CHROMEOS)
 
+std::string GetChromeVersionString() {
+  // Version of the current running browser.
+  std::string browser_version = chrome::GetVersionString();
+
+#if defined(OS_CHROMEOS)
+  // If the device is receiving LTS updates, add a prefix to the version string.
+  // The value of the policy is ignored here.
+  std::string value;
+  const bool is_lts = chromeos::CrosSettings::Get()->GetString(
+      chromeos::kReleaseLtsTag, &value);
+  if (is_lts)
+    browser_version = kLTSChromeVersionPrefix + browser_version;
+#endif  // defined(OS_CHROMEOS)
+  return browser_version;
+}
+
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns true if the path identified by |key| with the PathService is a parent
 // or ancestor of |child|.
@@ -266,7 +285,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 
   auto response = std::make_unique<SystemLogsResponse>();
 
-  response->emplace(kChromeVersionTag, chrome::GetVersionString());
+  response->emplace(kChromeVersionTag, GetChromeVersionString());
 
 #if defined(OS_CHROMEOS)
   response->emplace(kChromeEnrollmentTag, GetEnrollmentStatusString());
