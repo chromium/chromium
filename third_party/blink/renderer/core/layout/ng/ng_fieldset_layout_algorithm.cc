@@ -323,8 +323,33 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     scoped_refptr<const NGBlockBreakToken> content_break_token,
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
+  // If the following conditions meet, the content should be laid out with
+  // a block-size limitation:
+  // - The FIELDSET block-size is indefinite.
+  // - It has max-block-size.
+  // - The intrinsic block-size of the content is larger than the
+  //   max-block-size.
+  if (adjusted_padding_box_size.block_size == kIndefiniteSize) {
+    LayoutUnit max_content_block_size = ResolveMaxBlockLength(
+        ConstraintSpace(), Style(), BorderPadding(), Style().LogicalMaxHeight(),
+        LengthResolvePhase::kLayout);
+    if (max_content_block_size != LayoutUnit::Max()) {
+      max_content_block_size -= BorderPadding().BlockSum();
+
+      auto child_measure_space = CreateConstraintSpaceForFieldsetContent(
+          fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
+          NGCacheSlot::kMeasure);
+      LayoutUnit intrinsic_content_block_size =
+          fieldset_content
+              .Layout(child_measure_space, content_break_token.get())
+              ->IntrinsicBlockSize();
+      if (intrinsic_content_block_size > max_content_block_size)
+        adjusted_padding_box_size.block_size = max_content_block_size;
+    }
+  }
   auto child_space = CreateConstraintSpaceForFieldsetContent(
-      fieldset_content, adjusted_padding_box_size, intrinsic_block_size_);
+      fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
+      NGCacheSlot::kLayout);
   auto result = fieldset_content.Layout(child_space, content_break_token.get());
 
   // TODO(layout-dev): Handle abortions caused by block fragmentation.
@@ -421,11 +446,13 @@ const NGConstraintSpace
 NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
     NGBlockNode fieldset_content,
     LogicalSize padding_box_size,
-    LayoutUnit block_offset) {
+    LayoutUnit block_offset,
+    NGCacheSlot slot) {
   DCHECK(fieldset_content.CreatesNewFormattingContext());
   NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                    ConstraintSpace().GetWritingMode(),
                                    /* is_new_fc */ true);
+  builder.SetCacheSlot(slot);
   builder.SetTextDirection(fieldset_content.Style().Direction());
   builder.SetAvailableSize(padding_box_size);
   // We pass the container's PercentageResolutionSize because percentage
