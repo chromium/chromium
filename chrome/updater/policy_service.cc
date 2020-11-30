@@ -26,7 +26,7 @@ PolicyService::PolicyService() {
 #if defined(OS_WIN)
   InsertPolicyManager(std::make_unique<GroupPolicyManager>());
 #endif
-  // TODO (crbug/1122118): Inject the DMPolicyManager here.
+  // TODO(crbug/1122118): Inject the DMPolicyManager here.
 #if defined(OS_MAC)
   InsertPolicyManager(CreateManagedPreferencePolicyManager());
 #endif
@@ -54,13 +54,11 @@ void PolicyService::SetPolicyManagersForTesting(
     std::vector<std::unique_ptr<PolicyManagerInterface>> managers) {
   // Testing managers are not inserted via InsertPolicyManager(). Do a
   // quick sanity check that all managed providers are ahead of non-managed
-  // providers (there should be no adjacent pair with the reversed order).
-  DCHECK(std::adjacent_find(
-             managers.begin(), managers.end(),
-             [](const std::unique_ptr<PolicyManagerInterface>& first,
-                const std::unique_ptr<PolicyManagerInterface>& second) {
-               return !first->IsManaged() && second->IsManaged();
-             }) == managers.end());
+  // providers: there should be no adjacent pair with the reversed order.
+  DCHECK(std::adjacent_find(managers.begin(), managers.end(),
+                            [](const auto& fst, const auto& snd) {
+                              return !fst->IsManaged() && snd->IsManaged();
+                            }) == managers.end());
 
   policy_managers_ = std::move(managers);
 }
