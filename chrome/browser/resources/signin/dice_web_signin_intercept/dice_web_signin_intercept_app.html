@@ -90,8 +90,18 @@
     overflow-wrap: break-word;  /** For very long names and emails */
   }
 
-  .action-container {
+  #actionRow {
+    display: flex;
+    justify-content: flex-end;
     padding: 0 16px 16px;
+  }
+
+  .action-container {
+    padding: 0 0 0 8px;
+  }
+
+  paper-spinner-lite {
+    margin: auto 0;
   }
 
   cr-button {
@@ -116,12 +126,16 @@
   <div id="contents">[[interceptionParameters_.bodyText]]</div>
 </div>
 
-<div class="action-container">
-  <cr-button id="acceptButton" class="action-button" on-click="onAccept_"
-      autofocus>
-    [[interceptionParameters_.confirmButtonLabel]]
-  </cr-button>
-  <cr-button id="cancelButton" on-click="onCancel_">
-    [[interceptionParameters_.cancelButtonLabel]]
-  </cr-button>
+<div id="actionRow">
+  <paper-spinner-lite active="[[acceptButtonClicked_]]"></paper-spinner-lite>
+  <div class="action-container">
+    <cr-button id="acceptButton" class="action-button" on-click="onAccept_"
+        disabled="[[acceptButtonClicked_]]" autofocus>
+      [[interceptionParameters_.confirmButtonLabel]]
+    </cr-button>
+    <cr-button id="cancelButton" on-click="onCancel_"
+        disabled="[[acceptButtonClicked_]]">
+      [[interceptionParameters_.cancelButtonLabel]]
+    </cr-button>
+  </div>
 </div>

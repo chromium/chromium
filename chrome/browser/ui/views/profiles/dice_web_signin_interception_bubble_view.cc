@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -41,6 +42,18 @@ bool IsManaged(const AccountInfo& account_info) {
 }
 
 }  // namespace
+
+DiceWebSigninInterceptionBubbleView::ScopedBrowserListObserver::
+    ScopedBrowserListObserver(BrowserListObserver* owner)
+    : owner_(owner) {
+  DCHECK(owner_);
+  BrowserList::AddObserver(owner_);
+}
+
+DiceWebSigninInterceptionBubbleView::ScopedBrowserListObserver::
+    ~ScopedBrowserListObserver() {
+  BrowserList::RemoveObserver(owner_);
+}
 
 DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
   // Cancel if the bubble is destroyed without user interaction.
@@ -152,9 +165,25 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(bool accept) {
                                         : SigninInterceptionResult::kDeclined;
   RecordInterceptionResult(bubble_parameters_, profile_, result);
   std::move(callback_).Run(result);
+
+  // Only close the dialog when the user declined. If the user accepted the
+  // dialog displays a spinner until the new browser is created.
+  if (accept) {
+    browser_list_observer_ = std::make_unique<ScopedBrowserListObserver>(this);
+  } else {
+    GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kCancelButtonClicked);
+  }
+}
+
+void DiceWebSigninInterceptionBubbleView::OnBrowserAdded(Browser* browser) {
+  // This function is only called when the user already accepted.
+  // Close the bubble when any new browser is created, not necessarily the one
+  // related to the signin interception ; this is a good-enough approximation.
+  DCHECK(browser_list_observer_);
+  browser_list_observer_.reset();
   GetWidget()->CloseWithReason(
-      accept ? views::Widget::ClosedReason::kAcceptButtonClicked
-             : views::Widget::ClosedReason::kCancelButtonClicked);
+      views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
 // DiceWebSigninInterceptorDelegate --------------------------------------------

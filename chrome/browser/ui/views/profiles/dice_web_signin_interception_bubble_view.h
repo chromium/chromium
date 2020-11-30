@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 
 namespace views {
 class View;
@@ -20,7 +21,8 @@ class Profile;
 // Bubble shown as part of Dice web signin interception. This bubble is
 // implemented as a WebUI page rendered inside a native bubble.
 class DiceWebSigninInterceptionBubbleView
-    : public views::BubbleDialogDelegateView {
+    : public views::BubbleDialogDelegateView,
+      public BrowserListObserver {
  public:
   ~DiceWebSigninInterceptionBubbleView() override;
 
@@ -46,6 +48,25 @@ class DiceWebSigninInterceptionBubbleView
  private:
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleClosed);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleDeclined);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleAccepted);
+
+  // base::ScopedObservation does not work for BrowserList because its
+  // AddObserver/RemoveObserver methods are static.
+  class ScopedBrowserListObserver {
+   public:
+    explicit ScopedBrowserListObserver(BrowserListObserver* owner);
+    ~ScopedBrowserListObserver();
+
+    ScopedBrowserListObserver(const ScopedBrowserListObserver&) = delete;
+    ScopedBrowserListObserver& operator=(const ScopedBrowserListObserver&) =
+        delete;
+
+   private:
+    BrowserListObserver* owner_;
+  };
 
   DiceWebSigninInterceptionBubbleView(
       Profile* profile,
@@ -58,9 +79,16 @@ class DiceWebSigninInterceptionBubbleView
   // method, which is called by the inner web UI.
   void OnWebUIUserChoice(bool accept);
 
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
   Profile* profile_;
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
+
+  // Once the user accepted, a spinner is shown until the new browser is
+  // created, and then the bubble is closed.
+  std::unique_ptr<ScopedBrowserListObserver> browser_list_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_

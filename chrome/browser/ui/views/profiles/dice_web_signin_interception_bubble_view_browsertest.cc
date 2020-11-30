@@ -93,3 +93,72 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
 }
+
+// Tests that the callback is called once when the bubble is declined.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleDeclined) {
+  base::HistogramTester histogram_tester;
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      new DiceWebSigninInterceptionBubbleView(
+          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  widget->Show();
+  EXPECT_FALSE(callback_result_.has_value());
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  // Simulate clicking Cancel in the WebUI.
+  bubble->OnWebUIUserChoice(/*accept=*/false);
+  waiter.Wait();
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kDeclined);
+
+  // Check that histograms are recorded.
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser",
+                                      SigninInterceptionResult::kDeclined, 1);
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
+                                      SigninInterceptionResult::kDeclined, 1);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+}
+
+// Tests that the callback is called once when the bubble is accepted. The
+// bubble is not destroyed until a new browser window is created.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleAccepted) {
+  base::HistogramTester histogram_tester;
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      new DiceWebSigninInterceptionBubbleView(
+          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  widget->Show();
+  EXPECT_FALSE(callback_result_.has_value());
+
+  views::test::WidgetClosingObserver closing_observer(widget);
+  // Simulate clicking Accept in the WebUI.
+  bubble->OnWebUIUserChoice(/*accept=*/true);
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
+
+  // Widget was not closed yet.
+  ASSERT_FALSE(closing_observer.widget_closed());
+  // Simulate a new browser being created by the interception.
+  CreateGuestBrowser();
+  // Widget will close now.
+  closing_observer.Wait();
+
+  // Check that histograms are recorded.
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser",
+                                      SigninInterceptionResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
+                                      SigninInterceptionResult::kAccepted, 1);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+}

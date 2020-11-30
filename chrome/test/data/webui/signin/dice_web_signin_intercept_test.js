@@ -79,7 +79,19 @@ suite('DiceWebSigninInterceptTest', function() {
 
   test('ClickAccept', function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
-    app.$$('#acceptButton').click();
+    const spinner = app.$$('paper-spinner-lite');
+    const acceptButton = app.$$('#acceptButton');
+    const cancelButton = app.$$('#cancelButton');
+    assertFalse(spinner.active);
+    assertFalse(acceptButton.disabled);
+    assertFalse(cancelButton.disabled);
+
+    acceptButton.click();
+
+    // Buttons are disabled and the spinner is active.
+    assertTrue(acceptButton.disabled);
+    assertTrue(cancelButton.disabled);
+    assertTrue(spinner.active);
     return browserProxy.whenCalled('accept');
   });
 
