@@ -77,8 +77,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(const IntSize&,
                            NotShared<DOMArrayBufferView>,
                            const ImageDataColorSettings* = nullptr);
-  static ImageData* Create(scoped_refptr<StaticBitmapImage>,
-                           AlphaDisposition = kDontChangeAlpha);
 
   static ImageData* Create(unsigned width, unsigned height, ExceptionState&);
   static ImageData* Create(NotShared<DOMUint8ClampedArray>,
@@ -130,11 +128,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
   static unsigned StorageFormatBytesPerPixel(const String&);
   static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
-  static NotShared<DOMArrayBufferView>
-  ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
-      ArrayBufferContents&,
-      CanvasPixelFormat,
-      ImageDataStorageFormat);
 
   IntSize Size() const { return size_; }
   int width() const { return size_.Width(); }
@@ -145,25 +138,11 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   void data(ImageDataArray& result) { result = data_; }
 
   DOMArrayBufferBase* BufferBase() const;
-  CanvasColorParams GetCanvasColorParams();
   CanvasColorSpace GetCanvasColorSpace() const;
   ImageDataStorageFormat GetImageDataStorageFormat() const;
 
   // Return an SkPixmap that references this data directly.
   SkPixmap GetSkPixmap() const;
-
-  // DataU8ColorType param specifies if the converted pixels in uint8 pixel
-  // format should respect the "native" 32bit ARGB format of Skia's blitters.
-  // For example, if ImageDataInCanvasColorSettings() is called to fill an
-  // ImageBuffer, kRGBAColorType should be used. If the converted pixels are
-  // used to create an ImageBitmap, kN32ColorType should be used.
-  bool ImageDataInCanvasColorSettings(
-      CanvasColorSpace,
-      CanvasPixelFormat,
-      unsigned char* converted_pixels,
-      DataU8ColorType,
-      const IntRect* = nullptr,
-      const AlphaDisposition = kUnpremultiplyAlpha);
 
   // ImageBitmapSource implementation
   IntSize BitmapSourceSize() const override { return size_; }

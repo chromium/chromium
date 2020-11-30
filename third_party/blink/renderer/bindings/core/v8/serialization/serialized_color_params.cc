@@ -8,25 +8,11 @@
 
 namespace blink {
 
-SerializedColorParams::SerializedColorParams()
-    : color_space_(SerializedColorSpace::kSRGB),
-      pixel_format_(SerializedPixelFormat::kRGBA8),
-      opacity_mode_(SerializedOpacityMode::kNonOpaque),
-      storage_format_(SerializedImageDataStorageFormat::kUint8Clamped) {}
+SerializedColorParams::SerializedColorParams() = default;
 
-SerializedColorParams::SerializedColorParams(CanvasColorParams color_params) {
-  switch (color_params.ColorSpace()) {
-    case CanvasColorSpace::kSRGB:
-      color_space_ = SerializedColorSpace::kSRGB;
-      break;
-    case CanvasColorSpace::kRec2020:
-      color_space_ = SerializedColorSpace::kRec2020;
-      break;
-    case CanvasColorSpace::kP3:
-      color_space_ = SerializedColorSpace::kP3;
-      break;
-  }
-
+SerializedColorParams::SerializedColorParams(CanvasColorParams color_params)
+    : SerializedColorParams(color_params.ColorSpace(),
+                            kUint8ClampedArrayStorageFormat) {
   switch (color_params.PixelFormat()) {
     case CanvasPixelFormat::kRGBA8:
       pixel_format_ = SerializedPixelFormat::kRGBA8;
@@ -42,13 +28,22 @@ SerializedColorParams::SerializedColorParams(CanvasColorParams color_params) {
   opacity_mode_ = SerializedOpacityMode::kNonOpaque;
   if (color_params.GetOpacityMode() == blink::kOpaque)
     opacity_mode_ = SerializedOpacityMode::kOpaque;
-  storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
 }
 
 SerializedColorParams::SerializedColorParams(
-    CanvasColorParams color_params,
-    ImageDataStorageFormat storage_format)
-    : SerializedColorParams(color_params) {
+    CanvasColorSpace color_space,
+    ImageDataStorageFormat storage_format) {
+  switch (color_space) {
+    case CanvasColorSpace::kSRGB:
+      color_space_ = SerializedColorSpace::kSRGB;
+      break;
+    case CanvasColorSpace::kRec2020:
+      color_space_ = SerializedColorSpace::kRec2020;
+      break;
+    case CanvasColorSpace::kP3:
+      color_space_ = SerializedColorSpace::kP3;
+      break;
+  }
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
       storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
@@ -66,12 +61,11 @@ SerializedColorParams::SerializedColorParams(
     SerializedColorSpace color_space,
     SerializedPixelFormat pixel_format,
     SerializedOpacityMode opacity_mode,
-    SerializedImageDataStorageFormat storage_format) {
-  SetSerializedColorSpace(color_space);
-  SetSerializedPixelFormat(pixel_format);
-  SetSerializedOpacityMode(opacity_mode);
-  SetSerializedImageDataStorageFormat(storage_format);
-}
+    SerializedImageDataStorageFormat storage_format)
+    : color_space_(color_space),
+      pixel_format_(pixel_format),
+      opacity_mode_(opacity_mode),
+      storage_format_(storage_format) {}
 
 CanvasColorParams SerializedColorParams::GetCanvasColorParams() const {
   CanvasColorSpace color_space = CanvasColorSpace::kSRGB;
@@ -130,43 +124,6 @@ ImageDataStorageFormat SerializedColorParams::GetStorageFormat() const {
   }
   NOTREACHED();
   return kUint8ClampedArrayStorageFormat;
-}
-
-void SerializedColorParams::SetSerializedColorSpace(
-    SerializedColorSpace color_space) {
-  color_space_ = color_space;
-}
-
-void SerializedColorParams::SetSerializedPixelFormat(
-    SerializedPixelFormat pixel_format) {
-  pixel_format_ = pixel_format;
-}
-
-void SerializedColorParams::SetSerializedOpacityMode(
-    SerializedOpacityMode opacity_mode) {
-  opacity_mode_ = opacity_mode;
-}
-
-void SerializedColorParams::SetSerializedImageDataStorageFormat(
-    SerializedImageDataStorageFormat storage_format) {
-  storage_format_ = storage_format;
-}
-
-SerializedColorSpace SerializedColorParams::GetSerializedColorSpace() const {
-  return color_space_;
-}
-
-SerializedPixelFormat SerializedColorParams::GetSerializedPixelFormat() const {
-  return pixel_format_;
-}
-
-SerializedOpacityMode SerializedColorParams::GetSerializedOpacityMode() const {
-  return opacity_mode_;
-}
-
-SerializedImageDataStorageFormat
-SerializedColorParams::GetSerializedImageDataStorageFormat() const {
-  return storage_format_;
 }
 
 }  // namespace blink

@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -251,26 +250,6 @@ ImageData* ImageData::Create(const IntSize& size,
              : nullptr;
 }
 
-ImageDataColorSettings* CanvasColorParamsToImageDataColorSettings(
-    const CanvasColorParams& color_params) {
-  ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
-  switch (color_params.ColorSpace()) {
-    case CanvasColorSpace::kSRGB:
-      color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
-      break;
-    case CanvasColorSpace::kRec2020:
-      color_settings->setColorSpace(kRec2020CanvasColorSpaceName);
-      break;
-    case CanvasColorSpace::kP3:
-      color_settings->setColorSpace(kP3CanvasColorSpaceName);
-      break;
-  }
-  color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
-  if (color_params.PixelFormat() == CanvasPixelFormat::kF16)
-    color_settings->setStorageFormat(kFloat32ArrayStorageFormatName);
-  return color_settings;
-}
-
 ImageData* ImageData::Create(const IntSize& size,
                              CanvasColorSpace color_space,
                              ImageDataStorageFormat storage_format) {
@@ -309,50 +288,6 @@ ImageData* ImageData::Create(const IntSize& size,
           kParamSize | kParamData, &size, 0, 0, data_array, color_settings))
     return nullptr;
   return MakeGarbageCollected<ImageData>(size, data_array, color_settings);
-}
-
-ImageData* ImageData::Create(scoped_refptr<StaticBitmapImage> image,
-                             AlphaDisposition alpha_disposition) {
-  PaintImage paint_image = image->PaintImageForCurrentFrame();
-  DCHECK(paint_image);
-  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
-  CanvasColorParams color_params(image_info);
-  if (image_info.alphaType() != kOpaque_SkAlphaType) {
-    if (alpha_disposition == kPremultiplyAlpha) {
-      image_info = image_info.makeAlphaType(kPremul_SkAlphaType);
-    } else if (alpha_disposition == kUnpremultiplyAlpha) {
-      image_info = image_info.makeAlphaType(kUnpremul_SkAlphaType);
-    }
-  }
-
-  ImageData* image_data = Create(
-      image->Size(), CanvasColorParamsToImageDataColorSettings(color_params));
-  if (!image_data)
-    return nullptr;
-
-  ImageDataArray data = image_data->data();
-  SkColorType color_type = image_info.colorType();
-  bool create_f32_image_data = (color_type == kRGBA_1010102_SkColorType ||
-                                color_type == kRGB_101010x_SkColorType ||
-                                color_type == kRGBA_F16_SkColorType ||
-                                color_type == kRGBA_F32_SkColorType);
-
-  if (!create_f32_image_data) {
-    if (color_type == kR16G16B16A16_unorm_SkColorType) {
-      image_info = image_info.makeColorType(kR16G16B16A16_unorm_SkColorType);
-      paint_image.readPixels(image_info, data.GetAsUint16Array()->Data(),
-                             image_info.minRowBytes(), 0, 0);
-    } else {
-      image_info = image_info.makeColorType(kRGBA_8888_SkColorType);
-      paint_image.readPixels(image_info, data.GetAsUint8ClampedArray()->Data(),
-                             image_info.minRowBytes(), 0, 0);
-    }
-  } else {
-    image_info = image_info.makeColorType(kRGBA_F32_SkColorType);
-    paint_image.readPixels(image_info, data.GetAsFloat32Array()->Data(),
-                           image_info.minRowBytes(), 0, 0);
-  }
-  return image_data;
 }
 
 ImageData* ImageData::Create(unsigned width,
@@ -701,64 +636,6 @@ unsigned ImageData::StorageFormatBytesPerPixel(
   return 1;
 }
 
-NotShared<DOMArrayBufferView>
-ImageData::ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
-    ArrayBufferContents& content,
-    CanvasPixelFormat pixel_format,
-    ImageDataStorageFormat storage_format) {
-  if (!content.DataLength())
-    return NotShared<DOMArrayBufferView>();
-
-  if (pixel_format == CanvasColorParams::GetNativeCanvasPixelFormat() &&
-      storage_format == kUint8ClampedArrayStorageFormat) {
-    DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(content);
-    return NotShared<DOMArrayBufferView>(DOMUint8ClampedArray::Create(
-        array_buffer, 0, array_buffer->ByteLength()));
-  }
-
-  skcms_PixelFormat src_format = skcms_PixelFormat_RGBA_8888;
-  unsigned num_pixels = content.DataLength() / 4;
-  if (pixel_format == CanvasPixelFormat::kF16) {
-    src_format = skcms_PixelFormat_RGBA_hhhh;
-    num_pixels /= 2;
-  }
-  skcms_AlphaFormat alpha_format = skcms_AlphaFormat_Unpremul;
-
-  if (storage_format == kUint8ClampedArrayStorageFormat) {
-    NotShared<DOMUint8ClampedArray> u8_array =
-        AllocateAndValidateUint8ClampedArray(num_pixels * 4);
-    if (!u8_array)
-      return NotShared<DOMArrayBufferView>();
-    bool data_transform_successful = skcms_Transform(
-        content.Data(), src_format, alpha_format, nullptr, u8_array->Data(),
-        skcms_PixelFormat_RGBA_8888, alpha_format, nullptr, num_pixels);
-    DCHECK(data_transform_successful);
-    return u8_array;
-  }
-
-  if (storage_format == kUint16ArrayStorageFormat) {
-    NotShared<DOMUint16Array> u16_array =
-        AllocateAndValidateUint16Array(num_pixels * 4);
-    if (!u16_array)
-      return NotShared<DOMArrayBufferView>();
-    bool data_transform_successful = skcms_Transform(
-        content.Data(), src_format, alpha_format, nullptr, u16_array->Data(),
-        skcms_PixelFormat_RGBA_16161616LE, alpha_format, nullptr, num_pixels);
-    DCHECK(data_transform_successful);
-    return u16_array;
-  }
-
-  NotShared<DOMFloat32Array> f32_array =
-      AllocateAndValidateFloat32Array(num_pixels * 4);
-  if (!f32_array)
-    return NotShared<DOMArrayBufferView>();
-  bool data_transform_successful = skcms_Transform(
-      content.Data(), src_format, alpha_format, nullptr, f32_array->Data(),
-      skcms_PixelFormat_RGBA_ffff, alpha_format, nullptr, num_pixels);
-  DCHECK(data_transform_successful);
-  return f32_array;
-}
-
 DOMArrayBufferBase* ImageData::BufferBase() const {
   if (data_.IsUint8ClampedArray())
     return data_.GetAsUint8ClampedArray()->BufferBase();
@@ -767,19 +644,6 @@ DOMArrayBufferBase* ImageData::BufferBase() const {
   if (data_.IsFloat32Array())
     return data_.GetAsFloat32Array()->BufferBase();
   return nullptr;
-}
-
-CanvasColorParams ImageData::GetCanvasColorParams() {
-  if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled())
-    return CanvasColorParams();
-  CanvasColorSpace color_space =
-      CanvasColorSpaceFromName(color_settings_->colorSpace());
-  return CanvasColorParams(
-      color_space,
-      color_settings_->storageFormat() != kUint8ClampedArrayStorageFormatName
-          ? CanvasPixelFormat::kF16
-          : CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
 }
 
 SkPixmap ImageData::GetSkPixmap() const {
@@ -793,99 +657,6 @@ SkPixmap ImageData::GetSkPixmap() const {
       SkImageInfo::Make(width(), height(), color_type, kUnpremul_SkAlphaType,
                         CanvasColorSpaceToSkColorSpace(GetCanvasColorSpace()));
   return SkPixmap(info, BufferBase()->Data(), info.minRowBytes());
-}
-
-bool ImageData::ImageDataInCanvasColorSettings(
-    CanvasColorSpace canvas_color_space,
-    CanvasPixelFormat canvas_pixel_format,
-    unsigned char* converted_pixels,
-    DataU8ColorType u8_color_type,
-    const IntRect* src_rect,
-    const AlphaDisposition alpha_disposition) {
-  if (data_.IsNull())
-    return false;
-
-  CanvasColorParams canvas_color_params =
-      CanvasColorParams(canvas_color_space, canvas_pixel_format, kNonOpaque);
-
-  unsigned char* src_data = static_cast<unsigned char*>(BufferBase()->Data());
-
-  ImageDataStorageFormat storage_format = GetImageDataStorageFormat();
-
-  skcms_PixelFormat src_pixel_format = skcms_PixelFormat_RGBA_8888;
-  if (data_u16_)
-    src_pixel_format = skcms_PixelFormat_RGBA_16161616LE;
-  else if (data_f32_)
-    src_pixel_format = skcms_PixelFormat_RGBA_ffff;
-
-  skcms_PixelFormat dst_pixel_format = skcms_PixelFormat_RGBA_8888;
-  if (canvas_pixel_format == CanvasPixelFormat::kF16) {
-    dst_pixel_format = skcms_PixelFormat_RGBA_hhhh;
-  }
-#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
-  else if (canvas_pixel_format ==
-               CanvasColorParams::GetNativeCanvasPixelFormat() &&
-           u8_color_type == kN32ColorType) {
-    dst_pixel_format = skcms_PixelFormat_BGRA_8888;
-  }
-#endif
-
-  skcms_AlphaFormat src_alpha_format = skcms_AlphaFormat_Unpremul;
-  skcms_AlphaFormat dst_alpha_format = skcms_AlphaFormat_Unpremul;
-  if (alpha_disposition == kPremultiplyAlpha)
-    dst_alpha_format = skcms_AlphaFormat_PremulAsEncoded;
-
-  skcms_ICCProfile* src_profile_ptr = nullptr;
-  skcms_ICCProfile* dst_profile_ptr = nullptr;
-  skcms_ICCProfile src_profile, dst_profile;
-  CanvasColorSpaceToSkColorSpace(GetCanvasColorSpace())
-      ->toProfile(&src_profile);
-  canvas_color_params.GetSkColorSpace()->toProfile(&dst_profile);
-  // If the profiles are similar, we better leave them as nullptr, since
-  // skcms_Transform() only checks for profile pointer equality for the fast
-  // path.
-  if (!skcms_ApproximatelyEqualProfiles(&src_profile, &dst_profile)) {
-    src_profile_ptr = &src_profile;
-    dst_profile_ptr = &dst_profile;
-  }
-
-  const IntRect* crop_rect = nullptr;
-  if (src_rect && *src_rect != IntRect(IntPoint(), Size()))
-    crop_rect = src_rect;
-
-  // If only a portion of ImageData is required for canvas, we run the transform
-  // for every line.
-  if (crop_rect) {
-    unsigned bytes_per_pixel =
-        ImageData::StorageFormatBytesPerPixel(storage_format);
-    unsigned src_index =
-        (crop_rect->X() + crop_rect->Y() * width()) * bytes_per_pixel;
-    unsigned dst_index = 0;
-    unsigned src_row_stride = width() * bytes_per_pixel;
-    unsigned dst_row_stride =
-        crop_rect->Width() * canvas_color_params.BytesPerPixel();
-    bool data_transform_successful = true;
-
-    for (int i = 0; data_transform_successful && i < crop_rect->Height(); i++) {
-      data_transform_successful = skcms_Transform(
-          src_data + src_index, src_pixel_format, src_alpha_format,
-          src_profile_ptr, converted_pixels + dst_index, dst_pixel_format,
-          dst_alpha_format, dst_profile_ptr, crop_rect->Width());
-      DCHECK(data_transform_successful);
-      src_index += src_row_stride;
-      dst_index += dst_row_stride;
-    }
-    return data_transform_successful;
-  }
-
-  base::CheckedNumeric<uint32_t> area = size_.Area();
-  if (!area.IsValid())
-    return false;
-  bool data_transform_successful =
-      skcms_Transform(src_data, src_pixel_format, src_alpha_format,
-                      src_profile_ptr, converted_pixels, dst_pixel_format,
-                      dst_alpha_format, dst_profile_ptr, area.ValueOrDie());
-  return data_transform_successful;
 }
 
 void ImageData::Trace(Visitor* visitor) const {

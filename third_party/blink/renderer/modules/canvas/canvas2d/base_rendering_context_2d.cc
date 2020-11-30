@@ -1917,7 +1917,12 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // order for both ImageData and CanvasResourceProvider, therefore no
   // additional swizzling is needed.
   SkPixmap data_pixmap = data->GetSkPixmap();
-  CanvasColorParams data_color_params = data->GetCanvasColorParams();
+  CanvasColorParams data_color_params(
+      data->GetCanvasColorSpace(),
+      data->GetImageDataStorageFormat() != kUint8ClampedArrayStorageFormat
+          ? CanvasPixelFormat::kF16
+          : CanvasColorParams::GetNativeCanvasPixelFormat(),
+      kNonOpaque);
   CanvasColorParams context_color_params = CanvasColorParams(
       GetCanvas2DColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
 

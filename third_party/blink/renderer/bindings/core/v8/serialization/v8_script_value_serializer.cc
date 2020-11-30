@@ -334,7 +334,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
   if (wrapper_type_info == V8ImageData::GetWrapperTypeInfo()) {
     ImageData* image_data = wrappable->ToImpl<ImageData>();
     WriteTag(kImageDataTag);
-    SerializedColorParams color_params(image_data->GetCanvasColorParams(),
+    SerializedColorParams color_params(image_data->GetCanvasColorSpace(),
                                        image_data->GetImageDataStorageFormat());
     WriteUint32Enum(ImageSerializationTag::kCanvasColorSpaceTag);
     WriteUint32Enum(color_params.GetSerializedColorSpace());
