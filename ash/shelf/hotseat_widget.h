@@ -177,6 +177,10 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
     return target_hotseat_density_;
   }
 
+  // The layer that should be used to animate hotseat bounds while showing the
+  // home to overview contextual nudge.
+  ui::Layer* GetLayerForNudgeAnimation();
+
  private:
   class DelegateView;
 

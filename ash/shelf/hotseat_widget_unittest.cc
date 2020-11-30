@@ -19,6 +19,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_focus_cycler.h"
@@ -48,6 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/wm/core/window_util.h"
@@ -2114,6 +2116,228 @@ TEST_P(HotseatWidgetTest, NoBlurDuringAnimations) {
   EXPECT_EQ(
       ShelfConfig::Get()->shelf_blur_radius(),
       GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
+}
+
+// Tests that hotseat bounds don't jump when transitioning from drag to
+// animation.
+TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  // Add an app to shelf - the app will be used to track the shelf view position
+  // throughout the test.
+  ShelfTestUtil::AddAppShortcut("fake_app", TYPE_PINNED_APP);
+
+  // Open a window so the hotseat transitions to hidden state.
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  ui::ScopedAnimationDurationScaleMode animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  HotseatWidget* const hotseat_widget = GetPrimaryShelf()->hotseat_widget();
+  gfx::Point last_app_views_position =
+      hotseat_widget->GetWindowBoundsInScreen().origin();
+
+  // Returns whether the hotseat vertical position has changed comapred to
+  // |last_hotseat_y|, and updates |last_hotseat_y| to match the current hotseat
+  // position.
+  auto app_views_moved = [&last_app_views_position, &hotseat_widget]() -> bool {
+    gfx::Point app_views_position =
+        ShelfViewTestAPI(hotseat_widget->scrollable_shelf_view()->shelf_view())
+            .GetViewAt(0)
+            ->GetBoundsInScreen()
+            .origin();
+    hotseat_widget->GetLayer()->transform().TransformPoint(&app_views_position);
+    const bool position_changed = app_views_position != last_app_views_position;
+    last_app_views_position = app_views_position;
+    return position_changed;
+  };
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  const gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  // Drag upwards from the bottom of the screen to bring up hotseat - this
+  // should request presentation time metric to be reported.
+  generator->PressTouch(display_bounds.bottom_center());
+
+  // Drag the hotseat upward, by the height of the shelf.
+  const int shelf_height = GetShelfWidget()->GetWindowBoundsInScreen().height();
+
+  generator->MoveTouchBy(0, -shelf_height);
+  ASSERT_TRUE(app_views_moved());
+
+  // Release touch, and verify the hotseat position remained the same.
+  generator->ReleaseTouch();
+  EXPECT_FALSE(app_views_moved());
+
+  // Wait for the hotseat to animate to extended state.
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  ASSERT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_TRUE(app_views_moved());
+
+  // Drag hotseat down.
+  generator->PressTouch(hotseat_widget->GetWindowBoundsInScreen().top_center());
+  generator->MoveTouchBy(0, shelf_height);
+  ASSERT_TRUE(app_views_moved());
+
+  // Release touch, and verify the hotseat position remained the same.
+  generator->ReleaseTouch();
+  EXPECT_FALSE(app_views_moved());
+
+  // Wait for the hotseat to animate to extended state.
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+  ASSERT_TRUE(app_views_moved());
+
+  // Drag the hotseat back up, and release so animation to extended state
+  // starts.
+  generator->PressTouch(display_bounds.bottom_center());
+  generator->MoveTouchBy(0, -shelf_height);
+  ASSERT_TRUE(app_views_moved());
+  generator->ReleaseTouch();
+  EXPECT_FALSE(app_views_moved());
+
+  // Close the test widget to start transition to the shown state.
+  window.reset();
+
+  // The apparent hotseat bound should remain the same as the transition to show
+  // state starts.
+  ASSERT_EQ(HotseatState::kShownHomeLauncher,
+            GetShelfLayoutManager()->hotseat_state());
+  EXPECT_FALSE(app_views_moved());
+
+  // Finish the animation to shown state.
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  ASSERT_EQ(HotseatState::kShownHomeLauncher,
+            GetShelfLayoutManager()->hotseat_state());
+  EXPECT_TRUE(app_views_moved());
+}
+
+// Tests that hotseat bounds don't jump when the hotseat widget is translated
+// when a transitionj animation starts.
+TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  // Add an app to shelf - the app will be used to track the shelf view position
+  // throughout the test.
+  ShelfTestUtil::AddAppShortcut("fake_app", TYPE_PINNED_APP);
+
+  // Open a window so the hotseat transitions to hidden state.
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  HotseatWidget* const hotseat_widget = GetPrimaryShelf()->hotseat_widget();
+  gfx::Point last_app_views_position =
+      hotseat_widget->GetWindowBoundsInScreen().origin();
+
+  // Returns whether the hotseat vertical position has changed comapred to
+  // |last_hotseat_y|, and updates |last_hotseat_y| to match the current hotseat
+  // position.
+  auto app_views_moved = [&last_app_views_position, &hotseat_widget]() -> bool {
+    gfx::Point app_views_position =
+        ShelfViewTestAPI(hotseat_widget->scrollable_shelf_view()->shelf_view())
+            .GetViewAt(0)
+            ->GetBoundsInScreen()
+            .origin();
+    hotseat_widget->GetLayer()->transform().TransformPoint(&app_views_position);
+    const bool position_changed = app_views_position != last_app_views_position;
+    last_app_views_position = app_views_position;
+    return position_changed;
+  };
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  const gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  // Drag upwards from the bottom of the screen to bring up hotseat - this
+  // should request presentation time metric to be reported.
+  generator->PressTouch(display_bounds.bottom_center());
+
+  // Drag the hotseat upward, to transition hotseat to the extended state.
+  const int shelf_height = GetShelfWidget()->GetWindowBoundsInScreen().height();
+  generator->MoveTouchBy(0, -shelf_height);
+  // Release touch, and verify the hotseat position remained the same.
+  generator->ReleaseTouch();
+  ASSERT_TRUE(app_views_moved());
+
+  ui::ScopedAnimationDurationScaleMode animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto set_animated_transform = [](ui::Layer* layer,
+                                   const gfx::Vector2d& initial_offset) {
+    // Set translate animation on the hotseat widget, to simulate a state which
+    // the widget may have while a transform animation is in progress.
+    gfx::Transform initial_transform;
+    initial_transform.Translate(initial_offset.x(), initial_offset.y());
+    layer->SetTransform(initial_transform);
+
+    // Set up an animation to identity transform.
+    ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
+    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(300));
+    layer->SetTransform(gfx::Transform());
+  };
+
+  set_animated_transform(hotseat_widget->GetLayer(), gfx::Vector2d(0, -10));
+  ASSERT_TRUE(app_views_moved());
+
+  // Tap in the middle of the screen to initiate transition to hidden state.
+  generator->GestureTapAt(display_bounds.CenterPoint());
+  ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+
+  // Verify the current hotseat position remains unchanged.
+  EXPECT_FALSE(app_views_moved());
+
+  // Wait for the hotseat animation to hidden state to finish.
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_TRUE(app_views_moved());
+
+  // Set the hotseat widget transform again.
+  set_animated_transform(hotseat_widget->GetLayer(), gfx::Vector2d(0, -10));
+  ASSERT_TRUE(app_views_moved());
+
+  // CLose the window to transition to the shown state.
+  window.reset();
+  ASSERT_EQ(HotseatState::kShownHomeLauncher,
+            GetShelfLayoutManager()->hotseat_state());
+
+  // The apparent hotseat bound should remain the same as the transition to show
+  // state starts.
+  EXPECT_FALSE(app_views_moved());
+
+  // Finish the animation to shown state.
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  EXPECT_TRUE(app_views_moved());
+
+  // Open another widow, and move the hotseat to extended state.
+  window = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  generator->PressTouch(display_bounds.bottom_center());
+  generator->MoveTouchBy(0, -shelf_height);
+  generator->ReleaseTouch();
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  ASSERT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  set_animated_transform(hotseat_widget->GetLayer(), gfx::Vector2d(0, -10));
+  ASSERT_TRUE(app_views_moved());
+
+  // Close the window to transition to shown hotseat state.
+  window.reset();
+  ASSERT_EQ(HotseatState::kShownHomeLauncher,
+            GetShelfLayoutManager()->hotseat_state());
+
+  // The apparent hotseat bound should remain the same as the transition to show
+  // state starts.
+  EXPECT_FALSE(app_views_moved());
+
+  // Finish the animation to shown state.
+  ShellTestApi().WaitForWindowFinishAnimating(
+      hotseat_widget->GetNativeWindow());
+  EXPECT_TRUE(app_views_moved());
 }
 
 TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
