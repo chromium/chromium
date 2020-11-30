@@ -75,6 +75,7 @@ source_set("feed_core_v2") {
     "types.h",
   ]
   deps = [
+    ":common",
     "//components/feed/core:feed_core",
     "//components/feed/core/common:feed_core_common",
     "//components/history/core/browser",
@@ -99,6 +100,11 @@ source_set("feed_core_v2") {
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/proto:proto_v2",
   ]
+}
+
+source_set("common") {
+  sources = [ "common_enums.h" ]
+  deps = []
 }
 
 source_set("core_unit_tests") {
@@ -127,6 +133,7 @@ source_set("core_unit_tests") {
   ]
 
   deps = [
+    ":common",
     ":feed_core_v2",
     ":unit_tests_bundle_data",
     "//base",

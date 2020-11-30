@@ -18,45 +18,6 @@ namespace base {
 class TickClock;
 }  // namespace base
 namespace feed {
-namespace internal {
-// This enum is used for a UMA histogram. Keep in sync with FeedEngagementType
-// in enums.xml.
-enum class FeedEngagementType {
-  kFeedEngaged = 0,
-  kFeedEngagedSimple = 1,
-  kFeedInteracted = 2,
-  kDeprecatedFeedScrolled = 3,
-  kFeedScrolled = 4,
-  kMaxValue = FeedEngagementType::kFeedScrolled,
-};
-
-// This enum must match FeedUserActionType in enums.xml.
-// Note that most of these have a corresponding UserMetricsAction reported here.
-// Exceptions are described below.
-enum class FeedUserActionType {
-  kTappedOnCard = 0,
-  // This is not an actual user action, so there will be no UserMetricsAction
-  // reported for this.
-  kShownCard = 1,
-  kTappedSendFeedback = 2,
-  kTappedLearnMore = 3,
-  kTappedHideStory = 4,
-  kTappedNotInterestedIn = 5,
-  kTappedManageInterests = 6,
-  kTappedDownload = 7,
-  kTappedOpenInNewTab = 8,
-  kOpenedContextMenu = 9,
-  // User action not reported here. See Suggestions.SurfaceVisible.
-  kOpenedFeedSurface = 10,
-  kTappedOpenInNewIncognitoTab = 11,
-  kEphemeralChange = 12,
-  kEphemeralChangeRejected = 13,
-  kTappedTurnOn = 14,
-  kTappedTurnOff = 15,
-  kMaxValue = kTappedTurnOff,
-};
-
-}  // namespace internal
 
 // Reports UMA metrics for feed.
 // Note this is inherited only for testing.

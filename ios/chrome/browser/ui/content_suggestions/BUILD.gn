@@ -191,7 +191,10 @@ source_set("metrics") {
     "discover_feed_metrics_recorder.h",
     "discover_feed_metrics_recorder.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/feed/core/v2:common",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

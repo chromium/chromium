@@ -11,12 +11,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/prefs.h"
 
 namespace feed {
 namespace {
-using feed::internal::FeedEngagementType;
-using feed::internal::FeedUserActionType;
+using feed::FeedEngagementType;
+using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
 // Maximum time to wait before declaring a load operation failed.
 // For both ContentSuggestions.Feed.UserJourney.OpenFeed
