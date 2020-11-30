@@ -633,6 +633,9 @@ void ResourceLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
     if (defers != WebURLLoader::DeferType::kNotDeferred &&
         !response_body_loader_->IsSuspended()) {
       response_body_loader_->Suspend();
+      if (defers == WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
+        response_body_loader_->EvictFromBackForwardCacheIfDrained();
+      }
     }
     if (defers == WebURLLoader::DeferType::kNotDeferred &&
         response_body_loader_->IsSuspended()) {
@@ -1214,6 +1217,10 @@ void ResourceLoader::HandleError(const ResourceError& error) {
 
   fetcher_->HandleLoaderError(resource_.Get(), error,
                               inflight_keepalive_bytes_);
+}
+
+void ResourceLoader::EvictFromBackForwardCache() {
+  fetcher_->EvictFromBackForwardCache();
 }
 
 void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {

@@ -2292,6 +2292,12 @@ void ResourceFetcher::RemoveSubresourceWebBundle(
   subresource_web_bundles_.erase(&subresource_web_bundle);
 }
 
+void ResourceFetcher::EvictFromBackForwardCache() {
+  if (!resource_load_observer_)
+    return;
+  resource_load_observer_->EvictFromBackForwardCache();
+}
+
 void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   visitor->Trace(properties_);

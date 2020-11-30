@@ -376,8 +376,8 @@ void URLLoaderClientImpl::OnReceiveRedirect(
   DCHECK(!has_received_response_head_);
   if (deferred_state_ ==
       blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
-    // TODO(yuzus): Evict here.
-    // Close the connections and disptach and OnComplete message.
+    resource_dispatcher_->EvictFromBackForwardCache(request_id_);
+    // Close the connections and dispatch and OnComplete message.
     url_loader_.reset();
     url_loader_client_receiver_.reset();
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));

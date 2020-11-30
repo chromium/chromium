@@ -89,6 +89,10 @@ void TestRequestPeer::OnCompletedRequest(
   context_->completion_status = status;
 }
 
+void TestRequestPeer::EvictFromBackForwardCache() {
+  return;
+}
+
 TestRequestPeer::Context::Context() = default;
 TestRequestPeer::Context::~Context() = default;
 

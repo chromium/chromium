@@ -306,6 +306,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void AddSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
   void RemoveSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
 
+  void EvictFromBackForwardCache();
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {

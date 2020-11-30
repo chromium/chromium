@@ -72,6 +72,11 @@ class BLINK_PLATFORM_EXPORT WebRequestPeer {
   virtual void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) = 0;
 
+  // Called when the page is in BackForwardCache, and when the network request
+  // is redirected or the datapipe is already drained. This method evicts the
+  // entry.
+  virtual void EvictFromBackForwardCache() = 0;
+
   virtual ~WebRequestPeer() {}
 };
 

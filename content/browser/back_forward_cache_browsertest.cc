@@ -3911,7 +3911,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
-                       KeepFetchingBodyInCache) {
+                       PageWithDrainedDatapipeRequestsShouldBeEvicted) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3933,26 +3933,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // Send response header and a piece of the body before navigating away.
   fetch_response.WaitForRequest();
   fetch_response.Send(net::HTTP_OK, "text/plain");
-  fetch_response.Send("bo");
+  fetch_response.Send("body");
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-
-  // Send the response body while A is in the back-forward cache.
-  fetch_response.Send("dy");
-  fetch_response.Done();
+  delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
                 FROM_HERE);
-
-  // A should get the correct response body.
-  EXPECT_EQ("body", EvalJs(rfh_a, "fetch_response_promise"));
 }
 
 // Disabled on Android, since we have problems starting up the websocket test

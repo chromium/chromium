@@ -409,6 +409,14 @@ void ResourceDispatcher::OnTransferSizeUpdated(int request_id,
       ->NotifyResourceTransferSizeUpdated(transfer_size_diff);
 }
 
+void ResourceDispatcher::EvictFromBackForwardCache(int request_id) {
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return;
+
+  return request_info->peer->EvictFromBackForwardCache();
+}
+
 void ResourceDispatcher::SetCorsExemptHeaderList(
     const std::vector<std::string>& list) {
   cors_exempt_header_list_ = list;

@@ -42,6 +42,7 @@ class TestRequestPeer : public blink::WebRequestPeer {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
+  void EvictFromBackForwardCache() override;
 
   struct Context final {
     Context();

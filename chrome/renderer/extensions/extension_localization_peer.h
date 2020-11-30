@@ -64,6 +64,7 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
+  void EvictFromBackForwardCache() override;
 
  private:
   friend class ExtensionLocalizationPeerTest;

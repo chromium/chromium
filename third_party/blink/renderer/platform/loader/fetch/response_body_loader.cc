@@ -420,6 +420,11 @@ void ResponseBodyLoader::DidCancelLoadingBody() {
   client_->DidCancelLoadingBody();
 }
 
+// TODO(yuzus): Remove this and provide the capability to the loader.
+void ResponseBodyLoader::EvictFromBackForwardCache() {
+  client_->EvictFromBackForwardCache();
+}
+
 void ResponseBodyLoader::Start() {
   DCHECK(!started_);
   DCHECK(!drained_);
@@ -449,6 +454,12 @@ void ResponseBodyLoader::Suspend() {
 
   DCHECK(!suspended_);
   suspended_ = true;
+}
+
+void ResponseBodyLoader::EvictFromBackForwardCacheIfDrained() {
+  if (IsDrained()) {
+    client_->EvictFromBackForwardCache();
+  }
 }
 
 void ResponseBodyLoader::Resume() {

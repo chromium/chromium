@@ -162,6 +162,8 @@ class CONTENT_EXPORT ResourceDispatcher {
 
   void OnTransferSizeUpdated(int request_id, int32_t transfer_size_diff);
 
+  void EvictFromBackForwardCache(int request_id);
+
   // Sets the CORS exempt header list for sanity checking.
   void SetCorsExemptHeaderList(const std::vector<std::string>& list);
 

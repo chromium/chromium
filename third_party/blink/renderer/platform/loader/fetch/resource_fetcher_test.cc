@@ -154,7 +154,7 @@ class ResourceFetcherTest : public testing::Test {
                         const ResourceError&,
                         int64_t encoded_data_length,
                         IsInternalRequest is_internal_request) override {}
-
+    void EvictFromBackForwardCache() override {}
     const base::Optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }
