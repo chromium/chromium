@@ -564,6 +564,14 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
               std::move(failed_callback)));
       break;
     }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsLatency: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunHttpsLatencyRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
+      break;
+    }
   }
 }
 

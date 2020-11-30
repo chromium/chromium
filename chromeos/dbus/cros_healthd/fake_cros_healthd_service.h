@@ -123,6 +123,7 @@ class FakeCrosHealthdService final
   void RunHttpFirewallRoutine(RunHttpFirewallRoutineCallback callback) override;
   void RunHttpsFirewallRoutine(
       RunHttpsFirewallRoutineCallback callback) override;
+  void RunHttpsLatencyRoutine(RunHttpsLatencyRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

@@ -404,6 +404,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunHttpsFirewallRoutine() => (RunRoutineResponse response);
+
+  // Requests that the HttpsLatency routine is created and started on the
+  // platform. This routine checks whether the HTTPS latency is within
+  // established tolerance levels for the system. This routine is only
+  // available if GetAvailableRoutines returned kHttpsLatency.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunHttpsLatencyRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

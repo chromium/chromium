@@ -138,6 +138,7 @@ bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
     case healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection:
     case healthd::DiagnosticRoutineEnum::kHttpFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
+    case healthd::DiagnosticRoutineEnum::kHttpsLatency:
     case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
     case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
@@ -177,6 +178,7 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
     case healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection:
     case healthd::DiagnosticRoutineEnum::kHttpFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
+    case healthd::DiagnosticRoutineEnum::kHttpsLatency:
     case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
     case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
