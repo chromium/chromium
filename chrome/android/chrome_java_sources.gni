@@ -820,6 +820,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/NearOomInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/NearOomReductionInfoBar.java",
+  "java/src/org/chromium/chrome/browser/infobar/PasswordInfoBarUtils.java",
   "java/src/org/chromium/chrome/browser/infobar/PermissionInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/PermissionUpdateInfoBarDelegate.java",
   "java/src/org/chromium/chrome/browser/infobar/PreviewsInfoBar.java",

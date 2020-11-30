@@ -11,21 +11,17 @@
 #include "base/scoped_observer.h"
 #include "base/values.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/android/infobars/save_password_infobar.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,38 +35,18 @@ void SavePasswordInfoBarDelegate::Create(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  base::Optional<AccountInfo> account_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              account_id);
-  bool is_single_account_user =
-      identity_manager->GetAccountsWithRefreshTokens().size() == 1;
-
   // is_smartlock_branding_enabled indicates whether the user is syncing
   // passwords to their Google Account.
   bool is_smartlock_branding_enabled =
       password_bubble_experiment::IsSmartLockUser(sync_service);
-  bool should_show_account_footer =
-      (is_smartlock_branding_enabled &&
-       base::FeatureList::IsEnabled(
-           autofill::features::
-               kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) &&
-      (!is_single_account_user ||
-       base::FeatureList::IsEnabled(
-           autofill::features::
-               kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers)) &&
-      account_info.has_value();
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
   infobar_service->AddInfoBar(std::make_unique<SavePasswordInfoBar>(
       base::WrapUnique(
           new SavePasswordInfoBarDelegate(web_contents, std::move(form_to_save),
                                           is_smartlock_branding_enabled)),
-      should_show_account_footer ? account_info : base::nullopt));
+      password_manager::GetAccountInfoForPasswordInfobars(
+          profile, /*is_syncing=*/is_smartlock_branding_enabled)));
 }
 
 SavePasswordInfoBarDelegate::~SavePasswordInfoBarDelegate() {

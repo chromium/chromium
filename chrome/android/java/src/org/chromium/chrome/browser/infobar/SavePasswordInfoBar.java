@@ -4,17 +4,10 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
@@ -52,29 +45,10 @@ public class SavePasswordInfoBar extends ConfirmInfoBar {
             detailsMessageLayout.addDescription(mDetailsMessage);
         }
 
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_PASSWORD_INFO_BAR_ACCOUNT_INDICATION_FOOTER)
-                && mAccountInfo != null && !TextUtils.isEmpty(mAccountInfo.getEmail())
+        if (mAccountInfo != null && !TextUtils.isEmpty(mAccountInfo.getEmail())
                 && mAccountInfo.getAccountImage() != null) {
-            Resources res = layout.getResources();
-            int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
-            int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
-
-            LinearLayout footer = (LinearLayout) LayoutInflater.from(layout.getContext())
-                                          .inflate(R.layout.infobar_footer, null, false);
-
-            TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
-            emailView.setText(mAccountInfo.getEmail());
-
-            RoundedCornerImageView profilePicView =
-                    (RoundedCornerImageView) footer.findViewById(R.id.infobar_footer_profile_pic);
-            Bitmap resizedProfilePic = Bitmap.createScaledBitmap(
-                    mAccountInfo.getAccountImage(), smallIconSize, smallIconSize, false);
-            profilePicView.setRoundedCorners(
-                    smallIconSize / 2, smallIconSize / 2, smallIconSize / 2, smallIconSize / 2);
-            profilePicView.setImageBitmap(resizedProfilePic);
-
-            layout.addFooterView(footer);
+            layout.addFooterView(PasswordInfoBarUtils.createAccountIndicationFooter(
+                    layout.getContext(), mAccountInfo.getAccountImage(), mAccountInfo.getEmail()));
         }
     }
 }
