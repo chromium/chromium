@@ -637,11 +637,6 @@ bool SendTabToSelfBridge::ShouldUpdateTargetDeviceInfoList() const {
 
 void SendTabToSelfBridge::SetTargetDeviceInfoList() {
   DCHECK(device_info_tracker_->IsSyncing());
-  // Verify that the current TrackedCacheGuid() is the local GUID without
-  // enforcing that tracked cache GUID is set.
-  DCHECK(device_info_tracker_->IsRecentLocalCacheGuid(
-             change_processor()->TrackedCacheGuid()) ||
-         change_processor()->TrackedCacheGuid().empty());
 
   std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
       device_info_tracker_->GetAllDeviceInfo();
