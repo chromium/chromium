@@ -97,18 +97,6 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
   fft_frame_->DoPaddedFFT(impulse_response, truncated_response_length);
 }
 
-std::unique_ptr<AudioChannel> HRTFKernel::CreateImpulseResponse() {
-  std::unique_ptr<AudioChannel> channel =
-      std::make_unique<AudioChannel>(FftSize());
-  FFTFrame fft_frame(*fft_frame_);
-
-  // Add leading delay back in.
-  fft_frame.AddConstantGroupDelay(frame_delay_);
-  fft_frame.DoInverseFFT(channel->MutableData());
-
-  return channel;
-}
-
 // Interpolates two kernels with x: 0 -> 1 and returns the result.
 std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
     HRTFKernel* kernel1,

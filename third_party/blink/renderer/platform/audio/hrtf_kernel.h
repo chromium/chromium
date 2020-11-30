@@ -78,9 +78,6 @@ class PLATFORM_EXPORT HRTFKernel {
   float SampleRate() const { return sample_rate_; }
   double Nyquist() const { return 0.5 * SampleRate(); }
 
-  // Converts back into impulse-response form.
-  std::unique_ptr<AudioChannel> CreateImpulseResponse();
-
  private:
   std::unique_ptr<FFTFrame> fft_frame_;
   float frame_delay_;
