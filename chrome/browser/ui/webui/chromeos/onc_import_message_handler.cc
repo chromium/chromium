@@ -99,7 +99,8 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
     has_error = true;
     result += "Some certificates could not be parsed.\n";
   }
-  cert_importer->ImportAllCertificatesUserInitiated(
+  auto* const cert_importer_ptr = cert_importer.get();
+  cert_importer_ptr->ImportAllCertificatesUserInitiated(
       certs->server_or_authority_certificates(), certs->client_certificates(),
       base::BindOnce(&OncImportMessageHandler::OnCertificatesImported,
                      weak_factory_.GetWeakPtr(), std::move(cert_importer),
