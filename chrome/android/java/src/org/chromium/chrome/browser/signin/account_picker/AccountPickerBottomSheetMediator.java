@@ -23,6 +23,7 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;

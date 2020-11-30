@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**

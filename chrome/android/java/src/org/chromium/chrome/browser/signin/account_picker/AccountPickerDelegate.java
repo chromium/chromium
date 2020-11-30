@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 
 /**
  * This interface is used in web sign-in flow for the account picker bottom sheet.

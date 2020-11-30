@@ -8,6 +8,7 @@
 #include <limits.h>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin_metrics {
@@ -206,6 +207,61 @@ enum class PromoAction : int {
   // mobile).
   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT
 };
+
+#if defined(OS_ANDROID)
+// This class is used to record user action that was taken after
+// receiving the header from Gaia in the web sign-in flow.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: AccountConsistencyPromoAction
+enum class AccountConsistencyPromoAction : int {
+  // Promo is not shown as there are no accounts on device.
+  SUPPRESSED_NO_ACCOUNTS = 0,
+  // User has dismissed the promo by tapping back button.
+  DISMISSED_BACK,
+  // User has tapped |Add account to device| from expanded account list.
+  ADD_ACCOUNT_STARTED,
+  // User tapped the button from the expanded account list to open the incognito
+  // interstitial
+  // then confirmed opening the page in the incognito tab by tapping |Continue|
+  // in the incognito
+  // interstitial.
+  STARTED_INCOGNITO_SESSION,
+  // User has selected the default account and signed in with it
+  SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+  // User has selected one of the non default accounts and signed in with it.
+  SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+  // The promo was shown to user.
+  SHOWN,
+  // Promo is not shown due to sign-in being disallowed either by an enterprise
+  // policy
+  // or by |Allow Chrome sign-in| toggle.
+  SUPPRESSED_SIGNIN_NOT_ALLOWED,
+  // User has added an account and signed in with this account.
+  // When this metric is recorded, we won't record
+  // SIGNED_IN_WITH_DEFAULT_ACCOUNT or
+  // SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT.
+  SIGNED_IN_WITH_ADDED_ACCOUNT,
+  // User has dismissed the promo by tapping on the scrim above the bottom
+  // sheet.
+  DISMISSED_SCRIM,
+  // User has dismissed the promo by swiping down the bottom sheet.
+  DISMISSED_SWIPE_DOWN,
+  // User has dismissed the promo by other means.
+  DISMISSED_OTHER,
+  // The auth error screen was shown to the user.
+  AUTH_ERROR_SHOWN,
+  // The generic error screen was shown to the user.
+  GENERIC_ERROR_SHOWN,
+  // User has dismissed the promo by tapping on the dismissal button in the
+  // bottom sheet.
+  DISMISSED_BUTTON,
+  // User has completed the account addition flow triggered from the bottom
+  // sheet.
+  ADD_ACCOUNT_COMPLETED,
+
+  MAX,
+};
+#endif  // defined(OS_ANDROID)
 
 // Enum values which enumerates all reasons to start sign in process.
 // A Java counterpart will be generated for this enum.
