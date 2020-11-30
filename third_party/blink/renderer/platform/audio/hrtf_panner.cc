@@ -42,8 +42,7 @@ const double kMaxDelayTimeSeconds = 0.002;
 const int kUninitializedAzimuth = -1;
 
 HRTFPanner::HRTFPanner(float sample_rate, HRTFDatabaseLoader* database_loader)
-    : Panner(PanningModel::kHRTF),
-      database_loader_(database_loader),
+    : database_loader_(database_loader),
       sample_rate_(sample_rate),
       crossfade_selection_(kCrossfadeSelection1),
       azimuth_index1_(kUninitializedAzimuth),

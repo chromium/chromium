@@ -80,9 +80,7 @@ class PLATFORM_EXPORT Panner {
   virtual bool RequiresTailProcessing() const = 0;
 
  protected:
-  explicit Panner(PanningModel model) : panning_model_(model) {}
-
-  PanningModel panning_model_;
+  Panner() = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Panner);
