@@ -108,10 +108,6 @@ bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
   return false;
 }
 
-// The amount the fingers must move in a direction before a continuous gesture
-// animation is started. This is to minimize accidental scrolls.
-constexpr int kContinuousGestureMoveThresholdDp = 10;
-
 // Handles vertical 3-finger scroll gesture by entering overview on scrolling
 // up, and exiting it on scrolling down. If entering overview and window cycle
 // list is open, close the window cycle list.
@@ -284,7 +280,7 @@ bool WmGestureHandler::ProcessEventImpl(int finger_count,
 
   if (is_enhanced_desk_animations_ && finger_count == 4) {
     DCHECK(!moved);
-    // Horizon gesture may be flipped.
+    // Horizontal gesture may be flipped.
     const float offset_x = GetOffset(-delta_x);
     const float scroll_x = GetOffset(scroll_data_->scroll_x);
     auto* desks_controller = DesksController::Get();

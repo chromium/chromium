@@ -459,6 +459,11 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
 
   ending_desk_screenshot_taken_ = true;
   OnScreenshotLayerCreated();
+
+  // On ending screenshot may delete |this|.
+  if (on_ending_screenshot_taken_callback_for_testing_)
+    std::move(on_ending_screenshot_taken_callback_for_testing_).Run();
+
   delegate_->OnEndingDeskScreenshotTaken();
 }
 
