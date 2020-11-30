@@ -118,9 +118,6 @@ class BASE_EXPORT FilePathWatcher {
   // FileDescriptorWatcher.
   bool Watch(const FilePath& path, Type type, const Callback& callback);
 
-  // Compatibility function (deprecated) for the above.
-  bool Watch(const FilePath& path, bool recursive, const Callback& callback);
-
  private:
   std::unique_ptr<PlatformDelegate> impl_;
 

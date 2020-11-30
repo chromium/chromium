@@ -43,11 +43,4 @@ bool FilePathWatcher::Watch(const FilePath& path,
   return impl_->Watch(path, type, callback);
 }
 
-bool FilePathWatcher::Watch(const FilePath& path,
-                            bool recursive,
-                            const Callback& callback) {
-  return Watch(path, recursive ? Type::kRecursive : Type::kNonRecursive,
-               callback);
-}
-
 }  // namespace base

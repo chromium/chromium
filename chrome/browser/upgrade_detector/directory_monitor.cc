@@ -73,11 +73,8 @@ void DirectoryMonitor::Start(Callback on_change_callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          static_cast<bool (base::FilePathWatcher::*)(
-              const base::FilePath&, base::FilePathWatcher::Type,
-              const base::FilePathWatcher::Callback&)>(
-              &base::FilePathWatcher::Watch),
-          base::Unretained(watcher_.get()), std::move(install_dir_), watch_type,
+          &base::FilePathWatcher::Watch, base::Unretained(watcher_.get()),
+          std::move(install_dir_), watch_type,
           base::BindRepeating(
               [](base::SequencedTaskRunner* main_sequence,
                  const Callback& on_change_callback, const base::FilePath&,
