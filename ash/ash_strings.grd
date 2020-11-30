@@ -1039,8 +1039,8 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_NETWORK" desc="The tooltip text indicating the phone has a SIM, but it is not connected to a mobile network.">
         No mobile network
       </message>
-      <message name="IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_STRENGTH" desc="The tooltip text indicating the strength of the phone's mobile network">
-        Mobile network. Signal strength of <ph name="SIGNAL_STRENGTH">$1<ex>1</ex></ph>
+      <message name="IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_NAME_AND_STRENGTH" desc="The tooltip text indicating the name and strength of the phone's mobile network.">
+        <ph name="WIRELESS_PROVIDER">$1<ex>Google Fi</ex></ph>, Signal strength <ph name="SIGNAL_STRENGTH">$2<ex>1</ex></ph> percent.
       </message>
       <message name="IDS_ASH_PHONE_HUB_BATTERY_STATUS_NOT_CHARGING" desc="The tooltip text indicating the phone is currently not charging">
         Not charging

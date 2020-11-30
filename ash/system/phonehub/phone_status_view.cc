@@ -48,6 +48,11 @@ constexpr gfx::Insets kBorderInsets(0, 16);
 // Typograph in dip.
 constexpr int kBatteryLabelFontSize = 11;
 
+// Multiplied by the int returned by GetSignalStrengthAsInt() to obtain a
+// percentage for the signal strength displayed by the tooltip when hovering
+// over the signal strength icon, and verbalized by ChromeVox.
+constexpr int kSignalStrengthToPercentageMultiplier = 25;
+
 int GetSignalStrengthAsInt(PhoneStatusModel::SignalStrength signal_strength) {
   switch (signal_strength) {
     case PhoneStatusModel::SignalStrength::kZeroBars:
@@ -224,8 +229,10 @@ void PhoneStatusView::UpdateMobileStatus() {
           network_icon::ImageType::BARS, primary_color, kStatusIconSize,
           signal_strength);
       tooltip_text = l10n_util::GetStringFUTF16(
-          IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_STRENGTH,
-          base::NumberToString16(signal_strength));
+          IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_NAME_AND_STRENGTH,
+          metadata.mobile_provider,
+          base::NumberToString16(signal_strength *
+                                 kSignalStrengthToPercentageMultiplier));
       break;
   }
 
