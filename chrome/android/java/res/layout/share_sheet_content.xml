@@ -89,8 +89,6 @@
       android:id="@+id/share_sheet_divider"
       android:background="@color/divider_line_bg_color"
       android:layout_height="1dp"
-      android:layout_marginLeft="16dp"
-      android:layout_marginRight="16dp"
       android:layout_width="match_parent"
       android:visibility="gone" />
 
