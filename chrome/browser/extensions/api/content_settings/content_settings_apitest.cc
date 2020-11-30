@@ -241,7 +241,10 @@ class ExtensionContentSettingsApiLazyTest
 
  protected:
   bool RunLazyTest(const std::string& extension_name) {
-    int browser_test_flags = kFlagNone;
+    // TODO(https://crbug.com/1146173): These tests are being run with
+    // file access to prevent flakiness for the SW version. This should
+    // be reverted to run without file access when this bug is fixed.
+    int browser_test_flags = kFlagEnableFileAccess;
     if (GetParam() == ContextType::kServiceWorker)
       browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
 
