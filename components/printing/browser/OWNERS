@@ -1,4 +1,3 @@
-# COMPONENT: Internals>Printing
 
 # Service sandbox specialization must be reviewed by SECURITY_OWNERS
 per-file service_sandbox_type.h=set noparent
