@@ -77,6 +77,19 @@ static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
 
 }  // namespace
 
+namespace internal {
+
+SystemProfileProto::InstallerPackage ToInstallerPackage(
+    base::StringPiece installer_package_name) {
+  if (installer_package_name.empty())
+    return SystemProfileProto::INSTALLER_PACKAGE_NONE;
+  if (installer_package_name == "com.android.vending")
+    return SystemProfileProto::INSTALLER_PACKAGE_GOOGLE_PLAY_STORE;
+  return SystemProfileProto::INSTALLER_PACKAGE_OTHER;
+}
+
+}  // namespace internal
+
 MetricsLog::IndependentMetricsLoader::IndependentMetricsLoader(
     std::unique_ptr<MetricsLog> log)
     : log_(std::move(log)),
@@ -232,10 +245,12 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 
 #if defined(OS_ANDROID)
-  os->set_build_fingerprint(
-      base::android::BuildInfo::GetInstance()->android_build_fp());
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  os->set_build_fingerprint(build_info->android_build_fp());
   if (!package_name.empty() && package_name != "com.android.chrome")
     system_profile->set_app_package_name(package_name);
+  system_profile->set_installer_package(
+      internal::ToInstallerPackage(build_info->installer_package_name()));
 #elif defined(OS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif

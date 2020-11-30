@@ -214,6 +214,10 @@ TEST_F(MetricsLogTest, BasicRecord) {
   // Hard to mock.
   system_profile->set_build_timestamp(
       parsed.system_profile().build_timestamp());
+#if defined(OS_ANDROID)
+  system_profile->set_installer_package(
+      parsed.system_profile().installer_package());
+#endif
 
   EXPECT_EQ(expected.SerializeAsString(), encoded);
 }
@@ -418,6 +422,15 @@ TEST_F(MetricsLogTest, TruncateEvents) {
   EXPECT_EQ(internal::kUserActionEventLimit,
             log.uma_proto().user_action_event_size());
   EXPECT_EQ(internal::kOmniboxEventLimit, log.uma_proto().omnibox_event_size());
+}
+
+TEST_F(MetricsLogTest, ToInstallerPackage) {
+  using internal::ToInstallerPackage;
+  EXPECT_EQ(SystemProfileProto::INSTALLER_PACKAGE_NONE, ToInstallerPackage(""));
+  EXPECT_EQ(SystemProfileProto::INSTALLER_PACKAGE_GOOGLE_PLAY_STORE,
+            ToInstallerPackage("com.android.vending"));
+  EXPECT_EQ(SystemProfileProto::INSTALLER_PACKAGE_OTHER,
+            ToInstallerPackage("foo"));
 }
 
 }  // namespace metrics
