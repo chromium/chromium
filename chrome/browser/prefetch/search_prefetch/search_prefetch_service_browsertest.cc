@@ -53,6 +53,7 @@ constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
 constexpr char kOmniboxSuggestPrefetchSecondItemQuery[] = "porgsandwich";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
 constexpr char kLoadInSubframe[] = "/load_in_subframe";
+constexpr char kClientHintsURL[] = "/accept_ch_with_lifetime.html";
 }  // namespace
 
 // A response that hangs after serving the start of the response.
@@ -73,6 +74,8 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     search_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     search_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    search_server_->ServeFilesFromSourceDirectory(
+        "chrome/test/data/client_hints");
     search_server_->RegisterRequestHandler(
         base::BindRepeating(&SearchPrefetchBaseBrowserTest::HandleSearchRequest,
                             base::Unretained(this)));
@@ -251,6 +254,9 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
     if (request.GetURL().spec().find("favicon") != std::string::npos)
+      return nullptr;
+
+    if (request.relative_url == kClientHintsURL)
       return nullptr;
 
     if (hang_requests_after_start_) {
@@ -515,6 +521,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(base::Contains(headers["Accept"], "text/html"));
   EXPECT_EQ(1u, search_server_request_count());
   EXPECT_EQ(1u, search_server_prefetch_request_count());
+  // Make sure we don't get client hints headers by default.
+  EXPECT_FALSE(base::Contains(headers, "viewport-width"));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
@@ -549,6 +557,38 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16("prefetch_3"));
   EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       BasicClientHintsFunctionality) {
+  // Fetch a response that will set client hints on future requests.
+  GURL client_hints = GetSearchServerQueryURLWithNoQuery(kClientHintsURL);
+  ui_test_utils::NavigateToURL(browser(), client_hints);
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  EXPECT_NE(std::string::npos,
+            search_server_requests()[0].GetURL().spec().find(search_terms));
+  auto headers = search_server_requests()[0].headers;
+
+  // Make sure we can get client hints headers.
+  EXPECT_TRUE(base::Contains(headers, "viewport-width"));
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,

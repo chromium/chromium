@@ -5,7 +5,10 @@
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/common/content_constants.h"
 #include "net/base/load_flags.h"
@@ -70,6 +73,15 @@ void BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
       content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
+
+  bool js_enabled = profile->GetPrefs() && profile->GetPrefs()->GetBoolean(
+                                               prefs::kWebKitJavascriptEnabled);
+
+  AddClientHintsHeadersToPrefetchNavigation(
+      resource_request->url, &(resource_request->headers), profile,
+      profile->GetClientHintsControllerDelegate(),
+      /*is_ua_override_on=*/false, js_enabled);
+
   // TODO(ryansturm): Find other headers that may need to be set.
   // https://crbug.com/1138648
 

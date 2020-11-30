@@ -99,6 +99,8 @@ source_set("browser_sources") {
     "child_process_termination_info.h",
     "clear_site_data_utils.h",
     "client_certificate_delegate.h",
+    "client_hints.cc",
+    "client_hints.h",
     "client_hints_controller_delegate.h",
     "color_chooser.h",
     "console_message.h",

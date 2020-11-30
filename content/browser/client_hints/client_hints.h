@@ -64,6 +64,17 @@ CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
     bool is_ua_override_on,
     FrameTreeNode*);
 
+// Adds client hints headers for a prefetch navigation that is not associated
+// with a frame. It must be a main frame navigation. |is_javascript_enabled| is
+// whether JavaScript is enabled in blink or not.
+CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
+    const GURL& url,
+    net::HttpRequestHeaders* headers,
+    BrowserContext* context,
+    ClientHintsControllerDelegate* delegate,
+    bool is_ua_override_on,
+    bool is_javascript_enabled);
+
 // Parses incoming client hints and persists them as appropriate. Returns
 // hints that were accepted as enabled even if they are not going to be
 // persisted. The distinction is relevant in legacy case where feature policy

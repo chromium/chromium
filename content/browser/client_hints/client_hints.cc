@@ -397,13 +397,13 @@ struct ClientHintsExtendedData {
     // instead. Otherwise, the current frame is an iframe and the main frame URL
     // was committed, so we can safely get it from it. Similarly, an
     // in-navigation main frame doesn't yet have a feature policy.
-    RenderFrameHostImpl* main_frame =
-        frame_tree_node->frame_tree()->GetMainFrame();
-    is_main_frame = frame_tree_node->IsMainFrame();
+    is_main_frame = !frame_tree_node || frame_tree_node->IsMainFrame();
     if (is_main_frame) {
       main_frame_url = url;
       is_1p_origin = true;
     } else {
+      RenderFrameHostImpl* main_frame =
+          frame_tree_node->frame_tree()->GetMainFrame();
       main_frame_url = main_frame->GetLastCommittedURL();
       feature_policy = main_frame->feature_policy();
       is_1p_origin = resource_origin.IsSameOriginWith(
@@ -564,7 +564,7 @@ bool ShouldAddClientHints(const GURL& url,
   // WebView) enable/disable JavaScript on a per-View basis, using the
   // WebPreferences setting.
   return IsValidURLForClientHints(url) && delegate->IsJavaScriptAllowed(url) &&
-         IsJavascriptEnabled(frame_tree_node);
+         (!frame_tree_node || IsJavascriptEnabled(frame_tree_node));
 }
 
 unsigned long RoundRttForTesting(const std::string& host,
@@ -583,6 +583,7 @@ void UpdateNavigationRequestClientUaHeaders(
     bool override_ua,
     FrameTreeNode* frame_tree_node,
     net::HttpRequestHeaders* headers) {
+  DCHECK(frame_tree_node);
   if (!delegate->UserAgentClientHintEnabled() ||
       !ShouldAddClientHints(url, frame_tree_node, delegate)) {
     return;
@@ -593,24 +594,14 @@ void UpdateNavigationRequestClientUaHeaders(
       ClientUaHeaderCallType::kAfterCreated, headers);
 }
 
-void AddNavigationRequestClientHintsHeaders(
-    const GURL& url,
-    net::HttpRequestHeaders* headers,
-    BrowserContext* context,
-    ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on,
-    FrameTreeNode* frame_tree_node) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
-            net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
-            static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
-  DCHECK(context);
+namespace {
 
-  if (!ShouldAddClientHints(url, frame_tree_node, delegate)) {
-    return;
-  }
-
+void AddRequestClientHintsHeaders(const GURL& url,
+                                  net::HttpRequestHeaders* headers,
+                                  BrowserContext* context,
+                                  ClientHintsControllerDelegate* delegate,
+                                  bool is_ua_override_on,
+                                  FrameTreeNode* frame_tree_node) {
   const ClientHintsExtendedData data(url, frame_tree_node, delegate);
 
   // Add Headers
@@ -660,6 +651,56 @@ void AddNavigationRequestClientHintsHeaders(
   // headers stay attached to the redirected request. Consider removing/adding
   // the client hints headers if the request is redirected with a change in
   // scheme or a change in the origin.
+}
+
+}  // namespace
+
+void AddPrefetchNavigationRequestClientHintsHeaders(
+    const GURL& url,
+    net::HttpRequestHeaders* headers,
+    BrowserContext* context,
+    ClientHintsControllerDelegate* delegate,
+    bool is_ua_override_on,
+    bool is_javascript_enabled) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+            net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
+  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+            static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
+  DCHECK(context);
+
+  // Since prefetch navigation doesn't have a related frame tree node,
+  // |is_javascript_enabled| is passed in to get whether a typical frame tree
+  // node would support javascript.
+  if (!is_javascript_enabled || !ShouldAddClientHints(url, nullptr, delegate)) {
+    return;
+  }
+
+  AddRequestClientHintsHeaders(url, headers, context, delegate,
+                               is_ua_override_on, nullptr);
+}
+
+void AddNavigationRequestClientHintsHeaders(
+    const GURL& url,
+    net::HttpRequestHeaders* headers,
+    BrowserContext* context,
+    ClientHintsControllerDelegate* delegate,
+    bool is_ua_override_on,
+    FrameTreeNode* frame_tree_node) {
+  DCHECK(frame_tree_node);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+            net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
+  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+            static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
+  DCHECK(context);
+
+  if (!ShouldAddClientHints(url, frame_tree_node, delegate)) {
+    return;
+  }
+
+  AddRequestClientHintsHeaders(url, headers, context, delegate,
+                               is_ua_override_on, frame_tree_node);
 }
 
 base::Optional<std::vector<network::mojom::WebClientHintsType>>
