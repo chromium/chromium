@@ -831,7 +831,7 @@ AutomationNodeImpl.prototype = {
   },
 
   get tableCellRowHeaders() {
-    var id = GetTableCellRowHeaders(this.treeID, this.id);
+    var ids = GetTableCellRowHeaders(this.treeID, this.id);
     if (ids && this.rootImpl) {
       var result = [];
       for (var i = 0; i < ids.length; i++)
