@@ -134,6 +134,22 @@ export class TabSearchAppElement extends PolymerElement {
         callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)),
         callbackRouter.tabsRemoved.addListener(
             tabIds => this.onTabsRemoved_(tabIds)));
+
+    // The infinite-list only triggers a dom-change event after it is ready
+    // and observes a change on the list items.
+    listenOnce(this.$.tabsList, 'dom-change', () => {
+      // Push showUI() to the event loop to allow reflow to occur following
+      // the DOM update.
+      setTimeout(() => {
+        this.apiProxy_.showUI();
+
+        // Record the first time it takes for the initial list of tabs to
+        // render.
+        chrome.metricsPrivate.recordTime(
+            'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
+            Math.round(window.performance.now()));
+      }, 0);
+    });
     this.updateTabs_();
   }
 
@@ -151,20 +167,6 @@ export class TabSearchAppElement extends PolymerElement {
           'Tabs.TabSearch.WebUI.TabListDataReceived',
           Math.round(Date.now() - getTabsStartTimestamp));
 
-      // Prior to the first load |this.openTabs_| has not been set. Record the
-      // time it takes for the initial list of tabs to render.
-      if (!this.openTabs_) {
-        listenOnce(this.$.tabsList, 'dom-change', () => {
-          // Push showUI() to the event loop to allow reflow to occur following
-          // the DOM update.
-          setTimeout(() => {
-            this.apiProxy_.showUI();
-            chrome.metricsPrivate.recordTime(
-                'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
-                Math.round(window.performance.now()));
-          }, 0);
-        });
-      }
       this.openTabs_ = profileTabs.windows;
     });
   }

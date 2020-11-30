@@ -276,9 +276,10 @@ suite('TabSearchAppTest', () => {
     };
 
     await setupTest(sampleData());
+    await testProxy.whenCalled('showUI');
     await waitAfterNextRender(tabSearchApp);
 
-    // Make sure that tab data has been recieved.
+    // Make sure that tab data has been received.
     verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
 
     // Ensure that |chrome.metricsPrivate.recordTime()| has been called
@@ -359,21 +360,16 @@ suite('TabSearchAppTest', () => {
         });
   });
 
-  /** TODO(crbug.com/1148061) Investigate/Fix flaky test. */
-  // Casting to avoid inexistent skip() function closure validation error.
-  /** @type {!Object} */
-  (test).skip('Verify showUI() is called correctly', async () => {
-    assertEquals(0, testProxy.getCallCount('showUI'));
-
+  test('Verify showUI() is called correctly', async () => {
     await setupTest(sampleData());
     await waitAfterNextRender(tabSearchApp);
 
     // Make sure that tab data has been received.
     verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
 
-    // Ensure that showUI() has been called once after initial data has been
+    // Ensure that showUI() has been called after the initial data has been
     // rendered.
-    assertEquals(1, testProxy.getCallCount('showUI'));
+    await testProxy.whenCalled('showUI');
 
     // Force a change to filtered tab data that would result in a
     // re-render.
