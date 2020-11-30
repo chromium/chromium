@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
@@ -3628,7 +3629,7 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
       local_frame->View()->ConvertToRootFrame(focus));
 }
 
-void WebFrameWidgetImpl::BatterySavingsChanged(WebBatterySavingsFlags savings) {
+void WebFrameWidgetImpl::BatterySavingsChanged(BatterySavingsFlags savings) {
   widget_base_->LayerTreeHost()->SetEnableFrameRateThrottling(
       savings & kAllowReducedFrameRate);
 }

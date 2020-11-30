@@ -1293,8 +1293,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class BatterySavingsChromeClient : public EmptyChromeClient {
  public:
-  MOCK_METHOD2(BatterySavingsChanged,
-               void(LocalFrame&, WebBatterySavingsFlags));
+  MOCK_METHOD2(BatterySavingsChanged, void(LocalFrame&, BatterySavingsFlags));
 };
 
 class DocumentBatterySavingsTest : public PageTestBase,

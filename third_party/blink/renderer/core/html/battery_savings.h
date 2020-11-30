@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BATTERY_SAVINGS_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BATTERY_SAVINGS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_BATTERY_SAVINGS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_BATTERY_SAVINGS_H_
 
 namespace blink {
 
@@ -11,15 +11,14 @@ namespace blink {
 // meta element. For instance:
 //
 // <meta name="battery-savings" content="allow-reduced-framerate">
-//
 // These constants are bits which can be combined.
-enum WebBatterySavings {
+enum BatterySavings {
   kAllowReducedFrameRate = 1 << 0,
   kAllowReducedScriptSpeed = 1 << 1,
 };
 
-using WebBatterySavingsFlags = unsigned;
+using BatterySavingsFlags = unsigned;
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BATTERY_SAVINGS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_BATTERY_SAVINGS_H_

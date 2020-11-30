@@ -163,7 +163,6 @@ source_set("blink_headers") {
     "platform/web_audio_device.h",
     "platform/web_audio_latency_hint.h",
     "platform/web_audio_source_provider.h",
-    "platform/web_battery_savings.h",
     "platform/web_blob_info.h",
     "platform/web_cache.h",
     "platform/web_callbacks.h",

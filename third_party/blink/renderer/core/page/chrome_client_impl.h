@@ -285,7 +285,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   double UserZoomFactor() const override;
 
   void BatterySavingsChanged(LocalFrame& main_frame,
-                             WebBatterySavingsFlags savings) override;
+                             BatterySavingsFlags savings) override;
 
   void FormElementReset(HTMLFormElement& element) override;
 

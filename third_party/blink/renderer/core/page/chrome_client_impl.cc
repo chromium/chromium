@@ -1167,7 +1167,7 @@ void ChromeClientImpl::SetDelegatedInkMetadata(
 }
 
 void ChromeClientImpl::BatterySavingsChanged(LocalFrame& main_frame,
-                                             WebBatterySavingsFlags savings) {
+                                             BatterySavingsFlags savings) {
   DCHECK(main_frame.IsMainFrame());
   WebLocalFrameImpl::FromFrame(main_frame)
       ->FrameWidgetImpl()

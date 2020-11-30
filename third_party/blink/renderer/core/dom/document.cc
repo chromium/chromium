@@ -67,7 +67,6 @@
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_battery_savings.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
@@ -187,6 +186,7 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
+#include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -7149,7 +7149,7 @@ void Document::BatterySavingsMetaChanged() {
   if (!root_element)
     return;
 
-  WebBatterySavingsFlags savings = 0;
+  BatterySavingsFlags savings = 0;
   for (HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
     if (EqualIgnoringASCIICase(meta_element.GetName(), "battery-savings")) {

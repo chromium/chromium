@@ -221,7 +221,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void InstallSupplements(LocalFrame&) override {}
   void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const override {}
   void BatterySavingsChanged(LocalFrame& main_frame,
-                             WebBatterySavingsFlags savings) override {}
+                             BatterySavingsFlags savings) override {}
 };
 
 class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
