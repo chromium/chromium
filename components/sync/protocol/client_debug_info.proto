@@ -78,12 +78,6 @@ message DatatypeAssociationStats {
   //       |data_type_id| instead of just one data type.
   optional int64 download_time_us = 13;
 
-  // Waiting time for higher priority types to finish association. This
-  // measures the time between finishing downloading data to requesting
-  // association manager to associate this batch of types. High priority types
-  // have near zero waiting time.
-  optional int64 association_wait_time_for_high_priority_us = 16;
-
   // Higher priority type that's configured before this type.
   repeated int32 high_priority_type_configured_before = 18;
 
@@ -114,6 +108,8 @@ message DatatypeAssociationStats {
   reserved 12;
   reserved "association_wait_time_for_same_priority_us";
   reserved 14;
+  reserved "association_wait_time_for_high_priority_us";
+  reserved 16;
   reserved "association_time_us";
   reserved 17;
   reserved "local_version_pre_association";

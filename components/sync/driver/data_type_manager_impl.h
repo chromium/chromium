@@ -241,11 +241,6 @@ class DataTypeManagerImpl : public DataTypeManager,
     base::Time download_start_time;
     // Time at which |types| finished downloading.
     base::Time download_ready_time;
-    // Time at which the association for |read_types| began.
-    base::Time ready_association_request_time;
-    // Time at which the association for |types| began (not relevant to
-    // |ready_types|.
-    base::Time full_association_request_time;
     // The set of types that are higher priority (and were therefore blocking)
     // the association of |types|.
     ModelTypeSet high_priority_types_before;

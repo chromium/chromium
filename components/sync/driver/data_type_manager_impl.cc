@@ -646,8 +646,6 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
 
   ModelTypeSet types_to_associate;
   if (group == READY_AT_CONFIG) {
-    association_types_queue_.front().ready_association_request_time =
-        base::Time::Now();
     types_to_associate = association_types_queue_.front().ready_types;
   } else {
     DCHECK_EQ(UNREADY_AT_CONFIG, group);
@@ -655,8 +653,6 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
     // downloading.
     if (association_types_queue_.front().download_ready_time.is_null())
       return;
-    association_types_queue_.front().full_association_request_time =
-        base::Time::Now();
     // We request the full set of types here for completeness sake. All types
     // within the READY_AT_CONFIG set will already be started and should be
     // no-ops.
@@ -736,13 +732,6 @@ void DataTypeManagerImpl::RecordConfigurationStats(ModelType type) {
     if (info.first_sync_types.Has(type)) {
       configuration_stats_[type].download_time =
           info.download_ready_time - info.download_start_time;
-    }
-    if (info.ready_types.Has(type)) {
-      configuration_stats_[type].association_wait_time_for_high_priority =
-          info.ready_association_request_time - info.download_start_time;
-    } else {
-      configuration_stats_[type].association_wait_time_for_high_priority =
-          info.full_association_request_time - info.download_ready_time;
     }
     configuration_stats_[type].high_priority_types_configured_before =
         info.high_priority_types_before;

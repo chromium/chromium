@@ -180,9 +180,6 @@ void DebugInfoEventListener::OnDataTypeConfigureComplete(
         configuration_stats[i].download_wait_time.InMicroseconds());
     datatype_stats->set_download_time_us(
         configuration_stats[i].download_time.InMicroseconds());
-    datatype_stats->set_association_wait_time_for_high_priority_us(
-        configuration_stats[i]
-            .association_wait_time_for_high_priority.InMicroseconds());
 
     for (ModelType type :
          configuration_stats[i].high_priority_types_configured_before) {
