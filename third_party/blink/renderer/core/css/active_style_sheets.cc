@@ -124,4 +124,45 @@ ActiveSheetsChange CompareActiveStyleSheets(
              : kActiveSheetsChanged;
 }
 
+namespace {
+
+bool HasMediaQueries(const ActiveStyleSheetVector& active_style_sheets) {
+  for (const auto& active_sheet : active_style_sheets) {
+    if (const MediaQuerySet* media_queries =
+            active_sheet.first->MediaQueries()) {
+      if (!media_queries->QueryVector().IsEmpty())
+        return true;
+    }
+    StyleSheetContents* contents = active_sheet.first->Contents();
+    if (contents->HasMediaQueries())
+      return true;
+  }
+  return false;
+}
+
+bool HasSizeDependentMediaQueries(
+    const ActiveStyleSheetVector& active_style_sheets) {
+  for (const auto& active_sheet : active_style_sheets) {
+    if (active_sheet.first->HasMediaQueryResults())
+      return true;
+    StyleSheetContents* contents = active_sheet.first->Contents();
+    if (!contents->HasRuleSet())
+      continue;
+    if (contents->GetRuleSet().Features().HasMediaQueryResults())
+      return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+bool AffectedByMediaValueChange(const ActiveStyleSheetVector& active_sheets,
+                                MediaValueChange change) {
+  if (change == MediaValueChange::kSize)
+    return HasSizeDependentMediaQueries(active_sheets);
+
+  DCHECK(change == MediaValueChange::kOther);
+  return HasMediaQueries(active_sheets);
+}
+
 }  // namespace blink
