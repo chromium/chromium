@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -567,7 +568,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return ReadableStream::Deserialize(
           script_state_,
           CreateEntangledPort(GetScriptState(), streams_[index].channel),
-          exception_state);
+          std::move(streams_[index].readable_optimizer), exception_state);
     }
     case kWritableStreamTransferTag: {
       if (!TransferableStreamsEnabled())
@@ -599,8 +600,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       // 1. Let readableRecord be !
       //    StructuredDeserializeWithTransfer(dataHolder.[[readable]], the
       //    current Realm).
-      ReadableStream* readable = ReadableStream::Deserialize(
-          script_state_, port_for_readable, exception_state);
+      ReadableStream* readable =
+          ReadableStream::Deserialize(script_state_, port_for_readable,
+                                      /*optimizer=*/nullptr, exception_state);
       if (!readable)
         return nullptr;
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -91,6 +92,35 @@ readAll(stream);
     NOTREACHED();
     return base::nullopt;
   }
+};
+
+// This breaks expectations for general ReadableStreamTransferringOptimizer
+// subclasses, but we don't care.
+class TestTransferringOptimizer final
+    : public ReadableStreamTransferringOptimizer {
+  USING_FAST_MALLOC(TestTransferringOptimizer);
+
+ public:
+  TestTransferringOptimizer() = default;
+
+  UnderlyingSourceBase* PerformInProcessOptimization(
+      ScriptState* script_state) override {
+    return MakeGarbageCollected<Source>(script_state);
+  }
+
+ private:
+  class Source final : public UnderlyingSourceBase {
+   public:
+    explicit Source(ScriptState* script_state)
+        : UnderlyingSourceBase(script_state) {}
+
+    ScriptPromise Start(ScriptState* script_state) override {
+      Controller()->Enqueue("foo");
+      Controller()->Enqueue(", bar");
+      Controller()->Close();
+      return ScriptPromise::CastUndefined(script_state);
+    }
+  };
 };
 
 TEST_F(ReadableStreamTest, CreateWithoutArguments) {
@@ -369,8 +399,9 @@ TEST_F(ReadableStreamTest, Serialize) {
   stream->Serialize(script_state, channel->port1(), ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(stream->IsLocked());
 
-  auto* transferred = ReadableStream::Deserialize(
-      script_state, channel->port2(), ASSERT_NO_EXCEPTION);
+  auto* transferred =
+      ReadableStream::Deserialize(script_state, channel->port2(),
+                                  /*optimizer=*/nullptr, ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(transferred);
 
   underlying_source->Enqueue(ScriptValue(isolate, V8String(isolate, "hello")));
@@ -379,6 +410,68 @@ TEST_F(ReadableStreamTest, Serialize) {
 
   EXPECT_EQ(ReadAll(scope, transferred),
             base::make_optional<String>("hello, bye"));
+}
+
+TEST_F(ReadableStreamTest, DeserializeWithNullOptimizer) {
+  V8TestingScope scope;
+  auto optimizer = std::make_unique<ReadableStreamTransferringOptimizer>();
+  auto* script_state = scope.GetScriptState();
+  auto* isolate = scope.GetIsolate();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+  ASSERT_TRUE(stream);
+
+  auto* channel =
+      MakeGarbageCollected<MessageChannel>(scope.GetExecutionContext());
+
+  stream->Serialize(script_state, channel->port1(), ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(stream->IsLocked());
+
+  auto* transferred =
+      ReadableStream::Deserialize(script_state, channel->port2(),
+                                  std::move(optimizer), ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(transferred);
+
+  underlying_source->Enqueue(ScriptValue(isolate, V8String(isolate, "hello")));
+  underlying_source->Enqueue(ScriptValue(isolate, V8String(isolate, ", bye")));
+  underlying_source->Close();
+
+  EXPECT_EQ(ReadAll(scope, transferred),
+            base::make_optional<String>("hello, bye"));
+}
+
+TEST_F(ReadableStreamTest, DeserializeWithTestOptimizer) {
+  V8TestingScope scope;
+  auto optimizer = std::make_unique<TestTransferringOptimizer>();
+  auto* script_state = scope.GetScriptState();
+  auto* isolate = scope.GetIsolate();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+  ASSERT_TRUE(stream);
+
+  auto* channel =
+      MakeGarbageCollected<MessageChannel>(scope.GetExecutionContext());
+
+  stream->Serialize(script_state, channel->port1(), ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(stream->IsLocked());
+
+  auto* transferred =
+      ReadableStream::Deserialize(script_state, channel->port2(),
+                                  std::move(optimizer), ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(transferred);
+
+  underlying_source->Enqueue(ScriptValue(isolate, V8String(isolate, "hello")));
+  underlying_source->Enqueue(ScriptValue(isolate, V8String(isolate, ", bye")));
+  underlying_source->Close();
+
+  EXPECT_EQ(ReadAll(scope, transferred),
+            base::make_optional<String>("hello, byefoo, bar"));
 }
 
 TEST_F(ReadableStreamTest, GarbageCollectJavaScriptUnderlyingSource) {

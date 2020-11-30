@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
@@ -790,7 +791,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
               .ToLocalChecked();
       if (done) {
         // We've finished reading `source1_`. Let's start reading `source2_`.
-        source_->has_finished_reading_source1_ = true;
+        source_->has_finished_reading_stream1_ = true;
         ReadableStreamDefaultController* controller =
             source_->Controller()->GetOriginalController();
         return source_->source2_
@@ -840,36 +841,32 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
   };
 
   ConcatenatingUnderlyingSource(ScriptState* script_state,
-                                UnderlyingSourceBase* source1,
+                                ReadableStream* stream1,
                                 UnderlyingSourceBase* source2)
       : UnderlyingSourceBase(script_state),
-        stream_for_source1_(ReadableStream::CreateWithCountQueueingStrategy(
-            script_state,
-            source1,
-            /*high_water_mark=*/0)),
+        stream1_(stream1),
         source2_(source2) {}
 
   ScriptPromise Start(ScriptState* script_state) override {
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
-    reader_for_source1_ = ReadableStream::AcquireDefaultReader(
-        script_state, stream_for_source1_, /*for_author_code=*/false,
-        exception_state);
+    reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
+        script_state, stream1_, /*for_author_code=*/false, exception_state);
     if (exception_state.HadException()) {
       return ScriptPromise::Reject(script_state, exception_state);
     }
-    DCHECK(reader_for_source1_);
+    DCHECK(reader_for_stream1_);
     return ScriptPromise::CastUndefined(script_state);
   }
 
   ScriptPromise pull(ScriptState* script_state) override {
-    if (has_finished_reading_source1_) {
+    if (has_finished_reading_stream1_) {
       return source2_->pull(script_state);
     }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     ScriptPromise read_promise =
-        reader_for_source1_->read(script_state, exception_state);
+        reader_for_stream1_->read(script_state, exception_state);
     if (exception_state.HadException()) {
       return ScriptPromise::Reject(script_state, exception_state);
     }
@@ -879,13 +876,13 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
   }
 
   ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
-    if (has_finished_reading_source1_) {
+    if (has_finished_reading_stream1_) {
       return source2_->Cancel(script_state, reason);
     }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     ScriptPromise cancel_promise1 =
-        reader_for_source1_->cancel(script_state, reason, exception_state);
+        reader_for_stream1_->cancel(script_state, reason, exception_state);
     if (exception_state.HadException()) {
       cancel_promise1 = ScriptPromise::Reject(script_state, exception_state);
     }
@@ -903,16 +900,16 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
   }
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(stream_for_source1_);
-    visitor->Trace(reader_for_source1_);
+    visitor->Trace(stream1_);
+    visitor->Trace(reader_for_stream1_);
     visitor->Trace(source2_);
     UnderlyingSourceBase::Trace(visitor);
   }
 
  private:
-  Member<ReadableStream> stream_for_source1_;
-  Member<ReadableStreamDefaultReader> reader_for_source1_;
-  bool has_finished_reading_source1_ = false;
+  Member<ReadableStream> stream1_;
+  Member<ReadableStreamDefaultReader> reader_for_stream1_;
+  bool has_finished_reading_stream1_ = false;
   Member<UnderlyingSourceBase> source2_;
 };
 
@@ -1026,18 +1023,37 @@ CORE_EXPORT WritableStream* CreateCrossRealmTransformWritable(
 CORE_EXPORT ReadableStream* CreateCrossRealmTransformReadable(
     ScriptState* script_state,
     MessagePort* port,
+    std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<CrossRealmTransformReadable>(script_state, port)
-      ->CreateReadableStream(exception_state);
+  ReadableStream* stream =
+      MakeGarbageCollected<CrossRealmTransformReadable>(script_state, port)
+          ->CreateReadableStream(exception_state);
+  if (!optimizer) {
+    return stream;
+  }
+  UnderlyingSourceBase* source2 =
+      optimizer->PerformInProcessOptimization(script_state);
+  if (!source2) {
+    return stream;
+  }
+
+  return ReadableStream::CreateWithCountQueueingStrategy(
+      script_state,
+      MakeGarbageCollected<ConcatenatingUnderlyingSource>(script_state, stream,
+                                                          source2),
+      /*high_water_mark=*/0);
 }
 
 ReadableStream* CreateConcatenatedReadableStream(
     ScriptState* script_state,
     UnderlyingSourceBase* source1,
     UnderlyingSourceBase* source2) {
+  auto* const stream1 =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source1,
+                                                      /*high_water_mark=*/0);
   return ReadableStream::CreateWithCountQueueingStrategy(
       script_state,
-      MakeGarbageCollected<ConcatenatingUnderlyingSource>(script_state, source1,
+      MakeGarbageCollected<ConcatenatingUnderlyingSource>(script_state, stream1,
                                                           source2),
       /*high_water_mark=*/0);
 }

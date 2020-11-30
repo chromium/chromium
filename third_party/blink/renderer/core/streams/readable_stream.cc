@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
@@ -1093,6 +1094,16 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     ScriptState* script_state,
     UnderlyingSourceBase* underlying_source,
     size_t high_water_mark) {
+  return CreateWithCountQueueingStrategy(script_state, underlying_source,
+                                         high_water_mark,
+                                         /*optimizer=*/nullptr);
+}
+
+ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
+    ScriptState* script_state,
+    UnderlyingSourceBase* underlying_source,
+    size_t high_water_mark,
+    std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
 
   // It's safer to use a workalike rather than a real CountQueuingStrategy
@@ -1129,6 +1140,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
         << "Ignoring an exception in CreateWithCountQueuingStrategy().";
   }
 
+  stream->transferring_optimizer_ = std::move(optimizer);
   return stream;
 }
 
@@ -1533,9 +1545,11 @@ void ReadableStream::Serialize(ScriptState* script_state,
   //    « port2 »).
 }
 
-ReadableStream* ReadableStream::Deserialize(ScriptState* script_state,
-                                            MessagePort* port,
-                                            ExceptionState& exception_state) {
+ReadableStream* ReadableStream::Deserialize(
+    ScriptState* script_state,
+    MessagePort* port,
+    std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
+    ExceptionState& exception_state) {
   // We need to execute JavaScript to call "Then" on v8::Promises. We will not
   // run author code.
   v8::Isolate::AllowJavascriptExecutionScope allow_js(
@@ -1551,8 +1565,8 @@ ReadableStream* ReadableStream::Deserialize(ScriptState* script_state,
   // 3. Perform ! SetUpCrossRealmTransformReadable(value, port).
   // In the standard |value| contains an uninitialized ReadableStream. In the
   // implementation, we create the stream here.
-  auto* readable =
-      CreateCrossRealmTransformReadable(script_state, port, exception_state);
+  auto* readable = CreateCrossRealmTransformReadable(
+      script_state, port, std::move(optimizer), exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -1579,6 +1593,11 @@ ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
 v8::Local<v8::Value> ReadableStream::GetStoredError(
     v8::Isolate* isolate) const {
   return stored_error_.NewLocal(isolate);
+}
+
+std::unique_ptr<ReadableStreamTransferringOptimizer>
+ReadableStream::TakeTransferringOptimizer() {
+  return std::move(transferring_optimizer_);
 }
 
 void ReadableStream::Trace(Visitor* visitor) const {

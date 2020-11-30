@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
@@ -240,8 +241,8 @@ void WritableStream::Serialize(ScriptState* script_state,
 
   // 5. Let readable be a new ReadableStream in the current Realm.
   // 6. Perform ! SetUpCrossRealmTransformReadable(readable, port1).
-  auto* readable =
-      CreateCrossRealmTransformReadable(script_state, port, exception_state);
+  auto* readable = CreateCrossRealmTransformReadable(
+      script_state, port, /*optimizer=*/nullptr, exception_state);
   if (exception_state.HadException()) {
     return;
   }

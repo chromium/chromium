@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -23,6 +24,7 @@ class MessagePort;
 class ReadableStreamDefaultController;
 class ReadableStreamDefaultReaderOrReadableStreamBYOBReader;
 class ReadableStreamGetReaderOptions;
+class ReadableStreamTransferringOptimizer;
 class ReadableWritablePair;
 class ScriptPromise;
 class ScriptState;
@@ -88,6 +90,11 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
       ScriptState* script_state,
       UnderlyingSourceBase* underlying_source,
       size_t high_water_mark);
+  static ReadableStream* CreateWithCountQueueingStrategy(
+      ScriptState* script_state,
+      UnderlyingSourceBase* underlying_source,
+      size_t high_water_mark,
+      std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer);
 
   // CreateReadableStream():
   // https://streams.spec.whatwg.org/#create-readable-stream
@@ -169,9 +176,11 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   void Serialize(ScriptState*, MessagePort* port, ExceptionState&);
 
-  static ReadableStream* Deserialize(ScriptState*,
-                                     MessagePort* port,
-                                     ExceptionState&);
+  static ReadableStream* Deserialize(
+      ScriptState*,
+      MessagePort* port,
+      std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
+      ExceptionState&);
 
   // Returns a reader that doesn't have the |for_author_code_| flag set. This is
   // used in contexts where reads should not be interceptable by user code. This
@@ -225,6 +234,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   }
 
   v8::Local<v8::Value> GetStoredError(v8::Isolate*) const;
+
+  std::unique_ptr<ReadableStreamTransferringOptimizer>
+  TakeTransferringOptimizer();
 
   void Trace(Visitor*) const override;
 
@@ -292,6 +304,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   Member<ReadableStreamDefaultController> readable_stream_controller_;
   Member<ReadableStreamGenericReader> reader_;
   TraceWrapperV8Reference<v8::Value> stored_error_;
+  std::unique_ptr<ReadableStreamTransferringOptimizer> transferring_optimizer_;
 };
 
 }  // namespace blink

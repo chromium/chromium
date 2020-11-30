@@ -451,4 +451,6 @@
     void generateTestReport(DOMString message);
 
     [RaisesException] void setIsAdSubframe(HTMLIFrameElement iframe);
+
+    [RaisesException, CallWith=ScriptState] ReadableStream createReadableStream(long queueSize, DOMString optimizer);
 };

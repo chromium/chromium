@@ -72,6 +72,7 @@ class Node;
 class OriginTrialsTest;
 class Page;
 class Range;
+class ReadableStream;
 class RecordTest;
 class ScriptPromiseResolver;
 class ScrollState;
@@ -612,6 +613,11 @@ class Internals final : public ScriptWrappable {
 
   void setIsAdSubframe(HTMLIFrameElement* iframe,
                        ExceptionState& exception_state);
+
+  ReadableStream* createReadableStream(ScriptState* script_state,
+                                       int32_t queueSize,
+                                       const String& optimizer,
+                                       ExceptionState&);
 
  private:
   Document* ContextDocument() const;

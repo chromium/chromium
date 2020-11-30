@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
@@ -163,7 +164,8 @@ TEST(TransferableStreamsTest, SmokeTest) {
       script_state, channel->port1(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(writable);
   auto* readable = CreateCrossRealmTransformReadable(
-      script_state, channel->port2(), ASSERT_NO_EXCEPTION);
+      script_state, channel->port2(), /*optimizer=*/nullptr,
+      ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(readable);
 
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);

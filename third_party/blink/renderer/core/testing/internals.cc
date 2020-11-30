@@ -139,6 +139,10 @@
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -222,6 +226,156 @@ class UseCounterHelperObserverImpl final : public UseCounterHelper::Observer {
   WebFeature feature_;
   DISALLOW_COPY_AND_ASSIGN(UseCounterHelperObserverImpl);
 };
+
+class TestReadableStreamSource : public UnderlyingSourceBase {
+ public:
+  class Generator;
+
+  using Reply = CrossThreadOnceFunction<void(std::unique_ptr<Generator>)>;
+  using OptimizerCallback =
+      CrossThreadOnceFunction<void(scoped_refptr<base::SingleThreadTaskRunner>,
+                                   Reply)>;
+
+  enum class Type {
+    kWithNullOptimizer,
+    kWithPerformNullOptimizer,
+    kWithObservableOptimizer,
+    kWithPerfectOptimizer,
+  };
+
+  class Generator final {
+    USING_FAST_MALLOC(Generator);
+
+   public:
+    explicit Generator(int max_count) : max_count_(max_count) {}
+
+    base::Optional<int> Generate() {
+      if (count_ >= max_count_) {
+        return base::nullopt;
+      }
+      ++count_;
+      return current_++;
+    }
+
+    void Add(int n) { current_ += n; }
+
+   private:
+    friend class Optimizer;
+
+    int current_ = 0;
+    int count_ = 0;
+    const int max_count_;
+  };
+
+  class Optimizer final : public ReadableStreamTransferringOptimizer {
+    USING_FAST_MALLOC(Optimizer);
+
+   public:
+    Optimizer(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+              OptimizerCallback callback,
+              Type type)
+        : task_runner_(std::move(task_runner)),
+          callback_(std::move(callback)),
+          type_(type) {}
+
+    UnderlyingSourceBase* PerformInProcessOptimization(
+        ScriptState* script_state) override;
+
+   private:
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    OptimizerCallback callback_;
+    const Type type_;
+  };
+
+  TestReadableStreamSource(ScriptState* script_state, Type type)
+      : UnderlyingSourceBase(script_state), type_(type) {}
+
+  ScriptPromise Start(ScriptState* script_state) override {
+    if (generator_) {
+      return ScriptPromise::CastUndefined(script_state);
+    }
+    resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    return resolver_->Promise();
+  }
+
+  ScriptPromise pull(ScriptState* script_state) override {
+    if (!generator_) {
+      return ScriptPromise::CastUndefined(script_state);
+    }
+
+    const auto result = generator_->Generate();
+    if (!result) {
+      Controller()->Close();
+      return ScriptPromise::CastUndefined(script_state);
+    }
+    Controller()->Enqueue(*result);
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  std::unique_ptr<ReadableStreamTransferringOptimizer>
+  CreateTransferringOptimizer(ScriptState* script_state) {
+    switch (type_) {
+      case Type::kWithNullOptimizer:
+        return nullptr;
+      case Type::kWithPerformNullOptimizer:
+        return std::make_unique<ReadableStreamTransferringOptimizer>();
+      case Type::kWithObservableOptimizer:
+      case Type::kWithPerfectOptimizer:
+        ExecutionContext* context = ExecutionContext::From(script_state);
+        return std::make_unique<Optimizer>(
+            context->GetTaskRunner(TaskType::kInternalDefault),
+            CrossThreadBindOnce(&TestReadableStreamSource::Detach,
+                                WrapCrossThreadWeakPersistent(this)),
+            type_);
+    }
+  }
+
+  void Attach(std::unique_ptr<Generator> generator) {
+    if (type_ == Type::kWithObservableOptimizer) {
+      generator->Add(100);
+    }
+    generator_ = std::move(generator);
+    if (resolver_) {
+      resolver_->Resolve();
+    }
+  }
+
+  void Detach(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+              Reply reply) {
+    Controller()->Close();
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(std::move(reply), std::move(generator_)));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(resolver_);
+    UnderlyingSourceBase::Trace(visitor);
+  }
+
+ private:
+  const Type type_;
+  std::unique_ptr<Generator> generator_;
+  Member<ScriptPromiseResolver> resolver_;
+};
+
+UnderlyingSourceBase*
+TestReadableStreamSource::Optimizer::PerformInProcessOptimization(
+    ScriptState* script_state) {
+  TestReadableStreamSource* source =
+      MakeGarbageCollected<TestReadableStreamSource>(script_state, type_);
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  Reply reply = CrossThreadBindOnce(&TestReadableStreamSource::Attach,
+                                    WrapCrossThreadPersistent(source));
+
+  PostCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(std::move(callback_),
+                          context->GetTaskRunner(TaskType::kInternalDefault),
+                          std::move(reply)));
+  return source;
+}
 
 }  // namespace
 
@@ -3512,6 +3666,33 @@ void Internals::setIsAdSubframe(HTMLIFrameElement* iframe,
   child_frame->SetIsAdSubframe(parent_is_ad
                                    ? blink::mojom::AdFrameType::kChildAd
                                    : blink::mojom::AdFrameType::kRootAd);
+}
+
+ReadableStream* Internals::createReadableStream(
+    ScriptState* script_state,
+    int32_t queue_size,
+    const String& optimizer,
+    ExceptionState& exception_state) {
+  TestReadableStreamSource::Type type;
+  if (optimizer.IsEmpty()) {
+    type = TestReadableStreamSource::Type::kWithNullOptimizer;
+  } else if (optimizer == "perform-null") {
+    type = TestReadableStreamSource::Type::kWithPerformNullOptimizer;
+  } else if (optimizer == "observable") {
+    type = TestReadableStreamSource::Type::kWithObservableOptimizer;
+  } else if (optimizer == "perfect") {
+    type = TestReadableStreamSource::Type::kWithPerformNullOptimizer;
+  } else {
+    exception_state.ThrowRangeError(
+        "The \"optimizer\" parameter is not correctly set.");
+    return nullptr;
+  }
+  auto* source =
+      MakeGarbageCollected<TestReadableStreamSource>(script_state, type);
+  source->Attach(std::make_unique<TestReadableStreamSource::Generator>(10));
+  return ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, source, queue_size,
+      source->CreateTransferringOptimizer(script_state));
 }
 
 }  // namespace blink
