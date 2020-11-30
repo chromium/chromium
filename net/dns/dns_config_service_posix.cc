@@ -259,7 +259,8 @@ class DnsConfigServicePosix::Watcher {
 // Hosts file should never change on Android or iOS (and watching it on Android
 // is problematic; see http://crbug.com/600442), so don't watch it there.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
-    if (!hosts_watcher_.Watch(base::FilePath(service_->file_path_hosts_), false,
+    if (!hosts_watcher_.Watch(base::FilePath(service_->file_path_hosts_),
+                              base::FilePathWatcher::Type::kNonRecursive,
                               base::BindRepeating(&Watcher::OnHostsChanged,
                                                   base::Unretained(this)))) {
       LOG(ERROR) << "DNS hosts watch failed to start.";
