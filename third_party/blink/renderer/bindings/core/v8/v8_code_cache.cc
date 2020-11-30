@@ -321,17 +321,14 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   ReferrerScriptInfo referrer_info;
   v8::ScriptOrigin origin(
       V8String(isolate, file_name),
-      v8::Integer::New(isolate, 0),  // line_offset
-      v8::Integer::New(isolate, 0),  // column_offset
-      v8::Boolean::New(
-          isolate,
-          opaque_mode == OpaqueMode::kNotOpaque),  // is_shared_cross_origin
-      v8::Local<v8::Integer>(),                    // script_id
-      V8String(isolate, String("")),               // source_map_url
-      v8::Boolean::New(isolate,
-                       opaque_mode == OpaqueMode::kOpaque),  // is_opaque
-      v8::False(isolate),                                    // is_wasm
-      v8::False(isolate),                                    // is_module
+      0,                                      // line_offset
+      0,                                      // column_offset
+      opaque_mode == OpaqueMode::kNotOpaque,  // is_shared_cross_origin
+      -1,                                     // script_id
+      V8String(isolate, String("")),          // source_map_url
+      opaque_mode == OpaqueMode::kOpaque,     // is_opaque
+      false,                                  // is_wasm
+      false,                                  // is_module
       referrer_info.ToV8HostDefinedOptions(isolate));
   v8::Local<v8::String> code(V8String(isolate, script_string));
   v8::ScriptCompiler::Source source(code, origin);

@@ -203,10 +203,9 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   DCHECK_LE(scopes_size, base::size(scopes));
 
   v8::ScriptOrigin origin(
-      V8String(isolate, source_url_),
-      v8::Integer::New(isolate, position_.line_.ZeroBasedInt()),
-      v8::Integer::New(isolate, position_.column_.ZeroBasedInt()),
-      v8::True(isolate));  // True as |SanitizeScriptErrors::kDoNotSanitize|
+      V8String(isolate, source_url_), position_.line_.ZeroBasedInt(),
+      position_.column_.ZeroBasedInt(),
+      true);  // true as |SanitizeScriptErrors::kDoNotSanitize|
   v8::ScriptCompiler::Source source(V8String(isolate, script_body_), origin);
 
   v8::Local<v8::Function> compiled_function;
