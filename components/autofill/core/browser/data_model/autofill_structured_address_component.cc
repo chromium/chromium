@@ -508,6 +508,27 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   DCHECK(success);
 }
 
+bool AddressComponent::WipeInvalidStructure() {
+  if (IsAtomic()) {
+    return false;
+  }
+
+  // Test that each structured token is part of the subcomponent.
+  // This is not perfect, because different components can match with an
+  // overlapping portion of the unstructured string, but it guarantees that all
+  // information in the components is contained in the unstructured
+  // representation.
+  for (const auto* component : Subcomponents()) {
+    if (GetValue().find(component->GetValue()) == base::string16::npos) {
+      // If the value of one component could not have been found, wipe the full
+      // structure.
+      RecursivelyUnsetSubcomponents();
+      return true;
+    }
+  }
+  return false;
+}
+
 void AddressComponent::FormatValueFromSubcomponents() {
   // Get the most suited format string.
   base::string16 format_string = GetBestFormatString();

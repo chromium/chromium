@@ -1044,9 +1044,10 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
   AutofillProfile profile;
   profile.set_origin(std::string());
 
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
-                                           ASCIIToUTF16("Street Address"),
-                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      ASCIIToUTF16("Street Name House Number Premise Subpremise"),
+      VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
                                            ASCIIToUTF16("Street Name"),
                                            VerificationStatus::kFormatted);
@@ -1070,9 +1071,9 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"), VerificationStatus::kObserved);
 
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_DEPENDENT_STREET_NAME, ASCIIToUTF16("Dependent Street Name"),
-      VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_STREET_NAME,
+                                           ASCIIToUTF16(""),
+                                           VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER,
                                            ASCIIToUTF16("House Number"),
@@ -1131,7 +1132,7 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_STREET_NAME),
             ASCIIToUTF16("Street Name"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
-            ASCIIToUTF16("Dependent Street Name"));
+            ASCIIToUTF16(""));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
             ASCIIToUTF16("House Number"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_SUBPREMISE),
@@ -1162,15 +1163,16 @@ TEST_F(AutofillTableTest,
   AutofillProfile profile;
   profile.set_origin(std::string());
 
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
-                                           ASCIIToUTF16("Street Address"),
-                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      ASCIIToUTF16("Street Name House Number Premise Subpremise"),
+      VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
                                            ASCIIToUTF16("Street Name"),
                                            VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_DEPENDENT_STREET_NAME, ASCIIToUTF16("Dependent Street Name"),
-      VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_STREET_NAME,
+                                           ASCIIToUTF16(""),
+                                           VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER,
                                            ASCIIToUTF16("House Number"),
                                            VerificationStatus::kUserVerified);
@@ -1196,7 +1198,7 @@ TEST_F(AutofillTableTest,
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_STREET_NAME),
             ASCIIToUTF16("Street Name"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
-            ASCIIToUTF16("Dependent Street Name"));
+            ASCIIToUTF16(""));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
             ASCIIToUTF16("House Number"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_SUBPREMISE),

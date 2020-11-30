@@ -226,6 +226,10 @@ class Address : public AddressComponent {
   // a status.
   void MigrateLegacyStructure(bool is_verified_profile);
 
+  // Checks if the street address contains an invalid structure and wipes it if
+  // necessary.
+  bool WipeInvalidStructure() override;
+
  private:
   StreetAddress street_address_{this};
   PostalCode postal_code_{this};

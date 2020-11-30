@@ -446,8 +446,9 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   for (ServerFieldType type : types) {
     int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
-    if (comparison != 0)
+    if (comparison != 0) {
       return comparison;
+    }
   }
 
   for (ServerFieldType type : types) {
@@ -475,8 +476,9 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     };
     for (ServerFieldType type : new_types) {
       int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
-      if (comparison != 0)
+      if (comparison != 0) {
         return comparison;
+      }
     }
 
     for (ServerFieldType type : types) {
@@ -644,35 +646,47 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
   // Should only be called if the profile is already verified.
   DCHECK(IsVerified());
 
-  // Only applicable for structured names.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
-    return false;
-  }
-
   AutofillProfileComparator comparator(app_locale);
-  NameInfo name;
+
   DVLOG(1) << "Merging profile structure information :\nSource = " << profile
            << "\nDest = " << *this;
 
+  bool merged = false;
+
   // It is already verified upstream that the profiles and therefore also the
-  // names are mergeable.
-  // However, the structure should only be merged if the full names are token
-  // equivalent.
-  if (!structured_address::AreStringTokenEquivalent(
-          GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL)))
-    return false;
-
-  if (!comparator.MergeNames(profile, *this, &name)) {
-    NOTREACHED();
-    return false;
+  // names and addresses are mergeable.
+  // However, the structure should only be merged if the full names or addresses
+  // are token equivalent.
+  if (structured_address::StructuredNamesEnabled() &&
+      structured_address::AreStringTokenEquivalent(
+          GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL))) {
+    NameInfo name;
+    if (!comparator.MergeNames(profile, *this, &name)) {
+      NOTREACHED();
+      return false;
+    }
+    if (name_ != name) {
+      name_ = name;
+      merged = true;
+    }
   }
 
-  if (name_ != name) {
-    name_ = name;
-    return true;
+  if (structured_address::StructuredAddressesEnabled() &&
+      structured_address::AreStringTokenEquivalent(
+          GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+          profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))) {
+    Address address;
+    if (!comparator.MergeAddresses(profile, *this, &address)) {
+      NOTREACHED();
+      return false;
+    }
+    if (address_ != address) {
+      address_ = address;
+      merged = true;
+    }
   }
-  return false;
+
+  return merged;
 }
 
 bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
