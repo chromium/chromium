@@ -3227,10 +3227,6 @@ bool AXNodeObject::ShouldUseLayoutBuilderTraversal() const {
   // it's possible for the same object to become a child of 2 different nodes,
   // e.g. if it has a different layout parent and DOM parent.
 
-  // Avoid calling AXNodeObject logic for continuations.
-  if (GetLayoutObject() && GetLayoutObject()->IsElementContinuation())
-    return false;
-
   Node* node = GetNode();
   if (!node)
     return false;
