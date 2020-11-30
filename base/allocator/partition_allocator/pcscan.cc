@@ -23,9 +23,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/platform_thread.h"
 #include "base/trace_event/base_tracing.h"
 
 namespace base {
@@ -72,10 +70,9 @@ class MetadataAllocator {
 };
 
 void ReportStats(size_t swept_bytes, size_t last_size, size_t new_size) {
-  VLOG(2) << "swept bytes: " << swept_bytes;
-  VLOG(2) << "quarantine size: " << last_size << " -> " << new_size;
-  VLOG(2) << "quarantine survival rate: "
-          << static_cast<double>(new_size) / last_size;
+  VLOG(2) << "quarantine size: " << last_size << " -> " << new_size
+          << ", swept bytes: " << swept_bytes
+          << ", survival rate: " << static_cast<double>(new_size) / last_size;
 }
 
 template <bool thread_safe>
@@ -90,6 +87,15 @@ uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
   return reinterpret_cast<uintptr_t>(
       root.AdjustPointerForExtrasAdd(allocation_start));
 }
+
+namespace scopes {
+constexpr char kPCScan[] = "PCScan";
+constexpr char kClear[] = "PCScan.Clear";
+constexpr char kScan[] = "PCScan.Scan";
+constexpr char kSweep[] = "PCScan.Sweep";
+}  // namespace scopes
+constexpr char kTraceCategory[] = "partition_alloc";
+#define PCSCAN_EVENT(scope) TRACE_EVENT0(kTraceCategory, (scope))
 
 }  // namespace
 
@@ -246,6 +252,7 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
+  PCSCAN_EVENT(scopes::kClear);
   for (auto super_page : super_pages_) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
@@ -309,8 +316,8 @@ size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
 
 template <bool thread_safe>
 size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
+  PCSCAN_EVENT(scopes::kScan);
   size_t new_quarantine_size = 0;
-
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains quarantined objects.
   for (auto scan_area : large_scan_areas_) {
@@ -348,6 +355,7 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
 
 template <bool thread_safe>
 size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
+  PCSCAN_EVENT(scopes::kSweep);
   size_t swept_bytes = 0;
 
   for (auto super_page : super_pages_) {
@@ -414,7 +422,7 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::RunOnce() && {
-  TRACE_EVENT0("partition_alloc", "PCScan");
+  PCSCAN_EVENT(scopes::kPCScan);
 
   // Clear all quarantined objects.
   ClearQuarantinedObjects();
@@ -462,7 +470,15 @@ class PCScan<thread_safe>::PCScanThread final {
  private:
   friend class base::NoDestructor<PCScanThread>;
 
-  PCScanThread() { std::thread{&PCScanThread::TaskLoop, this}.detach(); }
+  PCScanThread() {
+    std::thread{[this] {
+      static constexpr const char* kThreadName = "PCScan";
+      // Ideally we should avoid mixing base:: and std:: API for threading, but
+      // this is useful for visualizing the pcscan thread in chrome://tracing.
+      base::PlatformThread::SetName(kThreadName);
+      TaskLoop();
+    }}.detach();
+  }
 
   void TaskLoop() {
     while (true) {
