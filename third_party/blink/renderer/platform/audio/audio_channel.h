@@ -34,7 +34,6 @@
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -42,8 +41,6 @@ namespace blink {
 // samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
 class PLATFORM_EXPORT AudioChannel {
-  USING_FAST_MALLOC(AudioChannel);
-
  public:
   // Memory can be externally referenced, or can be internally allocated with an
   // AudioFloatArray.
@@ -130,8 +127,6 @@ class PLATFORM_EXPORT AudioChannel {
   float* raw_pointer_;
   std::unique_ptr<AudioFloatArray> mem_buffer_;
   bool silent_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioChannel);
 };
 
 }  // namespace blink

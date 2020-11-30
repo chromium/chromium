@@ -34,6 +34,7 @@ include_rules = [
     "+base/numerics/safe_conversions.h",
     "+base/optional.h",
     "+base/rand_util.h",
+    "+base/ranges",
     "+base/sequence_checker.h",
     "+base/sequenced_task_runner.h",
     "+base/single_thread_task_runner.h",
