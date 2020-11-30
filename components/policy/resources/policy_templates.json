@@ -13351,9 +13351,9 @@
       'id': 207,
       'caption': '''Enable remote attestation for the device''',
       'tags': [],
-      'desc': '''If true, remote attestation is allowed for the device and a certificate will automatically be generated and uploaded to the Device Management Server.
+      'desc': '''Setting the policy to Enabled allows remote attestation for the device. A certificate is automatically generated and uploaded to the Device Management Server.
 
-          If it is set to false, or if it is not set, no certificate will be generated and calls to the enterprise.platformKeys extension API will fail.''',
+      Setting the policy to Disabled or leaving it unset means no certificate is generated and calls to the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> fail.''',
     },
     {
       'name': 'AttestationEnabledForUser',
@@ -13369,9 +13369,9 @@
       'id': 200,
       'caption': '''Enable remote attestation for the user''',
       'tags': [],
-      'desc': '''If true, the user can use the hardware on Chrome devices to remote attest its identity to the privacy CA via the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> using <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph>.
+      'desc': '''Setting the policy to Enabled lets users use the hardware on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices to remotely attest its identity to the privacy CA through the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> using <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph>.
 
-          If it is set to false, or if it is not set, calls to the API will fail with an error code.''',
+      Setting the policy to Disabled or leaving it unset has calls to the API fail with an error code.''',
     },
     {
       'name': 'AttestationExtensionAllowlist',
@@ -13390,9 +13390,9 @@
       'id': 785,
       'caption': '''Extensions allowed to to use the remote attestation API''',
       'tags': [],
-      'desc': '''This policy specifies the allowed extensions to use the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> functions for remote attestation. Extensions must be added to this list to use the API.
+      'desc': '''Setting the policy specifies the allowed extensions to use the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> functions for remote attestation. Extensions must be on this list to use the API.
 
-          If an extension is not in the list, or the list is not set, the call to the API will fail with an error code.''',
+      If an extension is not in the list, or the list is not set, the call to the API fails with an error code.''',
     },
     {
       'name': 'AttestationExtensionWhitelist',
@@ -13412,11 +13412,11 @@
       'id': 201,
       'caption': '''Extensions allowed to to use the remote attestation API''',
       'tags': [],
-      'desc': '''This policy specifies the allowed extensions to use the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> function <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph> for remote attestation. Extensions must be added to this list to use the API.
+      'desc': '''This policy is deprecated, please use <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME">AttestationExtensionAllowlist</ph> instead.
 
-          If an extension is not in the list, or the list is not set, the call to the API will fail with an error code.
+      Setting the policy specifies the allowed extensions to use the <ph name="ENTERPRISE_PLATFORM_KEYS_API">Enterprise Platform Keys API</ph> function <ph name="CHALLENGE_USER_KEY_FUNCTION">chrome.enterprise.platformKeys.challengeUserKey()</ph> for remote attestation. Extensions must be on this list to use the API.
 
-          This policy is deprecated, please use <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME">AttestationExtensionAllowlist</ph> instead.''',
+      If an extension is not in the list, or the list is not set, the call to the API fails with an error code.''',
     },
     {
       'name': 'AttestationForContentProtectionEnabled',
@@ -13433,11 +13433,9 @@
       'id': 239,
       'caption': '''Enable the use of remote attestation for content protection for the device''',
       'tags': [],
-      'desc': '''Chrome OS devices can use remote attestation (Verified Access) to get a certificate issued by the Chrome OS CA that asserts the device is eligible to play protected content.  This process involves sending hardware endorsement information to the Chrome OS CA which uniquely identifies the device.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices use remote attestation (Verified Access) to get a certificate issued by the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> CA that asserts the device is eligible to play protected content. This process involves sending hardware endorsement information to the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> CA which uniquely identifies the device.
 
-          If this setting is false, the device will not use remote attestation for content protection and the device may be unable to play protected content.
-
-          If this setting is true, or if it is not set, remote attestation may be used for content protection.''',
+      Setting the policy to Disabled means the device won't use remote attestation for content protection, and the device may not play protected content.''',
     },
     {
       'name': 'SuppressChromeFrameTurndownPrompt',
