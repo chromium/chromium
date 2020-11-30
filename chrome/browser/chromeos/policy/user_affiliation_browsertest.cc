@@ -11,8 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/chromeos/policy/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,8 +23,6 @@
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
@@ -47,13 +46,6 @@ class ResourceContext;
 namespace policy {
 
 namespace {
-
-constexpr char kAffiliatedUser[] = "affiliated-user@example.com";
-constexpr char kAffiliatedUserGaiaId[] = "1234567890";
-constexpr char kAffiliatedUserObjGuid[] =
-    "{11111111-1111-1111-1111-111111111111}";
-constexpr char kAffiliationID[] = "some-affiliation-id";
-constexpr char kAnotherAffiliationID[] = "another-affiliation-id";
 
 struct Params {
   Params(bool affiliated, bool active_directory)
@@ -124,14 +116,8 @@ class UserAffiliationBrowserTest
  public:
   UserAffiliationBrowserTest() {
     set_exit_when_last_browser_closes(false);
-
-    if (GetParam().active_directory) {
-      account_id_ = AccountId::AdFromUserEmailObjGuid(kAffiliatedUser,
-                                                      kAffiliatedUserObjGuid);
-    } else {
-      account_id_ = AccountId::FromUserEmailGaiaId(kAffiliatedUser,
-                                                   kAffiliatedUserGaiaId);
-    }
+    affiliation_mixin_.SetIsForActiveDirectory(GetParam().active_directory);
+    affiliation_mixin_.set_affiliated(GetParam().affiliated);
   }
 
  protected:
@@ -143,7 +129,8 @@ class UserAffiliationBrowserTest
           command_line);
     } else {
       const cryptohome::AccountIdentifier cryptohome_id =
-          cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+          cryptohome::CreateAccountIdentifierFromAccountId(
+              affiliation_mixin_.account_id());
       command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
                                       cryptohome_id.account_id());
       command_line->AppendSwitchASCII(
@@ -159,31 +146,10 @@ class UserAffiliationBrowserTest
     // shutdown in ChromeBrowserMain.
     chromeos::SessionManagerClient::InitializeFakeInMemory();
     chromeos::UpstartClient::InitializeFake();
-    chromeos::FakeAuthPolicyClient* fake_authpolicy_client = nullptr;
     if (GetParam().active_directory) {
       chromeos::AuthPolicyClient::InitializeFake();
-      fake_authpolicy_client = chromeos::FakeAuthPolicyClient::Get();
-      fake_authpolicy_client->DisableOperationDelayForTesting();
+      chromeos::FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
     }
-
-    DevicePolicyCrosTestHelper test_helper;
-    UserPolicyBuilder user_policy;
-    const std::set<std::string> device_affiliation_ids = {kAffiliationID};
-    const std::set<std::string> user_affiliation_ids = {
-        GetParam().affiliated ? kAffiliationID : kAnotherAffiliationID};
-
-    auto* session_manager_client = chromeos::FakeSessionManagerClient::Get();
-    AffiliationTestHelper affiliation_helper =
-        GetParam().active_directory
-            ? AffiliationTestHelper::CreateForActiveDirectory(
-                  session_manager_client, fake_authpolicy_client)
-            : AffiliationTestHelper::CreateForCloud(session_manager_client);
-
-    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
-        &test_helper, device_affiliation_ids));
-
-    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
-        &user_policy, account_id_, user_affiliation_ids));
 
     // Set retry delay to prevent timeouts.
     policy::DeviceManagementService::SetRetryDelayForTesting(0);
@@ -216,8 +182,6 @@ class UserAffiliationBrowserTest
     TearDownTestSystemSlot();
   }
 
-  AccountId account_id_;
-
   void SetUpTestSystemSlot() {
     bool system_slot_constructed_successfully = false;
     base::RunLoop loop;
@@ -232,9 +196,10 @@ class UserAffiliationBrowserTest
   }
 
   void VerifyAffiliationExpectations() {
-    EXPECT_EQ(GetParam().affiliated, user_manager::UserManager::Get()
-                                         ->FindUser(account_id_)
-                                         ->IsAffiliated());
+    EXPECT_EQ(GetParam().affiliated,
+              user_manager::UserManager::Get()
+                  ->FindUser(affiliation_mixin_.account_id())
+                  ->IsAffiliated());
 
     // Also test system slot availability, which is tied to user affiliation.
     // This gives us additional information, because for the system slot to be
@@ -244,6 +209,9 @@ class UserAffiliationBrowserTest
     EXPECT_EQ(GetParam().affiliated,
               IsSystemSlotAvailable(ProfileManager::GetPrimaryUserProfile()));
   }
+
+  DevicePolicyCrosTestHelper test_helper_;
+  AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
 
  private:
   void SetUpTestSystemSlotOnIO(bool* out_system_slot_constructed_successfully) {
@@ -284,12 +252,12 @@ class UserAffiliationBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(UserAffiliationBrowserTest, PRE_PRE_TestAffiliation) {
-  AffiliationTestHelper::PreLoginUser(account_id_);
+  AffiliationTestHelper::PreLoginUser(affiliation_mixin_.account_id());
 }
 
 // This part of the test performs a regular sign-in through the login manager.
 IN_PROC_BROWSER_TEST_P(UserAffiliationBrowserTest, PRE_TestAffiliation) {
-  AffiliationTestHelper::LoginUser(account_id_);
+  AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   ASSERT_NO_FATAL_FAILURE(VerifyAffiliationExpectations());
 }
 

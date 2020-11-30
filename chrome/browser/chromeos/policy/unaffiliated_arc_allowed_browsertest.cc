@@ -12,8 +12,8 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/chromeos/policy/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -31,11 +31,6 @@ namespace policy {
 
 namespace {
 
-constexpr char kAffiliatedUserEmail[] = "affiliated-user@example.com";
-constexpr char kAffiliatedUserGaiaId[] = "affiliated-user_example.com";
-constexpr char kAffiliationID[] = "some-affiliation-id";
-constexpr char kAnotherAffiliationID[] = "another-affiliation-id";
-
 struct Params {
   explicit Params(bool _affiliated) : affiliated(_affiliated) {}
   bool affiliated;
@@ -47,11 +42,9 @@ class UnaffiliatedArcAllowedTest
     : public DevicePolicyCrosBrowserTest,
       public ::testing::WithParamInterface<Params> {
  public:
-  UnaffiliatedArcAllowedTest()
-      : affiliated_account_id_(
-            AccountId::FromUserEmailGaiaId(kAffiliatedUserEmail,
-                                           kAffiliatedUserGaiaId)) {
+  UnaffiliatedArcAllowedTest() {
     set_exit_when_last_browser_closes(false);
+    affiliation_mixin_.set_affiliated(GetParam().affiliated);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -59,24 +52,6 @@ class UnaffiliatedArcAllowedTest
     arc::SetArcAvailableCommandLineForTesting(command_line);
     AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
         command_line);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
-
-    UserPolicyBuilder user_policy;
-    DevicePolicyCrosTestHelper test_helper;
-
-    const std::set<std::string> device_affiliation_ids = {kAffiliationID};
-    const std::set<std::string> user_affiliation_ids = {
-        GetParam().affiliated ? kAffiliationID : kAnotherAffiliationID};
-
-    AffiliationTestHelper affiliation_helper =
-        AffiliationTestHelper::CreateForCloud(session_manager_client());
-    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
-        &test_helper, device_affiliation_ids));
-    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
-        &user_policy, affiliated_account_id_, user_affiliation_ids));
   }
 
   void TearDownOnMainThread() override {
@@ -107,20 +82,20 @@ class UnaffiliatedArcAllowedTest
     run_loop.Run();
   }
 
-  const AccountId affiliated_account_id_;
+  AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(UnaffiliatedArcAllowedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(UnaffiliatedArcAllowedTest, PRE_ProfileTest) {
-  AffiliationTestHelper::PreLoginUser(affiliated_account_id_);
+  AffiliationTestHelper::PreLoginUser(affiliation_mixin_.account_id());
 }
 
 IN_PROC_BROWSER_TEST_P(UnaffiliatedArcAllowedTest, ProfileTest) {
-  AffiliationTestHelper::LoginUser(affiliated_account_id_);
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(affiliated_account_id_);
+  AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
+  const user_manager::User* user = user_manager::UserManager::Get()->FindUser(
+      affiliation_mixin_.account_id());
   const Profile* profile =
       chromeos::ProfileHelper::Get()->GetProfileByUser(user);
   const bool affiliated = GetParam().affiliated;

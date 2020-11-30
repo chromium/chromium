@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
@@ -90,13 +91,13 @@ class EnterpriseDeviceAttributesTest
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, PRE_Success) {
-  policy::AffiliationTestHelper::PreLoginUser(affiliated_account_id_);
+  policy::AffiliationTestHelper::PreLoginUser(affiliation_mixin_.account_id());
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
   const bool is_affiliated = GetParam();
   EXPECT_EQ(is_affiliated, user_manager::UserManager::Get()
-                               ->FindUser(affiliated_account_id_)
+                               ->FindUser(affiliation_mixin_.account_id())
                                ->IsAffiliated());
 
   const Extension* extension =

@@ -22,18 +22,6 @@
 
 namespace {
 
-// If running with |is_affiliated|==true, the test will use the same
-// |kAffiliationID| as user and device affiliation ID, which makes the user
-// affiliated (affiliation IDs overlap).
-// If running with |is_affiliated|==false, the test will use |kAffiliationID| as
-// device and |kAnotherAffiliationID| as user affiliation ID, which makes the
-// user non-affiliated (affiliation IDs don't overlap).
-constexpr char kAffiliationID[] = "some-affiliation-id";
-constexpr char kAnotherAffiliationID[] = "another-affiliation-id";
-
-constexpr char kAffiliatedUserEmail[] = "user@example.com";
-constexpr char kAffiliatedUserGaiaId[] = "1029384756";
-
 base::FilePath GetTestDataDir() {
   return base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
 }
@@ -44,15 +32,12 @@ namespace extensions {
 
 ForceInstalledAffiliatedExtensionApiTest::
     ForceInstalledAffiliatedExtensionApiTest(bool is_affiliated)
-    : is_affiliated_(is_affiliated),
-      affiliated_account_id_(
-          AccountId::FromUserEmailGaiaId(kAffiliatedUserEmail,
-                                         kAffiliatedUserGaiaId)),
-      test_install_attributes_(
+    : test_install_attributes_(
           chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                               "fake-id")) {
   set_exit_when_last_browser_closes(false);
   set_chromeos_user_ = false;
+  affiliation_mixin_.set_affiliated(is_affiliated);
 }
 
 ForceInstalledAffiliatedExtensionApiTest::
@@ -70,26 +55,6 @@ void ForceInstalledAffiliatedExtensionApiTest::
   // Initialize clients here so they are available during setup. They will be
   // shutdown in ChromeBrowserMain.
   chromeos::SessionManagerClient::InitializeFakeInMemory();
-  policy::AffiliationTestHelper affiliation_helper =
-      policy::AffiliationTestHelper::CreateForCloud(
-          chromeos::FakeSessionManagerClient::Get());
-
-  std::set<std::string> device_affiliation_ids;
-  device_affiliation_ids.insert(kAffiliationID);
-  ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
-      &test_helper_, device_affiliation_ids));
-  test_helper_.InstallOwnerKey();
-
-  std::set<std::string> user_affiliation_ids;
-  if (is_affiliated_) {
-    user_affiliation_ids.insert(kAffiliationID);
-  } else {
-    user_affiliation_ids.insert(kAnotherAffiliationID);
-  }
-  policy::UserPolicyBuilder user_policy;
-  ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
-      &user_policy, affiliated_account_id_, user_affiliation_ids));
-  test_helper_.InstallOwnerKey();
 
   // Init the user policy provider.
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
@@ -112,7 +77,7 @@ void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
   const base::ListValue* users =
       g_browser_process->local_state()->GetList("LoggedInUsers");
   if (!users->empty()) {
-    policy::AffiliationTestHelper::LoginUser(affiliated_account_id_);
+    policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   }
 
   force_install_mixin_.InitWithMockPolicyProvider(profile(), &policy_provider_);

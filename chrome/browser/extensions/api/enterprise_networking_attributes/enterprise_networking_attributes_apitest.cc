@@ -149,13 +149,13 @@ class EnterpriseNetworkingAttributesTest
 
 IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest,
                        PRE_GetNetworkDetails) {
-  policy::AffiliationTestHelper::PreLoginUser(affiliated_account_id_);
+  policy::AffiliationTestHelper::PreLoginUser(affiliation_mixin_.account_id());
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
   const bool is_affiliated = GetParam();
   EXPECT_EQ(is_affiliated, user_manager::UserManager::Get()
-                               ->FindUser(affiliated_account_id_)
+                               ->FindUser(affiliation_mixin_.account_id())
                                ->IsAffiliated());
 
   const Extension* extension =
