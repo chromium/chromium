@@ -551,9 +551,18 @@ void AccelerometerFileReader::ReadFileAndNotify() {
     char reading[reading_size];
     int bytes_read = base::ReadFile(reading_data.path, reading, reading_size);
     if (bytes_read < reading_size) {
-      LOG(ERROR) << "Accelerometer Read " << bytes_read << " byte(s), expected "
-                 << reading_size << " bytes from accelerometer "
-                 << reading_data.path.MaybeAsASCII();
+      // Dynamically throttle error logging as this can be called many times
+      // every second if path is consistently inaccessible.
+      static uint64_t sLogCount = 1U;
+      static uint64_t sLogThrottle = 1U;
+      if ((sLogCount ^ sLogThrottle) == 0) {
+        LOG(ERROR) << "Accelerometer Read " << bytes_read
+                   << " byte(s), expected " << reading_size
+                   << " bytes from accelerometer "
+                   << reading_data.path.MaybeAsASCII();
+        sLogThrottle *= 2U;
+      }
+      sLogCount++;
       return;
     }
     for (AccelerometerSource source : reading_data.sources) {
