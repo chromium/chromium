@@ -59,7 +59,8 @@ void RunProbe(base::WaitableEvent* waiter,
       std::move(overrides),
       base::BindRepeating(&SystemNetworkContextManager::GetContext,
                           base::Unretained(manager)));
-  runner->RunProbe(base::BindOnce(
+  auto* const runner_ptr = runner.get();
+  runner_ptr->RunProbe(base::BindOnce(
       [](base::WaitableEvent* waiter, bool* success,
          std::unique_ptr<DnsProbeRunner> runner) {
         *success = runner->result() == DnsProbeRunner::CORRECT;
