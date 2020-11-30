@@ -2,6 +2,8 @@
 
 This is a list of changes to [First Contentful Paint](https://web.dev/fcp).
 
+* Chrome 89
+  * Metric definition improvement: [First Contentful Paint reported for quick tab switches](2020_11_fcp.md)
 * Chrome 86
   * Metric definition improvements: [First Contentful Paint reported for videos, webgl2 canvases, and non-contentful SVG](2020_07_fcp.md)
 * Chrome 84
