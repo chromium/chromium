@@ -54,6 +54,10 @@ struct VideoEncoderClientConfig {
   uint32_t bitrate = kDefaultBitrate;
   // The desired framerate in frames/second.
   uint32_t framerate = 30.0;
+  // The interval of calling VideoEncodeAccelerator::Encode(). If this is
+  // base::nullopt, Encode() is called once VideoEncodeAccelerator consumes
+  // the previous VideoFrames.
+  base::Optional<base::TimeDelta> encode_interval = base::nullopt;
   // The number of frames to be encoded. This can be more than the number of
   // frames in the video, and in which case the VideoEncoderClient loops the
   // video during encoding.

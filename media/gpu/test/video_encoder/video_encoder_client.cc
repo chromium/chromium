@@ -500,6 +500,15 @@ void VideoEncoderClient::EncodeNextFrameTask() {
 
   num_encodes_requested_++;
   num_outstanding_encode_requests_++;
+  if (encoder_client_config_.encode_interval) {
+    // Schedules the next encode here if we're encoding at a fixed ratio.
+    // Otherwise the next encode will be scheduled immediately when the previous
+    // operation is done in EncodeDoneTask().
+    encoder_client_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&VideoEncoderClient::EncodeNextFrameTask, weak_this_),
+        *encoder_client_config_.encode_interval);
+  }
 }
 
 void VideoEncoderClient::FlushTask() {
@@ -543,10 +552,12 @@ void VideoEncoderClient::EncodeDoneTask(base::TimeDelta timestamp) {
   num_outstanding_encode_requests_--;
   FlushDoneTaskIfNeeded();
 
-  // Queue the next frame to be encoded.
-  encoder_client_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoEncoderClient::EncodeNextFrameTask, weak_this_));
+  if (!encoder_client_config_.encode_interval) {
+    // Queue the next frame to be encoded.
+    encoder_client_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VideoEncoderClient::EncodeNextFrameTask, weak_this_));
+  }
 }
 
 void VideoEncoderClient::FlushDoneTask(bool success) {

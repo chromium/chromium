@@ -59,6 +59,8 @@ constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
 
 media::test::VideoEncoderTestEnvironment* g_env;
 
+constexpr size_t kNumFramesToEncodeForPerformance = 300;
+
 // Default output folder used to store performance metrics.
 constexpr const base::FilePath::CharType* kDefaultOutputFolder =
     FILE_PATH_LITERAL("perf_metrics");
@@ -272,7 +274,8 @@ class VideoEncoderTest : public ::testing::Test {
   // Create a new video encoder instance.
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(const Video* video,
                                                    VideoCodecProfile profile,
-                                                   uint32_t bitrate) {
+                                                   uint32_t bitrate,
+                                                   uint32_t encoder_rate = 0) {
     LOG_ASSERT(video);
 
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
@@ -283,6 +286,10 @@ class VideoEncoderTest : public ::testing::Test {
     constexpr size_t kNumTemporalLayers = 1u;
     VideoEncoderClientConfig config(video, profile, kNumTemporalLayers,
                                     bitrate);
+    config.num_frames_to_encode = kNumFramesToEncodeForPerformance;
+    if (encoder_rate != 0)
+      config.encode_interval =
+          base::TimeDelta::FromSeconds(/*secs=*/1u) / encoder_rate;
     auto video_encoder =
         VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory(),
                              std::move(bitstream_processors));
@@ -297,9 +304,9 @@ class VideoEncoderTest : public ::testing::Test {
 
 }  // namespace
 
-// Encode video from start to end while measuring uncapped performance. This
-// test will encode a video as fast as possible, and gives an idea about the
-// maximum output of the encoder.
+// Encode |kNumFramesToEncodeForPerformance| frames while measuring uncapped
+// performance. This test will encode a video as fast as possible, and gives an
+// idea about the maximum output of the encoder.
 TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
   auto encoder =
       CreateVideoEncoder(g_env->Video(), g_env->Profile(), g_env->Bitrate());
@@ -314,9 +321,28 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
   metrics.WriteToFile();
 
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), kNumFramesToEncodeForPerformance);
 }
 
+// Encode |kNumFramesToEncodeForPerformance| frames while measuring uncapped
+// performance. This test will encode a video at a fixed ratio, 30fps.
+// This test can be used to measure the cpu metrics during encoding.
+TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
+  const uint32_t kEncodeRate = 30;
+  auto encoder = CreateVideoEncoder(g_env->Video(), g_env->Profile(),
+                                    g_env->Bitrate(), kEncodeRate);
+  performance_evaluator_->StartMeasuring();
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  performance_evaluator_->StopMeasuring();
+
+  auto metrics = performance_evaluator_->Metrics();
+  metrics.WriteToConsole();
+  metrics.WriteToFile();
+
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), kNumFramesToEncodeForPerformance);
+}
 }  // namespace test
 }  // namespace media
 
