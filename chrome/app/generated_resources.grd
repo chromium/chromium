@@ -7251,7 +7251,7 @@ the Bookmarks menu.">
         Google Pay
       </message>
 
-      <if expr="is_linux and not chromeos">
+      <if expr="is_linux and not chromeos and not lacros">
         <message name="IDS_SHOW_WINDOW_DECORATIONS" desc="The label of a radio button in the options dialog for using the system title bar and borders.">
           Use system title bar and borders
         </message>

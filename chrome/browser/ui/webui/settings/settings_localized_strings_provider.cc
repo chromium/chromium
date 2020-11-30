@@ -348,9 +348,11 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
     {"useSystemTheme", IDS_SETTINGS_USE_SYSTEM_THEME},
     {"classicTheme", IDS_SETTINGS_CLASSIC_THEME},
     {"useClassicTheme", IDS_SETTINGS_USE_CLASSIC_THEME},
-    {"showWindowDecorations", IDS_SHOW_WINDOW_DECORATIONS},
 #else
     {"resetToDefaultTheme", IDS_SETTINGS_RESET_TO_DEFAULT_THEME},
+#endif
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"showWindowDecorations", IDS_SHOW_WINDOW_DECORATIONS},
 #endif
 #if defined(OS_MAC)
     {"tabsToLinks", IDS_SETTINGS_TABS_TO_LINKS_PREF},
