@@ -241,10 +241,6 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::RestartInternal() {
     if (should_collapse_initiator) {
       status.extended_error_code = static_cast<int>(
           blink::ResourceRequestBlockedReason::kCollapsedByClient);
-    } else {
-      status.extended_error_code =
-          static_cast<int>(blink::ResourceRequestBlockedReason::
-                               kBlockedByExtensionCrbug1128174Investigation);
     }
     OnRequestError(status, state_on_error);
     return;
@@ -592,11 +588,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     if (result == net::ERR_BLOCKED_BY_CLIENT) {
       // The request was cancelled synchronously. Dispatch an error notification
       // and terminate the request.
-      network::URLLoaderCompletionStatus completion_status(result);
-      completion_status.extended_error_code =
-          static_cast<int>(blink::ResourceRequestBlockedReason::
-                               kBlockedByExtensionCrbug1128174Investigation);
-      OnRequestError(completion_status, state_on_error);
+      OnRequestError(network::URLLoaderCompletionStatus(result),
+                     state_on_error);
       return;
     }
 
@@ -988,11 +981,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       } else {
         state = State::kRejectedByOnHeadersReceivedForFinalResponse;
       }
-      network::URLLoaderCompletionStatus completion_status(result);
-      completion_status.extended_error_code =
-          static_cast<int>(blink::ResourceRequestBlockedReason::
-                               kBlockedByExtensionCrbug1128174Investigation);
-      OnRequestError(completion_status, state);
+      OnRequestError(network::URLLoaderCompletionStatus(result), state);
       return;
     }
 

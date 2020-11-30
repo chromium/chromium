@@ -131,9 +131,9 @@ enum class FailedReason {
   kBlockedBecauseCorpNotSameOrigin = 20,
   kBlockedBecauseCorpNotSameOriginAfterDefaultedToSameOriginByCoep = 21,
   kBlockedBecauseCorpNotSameSite = 22,
-  kBlockedBecauseBlockedByExtensionCrbug1128174Investigation = 23,
+  kBlockedByExtensionCrbug1128174Investigation = 23,  // No longer used.
 
-  kMaxValue = kBlockedBecauseBlockedByExtensionCrbug1128174Investigation,
+  kMaxValue = kBlockedByExtensionCrbug1128174Investigation,
 };
 
 FailedReason ResourceRequestBlockedReasonToFailedReason(
@@ -169,10 +169,6 @@ FailedReason ResourceRequestBlockedReasonToFailedReason(
           kBlockedBecauseCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case ResourceRequestBlockedReason::kCorpNotSameSite:
       return FailedReason::kBlockedBecauseCorpNotSameSite;
-    case ResourceRequestBlockedReason::
-        kBlockedByExtensionCrbug1128174Investigation:
-      return FailedReason::
-          kBlockedBecauseBlockedByExtensionCrbug1128174Investigation;
   }
 }
 
