@@ -45,7 +45,7 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
 
  private:
   // storage::mojom::ServiceWorkerStorageControl implementations:
-  void Disable() override;
+  void Disable(DisableCallback callback) override;
   void Delete(DeleteCallback callback) override;
   void Recover(
       std::vector<storage::mojom::ServiceWorkerLiveVersionInfoPtr> versions,

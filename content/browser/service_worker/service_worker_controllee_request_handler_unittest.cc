@@ -225,7 +225,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, Error) {
   base::HistogramTester histogram_tester;
 
   // Disabling the storage makes looking up the registration return an error.
-  context()->GetStorageControl()->Disable();
+  context()->registry()->DisableStorageForTesting(base::DoNothing());
 
   histogram_tester.ExpectTotalCount(
       "ServiceWorker.LookupRegistration.MainResource.Time.Error", 0);

@@ -308,7 +308,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForOrigin_UnregisterFail) {
                   }));
   // Disable storage before it finishes. This causes the Unregister job to
   // complete with an error.
-  context()->GetStorageControl()->Disable();
+  context()->registry()->DisableStorageForTesting(base::DoNothing());
   loop.Run();
 
   // The operation should still complete.

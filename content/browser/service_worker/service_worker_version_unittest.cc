@@ -1462,8 +1462,9 @@ TEST_F(ServiceWorkerVersionTest, WriteMetadata_RemoteStorageDisconnection) {
 TEST_F(ServiceWorkerVersionTest, WriteMetadata_StorageDisabled) {
   const std::string kMetadata("Test metadata");
 
-  helper_->context()->registry()->GetRemoteStorageControl()->Disable();
-  helper_->context()->registry()->GetRemoteStorageControl().FlushForTesting();
+  base::RunLoop loop;
+  helper_->context()->registry()->DisableStorageForTesting(loop.QuitClosure());
+  loop.Run();
 
   net::TestCompletionCallback completion;
   version_->script_cache_map()->WriteMetadata(

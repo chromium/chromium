@@ -1623,6 +1623,25 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_PerformStorageCleanup) {
       kExpectedRetryCountForRecovery, kExpectedSampleCount);
 }
 
+TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_Disable) {
+  EnsureRemoteCallsAreExecuted();
+
+  // This schedules a Disable() remote call.
+  registry()->PrepareForDeleteAndStartOver();
+
+  EXPECT_EQ(inflight_call_count(), 1U);
+  registry()->SimulateStorageRestartForTesting();
+
+  base::HistogramTester histogram_tester;
+  EnsureRemoteCallsAreExecuted();
+  EXPECT_EQ(inflight_call_count(), 0U);
+  const size_t kExpectedRetryCountForRecovery = 0;
+  const size_t kExpectedSampleCount = 1;
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.Storage.RetryCountForRecovery",
+      kExpectedRetryCountForRecovery, kExpectedSampleCount);
+}
+
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
  public:
   ServiceWorkerRegistryOriginTrialsTest() {

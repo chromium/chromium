@@ -125,8 +125,9 @@ struct ServiceWorkerUserData {
 // Currently this is consumed and implemented in the browser process, but the
 // implementation will eventually live in the Storage Service.
 interface ServiceWorkerStorageControl {
-  // Disables the storage.
-  Disable();
+  // Disables the storage. The callback is invoked after the storage is
+  // disabled.
+  Disable() => ();
 
   // Deletes the whole storage.
   Delete() => (ServiceWorkerDatabaseStatus status);

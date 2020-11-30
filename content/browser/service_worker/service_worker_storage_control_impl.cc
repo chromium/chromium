@@ -104,8 +104,9 @@ void ServiceWorkerStorageControlImpl::LazyInitializeForTest() {
   storage_->LazyInitializeForTest();
 }
 
-void ServiceWorkerStorageControlImpl::Disable() {
+void ServiceWorkerStorageControlImpl::Disable(DisableCallback callback) {
   storage_->Disable();
+  std::move(callback).Run();
 }
 
 void ServiceWorkerStorageControlImpl::Delete(DeleteCallback callback) {

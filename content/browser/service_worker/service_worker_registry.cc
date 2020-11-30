@@ -684,8 +684,11 @@ void ServiceWorkerRegistry::PerformStorageCleanup(base::OnceClosure callback) {
 
 void ServiceWorkerRegistry::PrepareForDeleteAndStartOver() {
   should_schedule_delete_and_start_over_ = false;
-  GetRemoteStorageControl()->Disable();
   is_storage_disabled_ = true;
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::Disable,
+      base::BindRepeating(&ServiceWorkerRegistry::DidDisable,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegistry::DeleteAndStartOver(StatusCallback callback) {
@@ -694,6 +697,11 @@ void ServiceWorkerRegistry::DeleteAndStartOver(StatusCallback callback) {
       &storage::mojom::ServiceWorkerStorageControl::Delete,
       base::BindRepeating(&ServiceWorkerRegistry::DidDeleteAndStartOver,
                           weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+}
+
+void ServiceWorkerRegistry::DisableStorageForTesting(
+    base::OnceClosure callback) {
+  GetRemoteStorageControl()->Disable(std::move(callback));
 }
 
 void ServiceWorkerRegistry::SimulateStorageRestartForTesting() {
@@ -1392,6 +1400,11 @@ void ServiceWorkerRegistry::DidPerformStorageCleanup(base::OnceClosure callback,
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   FinishRemoteCall(call_id);
   std::move(callback).Run();
+}
+
+void ServiceWorkerRegistry::DidDisable(uint64_t call_id) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
 }
 
 void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(
