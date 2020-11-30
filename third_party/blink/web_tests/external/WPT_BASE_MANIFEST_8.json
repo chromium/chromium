@@ -90967,6 +90967,32 @@
        {}
       ]
      ],
+     "first-letter-skip-empty-span-nested.html": [
+      "e57700bbbd61246c93a5e2bae00659d87a4981dc",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-letter-skip-empty-span-nested-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "first-letter-skip-empty-span.html": [
+      "d3914050ad892a13df3d5caacc238488175ac5c3",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-letter-skip-empty-span-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-letter-skip-marker.html": [
       "fb9fe258472e3a0e338f12246469e9499b4c2601",
       [
@@ -196184,6 +196210,14 @@
       "38c230045bd0cbec0d94da16b27fd56aa58456a1",
       []
      ],
+     "first-letter-skip-empty-span-nested-ref.html": [
+      "95c2f94a6b7f35f0c91b5aec314d79e38dc7fe5d",
+      []
+     ],
+     "first-letter-skip-empty-span-ref.html": [
+      "27a364546e7c56c8aa6baee11615f4950576404d",
+      []
+     ],
      "first-letter-skip-marker-ref.html": [
       "82c5074fd26aa2dc35c9c8fa77dd3bf1099c5f88",
       []
@@ -251893,12 +251927,12 @@
         []
        ],
        "chromium.py": [
-        "cef01c4ffc5dd2df67ddfb6ed746d3ea4c5c4d76",
+        "3c52f76965b144ba1845c1f6e60fc6ea0bb63d54",
         []
        ],
        "tests": {
         "test_chromium.py": [
-         "8f8e732d4736337ccfecbb13f1fb8b590c9df52a",
+         "807f5837f7964e329d05377b34029c6ab727611f",
          []
         ]
        },
@@ -283707,7 +283741,7 @@
      ]
     ],
     "otpcredential-iframe.https.html": [
-     "8af17b599612e3750f3094270be8e9cd9a109290",
+     "da3e572b6b5771fcc55f5bf828a1a0a0a6606fa3",
      [
       null,
       {}
