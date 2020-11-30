@@ -137,9 +137,18 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
 
   builder.ClearBitmap();
 
-  // In the absence of bitmap data, HTML data takes precedence.
+  // In the absence of bitmap data, HTML data takes precedence, but we use
+  // plain-text format for the label.
+  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
+            base::UTF8ToUTF16("Text"));
+
+  builder.ClearText();
+
+  // If plan-text does not exist, we show a placeholder label.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
             base::UTF8ToUTF16("HTML Content"));
+
+  builder.SetText("Text");
 
   builder.ClearMarkup();
 

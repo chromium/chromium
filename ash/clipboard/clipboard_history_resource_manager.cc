@@ -146,6 +146,9 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
     case ui::ClipboardInternalFormat::kText:
       return base::UTF8ToUTF16(data.text());
     case ui::ClipboardInternalFormat::kHtml:
+      // Show plain-text if it exists, otherwise show the placeholder.
+      if (!data.text().empty())
+        return base::UTF8ToUTF16(data.text());
       return GetLocalizedString(IDS_CLIPBOARD_MENU_HTML);
     case ui::ClipboardInternalFormat::kSvg:
       return base::UTF8ToUTF16(data.svg_data());
