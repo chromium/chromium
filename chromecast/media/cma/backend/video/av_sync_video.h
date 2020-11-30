@@ -67,7 +67,7 @@ class AvSyncVideo : public AvSync {
   int64_t last_apts_timestamp_ = INT64_MIN;
 
   int64_t clock_rate_start_timestamp_ = INT64_MIN;
-  int64_t clock_rate_error_base_ = INT64_MIN;
+  double clock_rate_error_base_ = 0.0;
   int64_t apts_error_start_timestamp_ = INT64_MIN;
 
   DISALLOW_COPY_AND_ASSIGN(AvSyncVideo);
