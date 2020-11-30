@@ -206,7 +206,7 @@ To use `ld.lld`'s `--reproduce` flag, follow these steps:
 
 1. Copy the link command that ninja prints, `cd out/gn`, paste it, and manually
    append `-Wl,--reproduce,repro.tar`. With `lld-link`, instead append
-   `/linkrepro:repro.tar`. (`ld.lld` is invoked through the `clang` driver, so
+   `/reproduce:repro.tar`. (`ld.lld` is invoked through the `clang` driver, so
    it needs `-Wl` to pass the flag through to the linker. `lld-link` is called
    directly, so the flag needs no prefix.)
 
