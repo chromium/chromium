@@ -78,11 +78,10 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadEncoding) {
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptInFrame) {
-  // TODO(https://crbug.com/1115182): Flaky for SW-based extensions.
-  if (GetParam() == ContextType::kServiceWorker)
-    return;
-
-  ASSERT_TRUE(RunTest("executescript/in_frame")) << message_;
+  // TODO(https://crbug.com/1146173): This test is being run with
+  // file access to prevent flakiness for the SW version. It should
+  // be reverted to run without file access when this bug is fixed.
+  ASSERT_TRUE(RunTestWithFileAccess("executescript/in_frame")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptByFrameId) {
@@ -90,11 +89,10 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptByFrameId) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptPermissions) {
-  // TODO(https://crbug.com/1115182): Flaky for SW-based extensions.
-  if (GetParam() == ContextType::kServiceWorker)
-    return;
-
-  ASSERT_TRUE(RunTest("executescript/permissions")) << message_;
+  // TODO(https://crbug.com/1146173): This test is being run with
+  // file access to prevent flakiness for the SW version. It should
+  // be reverted to run without file access when this bug is fixed.
+  ASSERT_TRUE(RunTestWithFileAccess("executescript/permissions")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/84760.
