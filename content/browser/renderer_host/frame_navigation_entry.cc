@@ -31,7 +31,8 @@ FrameNavigationEntry::FrameNavigationEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info)
+    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+    std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies)
     : frame_unique_name_(frame_unique_name),
       item_sequence_number_(item_sequence_number),
       document_sequence_number_(document_sequence_number),
@@ -46,7 +47,8 @@ FrameNavigationEntry::FrameNavigationEntry(
       method_(method),
       post_id_(post_id),
       blob_url_loader_factory_(std::move(blob_url_loader_factory)),
-      web_bundle_navigation_info_(std::move(web_bundle_navigation_info)) {
+      web_bundle_navigation_info_(std::move(web_bundle_navigation_info)),
+      document_policies_(std::move(document_policies)) {
   if (origin)
     committed_origin_ = *origin;
 }
@@ -57,12 +59,16 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
   auto copy = base::MakeRefCounted<FrameNavigationEntry>();
 
   // Omit any fields cleared at commit time.
-  copy->UpdateEntry(frame_unique_name_, item_sequence_number_,
-                    document_sequence_number_, site_instance_.get(), nullptr,
-                    url_, committed_origin_, referrer_, initiator_origin_,
-                    redirect_chain_, page_state_, method_, post_id_,
-                    nullptr /* blob_url_loader_factory */,
-                    nullptr /* web_bundle_navigation_info */);
+  copy->UpdateEntry(
+      frame_unique_name_, item_sequence_number_, document_sequence_number_,
+      site_instance_.get(), nullptr, url_, committed_origin_, referrer_,
+      initiator_origin_, redirect_chain_, page_state_, method_, post_id_,
+      nullptr /* blob_url_loader_factory */,
+      nullptr /* web_bundle_navigation_info */,
+      document_policies_
+          ? std::make_unique<PolicyContainerHost::DocumentPolicies>(
+                *document_policies_)
+          : nullptr);
   // |bindings_| gets only updated through the SetBindings API, not through
   // UpdateEntry, so make a copy of it explicitly here as part of cloning.
   copy->bindings_ = bindings_;
@@ -84,7 +90,8 @@ void FrameNavigationEntry::UpdateEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info) {
+    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+    std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies) {
   frame_unique_name_ = frame_unique_name;
   item_sequence_number_ = item_sequence_number;
   document_sequence_number_ = document_sequence_number;
@@ -100,6 +107,7 @@ void FrameNavigationEntry::UpdateEntry(
   post_id_ = post_id;
   blob_url_loader_factory_ = std::move(blob_url_loader_factory);
   web_bundle_navigation_info_ = std::move(web_bundle_navigation_info);
+  document_policies_ = std::move(document_policies);
 }
 
 void FrameNavigationEntry::set_item_sequence_number(

@@ -1072,16 +1072,22 @@ NavigationRequest::NavigationRequest(
 
   policy_container_host_ = std::make_unique<PolicyContainerHost>();
 
-  // Local schemes inherit the policy container  from the initiator.
-  //
-  // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
-  // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
-  // the policy container from the document which created them and not from the
-  // initiator of the navigation).
-  if (common_params_->url.SchemeIs(url::kAboutScheme) ||
-      common_params_->url.SchemeIs(url::kDataScheme) ||
-      common_params_->url.SchemeIs(url::kBlobScheme) ||
-      common_params_->url.SchemeIs(url::kFileSystemScheme)) {
+  // If there is a history entry with some document policies, initialize the
+  // PolicyContainerHost with them, so that they will get applied to the
+  // document created by the navigation.
+  if (frame_entry && frame_entry->document_policies()) {
+    policy_container_host_ = std::make_unique<PolicyContainerHost>(
+        *frame_entry->document_policies());
+    // Local schemes inherit the policy container  from the initiator.
+    //
+    // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
+    // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
+    // the policy container from the document which created them and not from
+    // the initiator of the navigation).
+  } else if (common_params_->url.SchemeIs(url::kAboutScheme) ||
+             common_params_->url.SchemeIs(url::kDataScheme) ||
+             common_params_->url.SchemeIs(url::kBlobScheme) ||
+             common_params_->url.SchemeIs(url::kFileSystemScheme)) {
     if (GetInitiatorRoutingId()) {
       RenderFrameHostImpl* initiator_rfh = static_cast<RenderFrameHostImpl*>(
           RenderFrameHost::FromID(GetInitiatorRoutingId()));
@@ -2518,6 +2524,10 @@ void NavigationRequest::OnResponseStarted(
           frame_entry->post_id(), frame_entry->blob_url_loader_factory(),
           frame_entry->web_bundle_navigation_info()
               ? frame_entry->web_bundle_navigation_info()->Clone()
+              : nullptr,
+          frame_entry->document_policies()
+              ? std::make_unique<PolicyContainerHost::DocumentPolicies>(
+                    *frame_entry->document_policies())
               : nullptr);
     }
   }

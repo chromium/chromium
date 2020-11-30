@@ -522,6 +522,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool RendererDidNavigateAutoSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
+      bool is_same_document,
       NavigationRequest* request);
 
   // Allows the derived class to issue notifications that a load has been
@@ -597,6 +598,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // current pending entry have been deleted, this automatically discards the
   // pending NavigationEntry.
   void PendingEntryRefDeleted(PendingEntryRef* ref);
+
+  // Compute the document policies to be stored in the FrameNavigationEntry by
+  // RendererDidNavigate.
+  std::unique_ptr<PolicyContainerHost::DocumentPolicies>
+  ComputeDocumentPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
+                                       bool is_same_document,
+                                       NavigationRequest* request);
 
   // ---------------------------------------------------------------------------
 
