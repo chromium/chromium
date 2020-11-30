@@ -32,27 +32,6 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
 
-// Set PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL if this platform has
-// a platform-specific subclass of BrowserAccessibility and
-// BrowserAccessibilityManager.
-#undef PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL
-
-#if defined(OS_WIN)
-#define PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL 1
-#endif
-
-#if defined(OS_MAC)
-#define PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL 1
-#endif
-
-#if defined(OS_ANDROID) && !defined(USE_AURA)
-#define PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL 1
-#endif
-
-#if BUILDFLAG(USE_ATK)
-#define PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL 1
-#endif
-
 #if defined(OS_MAC) && __OBJC__
 @class BrowserAccessibilityCocoa;
 #endif

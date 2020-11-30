@@ -4,10 +4,11 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
+#include "ui/base/buildflags.h"
 
 namespace content {
 
-#if !defined(PLATFORM_HAS_NATIVE_ACCESSIBILITY_IMPL)
+#if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 // static
 std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
   return AccessibilityTreeFormatterBlink::CreateBlink();

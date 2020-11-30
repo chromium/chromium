@@ -8,11 +8,25 @@ declare_args() {
   # Optional system library.
   use_xkbcommon = use_ozone && (is_linux || is_chromeos) && !is_chromecast
 
-  # Whether the platform provides a native accessibility toolkit.
+  # Whether the platform provides a native accessibility toolkit, in other words
+  # the platform has a C/C++ interface for accessibility that Chrome
+  # implements/subclasses in some way - win, mac, linux.
   has_native_accessibility = use_atk || is_win || is_mac
 
+  # Whether the platform provide platform-specific accessibility implementation,
+  # i.e. there an accessibility API of some kind on this platform that's
+  # implemented in Chrome's browser process, but not necessarily something that
+  # looks like subclassing an interface - so that includes Android (the Java
+  # AccessibilityNodeProvider API) and Fuchsia (uses fidl messaging, kind of
+  # like mojo).
+  has_platform_accessibility_support = false
+
   # Whether the message center should be included for displaying notifications.
-  enable_message_center = is_win || is_mac || is_linux || is_chromeos || is_fuchsia
+  enable_message_center =
+      is_win || is_mac || is_linux || is_chromeos || is_fuchsia
 }
+
+has_platform_accessibility_support =
+    has_native_accessibility || (is_android || !use_aura)
 
 enable_hidpi = is_mac || is_win || is_linux || is_chromeos || is_ios
