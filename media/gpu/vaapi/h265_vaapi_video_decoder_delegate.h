@@ -18,13 +18,17 @@ typedef struct _VAPictureHEVC VAPictureHEVC;
 
 namespace media {
 
+class CdmContext;
 class H265Picture;
 
 class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
                                       public VaapiVideoDecoderDelegate {
  public:
-  H265VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* vaapi_dec,
-                                scoped_refptr<VaapiWrapper> vaapi_wrapper);
+  H265VaapiVideoDecoderDelegate(
+      DecodeSurfaceHandler<VASurface>* vaapi_dec,
+      scoped_refptr<VaapiWrapper> vaapi_wrapper,
+      ProtectedSessionUpdateCB on_protected_session_update_cb,
+      CdmContext* cdm_context);
 
   H265VaapiVideoDecoderDelegate(const H265VaapiVideoDecoderDelegate&) = delete;
   H265VaapiVideoDecoderDelegate& operator=(
@@ -51,6 +55,8 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   Status SubmitDecode(scoped_refptr<H265Picture> pic) override;
   bool OutputPicture(scoped_refptr<H265Picture> pic) override;
   void Reset() override;
+  Status SetStream(base::span<const uint8_t> stream,
+                   const DecryptConfig* decrypt_config) override;
 
  private:
   void FillVAPicture(VAPictureHEVC* va_pic, scoped_refptr<H265Picture> pic);
@@ -80,6 +86,11 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // |slice_param_| filled.
   const uint8_t* last_slice_data_{nullptr};
   size_t last_slice_size_{0};
+
+  // We need to hold onto this memory here because it's referenced by the
+  // mapped buffer in libva across calls. It is filled in SubmitSlice() and
+  // stays alive until SubmitDecode() or Reset().
+  std::vector<VAEncryptionSegmentInfo> encryption_segment_info_;
 };
 
 }  // namespace media

@@ -6,6 +6,7 @@
 
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/cdm_context.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -38,11 +39,13 @@ using DecodeStatus = H265Decoder::H265Accelerator::Status;
 
 H265VaapiVideoDecoderDelegate::H265VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
-    scoped_refptr<VaapiWrapper> vaapi_wrapper)
+    scoped_refptr<VaapiWrapper> vaapi_wrapper,
+    ProtectedSessionUpdateCB on_protected_session_update_cb,
+    CdmContext* cdm_context)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),
-                                base::DoNothing(),
-                                nullptr) {
+                                std::move(on_protected_session_update_cb),
+                                cdm_context) {
   ref_pic_list_pocs_.reserve(kMaxRefIdxActive);
 }
 
@@ -292,6 +295,22 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
     return DecodeStatus::kFail;
   }
 
+  bool uses_crypto = false;
+  VAEncryptionParameters crypto_params = {};
+  if ((!subsamples.empty() && subsamples[0].cypher_bytes) ||
+      IsProtectedSession()) {
+    ProtectedSessionState state =
+        SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params,
+                           &encryption_segment_info_, subsamples);
+    if (state == ProtectedSessionState::kFailed) {
+      LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
+                    "session";
+      return DecodeStatus::kFail;
+    } else if (state != ProtectedSessionState::kCreated) {
+      return DecodeStatus::kTryAgain;
+    }
+    uses_crypto = true;
+  }
   memset(&slice_param_, 0, sizeof(slice_param_));
 
   slice_param_.slice_data_size = slice_hdr->nalu_size;
@@ -418,6 +437,11 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
 
   last_slice_data_ = data;
   last_slice_size_ = size;
+  if (uses_crypto &&
+      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
+                                    sizeof(crypto_params), &crypto_params)) {
+    return DecodeStatus::kFail;
+  }
   return DecodeStatus::kOk;
 }
 
@@ -430,11 +454,11 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
     return DecodeStatus::kFail;
   }
 
+  const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
+      pic->AsVaapiH265Picture()->va_surface()->id());
   ref_pic_list_pocs_.clear();
-  return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-             pic->AsVaapiH265Picture()->va_surface()->id())
-             ? DecodeStatus::kOk
-             : DecodeStatus::kFail;
+  encryption_segment_info_.clear();
+  return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
 bool H265VaapiVideoDecoderDelegate::OutputPicture(
@@ -452,7 +476,18 @@ void H265VaapiVideoDecoderDelegate::Reset() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   vaapi_wrapper_->DestroyPendingBuffers();
   ref_pic_list_pocs_.clear();
+  encryption_segment_info_.clear();
   last_slice_data_ = nullptr;
+}
+
+DecodeStatus H265VaapiVideoDecoderDelegate::SetStream(
+    base::span<const uint8_t> /*stream*/,
+    const DecryptConfig* decrypt_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!decrypt_config)
+    return Status::kOk;
+  return SetDecryptConfig(decrypt_config->Clone()) ? Status::kOk
+                                                   : Status::kFail;
 }
 
 void H265VaapiVideoDecoderDelegate::FillVAPicture(
