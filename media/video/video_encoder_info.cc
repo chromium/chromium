@@ -54,6 +54,5 @@ bool operator==(const VideoEncoderInfo& l, const VideoEncoderInfo& r) {
          l.supports_simulcast == r.supports_simulcast &&
          l.scaling_settings == r.scaling_settings &&
          l.resolution_bitrate_limits == r.resolution_bitrate_limits;
-  return true;
 }
 }  // namespace media
