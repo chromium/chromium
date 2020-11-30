@@ -78,8 +78,7 @@ std::unique_ptr<media::Renderer> FuchsiaRendererFactory::CreateRenderer(
   if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
                            /*for_media_stream=*/false)) {
     gmb_pool = std::make_unique<media::GpuMemoryBufferVideoFramePool>(
-        std::move(media_task_runner), std::move(worker_task_runner),
-        gpu_factories);
+        media_task_runner, std::move(worker_task_runner), gpu_factories);
   }
 
   std::unique_ptr<media::VideoRenderer> video_renderer(
