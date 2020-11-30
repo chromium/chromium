@@ -1224,7 +1224,6 @@ source_set("unit_tests") {
     "events/pointer_event_util_test.cc",
     "events/touch_event_test.cc",
     "events/web_input_event_conversion_test.cc",
-    "execution_context/agent_metrics_collector_test.cc",
     "execution_context/execution_context_lifecycle_state_observer_test.cc",
     "exported/web_document_subresource_filter_test.cc",
     "exported/web_document_test.cc",

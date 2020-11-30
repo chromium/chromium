@@ -72,7 +72,6 @@
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/mojom/agents/agent_metrics.mojom.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -107,7 +106,6 @@ class GpuClient;
 }
 
 namespace content {
-class AgentMetricsCollectorHost;
 class AgentSchedulingGroupHost;
 class CodeCacheHostImpl;
 class FileSystemManagerImpl;
@@ -866,9 +864,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance);
 
-  void CreateAgentMetricsCollectorHost(
-      mojo::PendingReceiver<blink::mojom::AgentMetricsCollectorHost> receiver);
-
   void BindPeerConnectionTrackerHost(
       mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver);
 
@@ -1106,8 +1101,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   std::unique_ptr<MediaStreamTrackMetricsHost, BrowserThread::DeleteOnIOThread>
       media_stream_track_metrics_host_;
-
-  std::unique_ptr<AgentMetricsCollectorHost> agent_metrics_collector_host_;
 
   std::unique_ptr<FramelessMediaInterfaceProxy> media_interface_proxy_;
 

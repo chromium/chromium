@@ -55,7 +55,6 @@ class AnimationHost;
 }
 
 namespace blink {
-class AgentMetricsCollector;
 class AutoscrollController;
 class BrowserControls;
 class ChromeClient;
@@ -196,9 +195,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
   ValidationMessageClient& GetValidationMessageClient() const {
     return *validation_message_client_;
-  }
-  AgentMetricsCollector* GetAgentMetricsCollector() const {
-    return agent_metrics_collector_.Get();
   }
   void SetValidationMessageClientForTesting(ValidationMessageClient*);
 
@@ -440,10 +436,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   Member<PluginData> plugin_data_;
 
   Member<ValidationMessageClient> validation_message_client_;
-
-  // Stored only for ordinary pages to avoid adding metrics from things like
-  // overlays, popups and SVG.
-  Member<AgentMetricsCollector> agent_metrics_collector_;
 
   Deprecation deprecation_;
   WebWindowFeatures window_features_;

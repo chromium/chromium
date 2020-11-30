@@ -5,8 +5,6 @@
 blink_core_sources_execution_context = [
   "agent.cc",
   "agent.h",
-  "agent_metrics_collector.cc",
-  "agent_metrics_collector.h",
   "execution_context.cc",
   "execution_context.h",
   "execution_context_lifecycle_observer.cc",

@@ -1237,8 +1237,6 @@ source_set("browser") {
     "quota/quota_context.h",
     "quota/quota_manager_host.cc",
     "quota/quota_manager_host.h",
-    "renderer_host/agent_metrics_collector.cc",
-    "renderer_host/agent_metrics_collector.h",
     "renderer_host/agent_scheduling_group_host.cc",
     "renderer_host/agent_scheduling_group_host.h",
     "renderer_host/ancestor_throttle.cc",

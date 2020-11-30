@@ -10728,6 +10728,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceManager.AgentsByTime" units="units"
     expires_after="2020-12-04">
+  <obsolete>
+    Removed 2020-11.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>platform-architecture-dev@chromium.org</owner>
@@ -10740,6 +10743,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceManager.AgentsPerRendererByTime" units="units"
     expires_after="2020-12-04">
+  <obsolete>
+    Removed 2020-11.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>platform-architecture-dev@chromium.org</owner>
@@ -10752,6 +10758,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceManager.AgentsUniqueByTime" units="units"
     expires_after="2020-12-04">
+  <obsolete>
+    Removed 2020-11.
+  </obsolete>
   <owner>bokan@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>platform-architecture-dev@chromium.org</owner>

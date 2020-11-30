@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/execution_context/agent_metrics_collector.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/dom_timer.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -130,12 +129,6 @@ Page::PageSet& Page::OrdinaryPages() {
   return *pages;
 }
 
-static AgentMetricsCollector& GlobalAgentMetricsCollector() {
-  DEFINE_STATIC_LOCAL(Persistent<AgentMetricsCollector>, metrics_collector,
-                      (MakeGarbageCollected<AgentMetricsCollector>()));
-  return *metrics_collector;
-}
-
 void Page::InsertOrdinaryPageForTesting(Page* page) {
   OrdinaryPages().insert(page);
 }
@@ -175,7 +168,6 @@ Page* Page::CreateOrdinary(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
   Page* page = MakeGarbageCollected<Page>(page_clients);
   page->is_ordinary_ = true;
-  page->agent_metrics_collector_ = &GlobalAgentMetricsCollector();
   page->SetPageScheduler(
       agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(page));
 
@@ -935,7 +927,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(main_frame_);
   visitor->Trace(plugin_data_);
   visitor->Trace(validation_message_client_);
-  visitor->Trace(agent_metrics_collector_);
   visitor->Trace(plugins_changed_observers_);
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
@@ -984,9 +975,6 @@ void Page::WillBeDestroyed() {
   if (validation_message_client_)
     validation_message_client_->WillBeDestroyed();
   main_frame_ = nullptr;
-
-  if (agent_metrics_collector_)
-    agent_metrics_collector_->ReportMetrics();
 
   page_visibility_observer_set_.ForEachObserver(
       [](PageVisibilityObserver* observer) {
