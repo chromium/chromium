@@ -220,10 +220,14 @@ computer.
 <a name="TOC-Why-aren-t-compromised-infected-machines-in-Chrome-s-threat-model-"></a>
 ## Why aren't compromised/infected machines in Chrome's threat model?
 
-This is essentially the same situation as with physically-local attacks. The
-attacker's code, when it runs as your user account on your machine, can do
-anything you can do. (See also [Microsoft's Ten Immutable Laws Of
+Although the attacker may now be remote, the consequences are essentially the
+same as with physically-local attacks. The attacker's code, when it runs as
+your user account on your machine, can do anything you can do. (See also
+[Microsoft's Ten Immutable Laws Of
 Security](https://web.archive.org/web/20160311224620/https://technet.microsoft.com/en-us/library/hh278941.aspx).)
+
+Other cases covered by this section include leaving a debugger port open to
+the world, remote shells, and so forth.
 
 <a name="TOC-What-about-unmasking-of-passwords-with-the-developer-tools-"></a>
 ## What about unmasking of passwords with the developer tools?
