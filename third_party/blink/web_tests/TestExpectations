@@ -1769,7 +1769,6 @@ crbug.com/555703 [ Fuchsia ] virtual/media-gpu-accelerated/* [ Skip ]
 crbug.com/467477 fast/multicol/vertical-rl/nested-columns.html [ Failure ]
 
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
-crbug.com/400829 virtual/stable/media/stable/video-object-fit-stable.html [ Failure ]
 
 # Source map asyncification requires some 3-way changes with the DevTools frontend.
 crbug.com/1032016 http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-shifted-breakpoint.js [ Pass Failure Timeout ]
