@@ -30,6 +30,7 @@
 #include "fuchsia/engine/switches.h"
 #include "media/base/media_switches.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
@@ -186,6 +187,7 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kForceProtectedVideoOutputBuffers,
       switches::kMaxDecodedImageSizeMb,
       switches::kPlayreadyKeySystem,
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure,
       switches::kUseOverlaysForVideo,
   };
 

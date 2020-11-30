@@ -56,6 +56,7 @@
 #include "net/http/http_util.h"
 #include "sandbox/policy/fuchsia/sandbox_policy_fuchsia.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 #include "ui/gfx/switches.h"
@@ -565,15 +566,17 @@ void ContextProviderImpl::Create(
     const std::vector<std::string>& insecure_origins =
         params.unsafely_treat_insecure_origins_as_secure();
     for (auto origin : insecure_origins) {
-      if (origin == switches::kAllowRunningInsecureContent)
+      if (origin == switches::kAllowRunningInsecureContent) {
         launch_command.AppendSwitch(switches::kAllowRunningInsecureContent);
-      if (origin == kDisableMixedContentAutoupgradeOrigin) {
+      } else if (origin == kDisableMixedContentAutoupgradeOrigin) {
         AppendFeature(switches::kDisableFeatures,
                       kMixedContentAutoupgradeFeatureName, &launch_command);
+      } else {
+        // Pass the rest of the list to the Context process.
+        AppendFeature(network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+                      origin, &launch_command);
       }
     }
-    // TODO(crbug.com/1023510): Pass the rest of the list to the Context
-    // process.
   }
 
   if (params.has_cors_exempt_headers()) {

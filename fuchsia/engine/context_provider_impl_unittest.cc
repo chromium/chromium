@@ -36,6 +36,8 @@
 #include "fuchsia/engine/context_provider_impl.h"
 #include "fuchsia/engine/fake_context.h"
 #include "fuchsia/engine/switches.h"
+#include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -514,6 +516,46 @@ TEST(ContextProviderImplConfigTest, WithConfigWithWronglyTypedCommandLineArgs) {
     loop.Quit();
   });
   context_provider.Create(BuildCreateContextParams(), context.NewRequest());
+
+  loop.Run();
+}
+
+// Tests that unsafely_treat_insecure_origins_as_secure properly adds the right
+// command-line arguments to the Context process.
+TEST(ContextProviderImplParamsTest, WithInsecureOriginsAsSecure) {
+  const base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+
+  base::RunLoop loop;
+  ContextProviderImpl context_provider;
+  context_provider.SetLaunchCallbackForTest(
+      base::BindLambdaForTesting([&](const base::CommandLine& command,
+                                     const base::LaunchOptions& options) {
+        EXPECT_TRUE(command.HasSwitch(switches::kAllowRunningInsecureContent));
+        EXPECT_THAT(command.GetSwitchValueASCII(switches::kDisableFeatures),
+                    testing::HasSubstr("AutoupgradeMixedContent"));
+        EXPECT_EQ(command.GetSwitchValueASCII(
+                      network::switches::kUnsafelyTreatInsecureOriginAsSecure),
+                  "http://example.com");
+        loop.Quit();
+        return base::Process();
+      }));
+
+  fuchsia::web::ContextPtr context;
+  context.set_error_handler([&loop](zx_status_t status) {
+    ZX_LOG(ERROR, status);
+    ADD_FAILURE();
+    loop.Quit();
+  });
+
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
+  std::vector<std::string> insecure_origins;
+  insecure_origins.push_back(switches::kAllowRunningInsecureContent);
+  insecure_origins.push_back("disable-mixed-content-autoupgrade");
+  insecure_origins.push_back("http://example.com");
+  create_params.set_unsafely_treat_insecure_origins_as_secure(
+      std::move(insecure_origins));
+  context_provider.Create(std::move(create_params), context.NewRequest());
 
   loop.Run();
 }
