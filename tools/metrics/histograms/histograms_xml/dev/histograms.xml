@@ -103,6 +103,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DevTools.CSSGridSettings2" enum="DevtoolsGridSettingChanged2"
     expires_after="M88">
+  <obsolete>
+    Removed in M89 because it is no longer needed for analysis.
+  </obsolete>
   <owner>yangguo@chromium.org</owner>
   <owner>brgoddar@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -155,6 +158,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DevTools.GridOverlayOpenedFrom"
     enum="DevToolsGridOverlayOpenedFrom" expires_after="M88">
+  <obsolete>
+    Removed in M89 because it is no longer needed for analysis.
+  </obsolete>
   <owner>changhaohan@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
@@ -165,6 +171,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DevTools.HighlightedPersistentCSSGridCount"
     enum="DevToolsHighlightedPersistentCSSGridCount" expires_after="M88">
+  <obsolete>
+    Removed in M89 because it is no longer needed for analysis.
+  </obsolete>
   <owner>yangguo@chromium.org</owner>
   <owner>patrick.brosset@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>

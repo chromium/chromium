@@ -16775,11 +16775,17 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <int value="0" label="Adorner"/>
   <int value="1" label="Layout pane"/>
 </enum>
 
 <enum name="DevtoolsGridSettingChanged">
+  <obsolete>
+    Superseded by DevtoolsGridSettingChanged2.
+  </obsolete>
   <int value="0" label="showGridBorder.none"/>
   <int value="1" label="showGridBorder.dashed"/>
   <int value="2" label="showGridBorder.solid"/>
@@ -16804,6 +16810,9 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="DevtoolsGridSettingChanged2">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <int value="0" label="showGridLineLabels.none"/>
   <int value="1" label="showGridLineLabels.lineNumbers"/>
   <int value="2" label="showGridLineLabels.lineNames"/>
@@ -16816,6 +16825,9 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="DevToolsHighlightedPersistentCSSGridCount">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <int value="0" label="0"/>
   <int value="1" label="1"/>
   <int value="2" label="2"/>
