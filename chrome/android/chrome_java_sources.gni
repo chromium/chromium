@@ -1280,7 +1280,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/signin/SigninUtils.java",
   "java/src/org/chromium/chrome/browser/signin/SigninView.java",
   "java/src/org/chromium/chrome/browser/signin/SyncPromoView.java",
-  "java/src/org/chromium/chrome/browser/signin/UnifiedConsentServiceBridge.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerBottomSheetCoordinator.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerBottomSheetMediator.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerBottomSheetProperties.java",

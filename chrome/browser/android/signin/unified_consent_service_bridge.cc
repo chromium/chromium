@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/UnifiedConsentServiceBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/signin/services/android/jni_headers/UnifiedConsentServiceBridge_jni.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/prefs/pref_service.h"

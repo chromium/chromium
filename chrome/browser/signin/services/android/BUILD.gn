@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
     "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
   ]
 }
@@ -14,6 +15,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
+    "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
     "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
   ]
   deps = [
