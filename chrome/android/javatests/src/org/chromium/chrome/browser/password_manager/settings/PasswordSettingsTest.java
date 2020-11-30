@@ -1680,6 +1680,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisabledTest(message = "crbug.com/1153707")
     public void testSearchTextInOverflowMenuVisibleWithFeature() {
         setPasswordSource(null); // Initialize empty preferences.mSettingsActivityTestRule
         startPasswordSettingsFromMainSettings();
