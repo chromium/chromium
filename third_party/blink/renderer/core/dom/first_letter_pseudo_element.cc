@@ -180,6 +180,14 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       // PseudoIdFirstLetter set. When that node is attached we will handle
       // setting up the first letter then.
       return nullptr;
+    } else if (first_letter_text_layout_object->IsInline() &&
+               !first_letter_text_layout_object->SlowFirstChild()) {
+      LayoutObject* next_sibling =
+          first_letter_text_layout_object->NextSibling();
+      first_letter_text_layout_object =
+          next_sibling
+              ? next_sibling
+              : first_letter_text_layout_object->Parent()->NextSibling();
     } else {
       first_letter_text_layout_object =
           first_letter_text_layout_object->SlowFirstChild();
