@@ -48,11 +48,15 @@ const char kPluginFileName[] = "plugin_file_name";
 
 }  // namespace
 
-class BrowserReportGeneratorTest : public ::testing::Test {
+class BrowserReportGeneratorTest : public ::testing::Test,
+                                   public ::testing::WithParamInterface<bool> {
  public:
   BrowserReportGeneratorTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
-        generator_(&delegate_factory_) {}
+        generator_(&delegate_factory_) {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
   ~BrowserReportGeneratorTest() override = default;
 
   void SetUp() override {
@@ -192,11 +196,12 @@ class BrowserReportGeneratorTest : public ::testing::Test {
   TestingProfileManager profile_manager_;
   BrowserReportGenerator generator_;
   ScopedExtensionRequestReportThrottler throttler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserReportGeneratorTest);
 };
 
-TEST_F(BrowserReportGeneratorTest, GenerateBasicReport) {
+TEST_P(BrowserReportGeneratorTest, GenerateBasicReport) {
   InitializeProfile();
   InitializeIrregularProfiles();
   InitializePlugin();
@@ -204,7 +209,7 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReport) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
+TEST_P(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
   InitializeUpdate();
   InitializeProfile();
   InitializeIrregularProfiles();
@@ -213,7 +218,7 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReportWithUpdate) {
 }
 #endif
 
-TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnly) {
+TEST_P(BrowserReportGeneratorTest, ExtensionRequestOnly) {
   InitializeUpdate();
   InitializeProfile();
   InitializeIrregularProfiles();
@@ -227,7 +232,7 @@ TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnly) {
 
 // It's possible that the extension request report is delayed and by the time
 // report is generated, the extension request report throttler is disabled.
-TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnlyWithoutThrottler) {
+TEST_P(BrowserReportGeneratorTest, ExtensionRequestOnlyWithoutThrottler) {
   InitializeUpdate();
   InitializeProfile();
   InitializeIrregularProfiles();
@@ -236,5 +241,9 @@ TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnlyWithoutThrottler) {
   throttler()->Disable();
   GenerateExtensinRequestReportAndVerify({});
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         BrowserReportGeneratorTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 }  // namespace enterprise_reporting

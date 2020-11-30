@@ -42,14 +42,19 @@ const char kActiveProfileName2[] = "active_profile2";
 
 // TODO(crbug.com/1103732): Get rid of chrome/browser dependencies and then
 // move this file to components/enterprise/browser.
-class ReportRequestQueueGeneratorTest : public ::testing::Test {
+class ReportRequestQueueGeneratorTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
  public:
   using ReportRequest = definition::ReportRequest;
 
   ReportRequestQueueGeneratorTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         browser_report_generator_(&reporting_delegate_factory_),
-        report_request_queue_generator_(&reporting_delegate_factory_) {}
+        report_request_queue_generator_(&reporting_delegate_factory_) {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
 
   ~ReportRequestQueueGeneratorTest() override = default;
 
@@ -207,11 +212,12 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
   BrowserReportGenerator browser_report_generator_;
   ReportRequestQueueGenerator report_request_queue_generator_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportRequestQueueGeneratorTest);
 };
 
-TEST_F(ReportRequestQueueGeneratorTest, GenerateReport) {
+TEST_P(ReportRequestQueueGeneratorTest, GenerateReport) {
   auto idle_profile_names = CreateIdleProfiles();
   auto basic_request = GenerateBasicRequest();
   auto requests = GenerateRequests(*basic_request);
@@ -222,7 +228,7 @@ TEST_F(ReportRequestQueueGeneratorTest, GenerateReport) {
                                         /*report size floor to KB*/ 0, 1);
 }
 
-TEST_F(ReportRequestQueueGeneratorTest, GenerateActiveProfiles) {
+TEST_P(ReportRequestQueueGeneratorTest, GenerateActiveProfiles) {
   auto idle_profile_names = CreateIdleProfiles();
   auto active_profile_names = CreateActiveProfiles();
   auto basic_request = GenerateBasicRequest();
@@ -235,7 +241,7 @@ TEST_F(ReportRequestQueueGeneratorTest, GenerateActiveProfiles) {
                                         /*report size floor to KB*/ 0, 1);
 }
 
-TEST_F(ReportRequestQueueGeneratorTest, BasicReportIsTooBig) {
+TEST_P(ReportRequestQueueGeneratorTest, BasicReportIsTooBig) {
   // Set a super small limitation.
   SetAndVerifyMaximumRequestSize(5);
 
@@ -249,7 +255,7 @@ TEST_F(ReportRequestQueueGeneratorTest, BasicReportIsTooBig) {
                                        0);
 }
 
-TEST_F(ReportRequestQueueGeneratorTest, ReportSeparation) {
+TEST_P(ReportRequestQueueGeneratorTest, ReportSeparation) {
   CreateActiveProfilesWithContent();
   auto basic_request = GenerateBasicRequest();
   auto requests = GenerateRequests(*basic_request);
@@ -271,7 +277,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ReportSeparation) {
                                         /*report size floor to KB*/ 0, 2);
 }
 
-TEST_F(ReportRequestQueueGeneratorTest, ProfileReportIsTooBig) {
+TEST_P(ReportRequestQueueGeneratorTest, ProfileReportIsTooBig) {
   CreateActiveProfileWithContent(kActiveProfileName1);
   auto basic_request = GenerateBasicRequest();
   auto requests = GenerateRequests(*basic_request);
@@ -294,7 +300,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ProfileReportIsTooBig) {
                                         /*report size floor to KB*/ 0, 2);
 }
 
-TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
+TEST_P(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
   auto policy_service = std::make_unique<policy::MockPolicyService>();
   policy::PolicyMap policy_map;
 
@@ -330,5 +336,9 @@ TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
   EXPECT_EQ(2, profile_info.chrome_policies_size());
 #endif
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         ReportRequestQueueGeneratorTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 }  // namespace enterprise_reporting

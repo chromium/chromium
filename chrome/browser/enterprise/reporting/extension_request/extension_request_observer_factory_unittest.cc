@@ -119,7 +119,20 @@ TEST_F(ExtensionRequestObserverFactoryTest, AddProfile) {
   EXPECT_EQ(2, factory_.GetNumberOfObserversForTesting());
 }
 
-TEST_F(ExtensionRequestObserverFactoryTest,
+class GuestExtensionRequestObserverFactoryTest
+    : public ExtensionRequestObserverFactoryTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GuestExtensionRequestObserverFactoryTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(GuestExtensionRequestObserverFactoryTest,
        NoObserverForSystemAndGuestProfile) {
   ExtensionRequestObserverFactory factory_;
   EXPECT_EQ(0, factory_.GetNumberOfObserversForTesting());
@@ -132,5 +145,9 @@ TEST_F(ExtensionRequestObserverFactoryTest,
   EXPECT_FALSE(factory_.GetObserverByProfileForTesting(system_profile));
   EXPECT_EQ(0, factory_.GetNumberOfObserversForTesting());
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestExtensionRequestObserverFactoryTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 }  // namespace enterprise_reporting
