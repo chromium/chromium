@@ -37,13 +37,13 @@ StyleSheetCollection::StyleSheetCollection() = default;
 
 void StyleSheetCollection::Dispose() {
   style_sheets_for_style_sheet_list_.clear();
-  active_author_style_sheets_.clear();
+  active_style_sheets_.clear();
 }
 
 void StyleSheetCollection::Swap(StyleSheetCollection& other) {
   swap(style_sheets_for_style_sheet_list_,
        other.style_sheets_for_style_sheet_list_);
-  active_author_style_sheets_.swap(other.active_author_style_sheets_);
+  active_style_sheets_.swap(other.active_style_sheets_);
   sheet_list_dirty_ = false;
 }
 
@@ -55,7 +55,7 @@ void StyleSheetCollection::SwapSheetsForSheetList(
 
 void StyleSheetCollection::AppendActiveStyleSheet(
     const ActiveStyleSheet& active_sheet) {
-  active_author_style_sheets_.push_back(active_sheet);
+  active_style_sheets_.push_back(active_sheet);
 }
 
 void StyleSheetCollection::AppendSheetForList(StyleSheet* sheet) {
@@ -63,7 +63,7 @@ void StyleSheetCollection::AppendSheetForList(StyleSheet* sheet) {
 }
 
 void StyleSheetCollection::Trace(Visitor* visitor) const {
-  visitor->Trace(active_author_style_sheets_);
+  visitor->Trace(active_style_sheets_);
   visitor->Trace(style_sheets_for_style_sheet_list_);
 }
 

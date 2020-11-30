@@ -53,8 +53,8 @@ class CORE_EXPORT StyleSheetCollection
   StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;
   virtual ~StyleSheetCollection() = default;
 
-  const ActiveStyleSheetVector& ActiveAuthorStyleSheets() const {
-    return active_author_style_sheets_;
+  const ActiveStyleSheetVector& ActiveStyleSheets() const {
+    return active_style_sheets_;
   }
   const HeapVector<Member<StyleSheet>>& StyleSheetsForStyleSheetList() const {
     return style_sheets_for_style_sheet_list_;
@@ -75,7 +75,7 @@ class CORE_EXPORT StyleSheetCollection
 
  protected:
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
-  ActiveStyleSheetVector active_author_style_sheets_;
+  ActiveStyleSheetVector active_style_sheets_;
   bool sheet_list_dirty_ = true;
 };
 

@@ -430,7 +430,7 @@ static void MatchElementScopeRules(const Element& element,
                                    ElementRuleCollector& collector) {
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
-    element_scope_resolver->CollectMatchingAuthorRules(collector);
+    element_scope_resolver->CollectMatchingElementScopeRules(collector);
     element_scope_resolver->CollectMatchingTreeBoundaryCrossingRules(collector);
     collector.SortAndTransferMatchedRules();
   }
@@ -621,8 +621,8 @@ void StyleResolver::MatchAuthorRulesV0(
 
   // Apply normal rules from element scope.
   if (element_scope_resolver) {
-    element_scope_resolver->CollectMatchingAuthorRules(collector,
-                                                       ++cascade_order);
+    element_scope_resolver->CollectMatchingElementScopeRules(collector,
+                                                             ++cascade_order);
   }
 
   // Apply /deep/ and ::shadow rules from outer scopes, and ::content from

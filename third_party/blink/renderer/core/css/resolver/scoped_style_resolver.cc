@@ -99,7 +99,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     if (!active_iterator->second)
       continue;
     const RuleSet& rule_set = *active_iterator->second;
-    author_style_sheets_.push_back(sheet);
+    style_sheets_.push_back(sheet);
     AddKeyframeRules(rule_set);
     AddFontFaceRules(rule_set);
     AddTreeBoundaryCrossingRules(rule_set, sheet, index);
@@ -116,7 +116,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
   features.DeviceDependentMediaQueryResults().AppendVector(
       device_dependent_media_query_results_);
 
-  for (auto sheet : author_style_sheets_) {
+  for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     StyleSheetContents* contents = sheet->Contents();
     if (contents->HasOneClient() ||
@@ -134,8 +134,8 @@ void ScopedStyleResolver::CollectFeaturesTo(
   }
 }
 
-void ScopedStyleResolver::ResetAuthorStyle() {
-  author_style_sheets_.clear();
+void ScopedStyleResolver::ResetStyle() {
+  style_sheets_.clear();
   viewport_dependent_media_query_results_.clear();
   device_dependent_media_query_results_.clear();
   keyframes_rule_map_.clear();
@@ -145,12 +145,12 @@ void ScopedStyleResolver::ResetAuthorStyle() {
   needs_append_all_sheets_ = false;
 }
 
-const ActiveStyleSheetVector& ScopedStyleResolver::ActiveAuthorStyleSheets() {
+const ActiveStyleSheetVector& ScopedStyleResolver::ActiveStyleSheets() {
   StyleSheetCollection* collection =
       GetTreeScope().GetDocument().GetStyleEngine().StyleSheetCollectionFor(
           *scope_);
   DCHECK(collection);
-  return collection->ActiveAuthorStyleSheets();
+  return collection->ActiveStyleSheets();
 }
 
 // static
@@ -177,8 +177,8 @@ ScopedStyleResolver::KeyframeStylesForAnimationFromActiveSheets(
 StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
   if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled()) {
-    return KeyframeStylesForAnimationFromActiveSheets(
-        animation_name, ActiveAuthorStyleSheets());
+    return KeyframeStylesForAnimationFromActiveSheets(animation_name,
+                                                      ActiveStyleSheets());
   }
 
   if (keyframes_rule_map_.IsEmpty())
@@ -254,11 +254,11 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
   tree_scope.GetDocument().Timeline().InvalidateKeyframeEffects(tree_scope);
 }
 
-void ScopedStyleResolver::CollectMatchingAuthorRules(
+void ScopedStyleResolver::CollectMatchingElementScopeRules(
     ElementRuleCollector& collector,
     ShadowV0CascadeOrder cascade_order) {
   wtf_size_t sheet_index = 0;
-  for (auto sheet : author_style_sheets_) {
+  for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     MatchRequest match_request(&sheet->Contents()->GetRuleSet(),
                                &scope_->RootNode(), sheet, sheet_index++);
@@ -270,7 +270,7 @@ void ScopedStyleResolver::CollectMatchingShadowHostRules(
     ElementRuleCollector& collector,
     ShadowV0CascadeOrder cascade_order) {
   wtf_size_t sheet_index = 0;
-  for (auto sheet : author_style_sheets_) {
+  for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     MatchRequest match_request(&sheet->Contents()->GetRuleSet(),
                                &scope_->RootNode(), sheet, sheet_index++);
@@ -309,7 +309,7 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     PartNames& part_names,
     ShadowV0CascadeOrder cascade_order) {
   wtf_size_t sheet_index = 0;
-  for (auto sheet : author_style_sheets_) {
+  for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     MatchRequest match_request(&sheet->Contents()->GetRuleSet(),
                                &scope_->RootNode(), sheet, sheet_index++);
@@ -319,16 +319,15 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
 }
 
 void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
-  // Only consider the global author RuleSet for @page rules, as per the HTML5
-  // spec.
+  // Currently, only @page rules in the document scope apply.
   DCHECK(scope_->RootNode().IsDocumentNode());
-  for (auto sheet : author_style_sheets_)
+  for (auto sheet : style_sheets_)
     collector.MatchPageRules(&sheet->Contents()->GetRuleSet());
 }
 
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
-  visitor->Trace(author_style_sheets_);
+  visitor->Trace(style_sheets_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(tree_boundary_crossing_rule_set_);
   visitor->Trace(slotted_rule_set_);
@@ -341,24 +340,22 @@ static void AddRules(RuleSet* rule_set,
 }
 
 void ScopedStyleResolver::AddTreeBoundaryCrossingRules(
-    const RuleSet& author_rules,
+    const RuleSet& rules,
     CSSStyleSheet* parent_style_sheet,
     unsigned sheet_index) {
   bool is_document_scope = GetTreeScope().RootNode().IsDocumentNode();
-  if (author_rules.DeepCombinatorOrShadowPseudoRules().IsEmpty() &&
-      (is_document_scope ||
-       (author_rules.ContentPseudoElementRules().IsEmpty())))
+  if (rules.DeepCombinatorOrShadowPseudoRules().IsEmpty() &&
+      (is_document_scope || (rules.ContentPseudoElementRules().IsEmpty())))
     return;
 
-  if (!author_rules.DeepCombinatorOrShadowPseudoRules().IsEmpty())
+  if (!rules.DeepCombinatorOrShadowPseudoRules().IsEmpty())
     has_deep_or_shadow_selector_ = true;
 
   auto* rule_set_for_scope = MakeGarbageCollected<RuleSet>();
-  AddRules(rule_set_for_scope,
-           author_rules.DeepCombinatorOrShadowPseudoRules());
+  AddRules(rule_set_for_scope, rules.DeepCombinatorOrShadowPseudoRules());
 
   if (!is_document_scope)
-    AddRules(rule_set_for_scope, author_rules.ContentPseudoElementRules());
+    AddRules(rule_set_for_scope, rules.ContentPseudoElementRules());
 
   if (!tree_boundary_crossing_rule_set_) {
     tree_boundary_crossing_rule_set_ =
@@ -386,15 +383,15 @@ void ScopedStyleResolver::V0ShadowAddedOnV1Document() {
   slotted_rule_set_ = nullptr;
 }
 
-void ScopedStyleResolver::AddSlottedRules(const RuleSet& author_rules,
+void ScopedStyleResolver::AddSlottedRules(const RuleSet& rules,
                                           CSSStyleSheet* parent_style_sheet,
                                           unsigned sheet_index) {
   bool is_document_scope = GetTreeScope().RootNode().IsDocumentNode();
-  if (is_document_scope || author_rules.SlottedPseudoElementRules().IsEmpty())
+  if (is_document_scope || rules.SlottedPseudoElementRules().IsEmpty())
     return;
 
   auto* slotted_rule_set = MakeGarbageCollected<RuleSet>();
-  AddRules(slotted_rule_set, author_rules.SlottedPseudoElementRules());
+  AddRules(slotted_rule_set, rules.SlottedPseudoElementRules());
 
   // In case ::slotted rule is used in V0/V1 mixed document, put ::slotted
   // rules in tree boundary crossing rules as the pure v1 fast path in

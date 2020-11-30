@@ -426,7 +426,7 @@ void StyleEngine::MediaQueryAffectingValueChanged(TreeScope& tree_scope,
                                                   MediaValueChange change) {
   auto* collection = StyleSheetCollectionFor(tree_scope);
   DCHECK(collection);
-  if (MediaQueryAffectingValueChanged(collection->ActiveAuthorStyleSheets(),
+  if (MediaQueryAffectingValueChanged(collection->ActiveStyleSheets(),
                                       change)) {
     SetNeedsActiveStyleUpdate(tree_scope);
   }
@@ -615,16 +615,16 @@ const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
     UpdateActiveStyle();
 
   if (active_tree_scopes_.IsEmpty())
-    return GetDocumentStyleSheetCollection().ActiveAuthorStyleSheets();
+    return GetDocumentStyleSheetCollection().ActiveStyleSheets();
 
   ActiveStyleSheetVector active_style_sheets;
 
   active_style_sheets.AppendVector(
-      GetDocumentStyleSheetCollection().ActiveAuthorStyleSheets());
+      GetDocumentStyleSheetCollection().ActiveStyleSheets());
   for (TreeScope* tree_scope : active_tree_scopes_) {
     if (TreeScopeStyleSheetCollection* collection =
             style_sheet_collection_map_.at(tree_scope))
-      active_style_sheets.AppendVector(collection->ActiveAuthorStyleSheets());
+      active_style_sheets.AppendVector(collection->ActiveStyleSheets());
   }
 
   // FIXME: Inspector needs a vector which has all active stylesheets.
@@ -664,7 +664,7 @@ void StyleEngine::ResetAuthorStyle(TreeScope& tree_scope) {
   if (global_rule_set_)
     global_rule_set_->MarkDirty();
   if (tree_scope.RootNode().IsDocumentNode()) {
-    scoped_resolver->ResetAuthorStyle();
+    scoped_resolver->ResetStyle();
     return;
   }
 
@@ -1694,7 +1694,7 @@ void StyleEngine::ApplyRuleSetChanges(
     else if (change == kActiveSheetsAppended)
       append_start_index = old_style_sheets.size();
     else
-      scoped_resolver->ResetAuthorStyle();
+      scoped_resolver->ResetStyle();
   }
 
   if (!new_style_sheets.IsEmpty()) {
