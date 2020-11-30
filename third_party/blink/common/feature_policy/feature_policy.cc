@@ -16,17 +16,16 @@ namespace blink {
 namespace {
 
 // Extracts an Allowlist from a ParsedFeaturePolicyDeclaration.
-std::unique_ptr<FeaturePolicy::Allowlist> AllowlistFromDeclaration(
+FeaturePolicy::Allowlist AllowlistFromDeclaration(
     const ParsedFeaturePolicyDeclaration& parsed_declaration,
     const FeaturePolicyFeatureList& feature_list) {
-  std::unique_ptr<FeaturePolicy::Allowlist> result =
-      base::WrapUnique(new FeaturePolicy::Allowlist());
+  auto result = FeaturePolicy::Allowlist();
   if (parsed_declaration.matches_all_origins)
-    result->AddAll();
+    result.AddAll();
   if (parsed_declaration.matches_opaque_src)
-    result->AddOpaqueSrc();
+    result.AddOpaqueSrc();
   for (const auto& value : parsed_declaration.allowed_origins)
-    result->Add(value);
+    result.Add(value);
 
   return result;
 }
@@ -120,6 +119,21 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateWithOpenerPolicy(
   return new_policy;
 }
 
+// static
+std::unique_ptr<FeaturePolicy> FeaturePolicy::CopyStateFrom(
+    const FeaturePolicy* source) {
+  if (!source)
+    return nullptr;
+
+  std::unique_ptr<FeaturePolicy> new_policy = base::WrapUnique(
+      new FeaturePolicy(source->origin_, GetFeaturePolicyFeatureList()));
+
+  new_policy->inherited_policies_ = source->inherited_policies_;
+  new_policy->allowlists_ = source->allowlists_;
+
+  return new_policy;
+}
+
 bool FeaturePolicy::IsFeatureEnabled(
     mojom::FeaturePolicyFeature feature) const {
   return IsFeatureEnabledForOrigin(feature, origin_);
@@ -134,7 +148,7 @@ bool FeaturePolicy::IsFeatureEnabledForOrigin(
   auto inherited_value = inherited_policies_.at(feature);
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
-    return inherited_value && allowlist->second->Contains(origin);
+    return inherited_value && allowlist->second.Contains(origin);
   }
 
   // If no "allowlist" is specified, return default feature value.
@@ -155,7 +169,7 @@ bool FeaturePolicy::GetFeatureValueForOrigin(
   auto inherited_value = inherited_policies_.at(feature);
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
-    return inherited_value && allowlist->second->Contains(origin);
+    return inherited_value && allowlist->second.Contains(origin);
   }
 
   return inherited_value;
@@ -172,7 +186,7 @@ const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForFeature(
   // Return defined policy if exists; otherwise return default policy.
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end())
-    return FeaturePolicy::Allowlist(*(allowlist->second));
+    return allowlist->second;
 
   const FeaturePolicyFeatureDefault default_policy = feature_list_.at(feature);
   FeaturePolicy::Allowlist default_allowlist;
@@ -192,8 +206,8 @@ void FeaturePolicy::SetHeaderPolicy(const ParsedFeaturePolicy& parsed_header) {
        parsed_header) {
     mojom::FeaturePolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::FeaturePolicyFeature::kNotFound);
-    allowlists_[feature] =
-        AllowlistFromDeclaration(parsed_declaration, feature_list_);
+    allowlists_.emplace(
+        feature, AllowlistFromDeclaration(parsed_declaration, feature_list_));
   }
 }
 
@@ -259,7 +273,7 @@ bool FeaturePolicy::InheritedValueForFeature(
       // 9.8 5.1: If the allowlist for feature in container policy matches
       // origin, return "Enabled".
       // 9.8 5.2: Otherwise return "Disabled".
-      return AllowlistFromDeclaration(decl, feature_list_)->Contains(origin_);
+      return AllowlistFromDeclaration(decl, feature_list_).Contains(origin_);
     }
   }
   // 9.8 6: If feature’s default allowlist is *, return "Enabled".

@@ -5277,8 +5277,6 @@ crbug.com/993790 external/wpt/document-policy/required-policy/separate-document-
 
 crbug.com/1134464 http/tests/images/document-policy/document-policy-oversized-images-edge-cases.php [ Pass Timeout ]
 
-crbug.com/1151954 http/tests/permissions-policy/permissions-policy-in-xsl.php [ Failure ]
-
 # Skipping because of unimplemented behaviour
 crbug.com/965495 external/wpt/feature-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Skip ]
 crbug.com/965495 external/wpt/permissions-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Skip ]
