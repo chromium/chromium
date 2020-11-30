@@ -2652,6 +2652,8 @@ static_library("ui") {
       "//chromeos/dbus/power",
       "//chromeos/dbus/session_manager",
       "//chromeos/dbus/system_clock",
+      "//chromeos/dbus/tpm_manager",
+      "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/upstart",
       "//chromeos/disks",
       "//chromeos/login/auth",

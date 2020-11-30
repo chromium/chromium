@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
@@ -46,8 +47,10 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   void OnCryptohomeBoolProperty(const std::string& destination_id,
                                 base::Optional<bool> result);
 
-  // This method is called when Cryptohome D-Bus TpmStatus call complete.
-  void OnCryptohomeTpmStatus(base::Optional<cryptohome::BaseReply> reply);
+  // This method is called when TpmManager D-Bus GetTpmNonsensitiveStatus call
+  // completes.
+  void OnGetTpmStatus(
+      const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
 
   // Sets textcontent of the element whose id is |destination_id| to |value|.
   void SetCryptohomeProperty(const std::string& destination_id,
