@@ -338,8 +338,6 @@ bool IsNodeFullyContained(const EphemeralRange& range, const Node& node) {
 
 // TODO(editing-dev): We should implement real version which refers
 // "user-select" CSS property.
-// TODO(editing-dev): We should make |SelectionAdjuster| to use this funciton
-// instead of |isSelectionBondary()|.
 bool IsUserSelectContain(const Node& node) {
   return IsA<HTMLTextAreaElement>(node) || IsA<HTMLInputElement>(node) ||
          IsA<HTMLSelectElement>(node);

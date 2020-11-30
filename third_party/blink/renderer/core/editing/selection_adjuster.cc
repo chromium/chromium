@@ -418,11 +418,6 @@ class ShadowBoundaryAdjuster final {
     return FlatTreeTraversal::IsDescendantOf(*anchor_node, node);
   }
 
-  static bool IsSelectionBoundary(const Node& node) {
-    return IsA<HTMLTextAreaElement>(node) || IsA<HTMLInputElement>(node) ||
-           IsA<HTMLSelectElement>(node);
-  }
-
   static Node* EnclosingShadowHostForStart(const PositionInFlatTree& position) {
     Node* node = position.NodeAsRangeFirstNode();
     if (!node)
@@ -432,7 +427,7 @@ class ShadowBoundaryAdjuster final {
       return nullptr;
     if (!IsEnclosedBy(position, *shadow_host))
       return nullptr;
-    return IsSelectionBoundary(*shadow_host) ? shadow_host : nullptr;
+    return IsUserSelectContain(*shadow_host) ? shadow_host : nullptr;
   }
 
   static Node* EnclosingShadowHostForEnd(const PositionInFlatTree& position) {
@@ -444,7 +439,7 @@ class ShadowBoundaryAdjuster final {
       return nullptr;
     if (!IsEnclosedBy(position, *shadow_host))
       return nullptr;
-    return IsSelectionBoundary(*shadow_host) ? shadow_host : nullptr;
+    return IsUserSelectContain(*shadow_host) ? shadow_host : nullptr;
   }
 
   static PositionInFlatTree AdjustPositionInFlatTreeForStart(
