@@ -65925,6 +65925,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="SYNC_DELETE_SUCCESS"/>
   <int value="1" label="SYNC_DELETE_FAIL_NONEXISTENT_ENGINE"/>
   <int value="2" label="SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER"/>
+  <int value="3" label="SYNC_ADD_SUCCESS"/>
+  <int value="4" label="SYNC_ADD_CONVERTED_TO_UPDATE"/>
+  <int value="5" label="SYNC_ADD_FAIL_OTHER_ERROR"/>
+  <int value="6" label="SYNC_UPDATE_SUCCESS"/>
+  <int value="7" label="SYNC_UPDATE_CONVERTED_TO_ADD"/>
 </enum>
 
 <enum name="SearchWidgetUseInfo">

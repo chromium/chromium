@@ -68,6 +68,11 @@ enum SearchTemplateURLEvent {
   SYNC_DELETE_SUCCESS = 0,
   SYNC_DELETE_FAIL_NONEXISTENT_ENGINE = 1,
   SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER = 2,
+  SYNC_ADD_SUCCESS = 3,
+  SYNC_ADD_CONVERTED_TO_UPDATE = 4,
+  SYNC_ADD_FAIL_OTHER_ERROR = 5,
+  SYNC_UPDATE_SUCCESS = 6,
+  SYNC_UPDATE_CONVERTED_TO_ADD = 7,
   SEARCH_TEMPLATE_URL_EVENT_MAX,
 };
 
@@ -1041,48 +1046,64 @@ base::Optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       continue;
     }
 
-    if ((iter->change_type() == syncer::SyncChange::ACTION_ADD &&
-         existing_turl) ||
-        (iter->change_type() == syncer::SyncChange::ACTION_UPDATE &&
-         !existing_turl)) {
-      // Can't ADD an already-existing engine, and can't UPDATE a non-existent
-      // engine. Early exit here to avoid ResolvingSyncKeywordConflict().
-      error = sync_error_factory_->CreateAndUploadError(FROM_HERE, error_msg);
-      continue;
-    }
+    // Because TemplateURLService sometimes ignores remote Sync changes which
+    // we cannot cleanly apply, we need to handle ADD and UPDATE together.
+    // Ignore what the other Sync layers THINK the change type is. Instead:
+    // If we have an existing engine, treat as an update.
+    DCHECK(iter->change_type() == syncer::SyncChange::ACTION_ADD ||
+           iter->change_type() == syncer::SyncChange::ACTION_UPDATE);
 
-    // Explicitly don't check for conflicts against extension keywords; in this
-    // case the functions which modify the keyword map know how to handle the
-    // conflicts.
-    // TODO(mpcomplete): If we allow editing extension keywords, then those will
-    // need to undergo conflict resolution.
-    TemplateURL* existing_keyword_turl =
-        FindNonExtensionTemplateURLForKeyword(turl->keyword());
-    const bool has_conflict =
-        existing_keyword_turl && (existing_keyword_turl != existing_turl);
-    if (has_conflict) {
-      // Resolve any conflicts with other entries so we can safely update the
-      // keyword.
-      ResolveSyncKeywordConflict(turl.get(), existing_keyword_turl,
-                                 &new_changes);
-    }
+    if (!existing_turl) {
+      if (iter->change_type() == syncer::SyncChange::ACTION_UPDATE) {
+        // This can happen if we have silently deleted a replaceable engine due
+        // to keyword conflict, and Sync server sends us an UPDATE to it.
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_UPDATE_CONVERTED_TO_ADD,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+      }
 
-    if (iter->change_type() == syncer::SyncChange::ACTION_ADD) {
       base::AutoReset<DefaultSearchChangeOrigin> change_origin(
           &dsp_change_origin_, DSP_CHANGE_SYNC_ADD);
       // Force the local ID to kInvalidTemplateURLID so we can add it.
       TemplateURLData data(turl->data());
       data.id = kInvalidTemplateURLID;
-      auto added_ptr = std::make_unique<TemplateURL>(data);
-      TemplateURL* added = added_ptr.get();
-      if (Add(std::move(added_ptr)))
-        MaybeUpdateDSEViaPrefs(added);
-      continue;
-    }
 
-    DCHECK_EQ(syncer::SyncChange::ACTION_UPDATE, iter->change_type());
-    if (Update(existing_turl, *turl))
+      TemplateURL* added = Add(std::make_unique<TemplateURL>(data));
+      if (added) {
+        MaybeUpdateDSEViaPrefs(added);
+
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_ADD_SUCCESS,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+      } else {
+        // Currently, in practice, this means that we tried to add a replaceable
+        // duplicate that was worse than our existing entry, but the API doesn't
+        // promise that, so we just log a generic SYNC_ADD_FAIL_OTHER_ERROR.
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_ADD_FAIL_OTHER_ERROR,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+      }
+    } else {
+      if (iter->change_type() == syncer::SyncChange::ACTION_ADD) {
+        // This can happen if we have ignored a DELETE request in the past to
+        // avoid deleting the default search provider, and later on, Sync tries
+        // to re-ADD something it thinks it has deleted.
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_ADD_CONVERTED_TO_UPDATE,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+      }
+
+      // Since we've already found |existing_turl| by GUID, this Update() should
+      // always return true, but we still don't want to crash if it fails.
+      DCHECK(existing_turl);
+      bool update_success = Update(existing_turl, *turl);
+      DCHECK(update_success);
+
       MaybeUpdateDSEViaPrefs(existing_turl);
+      UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                SYNC_UPDATE_SUCCESS,
+                                SEARCH_TEMPLATE_URL_EVENT_MAX);
+    }
   }
 
   // If something went wrong, we want to prematurely exit to avoid pushing

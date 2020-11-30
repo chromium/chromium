@@ -970,11 +970,12 @@ TEST_F(TemplateURLServiceSyncTest, ProcessChangesNoConflicts) {
   EXPECT_TRUE(model()->GetTemplateURLForGUID("key4"));
 }
 
-TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithConflictsSyncWins) {
+TEST_F(TemplateURLServiceSyncTest,
+       ProcessChangesWithDuplicateKeywordsSyncWins) {
   MergeAndExpectNotify(CreateInitialSyncData(), 1);
 
-  // Process different types of changes, with conflicts. Note that all this data
-  // has a newer timestamp, so Sync will win in these scenarios.
+  // Process different types of changes, with duplicate keywords. Note that all
+  // this data has a newer timestamp, so Sync will win in these scenarios.
   syncer::SyncChangeList changes;
   changes.push_back(CreateTestSyncChange(syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(ASCIIToUTF16("key2"), "http://new.com", "aaa")));
@@ -983,75 +984,74 @@ TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithConflictsSyncWins) {
   ProcessAndExpectNotify(changes, 1);
 
   // Add one, update one, so we're up to 4.
-  EXPECT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  // Sync is always newer here, so it should always win.  We should create
-  // SyncChanges for the changes to the local entities, since they're synced
-  // too.
-  EXPECT_EQ(2U, processor()->change_list_size());
-  ASSERT_TRUE(processor()->contains_guid("key2"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-            processor()->change_for_guid("key2").change_type());
-  ASSERT_TRUE(processor()->contains_guid("key3"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-            processor()->change_for_guid("key3").change_type());
+  ASSERT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
 
-  // aaa conflicts with key2 and wins, forcing key2's keyword to update.
+  // aaa duplicates the keyword of key2 and wins. key2 still has its keyword,
+  // but is shadowed by aaa.
   EXPECT_TRUE(model()->GetTemplateURLForGUID("aaa"));
   EXPECT_EQ(model()->GetTemplateURLForGUID("aaa"),
             model()->GetTemplateURLForKeyword(ASCIIToUTF16("key2")));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("key2"));
-  EXPECT_EQ(model()->GetTemplateURLForGUID("key2"),
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("key2.com")));
-  // key1 update conflicts with key3 and wins, forcing key3's keyword to update.
+  TemplateURL* key2_turl = model()->GetTemplateURLForGUID("key2");
+  ASSERT_TRUE(key2_turl);
+  ASSERT_EQ(ASCIIToUTF16("key2"), key2_turl->keyword());
+  // key1 update duplicates the keyword of key3 and wins. key3 still has its
+  // keyword but is shadowed by key1 now.
   EXPECT_TRUE(model()->GetTemplateURLForGUID("key1"));
   EXPECT_EQ(model()->GetTemplateURLForGUID("key1"),
             model()->GetTemplateURLForKeyword(ASCIIToUTF16("key3")));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("key3"));
-  EXPECT_EQ(model()->GetTemplateURLForGUID("key3"),
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("key3.com")));
+  TemplateURL* key3_turl = model()->GetTemplateURLForGUID("key3");
+  ASSERT_TRUE(key3_turl);
+  EXPECT_EQ(ASCIIToUTF16("key3"), key3_turl->keyword());
+
+  // Sync is always newer here, so it should always win. But we DO NOT create
+  // new sync updates in response to processing sync changes. That could cause
+  // an infinite loop. Instead, on next startup, we will merge changes anyways.
+  EXPECT_EQ(0U, processor()->change_list_size());
 }
 
-TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithConflictsLocalWins) {
+TEST_F(TemplateURLServiceSyncTest,
+       ProcessChangesWithDuplicateKeywordsLocalWins) {
   MergeAndExpectNotify(CreateInitialSyncData(), 1);
 
-  // Process different types of changes, with conflicts. Note that all this data
-  // has an older timestamp, so the local data will win in these scenarios.
+  // Process different types of changes, with duplicate keywords. Note that all
+  // this data has an older timestamp, so the local data will win in this case.
   syncer::SyncChangeList changes;
   changes.push_back(CreateTestSyncChange(syncer::SyncChange::ACTION_ADD,
       CreateTestTemplateURL(ASCIIToUTF16("key2"), "http://new.com", "aaa",
                             10)));
+  // Update the keyword of engine with GUID "key1" to "key3", which will
+  // duplicate the keyword of engine with GUID "key3".
   changes.push_back(CreateTestSyncChange(syncer::SyncChange::ACTION_UPDATE,
       CreateTestTemplateURL(ASCIIToUTF16("key3"), "http://key3.com", "key1",
                             10)));
   ProcessAndExpectNotify(changes, 1);
 
   // Add one, update one, so we're up to 4.
-  EXPECT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
-  // Local data wins twice so two updates are pushed up to Sync.
-  EXPECT_EQ(2U, processor()->change_list_size());
+  ASSERT_EQ(4U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
 
-  // aaa conflicts with key2 and loses, forcing it's keyword to update.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("aaa"));
-  EXPECT_EQ(model()->GetTemplateURLForGUID("aaa"),
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("new.com")));
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("key2"));
-  EXPECT_EQ(model()->GetTemplateURLForGUID("key2"),
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("key2")));
-  // key1 update conflicts with key3 and loses, forcing key1's keyword to
-  // update.
-  EXPECT_TRUE(model()->GetTemplateURLForGUID("key1"));
-  EXPECT_EQ(model()->GetTemplateURLForGUID("key1"),
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("key3.com")));
+  // aaa duplicates the keyword of key2 and loses. It still exists, and kept its
+  // keyword as "key2", but it's NOT best TemplateURL for "key2".
+  TemplateURL* aaa_turl = model()->GetTemplateURLForGUID("aaa");
+  ASSERT_TRUE(aaa_turl);
+  EXPECT_EQ(ASCIIToUTF16("key2"), aaa_turl->keyword());
+
+  TemplateURL* key2_turl = model()->GetTemplateURLForGUID("key2");
+  ASSERT_TRUE(key2_turl);
+  EXPECT_NE(aaa_turl, key2_turl);
+  EXPECT_EQ(key2_turl, model()->GetTemplateURLForKeyword(ASCIIToUTF16("key2")));
+
+  // key1 update duplicates the keyword of key3 and loses. It updates its
+  // keyword to "key3", but is NOT the best TemplateURL for "key3".
+  TemplateURL* key1_turl = model()->GetTemplateURLForGUID("key1");
+  ASSERT_TRUE(key1_turl);
+  EXPECT_EQ(ASCIIToUTF16("key3"), key1_turl->keyword());
   EXPECT_TRUE(model()->GetTemplateURLForGUID("key3"));
   EXPECT_EQ(model()->GetTemplateURLForGUID("key3"),
             model()->GetTemplateURLForKeyword(ASCIIToUTF16("key3")));
 
-  ASSERT_TRUE(processor()->contains_guid("aaa"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-            processor()->change_for_guid("aaa").change_type());
-  ASSERT_TRUE(processor()->contains_guid("key1"));
-  EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-            processor()->change_for_guid("key1").change_type());
+  // Local data wins twice, but we specifically DO NOT push updates to Sync
+  // in response to processing sync updates. That can cause an infinite loop.
+  EXPECT_EQ(0U, processor()->change_list_size());
 }
 
 TEST_F(TemplateURLServiceSyncTest, ProcessTemplateURLChange) {
