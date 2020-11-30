@@ -26,6 +26,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/locale_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
@@ -240,7 +241,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   state->form_factor = GetCurrentFormFactor();
   state->platform = GetPlatform();
   // TODO(crbug/1111131): Expand to other platforms.
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
   state->hardware_class = base::SysInfo::HardwareModelName();
 #endif
 #if defined(OS_ANDROID)

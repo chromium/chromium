@@ -16,6 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -36,7 +37,7 @@ using ::testing::UnorderedElementsAreArray;
 
 const char kTestLanguage[] = "en";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPreferredLanguagesPref[] = "settings.language.preferred_languages";
 #else
 const char* kPreferredLanguagesPref = nullptr;
@@ -77,7 +78,7 @@ class TranslatePrefsTest : public testing::Test {
 
   void SetUp() override {
     prefs_.SetString(kAcceptLanguagesPref, std::string());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     prefs_.SetString(kPreferredLanguagesPref, std::string());
 #endif
     prefs_.registry()->RegisterBooleanPref(
@@ -104,7 +105,7 @@ class TranslatePrefsTest : public testing::Test {
     } else {
       EXPECT_EQ(expected, prefs_.GetString(kAcceptLanguagesPref));
     }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (expected_chromeos.empty()) {
       EXPECT_TRUE(prefs_.GetString(kPreferredLanguagesPref).empty());
     } else {

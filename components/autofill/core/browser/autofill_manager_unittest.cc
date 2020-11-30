@@ -30,6 +30,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -8894,7 +8895,7 @@ class OnFocusOnFormFieldTest : public AutofillManagerTest,
   }
 
   void CheckSuggestionsAvailableIfScreenReaderRunning() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // The only existing functions for determining whether ChromeVox is in use
     // are in the src/chrome directory, which cannot be included in components.
     // Thus, if the platform is ChromeOS, we assume that ChromeVox is in use at
@@ -8904,7 +8905,7 @@ class OnFocusOnFormFieldTest : public AutofillManagerTest,
 #else
     EXPECT_EQ(has_active_screen_reader_,
               external_delegate_->has_suggestions_available_on_field_focus());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void CheckNoSuggestionsAvailableOnFieldFocus() {

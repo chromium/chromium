@@ -51,6 +51,7 @@ static_library("browser") {
     "//base",
     "//base:i18n",
     "//base/util/values:values_util",
+    "//build:chromeos_buildflags",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/keyed_service/core",
@@ -113,6 +114,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/infobars/core",
@@ -149,6 +151,7 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/sync_preferences",

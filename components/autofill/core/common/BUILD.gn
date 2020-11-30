@@ -59,6 +59,7 @@ static_library("common") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
 
     # Note: Can't use mojom:mojo_types here, as that already depends on :common.
     "//components/autofill/core/common/mojom:mojo_types_shared",

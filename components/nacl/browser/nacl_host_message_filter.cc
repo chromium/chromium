@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/browser/bad_message.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/nacl_file_host.h"
@@ -134,7 +135,7 @@ void NaClHostMessageFilter::OnLaunchNaCl(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   bool nonsfi_mode_allowed = false;
-#if defined(OS_CHROMEOS) && \
+#if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL))
   nonsfi_mode_allowed = NaClBrowser::GetDelegate()->IsNonSfiModeAllowed(
       profile_directory_, GURL(launch_params.manifest_url));

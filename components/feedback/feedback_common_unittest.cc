@@ -23,11 +23,11 @@ constexpr char kLongLog[] = TEN_LINES TEN_LINES TEN_LINES TEN_LINES TEN_LINES;
 constexpr char kLogsAttachmentName[] = "system_logs.zip";
 constexpr int kTestProductId = 3490;
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr int kDefaultProductId = 208;  // ChromeOS & Lacros default product ID.
 #else
 constexpr int kDefaultProductId = 237;  // Chrome default product ID.
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace
 
 class FeedbackCommonTest : public testing::Test {

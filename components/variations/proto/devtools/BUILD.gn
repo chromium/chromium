@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 # Some of the Windows builders do not support Java, which is a required
 # dependency for these build targets. These targets are only built manually, so
 # it's fine to limit them to Linux.
-if (is_linux || is_mac) {
+if (is_linux || is_chromeos_lacros || is_mac) {
   # Build this target to generate a small, self-contained utility for parsing a
   # serialized ClientVariations proto from the X-Client-Data header.
   #

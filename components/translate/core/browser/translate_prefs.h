@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "url/gurl.h"
 
@@ -367,7 +368,7 @@ class TranslatePrefs {
 
   // Path to the preference storing the accept languages.
   const std::string accept_languages_pref_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Path to the preference storing the preferred languages.
   // Only used on ChromeOS.
   std::string preferred_languages_pref_;

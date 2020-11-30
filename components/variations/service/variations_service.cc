@@ -32,6 +32,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -105,13 +106,14 @@ std::string GetPlatformString() {
   return "ios";
 #elif defined(OS_APPLE)
   return "mac";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return "chromeos";
 #elif defined(OS_ANDROID)
   return "android";
 #elif defined(OS_FUCHSIA)
   return "fuchsia";
-#elif defined(OS_LINUX) || defined(OS_BSD) || defined(OS_SOLARIS)
+#elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    defined(OS_BSD) || defined(OS_SOLARIS)
   // Default BSD and SOLARIS to Linux to not break those builds, although these
   // platforms are not officially supported by Chrome.
   return "linux";
@@ -262,7 +264,7 @@ std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This is a utility which syncs the policy-managed value of
 // |prefs::kDeviceVariationsRestrictionsByPolicy| into
 // |prefs::kVariationsRestrictionsByPolicy|.
@@ -339,7 +341,7 @@ class DeviceVariationsRestrictionByPolicyApplicator {
   base::WeakPtrFactory<DeviceVariationsRestrictionByPolicyApplicator>
       weak_ptr_factory_{this};
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 VariationsService::VariationsService(
     std::unique_ptr<VariationsServiceClient> client,
@@ -368,7 +370,7 @@ VariationsService::VariationsService(
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   device_variations_restrictions_by_policy_applicator_ =
       std::make_unique<DeviceVariationsRestrictionByPolicyApplicator>(
           policy_pref_service_);
@@ -495,7 +497,7 @@ GURL VariationsService::GetVariationsServerURL(HttpOptions http_options) {
 }
 
 void VariationsService::EnsureLocaleEquals(const std::string& locale) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS may switch language on the fly.
   DCHECK_EQ(locale, field_trial_creator_.application_locale());
 #else

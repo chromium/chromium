@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
 import("//components/nacl/features.gni")
@@ -139,7 +140,7 @@ if (is_linux || is_chromeos) {
       "//url/ipc:url_ipc",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       # NaCl is not working with compiler-rt in ChromeOS.
       # Force libgcc as a workaround. See https://crbug.com/761103
       ldflags = [

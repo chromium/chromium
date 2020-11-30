@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 
 namespace feedback {
 
@@ -434,14 +435,14 @@ TEST_F(RedactionToolTest, RedactChunk) {
      "<URL: 3>"},  // Potentially PII in parameter.
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
      "/root/<HASH:2754 1>/foo"},  // Hash string.
-#if defined(OS_CHROMEOS)          // We only redact Android paths on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)    // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
      "112K\t/home/root/deadbeef1234/android-data/data/system_de"},
     // Redacted app-specific storage path.
     {"8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/de",
      "8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/d_"},
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   std::string redaction_input;
   std::string redaction_output;
@@ -452,7 +453,7 @@ TEST_F(RedactionToolTest, RedactChunk) {
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
 }
 
-#if defined(OS_CHROMEOS)  // We only redact Android paths on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
 TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
   EXPECT_EQ("", RedactAndroidAppStoragePaths(""));
   EXPECT_EQ("foo\nbar\n", RedactAndroidAppStoragePaths("foo\nbar\n"));
@@ -499,7 +500,7 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
       "78M\t/home/root/deadbeef1234/android-data/data/data\n";
   EXPECT_EQ(kDuOutputRedacted, RedactAndroidAppStoragePaths(kDuOutput));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(RedactionToolTest, RedactBlockDevices) {
   // Test cases in the form {input, output}.

@@ -40,6 +40,7 @@ static_library("service") {
     ":buildflags",
     "//base",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/encrypted_messages",
     "//components/language/core/browser",
     "//components/metrics",

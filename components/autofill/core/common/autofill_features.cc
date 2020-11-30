@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
@@ -67,7 +68,7 @@ const base::Feature kAutofillCreateDataForTest{
 // account-based storage when sync the transport is enabled.
 const base::Feature kAutofillEnableAccountWalletStorage {
   "AutofillEnableAccountWalletStorage",
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID) || defined(OS_IOS)
       // Wallet transport is only currently available on Win/Mac/Linux.
       // (Somehow, swapping this check makes iOS unhappy?)
       base::FEATURE_DISABLED_BY_DEFAULT

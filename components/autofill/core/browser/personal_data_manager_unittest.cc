@@ -31,6 +31,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -449,7 +450,9 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
 
 // Cards are automatically remasked on Linux since full server cards are not
 // supported.
-#if !defined(OS_LINUX) || defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     personal_data_->ResetFullServerCard(
         personal_data_->GetCreditCards()[0]->guid());
 #endif
@@ -580,7 +583,7 @@ class PersonalDataManagerMigrationTest : public PersonalDataManagerHelper,
  public:
   PersonalDataManagerMigrationTest()
       : PersonalDataManagerHelper(
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
             { ::switches::kAccountIdMigration }
 #endif
         ) {
@@ -1410,7 +1413,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
       /*disabled_features=*/{});
 
 // ClearPrimaryAccount is not supported on CrOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Sign out.
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(AutofillSyncSigninState::kSignedOut,
@@ -6634,7 +6637,9 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
 
 // These tests are not applicable on Linux since it does not support full server
 // cards.
-#if !defined(OS_LINUX) || defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // Test that calling OnSyncServiceInitialized with a null sync service remasks
 // full server cards.
 TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NoSyncService) {
@@ -6683,7 +6688,7 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
   // OnSyncServiceInitialized.
   personal_data_->OnSyncShutdown(&sync_service);
 }
-#endif  // !defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 #if !defined(OS_ANDROID)
 TEST_F(PersonalDataManagerTest, ExcludeServerSideCards) {
@@ -6765,8 +6770,8 @@ TEST_F(PersonalDataManagerTest, ServerCardsShowInTransportMode_NeedOptIn) {
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC) ||
-        // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
+        // defined(OS_CHROMEOS)
 
 // Tests that all the non settings origins of autofill profiles are cleared but
 // that the settings origins are untouched.
@@ -7490,7 +7495,7 @@ TEST_F(PersonalDataManagerMigrationTest,
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !defined(OS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   // The method should return false if one of these is not respected:
   //   * The sync_service is not null
@@ -7603,7 +7608,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
     histogram_tester.ExpectTotalCount(kHistogramName, 0);
   }
 }
-#else   // !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_CHROMEOS)
+#else   // !defined(OS_ANDROID) && !defined(OS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   // The method should return false if one of these is not respected:
   //   * The sync_service is not null
@@ -7677,7 +7683,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   personal_data_->SetSyncServiceForTest(nullptr);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // Make a non-primary account available with both a refresh token and cookie
@@ -7726,7 +7733,7 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   }
 
 // ClearPrimaryAccount is not supported on CrOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Check that the sync state is |SignedOut| when the account info is empty.
   {
     identity_test_env_.ClearPrimaryAccount();
@@ -7741,7 +7748,7 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   sync_service_.SetAuthenticatedAccountInfo(primary_account_info);
   sync_service_.SetIsAuthenticatedAccountPrimary(true);
 // MakePrimaryAccountAvailable is not supported on CrOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email);
 #endif
 
@@ -7784,7 +7791,7 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
 
   // Account wallet storage only makes sense together with support for
   // unconsented primary accounts, i.e. on Win/Mac/Linux.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   {
     base::test::ScopedFeatureList scoped_features;
     scoped_features.InitAndEnableFeature(
@@ -7843,7 +7850,7 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
     EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(
         prefs_.get(), active_info.account_id));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   ///////////////////////////////////////////////////////////
   // kSignedInAndSyncFeature

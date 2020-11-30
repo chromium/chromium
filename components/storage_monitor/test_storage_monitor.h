@@ -10,9 +10,10 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/storage_monitor/storage_monitor.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #endif
@@ -52,7 +53,7 @@ class TestStorageMonitor : public StorageMonitor {
       base::string16* storage_object_id) const override;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   device::mojom::MtpManager* media_transfer_protocol_manager() override;
 #endif
 
@@ -78,7 +79,7 @@ class TestStorageMonitor : public StorageMonitor {
   // Paths considered for testing purposes to be on removable storage.
   std::vector<base::FilePath> removable_paths_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::Remote<device::mojom::MtpManager> media_transfer_protocol_manager_;
 #endif
 };

@@ -10,16 +10,17 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/storage_monitor/storage_info.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/storage_monitor/test_media_transfer_protocol_manager_chromeos.h"
 #endif
 
 namespace storage_monitor {
 
 TestStorageMonitor::TestStorageMonitor() : init_called_(false) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* fake_mtp_manager =
       TestMediaTransferProtocolManagerChromeOS::GetFakeMtpManager();
   fake_mtp_manager->AddReceiver(
@@ -115,7 +116,7 @@ bool TestStorageMonitor::GetMTPStorageInfoFromDeviceId(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 device::mojom::MtpManager*
 TestStorageMonitor::media_transfer_protocol_manager() {
   return media_transfer_protocol_manager_.get();

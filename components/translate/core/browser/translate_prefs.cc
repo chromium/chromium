@@ -22,6 +22,7 @@
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
@@ -195,7 +196,7 @@ TranslatePrefs::TranslatePrefs(PrefService* user_prefs,
     : accept_languages_pref_(accept_languages_pref),
       prefs_(user_prefs),
       language_prefs_(std::make_unique<language::LanguagePrefs>(user_prefs)) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   preferred_languages_pref_ = preferred_languages_pref;
 #else
   DCHECK(!preferred_languages_pref);
@@ -737,7 +738,7 @@ void TranslatePrefs::GetLanguageList(
   DCHECK(languages);
   DCHECK(languages->empty());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string& key = preferred_languages_pref_;
 #else
   const std::string& key = accept_languages_pref_;
@@ -751,7 +752,7 @@ void TranslatePrefs::UpdateLanguageList(
     const std::vector<std::string>& languages) {
   std::string languages_str = base::JoinString(languages, ",");
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs_->SetString(preferred_languages_pref_, languages_str);
 #endif
 

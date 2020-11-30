@@ -29,6 +29,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/nacl/common",
     "//components/nacl/common:buildflags",
     "//components/nacl/common:debug_exception_handler",

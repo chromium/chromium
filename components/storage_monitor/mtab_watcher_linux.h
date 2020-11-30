@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_MTAB_WATCHER_LINUX_H_
 #define COMPONENTS_STORAGE_MONITOR_MTAB_WATCHER_LINUX_H_
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #error "ChromeOS does not use MtabWatcherLinux."
 #endif
 
