@@ -246,14 +246,7 @@ class BackForwardCacheMetrics
   base::Optional<base::TimeTicks> started_navigation_timestamp_;
   base::Optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
 
-  NotRestoredReasons not_restored_reasons_;
-  uint64_t blocklisted_features_ = 0;
-  base::Optional<ShouldSwapBrowsingInstance>
-      browsing_instance_not_swapped_reason_;
-
-  // The reasons given at BackForwardCache::DisableForRenderFrameHost. These are
-  // a further breakdown of NotRestoredReason::kDisableForRenderFrameHostCalled.
-  std::set<std::string> disabled_reasons_;
+  std::unique_ptr<BackForwardCacheCanStoreDocumentResult> page_store_result_;
 
   // This value is updated only for navigations which are not same-document and
   // main-frame navigations.

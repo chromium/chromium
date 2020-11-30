@@ -164,6 +164,19 @@ void BackForwardCacheCanStoreDocumentResult::
     disabled_reasons_.insert(reason);
 }
 
+void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
+    const BackForwardCacheCanStoreDocumentResult& other) {
+  not_stored_reasons_ |= other.not_stored_reasons();
+  blocklisted_features_ |= other.blocklisted_features();
+  if (!browsing_instance_not_swapped_reason_) {
+    browsing_instance_not_swapped_reason_ =
+        other.browsing_instance_not_swapped_reason();
+  }
+  for (const std::string& reason : other.disabled_reasons()) {
+    disabled_reasons_.insert(reason);
+  }
+}
+
 BackForwardCacheCanStoreDocumentResult::
     BackForwardCacheCanStoreDocumentResult() = default;
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(

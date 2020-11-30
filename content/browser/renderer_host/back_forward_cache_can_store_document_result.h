@@ -31,6 +31,9 @@ class BackForwardCacheCanStoreDocumentResult {
       BackForwardCacheCanStoreDocumentResult&&);
   ~BackForwardCacheCanStoreDocumentResult();
 
+  // Add reasons contained in the |other| to |this|.
+  void AddReasonsFrom(const BackForwardCacheCanStoreDocumentResult& other);
+
   void No(BackForwardCacheMetrics::NotRestoredReason reason);
   void NoDueToFeatures(uint64_t features);
   void NoDueToRelatedActiveContents(base::Optional<ShouldSwapBrowsingInstance>
