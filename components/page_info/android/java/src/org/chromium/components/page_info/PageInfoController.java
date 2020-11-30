@@ -488,6 +488,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             mPendingRunAfterDismissTask.run();
             mPendingRunAfterDismissTask = null;
         }
+        if (mSubpageController != null) {
+            mSubpageController.onSubpageRemoved();
+            mSubpageController = null;
+        }
         mWebContentsObserver.destroy();
         mWebContentsObserver = null;
         PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
@@ -612,6 +616,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     public void exitSubpage() {
         if (mSubpageController == null) return;
         mContainer.showPage(mView, null, () -> {
+            // The PageInfo dialog can get dismissed during the page change animation.
+            // In that case mSubpageController will already be null.
+            if (mSubpageController == null) return;
             mSubpageController.onSubpageRemoved();
             mSubpageController = null;
         });
