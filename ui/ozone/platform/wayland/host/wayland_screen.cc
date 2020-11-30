@@ -235,6 +235,9 @@ gfx::AcceleratedWidget WaylandScreen::GetLocalProcessWidgetAtPoint(
 
 display::Display WaylandScreen::GetDisplayNearestPoint(
     const gfx::Point& point) const {
+  auto displays = GetAllDisplays();
+  if (displays.size() <= 1)
+    return GetPrimaryDisplay();
   return *FindDisplayNearestPoint(display_list_.displays(), point);
 }
 
