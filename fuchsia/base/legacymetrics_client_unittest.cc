@@ -148,6 +148,31 @@ TEST_F(LegacyMetricsClientTest, AllTypes) {
   EXPECT_EQ("bar", events[2].user_action_event().name());
 }
 
+TEST_F(LegacyMetricsClientTest, DisconnectWhileCollectingAdditionalEvents) {
+  // Hold the completion callback for later execution.
+  base::OnceCallback<void(std::vector<fuchsia::legacymetrics::Event>)>
+      on_report_done;
+  client_.SetReportAdditionalMetricsCallback(base::BindRepeating(
+      [](base::OnceCallback<void(std::vector<fuchsia::legacymetrics::Event>)>*
+             stored_on_report_done,
+         base::OnceCallback<void(std::vector<fuchsia::legacymetrics::Event>)>
+             on_report_done) {
+        *stored_on_report_done = std::move(on_report_done);
+      },
+      base::Unretained(&on_report_done)));
+
+  client_.Start(kReportInterval);
+
+  task_environment_.FastForwardBy(kReportInterval);
+
+  // Disconnect the service.
+  service_binding_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Fulfill the report additional metrics callback.
+  std::move(on_report_done).Run({});
+}
+
 TEST_F(LegacyMetricsClientTest, ReportSkippedNoEvents) {
   client_.Start(kReportInterval);
 
