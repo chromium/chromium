@@ -137,6 +137,18 @@ fuzzer_test("v8_script_parser_fuzzer") {
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
+v8_inspector_fuzzer_corpus_dir = "$target_gen_dir/v8_inspector_fuzzer_corpus"
+
+action("generate_v8_inspector_fuzzer_corpus") {
+  script = "generate_v8_inspector_fuzzer_corpus.py"
+  sources = [ "generate_v8_inspector_fuzzer_corpus.py" ]
+  args = [
+    rebase_path("//v8/test/inspector/", root_build_dir),
+    rebase_path(v8_inspector_fuzzer_corpus_dir, root_build_dir),
+  ]
+  outputs = [ v8_inspector_fuzzer_corpus_dir ]
+}
+
 fuzzer_test("v8_inspector_fuzzer") {
   sources = []
   deps = [ "//v8:inspector_fuzzer" ]
@@ -150,7 +162,8 @@ fuzzer_test("v8_inspector_fuzzer") {
     "handle_segv=1",
   ]
   dict = "dicts/generated/javascript.dict"
-  seed_corpus = "//v8/test/inspector/"
+  seed_corpus = v8_inspector_fuzzer_corpus_dir
+  seed_corpus_deps = [ ":generate_v8_inspector_fuzzer_corpus" ]
 
   # The fuzzer is able to handle any input, but since the input is interpreted
   # as JS code, restricting to ascii only will increase fuzzing efficiency.
