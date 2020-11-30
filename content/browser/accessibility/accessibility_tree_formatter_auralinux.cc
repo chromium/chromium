@@ -65,8 +65,13 @@ class AccessibilityTreeFormatterAuraLinux
                               base::DictionaryValue* dict) const;
 };
 
+// TODO(crbug.com/1133330): move implementation into
+// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterAuraLinux
+// is relocated under ui/accessibility/platform
+
 // static
-std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter>
+AXInspectFactory::CreatePlatformFormatter() {
   return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
 }
 
@@ -74,8 +79,8 @@ std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
 std::vector<AccessibilityTreeFormatter::TestPass>
 AccessibilityTreeFormatter::GetTestPasses() {
   return {
-      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink},
-      {"linux", &AccessibilityTreeFormatter::Create},
+      {"blink", &AXInspectFactory::CreateBlinkFormatter},
+      {"linux", &AXInspectFactory::CreatePlatformFormatter},
   };
 }
 

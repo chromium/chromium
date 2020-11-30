@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
+#include "content/public/browser/ax_inspect_factory.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"

@@ -26,9 +26,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
 
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
-
-  static std::unique_ptr<ui::AXTreeFormatter> CreateBlink();
-
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,
                           base::Value* dict) const;

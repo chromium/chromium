@@ -60,7 +60,7 @@
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/test/zoom_test_utils.h"
 #include "components/zoom/zoom_controller.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_task_traits.h"

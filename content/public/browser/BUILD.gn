@@ -26,7 +26,6 @@ source_set("browser_sources") {
   # External code should depend on via ":browser" above.
   visibility = [ "//content/*" ]
   sources = [
-    "accessibility_tree_formatter.h",
     "allow_service_worker_result.cc",
     "allow_service_worker_result.h",
     "appcache_service.cc",
@@ -37,6 +36,8 @@ source_set("browser_sources") {
     "authenticator_environment.h",
     "ax_event_notification_details.cc",
     "ax_event_notification_details.h",
+    "ax_inspect_factory.cc",
+    "ax_inspect_factory.h",
     "back_forward_cache.h",
     "background_fetch_delegate.cc",
     "background_fetch_delegate.h",

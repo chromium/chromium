@@ -193,11 +193,6 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
   AddPropertyFilter(property_filters, "roleDescription=*");
   AddPropertyFilter(property_filters, "errormessageId=*");
 }
-// static
-std::unique_ptr<ui::AXTreeFormatter>
-AccessibilityTreeFormatterBlink::CreateBlink() {
-  return std::make_unique<AccessibilityTreeFormatterBlink>();
-}
 
 const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",
                                             "TreeData.textSelEndOffset"};

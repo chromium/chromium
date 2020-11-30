@@ -82,8 +82,13 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
       const base::DictionaryValue& node) const override;
 };
 
+// TODO(crbug.com/1133330): move implementation into
+// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterWin is
+// relocated under ui/accessibility/platform
+
 // static
-std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter>
+AXInspectFactory::CreatePlatformFormatter() {
   base::win::AssertComInitialized();
   return std::make_unique<AccessibilityTreeFormatterWin>();
 }
@@ -94,8 +99,8 @@ AccessibilityTreeFormatter::GetTestPasses() {
   // In addition to the 'Blink' pass, Windows includes two accessibility APIs
   // that need to be tested independently (MSAA & UIA).
   return {
-      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink},
-      {"win", &AccessibilityTreeFormatter::Create},
+      {"blink", &AXInspectFactory::CreateBlinkFormatter},
+      {"win", &AXInspectFactory::CreatePlatformFormatter},
       {"uia", &AccessibilityTreeFormatterUia::CreateUia},
   };
 }

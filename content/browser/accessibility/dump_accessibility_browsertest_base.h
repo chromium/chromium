@@ -12,7 +12,7 @@
 #include "base/strings/string16.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/accessibility/accessibility_event_recorder.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"

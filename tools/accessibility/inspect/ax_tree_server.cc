@@ -52,7 +52,7 @@ AXTreeServer::AXTreeServer(gfx::AcceleratedWidget widget,
 void AXTreeServer::Run(BuildTree build_tree,
                        const base::FilePath& filters_path) {
   std::unique_ptr<AXTreeFormatter> formatter(
-      AccessibilityTreeFormatter::Create());
+      AXInspectFactory::CreatePlatformFormatter());
 
   // Set filters.
   std::vector<ui::AXPropertyFilter> filters = GetPropertyFilters(filters_path);

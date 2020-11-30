@@ -102,8 +102,13 @@ class AccessibilityTreeFormatterAndroid
       const base::DictionaryValue& node) const override;
 };
 
+// TODO(crbug.com/1133330): move implementation into
+// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterAndroid
+// is relocated under ui/accessibility/platform
+
 // static
-std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter>
+AXInspectFactory::CreatePlatformFormatter() {
   return std::make_unique<AccessibilityTreeFormatterAndroid>();
 }
 
@@ -113,7 +118,7 @@ AccessibilityTreeFormatter::GetTestPasses() {
   // Note: Android doesn't do a "blink" pass; the blink tree is different on
   // Android because we exclude inline text boxes, for performance.
   return {
-      {"android", &AccessibilityTreeFormatter::Create},
+      {"android", &AXInspectFactory::CreatePlatformFormatter},
   };
 }
 

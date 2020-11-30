@@ -33,7 +33,7 @@ class AccessibilityScriptsMacBrowserTest : public ContentBrowserTest {
         root_(nullptr),
         line_indexer_(nullptr),
         script_output_(),
-        formatter_(AccessibilityTreeFormatter::Create()),
+        formatter_(AXInspectFactory::CreatePlatformFormatter()),
         helper_("mac") {
     // Set property filters.
     std::vector<ui::AXPropertyFilter> property_filters;

@@ -10,15 +10,16 @@ namespace content {
 
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 // static
-std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
-  return AccessibilityTreeFormatterBlink::CreateBlink();
+std::unique_ptr<ui::AXTreeFormatter>
+AXInspectFactory::CreatePlatformFormatter() {
+  return AXInspectFactory::CreateBlinkFormatter();
 }
 
 // static
 std::vector<AccessibilityTreeFormatter::TestPass>
 AccessibilityTreeFormatter::GetTestPasses() {
   return {
-      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink},
+      {"blink", &AXInspectFactory::CreateBlinkFormatter},
   };
 }
 #endif

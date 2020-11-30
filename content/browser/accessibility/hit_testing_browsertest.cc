@@ -267,7 +267,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
 std::string
 AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
   std::unique_ptr<AXTreeFormatter> accessibility_tree_formatter =
-      AccessibilityTreeFormatterBlink::CreateBlink();
+      AXInspectFactory::CreateBlinkFormatter();
   accessibility_tree_formatter->set_show_ids(true);
   accessibility_tree_formatter->SetPropertyFilters(
       {{"name=*", ui::AXPropertyFilter::ALLOW},

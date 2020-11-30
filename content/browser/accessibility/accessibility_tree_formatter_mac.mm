@@ -107,8 +107,13 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   std::string FormatAttributeValue(const base::Value& value) const;
 };
 
+// TODO(crbug.com/1133330): move implementation into
+// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterMac is
+// relocated under ui/accessibility/platform
+
 // static
-std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
+std::unique_ptr<ui::AXTreeFormatter>
+AXInspectFactory::CreatePlatformFormatter() {
   return std::make_unique<AccessibilityTreeFormatterMac>();
 }
 
@@ -116,8 +121,8 @@ std::unique_ptr<ui::AXTreeFormatter> AccessibilityTreeFormatter::Create() {
 std::vector<AccessibilityTreeFormatter::TestPass>
 AccessibilityTreeFormatter::GetTestPasses() {
   return {
-      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink},
-      {"mac", &AccessibilityTreeFormatter::Create},
+      {"blink", &AXInspectFactory::CreateBlinkFormatter},
+      {"mac", &AXInspectFactory::CreatePlatformFormatter},
   };
 }
 

@@ -32,7 +32,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -141,7 +141,7 @@ AccessibilityWinBrowserTest::~AccessibilityWinBrowserTest() = default;
 
 std::string AccessibilityWinBrowserTest::PrintAXTree() const {
   std::unique_ptr<ui::AXTreeFormatter> formatter(
-      AccessibilityTreeFormatter::Create());
+      AXInspectFactory::CreatePlatformFormatter());
   DCHECK(formatter);
   formatter->set_show_ids(true);
   formatter->SetPropertyFilters(

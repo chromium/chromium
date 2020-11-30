@@ -18,7 +18,7 @@
 #include "base/values.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/accessibility_tree_formatter.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace {

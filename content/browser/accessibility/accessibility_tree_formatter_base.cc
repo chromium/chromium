@@ -40,11 +40,9 @@ std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     BrowserAccessibilityManager* ax_mgr,
     bool internal,
     std::vector<AXPropertyFilter> property_filters) {
-  std::unique_ptr<ui::AXTreeFormatter> formatter;
-  if (internal)
-    formatter = std::make_unique<AccessibilityTreeFormatterBlink>();
-  else
-    formatter = Create();
+  std::unique_ptr<ui::AXTreeFormatter> formatter =
+      internal ? AXInspectFactory::CreateBlinkFormatter()
+               : AXInspectFactory::CreatePlatformFormatter();
 
   formatter->SetPropertyFilters(property_filters);
   base::Value dict =
