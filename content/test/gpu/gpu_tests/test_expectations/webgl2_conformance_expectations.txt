@@ -124,6 +124,7 @@ crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1152259 [ win ] conformance/reading/read-pixels-test.html [ Failure ]
 crbug.com/1152259 [ linux ] conformance/reading/read-pixels-test.html [ Failure ]
+crbug.com/1152259 [ mac passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
