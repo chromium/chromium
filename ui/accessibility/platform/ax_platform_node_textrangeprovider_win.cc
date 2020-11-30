@@ -1462,7 +1462,10 @@ AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::~TextRangeEndpoints() {
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
     AXPositionInstance new_start) {
   bool did_tree_change = start_->tree_id() != new_start->tree_id();
-  if (did_tree_change && !start_->IsNullPosition() &&
+  // TODO(bebeaudr): We can't use IsNullPosition() here because of
+  // https://crbug.com/1152939. Once this is fixed, we can go back to
+  // IsNullPosition().
+  if (did_tree_change && start_->kind() != AXPositionKind::NULL_POSITION &&
       start_->tree_id() != end_->tree_id()) {
     RemoveObserver(start_->tree_id());
   }
@@ -1478,7 +1481,10 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetEnd(
     AXPositionInstance new_end) {
   bool did_tree_change = end_->tree_id() != new_end->tree_id();
-  if (did_tree_change && !end_->IsNullPosition() &&
+  // TODO(bebeaudr): We can't use IsNullPosition() here because of
+  // https://crbug.com/1152939. Once this is fixed, we can go back to
+  // IsNullPosition().
+  if (did_tree_change && end_->kind() != AXPositionKind::NULL_POSITION &&
       end_->tree_id() != start_->tree_id()) {
     RemoveObserver(end_->tree_id());
   }
