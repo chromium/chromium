@@ -237,6 +237,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     /** The current color of the location bar. */
     private int mCurrentLocationBarColor;
 
+    /** Whether the toolbar has a pending request to call {@link triggerUrlFocusAnimation()}. */
+    private boolean mPendingTriggerUrlFocusRequest;
+
     /**
      * Used to specify the visual state of the toolbar.
      */
@@ -466,6 +469,16 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 return getMenuButtonCoordinator().onEnterKeyPress();
             }
         });
+
+        /**
+         * Calls the {@link triggerUrlFocusAnimation()} here if it is skipped in {@link
+         * handleOmniboxInOverviewMode()}. See https://crbug.com/1152306.
+         */
+        if (mPendingTriggerUrlFocusRequest) {
+            mPendingTriggerUrlFocusRequest = false;
+            triggerUrlFocusAnimation(
+                    getToolbarDataProvider().isInOverviewAndShowingOmnibox() && !urlHasFocus());
+        }
 
         updateVisualsForLocationBarState();
     }
@@ -1849,6 +1862,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // is enabled.
         if (isNativeLibraryReady()) {
             triggerUrlFocusAnimation(inTabSwitcherMode && !urlHasFocus());
+        } else {
+            mPendingTriggerUrlFocusRequest = true;
         }
 
         if (inTabSwitcherMode) mUrlBar.setText("");

@@ -16,6 +16,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
@@ -28,6 +29,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -93,6 +95,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -107,6 +110,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.File;
@@ -949,6 +953,48 @@ public class InstantStartTest {
 
         Assert.assertFalse("There should be no GURL usages triggering native library loading",
                 NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    public void renderSingleAsHomepage_NoTab_ScrollToolbarToTop() throws IOException {
+        // clang-format on
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        // Initializes native.
+        startAndWaitNativeInitialization();
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 0, 0);
+
+        /** Drag the {@link R.id.placeholders_layout} to scroll the toolbar to the top. */
+        int toY = -mActivityTestRule.getActivity().getResources().getDimensionPixelOffset(
+                org.chromium.chrome.start_surface.R.dimen.toolbar_height_no_shadow);
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity().findViewById(R.id.placeholders_layout), 0, 0, 0,
+                toY, 1);
+
+        // The start surface toolbar should be scrolled up and not be displayed.
+        onView(withId(org.chromium.chrome.start_surface.R.id.tab_switcher_toolbar))
+                .check(matches(not(isDisplayed())));
+
+        // Toolbar container view should show.
+        onView(withId(org.chromium.chrome.start_surface.R.id.toolbar_container))
+                .check(matches(isDisplayed()));
+
+        View surface = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        ChromeRenderTestRule.sanitize(surface);
+        // TODO(crbug.com/1065314): fix favicon.
+        mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
     }
 
     /**
