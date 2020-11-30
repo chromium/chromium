@@ -133,7 +133,8 @@ extern const char kPolicyMissingMitigationMode[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kAllowRedeemChromeOsRegistrationOffers[];
 
-COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kStartUpFlags[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kFeatureFlags[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kStartUpFlagsDeprecated[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kKioskAppSettingsPrefix[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)

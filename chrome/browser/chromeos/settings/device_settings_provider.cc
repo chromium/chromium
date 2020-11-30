@@ -105,6 +105,7 @@ const char* const kKnownSettings[] = {
     kDeviceWilcoDtcAllowed,
     kDisplayRotationDefault,
     kExtensionCacheSize,
+    kFeatureFlags,
     kHeartbeatEnabled,
     kHeartbeatFrequency,
     kLoginAuthenticationBehavior,
@@ -145,7 +146,7 @@ const char* const kKnownSettings[] = {
     kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
-    kStartUpFlags,
+    kStartUpFlagsDeprecated,
     kStatsReportingPref,
     kSystemLogUploadEnabled,
     kSystemProxySettings,
@@ -374,14 +375,24 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
       policy.device_local_accounts().prompt_for_network_when_offline());
 
-  if (policy.has_start_up_flags()) {
-    std::vector<base::Value> list;
-    const em::StartUpFlagsProto& flags_proto = policy.start_up_flags();
-    const RepeatedPtrField<std::string>& flags = flags_proto.flags();
-    for (const std::string& entry : flags) {
-      list.push_back(base::Value(entry));
+  if (policy.has_feature_flags()) {
+    std::vector<base::Value> switches_list;
+    for (const std::string& entry : policy.feature_flags().switches()) {
+      switches_list.push_back(base::Value(entry));
     }
-    new_values_cache->SetValue(kStartUpFlags, base::Value(std::move(list)));
+    if (!switches_list.empty()) {
+      new_values_cache->SetValue(kStartUpFlagsDeprecated,
+                                 base::Value(std::move(switches_list)));
+    }
+
+    std::vector<base::Value> feature_flags_list;
+    for (const std::string& entry : policy.feature_flags().feature_flags()) {
+      feature_flags_list.push_back(base::Value(entry));
+    }
+    if (!feature_flags_list.empty()) {
+      new_values_cache->SetValue(kFeatureFlags,
+                                 base::Value(std::move(feature_flags_list)));
+    }
   }
 
   if (policy.has_saml_settings()) {

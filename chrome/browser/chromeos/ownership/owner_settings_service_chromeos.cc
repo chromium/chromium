@@ -620,17 +620,22 @@ void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
     } else {
       NOTREACHED();
     }
-  } else if (path == kStartUpFlags) {
-    em::StartUpFlagsProto* flags_proto = settings.mutable_start_up_flags();
-    flags_proto->Clear();
-    const base::ListValue* flags;
-    if (value.GetAsList(&flags)) {
-      for (base::ListValue::const_iterator i = flags->begin();
-           i != flags->end();
-           ++i) {
-        std::string flag;
-        if (i->GetAsString(&flag))
-          flags_proto->add_flags(flag);
+  } else if (path == kStartUpFlagsDeprecated) {
+    em::FeatureFlagsProto* feature_flags = settings.mutable_feature_flags();
+    feature_flags->Clear();
+    if (value.is_list()) {
+      for (const auto& flag : value.GetList()) {
+        if (flag.is_string())
+          feature_flags->add_switches(flag.GetString());
+      }
+    }
+  } else if (path == kFeatureFlags) {
+    em::FeatureFlagsProto* feature_flags = settings.mutable_feature_flags();
+    feature_flags->Clear();
+    if (value.is_list()) {
+      for (const auto& flag : value.GetList()) {
+        if (flag.is_string())
+          feature_flags->add_feature_flags(flag.GetString());
       }
     }
   } else if (path == kSystemUse24HourClock) {
