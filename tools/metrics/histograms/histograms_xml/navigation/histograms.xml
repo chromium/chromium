@@ -358,22 +358,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BackForwardCache.Restore.DisableEvictionDelay" units="ms"
-    expires_after="2021-10-01">
-  <owner>carlscab@google.com</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Delay introduced by the IPC round trips to disable eviction in all the
-    renderers of a page stored in the back-forward cache. That is, the interval
-    of time between sending an SetPageLifecycleState IPC to each renderer and
-    receiving all the responses.
-
-    Recorded on reception of the last ACK reply. We added this histogram to
-    measure the impact of this extra round trip to the renderer when restoring a
-    page from the back-forward cache.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
     expires_after="2021-10-01">
   <owner>sreejakshetty@chromium.org</owner>

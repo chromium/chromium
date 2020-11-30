@@ -2291,8 +2291,6 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       (new_state->pagehide_dispatch ==
        mojom::blink::PagehideDispatch::kNotDispatched) &&
       GetPage()->DispatchedPagehideAndStillHidden();
-  bool eviction_changed =
-      new_state->eviction_enabled != old_state->eviction_enabled;
 
   if (dispatching_pagehide) {
     RemoveFocusAndTextInputState();
@@ -2313,6 +2311,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   }
   if (freezing_page)
     SetPageFrozen(true);
+  if (storing_in_bfcache)
+    HookBackForwardCacheEviction(true);
   if (restoring_from_bfcache) {
     DCHECK(page_restore_params);
     // Update the history offset and length value saved in RenderViewImpl, as
@@ -2321,9 +2321,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     web_view_client_->OnSetHistoryOffsetAndLength(
         page_restore_params->pending_history_list_offset,
         page_restore_params->current_history_list_length);
+    HookBackForwardCacheEviction(false);
   }
-  if (eviction_changed)
-    HookBackForwardCacheEviction(new_state->eviction_enabled);
   if (resuming_page)
     SetPageFrozen(false);
   if (showing_page) {

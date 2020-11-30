@@ -807,6 +807,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   base::Optional<mojom::blink::ScreenOrientation> screen_orientation_override_;
 
+  mojom::blink::PageLifecycleStatePtr lifecycle_state_;
   mojo::AssociatedReceiver<mojom::blink::PageBroadcast> receiver_;
 
   // These are observing changes in |renderer_preferences_|. This is used for

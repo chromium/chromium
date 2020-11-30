@@ -27,12 +27,6 @@ struct PageLifecycleState {
   PageVisibilityState visibility;
   bool is_in_back_forward_cache;
   PagehideDispatch pagehide_dispatch;
-  // Tells the renderer whether it is allowed to evict the page from the
-  // back-forward cache. This is set to false shortly before the page is
-  // taken out of the cache to make sure that evict requests from the renderer
-  // do not race with the restoration flow on the browser. For example, if set
-  // to true the renderer must not evict the page if javascript is executed.
-  bool eviction_enabled;
 };
 
 // Additional parameters to send with SetPageLifecycleState calls when we're

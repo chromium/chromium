@@ -4,8 +4,6 @@
 
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 
-#include "base/callback_helpers.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -28,8 +26,6 @@ void PageLifecycleStateManager::TestDelegate::OnLastAcknowledgedStateChanged(
 void PageLifecycleStateManager::TestDelegate::OnUpdateSentToRenderer(
     const blink::mojom::PageLifecycleState& new_state) {}
 
-void PageLifecycleStateManager::TestDelegate::OnDeleted() {}
-
 PageLifecycleStateManager::PageLifecycleStateManager(
     RenderViewHostImpl* render_view_host_impl,
     blink::mojom::PageVisibilityState web_contents_visibility_state)
@@ -40,8 +36,7 @@ PageLifecycleStateManager::PageLifecycleStateManager(
 }
 
 PageLifecycleStateManager::~PageLifecycleStateManager() {
-  if (test_delegate_)
-    test_delegate_->OnDeleted();
+  DCHECK(!test_delegate_);
 }
 
 void PageLifecycleStateManager::SetIsFrozen(bool frozen) {
@@ -49,8 +44,7 @@ void PageLifecycleStateManager::SetIsFrozen(bool frozen) {
     return;
   is_set_frozen_called_ = frozen;
 
-  SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr,
-                                base::NullCallback());
+  SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr);
 }
 
 void PageLifecycleStateManager::SetWebContentsVisibility(
@@ -59,8 +53,7 @@ void PageLifecycleStateManager::SetWebContentsVisibility(
     return;
 
   web_contents_visibility_ = visibility;
-  SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr,
-                                base::NullCallback());
+  SendUpdatesToRendererIfNeeded(/*page_restore_params=*/nullptr);
   // TODO(yuzus): When a page is frozen and made visible, the page should
   // automatically resume.
 }
@@ -70,12 +63,7 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
   if (is_in_back_forward_cache_ == is_in_back_forward_cache)
     return;
-  // Prevent races by waiting for confirmation that the renderer will no longer
-  // evict the page before allowing it to exit the back-forward cache
-  DCHECK(is_in_back_forward_cache ||
-         !last_acknowledged_state_->eviction_enabled);
   is_in_back_forward_cache_ = is_in_back_forward_cache;
-  eviction_enabled_ = is_in_back_forward_cache;
   if (is_in_back_forward_cache) {
     // When a page is put into BackForwardCache, the page can run a busy loop.
     // Set a timeout monitor to check that the transition finishes within the
@@ -95,8 +83,7 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kNotDispatched;
   }
 
-  SendUpdatesToRendererIfNeeded(std::move(page_restore_params),
-                                base::NullCallback());
+  SendUpdatesToRendererIfNeeded(std::move(page_restore_params));
 }
 
 blink::mojom::PageLifecycleStatePtr
@@ -124,34 +111,14 @@ void PageLifecycleStateManager::DidSetPagehideDispatchDuringNewPageCommit(
             blink::mojom::PageVisibilityState::kHidden);
   DCHECK_NE(acknowledged_state->pagehide_dispatch,
             blink::mojom::PagehideDispatch::kNotDispatched);
-  OnPageLifecycleChangedAck(std::move(acknowledged_state),
-                            base::NullCallback());
-}
-
-void PageLifecycleStateManager::SetIsLeavingBackForwardCache(
-    base::OnceClosure done_cb) {
-  DCHECK(is_in_back_forward_cache_);
-  eviction_enabled_ = false;
-  SendUpdatesToRendererIfNeeded(nullptr, std::move(done_cb));
-}
-
-bool PageLifecycleStateManager::RendererExpectedToSendChannelAssociatedIpcs()
-    const {
-  // eviction_enabled_ => is_in_back_forward_cache_
-  DCHECK(!eviction_enabled_ || is_in_back_forward_cache_);
-  return !eviction_enabled_ || !last_acknowledged_state_->eviction_enabled;
+  OnPageLifecycleChangedAck(std::move(acknowledged_state));
 }
 
 void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
-    blink::mojom::PageRestoreParamsPtr page_restore_params,
-    base::OnceClosure done_cb) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params) {
   if (!render_view_host_impl_->GetAssociatedPageBroadcast()) {
-    // TODO(https://crbug.com/1153155): For some tests, |render_view_host_impl_|
-    // does not have the associated page.
-    if (done_cb) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    std::move(done_cb));
-    }
+    // For some tests, |render_view_host_impl_| does not have the associated
+    // page.
     return;
   }
 
@@ -173,8 +140,7 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
   render_view_host_impl_->GetAssociatedPageBroadcast()->SetPageLifecycleState(
       std::move(state), std::move(page_restore_params),
       base::BindOnce(&PageLifecycleStateManager::OnPageLifecycleChangedAck,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(new_state),
-                     std::move(done_cb)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(new_state)));
 }
 
 blink::mojom::PageLifecycleStatePtr
@@ -191,13 +157,11 @@ PageLifecycleStateManager::CalculatePageLifecycleState() {
        pagehide_dispatch_ != blink::mojom::PagehideDispatch::kNotDispatched)
           ? blink::mojom::PageVisibilityState::kHidden
           : web_contents_visibility_;
-  state->eviction_enabled = eviction_enabled_;
   return state;
 }
 
 void PageLifecycleStateManager::OnPageLifecycleChangedAck(
-    blink::mojom::PageLifecycleStatePtr acknowledged_state,
-    base::OnceClosure done_cb) {
+    blink::mojom::PageLifecycleStatePtr acknowledged_state) {
   blink::mojom::PageLifecycleStatePtr old_state =
       std::move(last_acknowledged_state_);
   last_acknowledged_state_ = std::move(acknowledged_state);
@@ -210,8 +174,6 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
     test_delegate_->OnLastAcknowledgedStateChanged(*old_state,
                                                    *last_acknowledged_state_);
   }
-  if (done_cb)
-    std::move(done_cb).Run();
 }
 
 void PageLifecycleStateManager::OnBackForwardCacheTimeout() {

@@ -411,10 +411,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
  private:
   // mojo::MessageFilter overrides.
   bool WillDispatch(mojo::Message* message) override {
-    if (render_frame_host_->render_view_host()
-            ->GetPageLifecycleStateManager()
-            ->RendererExpectedToSendChannelAssociatedIpcs() ||
-        ProcessHoldsNonCachedPages() ||
+    if (!IsFrameInBackForwardCache() || ProcessHoldsNonCachedPages() ||
         policy_ == BackForwardCacheImpl::kMessagePolicyNone) {
       return true;
     }
@@ -441,6 +438,17 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
   }
 
   void DidDispatchOrReject(mojo::Message* message, bool accepted) override {}
+
+  // Returns true if both the renderer and the browser think the frame is in the
+  // bfcache. That is the PageLifecycleState is in sync with regards to bfcache.
+  // In the intermediate states (no ACK received yet) messages must be allowed.
+  bool IsFrameInBackForwardCache() {
+    PageLifecycleStateManager* mgr =
+        render_frame_host_->render_view_host()->GetPageLifecycleStateManager();
+
+    return mgr->last_acknowledged_state().is_in_back_forward_cache &&
+           mgr->last_state_sent_to_renderer().is_in_back_forward_cache;
+  }
 
   // TODO(https://crbug.com/1125996): Remove once a well-behaved frozen
   // RenderFrame never send IPCs messages, even if there are active pages in the
@@ -4485,10 +4493,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
 
   if (!in_back_forward_cache) {
     TRACE_EVENT0("navigation", "BackForwardCache_EvictAfterDocumentRestored");
-    // TODO(carlscab): We should no longer get into this branch thanks to
-    // https://crrev.com/c/2352815. Lets keep this old code for now just in case
-    // and replace with a CHECK once we are confident that is the case.
-    base::debug::DumpWithoutCrashing();
+
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
         BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
             kByJavaScript);
