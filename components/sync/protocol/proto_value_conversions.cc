@@ -188,22 +188,6 @@ class ToValueVisitor {
     // Obsolete, don't visit
   }
 
-  // PasswordSpecifics
-  std::unique_ptr<base::DictionaryValue> ToValue(
-      const sync_pb::PasswordSpecifics& proto) const {
-    auto value = ToValueImpl(proto);
-    value->Remove("client_only_encrypted_data", nullptr);
-    return value;
-  }
-
-  // PasswordSpecificsData
-  std::unique_ptr<base::DictionaryValue> ToValue(
-      const sync_pb::PasswordSpecificsData& proto) const {
-    auto value = ToValueImpl(proto);
-    value->SetString("password_value", "<redacted>");
-    return value;
-  }
-
   // AutofillWalletSpecifics
   std::unique_ptr<base::DictionaryValue> ToValue(
       const sync_pb::AutofillWalletSpecifics& proto) const {

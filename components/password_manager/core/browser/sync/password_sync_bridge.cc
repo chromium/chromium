@@ -756,7 +756,7 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& pair : key_to_form_map) {
     PasswordForm form = *pair.second;
-    form.password_value = base::UTF8ToUTF16("hidden");
+    form.password_value = base::UTF8ToUTF16("<redacted>");
     batch->Put(base::NumberToString(pair.first), CreateEntityData(form));
   }
   std::move(callback).Run(std::move(batch));

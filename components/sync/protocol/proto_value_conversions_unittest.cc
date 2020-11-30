@@ -104,24 +104,6 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(wallet_metadata)
 DEFINE_SPECIFICS_TO_VALUE_TEST(web_app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)
 
-TEST(ProtoValueConversionsTest, PasswordSpecifics) {
-  sync_pb::PasswordSpecifics specifics;
-  specifics.mutable_client_only_encrypted_data();
-  auto value = PasswordSpecificsToValue(specifics);
-  EXPECT_FALSE(value->Get("client_only_encrypted_data", nullptr));
-}
-
-TEST(ProtoValueConversionsTest, PasswordSpecificsData) {
-  sync_pb::PasswordSpecificsData specifics;
-  specifics.set_password_value("secret");
-  std::unique_ptr<base::DictionaryValue> value(
-      PasswordSpecificsDataToValue(specifics));
-  EXPECT_FALSE(value->empty());
-  std::string password_value;
-  EXPECT_TRUE(value->GetString("password_value", &password_value));
-  EXPECT_EQ("<redacted>", password_value);
-}
-
 TEST(ProtoValueConversionsTest, AppSettingSpecificsToValue) {
   sync_pb::AppNotificationSettings specifics;
   specifics.set_disabled(true);

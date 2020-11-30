@@ -794,7 +794,8 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_FALSE(error);
 }
 
-TEST_F(PasswordSyncBridgeTest, ShouldGetAllDataForDebuggingWithHiddenPassword) {
+TEST_F(PasswordSyncBridgeTest,
+       ShouldGetAllDataForDebuggingWithRedactedPassword) {
   const int kPrimaryKey1 = 1000;
   const int kPrimaryKey2 = 1001;
   PasswordForm form1 = MakePasswordForm(kSignonRealm1);
@@ -814,9 +815,9 @@ TEST_F(PasswordSyncBridgeTest, ShouldGetAllDataForDebuggingWithHiddenPassword) {
   EXPECT_TRUE(batch->HasNext());
   while (batch->HasNext()) {
     const syncer::KeyAndData& data_pair = batch->Next();
-    EXPECT_EQ("hidden", data_pair.second->specifics.password()
-                            .client_only_encrypted_data()
-                            .password_value());
+    EXPECT_EQ("<redacted>", data_pair.second->specifics.password()
+                                .client_only_encrypted_data()
+                                .password_value());
   }
 }
 
