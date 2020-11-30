@@ -324,6 +324,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "insecurePasswords", IDS_SETTINGS_INSECURE_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString("weakPasswords",
                                             IDS_SETTINGS_WEAK_PASSWORDS_COUNT);
+  plural_string_handler->AddLocalizedString("securityKeysNewPIN",
+                                            IDS_SETTINGS_SECURITY_KEYS_NEW_PIN);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.

@@ -17,6 +17,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -98,7 +99,10 @@ Polymer({
      * @type {number|undefined}
      * @private
      */
-    newMinPinLength_: Number,
+    newMinPinLength_: {
+      type: Number,
+      observer: 'newMinPinLengthChanged_',
+    },
 
     /**
      * The number of PIN attempts remaining.
@@ -182,6 +186,9 @@ Polymer({
 
     /** @private */
     title_: String,
+
+    /** @private */
+    newPINDialogDescription_: String,
   },
 
   /** @private {?SecurityKeysPINBrowserProxy} */
@@ -488,6 +495,15 @@ Polymer({
    */
   closeText_() {
     return this.i18n(this.complete_ ? 'ok' : 'cancel');
+  },
+
+  /**
+   * @private
+   */
+  newMinPinLengthChanged_() {
+    PluralStringProxyImpl.getInstance()
+        .getPluralString('securityKeysNewPIN', this.newMinPinLength_)
+        .then(string => this.newPINDialogDescription_ = string);
   },
 
   /**

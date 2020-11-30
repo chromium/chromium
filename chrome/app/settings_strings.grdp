@@ -3262,7 +3262,9 @@
     Incorrect PIN. You have <ph name="RETRIES">$1<ex>8</ex></ph> attempts remaining.
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_NEW_PIN" desc="A message shown when a user is trying to set a PIN on a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
-    Enter your new PIN. A PIN must be at least four characters long and can contain letters, numbers, and other characters.
+    {MIN_PIN_LENGTH, plural,
+     =1 {Enter your new PIN. A PIN must be at least one character long and can contain letters, numbers, and other characters.}
+     other {Enter your new PIN. A PIN must be at least # characters long and can contain letters, numbers, and other characters.}}
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_SET_PIN_CONFIRM" desc="The label of the button shown when a user is trying to set a PIN on a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
     Save
