@@ -30,7 +30,7 @@ applications (to communicate the page failed to load).
 
 WebView supports the `onSafeBrowsingHit()` callback, allowing applications to
 implement custom interstitials. This also involves exposing [threat type
-constants](/android_webview/java/src/org/chromium/android_webview/AwSafeBrowsingConversionHelper.java),
+constants](/android_webview/java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingConversionHelper.java),
 to indicate what threat WebView observed.
 
 ## Sometimes, no "back to safety" button
