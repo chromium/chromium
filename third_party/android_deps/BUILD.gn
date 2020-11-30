@@ -28,6 +28,15 @@ java_group("android_support_v7_appcompat_java") {
   ]
 }
 
+java_group("dagger_java") {
+  deps = [ dagger_java_target ]
+}
+
+java_annotation_processor("dagger_processor") {
+  main_class = "dagger.internal.codegen.ComponentProcessor"
+  deps = [ dagger_annotation_processor_target ]
+}
+
 java_group("espresso_java") {
   testonly = true
 
@@ -77,11 +86,6 @@ java_group("protobuf_lite_runtime_java") {
 java_annotation_processor("auto_service_processor") {
   main_class = "com.google.auto.service.processor.AutoServiceProcessor"
   deps = [ ":com_google_auto_service_auto_service_java" ]
-}
-
-java_annotation_processor("dagger_processor") {
-  main_class = "dagger.internal.codegen.ComponentProcessor"
-  deps = [ ":com_google_dagger_dagger_compiler_java" ]
 }
 
 android_library("chromium_play_services_availability_java") {
