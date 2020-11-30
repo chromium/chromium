@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -109,8 +110,8 @@ struct ManagedState {
 bool HasRegisteredGroupName(ContentSettingsType type);
 
 // Converts a ContentSettingsType to/from its group name identifier.
-ContentSettingsType ContentSettingsTypeFromGroupName(const std::string& name);
-std::string ContentSettingsTypeToGroupName(ContentSettingsType type);
+ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name);
+base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type);
 
 // Converts a ListValue of group names to a list of ContentSettingsTypes
 std::vector<ContentSettingsType> ContentSettingsTypesFromGroupNames(

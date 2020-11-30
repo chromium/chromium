@@ -560,7 +560,8 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
 
 TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   const std::string kUsbChooserGroupName =
-      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA);
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA)
+          .as_string();
   const std::string& kPolicySource =
       SiteSettingSourceToString(SiteSettingSource::kPolicy);
   const std::string& kPreferenceSource =
@@ -752,7 +753,8 @@ void ExpectDisplayNameEq(const base::Value& actual_exception_object,
 TEST_F(SiteSettingsHelperChooserExceptionTest,
        GetChooserExceptionListFromProfile) {
   const std::string kUsbChooserGroupName =
-      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA);
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA)
+          .as_string();
   const ChooserTypeNameEntry* chooser_type =
       ChooserTypeFromGroupName(kUsbChooserGroupName);
   const std::string& kPolicySource =

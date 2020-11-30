@@ -2148,7 +2148,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
        HandleGetChooserExceptionListForUsb) {
   const std::string kUsbChooserGroupName =
       site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::USB_CHOOSER_DATA);
+          ContentSettingsType::USB_CHOOSER_DATA)
+          .as_string();
 
   const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
       kUsbChooserGroupName, /*expected_total_calls=*/1u);
@@ -2164,7 +2165,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
        HandleGetChooserExceptionListForUsbOffTheRecord) {
   const std::string kUsbChooserGroupName =
       site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::USB_CHOOSER_DATA);
+          ContentSettingsType::USB_CHOOSER_DATA)
+          .as_string();
   SetUpOffTheRecordUsbChooserContext();
   web_ui()->ClearTrackedCalls();
 
@@ -2200,7 +2202,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
        HandleResetChooserExceptionForSiteForUsb) {
   const std::string kUsbChooserGroupName =
       site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::USB_CHOOSER_DATA);
+          ContentSettingsType::USB_CHOOSER_DATA)
+          .as_string();
   const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
   const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
   const std::string kAndroidOriginStr = AndroidUrl().GetOrigin().spec();

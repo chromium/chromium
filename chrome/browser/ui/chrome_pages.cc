@@ -8,11 +8,11 @@
 
 #include <memory>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -189,8 +189,9 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // TODO(crbug.com/728353): Update the group names defined in
   // site_settings_helper once Options is removed from Chrome. Then this list
   // will no longer be needed.
-  static base::NoDestructor<std::map<ContentSettingsType, std::string>>
-      kSettingsPathOverrides(
+
+  static constexpr auto kSettingsPathOverrides =
+      base::MakeFixedFlatMap<ContentSettingsType, base::StringPiece>(
           {{ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
            {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},
            {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
@@ -198,13 +199,12 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
            {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
            {ContentSettingsType::ADS, "ads"},
            {ContentSettingsType::PPAPI_BROKER, "unsandboxedPlugins"}});
-  const auto it = kSettingsPathOverrides->find(type);
-  const std::string content_type_path =
-      (it == kSettingsPathOverrides->end())
-          ? site_settings::ContentSettingsTypeToGroupName(type)
-          : it->second;
+  const auto* it = kSettingsPathOverrides.find(type);
 
-  return std::string(kContentSettingsSubPage) + "/" + content_type_path;
+  return base::StrCat({kContentSettingsSubPage, "/",
+                       (it == kSettingsPathOverrides.end())
+                           ? site_settings::ContentSettingsTypeToGroupName(type)
+                           : it->second});
 }
 
 void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
@@ -379,9 +379,9 @@ void ShowSiteSettings(Profile* profile, const GURL& url) {
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type) {
   ShowSettingsSubPage(
-      browser,
-      kContentSettingsSubPage + std::string(kHashMark) +
-          site_settings::ContentSettingsTypeToGroupName(content_settings_type));
+      browser, base::StrCat({kContentSettingsSubPage, kHashMark,
+                             site_settings::ContentSettingsTypeToGroupName(
+                                 content_settings_type)}));
 }
 
 void ShowClearBrowsingDataDialog(Browser* browser) {

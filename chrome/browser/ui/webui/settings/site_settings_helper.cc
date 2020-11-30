@@ -376,7 +376,7 @@ bool HasRegisteredGroupName(ContentSettingsType type) {
   return false;
 }
 
-ContentSettingsType ContentSettingsTypeFromGroupName(const std::string& name) {
+ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
   for (size_t i = 0; i < base::size(kContentSettingsTypeGroupNames); ++i) {
     if (name == kContentSettingsTypeGroupNames[i].name)
       return kContentSettingsTypeGroupNames[i].type;
@@ -386,7 +386,7 @@ ContentSettingsType ContentSettingsTypeFromGroupName(const std::string& name) {
   return ContentSettingsType::DEFAULT;
 }
 
-std::string ContentSettingsTypeToGroupName(ContentSettingsType type) {
+base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
   for (size_t i = 0; i < base::size(kContentSettingsTypeGroupNames); ++i) {
     if (type == kContentSettingsTypeGroupNames[i].type) {
       const char* name = kContentSettingsTypeGroupNames[i].name;
