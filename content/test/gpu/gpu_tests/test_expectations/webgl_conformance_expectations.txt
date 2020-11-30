@@ -757,6 +757,7 @@ crbug.com/891456 [ android android-shield-android-tv ] conformance/textures/imag
 crbug.com/891456 [ android android-shield-android-tv ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1025790 [ android android-shield-android-tv ] conformance/textures/misc/tex-image-canvas-corruption.html [ Skip ]
 crbug.com/478572 [ android android-shield-android-tv ] deqp/data/gles2/shaders/functions.html [ Failure ]
+crbug.com/1153676 [ android android-shield-android-tv ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 # Texture tests found to generate intermittent GL errors in the GPU process
 crbug.com/1090407 [ android android-nexus-9 ] conformance/textures/* [ RetryOnFailure ]
 crbug.com/1090407 [ android android-shield-android-tv ] conformance/textures/* [ RetryOnFailure ]
