@@ -71,6 +71,7 @@ js_library("compile_resources") {
     "lib/ffmpeg.js",
     "main.js",
     "metrics.js",
+    "models/async_interval.js",
     "models/async_writer.js",
     "models/barcode.js",
     "models/barcode_worker.js",

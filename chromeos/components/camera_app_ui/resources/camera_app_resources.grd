@@ -14,6 +14,7 @@
     <structures>
       <structure name="IDR_CAMERA_ANALYTICS_JS" file="js/lib/analytics.js" type="chrome_html" />
       <structure name="IDR_CAMERA_APP_WINDOW_JS" file="js/app_window.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_ASYNC_INTERVAL_JS" file="js/models/async_interval.js" type="chrome_html" />
       <structure name="IDR_CAMERA_ASYNC_JOB_QUEUE_JS" file="js/async_job_queue.js" type="chrome_html" />
       <structure name="IDR_CAMERA_ASYNC_WRITER_JS" file="js/models/async_writer.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BACKGROUND_JS" file="js/background.js" type="chrome_html" />

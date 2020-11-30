@@ -4,6 +4,7 @@
 
 import * as Comlink from '../lib/comlink.js';
 
+import {clearAsyncInterval, setAsyncInterval} from './async_interval.js';
 // eslint-disable-next-line no-unused-vars
 import {BarcodeWorkerInterface} from './barcode_worker_interface.js';
 
@@ -54,9 +55,7 @@ export class BarcodeScanner {
       return;
     }
     let prevCode = null;
-    // TODO(b/172879638): Add a setIntervalAsync() helper to avoid two
-    // detections running at the same time.
-    this.intervalId_ = setInterval(async () => {
+    this.intervalId_ = setAsyncInterval(async () => {
       const code = await this.scan_();
       if (code !== null && code !== prevCode) {
         prevCode = code;
@@ -72,7 +71,7 @@ export class BarcodeScanner {
     if (this.intervalId_ === null) {
       return;
     }
-    clearInterval(this.intervalId_);
+    clearAsyncInterval(this.intervalId_);
     this.intervalId_ = null;
   }
 
