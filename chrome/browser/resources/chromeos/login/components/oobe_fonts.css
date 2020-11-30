@@ -39,3 +39,17 @@
     font-weight: var(--oobe-help-dialog-header-font-weight);
   };
 }
+
+.title {
+  color: var(--oobe-header-text-color);
+  @apply --oobe-header-font;
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--oobe-subheader-text-color);
+  line-height: var(--text-line-height);
+  margin: 0;
+  overflow-wrap: break-word;
+  text-align: var(--oobe-subtitle-text-alignment);
+}

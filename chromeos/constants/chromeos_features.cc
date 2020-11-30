@@ -437,6 +437,10 @@ const base::Feature kLoginDisplayPasswordButton{
 const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether new OOBE layout is shown or not.
+const base::Feature kNewOobeLayout{"NewOobeLayout",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // ChromeOS Media App. https://crbug.com/996088.
 const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -752,6 +756,10 @@ bool IsLoginDisplayPasswordButtonEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
+}
+
+bool IsNewOobeLayoutEnabled() {
+  return base::FeatureList::IsEnabled(kNewOobeLayout);
 }
 
 bool IsClipboardHistoryEnabled() {

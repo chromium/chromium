@@ -384,6 +384,10 @@ cr.define('cr.ui', function() {
     Oobe.getInstance().setShelfHeight(height);
   };
 
+  Oobe.setOrientation = function(isHorizontal) {
+    Oobe.getInstance().setOrientation(isHorizontal);
+  };
+
   /**
    * Sets the hint for calculating OOBE dialog margins.
    * @param {OobeTypes.DialogPaddingMode} mode.

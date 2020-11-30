@@ -1,0 +1,49 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_dialog.html">
+
+<!--
+  oobe-dialog wrap which is used to unify usage of oobe-adaptive-dialog during
+  layout transition.
+-->
+<dom-module id="oobe-adaptive-dialog">
+  <template>
+    <oobe-dialog id="dialog" has-buttons hide-shadow$="[[hideShadow]]"
+        no-lazy$="[[noLazy]]" no-header$="[[noHeader]]"
+        no-footer-padding$="[[noFooterPadding]]"
+        footer-shrinkable$="[[footerShrinkable]]">
+      <div slot="oobe-icon">
+        <slot name="icon"></slot>
+      </div>
+      <div slot="title">
+        <slot name="title"></slot>
+      </div>
+      <div slot="progress">
+        <slot name="progress"></slot>
+      </div>
+      <div slot="subtitle">
+        <slot name="subtitle"></slot>
+      </div>
+      <div slot="footer">
+        <slot name="content"></slot>
+      </div>
+      <div slot="back-navigation">
+        <slot name="back-navigation"></slot>
+      </div>
+      <div slot="bottom-buttons">
+        <slot name="bottom-buttons"></slot>
+      </div>
+    </oobe-dialog>
+  </template>
+  <script src="oobe_adaptive_dialog.js"></script>
+</dom-module>
+

@@ -1,75 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 Polymer({
-  is: 'oobe-dialog',
-
-  behaviors: [OobeI18nBehavior],
+  is: 'oobe-adaptive-dialog',
 
   properties: {
-    /**
-     * Controls visibility of the bottom-buttons element.
-     */
-    hasButtons: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Hide the box shadow on the top of oobe-bottom
-     */
-    hideShadow: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Control visibility of the header container.
-     */
-    noHeader: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Removes footer padding.
-     */
-    noFooterPadding: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Removes buttons padding.
-     */
-    noButtonsPadding: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * If true footer would be shrunk as much as possible to fit container.
-     */
-    footerShrinkable: {
-      type: Boolean,
-      value: false,
-    },
-
-    /* The ID of the localized string to be used as title text when no "title"
-     * slot elements are specified.
-     */
-    titleKey: {
-      type: String,
-    },
-
-    /* The ID of the localized string to be used as subtitle text when no
-     * "subtitle" slot elements are specified.
-     */
-    subtitleKey: {
-      type: String,
-    },
-
     /**
      * If set, prevents lazy instantiation of the dialog.
      */
@@ -89,25 +25,23 @@ Polymer({
       return;
     }
 
-    var scrollContainer = this.$$('#topScrollContainer');
-    var footerContainer = this.$$('#footerContainer');
-    if (!scrollContainer || !footerContainer) {
+    var scrollContainer = this.$$('#scrollContainer');
+    var contentContainer = this.$$('#contentContainer');
+    if (!scrollContainer || !contentContainer) {
       return;
     }
 
-    scrollContainer.addEventListener(
-        'scroll', this.applyScrollClassTags_.bind(this));
     this.resizeObserver_ =
         new ResizeObserver(this.applyScrollClassTags_.bind(this));
     this.resizeObserver_.observe(scrollContainer);
-    this.resizeObserver_.observe(footerContainer);
+    this.resizeObserver_.observe(contentContainer);
   },
 
   /**
-   * Applies the class tags to topScrollContainer that control the shadows.
+   * Applies the class tags to scrollContainer that control the shadows.
    */
   applyScrollClassTags_() {
-    var el = this.$$('#topScrollContainer');
+    var el = this.$$('#scrollContainer');
     el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
     el.classList.toggle('is-scrolled', el.scrollTop > 0);
     el.classList.toggle(
@@ -126,7 +60,7 @@ Polymer({
   },
 
   onBeforeShow() {
-    document.documentElement.removeAttribute('new-layout');
+    document.documentElement.setAttribute('new-layout', '');
     this.$$('#lazy').get();
     this.observeScrolling_();
   },
@@ -135,7 +69,7 @@ Polymer({
    * Scroll to the bottom of footer container.
    */
   scrollToBottom() {
-    var el = this.$$('#topScrollContainer');
+    var el = this.$$('#scrollContainer');
     el.scrollTop = el.scrollHeight;
   },
 
@@ -154,7 +88,7 @@ Polymer({
   },
 
   /**
-   * This is called from oobe_welcome when this dialog is shown.
+   * This is called when this dialog is shown.
    */
   show() {
     var focusedElements = this.getElementsByClassName('focus-on-show');

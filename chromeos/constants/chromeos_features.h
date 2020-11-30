@@ -206,6 +206,8 @@ extern const base::Feature kMultilingualTyping;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOnDeviceGrammarCheck;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kNewOobeLayout;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsPolymer3;
@@ -332,6 +334,7 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsLoginDeviceManagementDisclosureEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsLoginDisplayPasswordButtonEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsMinimumChromeVersionEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsNewOobeLayoutEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsClipboardHistoryEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();

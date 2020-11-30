@@ -44,6 +44,89 @@ html[screen=oobe] body {
   background-color: white;
 }
 
+/* New default paddings and constants */
+html[orientation=horizontal] {
+  --oobe-adaptive-dialog-content-direction: row;
+  --oobe-adaptive-dialog-width: 808px;
+  --oobe-adaptive-dialog-height: 508px;
+  --oobe-adaptive-dialog-header-width: 302px;
+  --oobe-adaptive-dialog-item-alignment: unset;
+  --oobe-adaptive-dialog-content-padding: 40px;
+  --oobe-subtitle-text-alignment: start;
+}
+
+@media screen and (min-width: 1080px) and (min-height: 675px) {
+  html[orientation=horizontal] {
+    --oobe-adaptive-dialog-width: 908px;
+    --oobe-adaptive-dialog-height: 547px;
+    --oobe-adaptive-dialog-header-width: 302px;
+  }
+}
+
+@media screen and (min-width: 1200px) and (min-height: 800px) {
+  html[orientation=horizontal] {
+    --oobe-adaptive-dialog-width: 1008px;
+    --oobe-adaptive-dialog-height: 656px;
+    --oobe-adaptive-dialog-header-width: 340px;
+  }
+}
+
+@media screen and (min-width: 1333px) and (min-height: 888px) {
+  html[orientation=horizontal] {
+    --oobe-adaptive-dialog-width: 1040px;
+    --oobe-adaptive-dialog-height: 680px;
+    --oobe-adaptive-dialog-header-width: 346px;
+  }
+}
+
+html[orientation=vertical] {
+  --oobe-adaptive-dialog-content-direction: column;
+  --oobe-adaptive-dialog-width: 504px;
+  --oobe-adaptive-dialog-height: 796px;
+  --oobe-adaptive-dialog-header-width: 302px;
+  --oobe-adaptive-dialog-item-alignment: center;
+  --oobe-adaptive-dialog-content-padding: 40px;
+  --oobe-subtitle-text-alignment: center;
+}
+
+
+@media screen and (min-width: 675px) and (min-height: 1080px) {
+  html[orientation=vertical] {
+    --oobe-adaptive-dialog-width: 567px;
+    --oobe-adaptive-dialog-height: 902px;
+    --oobe-adaptive-dialog-header-width: 302px;
+  }
+}
+
+@media screen and (min-width: 800px) and (min-height: 1200px) {
+  html[orientation=vertical] {
+    --oobe-adaptive-dialog-width: 672px;
+    --oobe-adaptive-dialog-height: 1008px;
+    --oobe-adaptive-dialog-header-width: 336px;
+  }
+}
+
+@media screen and (min-width: 888px) and (min-height: 1333px) {
+  html[orientation=vertical] {
+    --oobe-adaptive-dialog-width: 746px;
+    --oobe-adaptive-dialog-height: 1040px;
+    --oobe-adaptive-dialog-header-width: 347px;
+  }
+}
+
+html[orientation=horizontal] {
+  --oobe-adaptive-dialog-content-width: calc(
+      var(--oobe-adaptive-dialog-width) -
+      4 * var(--oobe-adaptive-dialog-content-padding) -
+      var(--oobe-adaptive-dialog-header-width));
+}
+
+html[orientation=vertical] {
+  --oobe-adaptive-dialog-content-width: calc(
+      var(--oobe-adaptive-dialog-width) -
+      2 * var(--oobe-adaptive-dialog-content-padding));
+}
+
 /* Padding defaults */
 html {
   --oobe-dialog-footer-height: 96px;

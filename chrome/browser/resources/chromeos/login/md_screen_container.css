@@ -3,7 +3,7 @@
  * found in the LICENSE file.
  */
 
-#outer-container {
+ html:not([new-layout]) #outer-container {
   align-items: center;
   box-sizing: border-box;
   height: 100%;
@@ -14,6 +14,13 @@
   padding-inline-start: var(--oobe-dialog-side-margin);
   position: absolute;
   width: 100%;
+  z-index: 1;
+}
+
+html[new-layout] #outer-container {
+  height: 100%;
+  margin-inline-end: var(--oobe-dialog-side-margin);
+  margin-inline-start: var(--oobe-dialog-side-margin);
   z-index: 1;
 }
 
@@ -47,6 +54,11 @@
   position: relative;
 }
 
+html[new-layout] #inner-container {
+  display: grid;
+  place-items: center;
+}
+
 #inner-container.animation {
   overflow: hidden;
 }
@@ -70,11 +82,17 @@
   transform: translateY(50px) rotateX(-2.5deg);
 }
 
-#oobe {
+html:not([new-layout]) #oobe {
   flex: 1 0 auto; /* grow shrink basis */
   height: var(--oobe-dialog-min-height);
   max-height: 768px;
   max-width: 768px;
+  width: 100%;
+}
+
+html[new-layout] #oobe {
+  flex: 1 0 auto; /* grow shrink basis */
+  min-height: var(--oobe-dialog-min-height);
   width: 100%;
 }
 

@@ -100,6 +100,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
@@ -153,6 +154,9 @@ constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
+constexpr char kOobeAdaptiveDialogHTML[] =
+    "components/oobe_adaptive_dialog.html";
+constexpr char kOobeAdaptvieDialogJS[] = "components/oobe_adaptive_dialog.js";
 constexpr char kOobeDialogHTML[] = "components/oobe_dialog.html";
 constexpr char kOobeDialogJS[] = "components/oobe_dialog.js";
 constexpr char kOobeCarouselHTML[] = "components/oobe_carousel.html";
@@ -662,6 +666,18 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML);
   source->AddResourcePath(kOobeDialogJS, IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS);
 
+  if (features::IsNewOobeLayoutEnabled()) {
+    source->AddResourcePath(kOobeAdaptiveDialogHTML,
+                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
+    source->AddResourcePath(kOobeAdaptvieDialogJS,
+                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS);
+  } else {
+    source->AddResourcePath(kOobeAdaptiveDialogHTML,
+                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML);
+    source->AddResourcePath(kOobeAdaptvieDialogJS,
+                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_JS);
+  }
+
   source->AddResourcePath(kOobeCarouselHTML,
                           IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML);
   source->AddResourcePath(kOobeCarouselJS,
@@ -708,7 +724,7 @@ void OobeUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
 
   localized_strings->SetBoolean(
       "changePictureVideoModeEnabled",
-      base::FeatureList::IsEnabled(features::kChangePictureVideoMode));
+      base::FeatureList::IsEnabled(::features::kChangePictureVideoMode));
 }
 
 void OobeUI::AddWebUIHandler(std::unique_ptr<BaseWebUIHandler> handler) {

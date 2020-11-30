@@ -289,6 +289,14 @@ cr.define('cr.ui.login', function() {
           '--shelf-area-height-base', height + 'px');
     },
 
+    setOrientation: function(isHorizontal) {
+      if (isHorizontal) {
+        document.documentElement.setAttribute('orientation', 'horizontal');
+      } else {
+        document.documentElement.setAttribute('orientation', 'vertical');
+      }
+    },
+
     /**
      * Sets the hint for calculating OOBE dialog inner padding.
      * @param {OobeTypes.DialogPaddingMode} mode.

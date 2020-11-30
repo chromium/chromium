@@ -49,6 +49,13 @@
 
         <structure name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML" file="resources/chromeos/login/components/oobe_dialog/oobe_dialog.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS" file="resources/chromeos/login/components/oobe_dialog/oobe_dialog.js" type="chrome_html" />
+
+        <!-- New layout (oobe_adaptive_dialog) corresponds OOBE redesign which has happened in November 2020 -->
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML" file="resources/chromeos/login/components/oobe_adaptive_dialog/oobe_adaptive_dialog.html" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS" file="resources/chromeos/login/components/oobe_adaptive_dialog/oobe_adaptive_dialog.js" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML" file="resources/chromeos/login/components/oobe_adaptive_dialog/oobe_adaptive_dialog_old.html" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_JS" file="resources/chromeos/login/components/oobe_adaptive_dialog/oobe_adaptive_dialog_old.js" type="chrome_html" />
+
         <structure name="IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML" file="resources/chromeos/login/components/oobe_carousel/oobe_carousel.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_JS" file="resources/chromeos/login/components/oobe_carousel/oobe_carousel.js" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_SLIDE_HTML" file="resources/chromeos/login/components/oobe_slide/oobe_slide.html" type="chrome_html" />
