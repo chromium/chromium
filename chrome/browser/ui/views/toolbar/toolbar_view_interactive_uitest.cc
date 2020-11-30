@@ -330,16 +330,14 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonUpdate) {
 
 class ToolbarViewWithExtensionsToolbarMenuTest : public ToolbarViewTest {
  public:
-  ToolbarViewWithExtensionsToolbarMenuTest() = default;
+  ToolbarViewWithExtensionsToolbarMenuTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kExtensionsToolbarMenu);
+  }
+
   ToolbarViewWithExtensionsToolbarMenuTest(
       const ToolbarViewWithExtensionsToolbarMenuTest&) = delete;
   ToolbarViewWithExtensionsToolbarMenuTest& operator=(
       const ToolbarViewWithExtensionsToolbarMenuTest&) = delete;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-    ToolbarViewTest::SetUp();
-  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -355,16 +353,36 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewWithExtensionsToolbarMenuTest,
   EXPECT_NE(nullptr, extensions_container);
 }
 
+class GuestToolbarViewWithExtensionsToolbarMenuTest
+    : public ToolbarViewWithExtensionsToolbarMenuTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GuestToolbarViewWithExtensionsToolbarMenuTest() : is_ephemeral_(GetParam()) {
+    // Update for platforms which don't support ephemeral Guest profiles.
+    if (is_ephemeral_) {
+      is_ephemeral_ =
+          TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+              scoped_feature_list_, is_ephemeral_);
+    }
+  }
+
+ protected:
+  bool is_ephemeral_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // TODO(crbug.com/991596): Setup test profiles properly for CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ToolbarForGuestHasNoExtensionsToolbarContainer \
-  DISABLED_ToolbarForGuestHasNoExtensionsToolbarContainer
+#define MAYBE_ExtensionsToolbarContainerForGuest \
+  DISABLED_ExtensionsToolbarContainerForGuest
 #else
-#define MAYBE_ToolbarForGuestHasNoExtensionsToolbarContainer \
-  ToolbarForGuestHasNoExtensionsToolbarContainer
+#define MAYBE_ExtensionsToolbarContainerForGuest \
+  ExtensionsToolbarContainerForGuest
 #endif
-IN_PROC_BROWSER_TEST_F(ToolbarViewWithExtensionsToolbarMenuTest,
-                       MAYBE_ToolbarForGuestHasNoExtensionsToolbarContainer) {
+IN_PROC_BROWSER_TEST_P(GuestToolbarViewWithExtensionsToolbarMenuTest,
+                       MAYBE_ExtensionsToolbarContainerForGuest) {
   // Verify guest browser does not have an extensions toolbar container.
   profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
   ui_test_utils::WaitForBrowserToOpen();
@@ -377,5 +395,13 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewWithExtensionsToolbarMenuTest,
       BrowserView::GetBrowserViewForBrowser(target_browser)
           ->toolbar()
           ->extensions_container();
-  EXPECT_EQ(nullptr, extensions_container);
+  // Ephemeral Guest profiles support extensions and OTR Guest profiles don't.
+  if (is_ephemeral_)
+    EXPECT_NE(nullptr, extensions_container);
+  else
+    EXPECT_EQ(nullptr, extensions_container);
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestProfileTypes,
+                         GuestToolbarViewWithExtensionsToolbarMenuTest,
+                         /*is_ephemeral=*/testing::Bool());
