@@ -73,8 +73,10 @@
       "-Wno-c++98-compat-extra-semi",
       "-Wno-extra-semi",
       "-Wno-sign-compare",
+      "-Wno-sometimes-uninitialized",
       "-Wno-string-concatenation",
       "-Wno-unreachable-code",
+      "-Wno-unused-variable",
     ]
   }
 
