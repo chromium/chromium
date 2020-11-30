@@ -190,6 +190,9 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
               old_registry->user_data_directory_,
               old_registry->database_task_runner_,
               old_registry->quota_manager_proxy_.get()))),
+      user_data_directory_(old_registry->user_data_directory_),
+      database_task_runner_(old_registry->database_task_runner_),
+      quota_manager_proxy_(old_registry->quota_manager_proxy_),
       special_storage_policy_(old_registry->special_storage_policy_) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context_);
