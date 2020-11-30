@@ -60,12 +60,15 @@ class CORE_EXPORT ImageResourceContent final
   blink::Image* GetImage() const;
   bool HasImage() const { return image_.get(); }
 
-  // The device pixel ratio we got from the server for this image, or 1.0.
-  float DevicePixelRatioHeaderValue() const;
-  bool HasDevicePixelRatioHeaderValue() const;
+  // Returns true if enough of the image has been decoded to allow its size to
+  // be determined. If this returns true, so will HasImage().
+  bool IsSizeAvailable() const {
+    return size_available_ != Image::kSizeUnavailable;
+  }
 
   // Returns the intrinsic width and height of the image, or 0x0 if no image
-  // exists. If the image is a BitmapImage, then this corresponds to the
+  // exists. IsSizeAvailable() can be used to determine if the value returned is
+  // reliable. If the image is a BitmapImage, then this corresponds to the
   // physical pixel dimensions of the image. If the image is an SVGImage, this
   // does not quite return the intrinsic width/height, but rather a concrete
   // object size resolved using a default object size of 300x150.
@@ -76,9 +79,9 @@ class CORE_EXPORT ImageResourceContent final
   void AddObserver(ImageResourceObserver*);
   void RemoveObserver(ImageResourceObserver*);
 
-  bool IsSizeAvailable() const {
-    return size_available_ != Image::kSizeUnavailable;
-  }
+  // The device pixel ratio we got from the server for this image, or 1.0.
+  float DevicePixelRatioHeaderValue() const;
+  bool HasDevicePixelRatioHeaderValue() const;
 
   // Correct the image orientation preference for potentially cross-origin
   // content.
