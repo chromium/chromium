@@ -18,12 +18,10 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/bind.h"
 #include "base/callback_list.h"
-#include "base/containers/flat_set.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -116,16 +114,15 @@ float ReRange(const float score, const float min, const float max) {
 }
 
 // Checks if current locale is non Latin locales.
-bool IsNonLatinLocale(const std::string& locale) {
+bool IsNonLatinLocale(base::StringPiece locale) {
   // A set of of non Latin locales. This set is used to select appropriate
   // algorithm for app search.
-  static const base::NoDestructor<base::flat_set<std::string>>
-      non_latin_locales({"am", "ar", "be", "bg",    "bn",    "el",   "fa",
-                         "gu", "hi", "hy", "iw",    "ja",    "ka",   "kk",
-                         "km", "kn", "ko", "ky",    "lo",    "mk",   "ml",
-                         "mn", "mr", "my", "pa",    "ru",    "sr",   "ta",
-                         "te", "th", "uk", "zh-CN", "zh-HK", "zh-TW"});
-  return base::Contains(*non_latin_locales, locale);
+  static constexpr char kNonLatinLocales[][6] = {
+      "am", "ar", "be", "bg", "bn",    "el",    "fa",   "gu", "hi",
+      "hy", "iw", "ja", "ka", "kk",    "km",    "kn",   "ko", "ky",
+      "lo", "mk", "ml", "mn", "mr",    "my",    "pa",   "ru", "sr",
+      "ta", "te", "th", "uk", "zh-CN", "zh-HK", "zh-TW"};
+  return base::Contains(kNonLatinLocales, locale);
 }
 
 }  // namespace
