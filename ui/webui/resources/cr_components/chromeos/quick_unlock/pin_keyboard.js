@@ -92,6 +92,14 @@ Polymer({
       value: false,
     },
 
+    // Whether or not non-digit pins are allowed.
+    // If allowNonDigit is false, any characters typed in the pin dialog
+    // will be swallowed.
+    allowNonDigit: {
+      type: Boolean,
+      value: false,
+    },
+
     hasError: Boolean,
 
     disabled: {
@@ -401,11 +409,16 @@ Polymer({
 
   /**
    * Helper function to check whether a given |event| should be processed by
-   * the numeric only input.
+   * the input.
    * @param {Event} event The event object.
    * @private
    */
   isValidEventForInput_(event) {
+    // Valid if the key is a non-digit and allowNonDigit is enabled.
+    if (this.allowNonDigit) {
+      return true;
+    }
+
     // Valid if the key is a number, and shift is not pressed.
     if ((event.keyCode >= 48 && event.keyCode <= 57) && !event.shiftKey) {
       return true;
@@ -453,10 +466,12 @@ Polymer({
       return;
     }
 
-    // Do not pass events that are not numbers or special keys we care about. We
-    // use this instead of input type number because there are several issues
-    // with input type number, such as no selectionStart/selectionEnd and
-    // entered non numbers causes the caret to jump to the left.
+    // If only digits are allowed in the pin input (allowNonDigit is set to
+    // false), then do not pass events that are not numbers or special keys we
+    // care about. We use this instead of input type number because there are
+    // several issues with input type number, such as no
+    // selectionStart/selectionEnd and entered non numbers causes the caret to
+    // jump to the left.
     if (!this.isValidEventForInput_(event)) {
       event.preventDefault();
       return;

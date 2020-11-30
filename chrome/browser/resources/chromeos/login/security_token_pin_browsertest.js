@@ -122,6 +122,17 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     expectEquals(completedEventDetail, SECOND_PIN);
   });
 
+  // Test that the input field accepts non-digit PIN.
+  test('non-digit PIN input validity', () => {
+    const NON_DIGIT_PIN = '+Aa';
+
+    // The user enters a non-digit pin.
+    pinInput.value = NON_DIGIT_PIN;
+
+    expectEquals(pinInput.value, NON_DIGIT_PIN);
+    expectEquals(inputField.value, NON_DIGIT_PIN);
+  });
+
   // Test that the 'cancel' event is fired when the user aborts the dialog.
   test('completion events in cancellation flow', () => {
     let cancelEventCount = 0;
