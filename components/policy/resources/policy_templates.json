@@ -10294,13 +10294,11 @@
       'id': 138,
       'caption': '''Continue running background apps when <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is closed''',
       'tags': ['system-security'],
-      'desc': '''Determines whether a <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> process is started on OS login and keeps running when the last browser window is closed, allowing background apps and the current browsing session to remain active, including any session cookies. The background process displays an icon in the system tray and can always be closed from there.
+      'desc': '''Setting the policy to Enabled turns background mode on. In backgroudn mode, a <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> process is started on OS sign-in and keeps running when the last browser window is closed, allowing background apps and the browsing session to remain active, including any session cookies. The background process displays an icon in the system tray and can always be closed from there.
 
-      If this policy is set to True, background mode is enabled and cannot be controlled by the user in the browser settings.
+      Setting the policy to Disabled turns background mode off.
 
-      If this policy is set to False, background mode is disabled and cannot be controlled by the user in the browser settings.
-
-      If this policy is left unset, background mode is initially disabled and can be controlled by the user in the browser settings.''',
+      If you set the policy, users can't change it in the browser settings. If unset, background mode is off at first, but users can change it.''',
     },
     {
       'name': 'DriveDisabled',
@@ -13592,11 +13590,9 @@
       'id': 241,
       'caption': '''Enable the data compression proxy feature''',
       'tags': [],
-      'desc': '''Enable or disable the data compression proxy and prevents users from changing this setting.
+      'desc': '''Setting the policy to Enabled allows the data compression proxy. Setting the policy to Disabled disallows the proxy.
 
-      If you enable or disable this setting, users cannot change or override this setting.
-
-      If this policy is left not set, the data compression proxy feature will be available for the user to choose whether to use it or not.''',
+      If you set the policy, users can't change it. If unset, users can choose to use the feature.''',
     },
     {
       'name': 'UserAvatarImage',
@@ -14387,9 +14383,9 @@
       'id': 304,
       'caption': '''Use hardware acceleration when available''',
       'tags': [],
-      'desc': '''If this policy is set to true or left unset, hardware acceleration will be enabled unless a certain GPU feature is blacklisted.
+      'desc': '''Setting the policy to Enabled or leaving it unset turns on hardware acceleration, if available.
 
-      If this policy is set to false, hardware acceleration will be disabled.''',
+      Setting the policy to Disabled turns off hardware acceleration.''',
     },
     {
       'name': 'UnifiedDesktopEnabledByDefault',
@@ -14799,9 +14795,9 @@
       'name': 'TaskManagerEndProcessEnabled',
       'owners': ['file://components/policy/resources/OWNERS'],
       'caption': '''Enable ending processes in Task Manager''',
-      'desc': '''If set to false, the 'End process' button is disabled in the Task Manager.
+      'desc': '''Setting the policy to Disabled prevents users from ending processes in the Task Manager.
 
-      If set to true or not configured, the user can end processes in the Task Manager.''',
+      Setting the policy to Enabled or leaving it unset lets users end processes in the Task Manager.''',
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:52-','chrome_os:52-'],
@@ -16968,11 +16964,9 @@
       'id': 522,
       'caption': '''Select task scheduler configuration''',
       'tags': [],
-      'desc': '''Instructs <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> to use the task scheduler configuration identified by the specified name.
+      'desc': '''Setting the policy instructs <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> to use the task scheduler configuration identified by the specified name. This policy can be set to <ph name="CONSERVATIVE_VALUE">Conservative</ph> or <ph name="PERFORMANCE_VALUE">Performance</ph>, which tune the task scheduler for stability or maximum performance, respectively.
 
-      This policy can be set to "conservative" and "performance", which select task scheduler configurations that are tuned for stability vs. maximum performance, respectively.
-
-      If the policy is left unset, the user can make their own choice.''',
+      If unset, users make their own choice.''',
     },
     {
       'name': 'NoteTakingAppsLockScreenWhitelist',
