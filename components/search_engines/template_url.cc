@@ -72,6 +72,8 @@ const char kDefaultCount[] = "10";
 // Used if the output encoding parameter is required.
 const char kOutputEncodingType[] = "UTF-8";
 
+const size_t kMaxStringEncodeStringLength = 1'000'000;
+
 // Attempts to encode |terms| and |original_query| in |encoding| and escape
 // them.  |terms| may be escaped as path or query depending on |is_in_query|;
 // |original_query| is always escaped as query. If |force_encode| is true
@@ -86,12 +88,23 @@ bool TryEncoding(const base::string16& terms,
                  base::string16* escaped_original_query) {
   DCHECK(escaped_terms);
   DCHECK(escaped_original_query);
+
+  // Both |base::UTF16ToCodepage()| and |net::Escape*()| invocations below
+  // create strings longer than their inputs. To ensure doing so does not crash,
+  // this truncates |terms| to |kMaxStringEncodeStringLength|.
+  const base::string16& truncated_terms =
+      terms.size() > kMaxStringEncodeStringLength
+          ? terms.substr(0, kMaxStringEncodeStringLength)
+          : terms;
+
   base::OnStringConversionError::Type error_handling =
       force_encode ? base::OnStringConversionError::SKIP
                    : base::OnStringConversionError::FAIL;
   std::string encoded_terms;
-  if (!base::UTF16ToCodepage(terms, encoding, error_handling, &encoded_terms))
+  if (!base::UTF16ToCodepage(truncated_terms, encoding, error_handling,
+                             &encoded_terms)) {
     return false;
+  }
   *escaped_terms = base::UTF8ToUTF16(is_in_query ?
       net::EscapeQueryParamValue(encoded_terms, true) :
       net::EscapePath(encoded_terms));
