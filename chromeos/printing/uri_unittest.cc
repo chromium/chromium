@@ -84,7 +84,7 @@ void TestNormalization(const std::string& input_uri,
 
 TEST(UriTest, DefaultConstructor) {
   Uri uri;
-  EXPECT_EQ(uri.GetNormalized(), ":");
+  EXPECT_EQ(uri.GetNormalized(), "");
   EXPECT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
   EXPECT_EQ(uri.GetScheme(), "");
   EXPECT_EQ(uri.GetUserinfo(), "");
@@ -262,7 +262,7 @@ TEST(UriTest, ParsingOfUriWithLeadingAndTrailingWhitespaces) {
 
 // Empty components are accepted.
 TEST(UriTest, NormalizationOfEmptyUri) {
-  TestNormalization("://@:/?#", ":");
+  TestNormalization("://@:/?#", "");
 }
 
 TEST(UriTest, NormalizationOfUriWithoutAuthority) {

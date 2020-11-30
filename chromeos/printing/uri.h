@@ -50,7 +50,7 @@ namespace chromeos {
 //
 // 1. The grammar is simplified:
 //
-//    uri = Scheme ":" [ authority ] [ Path ] [ "?" Query ] [ "#" Fragment ]
+//    uri = [ Scheme ":" ] [ authority ] [ Path ] [ "?" Query ] [ "#" Fragment ]
 //
 //    authority = "//" [ Userinfo "@" ] Host [ ":" Port ]
 //
@@ -215,7 +215,7 @@ class CHROMEOS_EXPORT Uri {
     kInvalidPercentEncoding,    // cannot parse hex number after % sign
     kDisallowedASCIICharacter,  // non-printable ASCII character
     kInvalidUTF8Character,      // error when tried to parse UTF-8 character
-    kInvalidScheme,             // invalid Scheme format or no ':' in input
+    kInvalidScheme,             // invalid Scheme format
     kInvalidPortNumber,
     kRelativePathsNotAllowed,  // non-empty Path that does not start with '/'
     kEmptySegmentInPath,
@@ -279,8 +279,8 @@ class CHROMEOS_EXPORT Uri {
   // - Set*Encoded(...) methods
   const ParserError& GetLastParsingError() const;
 
-  // Returns the URL in the normalized form. It never returns empty string!
-  // When all components are empty, this method returns ":" (see the grammar).
+  // Returns the URL in the normalized form. It returns empty string if and only
+  // if all components are empty (see the grammar).
   // If the Port is specified (GetPort() != -1) and |always_print_port| is set
   // to true, a Port number is always included in the returned URI (even when
   // it equals to a Scheme's default port number).

@@ -420,8 +420,10 @@ bool Uri::Pim::ParseUri(const Iter& begin, const Iter end) {
   parser_error_.parsed_strings = 0;
   parser_error_.parsed_chars = 0;
   Iter it1 = begin;
-  // The Scheme component ends at the first colon (":").
-  {
+  // The Scheme component starts from character different than slash ("/"),
+  // question mark ("?"), and number sign ("#"). Non-empty Scheme must be
+  // followed by the colon (":") character.
+  if (it1 < end && *it1 != '/' && *it1 != '?' && *it1 != '#') {
     auto it2 = std::find(it1, end, ':');
     if (it2 == end) {
       parser_error_.status = ParserStatus::kInvalidScheme;

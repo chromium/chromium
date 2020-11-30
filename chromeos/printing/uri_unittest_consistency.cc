@@ -121,7 +121,9 @@ TEST_P(UriConsistencyTest, QueryBuilding) {
 // Build normalized URI from encoded components and make sure that it is
 // equal to the value returned by GetNormalized().
 TEST_P(UriConsistencyTest, UriBuilding) {
-  std::string scheme = uri_.GetScheme() + ":";
+  std::string scheme = uri_.GetScheme();
+  if (!scheme.empty())
+    scheme += ":";
 
   // Build a part of URI called Authority (Userinfo@Host:Port).
   std::string authority_encoded;

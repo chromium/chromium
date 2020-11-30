@@ -180,7 +180,8 @@ std::string Uri::GetNormalized(bool always_print_port) const {
 
   // Output string. Adds Scheme.
   std::string out = pim_->scheme();
-  out.push_back(':');
+  if (!out.empty())
+    out.push_back(':');
 
   // Adds authority (Userinfo + Host + Port) if non-empty.
   Encoder enc("+&=:");
