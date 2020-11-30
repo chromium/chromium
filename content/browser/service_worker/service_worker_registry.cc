@@ -665,12 +665,18 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
 void ServiceWorkerRegistry::GetRegisteredOrigins(
     GetRegisteredOriginsCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  GetRemoteStorageControl()->GetRegisteredOrigins(std::move(callback));
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::GetRegisteredOrigins,
+      base::BindRepeating(&ServiceWorkerRegistry::DidGetRegisteredOrigins,
+                          weak_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
 void ServiceWorkerRegistry::PerformStorageCleanup(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  GetRemoteStorageControl()->PerformStorageCleanup(std::move(callback));
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::PerformStorageCleanup,
+      base::BindRepeating(&ServiceWorkerRegistry::DidPerformStorageCleanup,
+                          weak_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
 void ServiceWorkerRegistry::PrepareForDeleteAndStartOver() {
@@ -701,7 +707,7 @@ void ServiceWorkerRegistry::Start() {
         weak_factory_.GetWeakPtr(),
         base::WrapRefCounted(special_storage_policy_.get()));
 
-    GetRemoteStorageControl()->GetRegisteredOrigins(
+    GetRegisteredOrigins(
         base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup,
                        weak_factory_.GetWeakPtr()));
   }
@@ -1367,6 +1373,22 @@ void ServiceWorkerRegistry::DidDeleteAndStartOver(
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   FinishRemoteCall(call_id);
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
+}
+
+void ServiceWorkerRegistry::DidGetRegisteredOrigins(
+    GetRegisteredOriginsCallback callback,
+    uint64_t call_id,
+    const std::vector<url::Origin>& origins) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
+  std::move(callback).Run(origins);
+}
+
+void ServiceWorkerRegistry::DidPerformStorageCleanup(base::OnceClosure callback,
+                                                     uint64_t call_id) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
+  std::move(callback).Run();
 }
 
 void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(

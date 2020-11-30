@@ -1283,15 +1283,17 @@ TEST_F(ServiceWorkerRegistryTest, RemoteStorageDisconnection) {
 // Tests that inflight remote calls are retried after the remote storage is
 // restarted.
 TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
-  const GURL kScope1("http://www.example.com/scope/");
-  const GURL kScriptUrl1("http://www.example.com/script.js");
+  EnsureRemoteCallsAreExecuted();
+
+  const GURL kScope1("https://www.example.com/scope/");
+  const GURL kScriptUrl1("https://www.example.com/script.js");
   const auto kOrigin1(url::Origin::Create(kScope1));
   scoped_refptr<ServiceWorkerRegistration> registration1 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope1, kScriptUrl1,
                                                 /*resource_id=*/1);
 
-  const GURL kScope2("http://www.example.com/scope/foo");
-  const GURL kScriptUrl2("http://www.example.com/fooscript.js");
+  const GURL kScope2("https://www2.example.com/scope/foo");
+  const GURL kScriptUrl2("https://www2.example.com/foo/script.js");
   const auto kOrigin2(url::Origin::Create(kScope2));
   scoped_refptr<ServiceWorkerRegistration> registration2 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope2, kScriptUrl2,
@@ -1324,6 +1326,23 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
 
     loop1.Run();
     loop2.Run();
+    EXPECT_EQ(inflight_call_count(), 0U);
+  }
+
+  // Get registered origins
+  {
+    base::RunLoop loop;
+    registry()->GetRegisteredOrigins(base::BindLambdaForTesting(
+        [&](const std::vector<url::Origin>& origins) {
+          EXPECT_THAT(origins,
+                      testing::UnorderedElementsAreArray({kOrigin1, kOrigin2}));
+          loop.Quit();
+        }));
+
+    EXPECT_EQ(inflight_call_count(), 1U);
+    registry()->SimulateStorageRestartForTesting();
+
+    loop.Run();
     EXPECT_EQ(inflight_call_count(), 0U);
   }
 
@@ -1369,7 +1388,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
                 const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
                     registrations) {
               EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
-              EXPECT_EQ(registrations.size(), 2U);
+              EXPECT_EQ(registrations.size(), 1U);
               loop1.Quit();
             }));
 
@@ -1515,6 +1534,8 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
 
 TEST_F(ServiceWorkerRegistryTest,
        RetryInflightCalls_CreateNewRegistrationAndVersion) {
+  EnsureRemoteCallsAreExecuted();
+
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScriptUrl("http://www.example.com/script.js");
 
@@ -1560,12 +1581,34 @@ TEST_F(ServiceWorkerRegistryTest,
 }
 
 TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_DeleteAndStartOver) {
+  EnsureRemoteCallsAreExecuted();
+
   base::RunLoop loop;
   registry()->DeleteAndStartOver(
       base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
         DCHECK_EQ(status, blink::ServiceWorkerStatusCode::kOk);
         loop.Quit();
       }));
+
+  EXPECT_EQ(inflight_call_count(), 1U);
+  registry()->SimulateStorageRestartForTesting();
+
+  base::HistogramTester histogram_tester;
+  loop.Run();
+  EXPECT_EQ(inflight_call_count(), 0U);
+  const size_t kExpectedRetryCountForRecovery = 0;
+  const size_t kExpectedSampleCount = 1;
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.Storage.RetryCountForRecovery",
+      kExpectedRetryCountForRecovery, kExpectedSampleCount);
+}
+
+TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_PerformStorageCleanup) {
+  EnsureRemoteCallsAreExecuted();
+
+  base::RunLoop loop;
+  registry()->PerformStorageCleanup(
+      base::BindLambdaForTesting([&]() { loop.Quit(); }));
 
   EXPECT_EQ(inflight_call_count(), 1U);
   registry()->SimulateStorageRestartForTesting();

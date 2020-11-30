@@ -376,6 +376,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
 
+  void DidGetRegisteredOrigins(GetRegisteredOriginsCallback callback,
+                               uint64_t call_id,
+                               const std::vector<url::Origin>& origins);
+  void DidPerformStorageCleanup(base::OnceClosure callback, uint64_t call_id);
+
   // TODO(bashi): Consider introducing a helper class that handles the below.
   // These are almost the same as DOMStorageContextWrapper.
   void DidGetRegisteredOriginsOnStartup(
