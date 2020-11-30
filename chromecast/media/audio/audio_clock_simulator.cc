@@ -76,6 +76,7 @@ int AudioClockSimulator::FillFrames(int num_frames,
       auto result =
           FillDataLengthen(num_frames, playout_timestamp, channel_data, filled);
       filled += result.filled;
+      output_frames_ += result.filled;
       if (!result.complete) {
         break;
       }
@@ -86,6 +87,7 @@ int AudioClockSimulator::FillFrames(int num_frames,
       auto result =
           FillDataShorten(num_frames, playout_timestamp, channel_data, filled);
       filled += result.filled;
+      output_frames_ += result.filled;
       if (!result.complete) {
         break;
       }
@@ -93,8 +95,9 @@ int AudioClockSimulator::FillFrames(int num_frames,
     }
 
     int64_t end_input_frames = input_frames_ + kInterpolateWindow;
-    int64_t end_output_frames = output_frames_ + filled + kInterpolateWindow;
+    int64_t end_output_frames = output_frames_ + kInterpolateWindow;
     int64_t desired_output_frames = std::round(end_input_frames / clock_rate_);
+
     if (end_output_frames > desired_output_frames) {
       state_ = State::kShortening;
       continue;
@@ -112,6 +115,7 @@ int AudioClockSimulator::FillFrames(int num_frames,
     int desired = std::min(num_frames - filled, kInterpolateWindow);
     int provided = provider_->FillFrames(desired, timestamp, channels);
     input_frames_ += provided;
+    output_frames_ += provided;
     filled += provided;
 
     if (provided < desired) {
@@ -119,7 +123,6 @@ int AudioClockSimulator::FillFrames(int num_frames,
     }
   }
 
-  output_frames_ += filled;
   return filled;
 }
 
