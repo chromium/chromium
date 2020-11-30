@@ -160,7 +160,10 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
 
 // static
 GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
-  return net::SimplifyUrlForRequest(url);
+  GURL::Replacements replacements;
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  return url.ReplaceComponents(replacements);
 }
 
 // static
