@@ -31,6 +31,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -216,7 +217,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
 namespace extensions {
 namespace chrome_url_request_util {
 
-bool AllowCrossRendererResourceLoad(const GURL& url,
+bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
                                     blink::mojom::ResourceType resource_type,
                                     ui::PageTransition page_transition,
                                     int child_id,
@@ -226,7 +227,7 @@ bool AllowCrossRendererResourceLoad(const GURL& url,
                                     const ProcessMap& process_map,
                                     bool* allowed) {
   if (url_request_util::AllowCrossRendererResourceLoad(
-          url, resource_type, page_transition, child_id, is_incognito,
+          request, resource_type, page_transition, child_id, is_incognito,
           extension, extensions, process_map, allowed)) {
     return true;
   }

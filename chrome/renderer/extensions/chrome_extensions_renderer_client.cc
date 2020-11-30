@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/optional.h"
+#include "base/stl_util.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -260,8 +262,9 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
-      !resource_request_policy_->CanRequestResource(GURL(url), frame,
-                                                    transition_type)) {
+      !resource_request_policy_->CanRequestResource(
+          GURL(url), frame, transition_type,
+          base::OptionalFromPtr(initiator_origin))) {
     *new_url = GURL(chrome::kExtensionInvalidRequestURL);
   }
 

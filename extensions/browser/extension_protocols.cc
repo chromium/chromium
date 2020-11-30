@@ -260,7 +260,7 @@ bool ExtensionCanLoadInIncognito(bool is_main_frame,
 // guest mode profiles.
 //
 // Called on the UI thread.
-bool AllowExtensionResourceLoad(const GURL& url,
+bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
                                 blink::mojom::ResourceType resource_type,
                                 ui::PageTransition page_transition,
                                 int child_id,
@@ -290,7 +290,7 @@ bool AllowExtensionResourceLoad(const GURL& url,
   // process to request each other's resources. We can't do a more precise
   // check, since the renderer can lie about which extension has made the
   // request.
-  if (process_map.Contains(url.host(), child_id))
+  if (process_map.Contains(request.url.host(), child_id))
     return true;
 
   // Frame navigations to extensions have already been checked in
@@ -312,7 +312,7 @@ bool AllowExtensionResourceLoad(const GURL& url,
 
   // Allow the extension module embedder to grant permission for loads.
   if (ExtensionsBrowserClient::Get()->AllowCrossRendererResourceLoad(
-          url, resource_type, page_transition, child_id, is_incognito,
+          request, resource_type, page_transition, child_id, is_incognito,
           extension, extensions, process_map)) {
     return true;
   }
@@ -364,13 +364,13 @@ bool GetDirectoryForExtensionURL(const GURL& url,
   return false;
 }
 
-void GetSecurityPolicyForURL(const GURL& url,
+void GetSecurityPolicyForURL(const network::ResourceRequest& request,
                              const Extension* extension,
                              bool is_web_view_request,
                              std::string* content_security_policy,
                              bool* send_cors_header,
                              bool* follow_symlinks_anywhere) {
-  std::string resource_path = url.path();
+  std::string resource_path = request.url.path();
 
   // Use default CSP for <webview>.
   if (!is_web_view_request) {
@@ -380,7 +380,7 @@ void GetSecurityPolicyForURL(const GURL& url,
   }
 
   if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          extension, resource_path)) {
+          extension, resource_path, request.request_initiator)) {
     *send_cors_header = true;
   }
 
@@ -552,7 +552,7 @@ class ExtensionURLLoaderFactory
         extensions::util::IsIncognitoEnabled(extension_id, browser_context_);
 
     if (!AllowExtensionResourceLoad(
-            request.url,
+            request,
             static_cast<blink::mojom::ResourceType>(request.resource_type),
             static_cast<ui::PageTransition>(request.transition_type),
             render_process_id_, browser_context_->IsOffTheRecord(),
@@ -588,9 +588,9 @@ class ExtensionURLLoaderFactory
     bool send_cors_header = false;
     bool follow_symlinks_anywhere = false;
     if (extension) {
-      GetSecurityPolicyForURL(request.url, extension.get(),
-                              is_web_view_request_, &content_security_policy,
-                              &send_cors_header, &follow_symlinks_anywhere);
+      GetSecurityPolicyForURL(request, extension.get(), is_web_view_request_,
+                              &content_security_policy, &send_cors_header,
+                              &follow_symlinks_anywhere);
     }
 
     // If the extension is the Media Router Component Extension used to support

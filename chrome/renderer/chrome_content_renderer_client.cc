@@ -1590,8 +1590,9 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& url) {
         extensions::RendererExtensionRegistry::Get()->GetByID(url.host());
     if (!extension)
       return false;
+    // TODO(solomonkinard): Use initiator_origin and add tests.
     return extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-        extension, url.path());
+        extension, url.path(), base::Optional<url::Origin>());
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return true;

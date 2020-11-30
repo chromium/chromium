@@ -139,7 +139,7 @@ void TestExtensionsBrowserClient::LoadResourceFromResourceBundle(
 }
 
 bool TestExtensionsBrowserClient::AllowCrossRendererResourceLoad(
-    const GURL& url,
+    const network::ResourceRequest& request,
     blink::mojom::ResourceType resource_type,
     ui::PageTransition page_transition,
     int child_id,

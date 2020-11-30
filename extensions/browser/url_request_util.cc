@@ -15,12 +15,13 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 
 namespace extensions {
 namespace url_request_util {
 
-bool AllowCrossRendererResourceLoad(const GURL& url,
+bool AllowCrossRendererResourceLoad(const network::ResourceRequest& request,
                                     blink::mojom::ResourceType resource_type,
                                     ui::PageTransition page_transition,
                                     int child_id,
@@ -29,6 +30,7 @@ bool AllowCrossRendererResourceLoad(const GURL& url,
                                     const ExtensionSet& extensions,
                                     const ProcessMap& process_map,
                                     bool* allowed) {
+  const GURL& url = request.url;
   base::StringPiece resource_path = url.path_piece();
 
   // This logic is performed for main frame requests in
@@ -98,7 +100,7 @@ bool AllowCrossRendererResourceLoad(const GURL& url,
   // Allow web accessible extension resources to be loaded as
   // subresources/sub-frames.
   if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          extension, resource_path.as_string())) {
+          extension, resource_path.as_string(), request.request_initiator)) {
     *allowed = true;
     return true;
   }

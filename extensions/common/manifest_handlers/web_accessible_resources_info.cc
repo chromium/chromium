@@ -68,9 +68,8 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseResourceStringList(
 
   // In extensions where only a resource list is provided (as is the case in
   // manifest_version 2), resources are embeddable by any site. To handle
-  // this, have |matches| match anything.
+  // this, have |matches| match the specified schemes.
   URLPatternSet matches;
-
   matches.AddPattern(
       URLPattern(URLPattern::SCHEME_ALL, URLPattern::kAllUrlsPattern));
   info->web_accessible_resources.emplace_back(
@@ -142,8 +141,11 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     if (matches) {
       for (const auto& match : matches->GetList()) {
         URLPattern pattern(URLPattern::SCHEME_ALL);
-        if (!match.is_string() || pattern.Parse(match.GetString()) !=
-                                      URLPattern::ParseResult::kSuccess) {
+        if (!match.is_string() ||
+            pattern.Parse(match.GetString()) !=
+                URLPattern::ParseResult::kSuccess ||
+            pattern.path() != "/*") {
+          // TODO(solomonkinard): Don't use generic error message.
           *error = get_error(i);
           return nullptr;
         }
@@ -187,14 +189,23 @@ WebAccessibleResourcesInfo::~WebAccessibleResourcesInfo() = default;
 // static
 bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const Extension* extension,
-    const std::string& relative_path) {
+    const std::string& relative_path,
+    const base::Optional<url::Origin>& initiator_origin) {
+  auto initiator_url =
+      initiator_origin.has_value() ? initiator_origin->GetURL() : GURL();
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
   if (!info) {  // No web-accessible resources
     return false;
   }
   for (const auto& entry : info->web_accessible_resources) {
     if (extension->ResourceMatches(entry.resources, relative_path)) {
-      return true;
+      // Prior to MV3, web-accessible resources were accessible by any
+      // site. Preserve this behavior.
+      if (extension->manifest_version() < 3)
+        return true;
+
+      if (entry.matches.MatchesURL(initiator_url))
+        return true;
     }
   }
   return false;

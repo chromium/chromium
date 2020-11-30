@@ -133,7 +133,7 @@ void CastExtensionsBrowserClient::LoadResourceFromResourceBundle(
 }
 
 bool CastExtensionsBrowserClient::AllowCrossRendererResourceLoad(
-    const GURL& url,
+    const network::ResourceRequest& request,
     blink::mojom::ResourceType resource_type,
     ui::PageTransition page_transition,
     int child_id,
@@ -143,7 +143,7 @@ bool CastExtensionsBrowserClient::AllowCrossRendererResourceLoad(
     const ProcessMap& process_map) {
   bool allowed = false;
   if (url_request_util::AllowCrossRendererResourceLoad(
-          url, resource_type, page_transition, child_id, is_incognito,
+          request, resource_type, page_transition, child_id, is_incognito,
           extension, extensions, process_map, &allowed)) {
     return allowed;
   }

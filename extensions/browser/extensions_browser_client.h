@@ -27,7 +27,6 @@
 #include "ui/base/page_transition_types.h"
 
 class ExtensionFunctionRegistry;
-class GURL;
 class PrefService;
 
 namespace base {
@@ -177,7 +176,7 @@ class ExtensionsBrowserClient {
   // in renderer B. For example, Chrome overrides this to provide support for
   // webview and dev tools. May be called on either the UI or IO thread.
   virtual bool AllowCrossRendererResourceLoad(
-      const GURL& url,
+      const network::ResourceRequest& request,
       blink::mojom::ResourceType resource_type,
       ui::PageTransition page_transition,
       int child_id,
