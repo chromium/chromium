@@ -98,6 +98,10 @@ class MODULES_EXPORT DecoderTemplate
 
     // For reporting an error at the time when a request is processed.
     media::Status status;
+
+    // The value of |reset_generation_| at the time of this request. Used to
+    // abort pending requests following a reset().
+    uint32_t reset_generation = 0;
   };
 
   void ProcessRequests();
@@ -106,6 +110,7 @@ class MODULES_EXPORT DecoderTemplate
   bool ProcessFlushRequest(Request* request);
   bool ProcessResetRequest(Request* request);
   void HandleError(std::string context, media::Status);
+  void ResetAlgorithm();
   void Shutdown(DOMException* ex = nullptr);
 
   // Called by |decoder_|.
@@ -124,8 +129,10 @@ class MODULES_EXPORT DecoderTemplate
   Member<V8WebCodecsErrorCallback> error_cb_;
 
   HeapDeque<Member<Request>> requests_;
-  int32_t requested_decodes_ = 0;
-  int32_t requested_resets_ = 0;
+  int32_t num_pending_decodes_ = 0;
+
+  // Monotonic increasing generation counter for calls to ResetAlgorithm().
+  uint32_t reset_generation_ = 0;
 
   // Which state the codec is in, determining which calls we can receive.
   V8CodecState state_;
