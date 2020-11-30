@@ -291,6 +291,11 @@ if (is_chromeos_device) {
       "ui.ChromeLoginGAIA",
       "inputs.VirtualKeyboardOOBE",
 
+      # crbug.com/1140714
+      "inputs.VirtualKeyboardTyping",
+      "inputs.VirtualKeyboardTypingApps",
+      "inputs.VirtualKeyboardSuggestions",
+
       # crbug.com/1097630
       "security.OpenFDs",
 
