@@ -838,6 +838,10 @@ const Report = {
       toolbars.push(new SimpleLinkToolbar().createDom(
             pathParser.resultLink("-stderr.txt"), "standard error", "stderr"));
     }
+    if (test.command) {
+      toolbars.push(new SimpleLinkToolbar().createDom(
+            pathParser.resultLink("-command.txt"), "Command", "command"));
+    }
     return toolbars;
   },
   getResultsDiv: (test) => {
@@ -1133,6 +1137,9 @@ const GUI = {
 
     if (artifacts.hasOwnProperty('reference_file_mismatch'))
       test.reference = artifacts.reference_file_mismatch;
+
+    if (artifacts.hasOwnProperty('command'))
+      test.command = artifacts.command;
 
     if (is_image && is_text)
       return 'IMAGE+TEXT';

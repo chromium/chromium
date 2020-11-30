@@ -89,6 +89,7 @@ var expectedImage = preloadImage(container.getAttribute('data-prefix') + '-expec
 # Filename pieces when writing failures to the test results directory.
 FILENAME_SUFFIX_ACTUAL = "-actual"
 FILENAME_SUFFIX_EXPECTED = "-expected"
+FILENAME_SUFFIX_CMD = "-command"
 FILENAME_SUFFIX_DIFF = "-diff"
 FILENAME_SUFFIX_DIFFS = "-diffs"
 FILENAME_SUFFIX_STDERR = "-stderr"
@@ -129,12 +130,26 @@ class AbstractTestResultType(object):
             artifact_name, path, content, force_overwrite=force_overwrite)
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
+        typ_artifacts_dir = self.filesystem.join(
+            self.result_directory, typ_artifacts.ArtifactsSubDirectory())
+        if self.actual_driver_output.command:
+            artifact_filename = self.port.output_filename(
+                self.test_name, FILENAME_SUFFIX_CMD, '.txt')
+            artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
+                                                     artifact_filename)
+            if (force_overwrite or self.result != ResultType.Pass
+                    or not self.filesystem.exists(artifacts_abspath)):
+                self._write_to_artifacts(typ_artifacts,
+                                         'command',
+                                         artifact_filename,
+                                         self.actual_driver_output.command,
+                                         force_overwrite=True)
+
         if self.actual_driver_output.error:
             artifact_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_STDERR, '.txt')
-            artifacts_abspath = self.filesystem.join(
-                self.result_directory, typ_artifacts.ArtifactsSubDirectory(),
-                artifact_filename)
+            artifacts_abspath = self.filesystem.join(typ_artifacts_dir,
+                                                     artifact_filename)
             # If a test has multiple stderr results, keep that of the last
             # failure, which is useful for debugging flaky tests with
             # --iterations=n or --repeat-each=n.

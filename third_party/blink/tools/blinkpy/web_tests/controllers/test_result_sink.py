@@ -157,11 +157,11 @@ class TestResultSink(object):
                 # to render them with <text-diff-artifact> or
                 # <img-diff-artifact>.
                 #
-                # stderr and crash_log are the only artifact names that are
+                # command, stderr and crash_log are artifact names that are
                 # not included in the auto-generated summary. This uses
                 # <text-artifact> to render them in the summary_html section
                 # of each test.
-                if name in ['stderr', 'crash_log']:
+                if name in ['command', 'stderr', 'crash_log']:
                     summaries.append(
                         '<h3>%s</h3>'
                         '<p><text-artifact artifact-id="%s" /></p>' %

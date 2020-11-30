@@ -103,6 +103,9 @@ class ServerProcess(object):
     def pid(self):
         return self._pid
 
+    def cmd(self):
+        return self._cmd[:]
+
     def _reset(self):
         if getattr(self, '_proc', None):
             if self._proc.stdin:

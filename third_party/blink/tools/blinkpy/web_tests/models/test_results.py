@@ -46,16 +46,16 @@ def build_test_result(driver_output,
     failures = failures or []
     if not failures and driver_output.error:
         failures.append(test_failures.PassWithStderr(driver_output))
-    return TestResult(
-        test_name,
-        retry_attempt=retry_attempt,
-        failures=failures,
-        test_run_time=test_run_time,
-        reftest_type=reftest_type,
-        pid=pid,
-        references=references,
-        device_failed=device_failed,
-        crash_site=crash_site)
+    return TestResult(test_name,
+                      retry_attempt=retry_attempt,
+                      failures=failures,
+                      test_run_time=test_run_time,
+                      reftest_type=reftest_type,
+                      pid=pid,
+                      references=references,
+                      device_failed=device_failed,
+                      crash_site=crash_site,
+                      command=driver_output.command)
 
 
 class TestResult(object):
@@ -77,7 +77,8 @@ class TestResult(object):
                  pid=None,
                  references=None,
                  device_failed=False,
-                 crash_site=None):
+                 crash_site=None,
+                 command=None):
         self.test_name = test_name
         self.failures = failures or []
         self.test_run_time = test_run_time or 0  # The time taken to execute the test itself.
@@ -90,6 +91,7 @@ class TestResult(object):
             failure.has_repaint_overlay for failure in self.failures)
         self.crash_site = crash_site
         self.retry_attempt = retry_attempt
+        self.command = command
 
         results = set([f.result for f in self.failures] or [ResultType.Pass])
         assert len(results) <= 2, (
