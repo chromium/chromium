@@ -1151,6 +1151,14 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
     login_manager_.LoginAsNewRegularUser();
   });
 
+  sm_.ExpectSpeechPattern("Welcome to the ChromeVox tutorial*");
+
+  // The tutorial can be exited by pressing Escape.
+  sm_.Call([]() {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_ESCAPE, false, false, false, false));
+  });
+
   std::string button_title =
       features::IsSplitSettingsSyncEnabled() ? "Got it" : "Accept and continue";
   sm_.ExpectSpeech(button_title);
