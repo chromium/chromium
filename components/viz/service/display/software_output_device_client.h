@@ -13,7 +13,7 @@ namespace viz {
 
 class SoftwareOutputDeviceClient {
  public:
-  virtual ~SoftwareOutputDeviceClient() {}
+  virtual ~SoftwareOutputDeviceClient() = default;
 
   // Specify the CALayer parameters used to display the content drawn by this
   // device on macOS.

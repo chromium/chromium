@@ -4,7 +4,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <limits>
+#include <utility>
 #include <vector>
 
 #include "base/logging.h"
@@ -121,10 +123,10 @@ TEST(DrawPolygonConstructionTest, NormalNormal) {
 // More complicated shapes.
 TEST(DrawPolygonConstructionTest, TestNormal) {
   std::vector<gfx::Point3F> vertices;
-  vertices.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices.emplace_back(10.0f, 10.0f, 0.0f);
 
   CREATE_TEST_DRAW_FORWARD_POLYGON(polygon, vertices, 1);
   EXPECT_NORMAL(polygon, 0.0f, 0.0f, 1.0f);
@@ -132,12 +134,12 @@ TEST(DrawPolygonConstructionTest, TestNormal) {
 
 TEST(DrawPolygonConstructionTest, ClippedNormal) {
   std::vector<gfx::Point3F> vertices;
-  vertices.push_back(gfx::Point3F(0.1f, 10.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(0.0f, 9.9f, 0.0f));
-  vertices.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices.emplace_back(0.1f, 10.0f, 0.0f);
+  vertices.emplace_back(0.0f, 9.9f, 0.0f);
+  vertices.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices.emplace_back(10.0f, 10.0f, 0.0f);
 
   CREATE_TEST_DRAW_FORWARD_POLYGON(polygon, vertices, 1);
   EXPECT_NORMAL(polygon, 0.0f, 0.0f, 1.0f);
@@ -145,9 +147,9 @@ TEST(DrawPolygonConstructionTest, ClippedNormal) {
 
 TEST(DrawPolygonConstructionTest, SlimTriangleNormal) {
   std::vector<gfx::Point3F> vertices;
-  vertices.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(5000.0f, 0.0f, 0.0f));
-  vertices.push_back(gfx::Point3F(10000.0f, 1.0f, 0.0f));
+  vertices.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices.emplace_back(5000.0f, 0.0f, 0.0f);
+  vertices.emplace_back(10000.0f, 1.0f, 0.0f);
 
   CREATE_TEST_DRAW_FORWARD_POLYGON(polygon, vertices, 2);
   EXPECT_NORMAL(polygon, 0.0f, 0.0f, 1.0f);
@@ -158,9 +160,8 @@ TEST(DrawPolygonConstructionTest, ManyVertexNormal) {
   std::vector<gfx::Point3F> vertices_d;
   for (int i = 0; i < 100; i++) {
     const double step = i * base::kPiDouble / 50;
-    vertices_c.push_back(gfx::Point3F(cos(step), sin(step), 0.0f));
-    vertices_d.push_back(
-        gfx::Point3F(cos(step) + 99.0f, sin(step) + 99.0f, 100.0f));
+    vertices_c.emplace_back(cos(step), sin(step), 0.0f);
+    vertices_d.emplace_back(cos(step) + 99.0f, sin(step) + 99.0f, 100.0f);
   }
   CREATE_TEST_DRAW_FORWARD_POLYGON(polygon_c, vertices_c, 3);
   EXPECT_NORMAL(polygon_c, 0.0f, 0.0f, 1.0f);
@@ -246,15 +247,15 @@ TEST(DrawPolygonConstructionTest, InvertZNormal) {
 // compare in front.
 TEST(DrawPolygonSplitTest, NearlyTouchingOrder) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 10.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(0.0f, 10.0f, -1.0f));
-  vertices_b.push_back(gfx::Point3F(0.0f, 0.0f, -1.0f));
-  vertices_b.push_back(gfx::Point3F(10.0f, 0.0f, -1.0f));
-  vertices_b.push_back(gfx::Point3F(10.0f, 10.0f, -1.0f));
+  vertices_b.emplace_back(0.0f, 10.0f, -1.0f);
+  vertices_b.emplace_back(0.0f, 0.0f, -1.0f);
+  vertices_b.emplace_back(10.0f, 0.0f, -1.0f);
+  vertices_b.emplace_back(10.0f, 10.0f, -1.0f);
   gfx::Vector3dF normal(0.0f, 0.0f, 1.0f);
 
   CREATE_NEW_DRAW_POLYGON(polygon_a, vertices_a, normal, 0);
@@ -272,19 +273,19 @@ TEST(DrawPolygonSplitTest, NearlyTouchingOrder) {
 // Two quads are definitely not touching and so no split should occur.
 TEST(DrawPolygonSplitTest, NotClearlyInFront) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(87.2f, 1185.0f, 0.9f));
-  vertices_a.push_back(gfx::Point3F(288.3f, 1185.0f, -0.7f));
-  vertices_a.push_back(gfx::Point3F(288.3f, 1196.0f, -0.7f));
-  vertices_a.push_back(gfx::Point3F(87.2f, 1196.0f, 0.9f));
+  vertices_a.emplace_back(87.2f, 1185.0f, 0.9f);
+  vertices_a.emplace_back(288.3f, 1185.0f, -0.7f);
+  vertices_a.emplace_back(288.3f, 1196.0f, -0.7f);
+  vertices_a.emplace_back(87.2f, 1196.0f, 0.9f);
   gfx::Vector3dF normal_a = gfx::CrossProduct(vertices_a[1] - vertices_a[0],
                                               vertices_a[1] - vertices_a[2]);
   normal_a.Scale(1.0f / normal_a.Length());
 
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(62.1f, 1034.7f, 1.0f));
-  vertices_b.push_back(gfx::Point3F(313.4f, 1035.3f, -1.0f));
-  vertices_b.push_back(gfx::Point3F(313.4f, 1196.0f, -1.0f));
-  vertices_b.push_back(gfx::Point3F(62.1f, 1196.0f, 1.0f));
+  vertices_b.emplace_back(62.1f, 1034.7f, 1.0f);
+  vertices_b.emplace_back(313.4f, 1035.3f, -1.0f);
+  vertices_b.emplace_back(313.4f, 1196.0f, -1.0f);
+  vertices_b.emplace_back(62.1f, 1196.0f, 1.0f);
   gfx::Vector3dF normal_b = gfx::CrossProduct(vertices_b[1] - vertices_b[0],
                                               vertices_b[1] - vertices_b[2]);
   normal_b.Scale(1.0f / normal_b.Length());
@@ -304,15 +305,15 @@ TEST(DrawPolygonSplitTest, NotClearlyInFront) {
 // Two quads are definitely not touching and so no split should occur.
 TEST(DrawPolygonSplitTest, NotTouchingNoSplit) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 10.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(5.0f, 10.0f, 5.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 10.0f, 15.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 0.0f, 15.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 0.0f, 5.0f));
+  vertices_b.emplace_back(5.0f, 10.0f, 5.0f);
+  vertices_b.emplace_back(5.0f, 10.0f, 15.0f);
+  vertices_b.emplace_back(5.0f, 0.0f, 15.0f);
+  vertices_b.emplace_back(5.0f, 0.0f, 5.0f);
 
   CREATE_NEW_DRAW_POLYGON(polygon_a, vertices_a,
                           gfx::Vector3dF(0.0f, 0.0f, 1.0f), 0);
@@ -333,15 +334,15 @@ TEST(DrawPolygonSplitTest, NotTouchingNoSplit) {
 // should occur.
 TEST(DrawPolygonSplitTest, BarelyTouchingNoSplit) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 10.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(5.0f, 10.0f, 0.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 10.0f, -10.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 0.0f, -10.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 0.0f, 0.0f));
+  vertices_b.emplace_back(5.0f, 10.0f, 0.0f);
+  vertices_b.emplace_back(5.0f, 10.0f, -10.0f);
+  vertices_b.emplace_back(5.0f, 0.0f, -10.0f);
+  vertices_b.emplace_back(5.0f, 0.0f, 0.0f);
 
   CREATE_NEW_DRAW_POLYGON(polygon_a, vertices_a,
                           gfx::Vector3dF(0.0f, 0.0f, 1.0f), 0);
@@ -360,16 +361,16 @@ TEST(DrawPolygonSplitTest, BarelyTouchingNoSplit) {
 // One quad intersects a pent with an occluded side.
 TEST(DrawPolygonSplitTest, SlimClip) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 10.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(9.0f, 9.0f, 5.000f));
-  vertices_b.push_back(gfx::Point3F(1.0f, 1.0f, 0.001f));
-  vertices_b.push_back(gfx::Point3F(1.0f, 1.0f, 0.000f));
-  vertices_b.push_back(gfx::Point3F(1.002f, 1.002f, -0.005f));
-  vertices_b.push_back(gfx::Point3F(9.0f, 9.0f, -4.000f));
+  vertices_b.emplace_back(9.0f, 9.0f, 5.000f);
+  vertices_b.emplace_back(1.0f, 1.0f, 0.001f);
+  vertices_b.emplace_back(1.0f, 1.0f, 0.000f);
+  vertices_b.emplace_back(1.002f, 1.002f, -0.005f);
+  vertices_b.emplace_back(9.0f, 9.0f, -4.000f);
 
   CREATE_NEW_DRAW_POLYGON_PTR(polygon_a, vertices_a,
                               gfx::Vector3dF(0.0f, 0.0f, 1.0f), 0);
@@ -398,15 +399,15 @@ TEST(DrawPolygonSplitTest, SlimClip) {
 // One quad intersects another and becomes two pieces.
 TEST(DrawPolygonSplitTest, BasicSplit) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 10.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 10.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 10.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(10.0f, 10.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(5.0f, 10.0f, -5.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 0.0f, -5.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 0.0f, 5.0f));
-  vertices_b.push_back(gfx::Point3F(5.0f, 10.0f, 5.0f));
+  vertices_b.emplace_back(5.0f, 10.0f, -5.0f);
+  vertices_b.emplace_back(5.0f, 0.0f, -5.0f);
+  vertices_b.emplace_back(5.0f, 0.0f, 5.0f);
+  vertices_b.emplace_back(5.0f, 10.0f, 5.0f);
 
   CREATE_NEW_DRAW_POLYGON_PTR(polygon_a, vertices_a,
                               gfx::Vector3dF(0.0f, 0.0f, 1.0f), 0);
@@ -424,15 +425,15 @@ TEST(DrawPolygonSplitTest, BasicSplit) {
   EXPECT_TRUE(back_polygon != nullptr);
 
   std::vector<gfx::Point3F> test_points_a;
-  test_points_a.push_back(gfx::Point3F(5.0f, 0.0f, 0.0f));
-  test_points_a.push_back(gfx::Point3F(5.0f, 0.0f, 5.0f));
-  test_points_a.push_back(gfx::Point3F(5.0f, 10.0f, 5.0f));
-  test_points_a.push_back(gfx::Point3F(5.0f, 10.0f, 0.0f));
+  test_points_a.emplace_back(5.0f, 0.0f, 0.0f);
+  test_points_a.emplace_back(5.0f, 0.0f, 5.0f);
+  test_points_a.emplace_back(5.0f, 10.0f, 5.0f);
+  test_points_a.emplace_back(5.0f, 10.0f, 0.0f);
   std::vector<gfx::Point3F> test_points_b;
-  test_points_b.push_back(gfx::Point3F(5.0f, 10.0f, 0.0f));
-  test_points_b.push_back(gfx::Point3F(5.0f, 10.0f, -5.0f));
-  test_points_b.push_back(gfx::Point3F(5.0f, 0.0f, -5.0f));
-  test_points_b.push_back(gfx::Point3F(5.0f, 0.0f, 0.0f));
+  test_points_b.emplace_back(5.0f, 10.0f, 0.0f);
+  test_points_b.emplace_back(5.0f, 10.0f, -5.0f);
+  test_points_b.emplace_back(5.0f, 0.0f, -5.0f);
+  test_points_b.emplace_back(5.0f, 0.0f, 0.0f);
   ValidatePoints(*front_polygon, test_points_a);
   ValidatePoints(*back_polygon, test_points_b);
 
@@ -444,15 +445,15 @@ TEST(DrawPolygonSplitTest, BasicSplit) {
 // a pentagon as a result.
 TEST(DrawPolygonSplitTest, AngledSplit) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 10.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 10.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 10.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 10.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(2.0f, 5.0f, 1.0f));
-  vertices_b.push_back(gfx::Point3F(2.0f, -5.0f, 1.0f));
-  vertices_b.push_back(gfx::Point3F(-1.0f, -5.0f, -2.0f));
-  vertices_b.push_back(gfx::Point3F(-1.0f, 5.0f, -2.0f));
+  vertices_b.emplace_back(2.0f, 5.0f, 1.0f);
+  vertices_b.emplace_back(2.0f, -5.0f, 1.0f);
+  vertices_b.emplace_back(-1.0f, -5.0f, -2.0f);
+  vertices_b.emplace_back(-1.0f, 5.0f, -2.0f);
 
   CREATE_NEW_DRAW_POLYGON_PTR(polygon_a, vertices_a,
                               gfx::Vector3dF(0.0f, 1.0f, 0.0f), 0);
@@ -470,15 +471,15 @@ TEST(DrawPolygonSplitTest, AngledSplit) {
   EXPECT_TRUE(back_polygon != nullptr);
 
   std::vector<gfx::Point3F> test_points_a;
-  test_points_a.push_back(gfx::Point3F(10.0f, 0.0f, 9.0f));
-  test_points_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
-  test_points_a.push_back(gfx::Point3F(1.0f, 0.0f, 0.0f));
+  test_points_a.emplace_back(10.0f, 0.0f, 9.0f);
+  test_points_a.emplace_back(10.0f, 0.0f, 0.0f);
+  test_points_a.emplace_back(1.0f, 0.0f, 0.0f);
   std::vector<gfx::Point3F> test_points_b;
-  test_points_b.push_back(gfx::Point3F(1.0f, 0.0f, 0.0f));
-  test_points_b.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  test_points_b.push_back(gfx::Point3F(0.0f, 0.0f, 10.0f));
-  test_points_b.push_back(gfx::Point3F(10.0f, 0.0f, 10.0f));
-  test_points_b.push_back(gfx::Point3F(10.0f, 0.0f, 9.0f));
+  test_points_b.emplace_back(1.0f, 0.0f, 0.0f);
+  test_points_b.emplace_back(0.0f, 0.0f, 0.0f);
+  test_points_b.emplace_back(0.0f, 0.0f, 10.0f);
+  test_points_b.emplace_back(10.0f, 0.0f, 10.0f);
+  test_points_b.emplace_back(10.0f, 0.0f, 9.0f);
 
   ValidatePointsWithinDeltaOf(*front_polygon, test_points_a, 1e-6f);
   ValidatePointsWithinDeltaOf(*back_polygon, test_points_b, 1e-6f);
@@ -493,23 +494,23 @@ TEST(DrawPolygonSplitTest, AngledSplit) {
 // being present in the output polygons.
 TEST(DrawPolygonSplitTest, AlmostCoplanarSplit) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(723.814758300781250f, 552.810119628906250f,
-                                    -206.656036376953125f));
-  vertices_a.push_back(gfx::Point3F(797.634155273437500f, 549.095703125000000f,
-                                    -209.802902221679688f));
-  vertices_a.push_back(gfx::Point3F(799.264648437500000f, 490.325805664062500f,
-                                    -172.261627197265625f));
-  vertices_a.push_back(gfx::Point3F(720.732421875000000f, 493.944458007812500f,
-                                    -168.700469970703125f));
+  vertices_a.emplace_back(723.814758300781250f, 552.810119628906250f,
+                          -206.656036376953125f);
+  vertices_a.emplace_back(797.634155273437500f, 549.095703125000000f,
+                          -209.802902221679688f);
+  vertices_a.emplace_back(799.264648437500000f, 490.325805664062500f,
+                          -172.261627197265625f);
+  vertices_a.emplace_back(720.732421875000000f, 493.944458007812500f,
+                          -168.700469970703125f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(720.631286621093750f, 487.595977783203125f,
-                                    -164.681198120117188f));
-  vertices_b.push_back(gfx::Point3F(799.672851562500000f, 484.059020996093750f,
-                                    -168.219161987304688f));
-  vertices_b.push_back(gfx::Point3F(801.565490722656250f, 416.416809082031250f,
-                                    -125.007690429687500f));
-  vertices_b.push_back(gfx::Point3F(717.096801757812500f, 419.792327880859375f,
-                                    -120.967689514160156f));
+  vertices_b.emplace_back(720.631286621093750f, 487.595977783203125f,
+                          -164.681198120117188f);
+  vertices_b.emplace_back(799.672851562500000f, 484.059020996093750f,
+                          -168.219161987304688f);
+  vertices_b.emplace_back(801.565490722656250f, 416.416809082031250f,
+                          -125.007690429687500f);
+  vertices_b.emplace_back(717.096801757812500f, 419.792327880859375f,
+                          -120.967689514160156f);
 
   CREATE_NEW_DRAW_POLYGON_PTR(
       splitting_polygon, vertices_a,
@@ -541,15 +542,15 @@ TEST(DrawPolygonSplitTest, AlmostCoplanarSplit) {
 // a pentagon as a result, and then cut the pentagon.
 TEST(DrawPolygonSplitTest, DoubleSplit) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 0.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 0.0f, 10.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 10.0f));
-  vertices_a.push_back(gfx::Point3F(10.0f, 0.0f, 0.0f));
+  vertices_a.emplace_back(0.0f, 0.0f, 0.0f);
+  vertices_a.emplace_back(0.0f, 0.0f, 10.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 10.0f);
+  vertices_a.emplace_back(10.0f, 0.0f, 0.0f);
   std::vector<gfx::Point3F> vertices_b;
-  vertices_b.push_back(gfx::Point3F(2.0f, 5.0f, 1.0f));
-  vertices_b.push_back(gfx::Point3F(2.0f, -5.0f, 1.0f));
-  vertices_b.push_back(gfx::Point3F(-1.0f, -5.0f, -2.0f));
-  vertices_b.push_back(gfx::Point3F(-1.0f, 5.0f, -2.0f));
+  vertices_b.emplace_back(2.0f, 5.0f, 1.0f);
+  vertices_b.emplace_back(2.0f, -5.0f, 1.0f);
+  vertices_b.emplace_back(-1.0f, -5.0f, -2.0f);
+  vertices_b.emplace_back(-1.0f, 5.0f, -2.0f);
 
   CREATE_NEW_DRAW_POLYGON_PTR(polygon_a, vertices_a,
                               gfx::Vector3dF(0.0f, 1.0f, 0.0f), 0);
@@ -573,9 +574,9 @@ TEST(DrawPolygonSplitTest, DoubleSplit) {
       back_polygon->points();
 
   std::vector<gfx::Point3F> vertices_c;
-  vertices_c.push_back(gfx::Point3F(0.0f, 0.0f, 10.0f));
-  vertices_c.push_back(gfx::Point3F(1.0f, -0.05f, 0.0f));
-  vertices_c.push_back(gfx::Point3F(10.0f, 0.05f, 9.0f));
+  vertices_c.emplace_back(0.0f, 0.0f, 10.0f);
+  vertices_c.emplace_back(1.0f, -0.05f, 0.0f);
+  vertices_c.emplace_back(10.0f, 0.05f, 9.0f);
 
   CREATE_NEW_DRAW_POLYGON_PTR(polygon_c, vertices_c,
                               gfx::Vector3dF(0.005555f, -0.99997f, 0.005555f),
@@ -602,9 +603,9 @@ TEST(DrawPolygonSplitTest, DoubleSplit) {
 
 TEST(DrawPolygonTransformTest, TransformNormal) {
   std::vector<gfx::Point3F> vertices_a;
-  vertices_a.push_back(gfx::Point3F(1.0f, 0.0f, 1.0f));
-  vertices_a.push_back(gfx::Point3F(-1.0f, 0.0f, -1.0f));
-  vertices_a.push_back(gfx::Point3F(0.0f, 1.0f, 0.0f));
+  vertices_a.emplace_back(1.0f, 0.0f, 1.0f);
+  vertices_a.emplace_back(-1.0f, 0.0f, -1.0f);
+  vertices_a.emplace_back(0.0f, 1.0f, 0.0f);
   CREATE_NEW_DRAW_POLYGON(polygon_a, vertices_a,
                           gfx::Vector3dF(sqrt(2) / 2, 0.0f, -sqrt(2) / 2), 0);
   EXPECT_NORMAL(polygon_a, sqrt(2) / 2, 0.0f, -sqrt(2) / 2);

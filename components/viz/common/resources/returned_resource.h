@@ -23,7 +23,7 @@ struct VIZ_COMMON_EXPORT ReturnedResource {
                    bool lost)
       : id(id), sync_token(sync_token), count(count), lost(lost) {}
 
-  ReturnedResource() {}
+  ReturnedResource() = default;
 
   bool operator==(const ReturnedResource& other) const {
     return id == other.id && sync_token == other.sync_token &&

@@ -44,7 +44,7 @@ class GpuMemoryBufferManager;
 // synchronized using SyncTokens. See //docs/design/gpu_synchronization.md.
 class GPU_EXPORT SharedImageInterface {
  public:
-  virtual ~SharedImageInterface() {}
+  virtual ~SharedImageInterface() = default;
 
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which

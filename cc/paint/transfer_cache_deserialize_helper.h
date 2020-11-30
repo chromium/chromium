@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include <memory>
+
 #include "cc/paint/paint_export.h"
 #include "cc/paint/transfer_cache_entry.h"
 
@@ -18,7 +20,7 @@ namespace cc {
 // we need to figure out layering. crbug.com/777622
 class CC_PAINT_EXPORT TransferCacheDeserializeHelper {
  public:
-  virtual ~TransferCacheDeserializeHelper() {}
+  virtual ~TransferCacheDeserializeHelper() = default;
 
   // Type safe access to an entry in the transfer cache. Returns null if the
   // entry is missing or of the wrong type.

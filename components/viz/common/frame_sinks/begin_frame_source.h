@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -33,7 +34,7 @@ namespace viz {
 // objects.
 class VIZ_COMMON_EXPORT BeginFrameObserver {
  public:
-  virtual ~BeginFrameObserver() {}
+  virtual ~BeginFrameObserver() = default;
 
   // The |args| given to OnBeginFrame is guaranteed to have
   // |args|.IsValid()==true. If |args|.frame_id.source_id did not change

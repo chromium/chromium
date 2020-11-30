@@ -4,6 +4,8 @@
 
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 // ParentLocalSurfaceIdAllocator has 2 accessors which do not alter state:
@@ -21,7 +23,7 @@ class ParentLocalSurfaceIdAllocatorTest : public testing::Test {
  public:
   ParentLocalSurfaceIdAllocatorTest() = default;
 
-  ~ParentLocalSurfaceIdAllocatorTest() override {}
+  ~ParentLocalSurfaceIdAllocatorTest() override = default;
 
   ParentLocalSurfaceIdAllocator& allocator() { return *allocator_.get(); }
 

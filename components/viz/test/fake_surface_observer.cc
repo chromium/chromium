@@ -9,7 +9,7 @@ namespace viz {
 FakeSurfaceObserver::FakeSurfaceObserver(bool damage_display)
     : damage_display_(damage_display) {}
 
-FakeSurfaceObserver::~FakeSurfaceObserver() {}
+FakeSurfaceObserver::~FakeSurfaceObserver() = default;
 
 void FakeSurfaceObserver::Reset() {
   last_ack_ = BeginFrameAck();

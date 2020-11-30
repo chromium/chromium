@@ -5,14 +5,14 @@
 #ifndef CC_PAINT_IMAGE_PROVIDER_H_
 #define CC_PAINT_IMAGE_PROVIDER_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/optional.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op_buffer.h"
-
-#include <vector>
 
 namespace cc {
 class PaintImage;
@@ -36,7 +36,7 @@ class CC_PAINT_EXPORT ImageProvider {
     ScopedResult& operator=(const ScopedResult&) = delete;
     ScopedResult& operator=(ScopedResult&& other);
 
-    operator bool() const { return image_ || record_; }
+    explicit operator bool() const { return image_ || record_; }
     const DecodedDrawImage& decoded_image() const { return image_; }
     bool needs_unlock() const { return !destruction_callback_.is_null(); }
     const PaintRecord* paint_record() {
@@ -52,7 +52,7 @@ class CC_PAINT_EXPORT ImageProvider {
     DestructionCallback destruction_callback_;
   };
 
-  virtual ~ImageProvider() {}
+  virtual ~ImageProvider() = default;
 
   // Returns either:
   // 1. The DecodedDrawImage to use for this PaintImage. If no image is

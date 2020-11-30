@@ -364,7 +364,7 @@ void Surface::RecomputeActiveReferencedSurfaces() {
       active_referenced_surfaces_.insert(surface->surface_id());
       last_surface_id_for_range_.push_back(surface->surface_id());
     } else {
-      last_surface_id_for_range_.push_back(SurfaceId());
+      last_surface_id_for_range_.emplace_back();
     }
     // The allocation group for the end of the SurfaceRange should always be
     // referenced.

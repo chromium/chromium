@@ -27,7 +27,7 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSourceClient {
   virtual void OnTimerTick() = 0;
 
  protected:
-  virtual ~DelayBasedTimeSourceClient() {}
+  virtual ~DelayBasedTimeSourceClient() = default;
 };
 
 // This timer implements a time source that achieves the specified interval

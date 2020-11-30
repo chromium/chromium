@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_SURFACE_RESOURCE_HOLDER_H_
 
 #include <unordered_map>
+#include <vector>
 
 #include "base/macros.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -34,10 +35,8 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   SurfaceResourceHolderClient* client_;
 
   struct ResourceRefs {
-    ResourceRefs();
-
-    int refs_received_from_child;
-    int refs_holding_resource_alive;
+    int refs_received_from_child = 0;
+    int refs_holding_resource_alive = 0;
     gpu::SyncToken sync_token;
   };
   // Keeps track of the number of users currently in flight for each resource

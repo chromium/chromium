@@ -66,8 +66,8 @@ class GPU_GLES2_EXPORT SharedContextState
  public:
   using ContextLostCallback = base::OnceCallback<void(bool)>;
 
-  // TODO: Refactor code to have seperate constructor for GL and Vulkan and not
-  // initialize/use GL related info for vulkan and vice-versa.
+  // TODO(vikassoni): Refactor code to have seperate constructor for GL and
+  // Vulkan and not initialize/use GL related info for vulkan and vice-versa.
   SharedContextState(
       scoped_refptr<gl::GLShareGroup> share_group,
       scoped_refptr<gl::GLSurface> surface,
@@ -182,7 +182,7 @@ class GPU_GLES2_EXPORT SharedContextState
     virtual void OnContextLost() = 0;
 
    protected:
-    virtual ~ContextLostObserver() {}
+    virtual ~ContextLostObserver() = default;
   };
   void AddContextLostObserver(ContextLostObserver* obs);
   void RemoveContextLostObserver(ContextLostObserver* obs);

@@ -170,7 +170,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   virtual void SetFrameSequenceNumber(uint64_t frame_sequence_number) {}
 
  protected:
-  OverlayProcessorInterface() {}
+  OverlayProcessorInterface() = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OverlayProcessorInterface);
