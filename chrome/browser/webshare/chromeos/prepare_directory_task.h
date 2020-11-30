@@ -16,6 +16,7 @@ namespace webshare {
 class PrepareDirectoryTask {
  public:
   PrepareDirectoryTask(base::FilePath directory,
+                       uint64_t required_space,
                        blink::mojom::ShareService::ShareCallback callback);
   PrepareDirectoryTask(const PrepareDirectoryTask&) = delete;
   PrepareDirectoryTask& operator=(const PrepareDirectoryTask&) = delete;
@@ -27,11 +28,13 @@ class PrepareDirectoryTask {
 
  private:
   // Runs on a thread where blocking is permitted.
-  static base::File::Error PrepareDirectory(base::FilePath directory);
+  static base::File::Error PrepareDirectory(base::FilePath directory,
+                                            uint64_t required_space);
 
   void OnPrepareDirectory(base::File::Error result);
 
   const base::FilePath directory_;
+  const uint64_t required_space_;
   blink::mojom::ShareService::ShareCallback callback_;
 
   base::WeakPtrFactory<PrepareDirectoryTask> weak_ptr_factory_{this};

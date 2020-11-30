@@ -106,7 +106,7 @@ void SharesheetClient::Share(
 
   current_share_->prepare_directory_task =
       std::make_unique<PrepareDirectoryTask>(
-          current_share_->directory,
+          current_share_->directory, kMaxSharedFileBytes,
           base::BindOnce(&SharesheetClient::OnPrepareDirectory,
                          weak_ptr_factory_.GetWeakPtr()));
   current_share_->prepare_directory_task->Start();
