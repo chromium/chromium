@@ -378,6 +378,10 @@ void WidgetBase::UpdateVisualProperties(
   LayerTreeHost()->SetBrowserControlsParams(
       visual_properties.browser_controls_params);
 
+  LayerTreeHost()->SetVisualDeviceViewportSize(gfx::ScaleToCeiledSize(
+      visual_properties.visible_viewport_size,
+      visual_properties.screen_info.device_scale_factor));
+
   client_->UpdateVisualProperties(visual_properties);
 
   // FrameWidgets have custom code for external page scale factor.
@@ -1360,9 +1364,10 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
       compositor_viewport_pixel_rect,
       client_->GetOriginalScreenInfo().device_scale_factor,
       local_surface_id_from_parent_);
-  // The ViewportVisibleRect derives from the LayerTreeView's viewport size,
-  // which is set above.
-  LayerTreeHost()->SetViewportVisibleRect(client_->ViewportVisibleRect());
+  // The VisualDeviceViewportIntersectionRect derives from the LayerTreeView's
+  // viewport size, which is set above.
+  LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
+      client_->ViewportVisibleRect());
   LayerTreeHost()->SetDisplayColorSpaces(screen_info_.display_color_spaces);
 
   if (orientation_changed)

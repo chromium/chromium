@@ -1,0 +1,42 @@
+<!doctype html>
+<style>
+  .tallScroller {
+    width: 1000px;
+    height: 1000px;
+    overflow: scroll;
+    bottom: 0;
+    right:0;
+    position:absolute;
+  }
+
+  .tallScroller>.child {
+    width: 4000px;
+    height: 4000px;
+  }
+</style>
+
+<div id="tallScroller" class="tallScroller" onscroll="on_subscroller_scroll()">
+  <div class="child"></div>
+</div>
+
+<script>
+// This is an internal iframe for
+// virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html
+var port;
+function handleMessage(event) {
+  if (event.data.hasOwnProperty('startScroll')) {
+    port = event.source;
+    tallScroller.scrollTop = 0;
+    tallScroller.scrollLeft = 0;
+  }
+}
+
+function on_subscroller_scroll() {
+  port.postMessage({
+    deltaY: tallScroller.scrollTop,
+    deltaX: tallScroller.scrollLeft
+  },"*");
+}
+
+window.addEventListener("message", handleMessage);
+</script>

@@ -1777,7 +1777,7 @@ void WebFrameWidgetImpl::SetViewportIntersection(
 
   child_data().compositor_visible_rect =
       intersection_state->compositor_visible_rect;
-  widget_base_->LayerTreeHost()->SetViewportVisibleRect(
+  widget_base_->LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
       intersection_state->compositor_visible_rect);
   LocalRootImpl()->GetFrame()->SetViewportIntersectionFromParent(
       *intersection_state);

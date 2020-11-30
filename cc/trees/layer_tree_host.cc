@@ -780,11 +780,12 @@ std::string LayerTreeHost::LayersAsString() const {
 }
 
 bool LayerTreeHost::CaptureContent(std::vector<NodeInfo>* content) {
-  if (viewport_visible_rect_.IsEmpty())
+  if (visual_device_viewport_intersection_rect_.IsEmpty())
     return false;
 
-  gfx::Rect rect = gfx::Rect(viewport_visible_rect_.width(),
-                             viewport_visible_rect_.height());
+  gfx::Rect rect =
+      gfx::Rect(visual_device_viewport_intersection_rect_.width(),
+                visual_device_viewport_intersection_rect_.height());
   for (auto* layer : *this) {
     // Normally, the node won't be drawn in multiple layers, even it is, such as
     // text strokes, the visual rect don't have too much different.
@@ -1273,11 +1274,21 @@ void LayerTreeHost::SetViewportRectAndScale(
   }
 }
 
-void LayerTreeHost::SetViewportVisibleRect(const gfx::Rect& visible_rect) {
-  if (visible_rect == viewport_visible_rect_)
+void LayerTreeHost::SetVisualDeviceViewportIntersectionRect(
+    const gfx::Rect& intersection_rect) {
+  if (intersection_rect == visual_device_viewport_intersection_rect_)
     return;
 
-  viewport_visible_rect_ = visible_rect;
+  visual_device_viewport_intersection_rect_ = intersection_rect;
+}
+
+void LayerTreeHost::SetVisualDeviceViewportSize(
+    const gfx::Size& visual_device_viewport_size) {
+  if (visual_device_viewport_size == visual_device_viewport_size_)
+    return;
+
+  visual_device_viewport_size_ = visual_device_viewport_size;
+  SetNeedsCommit();
 }
 
 void LayerTreeHost::SetBrowserControlsParams(
@@ -1646,6 +1657,7 @@ void LayerTreeHost::PushLayerTreeHostPropertiesTo(
   RecordGpuRasterizationHistogram(host_impl);
 
   host_impl->SetDebugState(debug_state_);
+  host_impl->SetVisualDeviceViewportSize(visual_device_viewport_size_);
 }
 
 Layer* LayerTreeHost::LayerByElementId(ElementId element_id) const {

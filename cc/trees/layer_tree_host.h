@@ -403,7 +403,22 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       float device_scale_factor,
       const viz::LocalSurfaceId& local_surface_id_from_parent);
 
-  void SetViewportVisibleRect(const gfx::Rect& visible_rect);
+  // VisualDeviceViewportIntersectionRect is the intersection of this
+  // compositor's viewport with the "visible size", aka this compositor's
+  // viewport intersection with the global viewport (i.e.
+  // VisualDeviceViewportSize). It is also specified in the device viewport
+  // coordinate space.
+  void SetVisualDeviceViewportIntersectionRect(
+      const gfx::Rect& intersection_rect);
+
+  // VisualDeviceViewportSize is the size of the global viewport across all
+  // compositors that are part of the scene that this compositor contributes to
+  // (i.e. the visual viewport), allowing for that scene to be broken up into
+  // multiple compositors that each contribute to the whole (e.g. cross-origin
+  // iframes are isolated from each other). This is a size instead of a rect
+  // because each compositor doesn't know its position relative to other
+  // compositors. This is specified in device viewport coordinate space.
+  void SetVisualDeviceViewportSize(const gfx::Size&);
 
   gfx::Rect device_viewport_rect() const { return device_viewport_rect_; }
 
@@ -861,8 +876,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   LayerSelection selection_;
 
   gfx::Rect device_viewport_rect_;
-
-  gfx::Rect viewport_visible_rect_;
+  gfx::Rect visual_device_viewport_intersection_rect_;
+  gfx::Size visual_device_viewport_size_;
 
   bool have_scroll_event_handlers_ = false;
   EventListenerProperties event_listener_properties_

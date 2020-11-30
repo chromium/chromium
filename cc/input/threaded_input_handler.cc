@@ -1170,15 +1170,15 @@ gfx::Vector2dF ThreadedInputHandler::ResolveScrollGranularityToPixels(
 
   if (granularity == ui::ScrollGranularity::kScrollByPercentage) {
     gfx::SizeF scroller_size = gfx::SizeF(scroll_node.container_bounds);
-
-    gfx::SizeF viewport_size =
-        InnerViewportScrollNode()
-            ? gfx::SizeF(InnerViewportScrollNode()->container_bounds)
-            : gfx::SizeF(ActiveTree().GetDeviceViewport().size());
+    gfx::SizeF viewport_size(compositor_delegate_.VisualDeviceViewportSize());
 
     // Convert from rootframe coordinates to screen coordinates (physical
-    // pixels).
+    // pixels if --use-zoom-for-dsf enabled, DIPs otherwise).
     scroller_size.Scale(compositor_delegate_.PageScaleFactor());
+
+    // Convert from physical pixels to screen coordinates (if --use-zoom-for-dsf
+    // enabled, `DeviceScaleFactor()` returns 1).
+    viewport_size.Scale(1 / compositor_delegate_.DeviceScaleFactor());
 
     pixel_delta = ScrollUtils::ResolveScrollPercentageToPixels(
         pixel_delta, scroller_size, viewport_size);

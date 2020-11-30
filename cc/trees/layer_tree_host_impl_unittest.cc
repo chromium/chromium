@@ -423,6 +423,7 @@ class LayerTreeHostImplTest : public testing::Test,
     auto* root =
         SetupRootLayer<LayerImpl>(layer_tree_impl, inner_viewport_size);
     SetupViewport(root, outer_viewport_size, content_size);
+    host_impl_->SetVisualDeviceViewportSize(inner_viewport_size);
 
     UpdateDrawProperties(layer_tree_impl);
     layer_tree_impl->DidBecomeActive();

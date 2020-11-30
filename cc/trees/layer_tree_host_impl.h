@@ -373,11 +373,21 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidScrollContent(ElementId element_id, bool animated) override;
   float DeviceScaleFactor() const override;
   float PageScaleFactor() const override;
+  gfx::Size VisualDeviceViewportSize() const override;
   const LayerTreeSettings& GetSettings() const override;
   LayerTreeHostImpl& GetImplDeprecated() override;
   const LayerTreeHostImpl& GetImplDeprecated() const override;
 
   FrameSequenceTrackerCollection& frame_trackers() { return frame_trackers_; }
+
+  // VisualDeviceViewportSize is the size of the global viewport across all
+  // compositors that are part of the scene that this compositor contributes to
+  // (i.e. the visual viewport), allowing for that scene to be broken up into
+  // multiple compositors that each contribute to the whole (e.g. cross-origin
+  // iframes are isolated from each other). This is a size instead of a rect
+  // because each compositor doesn't know its position relative to other
+  // compositors. This is specified in device viewport coordinate space.
+  void SetVisualDeviceViewportSize(const gfx::Size&);
 
   // Updates registered ElementIds present in |changed_list|. Call this after
   // changing the property trees for the |changed_list| trees.
@@ -1116,6 +1126,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   int consecutive_frame_with_damage_count_;
 
   std::unique_ptr<Viewport> viewport_;
+
+  gfx::Size visual_device_viewport_size_;
 
   std::unique_ptr<PendingTreeRasterDurationHistogramTimer>
       pending_tree_raster_duration_timer_;

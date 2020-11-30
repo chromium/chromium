@@ -71,7 +71,8 @@ class LayerTreeHostCaptureContentTest : public LayerTreeTest {
     root->AddChild(root_picture_layer_);
 
     layer_tree_host()->SetRootLayer(root);
-    layer_tree_host()->SetViewportVisibleRect(gfx::Rect(device_bounds_));
+    layer_tree_host()->SetVisualDeviceViewportIntersectionRect(
+        gfx::Rect(device_bounds_));
   }
 
   void VerifyCapturedContent(std::vector<FakeTextHolder>* expected_result) {

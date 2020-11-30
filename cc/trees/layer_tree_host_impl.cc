@@ -3882,6 +3882,15 @@ void LayerTreeHostImpl::BindToInputHandler(
   input_delegate_ = std::move(delegate);
 }
 
+void LayerTreeHostImpl::SetVisualDeviceViewportSize(
+    const gfx::Size& visual_device_viewport_size) {
+  visual_device_viewport_size_ = visual_device_viewport_size;
+}
+
+gfx::Size LayerTreeHostImpl::VisualDeviceViewportSize() const {
+  return visual_device_viewport_size_;
+}
+
 ScrollTree& LayerTreeHostImpl::GetScrollTree() const {
   return active_tree_->property_trees()->scroll_tree;
 }
