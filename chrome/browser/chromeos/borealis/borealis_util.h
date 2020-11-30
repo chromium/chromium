@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_UTIL_H_
 
+#include <string>
+
 class Profile;
 
 namespace borealis {
@@ -14,9 +16,17 @@ namespace borealis {
 extern const char kBorealisAppId[];
 // This is used to install the Borealis DLC component.
 extern const char kBorealisDlcName[];
+// The regex used for extracing the Borealis app id of an application.
+extern const char kBorealisAppIdRegex[];
 
 // Shows the Borealis installer (borealis_installer_view).
 void ShowBorealisInstallerView(Profile* profile);
+
+// Extracts the borealis app id from |exec| and puts it into |app_id|,
+// returns true if successful.
+// TODO(b/173547790): This should probably be moved when we've decided
+// the details of how/where it will be used.
+bool GetBorealisAppId(std::string exec, int& app_id);
 
 }  // namespace borealis
 
