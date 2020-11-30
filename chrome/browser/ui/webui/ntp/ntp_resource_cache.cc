@@ -319,10 +319,12 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
   DCHECK(!profile_->IsOffTheRecord());
-  DCHECK(profile_->HasPrimaryOTRProfile());
+  DCHECK(profile_->HasAnyOffTheRecordProfile());
+  // Cookie controls service returns the same result for all off-the-record
+  // profiles, so it doesn't matter which of them we use.
   CookieControlsService* cookie_controls_service =
       CookieControlsServiceFactory::GetForProfile(
-          profile_->GetPrimaryOTRProfile());
+          profile_->GetAllOffTheRecordProfiles()[0]);
 
   replacements["incognitoTabDescription"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE);
@@ -605,8 +607,10 @@ void NTPResourceCache::CreateNewTabHTML() {
 }
 
 void NTPResourceCache::CreateNewTabIncognitoCSS() {
+  // Same theme is used by all off-the-record profiles, so just getting it from
+  // the first one.
   const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
-      profile_->GetPrimaryOTRProfile());
+      profile_->GetAllOffTheRecordProfiles()[0]);
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;
