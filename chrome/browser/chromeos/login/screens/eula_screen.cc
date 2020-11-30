@@ -14,9 +14,10 @@
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
 namespace chromeos {
 namespace {
@@ -121,7 +122,8 @@ void EulaScreen::OnViewDestroyed(EulaView* view) {
 
 void EulaScreen::ShowImpl() {
   // Command to own the TPM.
-  CryptohomeClient::Get()->TpmCanAttemptOwnership(base::DoNothing());
+  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
+                                         base::DoNothing());
   if (WizardController::UsingHandsOffEnrollment())
     OnUserAction(kUserActionAcceptButtonClicked);
   else if (view_)
