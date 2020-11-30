@@ -330,7 +330,10 @@ TEST_F('ChromeVoxBackgroundTest', 'ShowContextMenu', function() {
     mockFeedback.call(go.focus.bind(go))
         .expectSpeech('a', 'Link')
         .call(doCmd('contextMenu'))
-        .expectSpeech(/menu opened/);
+        .expectSpeech(/menu opened/)
+        .call(press(KeyCode.ESCAPE))
+        .expectSpeech(/menu closed/)
+        .expectSpeech('a', 'Link');
     mockFeedback.replay();
   }.bind(this));
 });
