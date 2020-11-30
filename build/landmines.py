@@ -18,7 +18,7 @@ machine. This can be particularly problematic on Windows where the directory
 deletion may well fail (locked files, command prompt in the directory, etc.),
 and generated .sln and .vcxproj files will be deleted.
 
-This output directory deletion will be repated when going back and forth across
+This output directory deletion will be repeated when going back and forth across
 the change that added the landmine, adding to the cost. There are usually less
 troublesome alternatives.
 """
