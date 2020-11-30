@@ -4,9 +4,11 @@
 
 #include "chrome/browser/profiles/guest_mode_policy_handler.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -14,7 +16,14 @@
 
 namespace policy {
 
-class GuestModePolicyHandlerTest : public ::testing::Test {
+class GuestModePolicyHandlerTest : public ::testing::Test,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  GuestModePolicyHandlerTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
+
  public:
   void SetUp() override {
     prefs_.Clear();
@@ -35,14 +44,17 @@ class GuestModePolicyHandlerTest : public ::testing::Test {
   PolicyMap policies_;
   PrefValueMap prefs_;
   GuestModePolicyHandler handler_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(GuestModePolicyHandlerTest, ForceSigninNotSet) {
+TEST_P(GuestModePolicyHandlerTest, ForceSigninNotSet) {
   handler_.ApplyPolicySettings(policies_, &prefs_);
   EXPECT_FALSE(prefs_.GetValue(prefs::kBrowserGuestModeEnabled, nullptr));
 }
 
-TEST_F(GuestModePolicyHandlerTest, ForceSigninDisabled) {
+TEST_P(GuestModePolicyHandlerTest, ForceSigninDisabled) {
   SetUpPolicy(key::kForceBrowserSignin, false);
   handler_.ApplyPolicySettings(policies_, &prefs_);
   EXPECT_FALSE(prefs_.GetValue(prefs::kBrowserGuestModeEnabled, nullptr));
@@ -52,7 +64,7 @@ TEST_F(GuestModePolicyHandlerTest, ForceSigninDisabled) {
   EXPECT_FALSE(prefs_.GetValue(prefs::kBrowserGuestModeEnabled, nullptr));
 }
 
-TEST_F(GuestModePolicyHandlerTest, GuestModeDisabledByDefault) {
+TEST_P(GuestModePolicyHandlerTest, GuestModeDisabledByDefault) {
   bool value;
   SetUpPolicy(key::kForceBrowserSignin, true);
   handler_.ApplyPolicySettings(policies_, &prefs_);
@@ -60,7 +72,7 @@ TEST_F(GuestModePolicyHandlerTest, GuestModeDisabledByDefault) {
   EXPECT_FALSE(value);
 }
 
-TEST_F(GuestModePolicyHandlerTest,
+TEST_P(GuestModePolicyHandlerTest,
        GuestModeDisabledByDefaultWithInvalidFormat) {
   bool value;
   SetUpPolicy(key::kForceBrowserSignin, true);
@@ -70,7 +82,7 @@ TEST_F(GuestModePolicyHandlerTest,
   EXPECT_FALSE(value);
 }
 
-TEST_F(GuestModePolicyHandlerTest, GuestModeSet) {
+TEST_P(GuestModePolicyHandlerTest, GuestModeSet) {
   bool value;
   SetUpPolicy(key::kForceBrowserSignin, true);
   SetUpPolicy(key::kBrowserGuestModeEnabled, true);
@@ -84,7 +96,7 @@ TEST_F(GuestModePolicyHandlerTest, GuestModeSet) {
   EXPECT_FALSE(value);
 }
 
-TEST_F(GuestModePolicyHandlerTest, GuestModeDisabledWhenBrowserSigninIsForced) {
+TEST_P(GuestModePolicyHandlerTest, GuestModeDisabledWhenBrowserSigninIsForced) {
   SetUpPolicy(key::kBrowserSignin,
               static_cast<int>(BrowserSigninMode::kForced));
   handler_.ApplyPolicySettings(policies_, &prefs_);
@@ -93,7 +105,7 @@ TEST_F(GuestModePolicyHandlerTest, GuestModeDisabledWhenBrowserSigninIsForced) {
   EXPECT_FALSE(value);
 }
 
-TEST_F(GuestModePolicyHandlerTest,
+TEST_P(GuestModePolicyHandlerTest,
        GuestModeIsNotSetWhenBrowserSigninIsNotForced) {
   bool value = false;
   SetUpPolicy(key::kBrowserSignin,
@@ -118,5 +130,9 @@ TEST_F(GuestModePolicyHandlerTest,
   handler_.ApplyPolicySettings(policies_, &prefs_);
   EXPECT_FALSE(prefs_.GetBoolean(prefs::kBrowserGuestModeEnabled, &value));
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
+                         GuestModePolicyHandlerTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 }  // namespace policy
