@@ -1,0 +1,4 @@
+monorail {
+  component: "Services>CloudMessaging"
+}
+team_email: "platform-capabilities@chromium.org"
