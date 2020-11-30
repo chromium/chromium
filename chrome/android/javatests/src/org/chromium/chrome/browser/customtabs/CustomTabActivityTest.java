@@ -701,6 +701,9 @@ public class CustomTabActivityTest {
         intent.setComponent(new ComponentName(
                 InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // These ensure the open in chrome chooser is not shown.
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
+        IntentHandler.setForceIntentSenderChromeToTrue(true);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
@@ -2348,7 +2351,6 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_HIDE_VISITS_FROM_CCT})
-    @DisabledTest(message = "https://crbug.com/1148855")
     public void testOmniboxHideVisitsFromCctTransitionRemovedWhenOpenInBrowser() throws Exception {
         // Augment the CustomTabsSession to catch open in browser.
         CallbackHelper callbackTriggered = new CallbackHelper();
@@ -2372,6 +2374,9 @@ public class CustomTabActivityTest {
                 InstrumentationRegistry.getTargetContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT, true);
+        // These ensure the open in chrome chooser is not shown.
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
+        IntentHandler.setForceIntentSenderChromeToTrue(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         // The entry should have FROM_API_2.
@@ -2384,6 +2389,7 @@ public class CustomTabActivityTest {
         final ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
         openAppMenuAndAssertMenuShown();
+        final Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             MenuItem item =
                     AppMenuTestSupport.getMenu(mCustomTabActivityTestRule.getAppMenuCoordinator())
@@ -2398,10 +2404,9 @@ public class CustomTabActivityTest {
 
         // No new navigation should be there, and the navigation should still have FROM_API_2.
         Assert.assertEquals(PageTransition.FROM_API_2,
-                getVisibleEntryTransitionType() & PageTransition.FROM_API_2);
+                getVisibleEntryTransitionTypeForTab(tab) & PageTransition.FROM_API_2);
 
         // Navigate to another page.
-        final Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(tab, null, () -> {
             JavaScriptUtils.executeJavaScript(
                     tab.getWebContents(), "location.href= '" + mTestPage2 + "';");
@@ -2415,7 +2420,8 @@ public class CustomTabActivityTest {
             Assert.assertNotEquals(navigationController.getVisibleEntry(),
                     navigationController.getNavigationHistory().getEntryAtIndex(0));
         });
-        Assert.assertEquals(0, getVisibleEntryTransitionType() & PageTransition.FROM_API_2);
+        Assert.assertEquals(
+                0, getVisibleEntryTransitionTypeForTab(tab) & PageTransition.FROM_API_2);
     }
 
     @Test
@@ -2476,6 +2482,9 @@ public class CustomTabActivityTest {
         intent.setData(Uri.parse(mTestPage));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_HIDE_VISITS_FROM_CCT, true);
+        // These ensure the open in chrome chooser is not shown.
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_IS_OPENED_BY_CHROME, true);
+        IntentHandler.setForceIntentSenderChromeToTrue(true);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         connection.newSession(token);
@@ -2483,9 +2492,8 @@ public class CustomTabActivityTest {
                 token, "com.google.android.googlequicksearchbox");
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        Assert.assertTrue(mCustomTabActivityTestRule.getActivity()
-                                  .getActivityTab()
-                                  .getHideFutureNavigations());
+        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        Assert.assertTrue(tab.getHideFutureNavigations());
 
         // Trigger open in browser.
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
@@ -2504,9 +2512,7 @@ public class CustomTabActivityTest {
             return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
         });
         callbackTriggered.waitForCallback(0);
-        Assert.assertFalse(mCustomTabActivityTestRule.getActivity()
-                                   .getActivityTab()
-                                   .getHideFutureNavigations());
+        Assert.assertFalse(tab.getHideFutureNavigations());
     }
 
     @Test
