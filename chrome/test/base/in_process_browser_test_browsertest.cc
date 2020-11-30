@@ -119,15 +119,7 @@ class SingleProcessBrowserTest : public InProcessBrowserTest {
   }
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-// TODO(https://crbug.com/931233): Reenable on Linux.
-// TODO(https://crbug.com/987448): Reenable on Windows.
-#define MAYBE_Test DISABLED_Test
-#else
-#define MAYBE_Test Test
-#endif
-
-IN_PROC_BROWSER_TEST_F(SingleProcessBrowserTest, MAYBE_Test) {
+IN_PROC_BROWSER_TEST_F(SingleProcessBrowserTest, Test) {
   // Should not crash.
 }
 
