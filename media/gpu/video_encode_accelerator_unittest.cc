@@ -1723,7 +1723,7 @@ class VEAClient : public VEAClientBase {
   // The BitstreamBufferReadyTimeout closure. It is set at each
   // BitstreamBufferReady() call, and cancelled at the next
   // BitstreamBufferReady() or flush callback is called.
-  base::CancelableClosure buffer_ready_timeout_;
+  base::CancelableOnceClosure buffer_ready_timeout_;
 
   // The timestamps for each frame in the order of CreateFrame() invocation.
   base::queue<base::TimeDelta> frame_timestamps_;

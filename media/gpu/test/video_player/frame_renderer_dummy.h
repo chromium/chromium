@@ -87,7 +87,7 @@ class FrameRendererDummy : public FrameRenderer {
   uint64_t frames_dropped_ GUARDED_BY(renderer_lock_);
 
   // Task that simulates rendering a frame to screen.
-  base::CancelableClosure render_task_;
+  base::CancelableRepeatingClosure render_task_;
   // Thread on which rendering video frames is simulated.
   base::Thread renderer_thread_;
   mutable base::Lock renderer_lock_;
