@@ -67,16 +67,16 @@
 </style>
 <div class="preview">
   <div id="helpOrProgress" class="preview-item"
-      hidden$="[[shouldShowScannedImages_(appState)]]">
-    <div id="helperText" hidden$="[[shouldHideHelperText_(appState)]]">
+      hidden$="[[showScannedImages_]]">
+    <div id="helperText" hidden$="[[!showHelperText_]]">
       <span inner-h-t-m-l="[[getHelperTextHtml_()]]"></span>
     </div>
-    <div id="scanProgress" hidden$="[[shouldHideProgress_(appState)]]">
+    <div id="scanProgress" hidden$="[[!showScanProgress_]]">
       <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
       <paper-progress value="[[progressPercent]]"></paper-progress>
     </div>
   </div>
-  <div id="scannedImages" hidden$="[[!shouldShowScannedImages_(appState)]]">
+  <div id="scannedImages" hidden$="[[!showScannedImages_]]">
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]">
     </template>

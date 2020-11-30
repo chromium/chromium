@@ -25,7 +25,10 @@ Polymer({
 
   properties: {
     /** @type {!AppState} */
-    appState: Number,
+    appState: {
+      type: Number,
+      observer: 'onAppStateChange_',
+    },
 
     /**
      * The object URLs of the scanned images.
@@ -38,6 +41,24 @@ Polymer({
 
     /** @type {number} */
     progressPercent: Number,
+
+    /** @private {boolean} */
+    showScannedImages_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    showHelperText_: {
+      type: Boolean,
+      value: true,
+    },
+
+    /** @private {boolean} */
+    showScanProgress_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -59,28 +80,12 @@ Polymer({
         'scanPreviewProgressText', this.pageNumber.toString());
   },
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldHideHelperText_() {
-    return this.appState === AppState.SCANNING ||
-        this.appState === AppState.DONE;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldHideProgress_() {
-    return this.appState !== AppState.SCANNING;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowScannedImages_() {
-    return this.appState === AppState.DONE && this.objectUrls.length > 0;
+  /** @private */
+  onAppStateChange_() {
+    this.showScannedImages_ =
+        this.appState === AppState.DONE && this.objectUrls.length > 0;
+    this.showHelperText_ =
+        this.appState !== AppState.SCANNING && this.appState !== AppState.DONE;
+    this.showScanProgress_ = !this.showHelperText_;
   },
 });
