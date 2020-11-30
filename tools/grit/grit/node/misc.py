@@ -45,6 +45,17 @@ _RTL_LANGS = (
 )
 
 
+def _GetIdMapKeyFromFilename(filename, src_root_dir):
+  new_grd_filename = filename
+  abs_grd_filename = os.path.abspath(filename)
+  if abs_grd_filename[:len(src_root_dir)] == src_root_dir:
+    new_grd_filename = abs_grd_filename[len(src_root_dir) + 1:]
+  else:
+    new_grd_filename = abs_grd_filename
+
+  return new_grd_filename.replace('\\', '/')
+
+
 def _ReadFirstIdsFromFile(filename, defines):
   """Read the starting resource id values from |filename|.  We also
   expand variables of the form <(FOO) based on defines passed in on
@@ -56,27 +67,36 @@ def _ReadFirstIdsFromFile(filename, defines):
   first_ids_dict = eval(util.ReadFile(filename, 'utf-8'))
   src_root_dir = os.path.abspath(os.path.join(os.path.dirname(filename),
                                               first_ids_dict['SRCDIR']))
+  EMPTY_REPLACEMENT = 'EMPTY'
 
   def ReplaceVariable(matchobj):
     for key, value in defines.items():
       if matchobj.group(1) == key:
-        return value
-    return ''
+        return value if len(value) > 0 else EMPTY_REPLACEMENT
+    return EMPTY_REPLACEMENT
 
   renames = []
   for grd_filename in first_ids_dict:
     new_grd_filename = re.sub(r'<\(([A-Za-z_]+)\)', ReplaceVariable,
                               grd_filename)
+    new_grd_filename = new_grd_filename.replace('\\', '/')
+
     if new_grd_filename != grd_filename:
-      abs_grd_filename = os.path.abspath(new_grd_filename)
-      if abs_grd_filename[:len(src_root_dir)] != src_root_dir:
-        new_grd_filename = os.path.basename(abs_grd_filename)
-      else:
-        new_grd_filename = abs_grd_filename[len(src_root_dir) + 1:]
-        new_grd_filename = new_grd_filename.replace('\\', '/')
+      # Empty or failed replacements at the start of the path can cause the path
+      # to appear to be absolute, when it in fact represents the path from the
+      # current (output) directory. Replace these with '.' instead.
+      if (new_grd_filename.startswith(EMPTY_REPLACEMENT + '/')):
+        new_grd_filename = '.' + new_grd_filename[len(EMPTY_REPLACEMENT):]
+
+      # Any other empty replacements in the middle of the path can be left
+      # as-is.
+      new_grd_filename = new_grd_filename.replace(EMPTY_REPLACEMENT, '')
+      new_grd_filename = _GetIdMapKeyFromFilename(new_grd_filename,
+                                                  src_root_dir)
       renames.append((grd_filename, new_grd_filename))
 
   for grd_filename, new_grd_filename in renames:
+    assert new_grd_filename not in first_ids_dict
     first_ids_dict[new_grd_filename] = first_ids_dict[grd_filename]
     del(first_ids_dict[grd_filename])
 
@@ -593,12 +613,7 @@ class GritNode(base.Node):
     from grit.node import empty
     for node in self.Preorder():
       if isinstance(node, empty.GroupingNode):
-        abs_filename = os.path.abspath(filename_or_stream)
-        if abs_filename[:len(src_root_dir)] != src_root_dir:
-          filename = os.path.basename(filename_or_stream)
-        else:
-          filename = abs_filename[len(src_root_dir) + 1:]
-          filename = filename.replace('\\', '/')
+        filename = _GetIdMapKeyFromFilename(filename_or_stream, src_root_dir)
 
         if node.attrs['first_id'] != '':
           raise Exception(

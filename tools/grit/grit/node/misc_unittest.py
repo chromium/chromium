@@ -80,7 +80,10 @@ class GritNodeUnittest(unittest.TestCase):
         {
           'SHARED_INTERMEDIATE_DIR': '/outside/src_dir',
         })
-    self.assertEqual({}, id_dict.get('devtools.grd', None))
+    # Windows adds a c:// prefix, which is why this is needed here.
+    abs_path = os.path.abspath(
+        '/outside/src_dir/devtools/devtools.grd').replace('\\', '/')
+    self.assertEqual({}, id_dict.get(abs_path, None))
 
   # Verifies that GetInputFiles() returns the correct list of files
   # corresponding to ChromeScaledImage nodes when assets are missing.
