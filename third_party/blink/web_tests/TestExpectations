@@ -2008,6 +2008,9 @@ crbug.com/849859 external/wpt/css/css-animations/Element-getAnimations-dynamic-c
 
 crbug.com/332189 external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Pass Failure ]
 
+# Awaiting DevTools changes.
+crbug.com/1152391 http/tests/devtools/elements/copy-styles.js [ Pass Failure ]
+
 # Some control characters still not visible
 crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-001.html [ Failure ]
 crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-002.html [ Failure ]
