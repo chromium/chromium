@@ -23,7 +23,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.AggregatedLatency.Renderer2" units="microseconds"
     expires_after="2021-04-04">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between initiation of any input event and the renderer receiving and
     starting to process it.
@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.FractionOfTimeWithoutUserInput" units="%"
     expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     For each 10 second window, reports the fraction of the time there was no
@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
     expires_after="2021-05-09">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the OS receiving a keyboard event and the resulting GPU frame
@@ -383,7 +383,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.OS" units="microseconds"
     expires_after="2020-11-01">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between input event received by OS and sent to Chrome.
@@ -412,7 +412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"
     units="microseconds" expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the generated
@@ -433,7 +433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.Scroll.Wheel.TimeToScrollUpdateSwapBegin2"
     units="microseconds" expires_after="2020-06-21">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and start of the frame swap
     on the GPU service caused by the generated ScrollUpdate gesture event. If no
@@ -642,7 +642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollBegin.Touch.BrowserNotifiedToBeforeGpuSwap2"
     units="microseconds" expires_after="2020-12-06">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of the first ScrollUpdate
     gesture event in a given scroll gesture event sequence with touch source
@@ -654,7 +654,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Touch.GpuSwap2" units="microseconds"
     expires_after="2021-04-04">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between gpu starts to swap the first ScrollUpdate gesture event in a
     given scroll gesture event sequence with touch source induced frame and the
@@ -672,7 +672,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Touch.HandledToRendererSwap2"
     units="microseconds" expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the first ScrollBegin gesture event in a given scroll gesture
@@ -692,7 +692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollBegin.Touch.RendererSwapToBrowserNotified2"
     units="microseconds" expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame induced by the first
@@ -705,7 +705,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Touch.TimeToHandled2"
     units="microseconds" expires_after="2021-04-19">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a touch event and the first generated
@@ -725,7 +725,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4"
     units="microseconds" expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -748,7 +748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollBegin.Wheel.BrowserNotifiedToBeforeGpuSwap2"
     units="microseconds" expires_after="2020-11-29">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of the first ScrollUpdate
     gesture event in a given scroll gesture event sequence with wheel source
@@ -760,7 +760,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.GpuSwap2" units="microseconds"
     expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap the first ScrollUpdate gesture event in a
@@ -779,7 +779,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.HandledToRendererSwap2"
     units="microseconds" expires_after="2021-07-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the first ScrollUpdate gesture event in a given scroll gesture
@@ -799,7 +799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollBegin.Wheel.RendererSwapToBrowserNotified2"
     units="microseconds" expires_after="2021-07-13">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame induced by the first
@@ -812,7 +812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToHandled2"
     units="microseconds" expires_after="2021-06-26">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the first generated
@@ -832,7 +832,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
     units="microseconds" expires_after="2021-04-25">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the start of the frame
     swap on the GPU service caused by the generated ScrollUpdate gesture event
@@ -1207,7 +1207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.BrowserNotifiedToBeforeGpuSwap2"
     units="microseconds" expires_after="M85">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of a ScrollUpdate gesture
     event with touch source induced renderer swap and GPU starts to swap.
@@ -1218,7 +1218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.GpuSwap2"
     units="microseconds" expires_after="2021-04-05">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap a ScrollUpdate gesture event with touch
@@ -1236,7 +1236,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.HandledToRendererSwap2"
     units="microseconds" expires_after="2020-12-06">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between the ScrollUpdate gesture event with touch source, is handled on
     main/impl thread (specified by suffix) and before renderer starts to swap.
@@ -1254,7 +1254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.RendererSwapToBrowserNotified2"
     units="microseconds" expires_after="2021-04-19">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame induced by ScrollUpdate
@@ -1266,7 +1266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.TimeToHandled2"
     units="microseconds" expires_after="2021-04-11">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a touch event and the generated
     ScrollUpdate gesture event is handled on main/impl thread (specified by
@@ -1287,7 +1287,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="microseconds" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1311,7 +1312,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollUpdate.Wheel.BrowserNotifiedToBeforeGpuSwap2"
     units="microseconds" expires_after="2020-12-06">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between the browser receives the notification of a ScrollUpdate gesture
     event with wheel source induced renderer swap and GPU starts to swap.
@@ -1322,7 +1323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.GpuSwap2"
     units="microseconds" expires_after="2021-06-16">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap a ScrollUpdate gesture event with wheel
@@ -1340,7 +1341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.HandledToRendererSwap2"
     units="microseconds" expires_after="2020-12-27">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between the ScrollUpdate gesture event with wheel source, is handled on
     main/impl thread (specified by suffix) and before renderer starts to swap.
@@ -1358,8 +1359,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollUpdate.Wheel.RendererSwapToBrowserNotified2"
     units="microseconds" expires_after="2021-07-13">
-  <owner>tdresser@chromium.org</owner>
-  <owner>input@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame induced by ScrollUpdate
     gesture event with wheel source, and browser receives the swap notification.
@@ -1370,7 +1371,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToHandled2"
     units="microseconds" expires_after="2021-01-17">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the generated
     ScrollUpdate gesture event is handled on main/impl thread (specified by
@@ -1390,7 +1391,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
     units="microseconds" expires_after="2021-04-25">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and start of the frame swap
     on the GPU service caused by the generated ScrollUpdate gesture event. If no
@@ -1432,7 +1433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.SingleTapType" enum="TapDelayType" expires_after="M85">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     On non-mobile sites, gesture taps are delayed to prevent double taps from
     sending a click event. This stat counts the number of taps that are delayed
@@ -1471,7 +1472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
     expires_after="2021-06-15">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     On non-mobile-optimized (desktop) sites, whether the ack response from the
@@ -1484,7 +1485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Touch.TimedOutOnMobileSite" enum="BooleanTimedOut"
     expires_after="2021-06-15">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     On mobile-optimized sites, whether the ack response from the renderer for
@@ -1497,7 +1498,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.TouchDuration" units="ms" expires_after="M77">
   <owner>kuscher@google.com</owner>
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     The duration of a touch-sequence. Only measured for single finger gestures.
     This replaces Ash.TouchDuration2, which did not record events on Android and
@@ -1509,7 +1510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.TouchMaxDistance" units="pixels" expires_after="M77">
   <owner>kuscher@google.com</owner>
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     The maximum euclidean distance in dips (device independent pixel) which a
     touch point has travelled away from its starting point. Only measured for

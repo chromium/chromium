@@ -52,13 +52,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Renderer4.CompositorTouchScrollUpdateThread"
     enum="ScrollThread" expires_after="M85">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>Whether the scroll from touch is executed on main thread.</summary>
 </histogram>
 
 <histogram name="Renderer4.CompositorWheelScrollUpdateThread"
     enum="ScrollThread" expires_after="M85">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Whether the scroll from mouse wheel is executed on main thread.
   </summary>
@@ -174,7 +174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Renderer4.MainThreadGestureScrollReason"
     enum="MainThreadScrollingReason" expires_after="M88">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
@@ -187,7 +187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Renderer4.MainThreadWheelScrollReason"
     enum="MainThreadScrollingReason" expires_after="M88">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of

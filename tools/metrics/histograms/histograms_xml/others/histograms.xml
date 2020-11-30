@@ -15793,7 +15793,7 @@ should be kept until we use this API.  -->
 
 <histogram name="Touchscreen.TouchEventsEnabled"
     enum="TouchEventFeatureDetectionState" expires_after="M77">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <summary>
     Tracks whether Touch Event Feature Detection is enabled. This is based on
     the touch events enabled flag and the presence of a touchscreen.

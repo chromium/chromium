@@ -312,7 +312,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>erikchen@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     This metric is emitted every 30 seconds [when there is user activity]. Each
@@ -352,7 +351,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>erikchen@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>

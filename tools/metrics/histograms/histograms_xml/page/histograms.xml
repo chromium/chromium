@@ -872,7 +872,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-05-02">
   <owner>dougarnett@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <summary>
     The maximum size click input burst for the page load. A click input burst is
     a sequence of user click inputs at approximately the same screen position
@@ -952,7 +952,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="PageLoad.Experimental.InputTiming.InputToNavigationStart"
     units="ms" expires_after="2021-04-18">
   <owner>sullivan@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the navigation actually starting.
@@ -963,7 +962,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.Background"
     units="ms" expires_after="2020-09-05">
   <owner>sullivan@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the navigation actually starting, for background loads.
@@ -974,7 +972,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
     units="ms" expires_after="2020-09-05">
   <owner>sullivan@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
   <summary>
     The time between the OS-level click/tap event and navigation start, for
     clicks on links in the renderer.
@@ -985,7 +982,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox"
     units="ms" expires_after="2020-09-05">
   <owner>sullivan@chromium.org</owner>
-  <owner>tdresser@chromium.org</owner>
   <summary>
     The time between the OS-level keypress/tap event in the omnibox and
     navigation start, for navigations from the omnibox.
@@ -1371,7 +1367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.InputTiming.NavigationToFirstNonScroll.AfterPaint"
     units="ms" expires_after="M77">
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <summary>
     Measures the time to first non-scroll input after the first paint.
   </summary>
@@ -1379,7 +1375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.InputTiming.NavigationToFirstScroll.AfterPaint"
     units="ms" expires_after="2021-06-22">
-  <owner>tdresser@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Measures the time to first scroll input after the first paint.
@@ -1406,7 +1402,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -1424,7 +1420,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.InteractiveTiming.FirstInputTimestamp4" units="ms"
     expires_after="2021-04-25">
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The duration between navigation start and the hardware timestamp of the
@@ -1437,7 +1433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -1877,7 +1873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.PaintTiming.ForegroundToFirstContentfulPaint"
     units="ms" expires_after="2021-04-04">
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from a background tab being switched to the foreground to
@@ -1887,7 +1883,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.PaintTiming.ForegroundToFirstPaint" units="ms"
     expires_after="2020-08-14">
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from a background tab being switched to the foreground to
@@ -1951,7 +1947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint" units="ms"
     expires_after="2021-04-04">
-  <owner>tdresser@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
