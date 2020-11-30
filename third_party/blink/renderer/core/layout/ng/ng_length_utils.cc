@@ -264,7 +264,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     const NGBlockNode& child,
     const MinMaxSizesFunc& min_max_sizes_func) {
   const ComputedStyle& style = child.Style();
-  WritingMode child_writing_mode = style.GetWritingMode();
+  const WritingMode child_writing_mode = style.GetWritingMode();
+
   // Synthesize a zero-sized constraint space for resolving sizes against.
   NGConstraintSpace space =
       NGConstraintSpaceBuilder(child_writing_mode, style.GetWritingDirection(),
@@ -330,6 +331,13 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   }
   result.sizes.Encompass(min);
 
+  // Tables need to apply one final constraint. They are never allowed to go
+  // below their min-intrinsic size (even if they have an inline-size, etc).
+  if (child.IsNGTable()) {
+    result.sizes.Encompass(
+        min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size);
+  }
+
   return result;
 }
 
@@ -358,7 +366,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
   if (IsParallelWritingMode(parent_writing_mode, child_writing_mode)) {
     // Tables are special; even if a width is specified, they may end up being
     // sized different. So we just always let the table code handle this.
-    if (child.IsTable())
+    if (child.IsTable() && !child.IsNGTable())
       return child.ComputeMinMaxSizes(parent_writing_mode, input, nullptr);
 
     // Replaced elements may size themselves using aspect ratios and block
