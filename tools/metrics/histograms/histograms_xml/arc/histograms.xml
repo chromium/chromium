@@ -816,7 +816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
-    expires_after="2021-01-01">
+    expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>jschettler@chromium.org</owner>
   <summary>
@@ -826,7 +826,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PrintPreview.RenderAndGeneratePDFTime" units="ms"
-    expires_after="2021-01-01">
+    expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>jschettler@chromium.org</owner>
   <summary>
@@ -837,7 +837,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PrintPreview.RenderAndGeneratePDFTimeAvgPerPage"
-    units="ms" expires_after="2021-01-01">
+    units="ms" expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>jschettler@chromium.org</owner>
   <summary>
@@ -848,7 +848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2021-03-15">
+    expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>jschettler@chromium.org</owner>
   <summary>
@@ -858,7 +858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2021-01-01">
+    expires_after="2021-06-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>jschettler@chromium.org</owner>
   <summary>Time taken for ARC to render a PDF for print preview.</summary>
