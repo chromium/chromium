@@ -7,6 +7,9 @@
 
 #include <vulkan/vulkan.h>
 
+#include <array>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/optional.h"
@@ -81,6 +84,16 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkImageUsageFlags usage,
       VkImageCreateFlags flags);
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  static std::unique_ptr<VulkanImage> CreateWithExternalMemoryAndModifiers(
+      VulkanDeviceQueue* device_queue,
+      const gfx::Size& size,
+      VkFormat format,
+      std::vector<uint64_t> modifiers,
+      VkImageUsageFlags usage,
+      VkImageCreateFlags flags);
+#endif
+
   void Destroy();
 
 #if defined(OS_POSIX)
@@ -122,6 +135,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   const scoped_refptr<gfx::NativePixmap>& native_pixmap() const {
     return native_pixmap_;
   }
+  uint64_t modifier() const { return modifier_; }
+  size_t plane_count() const { return plane_count_; }
+  const std::array<VkSubresourceLayout, 4>& layouts() const { return layouts_; }
 
  private:
   bool Initialize(VulkanDeviceQueue* device_queue,
@@ -150,6 +166,15 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkImageCreateFlags flags,
       VkImageTiling image_tiling);
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  bool InitializeWithExternalMemoryAndModifiers(VulkanDeviceQueue* device_queue,
+                                                const gfx::Size& size,
+                                                VkFormat format,
+                                                std::vector<uint64_t> modifiers,
+                                                VkImageUsageFlags usage,
+                                                VkImageCreateFlags flags);
+#endif
+
   VulkanDeviceQueue* device_queue_ = nullptr;
   gfx::Size size_;
   VkFormat format_ = VK_FORMAT_UNDEFINED;
@@ -165,6 +190,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkDeviceMemory device_memory_ = VK_NULL_HANDLE;
   VkExternalMemoryHandleTypeFlags handle_types_ = 0;
   scoped_refptr<gfx::NativePixmap> native_pixmap_;
+  uint64_t modifier_ = 0;
+  size_t plane_count_ = 0;
+  std::array<VkSubresourceLayout, 4> layouts_ = {};
 };
 
 }  // namespace gpu

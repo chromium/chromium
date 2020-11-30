@@ -270,6 +270,20 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
     return false;
   }
 
+  // If the |image_tiling_| is VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
+  // The InitializeWithExternalMemoryAndModifiers() will get the layout.
+  if (image_tiling_ == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT)
+    return true;
+
+  plane_count_ = 1;
+  const VkImageSubresource image_subresource = {
+      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      .mipLevel = 0,
+      .arrayLayer = 0,
+  };
+  vkGetImageSubresourceLayout(device_queue_->GetVulkanDevice(), image_,
+                              &image_subresource, &layouts_[0]);
+
   return true;
 }
 
