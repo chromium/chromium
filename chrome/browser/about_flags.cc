@@ -46,6 +46,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/features.h"
@@ -4263,6 +4264,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxWebUIOmniboxPopupName,
      flag_descriptions::kOmniboxWebUIOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
+
+    {"search-prefetch", flag_descriptions::kEnableSearchPrefetchName,
+     flag_descriptions::kEnableSearchPrefetchDescription, kOsAll,
+     SINGLE_VALUE_TYPE(kSearchPrefetchServiceCommandLineFlag)},
 
 #if defined(OS_CHROMEOS)
     {"handwriting-gesture", flag_descriptions::kHandwritingGestureName,

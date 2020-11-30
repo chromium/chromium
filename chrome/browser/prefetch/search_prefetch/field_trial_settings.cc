@@ -10,7 +10,7 @@
 
 // Enables the feature completely with a few skipped checks to make local
 // testing easier.
-constexpr char kSearchPrefetchServiceCommandLineFlag[] =
+const char kSearchPrefetchServiceCommandLineFlag[] =
     "enable-search-prefetch-service";
 
 const base::Feature kSearchPrefetchService{"SearchPrefetchService",

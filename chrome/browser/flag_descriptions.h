@@ -985,6 +985,9 @@ extern const char kOmniboxUISwapTitleAndUrlDescription[];
 extern const char kOmniboxWebUIOmniboxPopupName[];
 extern const char kOmniboxWebUIOmniboxPopupDescription[];
 
+extern const char kEnableSearchPrefetchName[];
+extern const char kEnableSearchPrefetchDescription[];
+
 extern const char kOopRasterizationName[];
 extern const char kOopRasterizationDescription[];
 

@@ -4229,6 +4229,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "search-prefetch",
+    "owners": ["ryansturm"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "select-to-speak-navigation-control",
     "owners": [ "joelriley" ],
     "expiry_milestone": 89
