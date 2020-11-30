@@ -37,6 +37,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
       const sync_pb::ModelTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
+  void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
                         UpdateResponseDataList updates) override;
 
