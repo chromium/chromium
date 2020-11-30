@@ -435,13 +435,18 @@ class ImageBuffer {
 
     const view = new Uint8Array(this.source.buffer, offset, length);
 
+    // Compute output image width and height.
+    const usesWidthAsHeight = thumbnail.orientation >= 5;
+    const height = usesWidthAsHeight ? thumbnail.width : thumbnail.height;
+    const width = usesWidthAsHeight ? thumbnail.height : thumbnail.width;
+
     // Compute pixel row stride.
-    const rowPad = thumbnail.width & 3;
-    const rowStride = 3 * thumbnail.width + rowPad;
+    const rowPad = width & 3;
+    const rowStride = 3 * width + rowPad;
 
     // Create bitmap image.
     const pixelDataOffset = 14 + 108;
-    const fileSize = pixelDataOffset + rowStride * thumbnail.height;
+    const fileSize = pixelDataOffset + rowStride * height;
     const bitmap = new DataView(new ArrayBuffer(fileSize));
 
     // BITMAPFILEHEADER 14 bytes.
@@ -453,8 +458,8 @@ class ImageBuffer {
 
     // DIB BITMAPV4HEADER 108 bytes.
     bitmap.setUint32(14, /* HeaderSize */ 108, true);
-    bitmap.setInt32(18, thumbnail.width, true);
-    bitmap.setInt32(22, -thumbnail.height /* top-down DIB */, true);
+    bitmap.setInt32(18, width, true);
+    bitmap.setInt32(22, -height /* top-down DIB */, true);
     bitmap.setInt16(26, /* ColorPlanes */ 1, true);
     bitmap.setInt16(28, /* BitsPerPixel BI_RGB */ 24, true);
     bitmap.setUint32(30, /* Compression: BI_RGB none */ 0, true);
@@ -508,24 +513,80 @@ class ImageBuffer {
     bitmap.setUint32(118, /* B Gamma */ gg, true);
 
     // Write RGB row pixels in top-down DIB order.
-    let output = pixelDataOffset;
-    for (let i = 0, y = thumbnail.height; y > 0; --y) {
-      for (let x = thumbnail.width; x > 0; --x) {
-        const R = view[i++];
-        const G = view[i++];
-        const B = view[i++];
-        bitmap.setUint8(output++, B);  // B
-        bitmap.setUint8(output++, G);  // G
-        bitmap.setUint8(output++, R);  // R
+    const h = thumbnail.height - 1;
+    const w = thumbnail.width - 1;
+    let dx = 0;
+
+    for (let input = 0, y = 0; y <= h; ++y) {
+      let output = pixelDataOffset;
+
+      /**
+       * Compute affine(a,b,c,d,tx,ty) transform of pixel (x,y)
+       *   { x': a * x + c * y + tx, y': d * y + b * x + ty }
+       * a,b,c,d in [-1,0,1], to apply the image orientation at
+       * (0,y) to find the output location of the input row.
+       * The transform derivative in x is used to calculate the
+       * relative output location of adjacent input row pixels.
+       */
+      switch (thumbnail.orientation) {
+        case 1:  // affine(+1, 0, 0, +1, 0, 0)
+          output += y * rowStride;
+          dx = 3;
+          break;
+        case 2:  // affine(-1, 0, 0, +1, w, 0)
+          output += y * rowStride + 3 * w;
+          dx = -3;
+          break;
+        case 3:  // affine(-1, 0, 0, -1, w, h)
+          output += (h - y) * rowStride + 3 * w;
+          dx = -3;
+          break;
+        case 4:  // affine(+1, 0, 0, -1, 0, h)
+          output += (h - y) * rowStride;
+          dx = 3;
+          break;
+        case 5:  // affine(0, +1, +1, 0, 0, 0)
+          output += 3 * y;
+          dx = rowStride;
+          break;
+        case 6:  // affine(0, +1, -1, 0, h, 0)
+          output += 3 * (h - y);
+          dx = rowStride;
+          break;
+        case 7:  // affine(0, -1, -1, 0, h, w)
+          output += w * rowStride + 3 * (h - y);
+          dx = -rowStride;
+          break;
+        case 8:  // affine(0, -1, +1, 0, 0, w)
+          output += w * rowStride + 3 * y;
+          dx = -rowStride;
+          break;
       }
 
-      switch (rowPad) {
-        case 3:
-          bitmap.setUint8(output++, 0);
-        case 2:
-          bitmap.setUint8(output++, 0);
-        case 1:
-          bitmap.setUint8(output++, 0);
+      for (let x = 0; x <= w; ++x, input += 3, output += dx) {
+        bitmap.setUint8(output + 0, view[input + 2]);  // B
+        bitmap.setUint8(output + 1, view[input + 1]);  // G
+        bitmap.setUint8(output + 2, view[input + 0]);  // R
+      }
+    }
+
+    // Write pixel row padding bytes if needed.
+    if (rowPad) {
+      let paddingOffset = pixelDataOffset + 3 * width;
+
+      for (let y = 0; y < height; ++y) {
+        let output = paddingOffset;
+
+        switch (rowPad) {
+          case 3:
+            bitmap.setUint8(output++, 0);
+          case 2:
+            bitmap.setUint8(output++, 0);
+          case 1:
+            bitmap.setUint8(output++, 0);
+        }
+
+        paddingOffset += rowStride;
       }
     }
 
@@ -533,8 +594,8 @@ class ImageBuffer {
       thumbnail: bitmap.buffer,
       mimeType: 'image/bmp',
       ifd: this.details_(result, thumbnail.orientation),
-      orientation: thumbnail.orientation,
       colorSpace: thumbnail.colorSpace,
+      orientation: 1,
     };
   }
 
