@@ -114,7 +114,9 @@ StreetAddress::GetParseRegularExpressionsByRelevance() const {
   return {pattern_provider->GetRegEx(RegEx::kParseHouseNumberStreetName),
           pattern_provider->GetRegEx(RegEx::kParseStreetNameHouseNumber),
           pattern_provider->GetRegEx(
-              RegEx::kParseStreetNameHouseNumberSuffixedFloor)};
+              RegEx::kParseStreetNameHouseNumberSuffixedFloor),
+          pattern_provider->GetRegEx(
+              RegEx::kParseStreetNameHouseNumberSuffixedFloorAndAppartmentRe)};
 }
 
 void StreetAddress::ParseValueAndAssignSubcomponentsByFallbackMethod() {
@@ -167,6 +169,16 @@ base::string16 StreetAddress::GetBestFormatString() const {
         "${ADDRESS_HOME_FLOOR;, ;. Stock}${ADDRESS_HOME_APT_NUM;, ;. Wohnung}");
   }
 
+  if (country_code == "MX") {
+    return base::ASCIIToUTF16(
+        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+        "${ADDRESS_HOME_FLOOR; - Piso ;}${ADDRESS_HOME_APT_NUM; - ;}");
+  }
+  if (country_code == "ES") {
+    return base::UTF8ToUTF16(
+        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+        "${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}");
+  }
   // Use the format for US/UK as the default.
   return base::ASCIIToUTF16(
       "${ADDRESS_HOME_HOUSE_NUMBER} ${ADDRESS_HOME_STREET_NAME} "

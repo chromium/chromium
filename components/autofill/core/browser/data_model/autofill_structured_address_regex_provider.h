@@ -36,6 +36,7 @@ enum class RegEx {
   kMatchMiddleNameInitialsCharacteristics,
   kParseStreetNameHouseNumber,
   kParseStreetNameHouseNumberSuffixedFloor,
+  kParseStreetNameHouseNumberSuffixedFloorAndAppartmentRe,
   kParseHouseNumberStreetName,
   kLastRegEx = kParseLastNameIntoSecondLastName,
 };
