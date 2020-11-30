@@ -7,6 +7,7 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_label.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
@@ -48,8 +49,9 @@ class ClipboardHistoryTextItemView::TextContentsView
 
  private:
   // ContentsView:
-  DeleteButton* CreateDeleteButton() override {
-    auto delete_button = std::make_unique<DeleteButton>(container());
+  ClipboardHistoryDeleteButton* CreateDeleteButton() override {
+    auto delete_button =
+        std::make_unique<ClipboardHistoryDeleteButton>(container());
     delete_button->SetVisible(false);
     delete_button->SetProperty(views::kMarginsKey, kDeleteButtonMargins);
     return AddChildView(std::move(delete_button));

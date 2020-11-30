@@ -7,6 +7,7 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
@@ -196,7 +197,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
  private:
   // ContentsView:
-  DeleteButton* CreateDeleteButton() override {
+  ClipboardHistoryDeleteButton* CreateDeleteButton() override {
     auto delete_button_container = std::make_unique<views::View>();
     auto* layout_manager = delete_button_container->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
@@ -206,10 +207,11 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     layout_manager->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
 
-    auto delete_button = std::make_unique<DeleteButton>(container_);
+    auto delete_button =
+        std::make_unique<ClipboardHistoryDeleteButton>(container_);
     delete_button->SetVisible(false);
     delete_button->SetProperty(views::kMarginsKey, kDeleteButtonMargins);
-    DeleteButton* delete_button_ptr =
+    ClipboardHistoryDeleteButton* delete_button_ptr =
         delete_button_container->AddChildView(std::move(delete_button));
     AddChildView(std::move(delete_button_container));
 
