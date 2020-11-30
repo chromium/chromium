@@ -237,11 +237,11 @@ size_t JobTaskSource::GetRemainingConcurrency() const {
   return max_concurrency - state.worker_count();
 }
 
-bool JobTaskSource::IsCompleted() const {
+bool JobTaskSource::IsActive() const {
   CheckedAutoLock auto_lock(worker_lock_);
   auto state = state_.Load();
-  return GetMaxConcurrency(state.worker_count()) == 0 &&
-         state.worker_count() == 0;
+  return GetMaxConcurrency(state.worker_count()) != 0 ||
+         state.worker_count() != 0;
 }
 
 size_t JobTaskSource::GetWorkerCount() const {

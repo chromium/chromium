@@ -82,11 +82,11 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunTasks) {
 
     std::move(task.task).Run();
     EXPECT_EQ(0U, task_source->GetRemainingConcurrency());
-    EXPECT_FALSE(task_source->IsCompleted());
+    EXPECT_TRUE(task_source->IsActive());
     // Returns false because the task source is out of tasks.
     EXPECT_FALSE(registered_task_source.DidProcessTask());
     EXPECT_EQ(0U, task_source->GetWorkerCount());
-    EXPECT_TRUE(task_source->IsCompleted());
+    EXPECT_FALSE(task_source->IsActive());
   }
 }
 
@@ -348,13 +348,13 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunJoinTaskInParallel) {
   auto worker_task = registered_task_source.TakeTask();
 
   EXPECT_TRUE(task_source->WillJoin());
-  EXPECT_FALSE(task_source->IsCompleted());
+  EXPECT_TRUE(task_source->IsActive());
 
   std::move(worker_task.task).Run();
   EXPECT_FALSE(registered_task_source.DidProcessTask());
 
   EXPECT_FALSE(task_source->RunJoinTask());
-  EXPECT_TRUE(task_source->IsCompleted());
+  EXPECT_FALSE(task_source->IsActive());
 }
 
 // Verifies that a call to NotifyConcurrencyIncrease() calls the delegate

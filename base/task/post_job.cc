@@ -76,8 +76,8 @@ JobHandle& JobHandle::operator=(JobHandle&& other) {
   return *this;
 }
 
-bool JobHandle::IsCompleted() const {
-  return task_source_->IsCompleted();
+bool JobHandle::IsActive() const {
+  return task_source_->IsActive();
 }
 
 void JobHandle::UpdatePriority(TaskPriority new_priority) {

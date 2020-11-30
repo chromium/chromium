@@ -74,7 +74,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   TaskSourceSortKey GetSortKey(
       bool disable_fair_scheduling = false) const override;
 
-  bool IsCompleted() const;
+  bool IsActive() const;
   size_t GetWorkerCount() const;
 
   // Returns the maximum number of tasks from this TaskSource that can run

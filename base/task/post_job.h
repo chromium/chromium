@@ -94,8 +94,8 @@ class BASE_EXPORT JobHandle {
   // Returns true if associated with a Job.
   explicit operator bool() const { return task_source_ != nullptr; }
 
-  // Returns true if there's no work pending and no worker running.
-  bool IsCompleted() const;
+  // Returns true if there's any work pending or any worker running.
+  bool IsActive() const;
 
   // Update this Job's priority.
   void UpdatePriority(TaskPriority new_priority);

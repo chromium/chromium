@@ -322,8 +322,12 @@ class JobHandleImpl : public v8::JobHandle {
   void Join() override { handle_.Join(); }
   void Cancel() override { handle_.Cancel(); }
   void CancelAndDetach() override { handle_.CancelAndDetach(); }
-  bool IsCompleted() override { return handle_.IsCompleted(); }
-  bool IsRunning() override { return !!handle_; }
+  bool IsActive() override { return handle_.IsActive(); }
+  bool IsValid() override { return !!handle_; }
+
+  // TODO(etiennep): Cleanup once rename is complete.
+  bool IsCompleted() override { return !IsActive(); }
+  bool IsRunning() override { return IsValid(); }
 
  private:
   static base::TaskPriority ToBaseTaskPriority(v8::TaskPriority priority) {

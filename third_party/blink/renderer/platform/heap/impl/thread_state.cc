@@ -1214,7 +1214,7 @@ bool ThreadState::ConcurrentMarkingStep() {
     }
     return false;
   }
-  return marker_handle_.IsCompleted();
+  return !marker_handle_.IsActive();
 }
 
 void ThreadState::IncrementalMarkingFinalize() {
