@@ -50,6 +50,7 @@ source_set("unit_tests") {
 
   sources = [
     "histogram_test.cc",
+    "partition_alloc_memory_dump_provider_test.cc",
     "tracing/traced_value_test.cc",
     "tracing/web_process_memory_dump_test.cc",
   ]

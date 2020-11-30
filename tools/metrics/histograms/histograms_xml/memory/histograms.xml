@@ -1985,6 +1985,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Throughput of a ParkableString disk write.</summary>
 </histogram>
 
+<histogram name="Memory.PartitionAlloc.ThreadCache.HitRate{ThreadType}"
+    units="%" expires_after="M92">
+  <owner>lizeb@chromium.org</owner>
+  <owner>bartekn@chromium.org</owner>
+  <summary>
+    Hit rate for PartitionAlloc's thread cache. Recorded during memory dumps, at
+    the same time as the Memory.*.PartitionAlloc.* histograms. Data is collected
+    for {ThreadType}.
+  </summary>
+  <token key="ThreadType">
+    <variant name="" summary="all threads"/>
+    <variant name=".MainThread" summary="the main thread only"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.PressureLevel" enum="MemoryPressureLevel"
     expires_after="2021-04-18">
   <owner>chrisha@chromium.org</owner>

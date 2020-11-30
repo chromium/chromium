@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/format_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -84,6 +85,23 @@ void PartitionStatsDumperImpl::PartitionDumpTotals(
         memory_dump_->CreateAllocatorDump(dump_name + "/thread_cache");
     base::trace_event::ReportPartitionAllocThreadCacheStats(
         all_thread_caches_dump, all_thread_caches_stats);
+
+    if (all_thread_caches_stats.alloc_count) {
+      int hit_rate_percent =
+          static_cast<int>((100 * all_thread_caches_stats.alloc_hits) /
+                           all_thread_caches_stats.alloc_count);
+      base::UmaHistogramPercentage("Memory.PartitionAlloc.ThreadCache.HitRate",
+                                   hit_rate_percent);
+    }
+
+    if (thread_cache_stats.alloc_count) {
+      int hit_rate_percent =
+          static_cast<int>((100 * thread_cache_stats.alloc_hits) /
+                           thread_cache_stats.alloc_count);
+      base::UmaHistogramPercentage(
+          "Memory.PartitionAlloc.ThreadCache.HitRate.MainThread",
+          hit_rate_percent);
+    }
   }
 }
 
