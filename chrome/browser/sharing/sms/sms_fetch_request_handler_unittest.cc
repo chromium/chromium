@@ -33,13 +33,15 @@ class MockSmsFetcher : public SmsFetcher {
   ~MockSmsFetcher() = default;
 
   MOCK_METHOD2(Subscribe,
-               void(const url::Origin& origin, Subscriber* subscriber));
+               void(const content::OriginList& origin_list,
+                    Subscriber* subscriber));
   MOCK_METHOD3(Subscribe,
-               void(const url::Origin& origin,
+               void(const content::OriginList& origin_list,
                     Subscriber* subscriber,
                     content::RenderFrameHost* rfh));
   MOCK_METHOD2(Unsubscribe,
-               void(const url::Origin& origin, Subscriber* subscriber));
+               void(const content::OriginList& origin_list,
+                    Subscriber* subscriber));
   MOCK_METHOD0(HasSubscribers, bool());
 
  private:

@@ -41,15 +41,17 @@ void SmsProvider::NotifyReceive(const std::string& sms,
                                 UserConsent consent_requirement) {
   SmsParser::Result result = SmsParser::Parse(sms);
   if (result.IsValid())
-    NotifyReceive(result.origin, result.one_time_code, consent_requirement);
+    NotifyReceive(result.GetOriginList(), result.one_time_code,
+                  consent_requirement);
   RecordParsingStatus(result.parsing_status);
 }
 
-void SmsProvider::NotifyReceive(const url::Origin& origin,
+void SmsProvider::NotifyReceive(const OriginList& origin_list,
                                 const std::string& one_time_code,
                                 UserConsent consent_requirement) {
   for (Observer& obs : observers_) {
-    bool handled = obs.OnReceive(origin, one_time_code, consent_requirement);
+    bool handled =
+        obs.OnReceive(origin_list, one_time_code, consent_requirement);
     if (handled) {
       break;
     }

@@ -313,6 +313,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableInstalledApp, features::kInstalledApp},
     {wf::EnableWebAuthenticationGetAssertionFeaturePolicy,
      device::kWebAuthGetAssertionFeaturePolicy},
+    {wf::EnableWebOTPAssertionFeaturePolicy,
+     features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
     {wf::EnableTransformInterop, blink::features::kTransformInterop},
     {wf::EnableVideoWakeLockOptimisationHiddenMuted,
      media::kWakeLockOptimisationHiddenMuted},

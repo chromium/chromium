@@ -81,7 +81,7 @@ class Service {
     web_contents->SetDelegate(&contents_delegate_);
 
     service_ = std::make_unique<WebOTPService>(
-        &fetcher_, origin, web_contents->GetMainFrame(),
+        &fetcher_, OriginList{origin}, web_contents->GetMainFrame(),
         service_remote_.BindNewPipeAndPassReceiver());
     service_->SetConsentHandlerForTesting(consent_handler_.get());
   }
@@ -107,7 +107,8 @@ class Service {
                      const string& otp,
                      /* avoid showing user prompts */
                      UserConsent consent_requirement = UserConsent::kObtained) {
-    provider_.NotifyReceive(Origin::Create(url), otp, consent_requirement);
+    provider_.NotifyReceive(OriginList{Origin::Create(url)}, otp,
+                            consent_requirement);
   }
 
  private:

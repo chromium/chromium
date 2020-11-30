@@ -34,16 +34,18 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
 
   // Called by devices that do not have telephony capabilities and exclusively
   // listen for SMSes received on other devices.
-  void Subscribe(const url::Origin& origin, Subscriber* subscriber) override;
+  void Subscribe(const OriginList& origin_list,
+                 Subscriber* subscriber) override;
   // Called by |WebOTPService| to fetch SMSes retrieved by the SmsProvider from
   // the requested device.
-  void Subscribe(const url::Origin& origin,
+  void Subscribe(const OriginList& origin_list,
                  Subscriber* subscriber,
                  RenderFrameHost* rfh) override;
-  void Unsubscribe(const url::Origin& origin, Subscriber* subscriber) override;
+  void Unsubscribe(const OriginList& origin_list,
+                   Subscriber* subscriber) override;
 
   // content::SmsProvider::Observer:
-  bool OnReceive(const url::Origin& origin,
+  bool OnReceive(const OriginList& origin_list,
                  const std::string& one_time_code,
                  UserConsent) override;
   bool OnFailure(SmsFetcher::FailureType failure_type) override;
@@ -53,7 +55,7 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
  private:
   void OnRemote(base::Optional<std::string> sms);
 
-  bool Notify(const url::Origin& origin,
+  bool Notify(const OriginList& origin_list,
               const std::string& one_time_code,
               UserConsent);
 

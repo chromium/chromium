@@ -19,6 +19,10 @@ namespace content {
 class BrowserContext;
 class RenderFrameHost;
 
+namespace {
+using OriginList = std::vector<url::Origin>;
+}  // namespace
+
 // SmsFetcher coordinates between the provisioning of SMSes coming from the
 // local device or remote devices to multiple origins.
 // There is one SmsFetcher per profile.
@@ -64,15 +68,16 @@ class SmsFetcher {
   // Subscribes to incoming SMSes from SmsProvider for subscribers that do not
   // have telephony capabilities and exclusively listen for SMSes received
   // on other devices.
-  virtual void Subscribe(const url::Origin& origin, Subscriber* subscriber) = 0;
+  virtual void Subscribe(const OriginList& origin_list,
+                         Subscriber* subscriber) = 0;
   // Subscribes to incoming SMSes from SmsProvider for telephony
   // devices that can receive SMSes locally and can show a permission prompt.
   // TODO(yigu): This API is used in content/ only. We should move it to the
   // SmsFetcherImpl per guideline. https://crbug.com/1136062.
-  virtual void Subscribe(const url::Origin& origin,
+  virtual void Subscribe(const OriginList& origin_list,
                          Subscriber* subscriber,
                          RenderFrameHost* render_frame_host) = 0;
-  virtual void Unsubscribe(const url::Origin& origin,
+  virtual void Unsubscribe(const OriginList& origin_list,
                            Subscriber* subscriber) = 0;
   // TODO(yigu): This API is used in content/ only. We should move it to the
   // SmsFetcherImpl per guideline. https://crbug.com/1136062.

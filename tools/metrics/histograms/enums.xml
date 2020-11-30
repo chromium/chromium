@@ -30476,6 +30476,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="77" label="ClipboardWrite"/>
   <int value="78" label="WebShare"/>
   <int value="79" label="Gamepad"/>
+  <int value="80" label="OTPCredentials"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

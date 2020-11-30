@@ -134,6 +134,9 @@ enum FeaturePolicyFeature {
   // Controls access to gamepads interface
   kGamepad = 79,
 
+  // Controls use of WebOTP API.
+  kOTPCredentials = 80,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_feature_policy_enum.py in

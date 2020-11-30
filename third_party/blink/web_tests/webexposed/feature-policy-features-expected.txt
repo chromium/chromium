@@ -41,6 +41,7 @@ microphone
 midi
 modals
 orientation-lock
+otp-credentials
 payment
 picture-in-picture
 pointer-lock

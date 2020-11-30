@@ -13,27 +13,27 @@ namespace content {
 SmsQueue::SmsQueue() = default;
 SmsQueue::~SmsQueue() = default;
 
-void SmsQueue::Push(const url::Origin& origin, Subscriber* subscriber) {
-  subscribers_[origin].AddObserver(subscriber);
+void SmsQueue::Push(const OriginList& origin_list, Subscriber* subscriber) {
+  subscribers_[origin_list].AddObserver(subscriber);
   // We expect that in most cases there should be only one pending origin and in
   // rare cases there may be a few more (<10).
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Sms.PendingOriginCount",
                              subscribers_.size(), 10);
 }
 
-SmsQueue::Subscriber* SmsQueue::Pop(const url::Origin& origin) {
-  auto it = subscribers_.find(origin);
+SmsQueue::Subscriber* SmsQueue::Pop(const OriginList& origin_list) {
+  auto it = subscribers_.find(origin_list);
   if (it == subscribers_.end())
     return nullptr;
   base::ObserverList<Subscriber>& subscribers = it->second;
 
   Subscriber& subscriber = *(subscribers.begin());
-  Remove(origin, &subscriber);
+  Remove(origin_list, &subscriber);
   return &subscriber;
 }
 
-void SmsQueue::Remove(const url::Origin& origin, Subscriber* subscriber) {
-  auto it = subscribers_.find(origin);
+void SmsQueue::Remove(const OriginList& origin_list, Subscriber* subscriber) {
+  auto it = subscribers_.find(origin_list);
   if (it == subscribers_.end())
     return;
   base::ObserverList<Subscriber>& queue = it->second;
@@ -47,10 +47,10 @@ bool SmsQueue::HasSubscribers() {
   return !subscribers_.empty();
 }
 
-bool SmsQueue::HasSubscriber(const url::Origin& origin,
+bool SmsQueue::HasSubscriber(const OriginList& origin_list,
                              const Subscriber* subscriber) {
-  return (subscribers_.find(origin) != subscribers_.end()) &&
-         subscribers_[origin].HasObserver(subscriber);
+  return (subscribers_.find(origin_list) != subscribers_.end()) &&
+         subscribers_[origin_list].HasObserver(subscriber);
 }
 
 // Currently we cannot extract the origin information upon failure because it's
@@ -68,7 +68,7 @@ bool SmsQueue::NotifyFailure(FailureType failure_type) {
   if (subscribers_.size() != 1)
     return false;
 
-  const url::Origin& implied_origin = subscribers_.begin()->first;
+  const OriginList& implied_origin = subscribers_.begin()->first;
   Subscriber* subscriber = Pop(implied_origin);
   subscriber->OnFailure(failure_type);
   return true;

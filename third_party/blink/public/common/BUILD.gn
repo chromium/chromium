@@ -182,6 +182,7 @@ source_set("headers") {
     "service_worker/service_worker_status_code.h",
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",
+    "sms/webotp_constants.h",
     "sms/webotp_service_destroyed_reason.h",
     "sms/webotp_service_outcome.h",
     "switches.h",

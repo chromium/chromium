@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
@@ -111,7 +112,9 @@ enum class RequiredOriginType {
   // expressed in various ways, e.g.: |allow| iframe attribute and/or
   // feature-policy header, and may be inherited from parent browsing
   // contexts. See Feature Policy spec.
-  kSecureAndPermittedByFeaturePolicy,
+  kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy,
+  // Similar to the enum above, checks the "otp-credentials" feature policy.
+  kSecureAndPermittedByWebOTPAssertionFeaturePolicy,
 };
 
 bool IsSameOriginWithAncestors(const Frame* frame) {
@@ -124,6 +127,37 @@ bool IsSameOriginWithAncestors(const Frame* frame) {
     if (!origin->IsSameOriginWith(
             current->GetSecurityContext()->GetSecurityOrigin()))
       return false;
+  }
+  return true;
+}
+
+// An ancestor chain is valid iff there are at most 2 unique origins on the
+// chain (current origin included), the unique origins must be consecutive.
+// e.g. the following are valid:
+// A.com (calls WebOTP API)
+// A.com -> A.com (calls WebOTP API)
+// A.com -> A.com -> B.com (calls WebOTP API)
+// A.com -> B.com -> B.com (calls WebOTP API)
+// while the following are invalid:
+// A.com -> B.com -> A.com (calls WebOTP API)
+// A.com -> B.com -> C.com (calls WebOTP API)
+// Note that there is additional requirement on feature permission being granted
+// upon crossing origins but that is not verified by this function.
+bool IsAncestorChainValidForWebOTP(const Frame* frame) {
+  const SecurityOrigin* current_origin =
+      frame->GetSecurityContext()->GetSecurityOrigin();
+  int number_of_unique_origin = 1;
+
+  const Frame* parent = frame->Tree().Parent();
+  while (parent) {
+    auto* parent_origin = parent->GetSecurityContext()->GetSecurityOrigin();
+    if (!parent_origin->IsSameOriginWith(current_origin)) {
+      ++number_of_unique_origin;
+      current_origin = parent_origin;
+    }
+    if (number_of_unique_origin > kMaxUniqueOriginInAncestorChainForWebOTP)
+      return false;
+    parent = parent->Tree().Parent();
   }
   return true;
 }
@@ -163,7 +197,8 @@ bool CheckSecurityRequirementsBeforeRequest(
       }
       break;
 
-    case RequiredOriginType::kSecureAndPermittedByFeaturePolicy:
+    case RequiredOriginType::
+        kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy:
       // The 'publickey-credentials-get' feature's "default allowlist" is
       // "self", which means the webauthn feature is allowed by default in
       // same-origin child browsing contexts.
@@ -172,13 +207,29 @@ bool CheckSecurityRequirementsBeforeRequest(
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The 'publickey-credentials-get' feature is not enabled in this "
-            "document. Feature Policy may be used to delegate Web "
+            "document. Permissions Policy may be used to delegate Web "
             "Authentication capabilities to cross-origin child frames."));
         return false;
       } else {
         UseCounter::Count(
             resolver->GetExecutionContext(),
             WebFeature::kCredentialManagerCrossOriginPublicKeyGetRequest);
+      }
+      break;
+
+    case RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy:
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::FeaturePolicyFeature::kOTPCredentials)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "The 'otp-credentials` feature is not enabled in this document."));
+        return false;
+      }
+      if (!IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame())) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "More than two unique origins are detected in the origin chain."));
+        return false;
       }
       break;
   }
@@ -208,9 +259,17 @@ void AssertSecurityRequirementsBeforeResponse(
           IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()));
       break;
 
-    case RequiredOriginType::kSecureAndPermittedByFeaturePolicy:
+    case RequiredOriginType::
+        kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kPublicKeyCredentialsGet));
+      break;
+
+    case RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy:
+      SECURITY_CHECK(
+          resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::FeaturePolicyFeature::kOTPCredentials) &&
+          IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame()));
       break;
   }
 }
@@ -579,7 +638,11 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
                   mojom::blink::SmsStatus status,
                   const WTF::String& otp) {
   AssertSecurityRequirementsBeforeResponse(
-      resolver, RequiredOriginType::kSecureAndSameWithAncestors);
+      resolver, resolver->GetExecutionContext()->IsFeatureEnabled(
+                    mojom::blink::FeaturePolicyFeature::kOTPCredentials)
+                    ? RequiredOriginType::
+                          kSecureAndPermittedByWebOTPAssertionFeaturePolicy
+                    : RequiredOriginType::kSecureAndSameWithAncestors);
   auto& window = *LocalDOMWindow::From(resolver->GetScriptState());
   ukm::SourceId source_id = window.UkmSourceID();
   ukm::UkmRecorder* recorder = window.UkmRecorder();
@@ -857,13 +920,18 @@ ScriptPromise CredentialsContainer::get(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
-  auto required_origin_type =
-      options->hasPublicKey() &&
-              RuntimeEnabledFeatures::
-                  WebAuthenticationGetAssertionFeaturePolicyEnabled()
-          ? RequiredOriginType::kSecureAndPermittedByFeaturePolicy
-          : RequiredOriginType::kSecureAndSameWithAncestors;
+  if (options->hasPublicKey() &&
+      RuntimeEnabledFeatures::
+          WebAuthenticationGetAssertionFeaturePolicyEnabled()) {
+    required_origin_type = RequiredOriginType::
+        kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy;
+  } else if (options->hasOtp() &&
+             RuntimeEnabledFeatures::WebOTPAssertionFeaturePolicyEnabled()) {
+    required_origin_type =
+        RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy;
+  }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;
   }
@@ -994,11 +1062,6 @@ ScriptPromise CredentialsContainer::get(
       }
       options->signal()->AddAlgorithm(
           WTF::Bind(&AbortOtpRequest, WrapPersistent(script_state)));
-    }
-
-    if (!CheckSecurityRequirementsBeforeRequest(
-            resolver, RequiredOriginType::kSecureAndSameWithAncestors)) {
-      return promise;
     }
 
     auto* webotp_service =

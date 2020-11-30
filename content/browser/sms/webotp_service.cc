@@ -27,6 +27,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 
 using blink::WebOTPServiceDestroyedReason;
@@ -34,25 +35,49 @@ using blink::mojom::SmsStatus;
 
 namespace content {
 
+namespace {
+
+// Only |kMaxUniqueOriginInAncestorChainForWebOTP| unique origins in the chain
+// is considered valid. In addition, the unique origins must be consecutive.
+// e.g. the following are valid:
+// A.com (calls WebOTP API)
+// A.com -> A.com (calls WebOTP API)
+// A.com -> A.com -> B.com (calls WebOTP API)
+// A.com -> B.com -> B.com (calls WebOTP API)
+// while the following are invalid:
+// A.com -> B.com -> A.com (calls WebOTP API)
+// A.com -> B.com -> C.com (calls WebOTP API)
+bool ValidateAndCollectUniqueOrigins(RenderFrameHost* rfh,
+                                     OriginList& origin_list) {
+  url::Origin current_origin = rfh->GetLastCommittedOrigin();
+  origin_list.push_back(current_origin);
+
+  RenderFrameHost* parent = rfh->GetParent();
+  while (parent) {
+    url::Origin parent_origin = parent->GetLastCommittedOrigin();
+    if (!parent_origin.IsSameOriginWith(current_origin)) {
+      origin_list.push_back(parent_origin);
+      current_origin = parent_origin;
+    }
+    if (origin_list.size() > blink::kMaxUniqueOriginInAncestorChainForWebOTP)
+      return false;
+    parent = parent->GetParent();
+  }
+  return true;
+}
+
+}  // namespace
+
 WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
-    const url::Origin& origin,
+    const OriginList& origin_list,
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
     : FrameServiceBase(host, std::move(receiver)),
       fetcher_(fetcher),
-      origin_(origin) {
+      origin_list_(origin_list) {
   DCHECK(fetcher_);
 }
-
-WebOTPService::WebOTPService(
-    SmsFetcher* fetcher,
-    RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
-    : WebOTPService(fetcher,
-                    host->GetLastCommittedOrigin(),
-                    host,
-                    std::move(receiver)) {}
 
 WebOTPService::~WebOTPService() {
   // Resolve any pending callback and invoke clean up to unsubscribe this
@@ -69,21 +94,14 @@ bool WebOTPService::Create(
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
   DCHECK(host);
 
-  RenderFrameHost* parent = host->GetParent();
-  url::Origin origin = host->GetLastCommittedOrigin();
-  while (parent) {
-    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
-      mojo::ReportBadMessage(
-          "Must have the same origin as the top-level frame.");
-      return false;
-    }
-    parent = parent->GetParent();
-  }
+  OriginList origin_list;
+  if (!ValidateAndCollectUniqueOrigins(host, origin_list))
+    return false;
 
   // WebOTPService owns itself. It will self-destruct when a mojo interface
   // error occurs, the render frame host is deleted, or the render frame host
   // navigates to a new document.
-  new WebOTPService(fetcher, host, std::move(receiver));
+  new WebOTPService(fetcher, origin_list, host, std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)->OnSchedulerTrackedFeatureUsed(
       blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
   return true;
@@ -108,10 +126,11 @@ void WebOTPService::Receive(ReceiveCallback callback) {
     return;
   }
 
+  DCHECK(!origin_list_.empty());
   // Abort the last request if there is we have not yet handled it.
   if (callback_) {
     std::move(callback_).Run(SmsStatus::kCancelled, base::nullopt);
-    fetcher_->Unsubscribe(origin_, this);
+    fetcher_->Unsubscribe(origin_list_, this);
   }
 
   start_time_ = base::TimeTicks::Now();
@@ -127,7 +146,7 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   if (consent_handler && consent_handler->is_active())
     return;
 
-  fetcher_->Subscribe(origin_, this, render_frame_host());
+  fetcher_->Subscribe(origin_list_, this, render_frame_host());
 }
 
 void WebOTPService::OnReceive(const std::string& one_time_code,
@@ -255,7 +274,7 @@ void WebOTPService::CleanUp() {
   }
   start_time_ = base::TimeTicks();
   callback_.Reset();
-  fetcher_->Unsubscribe(origin_, this);
+  fetcher_->Unsubscribe(origin_list_, this);
 }
 
 UserConsentHandler* WebOTPService::CreateConsentHandler(
@@ -264,8 +283,12 @@ UserConsentHandler* WebOTPService::CreateConsentHandler(
     return consent_handler_for_test_;
 
   if (consent_requirement == UserConsent::kNotObtained) {
+    // If WebOTP is used in a cross-origin iframe then the first origin in the
+    // list is the one who calls the WebOTP API. We show it to users in the
+    // prompt to make sure that they are aware of which frame / origin they are
+    // granting OTP access.
     consent_handler_ = std::make_unique<PromptBasedUserConsentHandler>(
-        render_frame_host(), origin_);
+        render_frame_host(), origin_list_[0]);
   } else {
     consent_handler_ = std::make_unique<NoopUserConsentHandler>();
   }

@@ -489,6 +489,10 @@ void WebRuntimeFeatures::EnableWebAuthenticationGetAssertionFeaturePolicy(
       enable);
 }
 
+void WebRuntimeFeatures::EnableWebOTPAssertionFeaturePolicy(bool enable) {
+  RuntimeEnabledFeatures::SetWebOTPAssertionFeaturePolicyEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableLazyInitializeMediaControls(bool enable) {
   RuntimeEnabledFeatures::SetLazyInitializeMediaControlsEnabled(enable);
 }

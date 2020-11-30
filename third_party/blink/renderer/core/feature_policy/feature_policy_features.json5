@@ -236,6 +236,11 @@
       depends_on: ["FeaturePolicyForSandbox"],
     },
     {
+      name: "OTPCredentials",
+      feature_policy_name: "otp-credentials",
+      depends_on: ["WebOTPAssertionFeaturePolicy"],
+    },
+    {
       name: "OrientationLock",
       feature_policy_name: "orientation-lock",
       feature_default: "EnableForAll",

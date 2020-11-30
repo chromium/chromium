@@ -115,8 +115,8 @@ constexpr char kAbortErrorMessage[] =
 
 constexpr char kGetFeaturePolicyMissingMessage[] =
     "webauth: NotAllowedError: The 'publickey-credentials-get' feature is "
-    "not enabled in this document. Feature Policy may be used to delegate Web "
-    "Authentication capabilities to cross-origin child frames.";
+    "not enabled in this document. Permissions Policy may be used to delegate "
+    "Web Authentication capabilities to cross-origin child frames.";
 
 constexpr char kCrossOriginAncestorMessage[] =
     "webauth: NotAllowedError: The following credential operations can only "

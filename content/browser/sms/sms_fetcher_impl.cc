@@ -39,26 +39,27 @@ SmsFetcher* SmsFetcher::Get(BrowserContext* context) {
 }
 
 // TODO(crbug.com/1015645): Add implementation.
-void SmsFetcherImpl::Subscribe(const url::Origin& origin,
+void SmsFetcherImpl::Subscribe(const OriginList& origin,
                                SmsQueue::Subscriber* subscriber) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
 }
 
-void SmsFetcherImpl::Subscribe(const url::Origin& origin,
+void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
                                SmsQueue::Subscriber* subscriber,
                                RenderFrameHost* render_frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(subscriber);
   DCHECK(render_frame_host);
   // Should not be called multiple times for the same subscriber and origin.
-  DCHECK(!subscribers_.HasSubscriber(origin, subscriber));
+  DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));
 
-  subscribers_.Push(origin, subscriber);
+  subscribers_.Push(origin_list, subscriber);
 
   // Fetches a remote SMS.
+  // TODO(1015645): Support iframe in cross-device WebOTP.
   GetContentClient()->browser()->FetchRemoteSms(
-      context_, origin,
+      context_, origin_list[0],
       base::BindOnce(&SmsFetcherImpl::OnRemote,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -67,20 +68,20 @@ void SmsFetcherImpl::Subscribe(const url::Origin& origin,
     provider_->Retrieve(render_frame_host);
 }
 
-void SmsFetcherImpl::Unsubscribe(const url::Origin& origin,
+void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,
                                  SmsQueue::Subscriber* subscriber) {
   // Unsubscribe does not make a call to the provider because currently there
   // is no mechanism to cancel a subscription.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  subscribers_.Remove(origin, subscriber);
+  subscribers_.Remove(origin_list, subscriber);
 }
 
-bool SmsFetcherImpl::Notify(const url::Origin& origin,
+bool SmsFetcherImpl::Notify(const OriginList& origin_list,
                             const std::string& one_time_code,
                             UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The received OTP is returned to the first subscriber for the origin.
-  auto* subscriber = subscribers_.Pop(origin);
+  auto* subscriber = subscribers_.Pop(origin_list);
 
   if (!subscriber)
     return false;
@@ -101,14 +102,15 @@ void SmsFetcherImpl::OnRemote(base::Optional<std::string> sms) {
   if (!result.IsValid())
     return;
 
-  Notify(result.origin, result.one_time_code, UserConsent::kNotObtained);
+  Notify(result.GetOriginList(), result.one_time_code,
+         UserConsent::kNotObtained);
 }
 
-bool SmsFetcherImpl::OnReceive(const url::Origin& origin,
+bool SmsFetcherImpl::OnReceive(const OriginList& origin_list,
                                const std::string& one_time_code,
                                UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return Notify(origin, one_time_code, consent_requirement);
+  return Notify(origin_list, one_time_code, consent_requirement);
 }
 
 bool SmsFetcherImpl::OnFailure(SmsFetcher::FailureType failure_type) {

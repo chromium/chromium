@@ -88,12 +88,13 @@ TEST_F(SmsFetcherImplTest, ReceiveFromLocalSmsProvider) {
   SmsFetcherImpl fetcher(nullptr, provider());
 
   EXPECT_CALL(*provider(), Retrieve(_)).WillOnce(Invoke([&]() {
-    provider()->NotifyReceive(kOrigin, "123", UserConsent::kObtained);
+    provider()->NotifyReceive(OriginList{kOrigin}, "123",
+                              UserConsent::kObtained);
   }));
 
   EXPECT_CALL(subscriber, OnReceive("123", UserConsent::kObtained));
 
-  fetcher.Subscribe(kOrigin, &subscriber, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
@@ -111,8 +112,8 @@ TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
 
   EXPECT_CALL(subscriber, OnReceive("123", _));
 
-  fetcher.Subscribe(url::Origin::Create(GURL("https://a.com")), &subscriber,
-                    main_rfh());
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
@@ -128,8 +129,8 @@ TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
 
   EXPECT_CALL(subscriber, OnReceive(_, _)).Times(0);
 
-  fetcher.Subscribe(url::Origin::Create(GURL("https://a.com")), &subscriber,
-                    main_rfh());
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
@@ -145,8 +146,8 @@ TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
 
   EXPECT_CALL(subscriber, OnReceive(_, _)).Times(0);
 
-  fetcher.Subscribe(url::Origin::Create(GURL("https://a.com")), &subscriber,
-                    main_rfh());
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
@@ -164,13 +165,14 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
           }));
 
   EXPECT_CALL(*provider(), Retrieve(_)).WillOnce(Invoke([&]() {
-    provider()->NotifyReceive(kOrigin, sms, UserConsent::kNotObtained);
+    provider()->NotifyReceive(OriginList{kOrigin}, sms,
+                              UserConsent::kNotObtained);
   }));
 
   // Expects subscriber to be notified just once.
   EXPECT_CALL(subscriber, OnReceive("123", UserConsent::kNotObtained));
 
-  fetcher.Subscribe(kOrigin, &subscriber, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribers) {
@@ -181,14 +183,14 @@ TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribers) {
 
   SmsFetcherImpl fetcher(nullptr, provider());
 
-  fetcher.Subscribe(kOrigin, &subscriber1, main_rfh());
-  fetcher.Subscribe(kOrigin, &subscriber2, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber1, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber2, main_rfh());
 
   EXPECT_CALL(subscriber1, OnReceive("123", UserConsent::kObtained));
-  provider()->NotifyReceive(kOrigin, "123", UserConsent::kObtained);
+  provider()->NotifyReceive(OriginList{kOrigin}, "123", UserConsent::kObtained);
 
   EXPECT_CALL(subscriber2, OnReceive("456", UserConsent::kObtained));
-  provider()->NotifyReceive(kOrigin, "456", UserConsent::kObtained);
+  provider()->NotifyReceive(OriginList{kOrigin}, "456", UserConsent::kObtained);
 }
 
 TEST_F(SmsFetcherImplTest, TwoOriginsTwoSubscribers) {
@@ -199,14 +201,16 @@ TEST_F(SmsFetcherImplTest, TwoOriginsTwoSubscribers) {
   StrictMock<MockSubscriber> subscriber2;
 
   SmsFetcherImpl fetcher(nullptr, provider());
-  fetcher.Subscribe(kOrigin1, &subscriber1, main_rfh());
-  fetcher.Subscribe(kOrigin2, &subscriber2, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin1}, &subscriber1, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin2}, &subscriber2, main_rfh());
 
   EXPECT_CALL(subscriber2, OnReceive("456", UserConsent::kObtained));
-  provider()->NotifyReceive(kOrigin2, "456", UserConsent::kObtained);
+  provider()->NotifyReceive(OriginList{kOrigin2}, "456",
+                            UserConsent::kObtained);
 
   EXPECT_CALL(subscriber1, OnReceive("123", UserConsent::kObtained));
-  provider()->NotifyReceive(kOrigin1, "123", UserConsent::kObtained);
+  provider()->NotifyReceive(OriginList{kOrigin1}, "123",
+                            UserConsent::kObtained);
 }
 
 TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribersOnlyOneIsNotifiedFailed) {
@@ -218,8 +222,8 @@ TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribersOnlyOneIsNotifiedFailed) {
   SmsFetcherImpl fetcher1(nullptr, provider());
   SmsFetcherImpl fetcher2(nullptr, provider());
 
-  fetcher1.Subscribe(kOrigin, &subscriber1, main_rfh());
-  fetcher2.Subscribe(kOrigin, &subscriber2, main_rfh());
+  fetcher1.Subscribe(OriginList{kOrigin}, &subscriber1, main_rfh());
+  fetcher2.Subscribe(OriginList{kOrigin}, &subscriber2, main_rfh());
 
   EXPECT_CALL(subscriber1, OnFailure(SmsFetcher::FailureType::kPromptTimeout));
   EXPECT_CALL(subscriber2, OnFailure(SmsFetcher::FailureType::kPromptTimeout))

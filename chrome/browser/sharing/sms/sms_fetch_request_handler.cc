@@ -37,13 +37,15 @@ SmsFetchRequestHandler::Request::Request(
     SharingMessageHandler::DoneCallback respond_callback)
     : handler_(handler),
       fetcher_(fetcher),
-      origin_(origin),
+      origin_list_(content::OriginList{origin}),
       respond_callback_(std::move(respond_callback)) {
-  fetcher_->Subscribe(origin_, this);
+  // TODO(1015645): Support iframe in cross-device WebOTP.
+  fetcher_->Subscribe(origin_list_, this);
 }
 
 SmsFetchRequestHandler::Request::~Request() {
-  fetcher_->Unsubscribe(origin_, this);
+  // TODO(1015645): Support iframe in cross-device WebOTP.
+  fetcher_->Unsubscribe(origin_list_, this);
 }
 
 void SmsFetchRequestHandler::Request::OnReceive(

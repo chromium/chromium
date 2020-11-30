@@ -14,10 +14,6 @@
 #include "content/browser/sms/sms_parser.h"
 #include "content/common/content_export.h"
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 
 class RenderFrameHost;
@@ -34,7 +30,7 @@ class CONTENT_EXPORT SmsProvider {
    public:
     // Receive an |one_time_code| from an origin. Return true if the message is
     // handled, which stops its propagation to other observers.
-    virtual bool OnReceive(const url::Origin&,
+    virtual bool OnReceive(const OriginList&,
                            const std::string& one_time_code,
                            UserConsent) = 0;
     virtual bool OnFailure(SmsFetcher::FailureType failure_type) = 0;
@@ -56,7 +52,7 @@ class CONTENT_EXPORT SmsProvider {
 
   void AddObserver(Observer*);
   void RemoveObserver(const Observer*);
-  void NotifyReceive(const url::Origin&,
+  void NotifyReceive(const OriginList&,
                      const std::string& one_time_code,
                      UserConsent);
   void NotifyReceiveForTesting(const std::string& sms, UserConsent);

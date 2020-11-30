@@ -649,9 +649,13 @@ const base::Feature kSignedHTTPExchangePingValidity{
     "SignedHTTPExchangePingValidity", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // This is intended as a kill switch for the WebOTP Service feature. To enable
-// this feature, the experimental web platform features flag should be set,
-// or the site should obtain an Origin Trial token.
+// this feature, the experimental web platform features flag should be set.
 const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables WebOTP calls in cross-origin iframes if allowed by Permissions
+// Policy.
+const base::Feature kWebOTPAssertionFeaturePolicy{
+    "WebOTPAssertionFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether Site Isolation protects against spoofing of origin in
 // mojom::FileSystemManager::Open IPC from compromised renderer processes.  See

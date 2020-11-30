@@ -2185,6 +2185,11 @@
       status: {"default": "experimental", "Android": "stable"},
     },
     {
+      name: "WebOTPAssertionFeaturePolicy",
+      status: "experimental",
+      depends_on: ["WebOTP"],
+    },
+    {
       name: "WebScheduler",
       origin_trial_feature_name: "WebScheduler",
       status: "experimental",

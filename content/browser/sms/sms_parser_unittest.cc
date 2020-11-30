@@ -20,7 +20,7 @@ url::Origin ParseOrigin(const std::string& message) {
   SmsParser::Result result = SmsParser::Parse(message);
   if (!result.IsValid())
     return url::Origin();
-  return result.origin;
+  return result.top_origin;
 }
 
 std::string ParseOTP(const std::string& message) {
@@ -77,7 +77,8 @@ TEST(SmsParserTest, Basic) {
 
   ASSERT_TRUE(result.IsValid());
   EXPECT_EQ("12345", result.one_time_code);
-  EXPECT_EQ(url::Origin::Create(GURL("https://example.com")), result.origin);
+  EXPECT_EQ(url::Origin::Create(GURL("https://example.com")),
+            result.top_origin);
 }
 
 TEST(SmsParserTest, Realistic) {
@@ -206,6 +207,58 @@ TEST(SmsParserTest, OneTimeCodeCharRanges) {
   EXPECT_EQ("1", ParseOTP("@example.com #1 can be short"));
   EXPECT_EQ("otp", ParseOTP("@example.com #otp with space"));
   EXPECT_EQ("otp", ParseOTP("@example.com #otp\twith with tab"));
+}
+
+TEST(SmsParserTest, EmbeddedIFrameAfterSingleSpace) {
+  SmsParser::Result result = SmsParser::Parse("@top.com #123 @embedded.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_EQ(url::Origin::Create(GURL("https://embedded.com")),
+            result.embedded_origin);
+  EXPECT_EQ("123", result.one_time_code);
+}
+
+TEST(SmsParserTest, EmbeddedIFrameAfterMultipleSpaces) {
+  SmsParser::Result result = SmsParser::Parse("@top.com #123  @embedded.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_TRUE(result.embedded_origin.opaque());
+  EXPECT_EQ("123", result.one_time_code);
+}
+
+TEST(SmsParserTest, EmbeddedIFrameAfterTab) {
+  SmsParser::Result result = SmsParser::Parse("@top.com #123\t@embedded.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_TRUE(result.embedded_origin.opaque());
+  EXPECT_EQ("123", result.one_time_code);
+}
+
+TEST(SmsParserTest, EmbeddedIFrameAfterNewLine) {
+  SmsParser::Result result = SmsParser::Parse("@top.com #123\n@embedded.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_TRUE(result.embedded_origin.opaque());
+  EXPECT_EQ("123", result.one_time_code);
+}
+
+TEST(SmsParserTest, EmbeddedIFrameAfterNonWhiteSpace) {
+  SmsParser::Result result = SmsParser::Parse("@top.com #123@embedded.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_TRUE(result.embedded_origin.opaque());
+  EXPECT_EQ("123@embedded.com", result.one_time_code);
+}
+
+TEST(SmsParserTest, OnlyFirstNonTopDomainConsidered) {
+  SmsParser::Result result =
+      SmsParser::Parse("@top.com #123 @embedded.com @nested.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_EQ(url::Origin::Create(GURL("https://embedded.com")),
+            result.embedded_origin);
+  EXPECT_EQ("123", result.one_time_code);
+}
+
+TEST(SmsParserTest, EmbeddedIFrameWithIncorrectToken) {
+  SmsParser::Result result = SmsParser::Parse("@top.com #123 %embedded.com");
+  EXPECT_EQ(url::Origin::Create(GURL("https://top.com")), result.top_origin);
+  EXPECT_TRUE(result.embedded_origin.opaque());
+  EXPECT_EQ("123", result.one_time_code);
 }
 
 }  // namespace content

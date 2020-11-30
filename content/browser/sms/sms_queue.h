@@ -23,17 +23,18 @@ class CONTENT_EXPORT SmsQueue {
   using FailureType = SmsFetcher::FailureType;
   using Subscriber = SmsFetcher::Subscriber;
 
-  void Push(const url::Origin& origin, Subscriber* subscriber);
-  Subscriber* Pop(const url::Origin& origin);
-  void Remove(const url::Origin& origin, Subscriber* subscriber);
+  void Push(const OriginList& origin_list, Subscriber* subscriber);
+  Subscriber* Pop(const OriginList& origin_list);
+  void Remove(const OriginList& origin_list, Subscriber* subscriber);
   bool HasSubscribers();
-  bool HasSubscriber(const url::Origin& origin, const Subscriber* subscriber);
+  bool HasSubscriber(const OriginList& origin_list,
+                     const Subscriber* subscriber);
   // Pops and notifies the first subscriber of an origin iff there's one origin
   // in the |subscribers_| map. Returns true if the failure is handled.
   bool NotifyFailure(FailureType failure_type);
 
  private:
-  std::map<url::Origin, base::ObserverList<Subscriber>> subscribers_;
+  std::map<OriginList, base::ObserverList<Subscriber>> subscribers_;
 
   DISALLOW_COPY_AND_ASSIGN(SmsQueue);
 };

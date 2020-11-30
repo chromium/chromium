@@ -44,10 +44,7 @@ class CONTENT_EXPORT WebOTPService
                      mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
   WebOTPService(SmsFetcher*,
-                RenderFrameHost*,
-                mojo::PendingReceiver<blink::mojom::WebOTPService>);
-  WebOTPService(SmsFetcher*,
-                const url::Origin&,
+                const OriginList&,
                 RenderFrameHost*,
                 mojo::PendingReceiver<blink::mojom::WebOTPService>);
   ~WebOTPService() override;
@@ -85,7 +82,7 @@ class CONTENT_EXPORT WebOTPService
   // and outlives this class.
   SmsFetcher* fetcher_;
 
-  const url::Origin origin_;
+  const OriginList origin_list_;
   ReceiveCallback callback_;
   base::Optional<std::string> one_time_code_;
   base::TimeTicks start_time_;

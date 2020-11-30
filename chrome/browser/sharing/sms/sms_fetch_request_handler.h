@@ -49,7 +49,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
    private:
     SmsFetchRequestHandler* handler_;
     content::SmsFetcher* fetcher_;
-    const url::Origin& origin_;
+    const content::OriginList origin_list_;
     SharingMessageHandler::DoneCallback respond_callback_;
 
     DISALLOW_COPY_AND_ASSIGN(Request);
