@@ -228,6 +228,10 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // flaky.
   BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
 
+  // Extra mac nodes are disabled temporarily for stability purposes, but keep
+  // them on for tests.
+  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
+
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   // Exit without running the test if we can't find an expectation file.

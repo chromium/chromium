@@ -233,6 +233,9 @@ void BrowserAccessibilityManager::Initialize(
 bool BrowserAccessibilityManager::never_suppress_or_delay_events_for_testing_ =
     false;
 
+// A flag for use in tests to indicate that extra mac nodes are allowed.
+bool BrowserAccessibilityManager::allow_extra_mac_nodes_for_testing_ = false;
+
 // static
 base::Optional<int32_t> BrowserAccessibilityManager::last_focused_node_id_ = {};
 
@@ -768,6 +771,16 @@ void BrowserAccessibilityManager::SetGeneratedEventCallbackForTesting(
 // static
 void BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting() {
   never_suppress_or_delay_events_for_testing_ = true;
+}
+
+// static
+void BrowserAccessibilityManager::AllowExtraMacNodesForTesting() {
+  allow_extra_mac_nodes_for_testing_ = true;
+}
+
+// static
+bool BrowserAccessibilityManager::GetExtraMacNodesAllowed() {
+  return allow_extra_mac_nodes_for_testing_;
 }
 
 void BrowserAccessibilityManager::Decrement(const BrowserAccessibility& node) {

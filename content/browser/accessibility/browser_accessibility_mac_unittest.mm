@@ -246,6 +246,9 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
 
 // Test Mac-specific table APIs.
 TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
+  // This line is needed until we turn extra mac nodes back on by default.
+  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
+
   ui::AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(7);
