@@ -135,11 +135,6 @@ bool ProfileOAuth2TokenService::HasRefreshToken(
 // static
 void ProfileOAuth2TokenService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-#if defined(OS_IOS)
-  registry->RegisterBooleanPref(prefs::kTokenServiceExcludeAllSecondaryAccounts,
-                                false);
-  registry->RegisterListPref(prefs::kTokenServiceExcludedSecondaryAccounts);
-#endif
   registry->RegisterStringPref(prefs::kGoogleServicesSigninScopedDeviceId,
                                std::string());
 }

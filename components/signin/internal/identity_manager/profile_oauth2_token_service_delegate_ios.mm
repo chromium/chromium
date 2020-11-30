@@ -14,11 +14,8 @@
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -187,9 +184,6 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
 
-  // Clean-up stale data from prefs.
-  ClearExcludedSecondaryAccounts();
-
   if (primary_account_id.empty()) {
     // On startup, always fire refresh token loaded even if there is nothing
     // to load (not authenticated).
@@ -267,7 +261,6 @@ void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentials() {
     RemoveAccount(accountStatus.first);
 
   DCHECK_EQ(0u, accounts_.size());
-  ClearExcludedSecondaryAccounts();
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::ReloadAllAccountsFromSystem() {
@@ -369,10 +362,4 @@ void ProfileOAuth2TokenServiceIOSDelegate::RemoveAccount(
     accounts_.erase(account_id);
     FireRefreshTokenRevoked(account_id);
   }
-}
-
-void ProfileOAuth2TokenServiceIOSDelegate::ClearExcludedSecondaryAccounts() {
-  client_->GetPrefs()->ClearPref(
-      prefs::kTokenServiceExcludeAllSecondaryAccounts);
-  client_->GetPrefs()->ClearPref(prefs::kTokenServiceExcludedSecondaryAccounts);
 }

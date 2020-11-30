@@ -7,11 +7,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/ios/fake_device_accounts_provider.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -45,11 +43,6 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
   void SetUp() override {
     AccountTrackerService::RegisterPrefs(prefs_.registry());
     account_tracker_.Initialize(&prefs_, base::FilePath());
-
-    prefs_.registry()->RegisterBooleanPref(
-        prefs::kTokenServiceExcludeAllSecondaryAccounts, false);
-    prefs_.registry()->RegisterListPref(
-        prefs::kTokenServiceExcludedSecondaryAccounts);
 
     fake_provider_ = new FakeDeviceAccountsProvider();
     oauth2_delegate_.reset(new ProfileOAuth2TokenServiceIOSDelegate(

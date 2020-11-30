@@ -93,9 +93,6 @@ class ProfileOAuth2TokenServiceIOSDelegate
   // removed.
   void ReloadCredentials();
 
-  // Clears exclude secondary accounts preferences.
-  void ClearExcludedSecondaryAccounts();
-
   // Info about the existing accounts.
   AccountStatusMap accounts_;
 
