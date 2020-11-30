@@ -547,6 +547,15 @@ AssociatedUserValidator::GetAuthEnforceReason(const base::string16& sid) {
     return AssociatedUserValidator::EnforceAuthReason::ONLINE_LOGIN_STALE;
   }
 
+  // Force user to login when policies are missing or stale. This check should
+  // be done before MDM enrollment to have the correct MDM enrollment policy for
+  // user.
+  if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
+      UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
+    return AssociatedUserValidator::EnforceAuthReason::
+        MISSING_OR_STALE_USER_POLICIES;
+  }
+
   // Force a reauth only for this user if mdm enrollment is needed, so that they
   // enroll.
   if (NeedsToEnrollWithMdm(sid))
@@ -570,13 +579,6 @@ AssociatedUserValidator::GetAuthEnforceReason(const base::string16& sid) {
   if (UploadDeviceDetailsNeeded(sid)) {
     return AssociatedUserValidator::EnforceAuthReason::
         UPLOAD_DEVICE_DETAILS_FAILED;
-  }
-
-  // Force user to login when policies are missing or stale.
-  if (UserPoliciesManager::Get()->CloudPoliciesEnabled() &&
-      UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid)) {
-    return AssociatedUserValidator::EnforceAuthReason::
-        MISSING_OR_STALE_USER_POLICIES;
   }
 
   return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;

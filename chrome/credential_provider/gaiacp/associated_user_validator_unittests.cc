@@ -672,10 +672,12 @@ INSTANTIATE_TEST_SUITE_P(
 // 4. int : 0 - Cloud policies disabled.
 //          1 - Cloud policies enabled but user policies are missing.
 //          2 - Cloud policies enabled and user policies are up to date.
+// 5. bool : Whether user is enrolled with MDM.
 class AssociatedUserValidatorCloudPolicyLoginEnforcedTest
     : public AssociatedUserValidatorTest,
       public ::testing::WithParamInterface<
-          std::tuple<CREDENTIAL_PROVIDER_USAGE_SCENARIO, bool, int, int>> {
+          std::
+              tuple<CREDENTIAL_PROVIDER_USAGE_SCENARIO, bool, int, int, bool>> {
  private:
   FakeScopedLsaPolicyFactory fake_scoped_lsa_policy_factory_;
 };
@@ -686,8 +688,9 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
   const bool is_user_associated = std::get<1>(GetParam());
   const int upload_device_details_state = std::get<2>(GetParam());
   const int cloud_policies_state = std::get<3>(GetParam());
+  const bool mdm_enrolled = std::get<4>(GetParam());
 
-  GoogleMdmEnrolledStatusForTesting forced_status(true);
+  GoogleMdmEnrolledStatusForTesting forced_status(mdm_enrolled);
   FakeUserPoliciesManager fake_user_policies_manager(cloud_policies_state != 0);
   FakeTokenGenerator fake_token_generator;
 
@@ -766,8 +769,9 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
     }
   }
 
-  bool is_get_auth_enforced = is_user_associated && (!uploaded_device_details ||
-                                                     reauth_for_missing_policy);
+  bool is_get_auth_enforced =
+      is_user_associated &&
+      (!uploaded_device_details || reauth_for_missing_policy || !mdm_enrolled);
 
   bool should_user_be_blocked =
       should_user_locking_be_enabled && is_get_auth_enforced;
@@ -775,6 +779,12 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
   EXPECT_EQ(should_user_be_blocked,
             validator.IsUserAccessBlockedForTesting(OLE2W(sid)));  // IN-TEST
   EXPECT_EQ(is_get_auth_enforced, validator.IsAuthEnforcedForUser(OLE2W(sid)));
+
+  if (is_get_auth_enforced && reauth_for_missing_policy) {
+    ASSERT_EQ(AssociatedUserValidator::EnforceAuthReason::
+                  MISSING_OR_STALE_USER_POLICIES,
+              validator.GetAuthEnforceReason((BSTR)sid));
+  }
 
   // Unlock the user.
   validator.AllowSigninForUsersWithInvalidTokenHandles();
@@ -795,7 +805,8 @@ INSTANTIATE_TEST_SUITE_P(
                                          CPUS_CREDUI),
                        ::testing::Bool(),
                        ::testing::Values(0, 1, 2),
-                       ::testing::Values(0, 1, 2)));
+                       ::testing::Values(0, 1, 2),
+                       ::testing::Bool()));
 
 // Tests auth enforcement when multiple number of device details uploads fail
 // consecutively.
