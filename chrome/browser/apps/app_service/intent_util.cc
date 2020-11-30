@@ -19,4 +19,15 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
   return CreateShareIntentFromFiles(file_urls, mime_types);
 }
 
+apps::mojom::IntentPtr CreateShareIntentFromFiles(
+    Profile* profile,
+    const std::vector<base::FilePath>& file_paths,
+    const std::vector<std::string>& mime_types,
+    const std::string& share_text,
+    const std::string& share_title) {
+  auto file_urls = apps::GetFileUrls(profile, file_paths);
+  return CreateShareIntentFromFiles(file_urls, mime_types, share_text,
+                                    share_title);
+}
+
 }  // namespace apps_util

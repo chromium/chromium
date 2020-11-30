@@ -153,6 +153,17 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
   return intent;
 }
 
+apps::mojom::IntentPtr CreateShareIntentFromFiles(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types,
+    const std::string& share_text,
+    const std::string& share_title) {
+  auto intent = CreateShareIntentFromFiles(filesystem_urls, mime_types);
+  intent->share_text = share_text;
+  intent->share_title = share_title;
+  return intent;
+}
+
 apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
     const GURL& filesystem_url,
     const std::string& mime_type,

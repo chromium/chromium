@@ -28,6 +28,14 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     const std::vector<GURL>& filesystem_urls,
     const std::vector<std::string>& mime_types);
 
+// Create an intent struct from the filesystem urls, mime types
+// of a list of files, and the share text and title.
+apps::mojom::IntentPtr CreateShareIntentFromFiles(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types,
+    const std::string& share_text,
+    const std::string& share_title);
+
 // Create an intent struct from the filesystem url, mime type
 // and the drive share url for a Google Drive file.
 apps::mojom::IntentPtr CreateShareIntentFromDriveFile(

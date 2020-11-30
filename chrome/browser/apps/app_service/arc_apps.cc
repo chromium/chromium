@@ -55,6 +55,9 @@
 
 namespace {
 
+constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
+constexpr char kIntentExtraSubject[] = "android.intent.extra.SUBJECT";
+
 void CompleteWithCompressed(apps::mojom::Publisher::LoadIconCallback callback,
                             std::vector<uint8_t> data) {
   if (data.empty()) {
@@ -232,10 +235,16 @@ arc::mojom::IntentInfoPtr CreateArcIntent(apps::mojom::IntentPtr intent) {
   if (intent->url.has_value()) {
     arc_intent->data = intent->url->spec();
   }
-  if (intent->share_text.has_value()) {
+  if (intent->share_text.has_value() || intent->share_title.has_value()) {
     arc_intent->extras = base::flat_map<std::string, std::string>();
-    arc_intent->extras.value().insert(std::make_pair(
-        "android.intent.extra.TEXT", intent->share_text.value()));
+  }
+  if (intent->share_text.has_value()) {
+    arc_intent->extras.value().insert(
+        std::make_pair(kIntentExtraText, intent->share_text.value()));
+  }
+  if (intent->share_title.has_value()) {
+    arc_intent->extras.value().insert(
+        std::make_pair(kIntentExtraSubject, intent->share_title.value()));
   }
   return arc_intent;
 }

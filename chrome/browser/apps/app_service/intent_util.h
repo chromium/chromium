@@ -24,6 +24,17 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types);
+
+// Create an intent struct from the file paths, mime types
+// of a list of files, and the share text and title.
+// This util has to live under chrome/ because it uses fileapis
+// and cannot be inlucded in components/.
+apps::mojom::IntentPtr CreateShareIntentFromFiles(
+    Profile* profile,
+    const std::vector<base::FilePath>& file_paths,
+    const std::vector<std::string>& mime_types,
+    const std::string& share_text,
+    const std::string& share_title);
 }  // namespace apps_util
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_INTENT_UTIL_H_
