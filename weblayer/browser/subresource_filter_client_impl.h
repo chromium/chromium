@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_SUBRESOURCE_FILTER_CLIENT_IMPL_H_
 
 #include <memory>
+#include <utility>
 
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
@@ -56,7 +57,7 @@ class SubresourceFilterClientImpl
   void set_database_manager_for_testing(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager) {
-    database_manager_ = database_manager;
+    database_manager_ = std::move(database_manager);
   }
 
  private:

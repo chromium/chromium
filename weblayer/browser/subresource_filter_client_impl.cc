@@ -5,7 +5,6 @@
 #include "weblayer/browser/subresource_filter_client_impl.h"
 
 #include <string>
-#include <utility>
 
 #include "base/macros.h"
 #include "build/build_config.h"
