@@ -153,6 +153,7 @@ class LambdaNormalizer:
   def Normalize(self, package, name):
     # Make d8 desugared lambdas look the same as Desugar ones.
     # D8 lambda: org.-$$Lambda$Promise$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex
+    #     D8 lambdas may also have no .dex suffix.
     # Desugar lambda: org.Promise$Nested1$$Lambda$0
     # 1) Need to prefix with proper class name so that they will show as nested.
     # 2) Need to suffix with number so that they diff better.
@@ -160,7 +161,11 @@ class LambdaNormalizer:
     lambda_start_idx = package.find('-$$Lambda$')
     class_path = package
     if lambda_start_idx != -1:
-      lambda_end_idx = package.find('.dex') + len('.dex')
+      dex_suffix_idx = package.find('.dex')
+      if dex_suffix_idx == -1:
+        lambda_end_idx = len(package)
+      else:
+        lambda_end_idx = dex_suffix_idx + len('.dex')
       old_lambda_name = package[lambda_start_idx:lambda_end_idx]
       class_path = package.replace('-$$Lambda$', '')
       base_name = _TruncateFrom(class_path, '$', rfind=True)

@@ -287,18 +287,19 @@ def Run(args, on_config_error):
   logging.warning('Done!')
   msg = [
       'View using a local server via: ',
-      '    {0}/upload_html_viwer.py --local',
+      '    {0}/upload_html_viewer.py --local',
       'or run:',
       '    gsutil.py cp -a public-read {1} gs://chrome-supersize/oneoffs/'
       '{2}.ndjson',
       '  to view at:',
-      '    https://chrome-supersize.firebaseapp.com/viewer.html'
-      '?load_url=oneoffs/{2}.ndjson',
+      '    https://chrome-supersize.firebaseapp.com/viewer.html?load_url='
+      'https://storage.googleapis.com/chrome-supersize/oneoffs/{2}.ndjson',
   ]
-  supersize_path = os.path.relpath(
-      os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'binary_size'))
+  libsupersize_path = os.path.relpath(
+      os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'binary_size',
+                   'libsupersize'))
   # Use a random UUID as the filename so user can copy-and-paste command
   # directly without a name collision.
   upload_id = uuid.uuid4()
-  print('\n'.join(msg).format(supersize_path, args.output_report_file,
+  print('\n'.join(msg).format(libsupersize_path, args.output_report_file,
                               upload_id))

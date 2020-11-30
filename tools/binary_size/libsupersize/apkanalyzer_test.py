@@ -102,9 +102,27 @@ class ApkAnalyzerTest(unittest.TestCase):
     self.assertEqual((expected_outer_class, expected_name),
                      lambda_normalizer.Normalize(package, name))
 
+  def testLambdaNormalizer_wholeString_noDexSuffix(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk'
+    package = name
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
   def testLambdaNormalizer_prefix(self):
     lambda_normalizer = apkanalyzer.LambdaNormalizer()
     name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdeLqWLHzk.dex foo bar'
+    package = name.split(' ')[0]
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$0 foo bar'
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+  def testLambdaNormalizer_prefix_noDexSuffix(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdeLqWLHzk foo bar'
     package = name.split(' ')[0]
     expected_outer_class = 'org.StackAnimation'
     expected_name = 'org.StackAnimation$Nested1$$Lambda$0 foo bar'
@@ -126,6 +144,21 @@ class ApkAnalyzerTest(unittest.TestCase):
     self.assertEqual((expected_outer_class, expected_name),
                      lambda_normalizer.Normalize(name, name))
 
+  def testLambdaNormalizer_lambdaCounting_noDexSuffix(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk'
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
+    # Ensure multiple calls to the same class maps to same number.
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(name, name))
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(name, name))
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk2'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$1'
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(name, name))
+
   def testLambdaNormalizer_multiSameLine(self):
     lambda_normalizer = apkanalyzer.LambdaNormalizer()
     name = ('org.-$$Lambda$StackAnimation$Nested1$kevdDQ8V2zqCrdieLqWLHzk.dex '
@@ -142,6 +175,25 @@ class ApkAnalyzerTest(unittest.TestCase):
     expected_outer_class = 'org.Other'
     expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
                      'org.Other$$Lambda$0.foo bar')
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+  def testLambdaNormalizer_multiSameLine_noDexSuffix(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = ('org.-$$Lambda$StackAnimation$Nested1$kevdDQ8V2zqCrdieLqWLHzk '
+            'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk bar')
+    package = name.split(' ')[0]
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
+                     'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk bar')
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+    name = expected_name
+    package = name.split(' ')[1]
+    expected_outer_class = 'org.Other'
+    expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
+                     'org.Other$$Lambda$0 bar')
     self.assertEqual((expected_outer_class, expected_name),
                      lambda_normalizer.Normalize(package, name))
 
