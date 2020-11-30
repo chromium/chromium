@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/arc/process/arc_process.h"
 
-#include <unordered_set>
 #include <utility>
 
 #include "base/no_destructor.h"
@@ -15,54 +14,78 @@ namespace arc {
 
 using mojom::ProcessState;
 
+namespace {
+
 constexpr char kCloudDpcrocessName[] =
     "com.google.android.apps.work.clouddpc.arc";
 
-const std::unordered_set<ProcessState>& ImportantStates() {
-  static const base::NoDestructor<std::unordered_set<ProcessState>>
-      kImportantStates({ProcessState::IMPORTANT_FOREGROUND,
-                        ProcessState::BOUND_FOREGROUND_SERVICE,
-                        ProcessState::FOREGROUND_SERVICE, ProcessState::TOP,
-                        ProcessState::PERSISTENT_UI, ProcessState::PERSISTENT});
-  return *kImportantStates;
+bool IsImportantState(ProcessState state) {
+  switch (state) {
+    case ProcessState::IMPORTANT_FOREGROUND:
+    case ProcessState::BOUND_FOREGROUND_SERVICE:
+    case ProcessState::FOREGROUND_SERVICE:
+    case ProcessState::TOP:
+    case ProcessState::PERSISTENT_UI:
+    case ProcessState::PERSISTENT:
+      return true;
+    default:
+      return false;
+  }
 }
 
-const std::unordered_set<ProcessState>& PersistentStates() {
-  static const base::NoDestructor<std::unordered_set<ProcessState>>
-      kPersistentStates(
-          {ProcessState::PERSISTENT_UI, ProcessState::PERSISTENT});
-  return *kPersistentStates;
+bool IsPersistentState(ProcessState state) {
+  switch (state) {
+    case ProcessState::PERSISTENT_UI:
+    case ProcessState::PERSISTENT:
+      return true;
+    default:
+      return false;
+  }
 }
 
-
-const std::unordered_set<ProcessState>& ProtectedBackgroundStates() {
-  static const base::NoDestructor<std::unordered_set<ProcessState>>
-      kProtectedBackgroundStates({ProcessState::TOP,
-                                  ProcessState::FOREGROUND_SERVICE,
-                                  ProcessState::BOUND_FOREGROUND_SERVICE,
-                                  ProcessState::IMPORTANT_FOREGROUND,
-                                  ProcessState::IMPORTANT_BACKGROUND});
-  return *kProtectedBackgroundStates;
+bool IsProtectedBackgroundState(ProcessState state) {
+  switch (state) {
+    case ProcessState::TOP:
+    case ProcessState::FOREGROUND_SERVICE:
+    case ProcessState::BOUND_FOREGROUND_SERVICE:
+    case ProcessState::IMPORTANT_FOREGROUND:
+    case ProcessState::IMPORTANT_BACKGROUND:
+      return true;
+    default:
+      return false;
+  }
 }
 
-const std::unordered_set<ProcessState>& BackgroundStates() {
-  static const base::NoDestructor<std::unordered_set<ProcessState>>
-      kBackgroundStates({ProcessState::TRANSIENT_BACKGROUND,
-                         ProcessState::BACKUP, ProcessState::SERVICE,
-                         ProcessState::RECEIVER, ProcessState::TOP_SLEEPING,
-                         ProcessState::HEAVY_WEIGHT, ProcessState::HOME,
-                         ProcessState::LAST_ACTIVITY,
-                         ProcessState::CACHED_ACTIVITY});
-  return *kBackgroundStates;
+bool IsBackgroundState(ProcessState state) {
+  switch (state) {
+    case ProcessState::TRANSIENT_BACKGROUND:
+    case ProcessState::BACKUP:
+    case ProcessState::SERVICE:
+    case ProcessState::RECEIVER:
+    case ProcessState::TOP_SLEEPING:
+    case ProcessState::HEAVY_WEIGHT:
+    case ProcessState::HOME:
+    case ProcessState::LAST_ACTIVITY:
+    case ProcessState::CACHED_ACTIVITY:
+      return true;
+    default:
+      return false;
+  }
 }
 
-const std::unordered_set<ProcessState>& CachedStates() {
-  static const base::NoDestructor<std::unordered_set<ProcessState>>
-      kCachedStates({ProcessState::CACHED_ACTIVITY_CLIENT,
-                     ProcessState::CACHED_RECENT, ProcessState::CACHED_EMPTY,
-                     ProcessState::NONEXISTENT});
-  return *kCachedStates;
+bool IsCachedState(ProcessState state) {
+  switch (state) {
+    case ProcessState::CACHED_ACTIVITY_CLIENT:
+    case ProcessState::CACHED_RECENT:
+    case ProcessState::CACHED_EMPTY:
+    case ProcessState::NONEXISTENT:
+      return true;
+    default:
+      return false;
+  }
 }
+
+}  // namespace
 
 ArcProcess::ArcProcess(base::ProcessId nspid,
                        base::ProcessId pid,
@@ -90,24 +113,22 @@ bool ArcProcess::operator<(const ArcProcess& rhs) const {
 ArcProcess::ArcProcess(ArcProcess&& other) = default;
 ArcProcess& ArcProcess::operator=(ArcProcess&& other) = default;
 
-// TODO(wvk): Use a simple switch/case instead of std::unordered_set lookup,
-// it will likely be faster.
 bool ArcProcess::IsImportant() const {
-  return ImportantStates().count(process_state()) == 1 || IsArcProtected();
+  return IsImportantState(process_state()) || IsArcProtected();
 }
 
 bool ArcProcess::IsPersistent() const {
   // Protect PERSISTENT, PERSISTENT_UI, our HOME and custom set of ARC processes
   // since they should have lower priority to be killed.
-  return PersistentStates().count(process_state()) == 1 || IsArcProtected();
+  return IsPersistentState(process_state()) || IsArcProtected();
 }
 
 bool ArcProcess::IsCached() const {
-  return CachedStates().count(process_state()) == 1;
+  return IsCachedState(process_state());
 }
 
 bool ArcProcess::IsBackgroundProtected() const {
-  return ProtectedBackgroundStates().count(process_state()) == 1;
+  return IsProtectedBackgroundState(process_state());
 }
 
 bool ArcProcess::IsArcProtected() const {
