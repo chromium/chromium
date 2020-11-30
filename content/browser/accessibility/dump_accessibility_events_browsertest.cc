@@ -259,8 +259,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-busy-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaButtonExpand) {
+#if defined(OS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
+#define DISABLED_ON_LINUX_TSAN_MSAN(name) DISABLED_##name
+#else
+#define DISABLED_ON_LINUX_TSAN_MSAN(name) name
+#endif
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    DISABLED_ON_LINUX_TSAN_MSAN(AccessibilityEventsAriaButtonExpand)) {
   RunEventTest(FILE_PATH_LITERAL("aria-button-expand.html"));
 }
 
