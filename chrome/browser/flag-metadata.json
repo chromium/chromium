@@ -1938,7 +1938,7 @@
   {
     "name": "enable-notification-indicator",
     "owners": [ "mmourgos", "newcomer" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "enable-offline-previews",
