@@ -336,6 +336,8 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-lollipop-arm-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
+    cores = 16,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
