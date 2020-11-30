@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"
 #include "chrome/browser/ui/webui/chromeos/video_source.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/test_files_request_filter.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_constants.h"
@@ -612,6 +613,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
 
   AddScreenHandler(
       std::make_unique<PinSetupScreenHandler>(js_calls_container_.get()));
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_debugger =

@@ -189,6 +189,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Number of times error screen has appeared during update.</summary>
 </histogram>
 
+<histogram name="OOBE.PinSetupScreen.UserActions"
+    enum="PinSetupScreenUserAction" expires_after="2021-07-30">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the PinSetup screen. Recorded when user clicks on
+    buttons on the PinSetup screen or when screen is automatically skipped.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
     expires_after="2021-07-30">
   <owner>raleksandrov@google.com</owner>

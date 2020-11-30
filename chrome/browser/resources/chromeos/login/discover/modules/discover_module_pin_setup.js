@@ -142,6 +142,12 @@ Polymer({
     autoSkipTimer_: undefined,
 
     /**
+     * Whether flow is finished or not.
+     * @private
+     */
+    flowFinished_: false,
+
+    /**
      * This is called when locale is changed.
      * @override
      */
@@ -288,7 +294,7 @@ Polymer({
       if (!this.authToken_) {
         this.setModes = null;
         this.step_ = PIN_SETUP_STEPS.LOADING;
-        this.onSkipButton_();
+        this.exitFlow_();
         return;
       }
       this.setModes = (modes, credentials, onComplete) => {
@@ -323,12 +329,12 @@ Polymer({
 
     /** @private */
     onSkipButton_() {
-      this.password_ = '';
-      this.authToken_ = '';
-
-      this.stopAutoSkipTimer_();
-      this.$.pinKeyboard.resetState();
-      this.fire('module-continue');
+      if (this.step_ == PIN_SETUP_STEPS.CONFIRM) {
+        chrome.send('login.PinSetupScreen.userActed', ['skip-button-in-flow']);
+      } else {
+        chrome.send('login.PinSetupScreen.userActed', ['skip-button-on-start']);
+      }
+      this.exitFlow_();
     },
 
     /** @private */
@@ -345,10 +351,26 @@ Polymer({
 
     /** @private */
     onDoneButton_() {
-      this.password_ = '';
-      this.authToken_ = '';
+      chrome.send('login.PinSetupScreen.userActed', ['done-button']);
+      this.exitFlow_();
+    },
+
+    /** @private */
+    exitFlow_() {
+      if (this.flowFinished_) {
+        return;
+      }
+      this.flowFinished_ = true;
+      this.removeAuthData_();
+      this.stopAutoSkipTimer_();
       this.$.pinKeyboard.resetState();
       this.fire('module-continue');
+    },
+
+    /** @private */
+    removeAuthData_() {
+      this.password_ = '';
+      this.authToken_ = '';
     },
 
     /**

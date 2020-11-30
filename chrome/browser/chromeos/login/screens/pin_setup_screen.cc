@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -16,8 +17,52 @@
 namespace chromeos {
 
 namespace {
-const char kFinished[] = "finished";
+
+constexpr char kFinished[] = "finished";
+
+constexpr const char kUserActionDoneButtonClicked[] = "done-button";
+constexpr const char kUserActionSkipButtonClickedOnStart[] =
+    "skip-button-on-start";
+constexpr const char kUserActionSkipButtonClickedInFlow[] =
+    "skip-button-in-flow";
+
+struct PinSetupUserAction {
+  const char* name_;
+  PinSetupScreen::UserAction uma_name_;
+};
+
+const PinSetupUserAction actions[] = {
+    {kUserActionDoneButtonClicked,
+     PinSetupScreen::UserAction::kDoneButtonClicked},
+    {kUserActionSkipButtonClickedOnStart,
+     PinSetupScreen::UserAction::kSkipButtonClickedOnStart},
+    {kUserActionSkipButtonClickedInFlow,
+     PinSetupScreen::UserAction::kSkipButtonClickedInFlow},
+};
+
+void RecordPinSetupScreenAction(PinSetupScreen::UserAction value) {
+  base::UmaHistogramEnumeration("OOBE.PinSetupScreen.UserActions", value);
 }
+
+bool IsPinSetupUserAction(const std::string& action_id) {
+  for (const auto& el : actions) {
+    if (action_id == el.name_)
+      return true;
+  }
+  return false;
+}
+
+void RecordUserAction(const std::string& action_id) {
+  for (const auto& el : actions) {
+    if (action_id == el.name_) {
+      RecordPinSetupScreenAction(el.uma_name_);
+      return;
+    }
+  }
+  NOTREACHED() << "Unexpected action id: " << action_id;
+}
+
+}  // namespace
 
 // static
 std::string PinSetupScreen::GetResultString(Result result) {
@@ -82,6 +127,10 @@ void PinSetupScreen::OnUserAction(const std::string& action_id) {
   // Only honor finish if discover is currently being shown.
   if (action_id == kFinished) {
     exit_callback_.Run(Result::NEXT);
+    return;
+  }
+  if (IsPinSetupUserAction(action_id)) {
+    RecordUserAction(action_id);
     return;
   }
   BaseScreen::OnUserAction(action_id);
