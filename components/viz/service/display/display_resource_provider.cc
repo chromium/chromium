@@ -109,7 +109,7 @@ DisplayResourceProvider::~DisplayResourceProvider() {
     gl->Finish();
 
   while (!resources_.empty())
-    DeleteResourceInternal(resources_.begin(), FOR_SHUTDOWN);
+    DeleteResourceInternal(resources_.begin());
 
   if (compositor_context_provider_) {
     // Check that all GL resources has been deleted.
@@ -270,15 +270,14 @@ void DisplayResourceProvider::WaitSyncToken(ResourceId id) {
 #endif
 }
 
-int DisplayResourceProvider::CreateChild(
-    const ReturnCallback& return_callback) {
+int DisplayResourceProvider::CreateChild(ReturnCallback return_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  Child child_info;
-  child_info.return_callback = return_callback;
-  int child = next_child_++;
-  children_[child] = child_info;
-  return child;
+  int child_id = next_child_++;
+  Child& child = children_[child_id];
+  child.return_callback = std::move(return_callback);
+
+  return child_id;
 }
 
 void DisplayResourceProvider::DestroyChild(int child_id) {
@@ -301,8 +300,8 @@ void DisplayResourceProvider::ReceiveFromChild(
   CHECK(child_it != children_.end());
   Child& child_info = child_it->second;
   DCHECK(!child_info.marked_for_deletion);
-  for (auto it = resources.begin(); it != resources.end(); ++it) {
-    auto resource_in_map_it = child_info.child_to_parent_map.find(it->id);
+  for (const TransferableResource& resource : resources) {
+    auto resource_in_map_it = child_info.child_to_parent_map.find(resource.id);
     if (resource_in_map_it != child_info.child_to_parent_map.end()) {
       ChildResource* resource = GetResource(resource_in_map_it->second);
       resource->marked_for_deletion = false;
@@ -310,24 +309,18 @@ void DisplayResourceProvider::ReceiveFromChild(
       continue;
     }
 
-    if (it->is_software != IsSoftware() ||
-        it->mailbox_holder.mailbox.IsZero()) {
+    if (resource.is_software != IsSoftware() ||
+        resource.mailbox_holder.mailbox.IsZero()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
-      std::vector<ReturnedResource> to_return;
-      to_return.push_back(it->ToReturnedResource());
-      child_info.return_callback.Run(to_return);
+      child_info.return_callback.Run({resource.ToReturnedResource()});
       continue;
     }
 
     ResourceId local_id = next_id_++;
-    if (it->is_software) {
-      DCHECK(IsBitmapFormatSupported(it->format));
-      InsertResource(local_id, ChildResource(child_id, *it));
-    } else {
-      InsertResource(local_id, ChildResource(child_id, *it));
-    }
-    child_info.child_to_parent_map[it->id] = local_id;
+    DCHECK(!resource.is_software || IsBitmapFormatSupported(resource.format));
+    resources_.emplace(local_id, ChildResource(child_id, resource));
+    child_info.child_to_parent_map[resource.id] = local_id;
   }
 }
 
@@ -347,10 +340,9 @@ void DisplayResourceProvider::DeclareUsedResourcesFromChild(
   DCHECK(!child_info.marked_for_deletion);
 
   std::vector<ResourceId> unused;
-  for (auto it = child_info.child_to_parent_map.begin();
-       it != child_info.child_to_parent_map.end(); ++it) {
-    ResourceId local_id = it->second;
-    bool resource_is_in_use = resources_from_child.count(it->first) > 0;
+  for (auto& entry : child_info.child_to_parent_map) {
+    ResourceId local_id = entry.second;
+    bool resource_is_in_use = resources_from_child.count(entry.first) > 0;
     if (!resource_is_in_use)
       unused.push_back(local_id);
   }
@@ -376,15 +368,6 @@ DisplayResourceProvider::GetChildToParentMap(int child) const {
 bool DisplayResourceProvider::InUse(ResourceId id) {
   ChildResource* resource = GetResource(id);
   return resource->InUse();
-}
-
-DisplayResourceProvider::ChildResource* DisplayResourceProvider::InsertResource(
-    ResourceId id,
-    ChildResource resource) {
-  auto result =
-      resources_.insert(ResourceMap::value_type(id, std::move(resource)));
-  DCHECK(result.second);
-  return &result.first->second;
 }
 
 DisplayResourceProvider::ChildResource* DisplayResourceProvider::GetResource(
@@ -419,8 +402,7 @@ void DisplayResourceProvider::PopulateSkBitmapWithResource(
   DCHECK(pixels_installed);
 }
 
-void DisplayResourceProvider::DeleteResourceInternal(ResourceMap::iterator it,
-                                                     DeleteStyle style) {
+void DisplayResourceProvider::DeleteResourceInternal(ResourceMap::iterator it) {
   TRACE_EVENT0("viz", "DisplayResourceProvider::DeleteResourceInternal");
   ChildResource* resource = &it->second;
 
@@ -602,8 +584,7 @@ bool DisplayResourceProvider::ReadLockFenceHasPassed(
 }
 
 #if defined(OS_ANDROID)
-void DisplayResourceProvider::DeletePromotionHint(ResourceMap::iterator it,
-                                                  DeleteStyle style) {
+void DisplayResourceProvider::DeletePromotionHint(ResourceMap::iterator it) {
   ChildResource* resource = &it->second;
   // If this resource was interested in promotion hints, then remove it from
   // the set of resources that we'll notify.
@@ -727,9 +708,9 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     child_info->child_to_parent_map.erase(child_id);
     resource.imported_count = 0;
 #if defined(OS_ANDROID)
-    DeletePromotionHint(it, style);
+    DeletePromotionHint(it);
 #endif
-    DeleteResourceInternal(it, style);
+    DeleteResourceInternal(it);
   }
 
   if (external_use_client_) {
@@ -776,11 +757,8 @@ void DisplayResourceProvider::DestroyChildInternal(ChildMap::iterator it,
   DCHECK(style == FOR_SHUTDOWN || !child.marked_for_deletion);
 
   std::vector<ResourceId> resources_for_child;
-
-  for (auto child_it = child.child_to_parent_map.begin();
-       child_it != child.child_to_parent_map.end(); ++child_it) {
-    ResourceId id = child_it->second;
-    resources_for_child.push_back(id);
+  for (auto& entry : child.child_to_parent_map) {
+    resources_for_child.push_back(entry.second);
   }
 
   child.marked_for_deletion = true;
@@ -1118,7 +1096,9 @@ DisplayResourceProvider::ScopedBatchReturnResources::
 }
 
 DisplayResourceProvider::Child::Child() = default;
-DisplayResourceProvider::Child::Child(const Child& other) = default;
+DisplayResourceProvider::Child::Child(Child&& other) = default;
+DisplayResourceProvider::Child& DisplayResourceProvider::Child::operator=(
+    Child&& other) = default;
 DisplayResourceProvider::Child::~Child() = default;
 
 DisplayResourceProvider::ChildResource::ChildResource(
