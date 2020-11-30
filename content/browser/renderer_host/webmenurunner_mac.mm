@@ -66,8 +66,7 @@
                         item->type != blink::mojom::MenuItem::Type::kGroup)];
   [menuItem setTarget:self];
 
-  // Set various alignment/language attributes. Note that many (if not most) of
-  // these attributes are functional only on 10.6 and above.
+  // Set various alignment/language attributes.
   base::scoped_nsobject<NSMutableDictionary> attrs(
       [[NSMutableDictionary alloc] initWithCapacity:3]);
   base::scoped_nsobject<NSMutableParagraphStyle> paragraphStyle(
@@ -82,12 +81,10 @@
   [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
   if (item->has_text_direction_override) {
-    base::scoped_nsobject<NSNumber> directionValue(
-        [[NSNumber alloc] initWithInteger:
-            writingDirection + NSTextWritingDirectionOverride]);
-    base::scoped_nsobject<NSArray> directionArray(
-        [[NSArray alloc] initWithObjects:directionValue.get(), nil]);
-    [attrs setObject:directionArray forKey:NSWritingDirectionAttributeName];
+    if (@available(macOS 10.11, *)) {
+      [attrs setObject:@[ @(writingDirection | NSWritingDirectionOverride) ]
+                forKey:NSWritingDirectionAttributeName];
+    }
   }
 
   [attrs setObject:[NSFont menuFontOfSize:_fontSize]
