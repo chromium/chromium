@@ -310,6 +310,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsDescendantOfElementType(HashSet<QualifiedName>& tag_names) const;
   String PlaceholderFromNativeAttribute() const;
 
+  void AddPseudoElementChildren();
   void AddInlineTextBoxChildren(bool force);
   void AddImageMapChildren();
   void AddPopupChildren();

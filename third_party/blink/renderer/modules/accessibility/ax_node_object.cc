@@ -3208,6 +3208,20 @@ void AXNodeObject::AddPopupChildren() {
     children_.push_back(ax_popup);
 }
 
+void AXNodeObject::AddPseudoElementChildren() {
+  // Pseudo elements often have text and image children that are not
+  // visited by the LayoutTreeBuilderTraversal class used in DOM traversal.
+  Element* element = GetElement();
+  if (!element || !element->IsPseudoElement() || !GetLayoutObject())
+    return;
+
+  LayoutObject* child = GetLayoutObject()->SlowFirstChild();
+  while (child) {
+    AddChild(AXObjectCache().GetOrCreate(child));
+    child = child->NextSibling();
+  }
+}
+
 AXSVGRoot* AXNodeObject::RemoteSVGRootElement() const {
   // FIXME(dmazzoni): none of this code properly handled multiple references to
   // the same remote SVG document. I'm disabling this support until it can be
@@ -3248,13 +3262,6 @@ bool AXNodeObject::ShouldUseLayoutBuilderTraversal() const {
   // <table>: a thead/tfoot in the middle are bumped to the top/bottom in
   // the layout representation.
   if (IsA<HTMLTableElement>(*node))
-    return false;
-
-  // Pseudo elements often have text children that are not
-  // visited by the LayoutTreeBuilderTraversal class used in DOM traversal.
-  // Without this condition, list bullets would not have static text children.
-  Element* element = GetElement();
-  if (element && element->IsPseudoElement())
     return false;
 
   return true;
@@ -3303,6 +3310,7 @@ void AXNodeObject::AddChildren() {
   AddRemoteSVGChildren();
   AddImageMapChildren();
   AddTableChildren();
+  AddPseudoElementChildren();
   AddInlineTextBoxChildren(false);
   AddValidationMessageChild();
   AddAccessibleNodeChildren();
@@ -3317,9 +3325,11 @@ void AXNodeObject::AddChildren() {
 }
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
+  if (!child)
+    return;
+
   unsigned int index = children_.size();
-  if (child)
-    InsertChild(child, index, is_from_aria_owns);
+  InsertChild(child, index, is_from_aria_owns);
 }
 
 void AXNodeObject::InsertChild(AXObject* child,
