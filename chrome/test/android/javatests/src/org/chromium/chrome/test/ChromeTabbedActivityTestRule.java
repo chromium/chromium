@@ -53,8 +53,9 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
 
     public void resumeMainActivityFromLauncher() throws Exception {
         Assert.assertNotNull(getActivity());
-        Assert.assertEquals(
-                ApplicationStatus.getStateForActivity(getActivity()), ActivityState.STOPPED);
+        @ActivityState
+        int state = ApplicationStatus.getStateForActivity(getActivity());
+        Assert.assertTrue(state == ActivityState.STOPPED || state == ActivityState.PAUSED);
 
         Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
                 getActivity().getPackageName());
