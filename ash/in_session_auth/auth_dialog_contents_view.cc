@@ -37,13 +37,14 @@ namespace {
 
 constexpr int kContainerPreferredWidth = 340;
 
-constexpr int kBorderTopDp = 24;
+constexpr int kBorderTopDp = 36;
 constexpr int kBorderLeftDp = 24;
 constexpr int kBorderBottomDp = 20;
 constexpr int kBorderRightDp = 24;
 constexpr int kCornerRadius = 12;
 
 constexpr int kTitleFontSizeDeltaDp = 4;
+constexpr int kOriginNameLineHeight = 18;
 
 constexpr int kSpacingAfterAvatar = 18;
 constexpr int kSpacingAfterTitle = 8;
@@ -52,7 +53,7 @@ constexpr int kSpacingAfterInputField = 16;
 
 constexpr int kAvatarSizeDp = 36;
 constexpr int kFingerprintIconSizeDp = 28;
-constexpr int kFingerprintIconTopSpacingDp = 20;
+constexpr int kSpacingBetweenPinPadAndFingerprintIcon = 24;
 constexpr int kSpacingBetweenFingerprintIconAndLabelDp = 15;
 constexpr int kFingerprintViewWidthDp = 204;
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
@@ -69,6 +70,7 @@ constexpr SkColor kDisabledFingerprintIconColor =
 constexpr SkColor kBackgroundColor = SK_ColorWHITE;
 constexpr SkColor kTextColorSecondary = gfx::kGoogleGrey700;
 constexpr SkColor kTextColorPrimary = gfx::kGoogleGrey900;
+constexpr SkColor kErrorColor = gfx::kGoogleRed600;
 
 constexpr int kSpacingBeforeButtons = 32;
 
@@ -100,8 +102,6 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   };
 
   FingerprintView() {
-    SetBorder(views::CreateEmptyBorder(kFingerprintIconTopSpacingDp, 0, 0, 0));
-
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kSpacingBetweenFingerprintIconAndLabelDp));
@@ -275,7 +275,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
 
     SetFontList(base_font_list.Derive(kTitleFontSizeDeltaDp,
                                       gfx::Font::FontStyle::NORMAL,
-                                      gfx::Font::Weight::NORMAL));
+                                      gfx::Font::Weight::MEDIUM));
     SetMaximumWidth(kContainerPreferredWidth);
     SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
@@ -297,7 +297,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
 
   void ShowError(const base::string16& error_text) {
     SetText(error_text);
-    SetEnabledColor(SK_ColorRED);
+    SetEnabledColor(kErrorColor);
     is_showing_error_ = true;
     SetAccessibleName(error_text);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
@@ -372,6 +372,9 @@ AuthDialogContentsView::AuthDialogContentsView(
   }
 
   if (auth_methods_ & kAuthFingerprint) {
+    if (pin_pad_view_)
+      AddVerticalSpacing(kSpacingBetweenPinPadAndFingerprintIcon);
+
     fingerprint_view_ =
         container_->AddChildView(std::make_unique<FingerprintView>());
     fingerprint_view_->SetCanUsePin(auth_methods_ & kAuthPin);
@@ -419,6 +422,7 @@ void AuthDialogContentsView::AddOriginNameView() {
                                  base::UTF8ToUTF16(origin_name_)));
   origin_name_view_->SetMaximumWidth(kContainerPreferredWidth);
   origin_name_view_->SetMultiLine(true);
+  origin_name_view_->SetLineHeight(kOriginNameLineHeight);
 
   origin_name_view_->SetPreferredSize(gfx::Size(
       kContainerPreferredWidth,
