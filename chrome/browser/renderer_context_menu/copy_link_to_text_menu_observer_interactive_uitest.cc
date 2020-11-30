@@ -91,9 +91,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   base::string16 text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16(
-                "\"hello world\"\nhttp://foo.com/#:~:text=hello%20world"),
-            text);
+  EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello%20world"), text);
 }
 
 IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
@@ -109,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   base::string16 text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16("\"hello world\"\nhttp://foo.com/"), text);
+  EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/"), text);
 }
 
 IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
@@ -124,8 +122,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   base::string16 text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16("\"hello world\"\nhttp://foo.com/#:~:text=hello"),
-            text);
+  EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello"), text);
 }
 
 // crbug.com/1139864
@@ -155,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   base::string16 text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16("\"hello world\"\n" + main_url.spec()), text);
+  EXPECT_EQ(base::UTF8ToUTF16(main_url.spec()), text);
 }
 
 IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
