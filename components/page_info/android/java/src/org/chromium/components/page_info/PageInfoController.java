@@ -266,6 +266,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.previewUIIcon = mDelegate.getPreviewUiIcon();
             mContainer.setParams(containerParams);
             mDelegate.getFavicon(mFullUrl, favicon -> {
+                // Return early if PageInfo has been dismissed.
+                if (mContext == null) return;
+
                 if (favicon != null) {
                     mContainer.setFavicon(favicon);
                 } else {

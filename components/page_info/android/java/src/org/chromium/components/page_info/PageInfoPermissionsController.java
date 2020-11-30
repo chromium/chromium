@@ -81,7 +81,7 @@ public class PageInfoPermissionsController
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         rowParams.subtitle = getPermissionSummaryString(params.permissions, resources);
-        rowParams.visible = rowParams.subtitle != null;
+        rowParams.visible = mDelegate.isSiteSettingsAvailable() && rowParams.subtitle != null;
         mRowView.setParams(rowParams);
     }
 
