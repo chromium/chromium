@@ -596,6 +596,13 @@ void WebPagePopupImpl::SetWindowRect(const IntRect& rect_in_screen) {
   }
 
   gfx::Rect window_rect = rect_in_screen;
+  // Do not set the same |window_rect| more than once. In case of backends that
+  // can reposition native windows during initialization of popups, |this| can
+  // override position of the popup on screen, which will result in
+  // RenderWidgetHostViewAura setting wrong bounds for aura::Window. In turn,
+  // that can result in offset and the content will not be properly positioned.
+  if (window_rect == WindowRectInScreen())
+    return;
 
   // Popups aren't emulated, but the WidgetScreenRect and WindowScreenRect
   // given to them are. When they set the WindowScreenRect it is based on those
