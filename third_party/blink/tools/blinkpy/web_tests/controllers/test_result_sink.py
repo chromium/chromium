@@ -167,7 +167,8 @@ class TestResultSink(object):
                         '<p><text-artifact artifact-id="%s" /></p>' %
                         (art_id, art_id))
 
-        return summaries, ret
+        # Sort summaries to display "command" at the top of the summary.
+        return sorted(summaries), ret
 
     def sink(self, expected, result):
         """Reports the test result to ResultSink.

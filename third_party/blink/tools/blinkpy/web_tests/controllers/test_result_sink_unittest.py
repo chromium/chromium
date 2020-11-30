@@ -176,12 +176,16 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def test_summary_html(self):
         tr = test_results.TestResult(test_name='test-name')
-        tr.artifacts.AddArtifact('stderr', '/tmp/foo', False)
-        tr.artifacts.AddArtifact('crash_log', '/tmp/bar', False)
+        tr.artifacts.AddArtifact('stderr', '/tmp/stderr', False)
+        tr.artifacts.AddArtifact('crash_log', '/tmp/crash_log', False)
+        tr.artifacts.AddArtifact('command', '/tmp/cmd', False)
 
         sent_data = self.sink(True, tr)
-        p = re.compile('<text-artifact artifact-id="(stderr|crash_log)" />')
-        self.assertSetEqual(
-            set(p.findall(sent_data['summaryHtml'])),
-            set(['stderr', 'crash_log']),
+        p = re.compile(
+            '<text-artifact artifact-id="(command|stderr|crash_log)" />')
+
+        self.assertListEqual(
+            p.findall(sent_data['summaryHtml']),
+            # The artifact tags should be sorted by the artifact names.
+            ['command', 'crash_log', 'stderr'],
         )
