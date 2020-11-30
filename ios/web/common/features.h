@@ -51,9 +51,6 @@ extern const base::Feature kUseDefaultUserAgentInWebClient;
 // of properties using hard coded logic.
 extern const base::Feature kPreserveScrollViewProperties;
 
-// When enabled, display an interstitial on lookalike URL navigations.
-extern const base::Feature kIOSLookalikeUrlNavigationSuggestionsUI;
-
 // When enabled, supports dropping URLs on the web content area to navigate to
 // the URL.
 extern const base::Feature kAddWebContentDropInteraction;

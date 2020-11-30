@@ -257,11 +257,6 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOSLegacyTLSInterstitialsName[];
 extern const char kIOSLegacyTLSInterstitialsDescription[];
 
-// Title and description for the flag to enable interstitials on lookalike
-// URL navigations.
-extern const char kIOSLookalikeUrlNavigationSuggestionsUIName[];
-extern const char kIOSLookalikeUrlNavigationSuggestionsUIDescription[];
-
 // Title and description for the flag to experiment with different location
 // permission user experiences.
 extern const char kLocationPermissionsPromptName[];

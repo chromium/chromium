@@ -291,12 +291,6 @@ const char kIOSLegacyTLSInterstitialsDescription[] =
     "that use legacy TLS connections, and subresources using legacy TLS "
     "connections will be blocked.";
 
-const char kIOSLookalikeUrlNavigationSuggestionsUIName[] =
-    "Lookalike URL Navigation Suggestions UI";
-const char kIOSLookalikeUrlNavigationSuggestionsUIDescription[] =
-    "When enabled, an interstitial will be shown on navigations to lookalike "
-    "URLs.";
-
 const char kLocationPermissionsPromptName[] =
     "Location Permisssions Prompt Experiment";
 const char kLocationPermissionsPromptDescription[] =

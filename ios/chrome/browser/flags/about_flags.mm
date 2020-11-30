@@ -460,12 +460,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          fullscreen::features::kFullscreenControllerBrowserScoped)},
-    {"ios-lookalike-url-navigation-suggestions-ui",
-     flag_descriptions::kIOSLookalikeUrlNavigationSuggestionsUIName,
-     flag_descriptions::kIOSLookalikeUrlNavigationSuggestionsUIDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         web::features::kIOSLookalikeUrlNavigationSuggestionsUI)},
     {"safe-browsing-real-time",
      flag_descriptions::kSafeBrowsingRealTimeLookupName,
      flag_descriptions::kSafeBrowsingRealTimeLookupDescription,
