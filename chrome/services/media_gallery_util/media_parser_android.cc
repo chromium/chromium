@@ -42,6 +42,7 @@ void MediaParserAndroid::ExtractVideoFrame(
   // be deleted when utility process dies or |OnVideoFrameExtracted| callback
   // is called.
   auto parser = std::make_unique<VideoThumbnailParser>(std::move(data_source));
-  parser->Start(base::BindOnce(&OnVideoFrameExtracted, std::move(parser),
-                               std::move(video_frame_callback)));
+  auto* const parser_ptr = parser.get();
+  parser_ptr->Start(base::BindOnce(&OnVideoFrameExtracted, std::move(parser),
+                                   std::move(video_frame_callback)));
 }

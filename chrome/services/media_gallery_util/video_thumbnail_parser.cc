@@ -81,7 +81,8 @@ void OnEncodedVideoFrameExtracted(
   auto thumbnail_decoder = std::make_unique<media::VideoThumbnailDecoder>(
       std::make_unique<media::VpxVideoDecoder>(), config, std::move(data));
 
-  thumbnail_decoder->Start(
+  auto* const thumbnail_decoder_ptr = thumbnail_decoder.get();
+  thumbnail_decoder_ptr->Start(
       base::BindOnce(&OnSoftwareVideoFrameDecoded, std::move(thumbnail_decoder),
                      std::move(video_frame_callback), config));
 }
@@ -90,9 +91,10 @@ void ExtractVideoFrameOnMediaThread(
     media::DataSource* data_source,
     MediaParser::ExtractVideoFrameCallback video_frame_callback) {
   auto extractor = std::make_unique<media::VideoFrameExtractor>(data_source);
-  extractor->Start(base::BindOnce(&OnEncodedVideoFrameExtracted,
-                                  std::move(extractor),
-                                  std::move(video_frame_callback)));
+  auto* const extractor_ptr = extractor.get();
+  extractor_ptr->Start(base::BindOnce(&OnEncodedVideoFrameExtracted,
+                                      std::move(extractor),
+                                      std::move(video_frame_callback)));
 }
 
 }  // namespace
