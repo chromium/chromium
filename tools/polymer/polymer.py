@@ -418,10 +418,9 @@ def _process_dom_module(js_file, html_file):
         line = '\n'.join(js_imports) + '\n\n'
         cr_define_found = True
         imports_added = True
-      elif line.startswith('Polymer({\n'):
+      elif 'Polymer({\n' in line:
         # Place the JS imports right before the opening "Polymer({" line.
-        line = line.replace(
-            r'Polymer({', '%s\n\nPolymer({' % '\n'.join(js_imports))
+        line = '\n'.join(js_imports) + '\n\n' + line
         imports_added = True
 
     # Place the HTML content right after the opening "Polymer({" line.
