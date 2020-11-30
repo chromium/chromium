@@ -21,5 +21,6 @@ safe_browsing_private.idl
 settings_private.idl
 system_private.json
 terminal_private.json
+tts.json
 users_private.idl
 webview_tag.json
