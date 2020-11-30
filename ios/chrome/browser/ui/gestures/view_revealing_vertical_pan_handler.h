@@ -12,10 +12,16 @@
 
 // Responsible for handling vertical pan gestures to reveal/hide a view behind
 // another.
+// When passed UIScrollViewDelegate calls, this object will handle those calls
+// to reveal/hide a view with some specific behaviors:
+//   1. The view will only reveal when the scrollView scroll starts from the
+//      top of the scroll view.
+//   2. When the view is peeked, scrolling down (moving the finger up) will
+//      cause the view to become hidden.
 // TODO(crbug.com/1123512): Add support for going straight from a Hidden state
 // to a revealed state (and vice-versa) if the gesture's translation and
 // velocity are enough to trigger such transition.
-@interface ViewRevealingVerticalPanHandler : NSObject
+@interface ViewRevealingVerticalPanHandler : NSObject <UIScrollViewDelegate>
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).
 // |revealedCoverHeight| is the height of the cover view that remains visible

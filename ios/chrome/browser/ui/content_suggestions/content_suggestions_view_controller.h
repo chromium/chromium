@@ -26,6 +26,7 @@
 @protocol SnackbarCommands;
 @protocol SuggestedContent;
 @protocol ThemeChangeDelegate;
+@class ViewRevealingVerticalPanHandler;
 
 extern NSString* const
     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix;
@@ -73,6 +74,9 @@ extern NSString* const
 // Discover Feed metrics recorder.
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+
+// The pan gesture handler for the hider view controller.
+@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -709,6 +710,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   [super scrollViewDidScroll:scrollView];
+  [self.panGestureHandler scrollViewDidScroll:scrollView];
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
   self.scrolledToTop =
@@ -737,6 +739,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
+  [self.panGestureHandler scrollViewWillBeginDragging:scrollView];
   self.scrollStartPosition = scrollView.contentOffset.y;
 }
 
@@ -745,6 +748,8 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
+  [self.panGestureHandler scrollViewDidEndDragging:scrollView
+                                    willDecelerate:decelerate];
   [self.discoverFeedMetricsRecorder
       recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
 }
@@ -759,6 +764,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
       scrollViewWillEndDragging:scrollView
                    withVelocity:velocity
             targetContentOffset:targetContentOffset];
+  [self.panGestureHandler scrollViewWillEndDragging:scrollView
+                                       withVelocity:velocity
+                                targetContentOffset:targetContentOffset];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

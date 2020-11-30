@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
+#import "base/notreached.h"
 #include "base/numerics/ranges.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 
@@ -55,6 +56,12 @@ const CGFloat kAnimationDuration = 0.25f;
 // Whether new pan gestures should be handled. Set to NO when a pan gesture ends
 // and set to YES when a pan gesture starts while layoutInTransition is NO.
 @property(nonatomic, assign) BOOL gesturesEnabled;
+
+// The contentOffset during the previous call to -scrollViewDidScroll:. Used to
+// keep the contentOffset the same during successive calls to
+// -scrollViewDidScroll:.
+@property(nonatomic, assign) CGPoint lastScrollOffset;
+
 @end
 
 @implementation ViewRevealingVerticalPanHandler
@@ -354,6 +361,77 @@ const CGFloat kAnimationDuration = 0.25f;
     self.gesturesEnabled = NO;
     self.layoutBeingInteractedWith = NO;
   }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  switch (self.currentState) {
+    case ViewRevealState::Hidden:
+      // The transition out of hidden state can only start if the scroll view
+      // starts dragging from the top.
+      if (!self.animator.isRunning && scrollView.contentOffset.y != 0) {
+        return;
+      }
+      break;
+    case ViewRevealState::Peeked:
+      break;
+    case ViewRevealState::Revealed:
+      // The scroll views should be covered in Revealed state, so should not
+      // be able to be scrolled.
+      NOTREACHED();
+      break;
+  }
+  [self panGestureBegan];
+  self.lastScrollOffset = scrollView.contentOffset;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  // These delegate methods are approximating the pan gesture handling from
+  // above, so only change things if the user is actively scrolling.
+  if (!scrollView.isDragging) {
+    return;
+  }
+  UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
+  CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
+  // When in Peeked state, scrolling can only transition to Hidden state.
+  if (self.currentState == ViewRevealState::Peeked && translationY > 0) {
+    translationY = 0;
+  }
+  [self panGestureChangedWithTranslation:translationY];
+  // During the transition, the ViewRevealingAnimatees should be moving, not the
+  // scroll view.
+  if (self.animator.fractionComplete > 0 &&
+      self.animator.fractionComplete < 1) {
+    CGPoint currentScrollOffset = scrollView.contentOffset;
+    currentScrollOffset.y = std::max(self.lastScrollOffset.y, 0.0);
+    scrollView.contentOffset = currentScrollOffset;
+  }
+  self.lastScrollOffset = scrollView.contentOffset;
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+  if (self.currentState == ViewRevealState::Hidden &&
+      self.animator.state != UIViewAnimatingStateActive) {
+    return;
+  }
+  UIPanGestureRecognizer* gesture = scrollView.panGestureRecognizer;
+  CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
+  CGFloat velocityY = [gesture velocityInView:gesture.view.superview].y;
+  // When in Peeked state, scrolling can only transition to Hidden state.
+  if (self.currentState == ViewRevealState::Peeked && translationY > 0) {
+    translationY = 0;
+    velocityY = 0;
+  }
+
+  [self panGestureEndedWithTranslation:translationY velocity:velocityY];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
+                  willDecelerate:(BOOL)decelerate {
+  // No-op.
 }
 
 @end

@@ -13,6 +13,7 @@ class WebState;
 
 @class ContentSuggestionsHeaderViewController;
 @protocol NewTabPageControllerDelegate;
+@class ViewRevealingVerticalPanHandler;
 
 // Coordinator to manage the Suggestions UI via a
 // ContentSuggestionsViewController.
@@ -31,6 +32,9 @@ class WebState;
 
 @property(nonatomic, strong, readonly)
     UICollectionViewController* viewController;
+
+// The pan gesture handler for the view controller.
+@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // Dismisses all modals owned by the NTP mediator.
 - (void)dismissModals;

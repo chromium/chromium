@@ -14,6 +14,7 @@ class WebState;
 }
 
 @protocol NewTabPageControllerDelegate;
+@class ViewRevealingVerticalPanHandler;
 
 // Coordinator handling the NTP.
 @interface NewTabPageCoordinator
@@ -36,6 +37,9 @@ class WebState;
 
 // Returns |YES| if the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
+
+// The pan gesture handler for the view controller.
+@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // Dismisses all modals owned by the NTP.
 - (void)dismissModals;

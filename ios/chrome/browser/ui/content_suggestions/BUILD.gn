@@ -165,6 +165,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp_tile_views",

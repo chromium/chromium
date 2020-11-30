@@ -284,6 +284,7 @@
   self.suggestionsViewController.discoverFeedMenuHandler = self;
   self.suggestionsViewController.discoverFeedMetricsRecorder =
       self.discoverFeedMetricsRecorder;
+  self.suggestionsViewController.panGestureHandler = self.panGestureHandler;
 
   self.discoverFeedHeaderDelegate =
       self.suggestionsViewController.discoverFeedHeaderDelegate;
