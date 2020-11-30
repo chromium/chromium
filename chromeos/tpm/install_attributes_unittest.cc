@@ -97,53 +97,33 @@ class InstallAttributesTest : public testing::Test {
 };
 
 TEST_F(InstallAttributesTest, Lock) {
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_EQ(
-        InstallAttributes::LOCK_SUCCESS,
-        LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE, kTestDomain,
-                                   std::string(),  // realm
-                                   kTestDeviceId));
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.ExistingInstallAttributesLock", 0, 1);
-  }
+  EXPECT_EQ(
+      InstallAttributes::LOCK_SUCCESS,
+      LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE, kTestDomain,
+                                 std::string(),  // realm
+                                 kTestDeviceId));
 
-  {
-    // Locking an already locked device should succeed if the parameters match.
-    base::HistogramTester histogram_tester;
-    EXPECT_EQ(
-        InstallAttributes::LOCK_SUCCESS,
-        LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE, kTestDomain,
-                                   std::string(),  // realm
-                                   kTestDeviceId));
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.ExistingInstallAttributesLock", 1, 1);
-  }
+  // Locking an already locked device should succeed if the parameters match.
+  EXPECT_EQ(
+      InstallAttributes::LOCK_SUCCESS,
+      LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE, kTestDomain,
+                                 std::string(),  // realm
+                                 kTestDeviceId));
 
-  {
-    // But another domain should fail.
-    base::HistogramTester histogram_tester;
-    EXPECT_EQ(InstallAttributes::LOCK_WRONG_DOMAIN,
-              LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE,
-                                         "anotherexample.com",
-                                         std::string(),  // realm
-                                         kTestDeviceId));
-    histogram_tester.ExpectTotalCount(
-        "Enterprise.ExistingInstallAttributesLock", 0);
-  }
+  // But another domain should fail.
+  EXPECT_EQ(InstallAttributes::LOCK_WRONG_DOMAIN,
+            LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE,
+                                       "anotherexample.com",
+                                       std::string(),  // realm
+                                       kTestDeviceId));
 
-  {
-    // A non-matching mode should fail as well.
-    base::HistogramTester histogram_tester;
-    EXPECT_EQ(InstallAttributes::LOCK_WRONG_MODE,
-              LockDeviceAndWaitForResult(
-                  policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
-                  std::string(),    // domain
-                  std::string(),    // realm
-                  std::string()));  // device id
-    histogram_tester.ExpectTotalCount(
-        "Enterprise.ExistingInstallAttributesLock", 0);
-  }
+  // A non-matching mode should fail as well.
+  EXPECT_EQ(
+      InstallAttributes::LOCK_WRONG_MODE,
+      LockDeviceAndWaitForResult(policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
+                                 std::string(),    // domain
+                                 std::string(),    // realm
+                                 std::string()));  // device id
 }
 
 TEST_F(InstallAttributesTest, IsEnterpriseManagedCloud) {

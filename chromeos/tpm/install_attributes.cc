@@ -62,13 +62,6 @@ void WarnIfNonempty(const std::map<std::string, std::string>& map,
   }
 }
 
-// Reports the metric for whether the locking succeeded with existing locked
-// attributes equal to the requested ones.
-void ReportExistingLockUma(bool is_existing_lock) {
-  UMA_HISTOGRAM_BOOLEAN("Enterprise.ExistingInstallAttributesLock",
-                        is_existing_lock);
-}
-
 }  // namespace
 
 // static
@@ -262,7 +255,6 @@ void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
     }
 
     // Already locked in the right mode, signal success.
-    ReportExistingLockUma(true /* is_existing_lock */);
     std::move(callback).Run(LOCK_SUCCESS);
     return;
   }
@@ -367,7 +359,6 @@ void InstallAttributes::OnReadImmutableAttributes(policy::DeviceMode mode,
     return;
   }
 
-  ReportExistingLockUma(false /* is_existing_lock */);
   std::move(callback).Run(LOCK_SUCCESS);
 }
 
