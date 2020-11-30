@@ -8622,9 +8622,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NOTIFICATION_REPLY_PLACEHOLDER" desc="Placeholder text shown in the text box before any text is entered when replying directly to a notification.">
         Send message
       </message>
-      <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification.">
-        Details are hidden while you share your screen
-      </message>
+      <if expr="not chromeos">
+        <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="Not on Chrome OS.">
+          Details are hidden while you share your screen
+        </message>
+      </if>
+      <if expr="chromeos">
+        <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="On Chrome OS only.">
+          Details are hidden while you share your screen
+        </message>
+      </if>
       <if expr="not use_titlecase">
         <message name="IDS_NOTIFICATION_MUTED_TITLE" desc="Title of a notification showing how many new notifications are currently hidden. The number is always greater than zero.">
           {MUTED_NOTIFICATIONS_COUNT, plural,
