@@ -18,10 +18,12 @@ class CertVerifierRequestImpl : public mojom::CertVerifierRequest,
  public:
   CertVerifierRequestImpl(
       mojo::PendingReceiver<mojom::CertVerifierRequest> receiver,
+      scoped_refptr<net::X509Certificate> cert,
       net::CertVerifyResult* verify_result,
       net::CompletionOnceCallback callback,
       const net::NetLogWithSource& net_log)
       : receiver_(this, std::move(receiver)),
+        cert_(cert),
         cert_verify_result_(verify_result),
         completion_callback_(std::move(callback)),
         net_log_(net_log) {
@@ -50,12 +52,15 @@ class CertVerifierRequestImpl : public mojom::CertVerifierRequest,
     // The CertVerifierRequest disconnected.
     DCHECK(completion_callback_);
     *cert_verify_result_ = net::CertVerifyResult();
+    cert_verify_result_->verified_cert = cert_;
     cert_verify_result_->cert_status = net::CERT_STATUS_INVALID;
     std::move(completion_callback_).Run(net::ERR_ABORTED);
   }
 
  private:
   mojo::Receiver<mojom::CertVerifierRequest> receiver_;
+  // Certificate being verified.
+  scoped_refptr<net::X509Certificate> cert_;
   // Out parameter for the result.
   net::CertVerifyResult* cert_verify_result_;
   // Callback to call once the result is available.
@@ -119,8 +124,8 @@ int MojoCertVerifier::Verify(
       cert_verifier_request.InitWithNewPipeAndPassReceiver();
   mojo_cert_verifier_->Verify(params, std::move(cert_verifier_request));
   *out_req = std::make_unique<CertVerifierRequestImpl>(
-      std::move(cert_verifier_receiver), verify_result, std::move(callback),
-      net_log);
+      std::move(cert_verifier_receiver), params.certificate(), verify_result,
+      std::move(callback), net_log);
 
   return net::ERR_IO_PENDING;
 }

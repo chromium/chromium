@@ -35,10 +35,13 @@ int CertAndCTVerifier::Verify(const RequestParams& params,
   int result = cert_verifier_->Verify(params, verify_result,
                                       std::move(ct_callback), out_req, net_log);
 
-  if (result != ERR_IO_PENDING) {
-    // Synchronous completion; directly perform CT verification which is always
-    // synchronous as it has all the data it needs for SCT verificiation and
-    // does not do any external communication.
+  // If the certificate verification completed synchronously and successfully,
+  // then directly perform CT verification (which is always synchronous as it
+  // has all the data it needs for SCT verification and does not do any external
+  // communication).
+  if (result != ERR_IO_PENDING &&
+      (result == OK || IsCertificateError(result))) {
+    DCHECK(verify_result->verified_cert);
     ct_verifier_->Verify(params.hostname(), verify_result->verified_cert.get(),
                          params.ocsp_response(), params.sct_list(),
                          &verify_result->scts, net_log);
@@ -55,13 +58,18 @@ void CertAndCTVerifier::OnCertVerifyComplete(const RequestParams& params,
                                              CompletionOnceCallback callback,
                                              CertVerifyResult* verify_result,
                                              const NetLogWithSource& net_log,
-                                             int error) {
-  ct_verifier_->Verify(params.hostname(), verify_result->verified_cert.get(),
-                       params.ocsp_response(), params.sct_list(),
-                       &verify_result->scts, net_log);
+                                             int result) {
+  // Only perform CT verification if the certificate verification completed
+  // successfully.
+  if (result == OK || IsCertificateError(result)) {
+    DCHECK(verify_result->verified_cert);
+    ct_verifier_->Verify(params.hostname(), verify_result->verified_cert.get(),
+                         params.ocsp_response(), params.sct_list(),
+                         &verify_result->scts, net_log);
+  }
 
   // Now chain to the user's callback, which may delete |this|.
-  std::move(callback).Run(error);
+  std::move(callback).Run(result);
 }
 
 }  // namespace net

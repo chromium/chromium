@@ -160,10 +160,10 @@ class NET_EXPORT CertVerifier {
   // Returns OK if successful or an error code upon failure.
   //
   // The |*verify_result| structure, including the |verify_result->cert_status|
-  // bitmask, is always filled out regardless of the return value. If the
-  // certificate has multiple errors, the corresponding status flags are set in
-  // |verify_result->cert_status|, and the error code for the most serious
-  // error is returned.
+  // bitmask and |verify_result->verified_cert|, is always filled out regardless
+  // of the return value. If the certificate has multiple errors, the
+  // corresponding status flags are set in |verify_result->cert_status|, and the
+  // error code for the most serious error is returned.
   //
   // |callback| must not be null. ERR_IO_PENDING is returned if the operation
   // could not be completed synchronously, in which case the result code will

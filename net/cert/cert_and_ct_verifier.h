@@ -43,7 +43,7 @@ class NET_EXPORT CertAndCTVerifier : public CertVerifier {
                             CompletionOnceCallback callback,
                             CertVerifyResult* verify_result,
                             const NetLogWithSource& net_log,
-                            int error);
+                            int result);
 
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<CTVerifier> ct_verifier_;
