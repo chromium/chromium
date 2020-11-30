@@ -3769,6 +3769,7 @@
 <translation id="5402815541704507626">모바일 데이터를 사용하여 업데이트 다운로드</translation>
 <translation id="540296380408672091"><ph name="HOST" />에서 쿠키 항상 차단</translation>
 <translation id="540495485885201800">이전 항목과 교환</translation>
+<translation id="5405146885510277940">설정 초기화</translation>
 <translation id="5408750356094797285">확대/축소: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google 계정에서 삭제</translation>
 <translation id="5411472733320185105">다음 호스트와 도메인에서 프록시 설정을 사용 안함:</translation>
@@ -5591,7 +5592,7 @@
 <translation id="7548856833046333824">레모네이드</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />을(를) 다운로드하지 못함</translation>
-<translation id="7551643184018910560">임시보관함에 고정</translation>
+<translation id="7551643184018910560">실행기에 고정</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7553012839257224005">Linux 컨테이너 확인 중</translation>
 <translation id="7553242001898162573">비밀번호를 입력해 주세요.</translation>

@@ -1023,7 +1023,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2148892889047469596">Emet la pestanya</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2150139952286079145">Cerca destinacions</translation>
-<translation id="2150661552845026580">Voleu afegir "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="2150661552845026580">Vols afegir "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Heu introduït un índex de pestanya no vàlid.</translation>
 <translation id="2152281589789213846">Afegeix impressores al teu perfil</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
@@ -2309,7 +2309,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - Temps restant: <ph name="TIME" /></translation>
 <translation id="3637682276779847508">Si no introdueixes el número PUK correcte, la targeta SIM es desactivarà de manera definitiva.</translation>
 <translation id="3639220004740062347">Surt del mode de lector</translation>
-<translation id="3640214691812501263">Voleu afegir l'extensió <ph name="EXTENSION_NAME" /> per a <ph name="USER_NAME" />?</translation>
+<translation id="3640214691812501263">Vols afegir "<ph name="EXTENSION_NAME" />" per a <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Ensenya l'Assistent a reconèixer la teva veu</translation>
 <translation id="3643637292669952403">Impedeix que els llocs web vegin la teva ubicació</translation>
 <translation id="3645372836428131288">Mou el dit lleugerament perquè es pugui capturar una altra part de l'empremta digital.</translation>
@@ -3770,6 +3770,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5402815541704507626">Baixa l'actualització utilitzant dades mòbils</translation>
 <translation id="540296380408672091">Bloqueja sempre les galetes a <ph name="HOST" /></translation>
 <translation id="540495485885201800">Canvia per l'anterior</translation>
+<translation id="5405146885510277940">Restableix la configuració</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Del teu Compte de Google</translation>
 <translation id="5411472733320185105">No utilitzeu la configuració del servidor intermediari per a aquests amfitrions i dominis:</translation>
@@ -4696,7 +4697,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6468485451923838994">Tipus de lletra</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fitxers</translation>
 <translation id="6469557521904094793">Activa la xarxa mòbil</translation>
-<translation id="6472207088655375767">Contrasenya d'ús únic</translation>
+<translation id="6472207088655375767">OTP</translation>
 <translation id="6472893788822429178">Mostra el botó Pàgina d'inici</translation>
 <translation id="6473842110411557830">Il·lustració de Powerwash</translation>
 <translation id="6474498546677193336">No s'ha pogut deixar de compartir perquè una aplicació està utilitzant aquesta carpeta. La carpeta es deixarà de compartir la propera vegada que Linux s'apagui.</translation>
@@ -6967,7 +6968,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9088917181875854783">Confirmeu que aquesta clau d'accés apareix a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Mètodes d'entrada</translation>
 <translation id="909108997331068008">El perfil <ph name="EXISTING_USER" /> ja s'ha utilitzat per iniciar la sessió a <ph name="NEW_USER" /></translation>
-<translation id="9093429538970210897">Es recomana fer una còpia de seguretat dels fitxers si l'actualització no es pot completar. En iniciar l'actualització, Linux (versió beta) s'apagarà. Desa els fitxers oberts abans de continuar.</translation>
+<translation id="9093429538970210897">Es recomana fer una còpia de seguretat dels fitxers per si de cas l'actualització no es pot completar. En iniciar l'actualització, Linux (versió beta) s'apagarà. Desa els fitxers oberts abans de continuar.</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
 <translation id="9094038138851891550">El nom d'usuari no és vàlid</translation>
 <translation id="9094982973264386462">Suprimeix</translation>

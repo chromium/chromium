@@ -128,7 +128,7 @@
 <translation id="1136712381129578788">ඉතා වැඩි අවස්ථාවක් වැරදි රහස් අංකය ඇතුළත් කළ බැවින් ආරක්‍ෂක යතුරට අඟුලු දමා ඇත. එය අඟුලු ඇරීමට, එය ඉවත් කර යළි ඇතුළත් කරන්න.</translation>
 <translation id="1137589305610962734">තාවකාලික දත්ත</translation>
 <translation id="1137673463384776352">සබැඳිය <ph name="APP" /> තුළ විවෘත කරන්න</translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{නව දැනුම්දීම}one{නව දැනුම්දීම් #}other{නව දැනුම්දීම් #}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{නව දැනුම්දීම}one{# නව දැනුම්දීම්}other{# නව දැනුම්දීම්}}</translation>
 <translation id="1139343347646843679">ලිනක්ස් වින්‍යාස කිරීමේදී දෝෂයක් තිබුණා. ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="1140351953533677694">ඔබගේ බ්ලූටූත් සහ අනුක්‍රමික උපාංග වෙත ප්‍රවේශ වන්න</translation>
 <translation id="114036956334641753">ශ්‍රව්‍ය සහ සිරස්තල</translation>
@@ -3770,6 +3770,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5402815541704507626">ජංගම දත්ත භාවිත කර යාවත්කාලීනය බාගැනීම</translation>
 <translation id="540296380408672091"><ph name="HOST" /> මත සැම විටම කුකි අවහිර කරන්න</translation>
 <translation id="540495485885201800">පෙර එක සමඟ හුවමාරු කරන්න</translation>
+<translation id="5405146885510277940">සැකසීම් යළි පිහිටුවන්න</translation>
 <translation id="5408750356094797285">විශාලනය: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ඔබේ Google ගිණුමෙන්</translation>
 <translation id="5411472733320185105">මෙම සත්කාරකයන් සහ වසම් සඳහා ප්‍රොක්සි සැකසුම් භාවිතා නොකරන්න:</translation>

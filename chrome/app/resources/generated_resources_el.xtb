@@ -128,7 +128,7 @@
 <translation id="1136712381129578788">Το κλειδί ασφαλείας είναι κλειδωμένο επειδή έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές. Για να το ξεκλειδώσετε, αφαιρέστε το και επανατοποθετήστε το.</translation>
 <translation id="1137589305610962734">προσωρινά δεδομένα</translation>
 <translation id="1137673463384776352">Άνοιγμα συνδέσμου στην εφαρμογή <ph name="APP" /></translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Νέα ειδοποίηση}other{# νέες ειδοποιήσεις}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Νέα Ειδοποίηση}other{# νέες ειδοποιήσεις}}</translation>
 <translation id="1139343347646843679">Παρουσιάστηκε ένα σφάλμα κατά τη διαμόρφωση των Linux. Επικοινωνήστε με τον διαχειριστή.</translation>
 <translation id="1140351953533677694">Πρόσβαση στις συσκευές Bluetooth και τις σειριακές συσκευές</translation>
 <translation id="114036956334641753">Ήχος και υπότιτλοι</translation>
@@ -3771,6 +3771,7 @@
 <translation id="5402815541704507626">Λήψη ενημέρωσης με χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="540296380408672091">Να γίνεται πάντα αποκλεισμός των cookie για <ph name="HOST" /></translation>
 <translation id="540495485885201800">Αντικατάσταση με προηγούμενο</translation>
+<translation id="5405146885510277940">Επαναφορά ρυθμίσεων</translation>
 <translation id="5408750356094797285">Εστίαση <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Από τον Λογαριασμό σας Google.</translation>
 <translation id="5411472733320185105">Μην χρησιμοποιείτε τις ρυθμίσεις διακομιστή μεσολάβησης για αυτούς τους κεντρικούς υπολογιστές και τομείς:</translation>

@@ -169,7 +169,7 @@
 <translation id="1177863135347784049">କଷ୍ଟମ୍‌</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="117916940443676133">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ ଏକ ପିନ୍ ଦ୍ୱାରା ସୁରକ୍ଷିତ ନୁହେଁ। ସାଇନ୍-ଇନ୍ ଡାଟା ପରିଚାଳନା କରିବାକୁ ପ୍ରଥମେ ଏକ ପିନ୍ ତିଆରି କରନ୍ତୁ।</translation>
-<translation id="1181037720776840403">ଅପସାରଣ</translation>
+<translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1183237619868651138">ସ୍ଥାନୀୟ କେଚ୍‍‍ରେ <ph name="EXTERNAL_CRX_FILE" /> ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="1185924365081634987">ଆପଣ ଏହି ନେଟ୍‍ୱର୍କ ତ୍ରୁଟିର ସମାଧାନ କରିବା ପାଇଁ <ph name="GUEST_SIGNIN_LINK_START" />ଅତିଥି ଭାବରେ ବ୍ରାଉଜ୍ କରିବା<ph name="GUEST_SIGNIN_LINK_END" />କୁ ମଧ୍ୟ ଚେଷ୍ଟା କରିପାରିବେ।</translation>
 <translation id="1186771945450942097">କ୍ଷତିକାରକ ସଫ୍ଟୱେର୍‌କୁ କାଢ଼ିଦିଅନ୍ତୁ</translation>
@@ -3763,6 +3763,7 @@
 <translation id="5402815541704507626">ମୋବାଇଲ୍‌ ଡାଟା ବ୍ୟବହାର କରି ଅପ୍‌ଡେଟ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="540296380408672091">ସର୍ବଦା <ph name="HOST" />ରେ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="540495485885201800">ପୂର୍ବବର୍ତ୍ତୀ ଆଇଟମ୍ ସହିତ ସ୍ୱାପ୍ କରନ୍ତୁ</translation>
+<translation id="5405146885510277940">ସେଟିଂସ୍ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5408750356094797285">ଜୁମ୍ କରନ୍ତୁ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ</translation>
 <translation id="5411472733320185105">ଏହି ହୋଷ୍ଟ ଏବଂ ଡୋମେନ୍‌ଗୁଡ଼ିକ ପାଇଁ ପ୍ରକ୍ସି ସେଟିଂସ୍ ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ:</translation>

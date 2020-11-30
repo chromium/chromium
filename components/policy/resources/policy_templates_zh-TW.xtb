@@ -554,9 +554,9 @@
 <translation id="1945994447126139909">這項企業政策只是暫時性措施，將在 <ph name="PRODUCT_NAME" /> 第 88 版中移除。
 
 
-      透過漸進式的 Chrome 第 85 穩定版發布作業，Chrome 的預設參照政策已從目前的值 no-referrer-when-downgrade 強化為更安全的 strict-origin-when-cross-origin。
+      透過漸進式的 Chrome 第 85 穩定版推出作業，Chrome 的預設參照政策已從目前的值 no-referrer-when-downgrade 強化為更安全的 strict-origin-when-cross-origin。
 
-      在發布之前，這項企業政策不會生效。如果你在發布之後啟用這項企業政策，Chrome 的預設參照政策將設為先前的值 no-referrer-when-downgrade。
+      在推出之前，這項企業政策不會生效。如果你在推出之後啟用這項企業政策，Chrome 的預設參照政策將設為先前的值 no-referrer-when-downgrade。
 
       在預設狀態下，系統會停用這項企業政策。</translation>
 <translation id="1962273523772270623">允許從 Google 服務收集 WebRTC 事件記錄</translation>

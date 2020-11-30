@@ -371,6 +371,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="363596933471559332">Du logges på nettsteder automatisk ved hjelp av lagret legitimasjon. Når funksjonen er slått av, blir du bedt om å oppgi legitimasjonen din hver gang du logger på et nettsted.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3658159451045945436">Tilbakestilling fjerner historikken for datasparing, inkludert listen over besøkte nettsteder.</translation>
+<translation id="3687645719033307815">Du ser på en forhåndsvisning av denne siden</translation>
 <translation id="3692944402865947621">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi lagringsstedet ikke kan nås.</translation>
 <translation id="3701167022068948696">Løs dette nå</translation>
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
@@ -1153,6 +1154,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9065383040763568503">Lagrede data som Chrome ikke tror er viktige (for eksempel nettsteder uten lagrede innstillinger eller som du ikke besøker ofte)</translation>
 <translation id="9069543557624799859">Nedlastingen starter kl. <ph name="TIME" />.</translation>
+<translation id="9069999660519089861">Ingen uleste sider</translation>
 <translation id="9070377983101773829">Start talesøk</translation>
 <translation id="9074336505530349563">For å få forslag om personlig tilpasset innhold fra Google, slå på synkronisering</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>

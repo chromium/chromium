@@ -17,7 +17,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
 <translation id="1119348796022671382">Chế độ màu theo giao diện dùng các màu trích xuất từ hình nền để tạo màu nhẹ nhàng cho giao diện.</translation>
-<translation id="112308213915226829">Tự động ẩn giá</translation>
+<translation id="112308213915226829">Tự động ẩn kệ</translation>
 <translation id="1153356358378277386">Thiết bị được ghép nối</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -199,8 +199,8 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2903844815300039659">Đã kết nối tới <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Ảnh chụp màn hình</translation>
 <translation id="2942350706960889382">Phóng to ở vị trí cố định</translation>
-<translation id="2942516765047364088">Vị trí giá</translation>
-<translation id="2946119680249604491">Thêm kết nối</translation>
+<translation id="2942516765047364088">Vị trí kệ</translation>
+<translation id="2946119680249604491">Thêm đường kết nối</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
@@ -685,7 +685,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
-<translation id="7551643184018910560">Ghim vào giá</translation>
+<translation id="7551643184018910560">Ghim vào kệ</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>

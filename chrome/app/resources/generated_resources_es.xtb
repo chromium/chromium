@@ -254,7 +254,7 @@
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1272293450992660632">Los códigos PIN no coinciden.</translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se ha registrado el dispositivo. Si quieres registrarlo en un dominio diferente, primero debes llevar a cabo el proceso de recuperación de dispositivo.</translation>
-<translation id="1274997165432133392">Cookies y otros datos de sitios web</translation>
+<translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1276994519141842946">No se ha podido desinstalar <ph name="APP_NAME" /></translation>
 <translation id="127946606521051357">Un dispositivo cercano está compartiendo datos</translation>
@@ -3770,6 +3770,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5402815541704507626">Descargar la actualización con datos móviles</translation>
 <translation id="540296380408672091">Bloquear siempre cookies en <ph name="HOST" /></translation>
 <translation id="540495485885201800">Intercambiar con el anterior</translation>
+<translation id="5405146885510277940">Restablecer configuración</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De tu cuenta de Google</translation>
 <translation id="5411472733320185105">No utilizar la configuración de proxy para estos hosts y dominios:</translation>

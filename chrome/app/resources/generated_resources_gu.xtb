@@ -128,7 +128,7 @@
 <translation id="1136712381129578788">ઘણી બધી વખત ખોટો પિન દાખલ કર્યો હતો એટલા માટે સુરક્ષા કોડ લૉક કરેલો છે. તે અનલૉક કરવા માટે તેને કાઢી નાખો અને ફરી શામેલ કરો.</translation>
 <translation id="1137589305610962734">અસ્થાયી ડેટા</translation>
 <translation id="1137673463384776352"><ph name="APP" />માં લિંક ખોલો</translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવું નોટિફિકેશન}one{# નવું નોટિફિકેશન}other{# નવા નોટિફિકેશન}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવી નોટિફિકેશન}one{# નવી નોટિફિકેશન}other{# નવી નોટિફિકેશન}}</translation>
 <translation id="1139343347646843679">Linuxની ગોઠવણી કરતી વખતે ભૂલ આવી હતી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="1140351953533677694">તમારા Bluetooth અને સીરિયલ ડિવાઇસને ઍક્સેસ કરો</translation>
 <translation id="114036956334641753">ઑડિયો અને કૅપ્શન</translation>
@@ -3768,6 +3768,7 @@
 <translation id="5402815541704507626">મોબાઇલ ડેટાનો ઉપયોગ કરીને અપડેટ ડાઉનલોડ કરો</translation>
 <translation id="540296380408672091"><ph name="HOST" /> પર કુકીઝને હંમેશાં અવરોધિત કરો</translation>
 <translation id="540495485885201800">અગાઉની આઇટમ સાથે અદલાબદલી કરો</translation>
+<translation id="5405146885510277940">સેટિંગ રીસેટ કરો</translation>
 <translation id="5408750356094797285">ઝૂમ કરો: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">તમારા Google એકાઉન્ટમાંથી</translation>
 <translation id="5411472733320185105">આ હોસ્ટ અને ડોમેન માટે પ્રૉક્સી સેટિંગનો ઉપયોગ કરશો નહીંં:</translation>
@@ -4889,6 +4890,7 @@ USB ડિવાઇસ</translation>
 <translation id="671928215901716392">સ્ક્રીન લૉક કરો</translation>
 <translation id="6721678857435001674">તમારી સુરક્ષા કીની બનાવટ અને મૉડલ જુઓ</translation>
 <translation id="6721972322305477112">&amp;File</translation>
+<translation id="672208878794563299">આગલી વખતે આ સાઇટ ફરીથી પૂછશે.</translation>
 <translation id="672213144943476270">અતિથિ તરીકે બ્રાઉઝ કરતાં પહેલાં કૃપા કરીને તમારી પ્રોફાઇલ અનલૉક કરો.</translation>
 <translation id="6723661294526996303">બુકમાર્ક્સ અને સેટિંગ્સ આયાત કરો...</translation>
 <translation id="6723839937902243910">પાવર</translation>

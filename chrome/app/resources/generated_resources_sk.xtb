@@ -2220,7 +2220,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="354068948465830244">Môže čítať údaje o webe a meniť ich</translation>
 <translation id="3543393733900874979">Aktualizácia zlyhala (chyba: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Podpis X9.62 ECDSA s SHA-512</translation>
-<translation id="3544879808695557954">Používateľské meno (voliteľné)</translation>
+<translation id="3544879808695557954">Používateľské meno (nepovinné)</translation>
 <translation id="354602065659584722">Škodlivý softvér bol odstránený</translation>
 <translation id="3547954654003013442">Nastavenia servera proxy</translation>
 <translation id="3548162552723420559">Upraví farby obrazovky podľa prostredia</translation>
@@ -3639,7 +3639,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5244474230056479698">Synchronizácia do účtu <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Ako začať so školským účtom</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> zlyhala. Aplikáciu reštartujte kliknutím na túto bublinu.</translation>
-<translation id="5247051749037287028">Zobrazovaný názov (voliteľné)</translation>
+<translation id="5247051749037287028">Zobrazovaný názov (nepovinné)</translation>
 <translation id="5249624017678798539">Prehliadač zlyhal pred dokončením sťahovania.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> poskytuje miestny obsah na základe vašej polohy. Môžete to zmeniť na stránke <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -3772,6 +3772,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5402815541704507626">Stiahnutie aktualizácie pomocou mobilných dát</translation>
 <translation id="540296380408672091">Vždy blokovať súbory cookie na stránkach <ph name="HOST" /></translation>
 <translation id="540495485885201800">Vymeniť s predchádzajúcou</translation>
+<translation id="5405146885510277940">Resetovať nastavenia</translation>
 <translation id="5408750356094797285">Lupa: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Z vášho účtu Google</translation>
 <translation id="5411472733320185105">Nepoužívať nastavenia servera proxy pre nasledujúcich hostiteľov a domény:</translation>
@@ -5082,7 +5083,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6943836128787782965">Príkaz get protokolu HTTP zlyhal</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="694592694773692225">Presmerovanie bolo zablokované na tejto stránke.</translation>
-<translation id="6949434160682548041">Heslo (voliteľné)</translation>
+<translation id="6949434160682548041">Heslo (nepovinné)</translation>
 <translation id="6950627417367801484">Obnoviť aplikácie</translation>
 <translation id="6950943362443484797">Aplikáciu pre vás nainštalujeme</translation>
 <translation id="6951153907720526401">Obslužné nástroje platieb</translation>

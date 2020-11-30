@@ -548,7 +548,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1888871729456797026">Mã thông báo đăng ký của chính sách đám mây trên màn hình</translation>
 <translation id="1894790493260633497">Bật chế độ in đồ họa nền theo mặc định</translation>
 <translation id="1897365952389968758">Cho phép tất cả các trang web chạy JavaScript</translation>
-<translation id="1902043648529789224">Kiểm soát vị trí giá</translation>
+<translation id="1902043648529789224">Kiểm soát vị trí kệ</translation>
 <translation id="1904323733389537794">Nếu bạn đặt chính sách này thành True, thì các hoạt động kiểm tra <ph name="OCSP_CRL_LABEL" /> trực tuyến sẽ được thực hiện.
 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ không thực hiện các hoạt động kiểm tra thu hồi trực tuyến ở <ph name="PRODUCT_NAME" /> 19 trở lên.
@@ -4186,17 +4186,17 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn không đặt chính sách nói trên, <ph name="BLOCK_PLUGINS_POLICY_NAME" /> sẽ áp dụng và cho phép người dùng thay đổi tùy chọn cài đặt này.
 
       Lưu ý: Tùy chọn Tự động phát chỉ dành cho miền được nêu tên rõ ràng trong chính sách <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Để bật tùy chọn tự động phát cho tất cả trang web, hãy thêm http://* và https://* vào danh sách này.</translation>
-<translation id="7037812781389976160">Kiểm soát vị trí của giá <ph name="PRODUCT_OS_NAME" />.
+<translation id="7037812781389976160">Kiểm soát vị trí kệ <ph name="PRODUCT_OS_NAME" />.
 
-      Nếu bạn đặt chính sách này thành 'Dưới cùng', thì giá sẽ được đặt ở cuối màn hình.
+      Nếu bạn đặt chính sách này thành 'Dưới cùng', thì kệ sẽ được đặt ở cuối màn hình.
 
-      Nếu bạn đặt chính sách này thành 'Bên trái', thì giá sẽ được đặt ở bên trái màn hình.
+      Nếu bạn đặt chính sách này thành 'Bên trái', thì kệ sẽ được đặt ở bên trái màn hình.
 
-      Nếu bạn đặt chính sách này thành 'Bên phải', thì giá sẽ được đặt ở bên phải màn hình.
+      Nếu bạn đặt chính sách này thành 'Bên phải', thì kệ sẽ được đặt ở bên phải màn hình.
 
       Nếu bạn đặt chính sách này thành bắt buộc, thì người dùng sẽ không thể thay đổi hoặc ghi đè chính sách này.
 
-      Nếu bạn không đặt chính sách này, thì giá sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của giá.</translation>
+      Nếu bạn không đặt chính sách này, thì kệ sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của kệ.</translation>
 <translation id="7040229947030068419">Giá trị mẫu:</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>
 <translation id="7063895219334505671">Cho phép cửa sổ bật lên trên các trang web này</translation>

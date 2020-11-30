@@ -80,7 +80,7 @@
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
 <translation id="1087707496788636333">De Chrome Enterprise-beleidslijst wordt verplaatst. Update je bookmarks naar <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
-<translation id="1093082332347834239">Als de instelling is ingeschakeld, wordt de host voor ondersteuning op afstand uitgevoerd in een proces met <ph name="UIACCESS_PERMISSION_NAME" />-rechten. Zodoende kan een externe gebruiker de vensters met een verhoogde bevoegdheid op de desktop van de lokale gebruiker gebruiken.
+<translation id="1093082332347834239">Als de instelling is ingeschakeld, wordt de host voor support op afstand uitgevoerd in een proces met <ph name="UIACCESS_PERMISSION_NAME" />-rechten. Zodoende kan een externe gebruiker de vensters met een verhoogde bevoegdheid op de desktop van de lokale gebruiker gebruiken.
 
           Als deze instelling is uitgeschakeld of niet geconfigureerd, wordt de host voor ondersteuning op afstand uitgevoerd in de context van de gebruiker en kan de externe gebruiker geen vensters met een verhoogde bevoegdheid op de desktop gebruiken.</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
@@ -3405,7 +3405,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
-<translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor ondersteuning op afstand</translation>
+<translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="6095048925836115505">Het virtuele toetsenbord op het inlogscherm inschakelen</translation>
 <translation id="6095999036251797924">Specificeert de periode zonder gebruikersinvoer waarna het scherm wordt vergrendeld wanneer het apparaat op netstroom of op de batterij werkt.
 

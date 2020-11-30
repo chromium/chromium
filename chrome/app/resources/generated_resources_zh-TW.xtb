@@ -1234,7 +1234,7 @@
 <translation id="2387052489799050037">前往主畫面</translation>
 <translation id="2387458720915042159">Proxy 連線類型</translation>
 <translation id="2390347491606624519">無法連線至 Proxy，請再次登入</translation>
-<translation id="2390782873446084770">Wi-Fi 同步處理</translation>
+<translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">標準字型</translation>
 <translation id="2392163307141705938">你已達到貴家長為 <ph name="IDS_SHORT_PRODUCT_NAME" /> 設定的使用時間限制。</translation>
 <translation id="2392369802118427583">啟用</translation>
@@ -2540,7 +2540,7 @@
 <translation id="3884152383786131369">支援多種語言的網站內容會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">你想存取這個網站的要求已傳送給<ph name="NAME" /></translation>
 <translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
-<translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步處理</translation>
+<translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP...</translation>
 <translation id="3893536212201235195">讀取及變更你的無障礙設定</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -3769,6 +3769,7 @@
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
 <translation id="540296380408672091">一律封鎖 <ph name="HOST" /> 的 Cookie</translation>
 <translation id="540495485885201800">與上一個交換</translation>
+<translation id="5405146885510277940">重設設定</translation>
 <translation id="5408750356094797285">縮放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">從 Google 帳戶</translation>
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
@@ -3953,7 +3954,7 @@
 <translation id="5602765853043467355">清除這個裝置的書籤、歷史記錄、密碼和其他設定</translation>
 <translation id="5605623530403479164">其他搜尋引擎</translation>
 <translation id="5605758115928394442">為了確認你的身分，系統已傳送通知到你的手機。</translation>
-<translation id="560834977503641186">Wi-Fi 同步處理，瞭解詳情</translation>
+<translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
 <translation id="5610038042047936818">切換至相機模式</translation>
@@ -7140,6 +7141,6 @@
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全連線...</translation>
-<translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi 同步處理。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi 同步。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">檢查(&amp;N)</translation>
 </translationbundle>

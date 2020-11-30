@@ -3773,6 +3773,7 @@
 <translation id="5402815541704507626">تنزيل التحديث باستخدام بيانات الجوّال</translation>
 <translation id="540296380408672091">حظر ملفات تعريف الارتباط على <ph name="HOST" /> دومًا</translation>
 <translation id="540495485885201800">تبديل العنصر المختار مع العنصر السابق</translation>
+<translation id="5405146885510277940">إعادة ضبط الإعدادات</translation>
 <translation id="5408750356094797285">تكبير/تصغير: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏من حسابك على Google</translation>
 <translation id="5411472733320185105">عدم استخدام إعدادات الخادم الوكيل لهذه المضيفات والنطاقات:</translation>
@@ -4347,7 +4348,7 @@
 <translation id="6064217302520318294">قفل الشاشة</translation>
 <translation id="6065289257230303064">سمات دليل صاحب الشهادة</translation>
 <translation id="6069464830445383022">‏تسجيل الدخول إلى Chromebook من خلال حسابك على Google</translation>
-<translation id="6069671174561668781">تعيين خلفية</translation>
+<translation id="6069671174561668781">ضبط الخلفية</translation>
 <translation id="6071181508177083058">تأكيد كلمة المرور</translation>
 <translation id="6071576563962215370">تعذَّر على النظام إنشاء قفل سمات وقت تثبيت الجهاز.</translation>
 <translation id="6072442788591997866">لا يُسمح باستخدام <ph name="APP_NAME" /> على هذا الجهاز. يُرجى التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
