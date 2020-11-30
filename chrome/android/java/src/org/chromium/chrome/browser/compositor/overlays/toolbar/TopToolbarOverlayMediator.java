@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.top;
+package org.chromium.chrome.browser.compositor.overlays.toolbar;
 
 import android.content.Context;
 
@@ -10,16 +10,15 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
@@ -46,13 +45,10 @@ public class TopToolbarOverlayMediator {
     private final Callback<ClipDrawableProgressBar.DrawingInfo> mProgressInfoCallback;
 
     /** Provides current tab. */
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ActivityTabProvider mTabSupplier;
 
     /** An observer that watches for changes in the active tab. */
-    private final CurrentTabObserver mTabObserver;
-
-    /** A callback to invoke upon activity tab switching. */
-    private final Callback<Tab> mActivityTabCallback;
+    private final ActivityTabProvider.ActivityTabObserver mTabSupplierObserver;
 
     /** Access to the current state of the browser controls. */
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -63,8 +59,8 @@ public class TopToolbarOverlayMediator {
     /** The view state for this overlay. */
     private final PropertyModel mModel;
 
-    /** Callback controller for cancelable callbacks. */
-    private final CallbackController mCallbackController;
+    /** The last non-null tab. */
+    private Tab mLastActiveTab;
 
     /** Whether the active layout has its own toolbar to display instead of this one. */
     private boolean mLayoutHasOwnToolbar;
@@ -75,7 +71,7 @@ public class TopToolbarOverlayMediator {
     TopToolbarOverlayMediator(PropertyModel model, Context context,
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
-            ObservableSupplier<Tab> tabSupplier,
+            ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
@@ -83,7 +79,6 @@ public class TopToolbarOverlayMediator {
         mTabSupplier = tabSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModel = model;
-        mCallbackController = new CallbackController();
 
         mSceneChangeObserver = new LayoutStateObserver() {
             @Override
@@ -98,7 +93,7 @@ public class TopToolbarOverlayMediator {
         };
         mLayoutStateProvider.addObserver(mSceneChangeObserver);
 
-        mTabObserver = new CurrentTabObserver(mTabSupplier, new EmptyTabObserver() {
+        final TabObserver currentTabObserver = new EmptyTabObserver() {
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
                 updateThemeColor(tab);
@@ -114,20 +109,21 @@ public class TopToolbarOverlayMediator {
                 updateVisibility();
                 updateThemeColor(tab);
             }
-        });
+        };
 
         // Keep an observer attached to the visible tab (and only the visible tab) to update
         // properties including theme color.
-        mActivityTabCallback = mCallbackController.makeCancelable(tab -> {
+        mTabSupplierObserver = (tab, hint) -> {
+            if (mLastActiveTab != null) mLastActiveTab.removeObserver(currentTabObserver);
             if (tab == null) return;
-            updateVisibility();
-            updateThemeColor(tab);
-            updateProgress();
-        });
 
-        mTabSupplier.addObserver(mActivityTabCallback);
-        mActivityTabCallback.onResult(mTabSupplier.get());
-        mTabObserver.triggerWithCurrentTab();
+            mLastActiveTab = tab;
+            mLastActiveTab.addObserver(currentTabObserver);
+            updateVisibility();
+            updateThemeColor(mLastActiveTab);
+            updateProgress();
+        };
+        mTabSupplier.addObserverAndTrigger(mTabSupplierObserver);
 
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             @Override
@@ -227,10 +223,9 @@ public class TopToolbarOverlayMediator {
 
     /** Clean up any state and observers. */
     void destroy() {
-        mCallbackController.destroy();
-        mTabObserver.destroy();
-        mActivityTabCallback.onResult(null);
-        mTabSupplier.removeObserver(mActivityTabCallback);
+        mTabSupplier.removeObserver(mTabSupplierObserver);
+        mTabSupplierObserver.onActivityTabChanged(null, false);
+        mLastActiveTab = null;
 
         mLayoutStateProvider.removeObserver(mSceneChangeObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
