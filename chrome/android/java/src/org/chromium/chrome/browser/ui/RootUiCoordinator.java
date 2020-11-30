@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
+import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -119,6 +121,7 @@ public class RootUiCoordinator
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabObscuringHandler mTabObscuringHandler;
     private final AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
+    private final @Nullable AutofillSessionLifetimeController mAutofillSessionLifetimeController;
 
     private ActivityTabProvider mActivityTabProvider;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
@@ -221,6 +224,14 @@ public class RootUiCoordinator
         mTabObscuringHandler = new TabObscuringHandler();
         mAccessibilityVisibilityHandler = new AccessibilityVisibilityHandler(
                 activity.getLifecycleDispatcher(), mActivityTabProvider, mTabObscuringHandler);
+        // While Autofill is supported on Android O, meaningful Autofill interactions in Chrome
+        // require the compatibility mode introduced in Android P.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mAutofillSessionLifetimeController = new AutofillSessionLifetimeController(
+                    activity, mActivityTabProvider);
+        } else {
+            mAutofillSessionLifetimeController = null;
+        }
         mProfileSupplier = profileSupplier;
         mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
         mAppMenuSupplier = new OneshotSupplierImpl<>();
