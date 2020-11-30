@@ -157447,6 +157447,19 @@
          ],
          {}
         ]
+       ],
+       "sticky-content.html": [
+        "f60d9ec528c8f95dcfcc8c1ac75c067404677e47",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/sticky-content-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "the-frameset-and-frame-elements": {
@@ -226970,7 +226983,11 @@
          "b358d925a76fb571eda42292e2abbf7c1c75062f",
          []
         ]
-       }
+       },
+       "sticky-content-ref.html": [
+        "95e3c05cd843fb3cf5c957730a00d236226e3822",
+        []
+       ]
       },
       "the-frameset-and-frame-elements": {
        "OWNERS": [
@@ -326204,6 +326221,13 @@
     ],
     "el-windows-1253.tentative.html": [
      "b314aa58e6b47642c203fb46b942b4747deba965",
+     [
+      null,
+      {}
+     ]
+    ],
+    "en-euro-windows-1252.tentative.html": [
+     "c2835e7d98a5c00d530b0b70c9de94d4f153c4ca",
      [
       null,
       {}
