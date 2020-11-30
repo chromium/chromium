@@ -157,7 +157,7 @@ template("mac_toolchain") {
           rebase_path("//build/toolchain/clang_code_coverage_wrapper.py",
                       root_build_dir) + " --files-to-instrument=" +
           rebase_path(toolchain_coverage_instrumentation_input_file,
-                      root_build_dir)
+                      root_build_dir) + " --target-os=" + target_os
       cc = _coverage_wrapper + " ${cc}"
       cxx = _coverage_wrapper + " ${cxx}"
     }
