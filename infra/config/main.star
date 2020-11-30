@@ -10,7 +10,7 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.19.0",
+    min = "1.21.0",
     message = "Update depot_tools",
 )
 
@@ -27,6 +27,7 @@ lucicfg.config(
         "commit-queue.cfg",
         "cq-builders.md",
         "cr-buildbucket.cfg",
+        "goma-usage.pyl",
         "luci-logdog.cfg",
         "luci-milo.cfg",
         "luci-notify.cfg",
@@ -134,7 +135,7 @@ branches.exec("//subprojects/goma/subproject.star")
 branches.exec("//subprojects/webrtc/subproject.star")
 
 branches.exec("//generators/cq-builders-md.star")
-
+exec("//generators/goma-usage.star")
 exec("//generators/scheduler-noop-jobs.star")
 exec("//generators/sort-consoles.star")
 
