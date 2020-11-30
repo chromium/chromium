@@ -79,7 +79,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- fre_button_bar_height = 52dp = layout_height + layout_marginBottom -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/next_button"
         android:layout_width="wrap_content"
