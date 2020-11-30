@@ -71,7 +71,7 @@ base::Optional<TransformationMatrix> XRAnchor::MojoFromObject() const {
     return base::nullopt;
   }
 
-  return mojo_from_anchor_->ToTransform().matrix();
+  return TransformationMatrix(mojo_from_anchor_->ToTransform().matrix());
 }
 
 void XRAnchor::Delete() {

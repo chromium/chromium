@@ -297,7 +297,7 @@ DOMMatrix* DOMMatrix::invertSelf() {
   if (is2d_) {
     AffineTransform affine_transform = matrix_.ToAffineTransform();
     if (affine_transform.IsInvertible()) {
-      matrix_ = affine_transform.Inverse();
+      matrix_ = TransformationMatrix(affine_transform.Inverse());
       return this;
     }
   } else {

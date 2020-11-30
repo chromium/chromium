@@ -42,7 +42,7 @@ base::Optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
     return base::nullopt;
   }
 
-  return mojo_from_this_->ToTransform().matrix();
+  return TransformationMatrix(mojo_from_this_->ToTransform().matrix());
 }
 
 XRSpace* XRImageTrackingResult::imageSpace() const {

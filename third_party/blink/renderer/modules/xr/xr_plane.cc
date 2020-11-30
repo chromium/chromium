@@ -63,7 +63,7 @@ base::Optional<TransformationMatrix> XRPlane::MojoFromObject() const {
     return base::nullopt;
   }
 
-  return mojo_from_plane_->ToTransform().matrix();
+  return TransformationMatrix(mojo_from_plane_->ToTransform().matrix());
 }
 
 String XRPlane::orientation() const {
@@ -127,7 +127,8 @@ ScriptPromise XRPlane::createAnchor(ScriptState* script_state,
   auto space_from_mojo = mojo_from_space.Inverse();
   // We'll create an anchor located at the current plane's pose:
   auto space_from_anchor =
-      space_from_mojo * (mojo_from_plane_->ToTransform().matrix());
+      space_from_mojo *
+      TransformationMatrix(mojo_from_plane_->ToTransform().matrix());
 
   return session_->CreatePlaneAnchorHelper(
       script_state, space_from_anchor,

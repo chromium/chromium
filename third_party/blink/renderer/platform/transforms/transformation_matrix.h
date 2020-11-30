@@ -83,7 +83,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   TransformationMatrix() {
     MakeIdentity();
   }
-  TransformationMatrix(const AffineTransform&);
+  explicit TransformationMatrix(const AffineTransform&);
   TransformationMatrix(const TransformationMatrix& t) {
     *this = t;
   }
@@ -114,7 +114,7 @@ class PLATFORM_EXPORT TransformationMatrix {
     SetMatrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41,
               m42, m43, m44);
   }
-  TransformationMatrix(const SkMatrix44& matrix) {
+  explicit TransformationMatrix(const SkMatrix44& matrix) {
     SetMatrix(
         matrix.get(0, 0), matrix.get(1, 0), matrix.get(2, 0), matrix.get(3, 0),
         matrix.get(0, 1), matrix.get(1, 1), matrix.get(2, 1), matrix.get(3, 1),

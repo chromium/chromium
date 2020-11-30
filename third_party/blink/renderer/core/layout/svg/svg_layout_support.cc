@@ -210,10 +210,11 @@ const LayoutObject* SVGLayoutSupport::PushMappingToContainer(
   if (parent->IsSVGRoot()) {
     TransformationMatrix matrix(
         To<LayoutSVGRoot>(parent)->LocalToBorderBoxTransform());
-    matrix.Multiply(object->LocalToSVGParentTransform());
+    matrix.Multiply(TransformationMatrix(object->LocalToSVGParentTransform()));
     geometry_map.Push(object, matrix);
   } else {
-    geometry_map.Push(object, object->LocalToSVGParentTransform());
+    geometry_map.Push(
+        object, TransformationMatrix(object->LocalToSVGParentTransform()));
   }
 
   return parent;
