@@ -432,12 +432,6 @@ void StyleEngine::MediaQueryAffectingValueChanged(TreeScope& tree_scope,
   }
 }
 
-void StyleEngine::MediaQueriesChangedInScope(TreeScope& tree_scope) {
-  if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver())
-    resolver->SetNeedsAppendAllSheets();
-  SetNeedsActiveStyleUpdate(tree_scope);
-}
-
 void StyleEngine::WatchedSelectorsChanged() {
   DCHECK(!IsHTMLImport());
   DCHECK(global_rule_set_);

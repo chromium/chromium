@@ -49,7 +49,7 @@ void HTMLStyleElement::ParseAttribute(
              GetDocument().IsActive() && sheet_) {
     sheet_->SetMediaQueries(
         MediaQuerySet::Create(params.new_value, GetExecutionContext()));
-    GetDocument().GetStyleEngine().MediaQueriesChangedInScope(GetTreeScope());
+    GetDocument().GetStyleEngine().SetNeedsActiveStyleUpdate(GetTreeScope());
   } else if (params.name == html_names::kTypeAttr) {
     HTMLElement::ParseAttribute(params);
     StyleElement::ChildrenChanged(*this);
