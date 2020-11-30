@@ -4,6 +4,8 @@
 
 #include "chrome/services/speech/soda/soda_client.h"
 
+#include "base/logging.h"
+
 namespace soda {
 
 SodaClient::SodaClient(base::FilePath library_path)
@@ -16,20 +18,27 @@ SodaClient::SodaClient(base::FilePath library_path)
           lib_.GetFunctionPointer("AddAudio"))),
       is_initialized_(false),
       sample_rate_(0),
-      channel_count_(0) {}
+      channel_count_(0) {
+  if (!lib_.is_valid()) {
+    LOG(ERROR) << "SODA binary at " << library_path.value()
+               << " could not be loaded.";
+    LOG(ERROR) << "Error: " << lib_.GetError()->ToString();
+    DCHECK(false);
+  }
+
+  DCHECK(create_soda_func_);
+  DCHECK(delete_soda_func_);
+  DCHECK(add_audio_func_);
+}
 
 NO_SANITIZE("cfi-icall")
 SodaClient::~SodaClient() {
-  DCHECK(soda_async_handle_);
-  DCHECK(delete_soda_func_);
   if (IsInitialized())
     delete_soda_func_(soda_async_handle_);
 }
 
 NO_SANITIZE("cfi-icall")
 void SodaClient::AddAudio(const char* audio_buffer, int audio_buffer_size) {
-  DCHECK(soda_async_handle_);
-  DCHECK(add_audio_func_);
   add_audio_func_(soda_async_handle_, audio_buffer, audio_buffer_size);
 }
 
@@ -39,10 +48,6 @@ bool SodaClient::DidAudioPropertyChange(int sample_rate, int channel_count) {
 
 NO_SANITIZE("cfi-icall")
 void SodaClient::Reset(const SodaConfig config) {
-  DCHECK(soda_async_handle_);
-  DCHECK(create_soda_func_);
-  DCHECK(delete_soda_func_);
-
   if (IsInitialized()) {
     delete_soda_func_(soda_async_handle_);
   }
