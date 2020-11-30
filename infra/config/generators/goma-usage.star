@@ -129,8 +129,19 @@ def _get_cq_goma_usage(ctx, goma_usage_by_builder):
             if project != settings.project:
                 continue
             goma_usage = goma_usage_by_builder[builder_id]
-            total_cq_goma_usage += goma_usage.jobs
+            jobs = goma_usage.jobs
+            experiment_percentage = None
+            if builder.experiment_percentage:
+                experiment_percentage = builder.experiment_percentage
+                jobs = jobs * experiment_percentage * 0.01
+            goma_usage = struct(
+                jobs = jobs,
+                jobs_per_build = goma_usage.jobs,
+                experiment_percentage = experiment_percentage,
+                estimate = goma_usage.estimate,
+            )
             cq_goma_usage_by_builder[builder_id] = goma_usage
+            total_cq_goma_usage += jobs
 
     return struct(
         total = total_cq_goma_usage,
@@ -246,6 +257,11 @@ def _generate_goma_usage(ctx):
         "'*total*': {},".format(cq_goma_usage.total),
     )
     for builder, goma_usage in sorted(cq_goma_usage.by_builder.items()):
+        if goma_usage.experiment_percentage:
+            _("# {jobs} jobs x {percent}% experiment".format(
+                jobs = goma_usage.jobs_per_build,
+                percent = goma_usage.experiment_percentage,
+            ))
         if goma_usage.estimate:
             _("# jobs count assumes an 8-core machine")
         _("'{}': {},".format(builder, goma_usage.jobs))
