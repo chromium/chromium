@@ -73,6 +73,8 @@ js_library("compile_resources") {
     "metrics.js",
     "models/async_writer.js",
     "models/barcode.js",
+    "models/barcode_worker.js",
+    "models/barcode_worker_interface.js",
     "models/chrome_file_system_entry.js",
     "models/file_namer.js",
     "models/file_system.js",

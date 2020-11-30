@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as Comlink from '../lib/comlink.js';
+
+// eslint-disable-next-line no-unused-vars
+import {BarcodeWorkerInterface} from './barcode_worker_interface.js';
+
 // TODO(b/172879638): Get some performance data and tune the scan interval.
 const SCAN_INTERVAL = 1000;
 
@@ -27,10 +32,11 @@ export class BarcodeScanner {
     this.callback_ = callback;
 
     /**
-     * @type {!BarcodeDetector}
+     * @type {!BarcodeWorkerInterface}
      * @private
      */
-    this.detector_ = new BarcodeDetector({formats: ['qr_code']});
+    this.worker_ = Comlink.wrap(
+        new Worker('/js/models/barcode_worker.js', {type: 'module'}));
 
     /**
      * The current running interval id.
@@ -78,13 +84,9 @@ export class BarcodeScanner {
    */
   async scan_() {
     // TODO(b/172879638): Down scale the frame if the resolution is too high.
-    // TODO(b/172879638): Run this on a Web Worker.
-    const codes = await this.detector_.detect(this.video_);
+    const bitmap = await createImageBitmap(this.video_);
 
-    if (codes.length === 0) {
-      return null;
-    }
-    // TODO(b/172879638): Handle multiple barcodes.
-    return codes[0].rawValue;
+    const value = await this.worker_.detect(Comlink.transfer(bitmap, [bitmap]));
+    return value;
   }
 }

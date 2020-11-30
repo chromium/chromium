@@ -19,6 +19,8 @@
       <structure name="IDR_CAMERA_BACKGROUND_JS" file="js/background.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BACKGROUND_OPS_JS" file="js/background_ops.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BARCODE_JS" file="js/models/barcode.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_BARCODE_WORKER_JS" file="js/models/barcode_worker.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_BARCODE_WORKER_INTERFACE_JS" file="js/models/barcode_worker_interface.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BROWSER_PROXY_INTERFACE_JS" file="js/browser_proxy/browser_proxy_interface.js" type="chrome_html" />
       <structure name="IDR_CAMERA_CAMERA3_DEVICE_INFO_JS" file="js/device/camera3_device_info.js" type="chrome_html" />
       <structure name="IDR_CAMERA_CAMERA_INTENT_JS" file="js/views/camera_intent.js" type="chrome_html" />
