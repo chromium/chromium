@@ -1542,6 +1542,13 @@ config("disable_deprecated_errors") {
   ]
 }
 
+# TODO(crbug.com/1153275): MDCTabBarViewItemView.h has incomplete nullability
+# specification, causing compilation to fail. Disable the warning until this
+# is fixed in MDC. Remove this once fixed.
+config("disable_nullability_completeness") {
+  cflags = [ "-Wno-nullability-completeness" ]
+}
+
 ios_framework_bundle("material_components_ios") {
   sources = _mdc_sources
 
@@ -1579,6 +1586,11 @@ ios_framework_bundle("material_components_ios") {
     # material_components_ios internally uses deprecated methods.
     # Disable the warning about deprecation usage.
     ":disable_deprecated_errors",
+
+    # TODO(crbug.com/1153275): MDCTabBarViewItemView.h has incomplete
+    # nullability specification, causing compilation to fail. Disable
+    # the warning until this is fixed in MDC. Remove this once fixed.
+    ":disable_nullability_completeness",
   ]
 }
 
