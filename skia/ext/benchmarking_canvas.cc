@@ -425,17 +425,10 @@ void BenchmarkingCanvas::willRestore() {
 void BenchmarkingCanvas::didConcat44(const SkM44& m) {
   SkScalar values[16];
   m.getColMajor(values);
-  AutoOp op(this, "Concat44");
-  op.addParam("column-major", AsListValue(values, 16));
+  AutoOp op(this, "Concat");
+  op.addParam("matrix", AsListValue(values, 16));
 
   INHERITED::didConcat44(m);
-}
-
-void BenchmarkingCanvas::didConcat(const SkMatrix& m) {
-  AutoOp op(this, "Concat");
-  op.addParam("matrix", AsValue(m));
-
-  INHERITED::didConcat(m);
 }
 
 void BenchmarkingCanvas::didScale(SkScalar x, SkScalar y) {
@@ -454,11 +447,13 @@ void BenchmarkingCanvas::didTranslate(SkScalar x, SkScalar y) {
   INHERITED::didTranslate(x, y);
 }
 
-void BenchmarkingCanvas::didSetMatrix(const SkMatrix& m) {
+void BenchmarkingCanvas::didSetM44(const SkM44& m) {
+  SkScalar values[16];
+  m.getColMajor(values);
   AutoOp op(this, "SetMatrix");
-  op.addParam("matrix", AsValue(m));
+  op.addParam("matrix", AsListValue(values, 16));
 
-  INHERITED::didSetMatrix(m);
+  INHERITED::didSetM44(m);
 }
 
 void BenchmarkingCanvas::onClipRect(const SkRect& rect,

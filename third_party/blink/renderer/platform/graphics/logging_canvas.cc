@@ -234,13 +234,6 @@ std::unique_ptr<JSONObject> ObjectForSkImage(const SkImage* image) {
   return image_item;
 }
 
-std::unique_ptr<JSONArray> ArrayForSkMatrix(const SkMatrix& matrix) {
-  auto matrix_array = std::make_unique<JSONArray>();
-  for (int i = 0; i < 9; ++i)
-    matrix_array->PushDouble(matrix[i]);
-  return matrix_array;
-}
-
 std::unique_ptr<JSONArray> ArrayForSkScalars(size_t count,
                                              const SkScalar array[]) {
   auto points_array_item = std::make_unique<JSONArray>();
@@ -560,10 +553,12 @@ void LoggingCanvas::onDrawPicture(const SkPicture* picture,
   this->UnrollDrawPicture(picture, matrix, paint, nullptr);
 }
 
-void LoggingCanvas::didSetMatrix(const SkMatrix& matrix) {
+void LoggingCanvas::didSetM44(const SkM44& matrix) {
+  SkScalar m[16];
+  matrix.getColMajor(m);
   AutoLogger logger(this);
   JSONObject* params = logger.LogItemWithParams("setMatrix");
-  params->SetArray("matrix", ArrayForSkMatrix(matrix));
+  params->SetArray("matrix44", ArrayForSkScalars(16, m));
 }
 
 void LoggingCanvas::didConcat44(const SkM44& matrix) {
@@ -572,29 +567,6 @@ void LoggingCanvas::didConcat44(const SkM44& matrix) {
   AutoLogger logger(this);
   JSONObject* params = logger.LogItemWithParams("concat44");
   params->SetArray("matrix44", ArrayForSkScalars(16, m));
-}
-
-void LoggingCanvas::didConcat(const SkMatrix& matrix) {
-  AutoLogger logger(this);
-  JSONObject* params;
-
-  switch (matrix.getType()) {
-    case SkMatrix::kTranslate_Mask:
-      params = logger.LogItemWithParams("translate");
-      params->SetDouble("dx", matrix.getTranslateX());
-      params->SetDouble("dy", matrix.getTranslateY());
-      break;
-
-    case SkMatrix::kScale_Mask:
-      params = logger.LogItemWithParams("scale");
-      params->SetDouble("scaleX", matrix.getScaleX());
-      params->SetDouble("scaleY", matrix.getScaleY());
-      break;
-
-    default:
-      params = logger.LogItemWithParams("concat");
-      params->SetArray("matrix", ArrayForSkMatrix(matrix));
-  }
 }
 
 void LoggingCanvas::didScale(SkScalar x, SkScalar y) {

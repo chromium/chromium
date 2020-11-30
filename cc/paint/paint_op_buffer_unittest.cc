@@ -2979,7 +2979,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, didConcat(SkMatrix::Translate(5.0f, 7.0f)));
+  EXPECT_CALL(canvas, didConcat44(SkM44::Translate(5.0f, 7.0f)));
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
@@ -3024,7 +3024,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
   EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, didConcat(SkMatrix::Scale(2.f, 1.5f)));
+  EXPECT_CALL(canvas, didConcat44(SkM44::Scale(2.f, 1.5f)));
   EXPECT_CALL(canvas, willSave()).InSequence(s);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));

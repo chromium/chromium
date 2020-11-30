@@ -77,9 +77,8 @@ class LoggingCanvas : public InterceptingCanvasBase {
   void onDrawPicture(const SkPicture*,
                      const SkMatrix*,
                      const SkPaint*) override;
-  void didSetMatrix(const SkMatrix&) override;
+  void didSetM44(const SkM44&) override;
   void didConcat44(const SkM44&) override;
-  void didConcat(const SkMatrix&) override;
   void didScale(SkScalar, SkScalar) override;
   void didTranslate(SkScalar, SkScalar) override;
   void willSave() override;

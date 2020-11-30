@@ -115,9 +115,8 @@ class InterceptingCanvasBase : public SkCanvas {
   void onDrawPicture(const SkPicture*,
                      const SkMatrix*,
                      const SkPaint*) override = 0;
-  void didSetMatrix(const SkMatrix&) override = 0;
+  void didSetM44(const SkM44&) override = 0;
   void didConcat44(const SkM44&) override = 0;
-  void didConcat(const SkMatrix&) override = 0;
   void didScale(SkScalar, SkScalar) override = 0;
   void didTranslate(SkScalar, SkScalar) override = 0;
   void willSave() override = 0;
@@ -250,15 +249,9 @@ class InterceptingCanvas : public InterceptingCanvasBase {
     this->UnrollDrawPicture(picture, matrix, paint, nullptr);
   }
 
-  void didSetMatrix(const SkMatrix& matrix) override {
-    Interceptor interceptor(this);
-  }
+  void didSetM44(const SkM44&) override { Interceptor interceptor(this); }
 
   void didConcat44(const SkM44&) override { Interceptor interceptor(this); }
-
-  void didConcat(const SkMatrix& matrix) override {
-    Interceptor interceptor(this);
-  }
 
   void didScale(SkScalar x, SkScalar y) override {
     Interceptor interceptor(this);
