@@ -69,11 +69,15 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   // Displays the dialog. |email| pre-fills the account email field in the
   // sign-in dialog - useful for account re-authentication. |source| specifies
   // the source UX surface used for launching the dialog.
-  static void Show(const std::string& email, const Source& source);
+  // DEPRECATED: Use AccountManagerFacade instead (see
+  // https://crbug.com/1140469).
+  static void ShowDeprecated(const std::string& email, const Source& source);
 
   // Displays the dialog for account addition. |source| specifies the source UX
   // surface used for launching the dialog.
-  static void Show(const Source& source);
+  // DEPRECATED: Use AccountManagerFacade instead (see
+  // https://crbug.com/1140469).
+  static void ShowDeprecated(const Source& source);
 
   // Updates the value of the last reached step in 'Add Account' flow for child
   // users. Before the dialog will close, this value will be reported to UMA.

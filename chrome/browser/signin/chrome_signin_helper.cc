@@ -282,7 +282,7 @@ void ProcessMirrorHeader(
     }
 
     // Display a re-authentication dialog.
-    chromeos::InlineLoginDialogChromeOS::Show(
+    chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
         manage_accounts_params.email,
         chromeos::InlineLoginDialogChromeOS::Source::kContentArea);
     return;

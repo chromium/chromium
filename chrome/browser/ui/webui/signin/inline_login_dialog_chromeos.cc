@@ -98,8 +98,8 @@ const char InlineLoginDialogChromeOS::kAccountAdditionSource[] =
     "AccountManager.AccountAdditionSource";
 
 // static
-void InlineLoginDialogChromeOS::Show(const std::string& email,
-                                     const Source& source) {
+void InlineLoginDialogChromeOS::ShowDeprecated(const std::string& email,
+                                               const Source& source) {
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
   // If the dialog was triggered as a response to background request, it could
   // get displayed on the lock screen. In this case it is safe to ignore it,
@@ -124,8 +124,8 @@ void InlineLoginDialogChromeOS::Show(const std::string& email,
       ->SetBackdropType(ash::WindowBackdrop::BackdropType::kSemiOpaque);
 }
 
-void InlineLoginDialogChromeOS::Show(const Source& source) {
-  Show(/* email= */ std::string(), source);
+void InlineLoginDialogChromeOS::ShowDeprecated(const Source& source) {
+  ShowDeprecated(/* email= */ std::string(), source);
 }
 
 // static

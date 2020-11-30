@@ -512,7 +512,7 @@ void ArcAuthService::IsAccountManagerAvailable(
 void ArcAuthService::HandleAddAccountRequest() {
   DCHECK(chromeos::IsAccountManagerAvailable(profile_));
 
-  chromeos::InlineLoginDialogChromeOS::Show(
+  chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
       chromeos::InlineLoginDialogChromeOS::Source::kArc);
 }
 
@@ -526,7 +526,7 @@ void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
 void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
   DCHECK(chromeos::IsAccountManagerAvailable(profile_));
 
-  chromeos::InlineLoginDialogChromeOS::Show(
+  chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
       email, chromeos::InlineLoginDialogChromeOS::Source::kArc);
 }
 

@@ -56,9 +56,9 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     CHECK(!args->GetList().empty());
     const std::string& account_email = args->GetList()[0].GetString();
 
-    InlineLoginDialogChromeOS::Show(account_email,
-                                    InlineLoginDialogChromeOS::Source::
-                                        kAccountManagerMigrationWelcomeScreen);
+    InlineLoginDialogChromeOS::ShowDeprecated(
+        account_email, InlineLoginDialogChromeOS::Source::
+                           kAccountManagerMigrationWelcomeScreen);
     HandleCloseDialog(args);
   }
 

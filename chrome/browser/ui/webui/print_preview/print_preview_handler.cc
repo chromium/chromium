@@ -823,7 +823,7 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
     // Chrome OS Account Manager is enabled on this Profile and hence, all
     // account management flows will go through native UIs and not through a
     // tabbed browser window.
-    chromeos::InlineLoginDialogChromeOS::Show(
+    chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
         chromeos::InlineLoginDialogChromeOS::Source::kPrintPreviewDialog);
     return;
   }
