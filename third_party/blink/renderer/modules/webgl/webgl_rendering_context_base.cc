@@ -851,9 +851,12 @@ bool WebGLRenderingContextBase::MakeXrCompatibleSync(
 
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
       device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable;
-  HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(host);
-  if (XRSystem* xr = XRSystem::From(canvas->GetDocument()))
-    xr->MakeXrCompatibleSync(&xr_compatible_result);
+
+  if (!host->IsOffscreenCanvas()) {
+    HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(host);
+    if (XRSystem* xr = XRSystem::From(canvas->GetDocument()))
+      xr->MakeXrCompatibleSync(&xr_compatible_result);
+  }
 
   return IsXrCompatibleFromResult(xr_compatible_result);
 }
