@@ -4,7 +4,9 @@
 
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 
+#include "base/files/file_util.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
+#include "media/base/media_switches.h"
 
 namespace speech {
 
@@ -54,6 +56,15 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     BindRecognizerCallback callback) {
+  // Destroy the speech recognition service if the SODA files haven't been
+  // downloaded yet.
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
+      (!base::PathExists(binary_path_) || !base::PathExists(config_path_))) {
+    speech_recognition_contexts_.Clear();
+    receiver_.reset();
+    return;
+  }
+
   SpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), weak_factory_.GetWeakPtr(),
       binary_path_, config_path_);
