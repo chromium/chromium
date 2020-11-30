@@ -127,7 +127,7 @@ def BuildTestTargetsWithNinja(out_dir, targets, dry_run):
   cmd = [ninja_path, '-C', out_dir] + targets
   print('Building: ' + ' '.join(cmd))
   if (dry_run):
-    return
+    return True
   try:
     subprocess.check_call(cmd)
   except subprocess.CalledProcessError as e:
