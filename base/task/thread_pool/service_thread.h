@@ -7,13 +7,9 @@
 
 #include "base/base_export.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 
 namespace base {
 namespace internal {
-
-class TaskTracker;
 
 // The ThreadPool's ServiceThread is a mostly idle thread that is responsible
 // for handling async events (e.g. delayed tasks and async I/O). Its role is to
@@ -23,36 +19,15 @@ class TaskTracker;
 // and make it easier to identify the service thread in stack traces.
 class BASE_EXPORT ServiceThread : public Thread {
  public:
-  // Constructs a ServiceThread which will record heartbeat metrics. This
-  // includes latency metrics through |task_tracker| if non-null. In that
-  // case, this ServiceThread will assume a registered ThreadPool instance
-  // and that |task_tracker| will outlive this ServiceThread.
-  explicit ServiceThread(const TaskTracker* task_tracker);
+  ServiceThread();
 
   ServiceThread(const ServiceThread&) = delete;
   ServiceThread& operator=(const ServiceThread&) = delete;
   ~ServiceThread() override = default;
 
-  // Overrides the default interval at which |heartbeat_latency_timer_| fires.
-  // Call this with a |heartbeat| of zero to undo the override.
-  // Must not be called while the ServiceThread is running.
-  static void SetHeartbeatIntervalForTesting(TimeDelta heartbeat);
-
  private:
   // Thread:
-  void Init() override;
   void Run(RunLoop* run_loop) override;
-
-  // Kicks off a single async task which will record a histogram on the latency
-  // of a randomly chosen set of TaskTraits.
-  void PerformHeartbeatLatencyReport() const;
-
-  const TaskTracker* const task_tracker_;
-
-  // Fires a recurring heartbeat task to record metrics which are independent
-  // from any execution sequence. This is done on the service thread to avoid
-  // all external dependencies (even main thread).
-  base::RepeatingTimer heartbeat_metrics_timer_;
 };
 
 }  // namespace internal

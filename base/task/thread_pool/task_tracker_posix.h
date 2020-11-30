@@ -24,7 +24,7 @@ struct Task;
 // TaskTracker can run tasks.
 class BASE_EXPORT TaskTrackerPosix : public TaskTracker {
  public:
-  explicit TaskTrackerPosix(StringPiece name);
+  TaskTrackerPosix();
   TaskTrackerPosix(const TaskTrackerPosix&) = delete;
   TaskTrackerPosix& operator=(const TaskTrackerPosix&) = delete;
   ~TaskTrackerPosix() override;

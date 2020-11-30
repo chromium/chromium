@@ -167,7 +167,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
   virtual test::PoolType GetPoolType() const = 0;
 
   Thread service_thread_{"ThreadPoolServiceThread"};
-  TaskTracker task_tracker_{"Test"};
+  TaskTracker task_tracker_;
   DelayedTaskManager delayed_task_manager_;
   test::MockPooledTaskRunnerDelegate mock_pooled_task_runner_delegate_ = {
       task_tracker_.GetTrackedRef(), &delayed_task_manager_};

@@ -52,7 +52,7 @@ class ThreadPoolWorkerStackTest : public testing::Test {
   }
 
  private:
-  TaskTracker task_tracker_{"Test"};
+  TaskTracker task_tracker_;
 
  protected:
   scoped_refptr<WorkerThread> worker_a_;

@@ -23,7 +23,6 @@
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
-#include "base/task/thread_pool/service_thread.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
@@ -71,13 +70,11 @@ bool g_synchronous_thread_start_for_testing = false;
 }  // namespace
 
 ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label)
-    : ThreadPoolImpl(histogram_label,
-                     std::make_unique<TaskTrackerImpl>(histogram_label)) {}
+    : ThreadPoolImpl(histogram_label, std::make_unique<TaskTrackerImpl>()) {}
 
 ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label,
                                std::unique_ptr<TaskTrackerImpl> task_tracker)
     : task_tracker_(std::move(task_tracker)),
-      service_thread_(std::make_unique<ServiceThread>(task_tracker_.get())),
       single_thread_task_runner_manager_(task_tracker_->GetTrackedRef(),
                                          &delayed_task_manager_),
       has_disable_best_effort_switch_(HasDisableBestEffortTasksSwitch()),
@@ -159,21 +156,21 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
       MessagePumpType::DEFAULT;
 #endif
   service_thread_options.timer_slack = TIMER_SLACK_MAXIMUM;
-  CHECK(service_thread_->StartWithOptions(service_thread_options));
+  CHECK(service_thread_.StartWithOptions(service_thread_options));
   if (g_synchronous_thread_start_for_testing)
-    service_thread_->WaitUntilThreadStarted();
+    service_thread_.WaitUntilThreadStarted();
 
 #if defined(OS_POSIX) && !defined(OS_NACL_SFI)
   // Needs to happen after starting the service thread to get its
   // task_runner().
-  task_tracker_->set_io_thread_task_runner(service_thread_->task_runner());
+  task_tracker_->set_io_thread_task_runner(service_thread_.task_runner());
 #endif  // defined(OS_POSIX) && !defined(OS_NACL_SFI)
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
   UpdateCanRunPolicy();
 
   // Needs to happen after starting the service thread to get its task_runner().
-  auto service_thread_task_runner = service_thread_->task_runner();
+  auto service_thread_task_runner = service_thread_.task_runner();
   delayed_task_manager_.Start(service_thread_task_runner);
 
   single_thread_task_runner_manager_.Start(worker_thread_observer);
@@ -317,7 +314,7 @@ void ThreadPoolImpl::Shutdown() {
   // being guaranteed to happen anyways, stopping right away is valid behavior
   // and avoids the more complex alternative of shutting down the service thread
   // atomically during TaskTracker shutdown.
-  service_thread_->Stop();
+  service_thread_.Stop();
 
   task_tracker_->StartShutdown();
 
@@ -345,7 +342,7 @@ void ThreadPoolImpl::JoinForTesting() {
   // tasks scheduled by the DelayedTaskManager might be posted between joining
   // those workers and stopping the service thread which will cause a CHECK. See
   // https://crbug.com/771701.
-  service_thread_->Stop();
+  service_thread_.Stop();
   single_thread_task_runner_manager_.JoinForTesting();
   foreground_thread_group_->JoinForTesting();
   if (background_thread_group_)

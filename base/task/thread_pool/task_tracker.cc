@@ -79,38 +79,6 @@ void TaskTracingInfo::AppendAsTraceFormat(std::string* out) const {
   out->append(tmp);
 }
 
-// Constructs a histogram to track latency which is logging to
-// "ThreadPool.{histogram_name}.{histogram_label}.{task_type_suffix}".
-HistogramBase* GetLatencyHistogram(StringPiece histogram_name,
-                                   StringPiece histogram_label,
-                                   StringPiece task_type_suffix) {
-  DCHECK(!histogram_name.empty());
-  DCHECK(!task_type_suffix.empty());
-
-  if (histogram_label.empty())
-    return nullptr;
-
-  // Mimics the UMA_HISTOGRAM_HIGH_RESOLUTION_CUSTOM_TIMES macro. The minimums
-  // and maximums were chosen to place the 1ms mark at around the 70% range
-  // coverage for buckets giving us good info for tasks that have a latency
-  // below 1ms (most of them) and enough info to assess how bad the latency is
-  // for tasks that exceed this threshold.
-  const std::string histogram = JoinString(
-      {"ThreadPool", histogram_name, histogram_label, task_type_suffix}, ".");
-  return Histogram::FactoryMicrosecondsTimeGet(
-      histogram, TimeDelta::FromMicroseconds(1),
-      TimeDelta::FromMilliseconds(20), 50,
-      HistogramBase::kUmaTargetedHistogramFlag);
-}
-
-// Returns a histogram stored in an array indexed by task priority.
-// TODO(jessemckenna): use the STATIC_HISTOGRAM_POINTER_GROUP macro from
-// histogram_macros.h instead.
-HistogramBase* GetHistogramForTaskPriority(TaskPriority task_priority,
-                                           HistogramBase* const histograms[3]) {
-  return histograms[static_cast<int>(task_priority)];
-}
-
 bool HasLogBestEffortTasksSwitch() {
   // The CommandLine might not be initialized if ThreadPool is initialized in a
   // dynamic library which doesn't have access to argc/argv.
@@ -289,24 +257,12 @@ class TaskTracker::State {
   subtle::Atomic32 bits_ = 0;
 };
 
-// TODO(jessemckenna): Write a helper function to avoid code duplication below.
-TaskTracker::TaskTracker(StringPiece histogram_label)
-    : histogram_label_(histogram_label),
-      has_log_best_effort_tasks_switch_(HasLogBestEffortTasksSwitch()),
+TaskTracker::TaskTracker()
+    : has_log_best_effort_tasks_switch_(HasLogBestEffortTasksSwitch()),
       state_(new State),
       can_run_policy_(CanRunPolicy::kAll),
       flush_cv_(flush_lock_.CreateConditionVariable()),
       shutdown_lock_(&flush_lock_),
-      heartbeat_latency_histograms_{
-          GetLatencyHistogram("HeartbeatLatencyMicroseconds",
-                              histogram_label,
-                              "BackgroundTaskPriority"),
-          GetLatencyHistogram("HeartbeatLatencyMicroseconds",
-                              histogram_label,
-                              "UserVisibleTaskPriority"),
-          GetLatencyHistogram("HeartbeatLatencyMicroseconds",
-                              histogram_label,
-                              "UserBlockingTaskPriority")},
       tracked_ref_factory_(this) {}
 
 TaskTracker::~TaskTracker() = default;
@@ -481,16 +437,6 @@ bool TaskTracker::HasShutdownStarted() const {
 bool TaskTracker::IsShutdownComplete() const {
   CheckedAutoLock auto_lock(shutdown_lock_);
   return shutdown_event_ && shutdown_event_->IsSignaled();
-}
-
-void TaskTracker::RecordHeartbeatLatencyHistogram(TaskPriority priority,
-                                                  TimeTicks posted_time) const {
-  if (histogram_label_.empty())
-    return;
-
-  const TimeDelta task_latency = TimeTicks::Now() - posted_time;
-  GetHistogramForTaskPriority(priority, heartbeat_latency_histograms_)
-      ->AddTimeMicrosecondsGranularity(task_latency);
 }
 
 void TaskTracker::RunTask(Task task,

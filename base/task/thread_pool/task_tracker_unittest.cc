@@ -239,7 +239,7 @@ class ThreadPoolTaskTrackerTest
     return num_tasks_executed_;
   }
 
-  TaskTracker tracker_{"Test"};
+  TaskTracker tracker_;
 
  private:
   void RunTaskCallback() {
@@ -1173,7 +1173,7 @@ class WaitAllowedTestThread : public SimpleThread {
 
  private:
   void Run() override {
-    auto task_tracker = std::make_unique<TaskTracker>("Test");
+    auto task_tracker = std::make_unique<TaskTracker>();
 
     // Waiting is allowed by default. Expect TaskTracker to disallow it before
     // running a task without the WithBaseSyncPrimitives() trait.

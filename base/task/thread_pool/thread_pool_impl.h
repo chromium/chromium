@@ -24,6 +24,7 @@
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/pooled_single_thread_task_runner_manager.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
+#include "base/task/thread_pool/service_thread.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/thread_group.h"
@@ -41,8 +42,6 @@
 #endif
 
 namespace base {
-
-class Thread;
 
 namespace internal {
 
@@ -155,7 +154,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   bool ShouldYield(const TaskSource* task_source) override;
 
   const std::unique_ptr<TaskTrackerImpl> task_tracker_;
-  std::unique_ptr<Thread> service_thread_;
+  ServiceThread service_thread_;
   DelayedTaskManager delayed_task_manager_;
   PooledSingleThreadTaskRunnerManager single_thread_task_runner_manager_;
 

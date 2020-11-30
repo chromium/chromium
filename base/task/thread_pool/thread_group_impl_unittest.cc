@@ -124,7 +124,7 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
   }
 
   Thread service_thread_;
-  TaskTracker task_tracker_{"Test"};
+  TaskTracker task_tracker_;
   std::unique_ptr<ThreadGroupImpl> thread_group_;
   DelayedTaskManager delayed_task_manager_;
   TrackedRefFactory<ThreadGroup::Delegate> tracked_ref_factory_;

@@ -73,7 +73,7 @@ class PooledSingleThreadTaskRunnerManagerTest : public testing::Test {
   }
 
   Thread service_thread_{"ThreadPoolServiceThread"};
-  TaskTracker task_tracker_{"Test"};
+  TaskTracker task_tracker_;
   DelayedTaskManager delayed_task_manager_;
   std::unique_ptr<PooledSingleThreadTaskRunnerManager>
       single_thread_task_runner_manager_;

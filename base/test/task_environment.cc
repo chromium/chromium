@@ -724,9 +724,7 @@ void TaskEnvironment::RemoveDestructionObserver(DestructionObserver* observer) {
 }
 
 TaskEnvironment::TestTaskTracker::TestTaskTracker()
-    : internal::ThreadPoolImpl::TaskTrackerImpl(std::string()),
-      can_run_tasks_cv_(&lock_),
-      task_completed_cv_(&lock_) {
+    : can_run_tasks_cv_(&lock_), task_completed_cv_(&lock_) {
   // Consider threads blocked on these as idle (avoids instantiating
   // ScopedBlockingCalls and confusing some //base internals tests).
   can_run_tasks_cv_.declare_only_used_while_idle();

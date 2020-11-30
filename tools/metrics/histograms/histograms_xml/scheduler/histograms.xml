@@ -330,6 +330,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="ThreadPool.HeartbeatLatencyMicroseconds"
     units="microseconds" expires_after="M85">
+  <obsolete>
+    Removed 11/2020. Not actively used.
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <owner>robliao@chromium.org</owner>

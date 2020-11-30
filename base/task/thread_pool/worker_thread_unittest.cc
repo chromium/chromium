@@ -270,7 +270,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
     EXPECT_LE(num_run_tasks_, created_sequences_.size());
   }
 
-  TaskTracker task_tracker_{"Test"};
+  TaskTracker task_tracker_;
 
   // Synchronizes access to all members below.
   mutable CheckedLock lock_;
@@ -521,7 +521,7 @@ class MockedControllableCleanupDelegate : public ControllableCleanupDelegate {
 // Verify that calling WorkerThread::Cleanup() from GetWork() causes
 // the WorkerThread's thread to exit.
 TEST(ThreadPoolWorkerTest, WorkerCleanupFromGetWork) {
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   // Will be owned by WorkerThread.
   MockedControllableCleanupDelegate* delegate =
       new StrictMock<MockedControllableCleanupDelegate>(&task_tracker);
@@ -542,7 +542,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupFromGetWork) {
 }
 
 TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWork) {
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   // Will be owned by WorkerThread.
   // No mock here as that's reasonably covered by other tests and the delegate
   // may destroy on a different thread. Mocks aren't designed with that in mind.
@@ -567,7 +567,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWork) {
 }
 
 TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWait) {
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   // Will be owned by WorkerThread.
   // No mock here as that's reasonably covered by other tests and the delegate
   // may destroy on a different thread. Mocks aren't designed with that in mind.
@@ -589,7 +589,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringWait) {
 }
 
 TEST(ThreadPoolWorkerTest, WorkerCleanupDuringShutdown) {
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   // Will be owned by WorkerThread.
   // No mock here as that's reasonably covered by other tests and the delegate
   // may destroy on a different thread. Mocks aren't designed with that in mind.
@@ -616,7 +616,7 @@ TEST(ThreadPoolWorkerTest, WorkerCleanupDuringShutdown) {
 
 // Verify that Start() is a no-op after Cleanup().
 TEST(ThreadPoolWorkerTest, CleanupBeforeStart) {
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   // Will be owned by WorkerThread.
   // No mock here as that's reasonably covered by other tests and the delegate
   // may destroy on a different thread. Mocks aren't designed with that in mind.
@@ -664,7 +664,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
 }  // namespace
 
 TEST(ThreadPoolWorkerTest, WorkerCleanupDuringJoin) {
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   // Will be owned by WorkerThread.
   // No mock here as that's reasonably covered by other tests and the
   // delegate may destroy on a different thread. Mocks aren't designed with that
@@ -751,7 +751,7 @@ TEST(ThreadPoolWorkerTest, BumpPriorityOfAliveThreadDuringShutdown) {
   if (!CanUseBackgroundPriorityForWorkerThread())
     return;
 
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
 
   // Block shutdown to ensure that the worker doesn't exit when StartShutdown()
   // is called.
@@ -814,7 +814,7 @@ class VerifyCallsToObserverDelegate : public WorkerThreadDefaultDelegate {
 // and exits its main function.
 TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   StrictMock<test::MockWorkerThreadObserver> observer;
-  TaskTracker task_tracker("Test");
+  TaskTracker task_tracker;
   auto delegate = std::make_unique<VerifyCallsToObserverDelegate>(&observer);
   auto worker =
       MakeRefCounted<WorkerThread>(ThreadPriority::NORMAL, std::move(delegate),
