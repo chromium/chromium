@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppDisabled) {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
-    list->Append(policy::SystemFeature::SCANNING);
+    list->Append(policy::SystemFeature::kScanning);
   }
 
   ASSERT_FALSE(GetManager()

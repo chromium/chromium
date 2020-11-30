@@ -802,7 +802,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectOSSettingsURL) {
   EXPECT_EQ(os_settings_url, dest_url);
 
   base::Value list(base::Value::Type::LIST);
-  list.Append(policy::SystemFeature::OS_SETTINGS);
+  list.Append(policy::SystemFeature::kOsSettings);
   testing_local_state_.Get()->Set(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
@@ -825,7 +825,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
   EXPECT_EQ(settings_url, dest_url);
 
   base::Value list(base::Value::Type::LIST);
-  list.Append(policy::SystemFeature::BROWSER_SETTINGS);
+  list.Append(policy::SystemFeature::kBrowserSettings);
   testing_local_state_.Get()->Set(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
@@ -842,7 +842,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
   EXPECT_EQ(scanning_app_url, dest_url);
 
   base::Value list(base::Value::Type::LIST);
-  list.Append(policy::SystemFeature::SCANNING);
+  list.Append(policy::SystemFeature::kScanning);
   testing_local_state_.Get()->Set(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 

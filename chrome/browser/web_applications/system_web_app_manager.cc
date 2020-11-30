@@ -302,13 +302,13 @@ std::set<SystemAppType> GetDisabledSystemWebApps() {
 
   for (const auto& entry : *disabled_system_features_pref) {
     switch (entry.GetInt()) {
-      case policy::SystemFeature::CAMERA:
+      case policy::SystemFeature::kCamera:
         disabled_system_apps.insert(SystemAppType::CAMERA);
         break;
-      case policy::SystemFeature::OS_SETTINGS:
+      case policy::SystemFeature::kOsSettings:
         disabled_system_apps.insert(SystemAppType::SETTINGS);
         break;
-      case policy::SystemFeature::SCANNING:
+      case policy::SystemFeature::kScanning:
         disabled_system_apps.insert(SystemAppType::SCANNING);
         break;
     }

@@ -19,12 +19,12 @@ namespace policy {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum SystemFeature {
-  UNKNOWN_SYSTEM_FEATURE = 0,
-  CAMERA = 1,            // The camera chrome app on Chrome OS.
-  BROWSER_SETTINGS = 2,  // Browser settings.
-  OS_SETTINGS = 3,       // The settings feature on Chrome OS.
-  SCANNING = 4,          // The scan SWA on Chrome OS.
-  kMaxValue = SCANNING
+  kUnknownSystemFeature = 0,
+  kCamera = 1,           // The camera chrome app on Chrome OS.
+  kBrowserSettings = 2,  // Browser settings.
+  kOsSettings = 3,       // The settings feature on Chrome OS.
+  kScanning = 4,         // The scan SWA on Chrome OS.
+  kMaxValue = kScanning
 };
 
 // A disabling mode that decides the user experience when a system feature is

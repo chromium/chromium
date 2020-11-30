@@ -499,8 +499,9 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
     return;
   }
 
-  bool is_disabled = base::Contains(*disabled_system_features_pref,
-                                    base::Value(policy::SystemFeature::CAMERA));
+  bool is_disabled =
+      base::Contains(*disabled_system_features_pref,
+                     base::Value(policy::SystemFeature::kCamera));
   auto* app_id = extension_misc::kCameraAppId;
 
   // Sometimes the policy is updated before the app is installed, so this way

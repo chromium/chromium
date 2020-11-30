@@ -4584,17 +4584,17 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
   // installation complete successfully.
   if (url.DomainIs(chrome::kChromeUIOSSettingsHost) &&
       url.path() != "/pwa.html" &&
-      IsSystemFeatureDisabled(policy::SystemFeature::OS_SETTINGS)) {
+      IsSystemFeatureDisabled(policy::SystemFeature::kOsSettings)) {
     return true;
   }
 
   if (url.DomainIs(chrome::kChromeUISettingsHost) &&
-      IsSystemFeatureDisabled(policy::SystemFeature::BROWSER_SETTINGS)) {
+      IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings)) {
     return true;
   }
 
   if (url.DomainIs(chromeos::kChromeUIScanningAppHost) &&
-      IsSystemFeatureDisabled(policy::SystemFeature::SCANNING)) {
+      IsSystemFeatureDisabled(policy::SystemFeature::kScanning)) {
     return true;
   }
 

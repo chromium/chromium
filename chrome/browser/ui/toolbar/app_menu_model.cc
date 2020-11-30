@@ -993,7 +993,7 @@ void AppMenuModel::UpdateSettingsItemState() {
 
   bool is_enabled = !system_features_disable_list_pref ||
                     system_features_disable_list_pref->Find(
-                        base::Value(policy::SystemFeature::BROWSER_SETTINGS)) ==
+                        base::Value(policy::SystemFeature::kBrowserSettings)) ==
                         system_features_disable_list_pref->end();
 
   int index = GetIndexOfCommandId(IDC_OPTIONS);

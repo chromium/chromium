@@ -53,7 +53,7 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
   for (const auto& element : filtered_list.GetList()) {
     SystemFeature feature = ConvertToEnum(element.GetString());
     enums_list.Append(feature);
-    if (feature == SystemFeature::OS_SETTINGS)
+    if (feature == SystemFeature::kOsSettings)
       os_settings_enabled = false;
 
     if (!old_list ||
@@ -71,16 +71,16 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
 SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
     const std::string& system_feature) {
   if (system_feature == kCameraFeature)
-    return SystemFeature::CAMERA;
+    return SystemFeature::kCamera;
   if (system_feature == kOsSettingsFeature)
-    return SystemFeature::OS_SETTINGS;
+    return SystemFeature::kOsSettings;
   if (system_feature == kBrowserSettingsFeature)
-    return SystemFeature::BROWSER_SETTINGS;
+    return SystemFeature::kBrowserSettings;
   if (system_feature == kScanningFeature)
-    return SystemFeature::SCANNING;
+    return SystemFeature::kScanning;
 
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
-  return UNKNOWN_SYSTEM_FEATURE;
+  return kUnknownSystemFeature;
 }
 
 }  // namespace policy

@@ -1456,7 +1456,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
-    list->Append(policy::SystemFeature::OS_SETTINGS);
+    list->Append(policy::SystemFeature::kOsSettings);
   }
   WaitForTestSystemAppInstall();
   base::Optional<AppId> settings_id =
@@ -1494,7 +1494,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
-    list->Append(policy::SystemFeature::OS_SETTINGS);
+    list->Append(policy::SystemFeature::kOsSettings);
   }
 
   apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
