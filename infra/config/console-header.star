@@ -96,11 +96,11 @@ HEADER = _header(
         ),
         _oncall(
             name = "Perf",
-            url = "https://rota-ng.appspot.com/legacy/sheriff_perf.json",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-perf-regression-sheriff",
         ),
         _oncall(
             name = "Perfbot",
-            url = "https://rota-ng.appspot.com/legacy/sheriff_perfbot.json",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-perf-bot-sheriff",
         ),
         _oncall(
             name = "Trooper",
