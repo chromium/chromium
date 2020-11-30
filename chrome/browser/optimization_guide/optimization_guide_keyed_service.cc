@@ -213,15 +213,33 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  // TODO(crbug/1146151): Passthrough to prediction manager.
-  NOTREACHED();
+  // Add this as a DCHECK since in reality, this keyed service is registered at
+  // browser initialization before anything can call it. If this is not the
+  // right assumption, then we need to add in facilities to store the registered
+  // observers and pass it in to the prediction manager constructor at this
+  // service's initialization.
+  DCHECK(prediction_manager_);
+
+  if (prediction_manager_) {
+    prediction_manager_->AddObserverForOptimizationTargetModel(
+        optimization_target, observer);
+  }
 }
 
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  // TODO(crbug/1146151): Passthrough to prediction manager.
-  NOTREACHED();
+  // Add this as a DCHECK since in reality, this keyed service is registered at
+  // browser initialization before anything can call it. If this is not the
+  // right assumption, then we need to add in facilities to store the registered
+  // observers and pass it in to the prediction manager constructor at this
+  // service's initialization.
+  DCHECK(prediction_manager_);
+
+  if (prediction_manager_) {
+    prediction_manager_->RemoveObserverForOptimizationTargetModel(
+        optimization_target, observer);
+  }
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(

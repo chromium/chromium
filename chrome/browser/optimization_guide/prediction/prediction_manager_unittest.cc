@@ -167,6 +167,27 @@ class FakeTopHostProvider : public TopHostProvider {
   int num_top_hosts_called_ = 0;
 };
 
+class FakeOptimizationTargetModelObserver
+    : public OptimizationTargetModelObserver {
+ public:
+  void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
+                          const base::FilePath& file_path) override {
+    last_received_paths_[optimization_target] = file_path;
+  }
+
+  base::Optional<base::FilePath> last_received_path_for_target(
+      proto::OptimizationTarget optimization_target) {
+    auto file_it = last_received_paths_.find(optimization_target);
+    if (file_it == last_received_paths_.end())
+      return base::nullopt;
+    return file_it->second;
+  }
+
+ private:
+  base::flat_map<proto::OptimizationTarget, base::FilePath>
+      last_received_paths_;
+};
+
 class FakePredictionModelDownloadManager
     : public PredictionModelDownloadManager {
  public:
@@ -625,10 +646,10 @@ TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
 
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
 
-    EXPECT_EQ(
-        OptimizationTargetDecision::kUnknown,
-        prediction_manager()->ShouldTargetNavigation(
-            navigation_handle.get(), proto::OPTIMIZATION_TARGET_UNKNOWN, {}));
+  EXPECT_EQ(
+      OptimizationTargetDecision::kUnknown,
+      prediction_manager()->ShouldTargetNavigation(
+          navigation_handle.get(), proto::OPTIMIZATION_TARGET_UNKNOWN, {}));
 
   // OptimizationGuideNavData should not be populated.
   OptimizationGuideNavigationData* nav_data =
@@ -652,6 +673,83 @@ TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
           optimization_guide::GetStringNameForOptimizationTarget(
               optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       0);
+}
+
+TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
+          GURL("https://foo.com"));
+
+  CreatePredictionManager({});
+
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+  SetStoreInitialized(/* load_models= */ false,
+                      /* load_host_model_features= */ false,
+                      /* have_models_in_store= */ false);
+
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+
+  EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
+            prediction_manager()->ShouldTargetNavigation(
+                navigation_handle.get(),
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
+
+  // OptimizationGuideNavData should not be populated.
+  OptimizationGuideNavigationData* nav_data =
+      OptimizationGuideNavigationData::GetFromNavigationHandle(
+          navigation_handle.get());
+  EXPECT_FALSE(nav_data
+                   ->GetModelVersionForOptimizationTarget(
+                       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                   .has_value());
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelEvaluationLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      0);
+
+  EXPECT_TRUE(prediction_manager()->registered_optimization_targets().contains(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_FALSE(observer
+                   .last_received_path_for_target(
+                       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                   .has_value());
+
+  // Ensure observer is hooked up.
+  proto::ModelInfo model_info;
+  model_info.set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  prediction_manager()->OnModelReady(model_info,
+                                     temp_dir().AppendASCII("whatever"));
+
+  EXPECT_EQ(observer
+                .last_received_path_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->BaseName()
+                .value(),
+            FILE_PATH_LITERAL("whatever"));
+
+  // Now remove observer.
+  prediction_manager()->RemoveObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+  prediction_manager()->OnModelReady(model_info,
+                                     temp_dir().AppendASCII("whatever2"));
+
+  // Last received path should not have been updated since the observer was
+  // removed.
+  EXPECT_EQ(observer
+                .last_received_path_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->BaseName()
+                .value(),
+            FILE_PATH_LITERAL("whatever"));
 }
 
 TEST_F(PredictionManagerTest,

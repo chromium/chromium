@@ -14,6 +14,7 @@
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -47,6 +48,7 @@ namespace optimization_guide {
 
 enum class OptimizationGuideDecision;
 class OptimizationGuideStore;
+class OptimizationTargetModelObserver;
 class PredictionModel;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
@@ -89,10 +91,27 @@ class PredictionManager
 
   ~PredictionManager() override;
 
-  // Register the optimization targets that may have ShouldTargetNavigtation
+  // Register the optimization targets that may have ShouldTargetNavigation
   // requested by consumers of the Optimization Guide.
   void RegisterOptimizationTargets(
       const std::vector<proto::OptimizationTarget>& optimization_targets);
+
+  // Adds an observer for updates to the model for |optimization_target|.
+  //
+  // It is assumed that any model retrieved this way will be passed to the
+  // Machine Learning Service for inference.
+  void AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer);
+
+  // Removes an observer for updates to the model for |optimization_target|.
+  //
+  // If |observer| is registered for multiple targets, |observer| must be
+  // removed for all observed targets for in order for it to be fully
+  // removed from receiving any calls.
+  void RemoveObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer);
 
   // Determine if the navigation matches the criteria for
   // |optimization_target|. Return kUnknown if a PredictionModel for the
@@ -323,6 +342,12 @@ class PredictionManager
   // 2. The last time a fetch attempt was made.
   void ScheduleModelsAndHostModelFeaturesFetch();
 
+  // Notifies observers of |optimization_target| that the model file has been
+  // updated to |file_path|.
+  void NotifyObserversOfNewModelPath(
+      proto::OptimizationTarget optimization_target,
+      const base::FilePath& file_path) const;
+
   // A map of optimization target to the prediction model capable of making
   // an optimization target decision for it.
   base::flat_map<proto::OptimizationTarget, std::unique_ptr<PredictionModel>>
@@ -331,6 +356,12 @@ class PredictionManager
   // The set of optimization targets that have been registered with the
   // prediction manager.
   base::flat_set<proto::OptimizationTarget> registered_optimization_targets_;
+
+  // The map from optimization target to observers that have been registered to
+  // receive model updates from the prediction manager.
+  std::map<proto::OptimizationTarget,
+           base::ObserverList<OptimizationTargetModelObserver>>
+      registered_observers_for_optimization_targets_;
 
   // A MRU cache of host to host model features known to the prediction manager.
   HostModelFeaturesMRUCache host_model_features_cache_;

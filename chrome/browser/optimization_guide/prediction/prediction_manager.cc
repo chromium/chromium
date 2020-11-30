@@ -276,7 +276,7 @@ void PredictionManager::RegisterOptimizationTargets(
     const std::vector<proto::OptimizationTarget>& optimization_targets) {
   SEQUENCE_CHECKER(sequence_checker_);
 
-  if (optimization_targets.size() == 0)
+  if (optimization_targets.empty())
     return;
 
   base::flat_set<proto::OptimizationTarget> new_optimization_targets;
@@ -309,6 +309,26 @@ void PredictionManager::RegisterOptimizationTargets(
   // Otherwise, the host model features are loaded, so load prediction models
   // for any newly registered targets.
   LoadPredictionModels(new_optimization_targets);
+}
+
+void PredictionManager::AddObserverForOptimizationTargetModel(
+    proto::OptimizationTarget optimization_target,
+    OptimizationTargetModelObserver* observer) {
+  registered_observers_for_optimization_targets_[optimization_target]
+      .AddObserver(observer);
+
+  RegisterOptimizationTargets({optimization_target});
+}
+
+void PredictionManager::RemoveObserverForOptimizationTargetModel(
+    proto::OptimizationTarget optimization_target,
+    OptimizationTargetModelObserver* observer) {
+  auto observers_it =
+      registered_observers_for_optimization_targets_.find(optimization_target);
+  if (observers_it == registered_observers_for_optimization_targets_.end())
+    return;
+
+  observers_it->second.RemoveObserver(observer);
 }
 
 base::Optional<float> PredictionManager::GetValueForClientFeature(
@@ -743,7 +763,21 @@ void PredictionManager::UpdatePredictionModels(
 
 void PredictionManager::OnModelReady(const proto::ModelInfo& model_info,
                                      const base::FilePath& file_path) {
-  // TODO(crbug/1146151): Clean up old model for target and update target.
+  // TODO(crbug/1146151): Clean up old model for target and update target in
+  // store.
+  NotifyObserversOfNewModelPath(model_info.optimization_target(), file_path);
+}
+
+void PredictionManager::NotifyObserversOfNewModelPath(
+    proto::OptimizationTarget optimization_target,
+    const base::FilePath& file_path) const {
+  auto observers_it =
+      registered_observers_for_optimization_targets_.find(optimization_target);
+  if (observers_it == registered_observers_for_optimization_targets_.end())
+    return;
+
+  for (auto& observer : observers_it->second)
+    observer.OnModelFileUpdated(optimization_target, file_path);
 }
 
 void PredictionManager::OnPredictionModelsStored() {
