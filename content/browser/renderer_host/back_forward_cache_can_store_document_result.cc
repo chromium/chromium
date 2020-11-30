@@ -131,6 +131,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "BackForwardCache is disabled through command line (may include "
              "cases where the embedder disabled it due to, e.g., enterprise "
              "policy)";
+    case Reason::kNavigationCancelledWhileRestoring:
+      return "Navigation request was cancelled after js eviction was disabled";
   }
 }
 

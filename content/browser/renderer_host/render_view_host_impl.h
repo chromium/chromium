@@ -307,6 +307,14 @@ class CONTENT_EXPORT RenderViewHostImpl
   const mojo::AssociatedRemote<blink::mojom::PageBroadcast>&
   GetAssociatedPageBroadcast();
 
+  // Prepares the renderer page to leave the back-forward cache by disabling
+  // Javascript eviction. |done_cb| is called upon receipt of the
+  // acknowledgement from the renderer that this has actually happened.
+  //
+  // After |done_cb| is called you can be certain that this renderer will not
+  // trigger an eviction of this page.
+  void PrepareToLeaveBackForwardCache(base::OnceClosure done_cb);
+
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
   // the caller places are in different platforms, in which case it's better
