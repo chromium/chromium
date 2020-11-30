@@ -434,6 +434,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.CompositingAssignments.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -449,6 +453,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.CompositingCommit.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -468,6 +476,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.CompositingInputs.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -574,6 +586,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-04-11">
   <owner>urvang@chromium.org</owner>
   <summary>Image codec inferred during decode.</summary>
+</histogram>
+
+<histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"
+    units="microseconds" expires_after="2021-03-21">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent computing IntersectionObserver observations in the Blink document
+    lifecycle where the observation is for Display Locking. Recorded when an
+    intersection observation is made for the Display Locking reason.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
 </histogram>
 
 <histogram name="Blink.EffectiveZoom" units="%" expires_after="2021-05-02">
@@ -797,6 +828,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.ForcedStyleAndLayout.UpdateTime" units="microseconds"
     expires_after="2021-05-23">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -811,6 +846,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.HandleInputEvents.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -825,6 +864,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.HitTestDocumentUpdate.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1031,6 +1074,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.ImplCompositorCommit.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1055,6 +1102,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.IntersectionObservation.UpdateTime" units="microseconds"
     expires_after="2021-05-23">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1065,6 +1116,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"
+    units="microseconds" expires_after="2021-03-21">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent computing IntersectionObserver observations in the Blink document
+    lifecycle where the observation is due to a Javascript request. Recorded
+    when an intersection observation is made for the Javascript reason.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
@@ -1110,6 +1180,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Layout.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
@@ -1155,6 +1229,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     corresponding count in
     Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred to determine
     how many iframes were loaded unnecessarily by LazyLoad.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"
+    units="microseconds" expires_after="2021-03-21">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent computing IntersectionObserver observations in the Blink document
+    lifecycle where the observation is due to a Lazy Image Loading request.
+    Recorded when an intersection observation is made to determine when a lazy
+    loaded image should be loaded.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
@@ -1432,6 +1526,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The percentage of time between a BeginMainFrame and paint results commit in
     Blink that is spent waiting for the CC thread to begin processing.
+  </summary>
+</histogram>
+
+<histogram name="Blink.MediaIntersectionObserver.UpdateTime"
+    units="microseconds" expires_after="2021-03-21">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>schenney@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent computing IntersectionObserver observations in the Blink document
+    lifecycle where the observation is for a media element. Recorded when an
+    intersection observation is made attributed to a media element (such as
+    video auto-play).
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
@@ -2235,6 +2349,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.WaitForCommit.UpdateTime" units="microseconds"
     expires_after="2021-05-02">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
 
   <owner>schenney@chromium.org</owner>
