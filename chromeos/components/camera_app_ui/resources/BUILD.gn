@@ -50,7 +50,10 @@ copy("chrome_camera_app_css") {
 import("images/images.gni")
 
 copy("chrome_camera_app_images") {
-  sources = []
+  sources = [
+    "images/camera_app_icons_128.png",
+    "images/camera_app_icons_48.png",
+  ]
   foreach(asset, in_app_assets) {
     sources += [ "images/$asset" ]
   }
