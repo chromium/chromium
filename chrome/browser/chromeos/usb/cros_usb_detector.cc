@@ -539,11 +539,11 @@ void CrosUsbDetector::OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device) {
 
 void CrosUsbDetector::OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info,
                                     bool hide_notification) {
+  std::string guid = device_info->guid;
   device_manager_->CheckAccess(
-      device_info->guid,
-      base::BindOnce(&CrosUsbDetector::OnDeviceChecked,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(device_info),
-                     hide_notification));
+      guid, base::BindOnce(&CrosUsbDetector::OnDeviceChecked,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(device_info), hide_notification));
 }
 
 void CrosUsbDetector::OnDeviceRemoved(
