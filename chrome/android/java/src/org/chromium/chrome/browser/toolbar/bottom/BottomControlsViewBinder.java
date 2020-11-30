@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.scene_layer.ScrollingBottomViewSceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -26,8 +25,10 @@ class BottomControlsViewBinder {
         /**
          * @param bottomControlsRootView The Android View based bottom controls.
          */
-        public ViewHolder(ScrollingBottomViewResourceFrameLayout bottomControlsRootView) {
+        public ViewHolder(ScrollingBottomViewResourceFrameLayout bottomControlsRootView,
+                ScrollingBottomViewSceneLayer layer) {
             root = bottomControlsRootView;
+            sceneLayer = layer;
         }
     }
 
@@ -37,32 +38,22 @@ class BottomControlsViewBinder {
             bottomControlsWrapper.getLayoutParams().height =
                     model.get(BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX);
         } else if (BottomControlsProperties.Y_OFFSET == propertyKey) {
-            // Native may not have completely initialized by the time this is set.
-            if (view.sceneLayer == null) return;
             view.sceneLayer.setYOffset(model.get(BottomControlsProperties.Y_OFFSET));
         } else if (BottomControlsProperties.ANDROID_VIEW_VISIBLE == propertyKey) {
             view.root.setVisibility(model.get(BottomControlsProperties.ANDROID_VIEW_VISIBLE)
                             ? View.VISIBLE
                             : View.INVISIBLE);
         } else if (BottomControlsProperties.COMPOSITED_VIEW_VISIBLE == propertyKey) {
-            if (view.sceneLayer == null) return;
             final boolean showCompositedView =
                     model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE);
             view.sceneLayer.setIsVisible(showCompositedView);
-            model.get(BottomControlsProperties.LAYOUT_MANAGER).requestUpdate();
-        } else if (BottomControlsProperties.LAYOUT_MANAGER == propertyKey) {
-            assert view.sceneLayer == null;
-            view.sceneLayer =
-                    new ScrollingBottomViewSceneLayer(view.root, view.root.getTopShadowHeight());
-            view.sceneLayer.setIsVisible(
-                    model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE));
-            model.get(BottomControlsProperties.LAYOUT_MANAGER).addSceneOverlay(view.sceneLayer);
-        } else if (BottomControlsProperties.RESOURCE_MANAGER == propertyKey) {
-            model.get(BottomControlsProperties.RESOURCE_MANAGER)
-                    .getDynamicResourceLoader()
-                    .registerResource(view.root.getId(), view.root.getResourceAdapter());
         } else {
             assert false : "Unhandled property detected in BottomControlsViewBinder!";
         }
+    }
+
+    static void bindCompositorMCP(PropertyModel model, ScrollingBottomViewSceneLayer sceneLayer,
+            PropertyKey propertyKey) {
+        assert propertyKey == null;
     }
 }
