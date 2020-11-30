@@ -1628,8 +1628,9 @@ crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-sep
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-002.html [ Failure ]
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-003.html [ Failure ]
 crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-other-space-separators-004.html [ Failure ]
-crbug.com/972992 external/wpt/css/css-text/white-space/trailing-ideographic-space-001.html [ Failure ]
-crbug.com/972992 external/wpt/css/css-text/white-space/trailing-ideographic-space-002.html [ Failure ]
+crbug.com/1129834 external/wpt/css/css-text/white-space/full-width-leading-spaces-004.html [ Failure ]
+crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-ideographic-space-001.html [ Failure ]
+crbug.com/1129834 external/wpt/css/css-text/white-space/trailing-ideographic-space-002.html [ Failure ]
 
 
 # Follow up the spec change for U+2010, U+2013
@@ -2573,7 +2574,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-text/white-space/full-width-leading-spaces-004.html [ Failure ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
