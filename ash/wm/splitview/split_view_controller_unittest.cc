@@ -2780,6 +2780,36 @@ TEST_P(SplitViewControllerTest, AutoSnapFromMinimizedState) {
   EndSplitView();
 }
 
+// Test that if the transient parent window is no longer snapped in split view,
+// split view divider should no longer observe the transient child window.
+TEST_P(SplitViewControllerTest, DoNotObserveTransientIfNotInSplitview) {
+  // Create two normal window.
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  // Add another two windows with one being a bubble transient child of the
+  // other.
+  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  aura::Window* parent = widget->GetNativeWindow();
+  parent->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanResize |
+                          aura::client::kResizeBehaviorCanMaximize);
+  views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
+      new TestBubbleDialogDelegateView(widget->GetContentsView()));
+  aura::Window* bubble_transient = bubble_widget->GetNativeWindow();
+  EXPECT_TRUE(::wm::HasTransientAncestor(bubble_transient, parent));
+
+  ToggleOverview();
+  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(parent, SplitViewController::RIGHT);
+  EXPECT_TRUE(bubble_transient->HasObserver(split_view_divider()));
+
+  split_view_controller()->SnapWindow(window2.get(),
+                                      SplitViewController::RIGHT);
+  EXPECT_FALSE(bubble_transient->HasObserver(split_view_divider()));
+}
+
 // Test the tab-dragging related functionalities in tablet mode. Tab(s) can be
 // dragged out of a window and then put in split view mode or merge into another
 // window.

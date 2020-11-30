@@ -96,6 +96,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
  private:
   void CreateDividerWidget(SplitViewController* controller);
 
+  void StartObservingTransientChild(aura::Window* transient);
+  void StopObservingTransientChild(aura::Window* transient);
+
   SplitViewController* controller_;
 
   // The window targeter that is installed on the always on top container window
