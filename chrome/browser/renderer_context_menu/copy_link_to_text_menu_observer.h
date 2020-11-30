@@ -19,7 +19,9 @@ class ClipboardDataEndpoint;
 // to the selected text to the user's clipboard.
 class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
-  explicit CopyLinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
+  static std::unique_ptr<CopyLinkToTextMenuObserver> Create(
+      RenderViewContextMenuProxy* proxy);
+
   CopyLinkToTextMenuObserver(const CopyLinkToTextMenuObserver&) = delete;
   CopyLinkToTextMenuObserver& operator=(const CopyLinkToTextMenuObserver&) =
       delete;
@@ -38,6 +40,7 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
   void OverrideGeneratedSelectorForTesting(const std::string& selector);
 
  private:
+  explicit CopyLinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
   mojo::Remote<blink::mojom::TextFragmentSelectorProducer> remote_;
   RenderViewContextMenuProxy* proxy_;
   GURL url_;

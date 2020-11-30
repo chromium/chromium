@@ -14,11 +14,27 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/process_manager.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
+}
+
+// static
+std::unique_ptr<CopyLinkToTextMenuObserver> CopyLinkToTextMenuObserver::Create(
+    RenderViewContextMenuProxy* proxy) {
+  // WebContents can be null in tests.
+  content::WebContents* web_contents = proxy->GetWebContents();
+  if (web_contents && extensions::ProcessManager::Get(
+                          proxy->GetWebContents()->GetBrowserContext())
+                          ->GetExtensionForWebContents(web_contents)) {
+    // Do not show menu item for extensions, such as the PDF viewer.
+    return nullptr;
+  }
+
+  return base::WrapUnique(new CopyLinkToTextMenuObserver(proxy));
 }
 
 CopyLinkToTextMenuObserver::CopyLinkToTextMenuObserver(
