@@ -5872,7 +5872,6 @@ crbug.com/1143929 svg/transforms/text-with-mask-with-svg-transform.svg [ Pass Fa
 
 # Sheriff 2020-09-29
 crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
-crbug.com/1083605 media/controls-styling-strict.html [ Pass Failure ]
 
 # Transform animation reftests
 crbug.com/1133901 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
