@@ -53,6 +53,9 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
       BreadcrumbManagerKeyedService* service);
 
  private:
+  // Sets |current_mapped_file_position_| to |file_size|;
+  void SetCurrentMappedFilePosition(size_t file_size);
+
   // Writes |pending_breadcrumbs_| to |breadcrumbs_file_| if it fits, otherwise
   // rewrites the file. NOTE: Writing may be delayed if the file has recently
   // been written into.
@@ -90,12 +93,15 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // The path to the temporary file for writing persisted breadcrumbs.
   base::FilePath breadcrumbs_temp_file_path_;
 
-  // NOTE: Since this value represents the breadcrumbs written during this
-  // session, it will remain 0 until |StartStoringEvents| is called.
-  size_t current_mapped_file_position_ = 0;
+  // The current size of breadcrumbs written to |breadcrumbs_file_path_|.
+  // NOTE: The optional will not have a value until the size of the existing
+  // file, if any, is retrieved.
+  base::Optional<size_t> current_mapped_file_position_;
 
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<BreadcrumbPersistentStorageManager> weak_ptr_factory_;
 
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;
