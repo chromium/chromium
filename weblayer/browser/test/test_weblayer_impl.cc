@@ -29,7 +29,8 @@ void CheckMetadata(
     base::android::RunRunnableAndroid(runnable);
     return;
   }
-  observer->NotifyOnNextMetadataChange(
+  auto* const observer_ptr = observer.get();
+  observer_ptr->NotifyOnNextMetadataChange(
       base::BindOnce(&CheckMetadata, std::move(observer), top_height,
                      bottom_height, runnable));
 }
