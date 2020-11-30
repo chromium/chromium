@@ -354,12 +354,6 @@ void ChromePluginPlaceholder::OnBlockedContent(
     bool is_same_origin) {
   DCHECK(render_frame());
 
-  if (status ==
-      content::RenderFrame::PeripheralContentStatus::CONTENT_STATUS_TINY) {
-    content_settings::ContentSettingsAgentImpl::Get(render_frame())
-        ->DidBlockContentType(ContentSettingsType::PLUGINS);
-  }
-
   std::string message = base::StringPrintf(
       is_same_origin ? "Same-origin plugin content from %s must have a visible "
                        "size larger than 6 x 6 pixels, or it will be blocked. "
