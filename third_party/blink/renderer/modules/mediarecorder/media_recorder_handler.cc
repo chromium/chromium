@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/platform/media_capabilities/web_media_configuration.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -280,12 +282,14 @@ bool MediaRecorderHandler::Start(int timeslice) {
     return false;
   }
 
-  webm_muxer_.reset(
-      new media::WebmMuxer(CodecIdToMediaAudioCodec(audio_codec_id_),
-                           use_video_tracks, use_audio_tracks,
-                           WTF::BindRepeating(&MediaRecorderHandler::WriteData,
-                                              WrapWeakPersistent(this))));
-
+  webm_muxer_ = std::make_unique<media::WebmMuxer>(
+      CodecIdToMediaAudioCodec(audio_codec_id_), use_video_tracks,
+      use_audio_tracks,
+      WTF::BindRepeating(&MediaRecorderHandler::WriteData,
+                         WrapWeakPersistent(this)));
+  if (timeslice > 0) {
+    webm_muxer_->SetMaximumDurationToForceDataOutput(timeslice_);
+  }
   if (use_video_tracks) {
     // TODO(mcasas): The muxer API supports only one video track. Extend it to
     // several video tracks, see http://crbug.com/528523.
@@ -294,6 +298,7 @@ bool MediaRecorderHandler::Start(int timeslice) {
         << "Only recording first video track.";
     if (!video_tracks_[0])
       return false;
+    UpdateTrackLiveAndEnabled(*video_tracks_[0], /*is_video=*/true);
 
     MediaStreamVideoTrack* const video_track =
         static_cast<MediaStreamVideoTrack*>(
@@ -332,6 +337,7 @@ bool MediaRecorderHandler::Start(int timeslice) {
         << " tracks is not implemented.  Only recording first audio track.";
     if (!audio_tracks_[0])
       return false;
+    UpdateTrackLiveAndEnabled(*audio_tracks_[0], /*is_video=*/false);
 
     const AudioTrackRecorder::OnEncodedAudioCB on_encoded_audio_cb =
         media::BindToCurrentLoop(WTF::BindRepeating(
@@ -652,23 +658,34 @@ bool MediaRecorderHandler::UpdateTracksAndCheckIfChanged() {
   if (audio_tracks_changed)
     audio_tracks_ = audio_tracks;
 
+  if (video_tracks_.size())
+    UpdateTrackLiveAndEnabled(*video_tracks_[0], /*is_video=*/true);
+  if (audio_tracks_.size())
+    UpdateTrackLiveAndEnabled(*audio_tracks_[0], /*is_video=*/false);
+
   return video_tracks_changed || audio_tracks_changed;
+}
+
+void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
+    const MediaStreamComponent& track,
+    bool is_video) {
+  const bool track_live_and_enabled =
+      track.Source()->GetReadyState() == MediaStreamSource::kReadyStateLive &&
+      track.Enabled();
+  if (webm_muxer_)
+    webm_muxer_->SetLiveAndEnabled(track_live_and_enabled, is_video);
 }
 
 void MediaRecorderHandler::OnSourceReadyStateChanged() {
   for (const auto& track : video_tracks_) {
     DCHECK(track->Source());
-    if (track->Source()->GetReadyState() !=
-        MediaStreamSource::kReadyStateEnded) {
+    if (track->Source()->GetReadyState() != MediaStreamSource::kReadyStateEnded)
       return;
-    }
   }
   for (const auto& track : audio_tracks_) {
     DCHECK(track->Source());
-    if (track->Source()->GetReadyState() !=
-        MediaStreamSource::kReadyStateEnded) {
+    if (track->Source()->GetReadyState() != MediaStreamSource::kReadyStateEnded)
       return;
-    }
   }
   // All tracks are ended, so stop the recorder in accordance with
   // https://www.w3.org/TR/mediastream-recording/#mediarecorder-methods.

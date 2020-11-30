@@ -119,6 +119,8 @@ class MODULES_EXPORT MediaRecorderHandler final
   void OnAudioBusForTesting(const media::AudioBus& audio_bus,
                             const base::TimeTicks& timestamp);
   void SetAudioFormatForTesting(const media::AudioParameters& params);
+  void UpdateTrackLiveAndEnabled(const MediaStreamComponent& track,
+                                 bool is_video);
 
   // Set to true if there is no MIME type configured upon Initialize()
   // and the video track's source supports encoded output, giving

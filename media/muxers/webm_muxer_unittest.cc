@@ -65,16 +65,14 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
             GetParam().num_video_tracks,
             GetParam().num_audio_tracks,
             base::BindRepeating(&WebmMuxerTest::WriteCallback,
-                                base::Unretained(this)))),
-        last_encoded_length_(0),
-        accumulated_position_(0) {
+                                base::Unretained(this)))) {
     EXPECT_EQ(webm_muxer_->Position(), 0);
     const mkvmuxer::int64 kRandomNewPosition = 333;
     EXPECT_EQ(webm_muxer_->Position(kRandomNewPosition), -1);
     EXPECT_FALSE(webm_muxer_->Seekable());
   }
 
-  MOCK_METHOD1(WriteCallback, void(base::StringPiece));
+  MOCK_METHOD(void, WriteCallback, (base::StringPiece));
 
   void SaveEncodedDataLen(const base::StringPiece& encoded_data) {
     last_encoded_length_ = encoded_data.size();
@@ -110,8 +108,8 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
 
   std::unique_ptr<WebmMuxer> webm_muxer_;
 
-  size_t last_encoded_length_;
-  int64_t accumulated_position_;
+  size_t last_encoded_length_ = 0;
+  int64_t accumulated_position_ = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebmMuxerTest);
@@ -504,6 +502,8 @@ class WebmMuxerTestUnparametrized : public testing::Test {
             base::TimeDelta::FromMilliseconds(system_timestamp_offset_ms));
   }
 
+  MOCK_METHOD(void, OnWrite, ());
+
   base::test::TaskEnvironment environment_;
   std::unique_ptr<WebmMuxer> webm_muxer_;
   std::map<int, std::vector<int>> buffer_timestamps_ms_;
@@ -534,6 +534,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
   static constexpr int kSentinelVideoBufferTimestampMs = 1000000;
 
   void SaveChunkAndInvokeWriteCallback(base::StringPiece chunk) {
+    OnWrite();
     std::copy(chunk.begin(), chunk.end(), std::back_inserter(muxed_data_));
   }
 
@@ -599,6 +600,53 @@ TEST_F(WebmMuxerTestUnparametrized,
   EXPECT_THAT(buffer_timestamps_ms_,
               UnorderedElementsAre(Pair(1, ElementsAre(0, 10)),
                                    Pair(2, ElementsAre(0, 5))));
+}
+
+TEST_F(WebmMuxerTestUnparametrized, HoldsDataUntilDurationExpiry) {
+  webm_muxer_->SetMaximumDurationToForceDataOutput(
+      base::TimeDelta::FromMilliseconds(200));
+  AddVideoAtOffset(0, /*is_key_frame=*/true);
+  AddAudioAtOffsetWithDuration(0, 10);
+  // Mute video. The muxer will hold on to audio data after this until the max
+  // data output duration is expired.
+  webm_muxer_->SetLiveAndEnabled(/*track_live_and_enabled=*/false,
+                                 /*is_video=*/true);
+  EXPECT_CALL(*this, OnWrite).Times(0);
+  AddAudioAtOffsetWithDuration(10, 10);
+  AddAudioAtOffsetWithDuration(20, 10);
+  AddAudioAtOffsetWithDuration(30, 10);
+  AddAudioAtOffsetWithDuration(40, 10);
+  Mock::VerifyAndClearExpectations(this);
+  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
+  AddAudioAtOffsetWithDuration(50, 10);
+  Mock::VerifyAndClearExpectations(this);
+  // Stop mock dispatch from happening too late in the WebmMuxer's destructor.
+  webm_muxer_ = nullptr;
+}
+
+TEST_F(WebmMuxerTestUnparametrized, DurationExpiryLimitedByMaxFrequency) {
+  webm_muxer_->SetMaximumDurationToForceDataOutput(
+      base::TimeDelta::FromMilliseconds(
+          50));  // This value is below the minimum limit of 100 ms.
+  AddVideoAtOffset(0, /*is_key_frame=*/true);
+  AddAudioAtOffsetWithDuration(0, 10);
+  // Mute video. The muxer will hold on to audio data after this until the max
+  // data output duration is expired.
+  webm_muxer_->SetLiveAndEnabled(/*track_live_and_enabled=*/false,
+                                 /*is_video=*/true);
+  EXPECT_CALL(*this, OnWrite).Times(0);
+  AddAudioAtOffsetWithDuration(10, 10);
+  AddAudioAtOffsetWithDuration(20, 10);
+  AddAudioAtOffsetWithDuration(30, 10);
+  AddAudioAtOffsetWithDuration(40, 10);
+  Mock::VerifyAndClearExpectations(this);
+  environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  EXPECT_CALL(*this, OnWrite).Times(AtLeast(1));
+  AddAudioAtOffsetWithDuration(50, 10);
+  Mock::VerifyAndClearExpectations(this);
+  // Stop mock dispatch from happening too late in the WebmMuxer's destructor.
+  webm_muxer_ = nullptr;
 }
 
 }  // namespace media
