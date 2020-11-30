@@ -38,7 +38,7 @@ bool OwnerFlagsStorage::SetFlags(const std::set<std::string>& flags) {
        it != switches.end(); ++it) {
     experiments_list.AppendString(*it);
   }
-  owner_settings_service_->Set(kStartUpFlags, experiments_list);
+  owner_settings_service_->Set(kStartUpFlagsDeprecated, experiments_list);
 
   return true;
 }

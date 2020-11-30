@@ -233,9 +233,14 @@ const char kPolicyMissingMitigationMode[] =
 const char kAllowRedeemChromeOsRegistrationOffers[] =
     "cros.echo.allow_redeem_chrome_os_registration_offers";
 
+// A list pref storing the feature flags (in the chrome://flags sense) that
+// should to be applied at the login screen.
+const char kFeatureFlags[] = "cros.feature_flags";
+
 // A list pref storing the flags that need to be applied to the browser upon
-// start-up.
-const char kStartUpFlags[] = "cros.startup_flags";
+// start-up. This lists raw flags, which isn't ideal since Chrome can't easily
+// tie this back to feature flags. Deprecated in favor of kFeatureFlags.
+const char kStartUpFlagsDeprecated[] = "cros.startup_flags";
 
 // A string pref for the restrict parameter to be appended to the Variations URL
 // when pinging the Variations server.

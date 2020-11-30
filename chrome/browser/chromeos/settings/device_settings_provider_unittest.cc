@@ -1228,4 +1228,26 @@ TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedEnabled) {
             *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
 }
 
+TEST_F(DeviceSettingsProviderTest, StartUpFlagsDeprecated) {
+  EXPECT_EQ(nullptr, provider_->Get(kStartUpFlagsDeprecated));
+
+  device_policy_->payload().mutable_feature_flags()->add_switches("--foo");
+  BuildAndInstallDevicePolicy();
+
+  base::ListValue expected_switches;
+  expected_switches.Append(base::Value("--foo"));
+  EXPECT_EQ(expected_switches, *provider_->Get(kStartUpFlagsDeprecated));
+}
+
+TEST_F(DeviceSettingsProviderTest, FeatureFlags) {
+  EXPECT_EQ(nullptr, provider_->Get(kFeatureFlags));
+
+  device_policy_->payload().mutable_feature_flags()->add_feature_flags("foo");
+  BuildAndInstallDevicePolicy();
+
+  base::ListValue expected_feature_flags;
+  expected_feature_flags.Append(base::Value("foo"));
+  EXPECT_EQ(expected_feature_flags, *provider_->Get(kFeatureFlags));
+}
+
 }  // namespace chromeos

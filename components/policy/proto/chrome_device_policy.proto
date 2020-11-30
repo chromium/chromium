@@ -552,11 +552,25 @@ message AllowRedeemChromeOsRegistrationOffersProto {
   optional bool allow_redeem_offers = 1 [default = true];
 }
 
-message StartUpFlagsProto {
-  // Specifies the flags that should be applied to Google Chrome when it starts.
-  // The specified flags are applied on the login screen only. Flags set via
-  // this policy do not propagate into user sessions.
-  repeated string flags = 1;
+message FeatureFlagsProto {
+  // Specifies switches that should be passed to Google Chrome when it starts.
+  // The specified switches are applied on the login screen only. Switches set
+  // via this policy do not propagate into user sessions.
+  // This is deprecated because it turned out that storing raw switches is
+  // problematic since Chrome can't easily tie switches back to feature flags to
+  // validate them. The |feature_flags| field below works in terms of feature
+  // flag names (i.e. chrome://flags items) instead and supersedes |switches|.
+  repeated string switches = 1 [deprecated = true];
+
+  // Specifies feature flags (i.e. chrome://flags items) that should be enabled
+  // when Chrome starts. The format of the individual entries matches the format
+  // chrome://flags uses for internal bookkeeping, i.e. either the flag name as
+  // listed on chrome://flags (for flags that only have a single choice besides
+  // the default) or the flag name followed by the index of the chosen option,
+  // separated by an '@' character (for flags with multiple choices). The
+  // specified feature flags are applied on the login screen only and don't
+  // propagate into the user session.
+  repeated string feature_flags = 2;
 }
 
 message UptimeLimitProto {
@@ -1763,7 +1777,7 @@ message ChromeDeviceSettingsProto {
   optional SystemTimezoneProto system_timezone = 20;
   optional DeviceLocalAccountsProto device_local_accounts = 21;
   optional AllowRedeemChromeOsRegistrationOffersProto allow_redeem_offers = 22;
-  optional StartUpFlagsProto start_up_flags = 23;
+  optional FeatureFlagsProto feature_flags = 23;
   optional UptimeLimitProto uptime_limit = 24;
   optional VariationsParameterProto variations_parameter = 25;
   optional AttestationSettingsProto attestation_settings = 26;

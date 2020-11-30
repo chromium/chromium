@@ -24110,6 +24110,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     ['DeviceLoginScreenSaverId', ''],
     ['DeviceLoginScreenSaverTimeout', ''],
     ['DeviceAppPack', ''],
+    ['DeviceStartUpFlags', ''],
     # Proto fields with unknown policy.
     ['', 'device_reporting.report_running_kiosk_app'],
     ['', 'camera_enabled.camera_enabled'],
@@ -24275,7 +24276,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceWiFiAllowed': 'device_wifi_allowed.device_wifi_allowed',
     'AutoCleanUpStrategy': 'auto_clean_up_settings.clean_up_strategy',
     'SupervisedUsersEnabled': 'supervised_users_settings.supervised_users_enabled',
-    'DeviceStartUpFlags': 'start_up_flags.flags',
     'ReportDeviceBoardStatus': 'device_reporting.report_board_status',
     'ReportDeviceCpuInfo': 'device_reporting.report_cpu_info',
     'ReportDeviceTimezoneInfo': 'device_reporting.report_timezone_info',
