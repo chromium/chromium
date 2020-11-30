@@ -86,6 +86,7 @@ class GuestOsRegistryService : public KeyedService {
 
     std::string Name() const;
     std::string Comment() const;
+    std::string Exec() const;
     std::string ExecutableFileName() const;
     std::set<std::string> Extensions() const;
     std::set<std::string> MimeTypes() const;

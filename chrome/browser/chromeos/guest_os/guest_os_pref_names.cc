@@ -23,6 +23,7 @@ const char kAppCommentKey[] = "comment";
 const char kAppExtensionsKey[] = "extensions";
 const char kAppMimeTypesKey[] = "mime_types";
 const char kAppKeywordsKey[] = "keywords";
+const char kAppExecKey[] = "exec";
 const char kAppExecutableFileNameKey[] = "executable_file_name";
 const char kAppNameKey[] = "name";
 const char kAppNoDisplayKey[] = "no_display";

@@ -22,6 +22,7 @@ extern const char kAppCommentKey[];
 extern const char kAppExtensionsKey[];
 extern const char kAppMimeTypesKey[];
 extern const char kAppKeywordsKey[];
+extern const char kAppExecKey[];
 extern const char kAppExecutableFileNameKey[];
 extern const char kAppNameKey[];
 extern const char kAppNoDisplayKey[];

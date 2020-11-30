@@ -102,6 +102,7 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
       {"", {"very", "awesome"}}};
   std::set<std::string> mime_types = {"text/plain", "text/x-python"};
   bool no_display = true;
+  std::string exec = "execName --extra-arg=true";
   std::string executable_file_name = "execName";
   std::string package_id =
       "vim;2:8.0.0197-4+deb9u1;amd64;installed:debian-stable";
@@ -118,6 +119,7 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
   App* app = app_list.add_apps();
   app->set_desktop_file_id(desktop_file_id);
   app->set_no_display(no_display);
+  app->set_exec(exec);
   app->set_executable_file_name(executable_file_name);
   app->set_package_id(package_id);
 
@@ -160,6 +162,7 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
   EXPECT_EQ(result->Keywords(), keywords[""]);
   EXPECT_EQ(result->MimeTypes(), mime_types);
   EXPECT_EQ(result->NoDisplay(), no_display);
+  EXPECT_EQ(result->Exec(), exec);
   EXPECT_EQ(result->ExecutableFileName(), executable_file_name);
   EXPECT_EQ(result->PackageId(), package_id);
 }
@@ -486,6 +489,27 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationKeywords) {
   EXPECT_EQ(result->Keywords(), keywords["ge"]);
   g_browser_process->SetApplicationLocale("te");
   EXPECT_EQ(result->Keywords(), keywords["te"]);
+}
+
+TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExec) {
+  std::string exec = "execName --extra-arg=true";
+  std::string app_id_valid_exec =
+      crostini::CrostiniTestHelper::GenerateAppId("app", "vm", "container");
+  std::string app_id_no_exec =
+      crostini::CrostiniTestHelper::GenerateAppId("noExec", "vm", "container");
+  ApplicationList app_list =
+      crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
+  *app_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("noExec");
+
+  app_list.mutable_apps(0)->set_exec(exec);
+  service()->UpdateApplicationList(app_list);
+
+  base::Optional<GuestOsRegistryService::Registration> result_valid_exec =
+      service()->GetRegistration(app_id_valid_exec);
+  base::Optional<GuestOsRegistryService::Registration> result_no_exec =
+      service()->GetRegistration(app_id_no_exec);
+  EXPECT_EQ(result_valid_exec->Exec(), exec);
+  EXPECT_EQ(result_no_exec->Exec(), "");
 }
 
 TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExecutableFileName) {

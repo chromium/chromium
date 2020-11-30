@@ -125,6 +125,8 @@ void PopulatePrefRegistrationFromApp(base::Value& pref_registration,
   pref_registration.SetKey(guest_os::prefs::kAppNameKey, std::move(name));
   pref_registration.SetKey(guest_os::prefs::kAppCommentKey,
                            ProtoToDictionary(app.comment()));
+  pref_registration.SetKey(guest_os::prefs::kAppExecKey,
+                           base::Value(app.exec()));
   pref_registration.SetKey(guest_os::prefs::kAppExecutableFileNameKey,
                            base::Value(app.executable_file_name()));
   pref_registration.SetKey(guest_os::prefs::kAppExtensionsKey,
@@ -255,6 +257,7 @@ static std::string ToString(const vm_tools::apps::App& app) {
          ", startup_wm_class: " + ToString(app.startup_wm_class()) +
          ", startup_notify: " + ToString(app.startup_notify()) +
          ", keywords: " + ToString(app.keywords()) +
+         ", exec: " + ToString(app.exec()) +
          ", executable_file_name: " + ToString(app.executable_file_name()) +
          ", package_id: " + ToString(app.package_id()) +
          ", extensions: " + ToString(app.extensions()) + "}";
@@ -385,6 +388,12 @@ std::string GuestOsRegistryService::Registration::Name() const {
 
 std::string GuestOsRegistryService::Registration::Comment() const {
   return LocalizedString(guest_os::prefs::kAppCommentKey);
+}
+
+std::string GuestOsRegistryService::Registration::Exec() const {
+  return pref_
+      .FindKeyOfType(guest_os::prefs::kAppExecKey, base::Value::Type::STRING)
+      ->GetString();
 }
 
 std::string GuestOsRegistryService::Registration::ExecutableFileName() const {
