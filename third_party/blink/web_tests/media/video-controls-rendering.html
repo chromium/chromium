@@ -17,7 +17,6 @@ const videos = document.getElementsByTagName('video');
 for (var i = 0; i < videos.length; ++i) {
   enableTestMode(videos[i]);
 }
-init();
-setSrcByTagName('video', 'content/test.ogv');
+setVideoSrcAndWaitForFirstFrame('content/test.ogv');
 </script>
 </body>

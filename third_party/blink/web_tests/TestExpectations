@@ -5491,9 +5491,6 @@ crbug.com/1051131 [ Fuchsia ] http/tests/appcache/abort-cache-onchecking-resourc
 # Sheriff 2020-02-19
 crbug.com/1053903 external/wpt/webxr/events_referenceSpace_reset_inline.https.html [ Pass Failure Timeout ]
 
-# Sheriff 2020-02-21
-crbug.com/1054977 media/video-controls-rendering.html [ Pass Failure ]
-
 # Sheriff 2020-02-28
 crbug.com/1056879 [ Win7 ] external/wpt/webxr/xrSession_requestAnimationFrame_getViewerPose.https.html [ Pass Failure Timeout ]
 crbug.com/1053861 http/tests/devtools/network/network-initiator-chain.js [ Pass Failure ]
