@@ -64,7 +64,8 @@ IN_PROC_BROWSER_TEST_F(ExpandablePaymentHandlerBrowserTest, ConfirmPayment) {
 }
 
 // Make sure the security icon is clickable.
-IN_PROC_BROWSER_TEST_F(ExpandablePaymentHandlerBrowserTest, ClickSecurityIcon) {
+IN_PROC_BROWSER_TEST_F(ExpandablePaymentHandlerBrowserTest,
+                       DISABLE_ON_ANDROID(ClickSecurityIcon)) {
   std::string expected = "success";
   EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(), "install()"));
   EXPECT_EQ("app_is_ready",
