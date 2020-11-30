@@ -165,9 +165,7 @@ class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
   static scoped_refptr<AudioBus> GetDataResource(int resource_id,
                                                  float sample_rate);
 
- protected:
-  AudioBus() = default;
-
+ private:
   AudioBus(unsigned number_of_channels, uint32_t length, bool allocate);
 
   void DiscreteSumFrom(const AudioBus&);
@@ -182,7 +180,6 @@ class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
   int layout_;
   float sample_rate_;  // 0.0 if unknown or N/A
 
- private:
   DISALLOW_COPY_AND_ASSIGN(AudioBus);
 };
 
