@@ -147,7 +147,8 @@ void DownloadUIAdapterDelegate::GetShareInfoForItem(
     const ContentId& id,
     ShareCallback share_callback) {
   auto share_helper = std::make_unique<OfflinePageShareHelper>(model_);
-  share_helper->GetShareInfo(
+  auto* const share_helper_ptr = share_helper.get();
+  share_helper_ptr->GetShareInfo(
       id, base::BindOnce(&OnShareInfoRetrieved, std::move(share_helper),
                          std::move(share_callback)));
 }
