@@ -64,8 +64,6 @@ ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
 #if !defined(PA_HAS_64_BITS_POINTERS)
   return false;
 #endif  // !PA_HAS_64_BITS_POINTERS
-  // TODO(bikineev): Calling this function can allocate which can cause
-  // reentrancy for the 'PA as malloc' configuration.
   return FeatureList::IsEnabled(kPartitionAllocPCScan);
 }
 

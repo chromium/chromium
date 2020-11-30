@@ -156,6 +156,7 @@ BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+BASE_EXPORT void EnablePCScan();
 BASE_EXPORT void EnablePCScanIfNeeded();
 #endif
 

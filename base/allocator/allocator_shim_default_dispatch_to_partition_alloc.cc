@@ -237,11 +237,15 @@ void EnablePartitionAllocMemoryReclaimer() {
       AlignedAllocator());
 }
 
+void EnablePCScan() {
+  Allocator()->EnablePCScan();
+  AlignedAllocator()->EnablePCScan();
+}
+
 void EnablePCScanIfNeeded() {
   if (!features::IsPartitionAllocPCScanEnabled())
     return;
-  Allocator()->EnablePCScan();
-  AlignedAllocator()->EnablePCScan();
+  EnablePCScan();
 }
 
 }  // namespace allocator

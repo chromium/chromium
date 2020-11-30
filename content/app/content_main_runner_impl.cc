@@ -241,6 +241,18 @@ void EnablePCScanForMallocPartitionsIfNeeded() {
 #endif
 }
 
+void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
+  static const base::Feature kPartitionAllocPCScanBrowserOnly{
+      "PartitionAllocPCScanBrowserOnly", base::FEATURE_DISABLED_BY_DEFAULT};
+  (void)kPartitionAllocPCScanBrowserOnly;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  CHECK(base::FeatureList::GetInstance());
+  if (base::FeatureList::IsEnabled(kPartitionAllocPCScanBrowserOnly)) {
+    base::allocator::EnablePCScan();
+  }
+#endif
+}
+
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
                          base::ScopedFD* control_fd) {
@@ -517,6 +529,7 @@ int RunBrowserProcessMain(const MainFunctionParams& main_function_params,
   int exit_code = delegate->RunProcess("", main_function_params);
   if (exit_code >= 0)
     return exit_code;
+  EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   return BrowserMain(main_function_params);
 }
 
