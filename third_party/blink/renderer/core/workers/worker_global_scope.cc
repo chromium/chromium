@@ -332,7 +332,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
                                                 std::move(cached_meta_data)));
     ReportingProxy().WillEvaluateImportedClassicScript(
         source_code.length(), handler ? handler->GetCodeCacheSize() : 0);
-    ScriptState::Scope scope(ScriptController()->GetScriptState());
+    v8::HandleScope scope(isolate);
     ScriptEvaluationResult result = ScriptController()->EvaluateAndReturnValue(
         ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
                          handler,

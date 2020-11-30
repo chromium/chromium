@@ -155,7 +155,7 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
     DCHECK(script_state);
     v8::Isolate* isolate = script_state->GetIsolate();
     DCHECK(isolate);
-    ScriptState::Scope scope(script_state);
+    v8::HandleScope scope(isolate);
 
     ScriptEvaluationResult result =
         global_scope->ScriptController()->EvaluateAndReturnValue(

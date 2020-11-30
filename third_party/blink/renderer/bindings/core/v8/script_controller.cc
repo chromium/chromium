@@ -286,8 +286,6 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
   }
   DCHECK_EQ(script_state->GetIsolate(), GetIsolate());
 
-  v8::Context::Scope scope(script_state->GetContext());
-
   return ExecuteScriptAndReturnValue(script_state->GetContext(), source_code,
                                      base_url, sanitize_script_errors,
                                      fetch_options);
@@ -356,8 +354,6 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptInIsolatedWorld(
   // TODO(dcheng): Context must always be initialized here, due to the call to
   // WindowProxy() inside ToScriptState() above. Add a helper which makes that
   // obvious?
-
-  v8::Context::Scope scope(script_state->GetContext());
 
   return ExecuteScriptAndReturnValue(script_state->GetContext(), source,
                                      base_url, sanitize_script_errors);

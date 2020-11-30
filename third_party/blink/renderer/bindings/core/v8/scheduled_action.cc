@@ -115,26 +115,39 @@ void ScheduledAction::Execute(ExecutionContext* context) {
     DVLOG(1) << "ScheduledAction::execute " << this << ": context is empty";
     return;
   }
-  // ExecutionContext::CanExecuteScripts() relies on the current context to
-  // determine if it is allowed. Enter the scope here.
-  ScriptState::Scope scope(script_state_->Get());
-  if (!context->CanExecuteScripts(kAboutToExecuteScript)) {
-    DVLOG(1) << "ScheduledAction::execute " << this
-             << ": window can not execute scripts";
-    return;
-  }
 
-  // https://html.spec.whatwg.org/C/#timer-initialisation-steps
-  if (function_) {
-    DVLOG(1) << "ScheduledAction::execute " << this << ": have function";
-    function_->InvokeAndReportException(context->ToScriptWrappable(),
-                                        arguments_);
-    return;
+  {
+    // ExecutionContext::CanExecuteScripts() relies on the current context to
+    // determine if it is allowed. Enter the scope here.
+    // TODO(crbug.com/1151165): Consider merging CanExecuteScripts() calls,
+    // because once crbug.com/1111134 is done, CanExecuteScripts() will be
+    // always called below inside
+    // - InvokeAndReportException() => V8Function::Invoke() =>
+    //   IsCallbackFunctionRunnable() and
+    // - V8ScriptRunner::CompileAndRunScript().
+    ScriptState::Scope scope(script_state_->Get());
+    if (!context->CanExecuteScripts(kAboutToExecuteScript)) {
+      DVLOG(1) << "ScheduledAction::execute " << this
+               << ": window can not execute scripts";
+      return;
+    }
+
+    // https://html.spec.whatwg.org/C/#timer-initialisation-steps
+    if (function_) {
+      DVLOG(1) << "ScheduledAction::execute " << this << ": have function";
+      function_->InvokeAndReportException(context->ToScriptWrappable(),
+                                          arguments_);
+      return;
+    }
+
+    // We exit the scope here, because we enter v8::Context during the main
+    // evaluation below.
   }
 
   // We use |SanitizeScriptErrors::kDoNotSanitize| because muted errors flag is
   // not set in https://html.spec.whatwg.org/C/#timer-initialisation-steps
   DVLOG(1) << "ScheduledAction::execute " << this << ": executing from source";
+  v8::HandleScope scope(script_state_->GetIsolate());
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     window->GetScriptController().ExecuteScriptAndReturnValue(
         script_state_->GetContext(),

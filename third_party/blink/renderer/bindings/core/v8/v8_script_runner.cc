@@ -380,6 +380,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     RethrowErrorsOption rethrow_errors) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
 
+  v8::Context::Scope scope(script_state->GetContext());
+
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
   TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
