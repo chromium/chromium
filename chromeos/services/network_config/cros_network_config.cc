@@ -2000,6 +2000,7 @@ void CrosNetworkConfig::SetProperties(const std::string& guid,
           << "SetProperties called with ethernet.eap but no EAP config: "
           << guid;
       std::move(callback).Run(false, kErrorNetworkUnavailable);
+      return;
     }
     network = eap_state;
   }
