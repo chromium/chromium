@@ -323,7 +323,11 @@ bool DrawAndScaleImage(
             : supported_size;
     decode_info = info.makeWH(decode_size.width(), decode_size.height());
   }
-  SkFilterQuality filter_quality = CalculateDesiredFilterQuality(draw_image);
+
+  const SkFilterQuality filter_quality =
+      CalculateDesiredFilterQuality(draw_image);
+  const SkSamplingOptions sampling(filter_quality);
+
   bool decode_to_f16_using_n32_intermediate =
       decode_info.colorType() == kRGBA_F16_SkColorType &&
       !ImageDecodeCacheUtils::CanResizeF16Image(filter_quality);
@@ -380,12 +384,12 @@ bool DrawAndScaleImage(
                     v_info_scaled.minRowBytes());
 
     const bool all_planes_scaled_successfully =
-        unscaled_yuva_pixmaps.plane(0).scalePixels(*pixmap_y, filter_quality) &&
-        unscaled_yuva_pixmaps.plane(1).scalePixels(*pixmap_u, filter_quality) &&
-        unscaled_yuva_pixmaps.plane(2).scalePixels(*pixmap_v, filter_quality);
+        unscaled_yuva_pixmaps.plane(0).scalePixels(*pixmap_y, sampling) &&
+        unscaled_yuva_pixmaps.plane(1).scalePixels(*pixmap_u, sampling) &&
+        unscaled_yuva_pixmaps.plane(2).scalePixels(*pixmap_v, sampling);
     return all_planes_scaled_successfully;
   }
-  return decode_pixmap.scalePixels(pixmap, filter_quality);
+  return decode_pixmap.scalePixels(pixmap, sampling);
 }
 
 // Takes ownership of the backing texture of an SkImage. This allows us to

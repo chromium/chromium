@@ -233,10 +233,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_SUPPORT_LEGACY_ADJUSTHQHEURISTIC
 #endif
 
-#ifndef SK_SUPPORT_LEGACY_SCALEPIXELS_PARAM
-#define SK_SUPPORT_LEGACY_SCALEPIXELS_PARAM
-#endif
-
 // Staging for lowp::bilerp_clamp_8888, and for planned misc. others.
 #define SK_DISABLE_LOWP_BILERP_CLAMP_CLAMP_STAGE
 

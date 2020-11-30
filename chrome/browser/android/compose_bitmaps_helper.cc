@@ -127,8 +127,9 @@ SkBitmap ScaleBitmap(int icon_size, const SkBitmap& bitmap) {
   SkImageInfo scaledIconInfo = bitmap.info().makeWH(icon_size, icon_size);
   temp_bitmap.setInfo(scaledIconInfo);
   temp_bitmap.allocPixels();
+  const SkSamplingOptions mitchellCubic({1.0f/3, 1.0f/3});
   bool did_scale =
-      bitmap.pixmap().scalePixels(temp_bitmap.pixmap(), kHigh_SkFilterQuality);
+      bitmap.pixmap().scalePixels(temp_bitmap.pixmap(), mitchellCubic);
   if (!did_scale) {
     DLOG(ERROR) << "Unable to scale icon";
     return SkBitmap();

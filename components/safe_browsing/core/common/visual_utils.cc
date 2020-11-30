@@ -188,8 +188,9 @@ bool GetBlurredImage(const SkBitmap& image,
   SkBitmap downsampled;
   if (!downsampled.tryAllocPixels(downsampled_info))
     return false;
-  image.pixmap().scalePixels(downsampled.pixmap(),
-                             SkFilterQuality::kMedium_SkFilterQuality);
+  image.pixmap().scalePixels(
+      downsampled.pixmap(),
+      SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest));
 
   std::unique_ptr<SkBitmap> blurred =
       BlockMeanAverage(downsampled, kPHashBlockSize);

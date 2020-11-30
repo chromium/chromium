@@ -99,8 +99,9 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
   scaled_bitmap.setInfo(
       bitmap->info().makeWH(scaled_size.width(), scaled_size.height()));
   if (scaled_bitmap.tryAllocPixels()) {
-    bitmap->pixmap().scalePixels(scaled_bitmap.pixmap(),
-                                 kMedium_SkFilterQuality);
+    bitmap->pixmap().scalePixels(
+        scaled_bitmap.pixmap(),
+        {SkFilterMode::kLinear, SkMipmapMode::kNearest});
   }
 
   *bitmap = scaled_bitmap;

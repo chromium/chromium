@@ -414,8 +414,9 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
     scaled_image = image_;
   } else {
     if (scaled_image.tryAllocPixels(scaled_image_format) &&
-        image_.pixmap().scalePixels(scaled_image.pixmap(),
-                                    kMedium_SkFilterQuality)) {
+        image_.pixmap().scalePixels(
+            scaled_image.pixmap(),
+            SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest))) {
       // Cache the scaled image, to avoid needing to re-scale in future calls to
       // this method.
       image_ = scaled_image;

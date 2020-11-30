@@ -154,7 +154,8 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
     result = ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
         decoded_pixmap, &target_pixmap, filter_quality);
   } else {
-    result = decoded_pixmap.scalePixels(target_pixmap, filter_quality);
+    result = decoded_pixmap.scalePixels(target_pixmap,
+                                        SkSamplingOptions(filter_quality));
   }
   DCHECK(result) << key.ToString();
 

@@ -41,7 +41,8 @@ bool ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
       n32_pixmap.info().makeWH(scaled_pixmap->width(), scaled_pixmap->height());
   if (!n32_resized_bitmap.tryAllocPixels(n32_resize_info))
     return false;
-  if (!n32_pixmap.scalePixels(n32_resized_bitmap.pixmap(), filter_quality))
+  if (!n32_pixmap.scalePixels(n32_resized_bitmap.pixmap(),
+                              SkSamplingOptions(filter_quality)))
     return false;
   // Convert back to f16 and return
   return n32_resized_bitmap.readPixels(*scaled_pixmap, 0, 0);
