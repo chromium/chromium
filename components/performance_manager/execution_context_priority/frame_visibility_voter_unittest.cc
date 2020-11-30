@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/execution_context_priority/ad_frame_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
 
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -22,14 +22,15 @@ const execution_context::ExecutionContext* GetExecutionContext(
   return execution_context::ExecutionContext::From(frame_node);
 }
 
-// Both the voting channel and the AdFrameVoter are expected live on the graph,
-// without being actual GraphOwned objects. This class wraps both to allow this.
+// Both the voting channel and the FrameVisibilityVoter are expected live on the
+// graph, without being actual GraphOwned objects. This class wraps both to
+// allow this.
 class GraphOwnedWrapper : public GraphOwned {
  public:
   GraphOwnedWrapper() {
     VotingChannel voting_channel = observer_.BuildVotingChannel();
     voter_id_ = voting_channel.voter_id();
-    ad_frame_voter_.SetVotingChannel(std::move(voting_channel));
+    frame_visibility_voter_.SetVotingChannel(std::move(voting_channel));
   }
 
   ~GraphOwnedWrapper() override = default;
@@ -39,10 +40,10 @@ class GraphOwnedWrapper : public GraphOwned {
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
-    graph->AddFrameNodeObserver(&ad_frame_voter_);
+    graph->AddFrameNodeObserver(&frame_visibility_voter_);
   }
   void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveFrameNodeObserver(&ad_frame_voter_);
+    graph->RemoveFrameNodeObserver(&frame_visibility_voter_);
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
@@ -52,21 +53,21 @@ class GraphOwnedWrapper : public GraphOwned {
 
  private:
   DummyVoteObserver observer_;
-  AdFrameVoter ad_frame_voter_;
+  FrameVisibilityVoter frame_visibility_voter_;
   VoterId voter_id_;
 };
 
 }  // namespace
 
-class AdFrameVoterTest : public GraphTestHarness {
+class FrameVisibilityVoterTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  AdFrameVoterTest() = default;
-  ~AdFrameVoterTest() override = default;
+  FrameVisibilityVoterTest() = default;
+  ~FrameVisibilityVoterTest() override = default;
 
-  AdFrameVoterTest(const AdFrameVoterTest&) = delete;
-  AdFrameVoterTest& operator=(const AdFrameVoterTest&) = delete;
+  FrameVisibilityVoterTest(const FrameVisibilityVoterTest&) = delete;
+  FrameVisibilityVoterTest& operator=(const FrameVisibilityVoterTest&) = delete;
 
   void SetUp() override {
     GetGraphFeaturesHelper().EnableExecutionContextRegistry();
@@ -85,22 +86,27 @@ class AdFrameVoterTest : public GraphTestHarness {
   GraphOwnedWrapper* wrapper_ = nullptr;
 };
 
-// Tests that the AdFrameVoter correctly casts a vote for an ad frame.
-TEST_F(AdFrameVoterTest, SetIsAdFrame) {
-  // Create a graph with a single frame. It should not initially be an ad frame.
+// Tests that the FrameVisibilityVoter correctly casts a vote for a frame
+// depending on its visibility.
+TEST_F(FrameVisibilityVoterTest, ChangeFrameVisibility) {
+  // Create a graph with a single frame in a non-visible page. Its initial
+  // visibility should be kNotVisible, resulting in a low priority.
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame_node = mock_graph.frame;
-  EXPECT_FALSE(frame_node->is_ad_frame());
-  EXPECT_EQ(observer().GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(frame_node.get())));
-
-  // Make the frame an ad frame. This should cast a low priority vote.
-  mock_graph.frame->SetIsAdFrame();
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(frame_node.get()),
-      base::TaskPriority::LOWEST, AdFrameVoter::kAdFrameReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(),
+                                 GetExecutionContext(frame_node.get()),
+                                 base::TaskPriority::LOWEST,
+                                 FrameVisibilityVoter::kFrameVisibilityReason));
+
+  // Make the frame visible. This should increase the priority.
+  mock_graph.frame->SetVisibility(FrameNode::Visibility::kVisible);
+  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  EXPECT_TRUE(observer().HasVote(voter_id(),
+                                 GetExecutionContext(frame_node.get()),
+                                 base::TaskPriority::USER_VISIBLE,
+                                 FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Deleting the frame should invalidate the vote.
   frame_node.reset();

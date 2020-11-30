@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/execution_context_priority/root_vote_observer.h"
+#include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"

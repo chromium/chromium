@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
 
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -38,4 +38,4 @@ class AdFrameVoter : public FrameNode::ObserverDefaultImpl {
 }  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_

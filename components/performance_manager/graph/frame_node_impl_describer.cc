@@ -10,7 +10,6 @@
 
 #include "base/values.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 
