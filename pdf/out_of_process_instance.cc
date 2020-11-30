@@ -703,10 +703,12 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   pp::Size view_device_size(view_rect.width() * device_scale,
                             view_rect.height() * device_scale);
 
-  if (view_device_size != plugin_size_ || device_scale != device_scale_) {
+  if (view_device_size != plugin_size_ || device_scale != device_scale_ ||
+      view_rect.point() != plugin_offset_) {
     device_scale_ = device_scale;
     plugin_dip_size_ = view_rect.size();
     plugin_size_ = view_device_size;
+    plugin_offset_ = view_rect.point();
 
     paint_manager_.SetSize(SizeFromPPSize(view_device_size), device_scale_);
 
@@ -837,8 +839,9 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
 
 void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   PP_PrivateAccessibilityViewportInfo viewport_info;
-  viewport_info.scroll.x = 0;
-  viewport_info.scroll.y = -top_toolbar_height_in_viewport_coords_;
+  viewport_info.scroll.x = -plugin_offset_.x();
+  viewport_info.scroll.y =
+      -top_toolbar_height_in_viewport_coords_ - plugin_offset_.y();
   viewport_info.offset.x =
       available_area_.point().x() / (device_scale_ * zoom_);
   viewport_info.offset.y =

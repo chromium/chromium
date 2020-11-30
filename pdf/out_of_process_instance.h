@@ -355,6 +355,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Size of entire document in pixels (i.e. if each page is 800 pixels high and
   // there are 10 pages, the height will be 8000).
   pp::Size document_size_;
+  // Positional offset, in CSS pixels, of the plugin rectangle.
+  pp::Point plugin_offset_;
   // The scroll offset in CSS pixels.
   pp::Point scroll_offset_;
 
