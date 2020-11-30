@@ -18,6 +18,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -199,7 +201,8 @@ void SystemTokenCertDBInitializer::OnGotTpmIsReady(
       // have been lost if initialization was interrupted.
       // We don't care about the result, and don't block waiting for it.
       LOG(WARNING) << "Request attempting TPM ownership.";
-      CryptohomeClient::Get()->TpmCanAttemptOwnership(base::DoNothing());
+      TpmManagerClient::Get()->TakeOwnership(
+          ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
     }
 
     return;
