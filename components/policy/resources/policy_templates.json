@@ -3175,13 +3175,9 @@
       'id': 15,
       'caption': '''Enable reporting of usage and crash-related data''',
       'tags': ['google-sharing'],
-      'desc': '''Enables anonymous reporting of usage and crash-related data about <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to Google and prevents users from changing this setting.
+      'desc': '''Setting the policy to Enabled turns on anonymous reporting of usage and crash-related data about Chrome to Google and prevents users from changing this setting. Setting the policy to Disabled means this information is not sent to Google.
 
-      If this setting is enabled, anonymous reporting of usage and crash-related
-      data is sent to Google.  If it is disabled, this information is not sent
-      to Google.  In both cases, users cannot change or override the setting.
-      If this policy is left not set, the setting will be what the user chose
-      upon installation / first run.
+      If you set the policy, users can't change it. If not set, users choose the behavior at installation or first run.
 
       This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are that are managed via MDM or joined to a domain via MCX.
 
@@ -9428,13 +9424,9 @@
       'id': 484,
       'caption': '''Report information about usage of Linux apps''',
       'tags': ['admin-sharing'],
-      'desc': '''Information about the usage of Linux apps is sent back to the
-      server.
+      'desc': '''If <ph name="LINUX_OS_NAME">Linux</ph> app support is on, setting the policy to Enabled sends information about <ph name="LINUX_OS_NAME">Linux</ph> apps usage back to the server.
 
-      If the policy is set to false or left unset, no usage information is
-      reported. If set to true, usage information is reported.
-
-      This policy only applies if Linux app support is enabled.''',
+      Setting the policy to Disabled or leaving it unset means no usage information is reported.''',
     },
     {
       'name': 'HeartbeatEnabled',
@@ -18475,13 +18467,13 @@
       'id': 442,
       'caption': '''Control how Chrome Cleanup reports data to Google''',
       'tags': ['system-security'],
-      'desc': '''If unset, should Chrome Cleanup detect unwanted software, it may report metadata about the scan to Google in accordance with policy set by SafeBrowsingExtendedReportingEnabled. Chrome Cleanup will then ask the user if they wish to clean up the unwanted software. The user can choose to share results of the cleanup with Google to assist with future unwanted software detection. These results contain file metadata, automatically installed extensions and registry keys as described by the Chrome Privacy Whitepaper.
+      'desc': '''Setting the policy to Enabled means if <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> detects unwanted software, it may, in line with policy set by <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME">SafeBrowsingExtendedReportingEnabled</ph>, report about the scan to Google. <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> asks users if they want the cleanup. It sends results to Google.
 
-      If disabled, should Chrome Cleanup detect unwanted software, it will not report metadata about the scan to Google, overriding any policy set by SafeBrowsingExtendedReportingEnabled. Chrome Cleanup will ask the user if they wish to clean up the unwanted software.  Results of the cleanup will not be reported to Google and the user will not have the option to do so.
+      Setting the policy to Disabled means if <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> detects unwanted software, it won't report about the scan to Google, regardless of the value of <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME">SafeBrowsingExtendedReportingEnabled</ph>. <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> asks users if they want the cleanup. The results aren't reported to Google.
 
-      If enabled, should Chrome Cleanup detect unwanted software, it may report metadata about the scan to Google in accordance with policy set by SafeBrowsingExtendedReportingEnabled. Chrome Cleanup will ask the user if they wish to clean up the unwanted software.  Results of the cleanup will be reported to Google and the user will not have the option to prevent it.
+      Leaving the policy unset means <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> may, in line with policy set by <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME">SafeBrowsingExtendedReportingEnabled</ph>, report about scans for detecting unwanted software to Google. <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> asks users if they want the cleanup and to share the results with Google to help with future unwanted software detection. These results have file metadata, automatically installed extensions, and registry keys, as described by the Chrome Privacy Whitepaper.
 
-      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, running on Windows 10 Pro, or enrolled in Chrome Browser Cloud Management.''',
+      On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.''',
     },
     {
       'name': 'AllowedLanguages',
@@ -19103,15 +19095,11 @@
       'id': 461,
       'caption': '''Enable URL-keyed anonymized data collection''',
       'tags': ['google-sharing'],
-      'desc': '''Enable URL-keyed anonymized data collection in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing this setting.
+      'desc': '''Setting the policy to Enabled means URL-keyed anonymized data collection, which sends URLs of pages the user visits to Google to make searches and browsing better, is always active.
 
-      URL-keyed anonymized data collection sends URLs of pages the user visits to Google to make searches and browsing better.
+      Setting the policy to Disabled results in no URL-keyed anonymized data collection.
 
-      If you enable this policy, URL-keyed anonymized data collection is always active.
-
-      If you disable this policy, URL-keyed anonymized data collection is never active.
-
-      If this policy is left not set, URL-keyed anonymized data collection will be enabled but the user will be able to change it.''',
+      If you set the policy, users can't change. If not set, then URL-keyed anonymized data collection at first, but users can change it.''',
     },
     {
       'id': 462,
@@ -19143,12 +19131,11 @@
       'id': 464,
       'caption': '''Allow collection of WebRTC event logs from Google services''',
       'tags': ['google-sharing'],
-      'desc': '''
-      Setting the policy to True allows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to collect WebRTC event logs from Google services such as Hangouts Meet and upload them to Google. These logs have diagnostic information for debugging issues with audio or video meetings in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, such as the time and size of RTP packets, feedback about congestion on the network, and metadata about time and quality of audio and video frames. These logs have no audio or video content from the meeting. To make debugging easier, Google might associate these logs, by means of a session ID, with other logs collected by the Google service itself.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can collect WebRTC event logs from Google services such as Hangouts Meet and upload them to Google. These logs have diagnostic information for debugging issues with audio or video meetings in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, such as the time and size of RTP packets, feedback about congestion on the network, and metadata about time and quality of audio and video frames. These logs have no audio or video content from the meeting. To make debugging easier, Google might associate these logs, by means of a session ID, with other logs collected by the Google service itself.
 
-      Setting the policy to False results in no collection or uploading of such logs.
+      Setting the policy to Disabled results in no collection or uploading of such logs.
 
-      Leaving the policy unset on versions up to and including M76 means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to not being able to collect and upload these logs. Starting at M77, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to being able to collect and upload these logs from most profiles affected by cloud-based user-level enterprise policies. From M77 up to and including M80, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can also collect and upload these logs by default from profiles affected by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> on-premise management.''',
+      Leaving the policy unset on versions up to and including M76 means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to not being able to collect and upload these logs. Starting at M77, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> defaults to being able to collect and upload these logs from most profiles affected by cloud-based, user-level enterprise policies. From M77 up to and including M80, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can also collect and upload these logs by default from profiles affected by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> on-premise management.''',
     },
     {
       'name': 'PowerSmartDimEnabled',
