@@ -36,6 +36,7 @@ class TestAppListColorProvider : public AppListColorProvider {
   SkColor GetSearchBoxIconColor(SkColor default_color) const override;
   SkColor GetSearchBoxCardBackgroundColor() const override;
   SkColor GetFolderBackgroundColor(SkColor default_color) const override;
+  SkColor GetFolderBubbleColor() const override;
   SkColor GetFolderTitleTextColor(SkColor default_color) const override;
   SkColor GetFolderHintTextColor() const override;
   SkColor GetFolderNameBackgroundColor(bool active) const override;

@@ -95,11 +95,11 @@ class BackgroundAnimation : public AppListFolderView::Animation,
         AppListColorProvider::Get()->GetFolderBackgroundColor(
             folder_view_->GetAppListConfig().folder_background_color());
     const SkColor from_color =
-        show_ ? folder_view_->GetAppListConfig().folder_bubble_color()
+        show_ ? AppListColorProvider::Get()->GetFolderBubbleColor()
               : background_color;
     const SkColor to_color =
         show_ ? background_color
-              : folder_view_->GetAppListConfig().folder_bubble_color();
+              : AppListColorProvider::Get()->GetFolderBubbleColor();
 
     background_view_->layer()->SetColor(from_color);
     background_view_->layer()->SetBackgroundBlur(

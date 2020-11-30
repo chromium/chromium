@@ -64,6 +64,10 @@ SkColor TestAppListColorProvider::GetFolderBackgroundColor(
   return gfx::kGoogleGrey900;
 }
 
+SkColor TestAppListColorProvider::GetFolderBubbleColor() const {
+  return SkColorSetA(gfx::kGoogleGrey100, 0x7A);
+}
+
 SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
     bool is_root_app_grid_page_switcher) const {
   return gfx::kGoogleGrey700;

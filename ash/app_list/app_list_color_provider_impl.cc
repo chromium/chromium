@@ -125,6 +125,12 @@ SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
       AshColorProvider::BaseLayerType::kTransparent80, default_color);
 }
 
+SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
+      SkColorSetA(gfx::kGoogleGrey100, 0x7A));
+}
+
 SkColor AppListColorProviderImpl::GetFolderTitleTextColor(
     SkColor default_color) const {
   return DeprecatedGetContentLayerColor(

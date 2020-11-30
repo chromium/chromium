@@ -305,7 +305,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
           FolderUnclippedIconDimensionForType(type)),
       folder_icon_radius_(FolderClippedIconDimensionForType(type) / 2),
       folder_background_radius_(12),
-      folder_bubble_color_(SkColorSetA(gfx::kGoogleGrey100, 0x7A)),
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
       item_icon_in_folder_icon_margin_(ItemIconInFolderIconMarginForType(type)),
@@ -442,7 +441,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
                                    inner_tile_scale_y)),
       folder_background_radius_(
           MinScale(base_config.folder_background_radius_, scale_x, scale_y)),
-      folder_bubble_color_(base_config.folder_bubble_color_),
       item_icon_in_folder_icon_dimension_(
           MinScale(base_config.item_icon_in_folder_icon_dimension_,
                    scale_x,

@@ -132,7 +132,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   }
   int folder_icon_radius() const { return folder_icon_radius_; }
   int folder_background_radius() const { return folder_background_radius_; }
-  int folder_bubble_color() const { return folder_bubble_color_; }
   int item_icon_in_folder_icon_dimension() const {
     return item_icon_in_folder_icon_dimension_;
   }
@@ -408,9 +407,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The corner radius of folder background.
   const int folder_background_radius_;
-
-  // The color of folder bubble.
-  const int folder_bubble_color_;
 
   // The dimension of the item icon in folder icon.
   const int item_icon_in_folder_icon_dimension_;
