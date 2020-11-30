@@ -12857,6 +12857,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.SystemNotification.Content.Click.Downloads_Files">
+  <owner>xingliu@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user clicked on the body of an Android notification for a file download.
+    This is logged at the same time as the 'Downloads - File' value is logged to
+    Mobile.SystemNotification.Content.Click.
+
+    This action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="Mobile_FocusedDefocusedOmnibox_WithNoAction">
   <owner>stkhapugin@chromium.org</owner>
   <description>

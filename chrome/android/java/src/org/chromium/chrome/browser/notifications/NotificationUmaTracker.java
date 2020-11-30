@@ -18,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -190,6 +191,9 @@ public class NotificationUmaTracker {
 
         RecordHistogram.recordEnumeratedHistogram("Mobile.SystemNotification.Content.Click", type,
                 SystemNotificationType.NUM_ENTRIES);
+        if (type == SystemNotificationType.DOWNLOAD_FILES) {
+            RecordUserAction.record("Mobile.SystemNotification.Content.Click.Downloads_Files");
+        }
         recordNotificationAgeHistogram("Mobile.SystemNotification.Content.Click.Age", createTime);
 
         switch (type) {
