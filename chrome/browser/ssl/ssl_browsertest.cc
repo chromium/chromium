@@ -7386,7 +7386,14 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, PolicyOverridesInterstitial) {
 
 // Check that if we have bypassed the legacy TLS error previously and then the
 // server responded with TLS 1.2, we drop the error exception.
-IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, FixedServerDropsBypass) {
+// Disabled due to flakiness. crbug.com/1153702
+#if defined(OS_MAC)
+#define MAYBE_FixedServerDropsBypass DISABLED_FixedServerDropsBypass
+#else
+#define MAYBE_FixedServerDropsBypass FixedServerDropsBypass
+#endif
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest,
+                       MAYBE_FixedServerDropsBypass) {
   int port;  // Save the port used so the different servers can be "identical".
 
   // Connect over TLS 1.0 and proceed through the interstitial to set an error
