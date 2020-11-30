@@ -10,11 +10,26 @@
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 #include "base/macros.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/color_space.h"
 
 namespace android_webview {
 
 class RenderThreadManager;
+
+struct OverlaysParams {
+  enum class Mode {
+    Disabled,
+    Enabled,
+  };
+
+  typedef ASurfaceControl* (*GetSurfaceControlFn)();
+  typedef void (*MergeTransactionFn)(ASurfaceTransaction*);
+
+  Mode overlays_mode = Mode::Disabled;
+  GetSurfaceControlFn get_surface_control = nullptr;
+  MergeTransactionFn merge_transaction = nullptr;
+};
 
 struct HardwareRendererDrawParams {
   bool operator==(const HardwareRendererDrawParams& other) const;
@@ -48,8 +63,11 @@ class HardwareRenderer {
 
   virtual ~HardwareRenderer();
 
-  void Draw(HardwareRendererDrawParams* params);
+  void Draw(const HardwareRendererDrawParams& params,
+            const OverlaysParams& overlays_params);
   void CommitFrame();
+  virtual void RemoveOverlays(
+      OverlaysParams::MergeTransactionFn merge_transaction) = 0;
 
  protected:
   explicit HardwareRenderer(RenderThreadManager* state);
@@ -60,9 +78,10 @@ class HardwareRenderer {
       const viz::FrameSinkId& frame_sink_id,
       uint32_t layer_tree_frame_sink_id);
 
-  void ReportDrawMetric(HardwareRendererDrawParams* params);
+  void ReportDrawMetric(const HardwareRendererDrawParams& params);
 
-  virtual void DrawAndSwap(HardwareRendererDrawParams* params) = 0;
+  virtual void DrawAndSwap(const HardwareRendererDrawParams& params,
+                           const OverlaysParams& overlays_params) = 0;
 
   RenderThreadManager* const render_thread_manager_;
 

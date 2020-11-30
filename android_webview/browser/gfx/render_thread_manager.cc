@@ -190,7 +190,8 @@ void RenderThreadManager::UpdateViewTreeForceDarkStateOnRT(
 }
 
 void RenderThreadManager::DrawOnRT(bool save_restore,
-                                   HardwareRendererDrawParams* params) {
+                                   const HardwareRendererDrawParams& params,
+                                   const OverlaysParams& overlays_params) {
   // Force GL binding init if it's not yet initialized.
   GpuServiceWebView::GetInstance();
   ScopedAppGLStateRestore state_restore(ScopedAppGLStateRestore::MODE_DRAW,
@@ -214,7 +215,13 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
   }
 
   if (hardware_renderer_)
-    hardware_renderer_->Draw(params);
+    hardware_renderer_->Draw(params, overlays_params);
+}
+
+void RenderThreadManager::RemoveOverlaysOnRT(
+    OverlaysParams::MergeTransactionFn merge_transaction) {
+  if (hardware_renderer_)
+    hardware_renderer_->RemoveOverlays(merge_transaction);
 }
 
 void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore) {

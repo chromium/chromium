@@ -75,6 +75,15 @@ void PostDrawVkWrapper(int functor,
   static_cast<AwDrawFnImpl*>(data)->PostDrawVk(params);
 }
 
+void RemoveOverlaysWrapper(int functor,
+                           void* data,
+                           AwDrawFn_RemoveOverlaysParams* params) {
+  TRACE_EVENT1("android_webview,toplevel", "DrawFn_RemoveOverlays", "functor",
+               functor);
+  CHECK_EQ(static_cast<AwDrawFnImpl*>(data)->functor_handle(), functor);
+  static_cast<AwDrawFnImpl*>(data)->RemoveOverlays(params);
+}
+
 sk_sp<GrVkSecondaryCBDrawContext> CreateDrawContext(
     GrDirectContext* gr_context,
     AwDrawFn_DrawVkParams* params,
@@ -96,6 +105,18 @@ sk_sp<GrVkSecondaryCBDrawContext> CreateDrawContext(
                                           &props);
 }
 
+OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
+  switch (mode) {
+    case AW_DRAW_FN_OVERLAYS_MODE_DISABLED:
+      return OverlaysParams::Mode::Disabled;
+    case AW_DRAW_FN_OVERLAYS_MODE_ENABLED:
+      return OverlaysParams::Mode::Enabled;
+    default:
+      NOTREACHED();
+      return OverlaysParams::Mode::Disabled;
+  }
+}
+
 template <typename T>
 HardwareRendererDrawParams CreateHRDrawParams(T* params,
                                               SkColorSpace* color_space) {
@@ -115,7 +136,19 @@ HardwareRendererDrawParams CreateHRDrawParams(T* params,
   for (size_t i = 0; i < base::size(hr_params.transform); ++i) {
     hr_params.transform[i] = params->transform[i];
   }
+
   return hr_params;
+}
+
+template <class T>
+OverlaysParams CreateOverlaysParams(T* draw_params) {
+  OverlaysParams params;
+  if (draw_params->version >= 3) {
+    params.overlays_mode = GetOverlaysMode(draw_params->overlays_mode);
+    params.get_surface_control = draw_params->get_surface_control;
+    params.merge_transaction = draw_params->merge_transaction;
+  }
+  return params;
 }
 
 template <typename T>
@@ -158,11 +191,15 @@ AwDrawFnImpl::AwDrawFnImpl()
       &OnSyncWrapper,      &OnContextDestroyedWrapper,
       &OnDestroyedWrapper, &DrawGLWrapper,
       &InitVkWrapper,      &DrawVkWrapper,
-      &PostDrawVkWrapper,
-  };
+      &PostDrawVkWrapper,  &RemoveOverlaysWrapper};
 
-  functor_handle_ =
-      g_draw_fn_function_table->create_functor(this, &g_functor_callbacks);
+  if (g_draw_fn_function_table->version >= 3) {
+    functor_handle_ = g_draw_fn_function_table->create_functor_v3(
+        this, kAwDrawFnVersion, &g_functor_callbacks);
+  } else {
+    functor_handle_ =
+        g_draw_fn_function_table->create_functor(this, &g_functor_callbacks);
+  }
 }
 
 AwDrawFnImpl::~AwDrawFnImpl() {}
@@ -218,7 +255,9 @@ void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
   auto color_space = params->version >= 2 ? CreateColorSpace(params) : nullptr;
   HardwareRendererDrawParams hr_params =
       CreateHRDrawParams(params, color_space.get());
-  render_thread_manager_.DrawOnRT(false /* save_restore */, &hr_params);
+  OverlaysParams overlays_params = CreateOverlaysParams(params);
+  render_thread_manager_.DrawOnRT(/*save_restore=*/false, hr_params,
+                                  overlays_params);
 }
 
 void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
@@ -250,14 +289,16 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
       vulkan_context_provider_->GetGrContext(), params, color_space);
   HardwareRendererDrawParams hr_params =
       CreateHRDrawParams(params, color_space.get());
+  OverlaysParams overlays_params = CreateOverlaysParams(params);
 
   if (is_interop_mode_) {
     DCHECK(interop_);
-    interop_->DrawVk(std::move(draw_context), std::move(color_space),
-                     &hr_params);
+    interop_->DrawVk(std::move(draw_context), std::move(color_space), hr_params,
+                     overlays_params);
 
   } else {
-    DrawVkDirect(std::move(draw_context), std::move(color_space), &hr_params);
+    DrawVkDirect(std::move(draw_context), std::move(color_space), hr_params,
+                 overlays_params);
   }
 }
 
@@ -275,14 +316,16 @@ void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
 
 void AwDrawFnImpl::DrawVkDirect(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
                                 sk_sp<SkColorSpace> color_space,
-                                HardwareRendererDrawParams* hr_params) {
+                                const HardwareRendererDrawParams& hr_params,
+                                const OverlaysParams& overlays_params) {
   DCHECK(!scoped_secondary_cb_draw_);
 
   // Set the draw contexct in |vulkan_context_provider_|, so the SkiaRenderer
   // and SkiaOutputSurface* will use it as frame render target.
   scoped_secondary_cb_draw_.emplace(vulkan_context_provider_.get(),
                                     std::move(draw_context));
-  render_thread_manager_.DrawOnRT(false /* save_restore */, hr_params);
+  render_thread_manager_.DrawOnRT(false /* save_restore */, hr_params,
+                                  overlays_params);
 }
 
 void AwDrawFnImpl::PostDrawVkDirect(AwDrawFn_PostDrawVkParams* params) {
@@ -291,6 +334,11 @@ void AwDrawFnImpl::PostDrawVkDirect(AwDrawFn_PostDrawVkParams* params) {
 
   DCHECK(scoped_secondary_cb_draw_);
   scoped_secondary_cb_draw_.reset();
+}
+
+void AwDrawFnImpl::RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params) {
+  DCHECK(params->merge_transaction);
+  render_thread_manager_.RemoveOverlaysOnRT(params->merge_transaction);
 }
 
 }  // namespace android_webview

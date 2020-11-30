@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 
 namespace {
@@ -75,11 +76,29 @@ AwDrawFnRenderMode QueryRenderMode() {
 }
 
 int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
+  DCHECK(false);
+  NOTREACHED();
+  return 0;
+}
+
+int CreateFunctor_v3(void* data,
+                     int version,
+                     AwDrawFnFunctorCallbacks* functor_callbacks) {
+  DCHECK_EQ(version, 3);
   return FunctorMap::Get()->allocate(data, functor_callbacks);
 }
 
 void ReleaseFunctor(int functor) {
   FunctorMap::Get()->mark_released(functor);
+}
+
+ASurfaceControl* GetSurfaceControl() {
+  NOTREACHED();
+  return nullptr;
+}
+
+void MergeTransaction(ASurfaceTransaction* transaction) {
+  NOTREACHED();
 }
 
 }  // namespace
@@ -90,12 +109,9 @@ JNIEXPORT jlong JNICALL
 Java_org_chromium_android_1webview_shell_DrawFn_nativeGetDrawFnFunctionTable(
     JNIEnv*,
     jclass) {
-  static AwDrawFnFunctionTable table{
-      kAwDrawFnVersion,
-      &QueryRenderMode,
-      &CreateFunctor,
-      &ReleaseFunctor,
-  };
+  static AwDrawFnFunctionTable table{kAwDrawFnVersion, &QueryRenderMode,
+                                     &CreateFunctor, &ReleaseFunctor,
+                                     &CreateFunctor_v3};
   return reinterpret_cast<intptr_t>(&table);
 }
 
@@ -174,6 +190,11 @@ Java_org_chromium_android_1webview_shell_DrawFn_nativeDrawGL(JNIEnv*,
   params.color_space_toXYZD50[6] = 0.0139264f;
   params.color_space_toXYZD50[7] = 0.0970921f;
   params.color_space_toXYZD50[8] = 0.714191;
+
+  params.overlays_mode = AW_DRAW_FN_OVERLAYS_MODE_DISABLED;
+  params.get_surface_control = GetSurfaceControl;
+  params.merge_transaction = MergeTransaction;
+
   data.functor_callbacks->draw_gl(functor, data.data, &params);
 }
 

@@ -11,12 +11,39 @@
 extern "C" {
 #endif
 
+typedef struct ASurfaceControl ASurfaceControl;
+typedef struct ASurfaceTransaction ASurfaceTransaction;
+
 // In order to make small changes backwards compatible, all structs passed from
 // android to chromium are versioned.
 //
 // 1 is Android Q. This matches kAwDrawGLInfoVersion version 3.
 // 2 Adds transfer_function_* and color_space_toXYZD50 to AwDrawFn_DrawGLParams.
-static const int kAwDrawFnVersion = 2;
+// 3 Adds SurfaceControl related functions.
+static const int kAwDrawFnVersion = 3;
+
+// Returns parent ASurfaceControl for WebView overlays. It will be have same
+// geometry as the surface we draw into and positioned below it (underlay).
+// This does not pass ownership to webview, but guaranteed to be alive until
+// transaction from next removeOverlays call or functor destruction will be
+// finished.
+typedef ASurfaceControl* AwDrawFn_GetSurfaceControl();
+
+// Merges WebView transaction to be applied synchronously with current draw.
+// This doesn't pass ownership of the transaction, changes will be copied and
+// webview can free transaction right after the call.
+typedef void AwDrawFn_MergeTransaction(ASurfaceTransaction* transaction);
+
+enum AwDrawFnOverlaysMode {
+  // Indicated that webview should not promote anything to overlays this draw
+  // and remove all visible overlays.
+  // Added in version 3.
+  AW_DRAW_FN_OVERLAYS_MODE_DISABLED = 0,
+
+  // Indicates that webview can use overlays.
+  // Added in version 3.
+  AW_DRAW_FN_OVERLAYS_MODE_ENABLED = 1,
+};
 
 struct AwDrawFn_OnSyncParams {
   int version;
@@ -55,6 +82,19 @@ struct AwDrawFn_DrawGLParams {
   float transfer_function_e;
   float transfer_function_f;
   float color_space_toXYZD50[9];
+
+  // Input: Indicates how webview should use overlays for this draw.
+  // Added in version 3.
+  AwDrawFnOverlaysMode overlays_mode;
+
+  // Input: WebView can call it to obtain parent surface control for overlays.
+  // Added in version 3.
+  AwDrawFn_GetSurfaceControl* get_surface_control;
+
+  // Input: WebView call this to apply ASurfaceTransaction synchronously with
+  // the draw.
+  // Added in version 3.
+  AwDrawFn_MergeTransaction* merge_transaction;
 };
 
 struct AwDrawFn_InitVkParams {
@@ -117,10 +157,31 @@ struct AwDrawFn_DrawVkParams {
   int clip_top;
   int clip_right;
   int clip_bottom;
+
+  // Input: Indicates how webview should use overlays for this draw.
+  // Added in version 3.
+  AwDrawFnOverlaysMode overlays_mode;
+
+  // Input: WebView can call it to obtain parent surface control for overlays.
+  // Added in version 3.
+  AwDrawFn_GetSurfaceControl* get_surface_control;
+
+  // Input: WebView call this to apply ASurfaceTransaction synchronously with
+  // the draw.
+  // Added in version 3.
+  AwDrawFn_MergeTransaction* merge_transaction;
 };
 
 struct AwDrawFn_PostDrawVkParams {
   int version;
+};
+
+struct AwDrawFn_RemoveOverlaysParams {
+  int version;
+  // Input: WebView call this to apply ASurfaceTransaction synchronously with
+  // the draw.
+  // Added in version 3.
+  AwDrawFn_MergeTransaction* merge_transaction;
 };
 
 // Called on render thread while UI thread is blocked. Called for both GL and
@@ -161,8 +222,15 @@ typedef void AwDrawFn_PostDrawVk(int functor,
                                  void* data,
                                  AwDrawFn_PostDrawVkParams* params);
 
+// Can be called to make webview hide all overlays and stop updating them until
+// next draw. WebView must obtain new ASurfaceControl after this call to use as
+// parent for the overlays on next draw.
+typedef void AwDrawFn_RemoveOverlays(int functor,
+                                     void* data,
+                                     AwDrawFn_RemoveOverlaysParams* params);
+
 struct AwDrawFnFunctorCallbacks {
-  // No version here since this is passed from chromium to android.
+  // version is passed in CreateFunctor call.
   AwDrawFn_OnSync* on_sync;
   AwDrawFn_OnContextDestroyed* on_context_destroyed;
   AwDrawFn_OnDestroyed* on_destroyed;
@@ -170,6 +238,8 @@ struct AwDrawFnFunctorCallbacks {
   AwDrawFn_InitVk* init_vk;
   AwDrawFn_DrawVk* draw_vk;
   AwDrawFn_PostDrawVk* post_draw_vk;
+  // Added in version 3.
+  AwDrawFn_RemoveOverlays* remove_overlays;
 };
 
 enum AwDrawFnRenderMode {
@@ -180,9 +250,15 @@ enum AwDrawFnRenderMode {
 // Get the render mode. Result is static for the process.
 typedef AwDrawFnRenderMode AwDrawFn_QueryRenderMode(void);
 
-// Create a functor. |functor_callbacks| should be valid until OnDestroyed.
+// This available up to version 3, use the one below.
 typedef int AwDrawFn_CreateFunctor(void* data,
                                    AwDrawFnFunctorCallbacks* functor_callbacks);
+
+// Create a functor. |functor_callbacks| should be valid until OnDestroyed.
+typedef int AwDrawFn_CreateFunctor_v3(
+    void* data,
+    int version,
+    AwDrawFnFunctorCallbacks* functor_callbacks);
 
 // May be called on any thread to signal that the functor should be destroyed.
 // The functor will receive an onDestroyed when the last usage of it is
@@ -192,8 +268,11 @@ typedef void AwDrawFn_ReleaseFunctor(int functor);
 struct AwDrawFnFunctionTable {
   int version;
   AwDrawFn_QueryRenderMode* query_render_mode;
+  // Available up to version 3.
   AwDrawFn_CreateFunctor* create_functor;
   AwDrawFn_ReleaseFunctor* release_functor;
+  // Added in version 3.
+  AwDrawFn_CreateFunctor_v3* create_functor_v3;
 };
 
 #ifdef __cplusplus

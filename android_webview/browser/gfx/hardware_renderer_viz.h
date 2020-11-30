@@ -26,7 +26,10 @@ class HardwareRendererViz : public HardwareRenderer {
   ~HardwareRendererViz() override;
 
   // HardwareRenderer overrides.
-  void DrawAndSwap(HardwareRendererDrawParams* params) override;
+  void DrawAndSwap(const HardwareRendererDrawParams& params,
+                   const OverlaysParams& overlays_params) override;
+  void RemoveOverlays(
+      OverlaysParams::MergeTransactionFn merge_transaction) override;
 
  private:
   class OnViz;

@@ -63,8 +63,11 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void CommitFrameOnRT();
   void SetVulkanContextProviderOnRT(AwVulkanContextProvider* context_provider);
   void UpdateViewTreeForceDarkStateOnRT(bool view_tree_force_dark_state);
-  void DrawOnRT(bool save_restore, HardwareRendererDrawParams* params);
+  void DrawOnRT(bool save_restore,
+                const HardwareRendererDrawParams& params,
+                const OverlaysParams& overlays_params);
   void DestroyHardwareRendererOnRT(bool save_restore);
+  void RemoveOverlaysOnRT(OverlaysParams::MergeTransactionFn merge_transaction);
 
   // May be created on either thread.
   class InsideHardwareReleaseReset {

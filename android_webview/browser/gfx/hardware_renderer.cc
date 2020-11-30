@@ -110,19 +110,21 @@ void HardwareRenderer::CommitFrame() {
   child_frame_queue_.emplace_back(std::move(child_frames.front()));
 }
 
-void HardwareRenderer::ReportDrawMetric(HardwareRendererDrawParams* params) {
-  const bool params_changed = last_draw_params_ == *params;
+void HardwareRenderer::ReportDrawMetric(
+    const HardwareRendererDrawParams& params) {
+  const bool params_changed = last_draw_params_ == params;
 
   auto type = GetDrawAndSubmissionType(
       did_invalidate_, did_submit_compositor_frame_, params_changed);
   UMA_HISTOGRAM_ENUMERATION("Android.WebView.Gfx.HardwareDrawType", type);
 
-  last_draw_params_ = *params;
+  last_draw_params_ = params;
   did_invalidate_ = false;
   did_submit_compositor_frame_ = false;
 }
 
-void HardwareRenderer::Draw(HardwareRendererDrawParams* params) {
+void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
+                            const OverlaysParams& overlays_params) {
   TRACE_EVENT0("android_webview", "HardwareRenderer::Draw");
 
   for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_))
@@ -155,7 +157,7 @@ void HardwareRenderer::Draw(HardwareRendererDrawParams* params) {
       DLOG(WARNING) << "EGLContextChanged";
   }
 
-  DrawAndSwap(params);
+  DrawAndSwap(params, overlays_params);
 }
 
 void HardwareRenderer::ReturnChildFrame(

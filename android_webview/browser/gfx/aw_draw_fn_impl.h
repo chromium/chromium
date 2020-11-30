@@ -42,12 +42,14 @@ class AwDrawFnImpl {
   void InitVk(AwDrawFn_InitVkParams* params);
   void DrawVk(AwDrawFn_DrawVkParams* params);
   void PostDrawVk(AwDrawFn_PostDrawVkParams* params);
+  void RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params);
 
  private:
   // With direct mode, we will render frames with Vulkan API directly.
   void DrawVkDirect(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
                     sk_sp<SkColorSpace> color_space,
-                    HardwareRendererDrawParams* params);
+                    const HardwareRendererDrawParams& params,
+                    const OverlaysParams& overlays_params);
   void PostDrawVkDirect(AwDrawFn_PostDrawVkParams* params);
 
   CompositorFrameConsumer* GetCompositorFrameConsumer() {

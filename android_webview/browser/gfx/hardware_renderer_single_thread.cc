@@ -50,7 +50,8 @@ HardwareRendererSingleThread::~HardwareRendererSingleThread() {
 }
 
 void HardwareRendererSingleThread::DrawAndSwap(
-    HardwareRendererDrawParams* params) {
+    const HardwareRendererDrawParams& params,
+    const OverlaysParams& overlays_params) {
   TRACE_EVENT0("android_webview", "HardwareRendererSingleThread::DrawAndSwap");
 
   bool submitted_new_frame = false;
@@ -93,10 +94,10 @@ void HardwareRendererSingleThread::DrawAndSwap(
   }
 
   gfx::Transform transform(gfx::Transform::kSkipInitialization);
-  transform.matrix().setColMajorf(params->transform);
+  transform.matrix().setColMajorf(params.transform);
   transform.Translate(scroll_offset_.x(), scroll_offset_.y());
 
-  gfx::Size viewport(params->width, params->height);
+  gfx::Size viewport(params.width, params.height);
   // Need to post the new transform matrix back to child compositor
   // because there is no onDraw during a Render Thread animation, and child
   // compositor might not have the tiles rasterized as the animation goes on.
@@ -121,12 +122,12 @@ void HardwareRendererSingleThread::DrawAndSwap(
     support_->RequestCopyOfOutput(child_id_, std::move(copy_request));
   }
 
-  gfx::Rect clip(params->clip_left, params->clip_top,
-                 params->clip_right - params->clip_left,
-                 params->clip_bottom - params->clip_top);
+  gfx::Rect clip(params.clip_left, params.clip_top,
+                 params.clip_right - params.clip_left,
+                 params.clip_bottom - params.clip_top);
   surfaces_->DrawAndSwap(viewport, clip, transform, surface_size_,
                          viz::SurfaceId(frame_sink_id_, child_id_),
-                         device_scale_factor_, params->color_space);
+                         device_scale_factor_, params.color_space);
   viz::FrameTimingDetailsMap timing_details =
       support_->TakeFrameTimingDetailsMap();
   if (submitted_new_frame) {
@@ -134,6 +135,12 @@ void HardwareRendererSingleThread::DrawAndSwap(
         draw_constraints, child_frame_sink_id_, std::move(timing_details),
         frame_token);
   }
+}
+
+void HardwareRendererSingleThread::RemoveOverlays(
+    OverlaysParams::MergeTransactionFn merge_transaction) {
+  // HardwareRendererSingleThread doesn't support overlays, so nothing to
+  // remove.
 }
 
 void HardwareRendererSingleThread::AllocateSurface() {

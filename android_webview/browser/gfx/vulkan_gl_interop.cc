@@ -164,7 +164,8 @@ VulkanGLInterop::~VulkanGLInterop() {
 
 void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
                              sk_sp<SkColorSpace> color_space,
-                             HardwareRendererDrawParams* params) {
+                             const HardwareRendererDrawParams& params,
+                             const OverlaysParams& overlays_params) {
   if (!gl_context_)
     return;
 
@@ -188,7 +189,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
 
   // If prev buffer is wrong size, just re-allocate.
   if (pending_draw && pending_draw->ahb_image->GetSize() !=
-                          gfx::Size(params->width, params->height)) {
+                          gfx::Size(params.width, params.height)) {
     pending_draw.reset();
   }
 
@@ -198,8 +199,8 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
         std::make_unique<InFlightInteropDraw>(vulkan_context_provider_);
 
     AHardwareBuffer_Desc desc = {};
-    desc.width = params->width;
-    desc.height = params->height;
+    desc.width = params.width;
+    desc.height = params.height;
     desc.layers = 1;  // number of images
     // TODO(ericrk): Handle other formats.
     desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
@@ -217,7 +218,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
         base::android::ScopedHardwareBufferHandle::Adopt(buffer);
 
     pending_draw->ahb_image = base::MakeRefCounted<gl::GLImageAHardwareBuffer>(
-        gfx::Size(params->width, params->height));
+        gfx::Size(params.width, params.height));
     if (!pending_draw->ahb_image->Initialize(scoped_buffer.get(),
                                              false /* preserved */)) {
       LOG(ERROR) << "Failed to initialize GLImage for AHardwareBuffer.";
@@ -250,12 +251,13 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   base::ScopedFD gl_done_fd;
   {
     glBindFramebufferEXT(GL_FRAMEBUFFER, pending_draw->framebuffer_id);
-    glViewport(0, 0, params->width, params->height);
+    glViewport(0, 0, params.width, params.height);
     glDisable(GL_STENCIL_TEST);
     glDisable(GL_SCISSOR_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    render_thread_manager_->DrawOnRT(false /* save_restore */, params);
+    render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
+                                     overlays_params);
     gl_done_fd = gpu::CreateEglFenceAndExportFd();
   }
 
@@ -294,7 +296,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
     auto* device_queue = vulkan_context_provider_->GetDeviceQueue();
     auto vulkan_image = gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
         device_queue, std::move(gmb_handle),
-        gfx::Size(params->width, params->height), VK_FORMAT_R8G8B8A8_UNORM,
+        gfx::Size(params.width, params.height), VK_FORMAT_R8G8B8A8_UNORM,
         0 /* usage */);
     if (!vulkan_image) {
       LOG(ERROR) << "Could not create VkImage from AHB.";
@@ -306,7 +308,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   }
 
   // Create an SkImage from AHB.
-  GrBackendTexture backend_texture(params->width, params->height,
+  GrBackendTexture backend_texture(params.width, params.height,
                                    pending_draw->image_info);
   pending_draw->ahb_skimage = SkImage::MakeFromTexture(
       vulkan_context_provider_->GetGrContext(), backend_texture,

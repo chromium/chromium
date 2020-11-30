@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -313,7 +314,8 @@ bool HardwareRendererViz::IsUsingVulkan() const {
   return output_surface_provider_.shared_context_state()->GrContextIsVulkan();
 }
 
-void HardwareRendererViz::DrawAndSwap(HardwareRendererDrawParams* params) {
+void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
+                                      const OverlaysParams& overlays_params) {
   TRACE_EVENT1("android_webview", "HardwareRendererViz::Draw", "vulkan",
                IsUsingVulkan());
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
@@ -321,10 +323,10 @@ void HardwareRendererViz::DrawAndSwap(HardwareRendererDrawParams* params) {
   viz::FrameTimingDetailsMap timing_details;
 
   gfx::Transform transform(gfx::Transform::kSkipInitialization);
-  transform.matrix().setColMajorf(params->transform);
+  transform.matrix().setColMajorf(params.transform);
   transform.Translate(scroll_offset_.x(), scroll_offset_.y());
 
-  gfx::Size viewport(params->width, params->height);
+  gfx::Size viewport(params.width, params.height);
   // Need to post the new transform matrix back to child compositor
   // because there is no onDraw during a Render Thread animation, and child
   // compositor might not have the tiles rasterized as the animation goes on.
@@ -345,9 +347,9 @@ void HardwareRendererViz::DrawAndSwap(HardwareRendererDrawParams* params) {
   if (!surface_id_.is_valid())
     return;
 
-  gfx::Rect clip(params->clip_left, params->clip_top,
-                 params->clip_right - params->clip_left,
-                 params->clip_bottom - params->clip_top);
+  gfx::Rect clip(params.clip_left, params.clip_top,
+                 params.clip_right - params.clip_left,
+                 params.clip_bottom - params.clip_top);
 
   output_surface_provider_.gl_surface()->RecalculateClipAndTransform(
       &viewport, &clip, &transform);
@@ -359,7 +361,7 @@ void HardwareRendererViz::DrawAndSwap(HardwareRendererDrawParams* params) {
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRendererViz::OnViz::DrawAndSwapOnViz,
                      base::Unretained(on_viz_.get()), viewport, clip, transform,
-                     surface_id_, device_scale_factor_, params->color_space,
+                     surface_id_, device_scale_factor_, params.color_space,
                      child_frame_.get()));
 
   output_surface_provider_.gl_surface()->MaybeDidPresent(
@@ -379,6 +381,11 @@ void HardwareRendererViz::DrawAndSwap(HardwareRendererDrawParams* params) {
         draw_constraints, child_frame_->frame_sink_id,
         std::move(timing_details), 0);
   }
+}
+
+void HardwareRendererViz::RemoveOverlays(
+    OverlaysParams::MergeTransactionFn merge_transaction) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace android_webview

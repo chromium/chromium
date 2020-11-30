@@ -31,7 +31,10 @@ class HardwareRendererSingleThread
 
  private:
   // HardwareRenderer implementation.
-  void DrawAndSwap(HardwareRendererDrawParams* params) override;
+  void DrawAndSwap(const HardwareRendererDrawParams& params,
+                   const OverlaysParams& overlays_params) override;
+  void RemoveOverlays(
+      OverlaysParams::MergeTransactionFn merge_transaction) override;
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(

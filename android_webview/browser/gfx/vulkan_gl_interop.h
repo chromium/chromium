@@ -30,6 +30,7 @@ namespace android_webview {
 
 class RenderThreadManager;
 struct HardwareRendererDrawParams;
+struct OverlaysParams;
 
 // With interop mode, we will render frames on AHBs with GL api, and then draw
 // AHBs with Vulkan API on the final target.
@@ -41,7 +42,8 @@ class VulkanGLInterop {
 
   void DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
               sk_sp<SkColorSpace> color_space,
-              HardwareRendererDrawParams* params);
+              const HardwareRendererDrawParams& params,
+              const OverlaysParams& overlays_params);
   void PostDrawVk();
 
   // For clean up.
