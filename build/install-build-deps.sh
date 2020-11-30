@@ -103,7 +103,7 @@ fi
 
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
-supported_codenames="(trusty|xenial|bionic|disco|eoan|focal)"
+supported_codenames="(trusty|xenial|bionic|disco|eoan|focal|groovy)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
   if [[ ! $distro_codename =~ $supported_codenames &&
@@ -113,8 +113,7 @@ if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
       "\tUbuntu 16.04 LTS (xenial with EoL April 2024)\n" \
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
       "\tUbuntu 20.04 LTS (focal with Eol April 2030)\n" \
-      "\tUbuntu 19.04 (disco)\n" \
-      "\tUbuntu 19.10 (eoan)\n" \
+      "\tUbuntu 20.10 (groovy)\n" \
       "\tDebian 8 (jessie) or later" >&2
     exit 1
   fi
@@ -204,12 +203,8 @@ dev_list="\
   perl
   pkg-config
   python
-  python-crypto
   python-dev
-  python-numpy
-  python-openssl
-  python-psutil
-  python-yaml
+  python-setuptools
   rpm
   ruby
   subversion
@@ -429,6 +424,13 @@ case $distro_codename in
                 gcc-10-multilib-arm-linux-gnueabihf
                 gcc-arm-linux-gnueabihf"
     ;;
+  groovy)
+    arm_list+=" g++-10-multilib-arm-linux-gnueabihf
+                gcc-10-multilib-arm-linux-gnueabihf
+                gcc-arm-linux-gnueabihf
+                g++-10-arm-linux-gnueabihf
+                gcc-10-arm-linux-gnueabihf"
+    ;;
 esac
 
 # Packages to build NaCl, its toolchains, and its ports.
@@ -523,6 +525,24 @@ elif package_exists php7.0-cgi; then
   dev_list="${dev_list} php7.0-cgi libapache2-mod-php7.0"
 else
   dev_list="${dev_list} php5-cgi libapache2-mod-php5"
+fi
+
+# Most python 2 packages are removed in Ubuntu 20.10, but the build doesn't seem
+# to need them, so only install them if they're available.
+if package_exists python-crypto; then
+  dev_list="${dev_list} python-crypto"
+fi
+if package_exists python-numpy; then
+  dev_list="${dev_list} python-numpy"
+fi
+if package_exists python-openssl; then
+  dev_list="${dev_list} python-openssl"
+fi
+if package_exists python-psutil; then
+  dev_list="${dev_list} python-psutil"
+fi
+if package_exists python-yaml; then
+  dev_list="${dev_list} python-yaml"
 fi
 
 # Some packages are only needed if the distribution actually supports
