@@ -4829,6 +4829,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="Net.TrustTokens.FetchFailedReason"
     enum="FetchFailedReasonOrResourceRequestBlockedReason"
     expires_after="2021-03-30">
+  <obsolete>
+    This was a temporary addition used for debugging during M88.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -4850,8 +4853,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The net error for a failed Fetch API call with an associated Trust Tokens
-    operation. This might help debug a surfeit of 'TypeError: failed to fetch'
-    observed in live testing.
+    operation. This was originally added to help debug a surfeit of 'TypeError:
+    failed to fetch' observed in live testing, and it is now retained since it's
+    useful for ongoing health monitoring.
   </summary>
 </histogram>
 

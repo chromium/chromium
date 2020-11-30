@@ -39,7 +39,6 @@
 #include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon_stdstring.h"
@@ -546,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
-  // Verify that the Net.TrustTokens.FetchFailedReason.* metrics
+  // Verify that the Net.TrustTokens.NetErrorForFetchFailure.* metrics
   // record successfully by testing one case with a blocked resource, one case
   // with a generic net-stack failure, and one case with a Trust Tokens
   // operation failure.
@@ -569,10 +568,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
 
   content::FetchHistogramsFromChildProcesses();
   histograms.ExpectUniqueSample(
-      "Net.TrustTokens.FetchFailedReason.Issuance",
-      9 /* fetch_manager.cc::FailedReason::kOtherNonBlockReason */,
-      /*expected_count=*/1);
-  histograms.ExpectUniqueSample(
       "Net.TrustTokens.NetErrorForFetchFailure.Issuance", net::ERR_FAILED,
       /*expected_count=*/1);
 
@@ -585,10 +580,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
                    .catch(err => err.name);)"));
 
   content::FetchHistogramsFromChildProcesses();
-  histograms.ExpectUniqueSample(
-      "Net.TrustTokens.FetchFailedReason.Redemption",
-      8 /* fetch_manager.cc::FailedReason::kTrustTokensError */,
-      /*expected_count=*/1);
   histograms.ExpectUniqueSample(
       "Net.TrustTokens.NetErrorForFetchFailure.Redemption",
       net::ERR_TRUST_TOKEN_OPERATION_FAILED,
@@ -613,12 +604,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
               HasSubstr("Failed to fetch"));
 
   content::FetchHistogramsFromChildProcesses();
-  histograms.ExpectBucketCount(
-      "Net.TrustTokens.FetchFailedReason.Issuance",
-      // fetch_manager.cc::FailedReason::
-      // kCorpNotSameOriginAfterDefaultedToSameOriginByCoep
-      21,
-      /*expected_count=*/1);
   histograms.ExpectBucketCount(
       "Net.TrustTokens.NetErrorForFetchFailure.Issuance",
       net::ERR_BLOCKED_BY_RESPONSE,
