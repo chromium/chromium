@@ -345,8 +345,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Convenient templatized version of SubmitBuffer() where |size| is deduced to
   // be the size of the type of |*data|.
   template <typename T>
-  bool SubmitBuffer(VABufferType va_buffer_type,
-                    const T* data) WARN_UNUSED_RESULT {
+  bool WARN_UNUSED_RESULT SubmitBuffer(VABufferType va_buffer_type,
+                                       const T* data) {
     return SubmitBuffer(va_buffer_type, sizeof(T), data);
   }
   // Batch-version of SubmitBuffer(), where the lock for accessing libva is
