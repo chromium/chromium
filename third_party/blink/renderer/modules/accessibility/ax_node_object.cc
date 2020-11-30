@@ -3013,23 +3013,40 @@ AXObject* AXNodeObject::RawNextSibling() const {
   return AXObjectCache().GetOrCreate(next_sibling);
 }
 
-void AXNodeObject::AddTableChildren() {
-  if (!IsTableLikeRole() || !GetLayoutObject() || !GetLayoutObject()->IsTable())
-    return;
+bool AXNodeObject::IsHtmlTable() const {
+  return IsTableLikeRole() && GetLayoutObject() &&
+         GetLayoutObject()->IsTable() && IsA<HTMLTableElement>(GetNode());
+}
 
-  AXObjectCacheImpl& ax_cache = AXObjectCache();
-  LayoutNGTableInterface* table =
-      ToInterface<LayoutNGTableInterface>(GetLayoutObject());
-  if (table)
-    table->RecalcSectionsIfNeeded();
-  Node* table_node = GetNode();
-  if (auto* html_table_element = DynamicTo<HTMLTableElement>(table_node)) {
-    if (HTMLTableCaptionElement* caption = html_table_element->caption()) {
-      AXObject* caption_object = ax_cache.GetOrCreate(caption);
-      if (caption_object && caption_object->AccessibilityIsIncludedInTree())
-        children_.push_front(caption_object);
-    }
-  }
+void AXNodeObject::AddTableChildren() {
+  // Add the caption (if any) and table sections in the visible order.
+  //
+  // Implementation notes:
+  //
+  // * There is always at least one section child DOM node.
+  //   For example, if the .html file specifies direct <tr> children of the
+  //   table, Blink will insert a <tbody> as a child of the table, and parent of
+  //   the <tr> elements.
+  //
+  // * Rendered order can differ from DOM order:
+  //   The valid DOM order of <table> children is specified here:
+  //   https://html.spec.whatwg.org/multipage/tables.html#the-table-element,
+  //   "... optionally a caption element, followed by zero or more
+  //   colgroup elements, followed optionally by a thead element, followed by
+  //   either zero or more tbody elements or one or more tr elements, followed
+  //   optionally by a tfoot element"
+  //   However, even if the DOM children occur in an incorrect order, Blink
+  //   automatically renders them as if they were in the correct order.
+  //   The following code ensures that the children are added to the AX tree in
+  //   the same order as Blink renders them.
+
+  DCHECK(IsA<HTMLTableElement>(GetNode()));
+  auto* html_table_element = To<HTMLTableElement>(GetNode());
+  AddNodeChild(html_table_element->caption());
+  AddNodeChild(html_table_element->tHead());
+  for (Node* node : *html_table_element->tBodies())
+    AddNodeChild(node);
+  AddNodeChild(html_table_element->tFoot());
 }
 
 int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
@@ -3235,12 +3252,35 @@ bool AXNodeObject::ShouldUseLayoutBuilderTraversal() const {
   if (IsA<HTMLRubyElement>(*node))
     return false;
 
-  // <table>: a thead/tfoot in the middle are bumped to the top/bottom in
-  // the layout representation.
-  if (IsA<HTMLTableElement>(*node))
-    return false;
-
   return true;
+}
+
+void AXNodeObject::AddNodeChildren() {
+  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
+       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+    if (child->IsMarkerPseudoElement() && AccessibilityIsIgnored())
+      continue;
+    AXObject* child_obj = AXObjectCache().GetOrCreate(child);
+
+    if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
+        child_obj &&
+        child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
+        child_obj->CanIgnoreTextAsEmpty())
+      continue;
+
+    AddChild(child_obj);
+  }
+}
+
+void AXNodeObject::AddLayoutChildren() {
+  for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
+    if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
+        obj && obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
+        obj->CanIgnoreTextAsEmpty())
+      continue;
+
+    AddChild(obj);
+  }
 }
 
 void AXNodeObject::AddChildren() {
@@ -3256,36 +3296,16 @@ void AXNodeObject::AddChildren() {
   AXObjectVector owned_children;
   AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
-  if (ShouldUseLayoutBuilderTraversal()) {
-    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
-         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-      if (child->IsMarkerPseudoElement() && AccessibilityIsIgnored())
-        continue;
-      AXObject* child_obj = AXObjectCache().GetOrCreate(child);
-
-      if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
-          child_obj &&
-          child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-          child_obj->CanIgnoreTextAsEmpty())
-        continue;
-
-      AddChild(child_obj);
-    }
-  } else {
-    for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
-      if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
-          obj && obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-          obj->CanIgnoreTextAsEmpty())
-        continue;
-
-      AddChild(obj);
-    }
-  }
+  if (IsHtmlTable())
+    AddTableChildren();
+  else if (ShouldUseLayoutBuilderTraversal())
+    AddNodeChildren();
+  else
+    AddLayoutChildren();
 
   AddPopupChildren();
   AddRemoteSVGChildren();
   AddImageMapChildren();
-  AddTableChildren();
   AddPseudoElementChildren();
   AddInlineTextBoxChildren(false);
   AddValidationMessageChild();
@@ -3298,6 +3318,13 @@ void AXNodeObject::AddChildren() {
     if (!child->CachedParentObject())
       child->SetParent(this);
   }
+}
+
+void AXNodeObject::AddNodeChild(Node* node) {
+  if (!node)
+    return;
+
+  AddChild(AXObjectCache().GetOrCreate(node));
 }
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {

@@ -1674,18 +1674,6 @@ AXObject* AXLayoutObject::RawFirstChild() const {
   if (!layout_object_)
     return nullptr;
 
-  // Walk sections of a table (thead, tbody, tfoot) in visual order.
-  // Note: always call RecalcSectionsIfNeeded() before accessing
-  // the sections of a LayoutTable.
-  if (layout_object_->IsTable()) {
-    LayoutNGTableInterface* table =
-        ToInterface<LayoutNGTableInterface>(layout_object_);
-    table->RecalcSectionsIfNeeded();
-    LayoutNGTableSectionInterface* top_section = table->TopSectionInterface();
-    return AXObjectCache().GetOrCreate(
-        top_section ? top_section->ToMutableLayoutObject() : nullptr);
-  }
-
   LayoutObject* first_child = layout_object_->SlowFirstChild();
 
   // CSS first-letter pseudo element is handled as continuation. Returning it
@@ -1715,20 +1703,6 @@ AXObject* AXLayoutObject::RawFirstChild() const {
 AXObject* AXLayoutObject::RawNextSibling() const {
   if (!layout_object_)
     return nullptr;
-
-  // Walk sections of a table (thead, tbody, tfoot) in visual order.
-  if (layout_object_->IsTableSection()) {
-    const LayoutNGTableSectionInterface* section =
-        ToInterface<LayoutNGTableSectionInterface>(layout_object_);
-    const LayoutNGTableSectionInterface* section_below =
-        section->TableInterface()->SectionBelowInterface(section,
-                                                         kSkipEmptySections);
-    // const_cast is necessary to avoid creating non-const versions of
-    // table interfaces.
-    LayoutObject* section_below_layout_object = const_cast<LayoutObject*>(
-        section_below ? section_below->ToLayoutObject() : nullptr);
-    return AXObjectCache().GetOrCreate(section_below_layout_object);
-  }
 
   // If it's not a continuation, just get the next sibling from the
   // layout tree, skipping over continuations.

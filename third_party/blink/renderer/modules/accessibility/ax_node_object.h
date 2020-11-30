@@ -224,6 +224,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Set is_from_aria_owns to true if the child is being added because it was
   // pointed to from aria-owns.
   void AddChild(AXObject*, bool is_from_aria_owns = false);
+  // If node is non-null, GetOrCreate an AXObject for it and add as a child.
+  void AddNodeChild(Node*);
   // Set is_from_aria_owns to true if the child is being insert because it was
   // pointed to from aria-owns.
   void InsertChild(AXObject*, unsigned index, bool is_from_aria_owns = false);
@@ -311,10 +313,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String PlaceholderFromNativeAttribute() const;
 
   void AddPseudoElementChildren();
+  void AddNodeChildren();
+  void AddLayoutChildren();
   void AddInlineTextBoxChildren(bool force);
   void AddImageMapChildren();
   void AddPopupChildren();
   void AddRemoteSVGChildren();
+  bool IsHtmlTable() const;
   void AddTableChildren();
   void AddValidationMessageChild();
   // For some nodes, only LayoutBuilderTraversal visits the necessary children.
