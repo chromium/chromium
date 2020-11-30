@@ -12,6 +12,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -45,6 +46,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
   SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
 
+  base::string16 label_text = l10n_util::GetStringUTF16(label_text_id);
   views::Builder<SwitchAccessMenuButton>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
       .AddChildren(
@@ -53,7 +55,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, icon_color)),
            views::Builder<views::Label>()
                .CopyAddressTo(&label_)
-               .SetText(l10n_util::GetStringUTF16(label_text_id))
+               .SetText(label_text)
                .SetTextContext(views::style::CONTEXT_BUTTON)
                .SetAutoColorReadabilityEnabled(false)
                .SetEnabledColor(label_color)
@@ -80,6 +82,9 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
       gfx::Insets(kButtonTopPaddingDip, left_padding_dip, bottom_padding_dip,
                   right_padding_dip));
   SetLayoutManager(std::move(layout));
+
+  GetViewAccessibility().OverrideName(label_text);
+  GetViewAccessibility().OverrideIsLeaf(true);
 }
 
 void SwitchAccessMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
