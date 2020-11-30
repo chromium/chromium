@@ -43,11 +43,6 @@ template <typename Strategy>
 SelectionTemplate<Strategy> ComputeAdjustedSelection(
     const SelectionTemplate<Strategy> selection,
     const EphemeralRangeTemplate<Strategy>& range) {
-  if (selection.ComputeRange() == range) {
-    // To pass "editing/deleting/delete_after_block_image.html", we need to
-    // return original selection.
-    return selection;
-  }
   if (range.StartPosition().CompareTo(range.EndPosition()) == 0) {
     return typename SelectionTemplate<Strategy>::Builder()
         .Collapse(selection.IsBaseFirst() ? range.StartPosition()

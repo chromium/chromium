@@ -160,6 +160,25 @@ bool CanAppendNewLineFeedToSelection(const VisibleSelection& selection,
   return false;
 }
 
+// Example: <div><img style="display:block">|<br></p>
+// See "editing/deleting/delete_after_block_image.html"
+Position AfterBlockIfBeforeAnonymousPlaceholder(const Position& position) {
+  if (!position.IsBeforeAnchor())
+    return Position();
+  const LayoutObject* const layout_object =
+      position.AnchorNode()->GetLayoutObject();
+  if (!layout_object || !layout_object->IsBR() ||
+      layout_object->NextSibling() || layout_object->PreviousSibling())
+    return Position();
+  const LayoutObject* const parent = layout_object->Parent();
+  if (!parent || !parent->IsAnonymous())
+    return Position();
+  const LayoutObject* const previous = parent->PreviousSibling();
+  if (!previous || !previous->NonPseudoNode())
+    return Position();
+  return Position::AfterNode(*previous->NonPseudoNode());
+}
+
 }  // anonymous namespace
 
 TypingCommand::TypingCommand(Document& document,
@@ -763,19 +782,37 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
 
 // If there are multiple Unicode code points to be deleted, adjust the
 // range to match platform conventions.
-static VisibleSelection AdjustSelectionForBackwardDelete(
-    const VisibleSelection& selection) {
-  if (selection.End().ComputeContainerNode() !=
-      selection.Start().ComputeContainerNode())
-    return selection;
-  if (selection.End().ComputeOffsetInContainerNode() -
-          selection.Start().ComputeOffsetInContainerNode() <=
+static SelectionForUndoStep AdjustSelectionForBackwardDelete(
+    const SelectionInDOMTree& selection) {
+  const Position& base = selection.Base();
+  if (selection.IsCaret()) {
+    // TODO(yosin): We should make |DeleteSelectionCommand| to work with
+    // anonymous placeholder.
+    if (Position after_block = AfterBlockIfBeforeAnonymousPlaceholder(base)) {
+      // We remove a anonymous placeholder <br> in <div> like <div><br></div>:
+      //   <div><img style="display:block"><br></div>
+      //   |selection_to_delete| is Before:<br>
+      // as
+      //   <div><img style="display:block"><div><br></div></div>.
+      //   |selection_to_delete| is <div>@0, After:<img>
+      // See "editing/deleting/delete_after_block_image.html"
+      return SelectionForUndoStep::Builder()
+          .SetBaseAndExtentAsBackwardSelection(base, after_block)
+          .Build();
+    }
+    return SelectionForUndoStep::From(selection);
+  }
+  if (base.ComputeContainerNode() != selection.Extent().ComputeContainerNode())
+    return SelectionForUndoStep::From(selection);
+  if (base.ComputeOffsetInContainerNode() -
+          selection.Extent().ComputeOffsetInContainerNode() <=
       1)
-    return selection;
-  return VisibleSelection::CreateWithoutValidationDeprecated(
-      selection.End(),
-      PreviousPositionOf(selection.End(), PositionMoveType::kBackwardDeletion),
-      selection.Affinity());
+    return SelectionForUndoStep::From(selection);
+  const Position& end = selection.ComputeEndPosition();
+  return SelectionForUndoStep::Builder()
+      .SetBaseAndExtentAsBackwardSelection(
+          end, PreviousPositionOf(end, PositionMoveType::kBackwardDeletion))
+      .Build();
 }
 
 void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
@@ -887,17 +924,17 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
     return;
   }
 
-  const VisibleSelection& selection_to_delete =
+  const SelectionForUndoStep& selection_to_delete =
       granularity == TextGranularity::kCharacter
-          ? AdjustSelectionForBackwardDelete(selection_modifier.Selection())
-          : selection_modifier.Selection();
+          ? AdjustSelectionForBackwardDelete(
+                selection_modifier.Selection().AsSelection())
+          : SelectionForUndoStep::From(
+                selection_modifier.Selection().AsSelection());
 
   if (!StartingSelection().IsRange() ||
       selection_to_delete.Base() != StartingSelection().Start()) {
-    DeleteKeyPressedInternal(
-        SelectionForUndoStep::From(selection_to_delete.AsSelection()),
-        SelectionForUndoStep::From(selection_to_delete.AsSelection()),
-        kill_ring, editing_state);
+    DeleteKeyPressedInternal(selection_to_delete, selection_to_delete,
+                             kill_ring, editing_state);
     return;
   }
   // Note: |StartingSelection().End()| can be disconnected.
@@ -909,9 +946,8 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
               CreateVisiblePosition(selection_to_delete.Extent())
                   .DeepEquivalent())
           .Build();
-  DeleteKeyPressedInternal(
-      SelectionForUndoStep::From(selection_to_delete.AsSelection()),
-      selection_after_undo, kill_ring, editing_state);
+  DeleteKeyPressedInternal(selection_to_delete, selection_after_undo, kill_ring,
+                           editing_state);
 }
 
 void TypingCommand::DeleteKeyPressedInternal(

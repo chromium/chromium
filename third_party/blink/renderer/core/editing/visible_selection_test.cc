@@ -95,6 +95,24 @@ VisibleSelectionTemplate<Strategy> ExpandUsingGranularity(
       granularity);
 }
 
+// For "editing/deleting/delete_after_block_image.html"
+TEST_F(VisibleSelectionTest, AnonymousPlaceholder) {
+  InsertStyleElement("img { display:block; width: 10px; height: 10px;");
+  SetBodyContent("<div><img id=i><br id=b></div>");
+  Element& img = *GetElementById("i");
+  Element& br = *GetElementById("b");
+
+  // Note: After:<img>, Before:<br>, DIV@1 are equivalent.
+  const VisibleSelection& selection =
+      CreateVisibleSelection(SelectionInDOMTree::Builder()
+                                 .Collapse(Position::BeforeNode(br))
+                                 .Extend(Position::AfterNode(img))
+                                 .Build());
+  EXPECT_TRUE(selection.IsCaret());
+  EXPECT_EQ(Position::BeforeNode(br), selection.Base());
+  EXPECT_EQ(Position::BeforeNode(br), selection.Extent());
+}
+
 TEST_F(VisibleSelectionTest, expandUsingGranularity) {
   const char* body_content =
       "<span id=host><a id=one>1</a><a id=two>22</a></span>";
