@@ -152,9 +152,11 @@
       </profile-card>
     </template>
     <div id="addProfile" class="profile-item">
-      <div class="profile-card-info">$i18n{addSpaceButton}</div>
+      <div id="addProfileButtonLabel" class="profile-card-info">
+        $i18n{addSpaceButton}
+      </div>
       <cr-icon-button iron-icon="profiles:add"
-          on-click="onAddProfileClick_" aria-label$="$i18n{addSpaceButton}">
+          on-click="onAddProfileClick_" aria-labelledby="addProfileButtonLabel">
       </cr-icon-button>
       <!-- Empty div to maintain alignment with other profile cards. -->
       <div class="profile-card-info"></div>
