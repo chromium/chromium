@@ -3163,11 +3163,8 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
 }
 
 void AXNodeObject::AddValidationMessageChild() {
-  if (!IsWebArea())
-    return;
-  AXObject* ax_object = AXObjectCache().ValidationMessageObjectIfInvalid();
-  if (ax_object)
-    children_.push_back(ax_object);
+  if (IsWebArea())
+    AddChild(AXObjectCache().ValidationMessageObjectIfInvalid());
 }
 
 void AXNodeObject::AddImageMapChildren() {
@@ -3182,30 +3179,22 @@ void AXNodeObject::AddImageMapChildren() {
   for (HTMLAreaElement& area :
        Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
     // add an <area> element for this child if it has a link
-    AXObject* obj = AXObjectCache().GetOrCreate(&area);
-    if (obj) {
-      auto* area_object = To<AXImageMapLink>(obj);
-      DCHECK_NE(area_object->AXObjectID(), 0U);
-      children_.push_back(area_object);
-    }
+    AddChild(AXObjectCache().GetOrCreate(&area));
   }
 }
 
 void AXNodeObject::AddPopupChildren() {
   if (!AXObjectCache().UseAXMenuList()) {
     auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
-    if (!html_select_element || !html_select_element->UsesMenuList())
-      return;
-    if (AXObject* ax_popup = html_select_element->PopupRootAXObject())
-      children_.push_back(ax_popup);
+    if (html_select_element && html_select_element->UsesMenuList())
+      AddChild(html_select_element->PopupRootAXObject());
     return;
   }
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(GetNode());
   if (!html_input_element)
     return;
-  if (AXObject* ax_popup = html_input_element->PopupRootAXObject())
-    children_.push_back(ax_popup);
+  AddChild(html_input_element->PopupRootAXObject());
 }
 
 void AXNodeObject::AddPseudoElementChildren() {
@@ -3230,16 +3219,7 @@ AXSVGRoot* AXNodeObject::RemoteSVGRootElement() const {
 }
 
 void AXNodeObject::AddRemoteSVGChildren() {
-  AXSVGRoot* root = RemoteSVGRootElement();
-  if (!root)
-    return;
-
-  if (!root->AccessibilityIsIncludedInTree()) {
-    for (const auto& child : root->ChildrenIncludingIgnored())
-      children_.push_back(child);
-  } else {
-    children_.push_back(root);
-  }
+  AddChild(RemoteSVGRootElement());
 }
 
 bool AXNodeObject::ShouldUseLayoutBuilderTraversal() const {
