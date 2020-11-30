@@ -69,7 +69,8 @@ std::string GetErrorMessage() {
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
 - (void)testBackForwardErrorPage {
-  // Using ERR_CONNECTION_CLOSED doesn't work.
+  // TODO(crbug.com/1153261): Going back/forward on the same host is failing.
+  // Use chrome:// to have a different hosts.
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
   self.serverRespondsWithContent = YES;
 

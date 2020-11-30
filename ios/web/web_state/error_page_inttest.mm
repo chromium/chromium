@@ -168,9 +168,12 @@ class ErrorPageTest : public WebTestWithWebState {
 #endif
 TEST_F(ErrorPageTest, MAYBE_BackForwardErrorPage) {
   if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
-    // TODO(crbug.com/1151938): Check if the test can be re-enabled with higher
-    // version of WebKit.
-    return;
+    // TODO(crbug.com/1153261): this test should be fixed in newer versions of
+    // WebKit.
+    if (@available(iOS 14.4, *)) {
+    } else {
+      return;
+    }
   }
   test::LoadUrl(web_state(), server_.GetURL("/close-socket"));
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
