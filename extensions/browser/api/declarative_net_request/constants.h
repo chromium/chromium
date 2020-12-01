@@ -174,6 +174,10 @@ extern const char kEnabledRulesetsRuleCountExceeded[];
 extern const char kEnabledRulesetsRegexRuleCountExceeded[];
 extern const char kInternalErrorUpdatingEnabledRulesets[];
 
+// setExtensionActionOptions API errors.
+extern const char kTabNotFoundError[];
+extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
+
 // Histogram names.
 extern const char kIndexAndPersistRulesTimeHistogram[];
 extern const char kManifestRulesCountHistogram[];

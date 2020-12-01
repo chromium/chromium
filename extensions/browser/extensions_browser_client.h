@@ -370,6 +370,9 @@ class ExtensionsBrowserClient {
   // Protection policy.
   virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
 
+  // Returns true if the given |tab_id| exists.
+  virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

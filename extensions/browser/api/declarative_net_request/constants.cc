@@ -106,6 +106,11 @@ const char kEnabledRulesetsRegexRuleCountExceeded[] =
     "limit.";
 const char kInternalErrorUpdatingEnabledRulesets[] = "Internal error.";
 
+const char kTabNotFoundError[] = "No tab with id: *.";
+const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
+    "Cannot increment action count unless displaying action count as badge "
+    "text.";
+
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";
 const char kManifestRulesCountHistogram[] =

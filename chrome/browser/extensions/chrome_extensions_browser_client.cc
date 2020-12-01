@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
@@ -579,6 +580,13 @@ bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
 bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
     content::WebContents* web_contents) const {
   return tabs_util::IsScreenshotRestricted(web_contents);
+}
+
+bool ChromeExtensionsBrowserClient::IsValidTabId(
+    content::BrowserContext* context,
+    int tab_id) const {
+  return ExtensionTabUtil::GetTabById(
+      tab_id, context, true /* include_incognito */, nullptr /* contents */);
 }
 
 // static

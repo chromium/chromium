@@ -98,6 +98,7 @@
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
@@ -396,17 +397,20 @@ class DeclarativeNetRequestBrowserTest
                 UnorderedElementsAreArray(expected_ruleset_ids));
   }
 
-  void SetActionsAsBadgeText(const ExtensionId& extension_id, bool pref) {
-    const char* pref_string = pref ? "true" : "false";
+  std::string SetExtensionActionOptions(const ExtensionId& extension_id,
+                                        const std::string& options) {
     static constexpr char kSetExtensionActionOptionsScript[] = R"(
-      chrome.declarativeNetRequest.setExtensionActionOptions(
-        {displayActionCountAsBadgeText: %s});
-      window.domAutomationController.send("done");
+      chrome.declarativeNetRequest.setExtensionActionOptions(%s,
+        () => {
+          window.domAutomationController.send(chrome.runtime.lastError ?
+              chrome.runtime.lastError.message : 'success');
+        }
+      );
     )";
 
-    ExecuteScriptInBackgroundPage(
+    return ExecuteScriptInBackgroundPage(
         extension_id,
-        base::StringPrintf(kSetExtensionActionOptionsScript, pref_string));
+        base::StringPrintf(kSetExtensionActionOptionsScript, options.c_str()));
   }
 
   // Navigates frame with name |frame_name| to |url|.
@@ -3160,8 +3164,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   EXPECT_EQ(default_badge_text,
             query_badge_text(extension_2->id(), first_tab_id));
 
-  SetActionsAsBadgeText(extension_1->id(), true);
-  SetActionsAsBadgeText(extension_2->id(), true);
+  EXPECT_EQ(SetExtensionActionOptions(extension_1->id(),
+                                      "{displayActionCountAsBadgeText: true}"),
+            "success");
+  EXPECT_EQ(SetExtensionActionOptions(extension_2->id(),
+                                      "{displayActionCountAsBadgeText: true}"),
+            "success");
 
   // After enabling the preference the visible badge text should remain as the
   // default initially, as the action count for the tab is still 0 for both
@@ -3215,8 +3223,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   EXPECT_EQ(declarative_net_request::kActionCountPlaceholderBadgeText,
             query_badge_text(extension_1->id(), first_tab_id));
 
-  SetActionsAsBadgeText(extension_1->id(), false);
-  SetActionsAsBadgeText(extension_2->id(), false);
+  EXPECT_EQ(SetExtensionActionOptions(extension_1->id(),
+                                      "{displayActionCountAsBadgeText: false}"),
+            "success");
+  EXPECT_EQ(SetExtensionActionOptions(extension_2->id(),
+                                      "{displayActionCountAsBadgeText: false}"),
+            "success");
 
   // Switching the preference off should cause the extension queried badge text
   // to be the explicitly set badge text for this tab if it exists. In this
@@ -3286,7 +3298,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   TestExtensionActionAPIObserver test_api_observer(
       profile(), extension_id, {web_contents(), second_browser_contents});
 
-  SetActionsAsBadgeText(extension_id, true);
+  EXPECT_EQ(SetExtensionActionOptions(extension_id,
+                                      "{displayActionCountAsBadgeText: true}"),
+            "success");
 
   // Wait until ExtensionActionAPI::NotifyChange is called, then perform a
   // sanity check that one action was matched, and this is reflected in the
@@ -3592,6 +3606,124 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     EXPECT_EQ(test_case.expected_ext_2_badge_text,
               extension_2_action->GetDisplayBadgeText(first_tab_id));
   }
+}
+
+// Test that the setExtensionActionOptions tabUpdate option works correctly.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       ActionsMatchedCountAsBadgeTextTabUpdate) {
+  // Load the extension with a background script so scripts can be run from its
+  // generated background page.
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Set up an extension with a blocking rule.
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("||abc.com");
+  rule.condition->resource_types = std::vector<std::string>({"sub_frame"});
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {rule}, "extension", {URLPattern::kAllUrlsPattern}));
+  const Extension* extension = last_loaded_extension();
+  ExtensionAction* action =
+      ExtensionActionManager::Get(web_contents()->GetBrowserContext())
+          ->GetExtensionAction(*extension);
+
+  const std::string default_badge_text = "asdf";
+  action->SetBadgeText(ExtensionAction::kDefaultTabId, default_badge_text);
+
+  // Display action count as badge text for |extension|.
+  EXPECT_EQ(SetExtensionActionOptions(extension->id(),
+                                      "{displayActionCountAsBadgeText: true}"),
+            "success");
+
+  // Navigate to a page with two frames, the same-origin one should be blocked.
+  const GURL page_url =
+      embedded_test_server()->GetURL("abc.com", "/page_with_two_frames.html");
+  ui_test_utils::NavigateToURL(browser(), page_url);
+
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents());
+
+  // Verify that the initial badge text reflects that the same-origin frame was
+  // blocked.
+  EXPECT_EQ("1", action->GetDisplayBadgeText(tab_id));
+
+  // Increment the action count.
+  EXPECT_EQ(SetExtensionActionOptions(
+                extension->id(),
+                base::StringPrintf("{tabUpdate: {tabId: %d, increment: 10}}",
+                                   tab_id)),
+            "success");
+  EXPECT_EQ("11", action->GetDisplayBadgeText(tab_id));
+
+  // An increment of 0 is ignored.
+  EXPECT_EQ(
+      SetExtensionActionOptions(
+          extension->id(),
+          base::StringPrintf("{tabUpdate: {tabId: %d, increment: 0}}", tab_id)),
+      "success");
+  EXPECT_EQ("11", action->GetDisplayBadgeText(tab_id));
+
+  // If the tab doesn't exist an error should be shown.
+  EXPECT_EQ(
+      SetExtensionActionOptions(
+          extension->id(),
+          base::StringPrintf("{tabUpdate: {tabId: %d, increment: 10}}", 999)),
+      ErrorUtils::FormatErrorMessage(declarative_net_request::kTabNotFoundError,
+                                     "999"));
+  EXPECT_EQ("11", action->GetDisplayBadgeText(tab_id));
+
+  // The action count should continue to increment when an action is taken.
+  NavigateFrame("frame1", page_url);
+  EXPECT_EQ("12", action->GetDisplayBadgeText(tab_id));
+
+  // The action count can be decremented.
+  EXPECT_EQ(SetExtensionActionOptions(
+                extension->id(),
+                base::StringPrintf("{tabUpdate: {tabId: %d, increment: -5}}",
+                                   tab_id)),
+            "success");
+  EXPECT_EQ("7", action->GetDisplayBadgeText(tab_id));
+
+  // Check that the action count cannot be decremented below 0. We fallback to
+  // displaying the default badge text when the action count is 0.
+  EXPECT_EQ(SetExtensionActionOptions(
+                extension->id(),
+                base::StringPrintf("{tabUpdate: {tabId: %d, increment: -10}}",
+                                   tab_id)),
+            "success");
+  EXPECT_EQ(default_badge_text, action->GetDisplayBadgeText(tab_id));
+  EXPECT_EQ(SetExtensionActionOptions(
+                extension->id(),
+                base::StringPrintf("{tabUpdate: {tabId: %d, increment: -1}}",
+                                   tab_id)),
+            "success");
+  EXPECT_EQ(default_badge_text, action->GetDisplayBadgeText(tab_id));
+  EXPECT_EQ(
+      SetExtensionActionOptions(
+          extension->id(),
+          base::StringPrintf("{tabUpdate: {tabId: %d, increment: 3}}", tab_id)),
+      "success");
+  EXPECT_EQ("3", action->GetDisplayBadgeText(tab_id));
+
+  // The action count cannot be incremented if the display action as badge text
+  // feature is not enabled.
+  EXPECT_EQ(
+      SetExtensionActionOptions(
+          extension->id(),
+          base::StringPrintf("{displayActionCountAsBadgeText: false, "
+                             "tabUpdate: {tabId: %d, increment: 10}}",
+                             tab_id)),
+      declarative_net_request::kIncrementActionCountWithoutUseAsBadgeTextError);
+  EXPECT_EQ(default_badge_text, action->GetDisplayBadgeText(tab_id));
+
+  // Any increment to the action count should not be ignored if we're enabling
+  // the preference.
+  EXPECT_EQ(SetExtensionActionOptions(
+                extension->id(),
+                base::StringPrintf("{displayActionCountAsBadgeText: true, "
+                                   "tabUpdate: {tabId: %d, increment: 5}}",
+                                   tab_id)),
+            "success");
+  EXPECT_EQ("8", action->GetDisplayBadgeText(tab_id));
 }
 
 // Test that the onRuleMatchedDebug event is only available for unpacked

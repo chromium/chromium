@@ -425,10 +425,20 @@ namespace declarativeNetRequest {
     DOMString[]? enableRulesetIds;
   };
 
+  dictionary TabActionCountUpdate {
+    // The tab for which to update the action count.
+    long tabId;
+    // The amount to increment the tab's action count by. Negative values will
+    // decrement the count.
+    long increment;
+  };
+
   dictionary ExtensionActionOptions {
     // Whether to automatically display the action count for a page as the
-    // extension's badge text. False by default.
-    boolean displayActionCountAsBadgeText;
+    // extension's badge text. This preference is persisted across sessions.
+    boolean? displayActionCountAsBadgeText;
+    // Details of how the tab's action count should be adjusted.
+    TabActionCountUpdate? tabUpdate;
   };
 
   callback EmptyCallback = void();
@@ -531,10 +541,12 @@ namespace declarativeNetRequest {
     static void getMatchedRules(optional MatchedRulesFilter filter,
                                 GetMatchedRulesCallback callback);
 
-    // Configures how matched actions will be displayed on the extension action.
-    // This preference is persisted across sessions.
+    // Configures if the action count for tabs should be displayed as the
+    // extension action's badge text and provides a way for that action count to
+    // be incremented.
     static void setExtensionActionOptions(
-        ExtensionActionOptions options);
+        ExtensionActionOptions options,
+        optional EmptyCallback callback);
 
     // Checks if the given regular expression will be supported as a
     // <code>regexFilter</code> rule condition.

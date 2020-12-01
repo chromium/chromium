@@ -30,6 +30,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
@@ -392,34 +393,58 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
-  bool use_action_count_as_badge_text =
-      params->options.display_action_count_as_badge_text;
+  declarative_net_request::RulesMonitorService* rules_monitor_service =
+      declarative_net_request::RulesMonitorService::Get(browser_context());
+  DCHECK(rules_monitor_service);
+
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
-  if (use_action_count_as_badge_text ==
-      prefs->GetDNRUseActionCountAsBadgeText(extension_id()))
-    return RespondNow(NoArguments());
+  declarative_net_request::ActionTracker& action_tracker =
+      rules_monitor_service->action_tracker();
 
-  prefs->SetDNRUseActionCountAsBadgeText(extension_id(),
-                                         use_action_count_as_badge_text);
+  bool use_action_count_as_badge_text =
+      prefs->GetDNRUseActionCountAsBadgeText(extension_id());
 
-  // If the preference is switched on, update the extension's badge text with
-  // the number of actions matched for this extension. Otherwise, clear the
-  // action count for the extension's icon and show the default badge text if
-  // set.
-  if (use_action_count_as_badge_text) {
-    declarative_net_request::RulesMonitorService* rules_monitor_service =
-        declarative_net_request::RulesMonitorService::Get(browser_context());
-    DCHECK(rules_monitor_service);
+  if (params->options.display_action_count_as_badge_text &&
+      *params->options.display_action_count_as_badge_text !=
+          use_action_count_as_badge_text) {
+    use_action_count_as_badge_text =
+        *params->options.display_action_count_as_badge_text;
+    prefs->SetDNRUseActionCountAsBadgeText(extension_id(),
+                                           use_action_count_as_badge_text);
 
-    const declarative_net_request::ActionTracker& action_tracker =
-        rules_monitor_service->action_tracker();
-    action_tracker.OnPreferenceEnabled(extension_id());
-  } else {
-    DCHECK(ExtensionsAPIClient::Get());
-    ExtensionsAPIClient::Get()->ClearActionCount(browser_context(),
-                                                 *extension());
+    // If the preference is switched on, update the extension's badge text
+    // with the number of actions matched for this extension. Otherwise, clear
+    // the action count for the extension's icon and show the default badge
+    // text if set.
+    if (use_action_count_as_badge_text)
+      action_tracker.OnPreferenceEnabled(extension_id());
+    else {
+      DCHECK(ExtensionsAPIClient::Get());
+      ExtensionsAPIClient::Get()->ClearActionCount(browser_context(),
+                                                   *extension());
+    }
   }
 
+  if (params->options.tab_update) {
+    if (!use_action_count_as_badge_text) {
+      return RespondNow(
+          Error(declarative_net_request::
+                    kIncrementActionCountWithoutUseAsBadgeTextError));
+    }
+
+    const auto& update_options = *params->options.tab_update;
+    int tab_id = update_options.tab_id;
+
+    if (!ExtensionsBrowserClient::Get()->IsValidTabId(browser_context(),
+                                                      tab_id)) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          declarative_net_request::kTabNotFoundError,
+          base::NumberToString(tab_id))));
+    }
+
+    action_tracker.IncrementActionCountForTab(extension_id(), tab_id,
+                                              update_options.increment);
+  }
   return RespondNow(NoArguments());
 }
 

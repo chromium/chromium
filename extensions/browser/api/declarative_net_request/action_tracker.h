@@ -103,6 +103,13 @@ class ActionTracker {
   int GetPendingRuleCountForTest(const ExtensionId& extension_id,
                                  int64_t navigation_id);
 
+  // Increments the action count for the given |extension_id| and |tab_id|.
+  // A negative value for |increment| will decrement the action count, but the
+  // action count will never be less than 0.
+  void IncrementActionCountForTab(const ExtensionId& extension_id,
+                                  int tab_id,
+                                  int increment);
+
  private:
   // Template key type used for TrackedInfo, specified by an extension_id and
   // another ID.

@@ -159,6 +159,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                           content::BrowserContext* context) override;
   bool IsScreenshotRestricted(
       content::WebContents* web_contents) const override;
+  bool IsValidTabId(content::BrowserContext* context,
+                    int tab_id) const override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

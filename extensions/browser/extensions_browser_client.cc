@@ -124,4 +124,9 @@ bool ExtensionsBrowserClient::IsScreenshotRestricted(
   return false;
 }
 
+bool ExtensionsBrowserClient::IsValidTabId(content::BrowserContext* context,
+                                           int tab_id) const {
+  return false;
+}
+
 }  // namespace extensions

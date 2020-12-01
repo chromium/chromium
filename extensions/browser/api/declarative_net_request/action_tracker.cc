@@ -322,6 +322,23 @@ int ActionTracker::GetPendingRuleCountForTest(const ExtensionId& extension_id,
              : tracked_info->second.matched_rules.size();
 }
 
+void ActionTracker::IncrementActionCountForTab(const ExtensionId& extension_id,
+                                               int tab_id,
+                                               int increment) {
+  TrackedInfo& tracked_info = rules_tracked_[{extension_id, tab_id}];
+  size_t new_action_count =
+      std::max<int>(tracked_info.action_count + increment, 0);
+
+  if (tracked_info.action_count == new_action_count)
+    return;
+
+  DCHECK(ExtensionsAPIClient::Get());
+  ExtensionsAPIClient::Get()->UpdateActionCount(browser_context_, extension_id,
+                                                tab_id, new_action_count,
+                                                false /* clear_badge_text */);
+  tracked_info.action_count = new_action_count;
+}
+
 template <typename T>
 ActionTracker::TrackedInfoContextKey<T>::TrackedInfoContextKey(
     ExtensionId extension_id,
