@@ -230,7 +230,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   mojo::Receiver<mojom::PrintCompositor> receiver_{this};
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
 
   // The creator of this service.

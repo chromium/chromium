@@ -24,7 +24,7 @@
 namespace content {
 
 CONTENT_EXPORT
-std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
 CreateDiscardableMemoryAllocator();
 
 }  // namespace content

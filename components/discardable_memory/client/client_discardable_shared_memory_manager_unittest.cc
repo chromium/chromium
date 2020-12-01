@@ -48,8 +48,6 @@ class TestClientDiscardableSharedMemoryManager
             base::MakeRefCounted<TestSingleThreadTaskRunner>(),
             periodic_purge_task_runner) {}
 
-  ~TestClientDiscardableSharedMemoryManager() override = default;
-
   std::unique_ptr<base::DiscardableSharedMemory>
   AllocateLockedDiscardableSharedMemory(size_t size, int32_t id) override {
     auto shared_memory = std::make_unique<base::DiscardableSharedMemory>();
@@ -73,15 +71,18 @@ class TestClientDiscardableSharedMemoryManager
     base::AutoLock lock(lock_);
     return timer_ == nullptr;
   }
+
+ private:
+  ~TestClientDiscardableSharedMemoryManager() override = default;
 };
 
 class ClientDiscardableSharedMemoryManagerTest : public testing::Test {
  public:
   void SetUp() override {
     client_ =
-        std::make_unique<TestClientDiscardableSharedMemoryManager>(nullptr);
+        base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>(nullptr);
   }
-  std::unique_ptr<TestClientDiscardableSharedMemoryManager> client_;
+  scoped_refptr<TestClientDiscardableSharedMemoryManager> client_;
   const size_t page_size_ = base::GetPageSize();
 };
 
@@ -92,7 +93,7 @@ class ClientDiscardableSharedMemoryManagerPeriodicPurgingTest
       : task_env_(base::test::TaskEnvironment::MainThreadType::UI,
                   base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
-    client_ = std::make_unique<TestClientDiscardableSharedMemoryManager>(
+    client_ = base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>(
         task_env_.GetMainThreadTaskRunner());
   }
   base::test::TaskEnvironment task_env_;

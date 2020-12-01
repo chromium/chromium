@@ -159,7 +159,7 @@ void VizMainImpl::CreateGpuService(
   if (!gpu_init_->gpu_info().in_process_gpu) {
     // If the GPU is running in the browser process, discardable memory manager
     // has already been initialized.
-    discardable_shared_memory_manager_ = std::make_unique<
+    discardable_shared_memory_manager_ = base::MakeRefCounted<
         discardable_memory::ClientDiscardableSharedMemoryManager>(
         std::move(discardable_memory_manager), io_task_runner());
     base::DiscardableMemoryAllocator::SetInstance(
