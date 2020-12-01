@@ -297,6 +297,17 @@ Polymer({
         if (e.shiftKey && this.getState().selection.anchor === null) {
           this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]));
         }
+
+        // If the focus moved from something other than a Ctrl + move event,
+        // update the selection.
+        const config = {
+          clear: !cursorModifier,
+          range: e.shiftKey,
+          toggle: false,
+        };
+
+        this.dispatch(selectItem(
+            this.displayedIds_[focusedIndex], this.getState(), config));
       }
     }
 
