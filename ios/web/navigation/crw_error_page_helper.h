@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_NAVIGATION_ERROR_PAGE_HELPER_H_
-#define IOS_WEB_NAVIGATION_ERROR_PAGE_HELPER_H_
+#ifndef IOS_WEB_NAVIGATION_CRW_ERROR_PAGE_HELPER_H_
+#define IOS_WEB_NAVIGATION_CRW_ERROR_PAGE_HELPER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,7 +11,7 @@ class GURL;
 
 // Class used to create an Error Page, constructing all the information needed
 // based on the initial error.
-@interface ErrorPageHelper : NSObject
+@interface CRWErrorPageHelper : NSObject
 
 // Failed URL of the failed navigation.
 @property(nonatomic, strong, readonly) NSURL* failedNavigationURL;
@@ -39,4 +39,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_WEB_NAVIGATION_ERROR_PAGE_HELPER_H_
+#endif  // IOS_WEB_NAVIGATION_CRW_ERROR_PAGE_HELPER_H_

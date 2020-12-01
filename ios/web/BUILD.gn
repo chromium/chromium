@@ -263,11 +263,11 @@ source_set("ios_web_navigation_unittests") {
   ]
 
   sources = [
+    "navigation/crw_error_page_helper_unittest.mm",
     "navigation/crw_navigation_item_holder_unittest.mm",
     "navigation/crw_session_storage_unittest.mm",
     "navigation/crw_text_fragments_handler_unittest.mm",
     "navigation/crw_wk_navigation_states_unittest.mm",
-    "navigation/error_page_helper_unittest.mm",
     "navigation/error_retry_state_machine_unittest.mm",
     "navigation/navigation_context_impl_unittest.mm",
     "navigation/navigation_item_impl_unittest.mm",
@@ -563,8 +563,8 @@ test("ios_web_inttests") {
     "browser_state_web_view_partition_inttest.mm",
     "cookie_blocking_inttest.mm",
     "find_in_page/find_in_page_manager_inttest.mm",
+    "navigation/crw_error_page_helper_inttest.mm",
     "navigation/crw_wk_navigation_handler_inttest.mm",
-    "navigation/error_page_helper_inttest.mm",
     "navigation/history_state_operations_inttest.mm",
     "navigation/meta_tag_inttest.mm",
     "navigation/window_location_inttest.mm",

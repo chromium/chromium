@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/navigation/error_page_helper.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -30,24 +30,24 @@ const char kSecondPageBody[] = "Second Page Body";
 namespace web {
 
 // Class for the Error Page test.
-class ErrorPageHelperIntTest : public WebIntTest {
+class CRWErrorPageHelperIntTest : public WebIntTest {
  protected:
-  ErrorPageHelperIntTest() {
+  CRWErrorPageHelperIntTest() {
     server_.RegisterRequestHandler(base::BindRepeating(
-        &ErrorPageHelperIntTest::HandleRequest, base::Unretained(this)));
+        &CRWErrorPageHelperIntTest::HandleRequest, base::Unretained(this)));
     EXPECT_TRUE(server_.Start()) << "Server didn't start";
   }
 
   // Returns an error page helper initialized with |url| as the url of the
   // failing page (original page).
-  ErrorPageHelper* HelperForUrl(const std::string& url) {
+  CRWErrorPageHelper* HelperForUrl(const std::string& url) {
     NSString* url_string = base::SysUTF8ToNSString(url);
     NSError* error = [NSError
         errorWithDomain:NSURLErrorDomain
                    code:NSURLErrorBadURL
                userInfo:@{NSURLErrorFailingURLStringErrorKey : url_string}];
 
-    return [[ErrorPageHelper alloc] initWithError:error];
+    return [[CRWErrorPageHelper alloc] initWithError:error];
   }
 
   // Returns the initial url. This url can be seen as the url of the page loaded
@@ -92,8 +92,8 @@ class ErrorPageHelperIntTest : public WebIntTest {
 
 // Tests that injecting HTML with Reload = YES is replacing the content of the
 // page with the injected HTML and navigating back reload the original URL.
-TEST_F(ErrorPageHelperIntTest, InjectHTMLAndReload) {
-  ErrorPageHelper* helper = HelperForUrl(GetOriginalUrl().spec());
+TEST_F(CRWErrorPageHelperIntTest, InjectHTMLAndReload) {
+  CRWErrorPageHelper* helper = HelperForUrl(GetOriginalUrl().spec());
 
   // Load the initial error page.
   ASSERT_TRUE(LoadUrl(GetInitialUrl()));
@@ -122,8 +122,8 @@ TEST_F(ErrorPageHelperIntTest, InjectHTMLAndReload) {
 
 // Tests that injecting HTML with Reload = NO is replacing the content of the
 // page with the injected HTML and navigating back hit the cache.
-TEST_F(ErrorPageHelperIntTest, InjectHTMLWithoutReload) {
-  ErrorPageHelper* helper = HelperForUrl(GetOriginalUrl().spec());
+TEST_F(CRWErrorPageHelperIntTest, InjectHTMLWithoutReload) {
+  CRWErrorPageHelper* helper = HelperForUrl(GetOriginalUrl().spec());
 
   // Load the initial error page.
   ASSERT_TRUE(LoadUrl(GetInitialUrl()));

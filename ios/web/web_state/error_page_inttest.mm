@@ -12,7 +12,6 @@
 #import "ios/net/protocol_handler_util.h"
 #include "ios/testing/embedded_test_server_handlers.h"
 #include "ios/web/common/features.h"
-#import "ios/web/navigation/error_page_helper.h"
 #include "ios/web/navigation/web_kit_constants.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

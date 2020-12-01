@@ -26,13 +26,13 @@
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_js_navigation_handler.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_web_view_navigation_observer.h"
 #import "ios/web/navigation/crw_web_view_navigation_observer_delegate.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
-#import "ios/web/navigation/error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -825,7 +825,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
   }
 
-  if ([ErrorPageHelper isErrorPageFileURL:URL]) {
+  if ([CRWErrorPageHelper isErrorPageFileURL:URL]) {
     context->SetLoadingErrorPage(true);
   }
 

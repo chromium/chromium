@@ -10,12 +10,12 @@
 #import "ios/net/http_response_headers_util.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/url_util.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
 #import "ios/web/navigation/crw_web_view_navigation_observer_delegate.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
-#import "ios/web/navigation/error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/web_client.h"
@@ -264,9 +264,9 @@ using web::wk_navigation_util::IsPlaceholderUrl;
   // window.location.href will match the previous URL at this stage, not the web
   // view's current URL.
   if (!self.webView.loading) {
-    if ([ErrorPageHelper isErrorPageFileURL:URL] &&
+    if ([CRWErrorPageHelper isErrorPageFileURL:URL] &&
         self.documentURL ==
-            [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:URL]) {
+            [CRWErrorPageHelper failedNavigationURLFromErrorPageFileURL:URL]) {
       // Case 4: reloading an error page.
       return;
     }

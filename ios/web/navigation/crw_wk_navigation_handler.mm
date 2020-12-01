@@ -16,11 +16,11 @@
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
 #import "ios/web/navigation/crw_text_fragments_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
-#import "ios/web/navigation/error_page_helper.h"
 #include "ios/web/navigation/error_retry_state_machine.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
@@ -300,7 +300,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
        IsPlaceholderUrl(requestURL)) ||
       (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       [ErrorPageHelper isErrorPageFileURL:requestURL])) {
+       [CRWErrorPageHelper isErrorPageFileURL:requestURL])) {
     if (action.sourceFrame.mainFrame) {
       // Disallow renderer initiated navigations to placeholder URLs.
       decisionHandler(WKNavigationActionPolicyCancel);
@@ -503,7 +503,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
        IsPlaceholderUrl(responseURL)) ||
       (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       [ErrorPageHelper isErrorPageFileURL:responseURL])) {
+       [CRWErrorPageHelper isErrorPageFileURL:responseURL])) {
     handler(WKNavigationResponsePolicyAllow);
     return;
   }
@@ -584,7 +584,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
     BOOL isErrorPageNavigation =
         (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-         [ErrorPageHelper isErrorPageFileURL:webViewURL]) ||
+         [CRWErrorPageHelper isErrorPageFileURL:webViewURL]) ||
         (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
          context->IsPlaceholderNavigation());
 
@@ -623,8 +623,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
           // Item may not exist if navigation was stopped (see
           // crbug.com/969915).
           item->SetURL(webViewURL);
-          if ([ErrorPageHelper isErrorPageFileURL:webViewURL]) {
-            item->SetVirtualURL([ErrorPageHelper
+          if ([CRWErrorPageHelper isErrorPageFileURL:webViewURL]) {
+            item->SetVirtualURL([CRWErrorPageHelper
                 failedNavigationURLFromErrorPageFileURL:webViewURL]);
           }
         }
@@ -945,7 +945,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // webView has the file URL.
   BOOL isErrorPage =
       base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-      [ErrorPageHelper isErrorPageFileURL:webViewURL];
+      [CRWErrorPageHelper isErrorPageFileURL:webViewURL];
 
   // When loading an error page that is a placeholder (legacy), the webViewURL
   // should be used as it is the actual URL we want to load.
@@ -1414,7 +1414,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   }
 
   // Allow navigation to WebUI pages from error pages.
-  if ([ErrorPageHelper isErrorPageFileURL:self.documentURL]) {
+  if ([CRWErrorPageHelper isErrorPageFileURL:self.documentURL]) {
     return YES;
   }
 
@@ -1995,7 +1995,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
                          isProvisionalLoad:(BOOL)provisionalLoad {
   DCHECK(base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
 
-  ErrorPageHelper* errorPage = [[ErrorPageHelper alloc] initWithError:error];
+  CRWErrorPageHelper* errorPage =
+      [[CRWErrorPageHelper alloc] initWithError:error];
   WKBackForwardListItem* backForwardItem = webView.backForwardList.currentItem;
   // There are 4 possible scenarios here:
   //   1. Current nav item is an error page for failed URL;
@@ -2222,8 +2223,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       context->GetNavigationId(), base::BindOnce(^(NSString* errorHTML) {
         if (errorHTML) {
           if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-            ErrorPageHelper* errorPageHelper =
-                [[ErrorPageHelper alloc] initWithError:context->GetError()];
+            CRWErrorPageHelper* errorPageHelper =
+                [[CRWErrorPageHelper alloc] initWithError:context->GetError()];
 
             [webView evaluateJavaScript:[errorPageHelper
                                             scriptForInjectingHTML:errorHTML

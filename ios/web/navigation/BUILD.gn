@@ -98,8 +98,8 @@ source_set("core") {
   ]
 
   sources = [
-    "error_page_helper.h",
-    "error_page_helper.mm",
+    "crw_error_page_helper.h",
+    "crw_error_page_helper.mm",
     "error_retry_state_machine.h",
     "error_retry_state_machine.mm",
     "navigation_context_impl.h",
