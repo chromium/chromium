@@ -19,6 +19,7 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
+#include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
 
 namespace chromeos {
 
@@ -68,8 +69,11 @@ class L10nUtilTest : public testing::Test {
 L10nUtilTest::L10nUtilTest()
     : input_manager_(new MockInputMethodManagerWithInputMethods) {
   chromeos::input_method::InitializeForTesting(input_manager_);
+  auto mock_component_extension_ime_manager_delegate = std::make_unique<
+      input_method::MockComponentExtensionIMEManagerDelegate>();
   input_manager_->SetComponentExtensionIMEManager(
-      std::make_unique<ComponentExtensionIMEManager>());
+      std::make_unique<ComponentExtensionIMEManager>(
+          std::move(mock_component_extension_ime_manager_delegate)));
 
   base::RunLoop().RunUntilIdle();
 }

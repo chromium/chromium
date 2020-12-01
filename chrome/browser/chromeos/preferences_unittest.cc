@@ -254,8 +254,8 @@ class InputMethodPreferencesTest : public PreferencesTest {
     std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate(
         mock_delegate);
     std::unique_ptr<ComponentExtensionIMEManager>
-        component_extension_ime_manager(new ComponentExtensionIMEManager);
-    component_extension_ime_manager->Initialize(std::move(delegate));
+        component_extension_ime_manager(
+            new ComponentExtensionIMEManager(std::move(delegate)));
 
     // Add the ComponentExtensionIMEManager to the mock InputMethodManager.
     mock_manager_->SetComponentExtensionIMEManager(

@@ -309,6 +309,7 @@ namespace {
 namespace input_method = chromeos::input_method;
 using input_method::InputMethodDescriptor;
 using input_method::InputMethodManager;
+using input_method::MockComponentExtensionIMEManagerDelegate;
 
 std::string GetExtensionImeId() {
   std::string kExtensionImeId = chromeos::extension_ime_util::GetInputMethodID(
@@ -368,11 +369,9 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {
     util_.AppendInputMethods(state_->input_methods_);
-    mock_delegate_ =
-        new chromeos::input_method::MockComponentExtensionIMEManagerDelegate();
     component_ext_mgr_ =
-        std::make_unique<chromeos::ComponentExtensionIMEManager>();
-    component_ext_mgr_->Initialize(base::WrapUnique(mock_delegate_));
+        std::make_unique<chromeos::ComponentExtensionIMEManager>(
+            std::make_unique<MockComponentExtensionIMEManagerDelegate>());
   }
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
@@ -393,8 +392,6 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_;
   std::unique_ptr<chromeos::ComponentExtensionIMEManager> component_ext_mgr_;
-  chromeos::input_method::MockComponentExtensionIMEManagerDelegate*
-      mock_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };

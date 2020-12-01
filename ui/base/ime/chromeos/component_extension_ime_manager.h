@@ -51,14 +51,9 @@ struct COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIME {
 // This class manages component extension input method.
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
  public:
-  ComponentExtensionIMEManager();
-  virtual ~ComponentExtensionIMEManager();
-
-  // Initializes component extension manager. This function create internal
-  // mapping between input method id and engine components. This function must
-  // be called before using any other function.
-  void Initialize(
+  ComponentExtensionIMEManager(
       std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
+  virtual ~ComponentExtensionIMEManager();
 
   // Loads |input_method_id| component extension IME. This function returns true
   // on success. This function is safe to call multiple times. Returns false if
@@ -92,11 +87,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
   std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate_;
 
   // The map of extension_id to ComponentExtensionIME instance.
-  // It's filled by Initialize() method and never changed during runtime.
+  // It's filled by ctor and never changed during runtime.
   std::map<std::string, ComponentExtensionIME> component_extension_imes_;
 
   // For quick check the validity of a given input method id.
-  // It's filled by Initialize() method and never changed during runtime.
+  // It's filled by ctor and never changed during runtime.
   std::set<std::string> input_method_id_set_;
 
   std::set<std::string> login_layout_set_;

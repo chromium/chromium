@@ -53,7 +53,6 @@ enum CallsBitmap {
 };
 
 void InitInputMethod() {
-  auto* comp_ime_manager = new ComponentExtensionIMEManager;
   auto* delegate = new MockComponentExtensionIMEManagerDelegate;
 
   ComponentExtensionIME ext1;
@@ -68,7 +67,8 @@ void InitInputMethod() {
   std::vector<ComponentExtensionIME> ime_list;
   ime_list.push_back(ext1);
   delegate->set_ime_list(ime_list);
-  comp_ime_manager->Initialize(
+
+  auto* comp_ime_manager = new ComponentExtensionIMEManager(
       std::unique_ptr<ComponentExtensionIMEManagerDelegate>(delegate));
 
   auto* manager = new MockInputMethodManagerImpl;

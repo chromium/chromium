@@ -55,18 +55,15 @@ ComponentExtensionIME::ComponentExtensionIME(
 
 ComponentExtensionIME::~ComponentExtensionIME() = default;
 
-ComponentExtensionIMEManager::ComponentExtensionIMEManager() {
+ComponentExtensionIMEManager::ComponentExtensionIMEManager(
+    std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate)
+    : delegate_(std::move(delegate)) {
   for (const auto& input_method : input_method::kInputMethods) {
     if (input_method.is_login_keyboard)
       login_layout_set_.insert(input_method.xkb_layout_id);
   }
-}
 
-ComponentExtensionIMEManager::~ComponentExtensionIMEManager() = default;
-
-void ComponentExtensionIMEManager::Initialize(
-    std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate) {
-  delegate_ = std::move(delegate);
+  // Creates internal mapping between input method id and engine components.
   std::vector<ComponentExtensionIME> ext_list = delegate_->ListIME();
   for (const auto& ext : ext_list) {
     bool extension_exists = IsAllowlistedExtension(ext.id);
@@ -81,6 +78,8 @@ void ComponentExtensionIMEManager::Initialize(
     }
   }
 }
+
+ComponentExtensionIMEManager::~ComponentExtensionIMEManager() = default;
 
 bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
     Profile* profile,

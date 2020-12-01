@@ -960,7 +960,6 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     bool enable_extension_loading)
     : delegate_(std::move(delegate)),
       util_(delegate_.get()),
-      component_extension_ime_manager_(new ComponentExtensionIMEManager()),
       enable_extension_loading_(enable_extension_loading),
       features_enabled_state_(InputMethodManager::FEATURE_ALL) {
   if (IsRunningAsSystemCompositor()) {
@@ -970,8 +969,9 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     keyboard_ = std::make_unique<FakeImeKeyboard>();
   }
   // Initializes the system IME list.
-  component_extension_ime_manager_->Initialize(
-      std::move(component_extension_ime_manager_delegate));
+  component_extension_ime_manager_ =
+      std::make_unique<ComponentExtensionIMEManager>(
+          std::move(component_extension_ime_manager_delegate));
   const InputMethodDescriptors& descriptors =
       component_extension_ime_manager_->GetAllIMEAsInputMethodDescriptor();
   util_.ResetInputMethods(descriptors);
