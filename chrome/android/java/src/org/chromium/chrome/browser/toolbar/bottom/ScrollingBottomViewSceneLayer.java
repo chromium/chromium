@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.scene_layer;
+package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.graphics.RectF;
 import android.view.View;

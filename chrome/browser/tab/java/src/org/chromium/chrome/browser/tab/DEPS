@@ -25,4 +25,8 @@ specific_include_rules = {
     "-components",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
   ],
+
+  'CurrentTabObserverTest.java': [
+    "+base/test/android/junit",
+  ]
 }

@@ -36,11 +36,17 @@ public class CurrentTabObserver {
         mTabObserver = tabObserver;
         mCallbackController = new CallbackController();
         mTabSupplierCallback = mCallbackController.makeCancelable((tab) -> {
+            if (mTab == tab) return;
             if (mTab != null) mTab.removeObserver(mTabObserver);
             mTab = tab;
             if (mTab != null) mTab.addObserver(mTabObserver);
         });
         mTabSupplier.addObserver(mTabSupplierCallback);
+    }
+
+    /** Trigger the event callback for this observer with the current tab. */
+    public void triggerWithCurrentTab() {
+        mTabSupplierCallback.onResult(mTabSupplier.get());
     }
 
     /** Destroy the current tab observer. This should be called after use. */
