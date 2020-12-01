@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -64,6 +65,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateDeleteContext) {
     params.SetStringPath("browserContextId", context_id);
     SendCommandSync("Target.disposeBrowserContext", std::move(params));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NewTabPageInCreatedContextDoesNotCrash) {
+  AttachToBrowser();
+  SendCommandSync("Target.createBrowserContext");
+  std::string* context_id_value = result_.FindStringPath("browserContextId");
+  ASSERT_TRUE(context_id_value);
+  std::string context_id = *context_id_value;
+
+  base::DictionaryValue params;
+  params.SetStringPath("url", chrome::kChromeUINewTabURL);
+  params.SetStringPath("browserContextId", context_id);
+  content::WebContentsAddedObserver observer;
+  SendCommandSync("Target.createTarget", std::move(params));
+  content::WebContents* wc = observer.GetWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(wc));
+  EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
+
+  // Should not crash by this point.
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
