@@ -168,7 +168,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   PA_DCHECK(!bucket->is_direct_mapped());
   void* addr = SlotSpanMetadata::ToPointer(this);
   root->DecommitSystemPagesForData(addr, bucket->get_bytes_per_span(),
-                                   PageUpdatePermissions);
+                                   PageKeepPermissionsIfPossible);
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
   // it on to the decommitted list when we next walk the active list.
