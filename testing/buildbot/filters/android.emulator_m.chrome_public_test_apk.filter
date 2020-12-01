@@ -85,4 +85,5 @@
 -org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testShowOnlyOneTabSuggestionMessageCard_withHardCleanup
 
 # crbug.com/1146477
+-org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonthAndYear
