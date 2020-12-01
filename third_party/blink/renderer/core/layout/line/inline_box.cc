@@ -191,7 +191,7 @@ LayoutUnit InlineBox::LineHeight() const {
 }
 
 int InlineBox::CaretMinOffset() const {
-  return GetLineLayoutItem().CaretMinOffset();
+  return 0;
 }
 
 int InlineBox::CaretMaxOffset() const {

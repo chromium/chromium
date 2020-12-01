@@ -229,9 +229,18 @@ class LineLayoutItem {
     layout_object_->SetAncestorLineBoxDirty();
   }
 
-  int CaretMinOffset() const { return layout_object_->CaretMinOffset(); }
-
-  int CaretMaxOffset() const { return layout_object_->CaretMaxOffset(); }
+  // TODO(yosin): We should not use |CaretMaxOffset()|, because this function
+  // may be used for creating invalid pointer, e.g. <hr>@1.
+  int CaretMaxOffset() const {
+    if (layout_object_->IsAtomicInlineLevel()) {
+      if (Node* const node = layout_object_->GetNode())
+        return std::max(1u, GetNode()->CountChildren());
+      return 1;
+    }
+    if (layout_object_->IsHR())
+      return 1;
+    return 0;
+  }
 
   bool HasFlippedBlocksWritingMode() const {
     return layout_object_->HasFlippedBlocksWritingMode();

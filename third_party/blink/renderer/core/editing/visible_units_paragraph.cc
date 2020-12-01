@@ -221,8 +221,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
 
       candidate_node = next_node_iterator;
       candidate_type = PositionAnchorType::kOffsetInAnchor;
-      candidate_offset =
-          layout_object->CaretMaxOffset() + text->TextStartOffset();
+      candidate_offset = text->CaretMaxOffset() + text->TextStartOffset();
       next_node_iterator = Strategy::Next(*next_node_iterator, start_block);
     } else if (EditingIgnoresContent(*next_node_iterator) ||
                IsDisplayInsideTable(next_node_iterator)) {

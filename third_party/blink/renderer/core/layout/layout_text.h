@@ -297,8 +297,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   bool IsBeforeNonCollapsedCharacter(unsigned) const;
   bool IsAfterNonCollapsedCharacter(unsigned) const;
 
-  int CaretMinOffset() const override;
-  int CaretMaxOffset() const override;
+  virtual int CaretMinOffset() const;
+  virtual int CaretMaxOffset() const;
   unsigned ResolvedTextLength() const;
 
   // True if any character remains after CSS white-space collapsing.

@@ -558,10 +558,11 @@ PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
 
 // TODO(yosin): We should use |AssociatedLayoutObjectOf()| in "visible_units.cc"
 // where it takes |LayoutObject| from |Position|.
-
 int CaretMinOffset(const Node* node) {
   const LayoutObject* layout_object = AssociatedLayoutObjectOf(*node, 0);
-  return layout_object ? layout_object->CaretMinOffset() : 0;
+  if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object))
+    return layout_text->CaretMinOffset();
+  return 0;
 }
 
 int CaretMaxOffset(const Node* n) {
@@ -774,7 +775,8 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
       // Until we resolve that, disable this so we can run the web tests!
       // DCHECK_GE(currentOffset, layoutObject->caretMaxOffset());
       return PositionTemplate<Strategy>(
-          current_node, layout_object->CaretMaxOffset() + text_start_offset);
+          current_node,
+          text_layout_object->CaretMaxOffset() + text_start_offset);
     }
 
     DCHECK_GE(current_pos.OffsetInLeafNode(),
@@ -895,9 +897,8 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     // ignored.
     if (EditingIgnoresContent(*current_node) ||
         IsDisplayInsideTable(current_node)) {
-      if (current_pos.OffsetInLeafNode() <= layout_object->CaretMinOffset())
-        return PositionTemplate<Strategy>::EditingPositionOf(
-            current_node, layout_object->CaretMinOffset());
+      if (current_pos.OffsetInLeafNode() <= 0)
+        return PositionTemplate<Strategy>::EditingPositionOf(current_node, 0);
       continue;
     }
 
@@ -912,7 +913,8 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
       DCHECK(current_pos.AtStartOfNode() ||
              HasInvisibleFirstLetter(current_node));
       return PositionTemplate<Strategy>(
-          current_node, layout_object->CaretMinOffset() + text_start_offset);
+          current_node,
+          text_layout_object->CaretMinOffset() + text_start_offset);
     }
 
     DCHECK_GE(current_pos.OffsetInLeafNode(),
