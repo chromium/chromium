@@ -341,6 +341,10 @@
     "label": "//media/capture:capture_unittests",
     "type": "windowed_test_launcher",
   },
+  "cast_accessibility_unittests": {
+    "label": "//chromecast/browser/accessibility/flutter:cast_accessibility_unittests",
+    "type": "console_test_launcher",
+  },
   "cast_runner_browsertests": {
     "label": "//fuchsia/runners:cast_runner_browsertests",
     "type": "console_test_launcher",

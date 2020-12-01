@@ -403,6 +403,7 @@
     },
 
     'cast_video_specific_chromium_gtests': {
+      'cast_accessibility_unittests': {},
       'cast_graphics_unittests': {},
       'exo_unittests': {},
       'views_unittests': {
