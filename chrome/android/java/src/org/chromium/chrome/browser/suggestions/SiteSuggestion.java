@@ -26,8 +26,8 @@ public class SiteSuggestion {
     /** Id of the favicon. It is optional and used when caching the favion on device. */
     public int faviconId;
 
-    /** The path to the icon image file for whitelisted tile, empty string otherwise. */
-    public final String whitelistIconPath;
+    /** The path to the icon image file for allowlisted tile, empty string otherwise. */
+    public final String allowlistIconPath;
 
     /** The generated tile's title originated from this {@code TileTitleSource}. */
     @TileTitleSource
@@ -48,12 +48,12 @@ public class SiteSuggestion {
         (produced by a ranking algorithm). */
     public final Date dataGenerationTime;
 
-    public SiteSuggestion(String title, GURL url, String whitelistIconPath, int titleSource,
+    public SiteSuggestion(String title, GURL url, String allowlistIconPath, int titleSource,
             int source, int sectionType, Date dataGenerationTime) {
         this.title = title;
         this.url = url;
         this.faviconId = INVALID_FAVICON_ID;
-        this.whitelistIconPath = whitelistIconPath;
+        this.allowlistIconPath = allowlistIconPath;
         this.source = source;
         this.titleSource = titleSource;
         this.sectionType = sectionType;
@@ -72,14 +72,14 @@ public class SiteSuggestion {
         if (sectionType != that.sectionType) return false;
         if (!title.equals(that.title)) return false;
         if (!url.equals(that.url)) return false;
-        return whitelistIconPath.equals(that.whitelistIconPath);
+        return allowlistIconPath.equals(that.allowlistIconPath);
     }
 
     @Override
     public int hashCode() {
         int result = title.hashCode();
         result = 31 * result + url.hashCode();
-        result = 31 * result + whitelistIconPath.hashCode();
+        result = 31 * result + allowlistIconPath.hashCode();
         result = 31 * result + source;
         result = 31 * result + sectionType;
         result = 31 * result + titleSource;

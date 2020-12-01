@@ -11180,6 +11180,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageProviders" separator=".">
+  <suffix name="allowlist"
+      label="Installed allowlist entry point suggestions."/>
   <suffix name="client" label="Suggestions coming from the client."/>
   <suffix name="client0" label="">
     <obsolete>
@@ -11228,8 +11230,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Has never been used.
     </obsolete>
   </suffix>
-  <suffix name="whitelist"
-      label="Installed whitelist entry point suggestions."/>
+  <suffix name="whitelist" label="Installed whitelist entry point suggestions.">
+    <obsolete>
+      Replaced with allowlist (M89).
+    </obsolete>
+  </suffix>
   <affected-histogram name="NewTabPage.MostVisited"/>
   <affected-histogram name="NewTabPage.MostVisitedAge"/>
   <affected-histogram name="NewTabPage.SuggestionsImpression"/>

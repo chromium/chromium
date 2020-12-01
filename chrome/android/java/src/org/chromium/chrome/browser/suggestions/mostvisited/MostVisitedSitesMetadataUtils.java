@@ -126,7 +126,7 @@ public class MostVisitedSitesMetadataUtils {
             stream.writeInt(topSitesInfo.get(i).faviconId);
             stream.writeUTF(topSitesInfo.get(i).title);
             stream.writeUTF(topSitesInfo.get(i).url.serialize());
-            stream.writeUTF(topSitesInfo.get(i).whitelistIconPath);
+            stream.writeUTF(topSitesInfo.get(i).allowlistIconPath);
             stream.writeInt(topSitesInfo.get(i).titleSource);
             stream.writeInt(topSitesInfo.get(i).source);
             stream.writeInt(topSitesInfo.get(i).sectionType);
@@ -164,12 +164,12 @@ public class MostVisitedSitesMetadataUtils {
             GURL url = GURL.deserialize(stream.readUTF());
             if (url.isEmpty()) throw new IOException("GURL deserialization failed.");
 
-            String whitelistIconPath = stream.readUTF();
+            String allowlistIconPath = stream.readUTF();
             int titleSource = stream.readInt();
             int source = stream.readInt();
             int sectionType = stream.readInt();
             dataGenerationTime = new Date(stream.readLong());
-            SiteSuggestion newSite = new SiteSuggestion(title, url, whitelistIconPath, titleSource,
+            SiteSuggestion newSite = new SiteSuggestion(title, url, allowlistIconPath, titleSource,
                     source, sectionType, dataGenerationTime);
             newSite.faviconId = faviconId;
             suggestions.add(newSite);

@@ -112,14 +112,14 @@ public class MostVisitedSitesFaviconHelperTest {
         siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
                 new Date()));
-        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", new GURL("https://www.bar.com"),
-                "/not_exist.png", TileTitleSource.UNKNOWN, TileSource.WHITELIST,
+        siteSuggestions.add(new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"),
+                "/not_exist.png", TileTitleSource.UNKNOWN, TileSource.ALLOWLIST,
                 TileSectionType.PERSONALIZED, new Date()));
         siteSuggestions.add(new SiteSuggestion("2 TOP_SITES", new GURL("https://www.baz.com"),
-                createBitmapAndWriteToFile(), TileTitleSource.UNKNOWN, TileSource.WHITELIST,
+                createBitmapAndWriteToFile(), TileTitleSource.UNKNOWN, TileSource.ALLOWLIST,
                 TileSectionType.PERSONALIZED, new Date()));
         siteSuggestions.add(new SiteSuggestion("3 TOP_SITES", new GURL("https://www.qux.com"), "",
-                TileTitleSource.UNKNOWN, TileSource.WHITELIST, TileSectionType.PERSONALIZED,
+                TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED,
                 new Date()));
         siteSuggestions.get(0).faviconId = 0;
         siteSuggestions.get(1).faviconId = 1;

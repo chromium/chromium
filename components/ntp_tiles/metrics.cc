@@ -25,7 +25,7 @@ const char kHistogramClientName[] = "client";
 const char kHistogramServerName[] = "server";
 const char kHistogramPopularName[] = "popular_fetched";
 const char kHistogramBakedInName[] = "popular_baked_in";
-const char kHistogramWhitelistName[] = "whitelist";
+const char kHistogramAllowlistName[] = "allowlist";
 const char kHistogramHomepageName[] = "homepage";
 const char kHistogramCustomLinksName[] = "custom_links";
 const char kHistogramExploreName[] = "explore";
@@ -50,8 +50,8 @@ std::string GetSourceHistogramName(TileSource source) {
       return kHistogramBakedInName;
     case TileSource::POPULAR:
       return kHistogramPopularName;
-    case TileSource::WHITELIST:
-      return kHistogramWhitelistName;
+    case TileSource::ALLOWLIST:
+      return kHistogramAllowlistName;
     case TileSource::SUGGESTIONS_SERVICE:
       return kHistogramServerName;
     case TileSource::HOMEPAGE:

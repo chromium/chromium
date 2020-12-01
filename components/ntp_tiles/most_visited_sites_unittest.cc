@@ -2190,7 +2190,7 @@ TEST(MostVisitedSitesMergeTest, ShouldMergeTilesWithPersonalOnly) {
   // Without any popular tiles, the result after merge should be the personal
   // tiles.
   EXPECT_THAT(MostVisitedSites::MergeTiles(std::move(personal_tiles),
-                                           /*whitelist_tiles=*/NTPTilesVector(),
+                                           /*allowlist_tiles=*/NTPTilesVector(),
                                            /*popular_tiles=*/NTPTilesVector(),
                                            /*explore_tile=*/base::nullopt),
               ElementsAre(MatchesTile("Site 1", "https://www.site1.com/",
@@ -2214,7 +2214,7 @@ TEST(MostVisitedSitesMergeTest, ShouldMergeTilesWithPopularOnly) {
   // tiles.
   EXPECT_THAT(
       MostVisitedSites::MergeTiles(/*personal_tiles=*/NTPTilesVector(),
-                                   /*whitelist_tiles=*/NTPTilesVector(),
+                                   /*allowlist_tiles=*/NTPTilesVector(),
                                    /*popular_tiles=*/std::move(popular_tiles),
                                    /*explore_tile=*/base::nullopt),
       ElementsAre(
@@ -2239,7 +2239,7 @@ TEST(MostVisitedSitesMergeTest, ShouldMergeTilesFavoringPersonalOverPopular) {
   };
   EXPECT_THAT(
       MostVisitedSites::MergeTiles(std::move(personal_tiles),
-                                   /*whitelist_tiles=*/NTPTilesVector(),
+                                   /*allowlist_tiles=*/NTPTilesVector(),
                                    /*popular_tiles=*/std::move(popular_tiles),
                                    /*explore_tiles=*/explore_tile),
       ElementsAre(

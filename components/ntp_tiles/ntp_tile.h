@@ -24,10 +24,10 @@ struct NTPTile {
   TileTitleSource title_source;
   TileSource source;
 
-  // Empty unless whitelists are enabled and this site is in a whitelist.
-  // However, may be non-empty even if |source| is not |WHITELIST|, if this tile
+  // Empty unless allowlists are enabled and this site is in an allowlist.
+  // However, may be non-empty even if |source| is not |ALLOWLIST|, if this tile
   // is also available from another, higher-priority source.
-  base::FilePath whitelist_icon_path;
+  base::FilePath allowlist_icon_path;
 
   // This won't be empty, but might 404 etc.
   GURL favicon_url;

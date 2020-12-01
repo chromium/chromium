@@ -176,7 +176,7 @@ bool MostVisitedSites::DoesSourceExist(TileSource source) const {
       return popular_sites_ != nullptr;
     case TileSource::HOMEPAGE:
       return homepage_client_ != nullptr;
-    case TileSource::WHITELIST:
+    case TileSource::ALLOWLIST:
       return supervisor_ != nullptr;
     case TileSource::CUSTOM_LINKS:
       return custom_links_ != nullptr;
@@ -456,11 +456,11 @@ void MostVisitedSites::InitiateTopSitesQuery() {
                      top_sites_weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::FilePath MostVisitedSites::GetWhitelistLargeIconPath(const GURL& url) {
+base::FilePath MostVisitedSites::GetAllowlistLargeIconPath(const GURL& url) {
   if (supervisor_) {
-    for (const auto& whitelist : supervisor_->GetWhitelists()) {
-      if (AreURLsEquivalent(whitelist.entry_point, url))
-        return whitelist.large_icon_path;
+    for (const auto& allowlist : supervisor_->GetAllowlists()) {
+      if (AreURLsEquivalent(allowlist.entry_point, url))
+        return allowlist.large_icon_path;
     }
   }
   return base::FilePath();
@@ -489,7 +489,7 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
         custom_links_ ? GenerateShortTitle(visited.title) : visited.title;
     tile.url = visited.url;
     tile.source = TileSource::TOP_SITES;
-    tile.whitelist_icon_path = GetWhitelistLargeIconPath(visited.url);
+    tile.allowlist_icon_path = GetAllowlistLargeIconPath(visited.url);
     // MostVisitedURL.title is either the title or the URL which is treated
     // exactly as the title. Differentiating here is not worth the overhead.
     tile.title_source = TileTitleSource::TITLE_TAG;
@@ -589,7 +589,7 @@ void MostVisitedSites::BuildCurrentTilesGivenSuggestionsProfile(
     tile.source = TileSource::SUGGESTIONS_SERVICE;
     // The title is an aggregation of multiple history entries of one site.
     tile.title_source = TileTitleSource::INFERRED;
-    tile.whitelist_icon_path = GetWhitelistLargeIconPath(url);
+    tile.allowlist_icon_path = GetAllowlistLargeIconPath(url);
     tile.favicon_url = GURL(suggestion_pb.favicon_url());
     tile.data_generation_time = profile_timestamp;
 
@@ -604,41 +604,41 @@ void MostVisitedSites::BuildCurrentTilesGivenSuggestionsProfile(
   InitiateNotificationForNewTiles(std::move(tiles));
 }
 
-NTPTilesVector MostVisitedSites::CreateWhitelistEntryPointTiles(
+NTPTilesVector MostVisitedSites::CreateAllowlistEntryPointTiles(
     const std::set<std::string>& used_hosts,
     size_t num_actual_tiles) {
   if (!supervisor_) {
     return NTPTilesVector();
   }
 
-  NTPTilesVector whitelist_tiles;
-  for (const auto& whitelist : supervisor_->GetWhitelists()) {
-    if (whitelist_tiles.size() + num_actual_tiles >= GetMaxNumSites())
+  NTPTilesVector allowlist_tiles;
+  for (const auto& allowlist : supervisor_->GetAllowlists()) {
+    if (allowlist_tiles.size() + num_actual_tiles >= GetMaxNumSites())
       break;
 
     // Skip blocked sites.
-    if (top_sites_ && top_sites_->IsBlocked(whitelist.entry_point))
+    if (top_sites_ && top_sites_->IsBlocked(allowlist.entry_point))
       continue;
 
     // Skip tiles already present.
-    if (used_hosts.find(whitelist.entry_point.host()) != used_hosts.end())
+    if (used_hosts.find(allowlist.entry_point.host()) != used_hosts.end())
       continue;
 
-    // Skip whitelist entry points that are manually blocked.
-    if (supervisor_->IsBlocked(whitelist.entry_point))
+    // Skip allowlist entry points that are manually blocked.
+    if (supervisor_->IsBlocked(allowlist.entry_point))
       continue;
 
     NTPTile tile;
-    tile.title = whitelist.title;
-    tile.url = whitelist.entry_point;
-    tile.source = TileSource::WHITELIST;
+    tile.title = allowlist.title;
+    tile.url = allowlist.entry_point;
+    tile.source = TileSource::ALLOWLIST;
     // User-set. Might be the title but we cannot be sure.
     tile.title_source = TileTitleSource::UNKNOWN;
-    tile.whitelist_icon_path = whitelist.large_icon_path;
-    whitelist_tiles.push_back(std::move(tile));
+    tile.allowlist_icon_path = allowlist.large_icon_path;
+    allowlist_tiles.push_back(std::move(tile));
   }
 
-  return whitelist_tiles;
+  return allowlist_tiles;
 }
 
 std::map<SectionType, NTPTilesVector>
@@ -851,9 +851,9 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
   }
   AddToHostsAndTotalCount(personal_tiles, &used_hosts, &num_actual_tiles);
 
-  NTPTilesVector whitelist_tiles =
-      CreateWhitelistEntryPointTiles(used_hosts, num_actual_tiles);
-  AddToHostsAndTotalCount(whitelist_tiles, &used_hosts, &num_actual_tiles);
+  NTPTilesVector allowlist_tiles =
+      CreateAllowlistEntryPointTiles(used_hosts, num_actual_tiles);
+  AddToHostsAndTotalCount(allowlist_tiles, &used_hosts, &num_actual_tiles);
 
   std::map<SectionType, NTPTilesVector> sections =
       CreatePopularSitesSections(used_hosts, num_actual_tiles);
@@ -861,7 +861,7 @@ void MostVisitedSites::MergeMostVisitedTiles(NTPTilesVector personal_tiles) {
                           &num_actual_tiles);
 
   NTPTilesVector new_tiles =
-      MergeTiles(std::move(personal_tiles), std::move(whitelist_tiles),
+      MergeTiles(std::move(personal_tiles), std::move(allowlist_tiles),
                  std::move(sections[SectionType::PERSONALIZED]), explore_tile);
 
   SaveTilesAndNotify(std::move(new_tiles), std::move(sections));
@@ -891,13 +891,13 @@ void MostVisitedSites::SaveTilesAndNotify(
 // static
 NTPTilesVector MostVisitedSites::MergeTiles(
     NTPTilesVector personal_tiles,
-    NTPTilesVector whitelist_tiles,
+    NTPTilesVector allowlist_tiles,
     NTPTilesVector popular_tiles,
     base::Optional<NTPTile> explore_tile) {
   NTPTilesVector merged_tiles;
   std::move(personal_tiles.begin(), personal_tiles.end(),
             std::back_inserter(merged_tiles));
-  std::move(whitelist_tiles.begin(), whitelist_tiles.end(),
+  std::move(allowlist_tiles.begin(), allowlist_tiles.end(),
             std::back_inserter(merged_tiles));
   std::move(popular_tiles.begin(), popular_tiles.end(),
             std::back_inserter(merged_tiles));

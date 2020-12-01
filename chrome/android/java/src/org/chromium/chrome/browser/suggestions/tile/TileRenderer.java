@@ -191,7 +191,7 @@ public class TileRenderer {
 
     private void fetchIcon(
             final SiteSuggestion siteData, final LargeIconBridge.LargeIconCallback iconCallback) {
-        if (siteData.whitelistIconPath.isEmpty()) {
+        if (siteData.allowlistIconPath.isEmpty()) {
             mImageFetcher.makeLargeIconRequest(siteData.url, mMinIconSize, iconCallback);
             return;
         }
@@ -199,9 +199,9 @@ public class TileRenderer {
         AsyncTask<Bitmap> task = new AsyncTask<Bitmap>() {
             @Override
             protected Bitmap doInBackground() {
-                Bitmap bitmap = BitmapFactory.decodeFile(siteData.whitelistIconPath);
+                Bitmap bitmap = BitmapFactory.decodeFile(siteData.allowlistIconPath);
                 if (bitmap == null) {
-                    Log.d(TAG, "Image decoding failed: %s", siteData.whitelistIconPath);
+                    Log.d(TAG, "Image decoding failed: %s", siteData.allowlistIconPath);
                 }
                 return bitmap;
             }

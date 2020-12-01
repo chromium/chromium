@@ -245,8 +245,8 @@ public class MostVisitedSitesHostTest {
         siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.0.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
                 new Date()));
-        siteSuggestions.add(new SiteSuggestion("1 WHITELIST", new GURL("https://www.1.com"), "",
-                TileTitleSource.UNKNOWN, TileSource.WHITELIST, TileSectionType.PERSONALIZED,
+        siteSuggestions.add(new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.1.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED,
                 new Date()));
         siteSuggestions.add(new SiteSuggestion("2 TOP_SITES", new GURL("https://www.2.com"), "",
                 TileTitleSource.UNKNOWN, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,

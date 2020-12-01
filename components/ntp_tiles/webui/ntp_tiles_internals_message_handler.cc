@@ -99,7 +99,7 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
     disabled.SetBoolean("suggestionsService", false);
     disabled.SetBoolean("popular", false);
     disabled.SetBoolean("customLinks", false);
-    disabled.SetBoolean("whitelist", false);
+    disabled.SetBoolean("allowlist", false);
     client_->CallJavascriptFunction(
         "chrome.ntp_tiles_internals.receiveSourceInfo", disabled);
     SendTiles(NTPTilesVector(), FaviconResultMap());
@@ -209,8 +209,8 @@ void NTPTilesInternalsMessageHandler::SendSourceInfo() {
                    most_visited_sites_->DoesSourceExist(TileSource::TOP_SITES));
   value.SetBoolean("customLinks", most_visited_sites_->DoesSourceExist(
                                       TileSource::CUSTOM_LINKS));
-  value.SetBoolean("whitelist",
-                   most_visited_sites_->DoesSourceExist(TileSource::WHITELIST));
+  value.SetBoolean("allowlist",
+                   most_visited_sites_->DoesSourceExist(TileSource::ALLOWLIST));
 
   if (most_visited_sites_->DoesSourceExist(TileSource::SUGGESTIONS_SERVICE)) {
     value.SetString("suggestionsService.status", suggestions_status_);
@@ -256,8 +256,8 @@ void NTPTilesInternalsMessageHandler::SendTiles(
     entry->SetString("title", tile.title);
     entry->SetString("url", tile.url.spec());
     entry->SetInteger("source", static_cast<int>(tile.source));
-    entry->SetString("whitelistIconPath",
-                     tile.whitelist_icon_path.LossyDisplayName());
+    entry->SetString("allowlistIconPath",
+                     tile.allowlist_icon_path.LossyDisplayName());
     if (tile.source == TileSource::CUSTOM_LINKS) {
       entry->SetBoolean("fromMostVisited", tile.from_most_visited);
     }
