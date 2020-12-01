@@ -48,7 +48,6 @@ class ExternalWebAppManager {
   static const char* kHistogramEnabledCount;
   static const char* kHistogramDisabledCount;
   static const char* kHistogramConfigErrorCount;
-  static const char* kHistogramUninstallAndReplaceCount;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

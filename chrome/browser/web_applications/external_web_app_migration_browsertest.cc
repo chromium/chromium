@@ -246,7 +246,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
     EXPECT_TRUE(IsExtensionAppInstalled());
 
     {
-      base::HistogramTester histograms;
       extensions::TestExtensionRegistryObserver uninstall_observer(
           extensions::ExtensionRegistry::Get(profile()));
 
@@ -257,8 +256,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
           uninstall_observer.WaitForExtensionUninstalled();
       EXPECT_EQ(uninstalled_app->id(), kExtensionId);
       EXPECT_FALSE(IsExtensionAppInstalled());
-      histograms.ExpectUniqueSample(
-          ExternalWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
     }
   }
 
@@ -275,7 +272,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 
   // Re-run migration.
   {
-    base::HistogramTester histograms;
     base::AutoReset<bool> testing_scope =
         SetExternalAppInstallFeatureAlwaysEnabledForTesting();
     ASSERT_TRUE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
@@ -290,8 +286,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
         uninstall_observer.WaitForExtensionUninstalled();
     EXPECT_EQ(uninstalled_app->id(), kExtensionId);
     EXPECT_FALSE(IsExtensionAppInstalled());
-    histograms.ExpectUniqueSample(
-        ExternalWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
   }
 }
 
@@ -347,7 +341,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
     EXPECT_TRUE(IsExtensionAppInstalled());
 
     {
-      base::HistogramTester histograms;
       extensions::TestExtensionRegistryObserver uninstall_observer(
           extensions::ExtensionRegistry::Get(profile()));
 
@@ -358,8 +351,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
           uninstall_observer.WaitForExtensionUninstalled();
       EXPECT_EQ(uninstalled_app->id(), kExtensionId);
       EXPECT_FALSE(IsExtensionAppInstalled());
-      histograms.ExpectUniqueSample(
-          ExternalWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
     }
   }
 
@@ -503,8 +494,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
           ExternalWebAppManager::kHistogramDisabledCount, 0, 1);
       histograms.ExpectUniqueSample(
           ExternalWebAppManager::kHistogramConfigErrorCount, 0, 1);
-      histograms.ExpectUniqueSample(
-          ExternalWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
     }
   }
 }
