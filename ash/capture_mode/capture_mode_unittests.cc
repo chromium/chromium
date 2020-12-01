@@ -1791,6 +1791,31 @@ TEST_F(CaptureModeTest, ScreenshotConfigurationHistogram) {
       kTabletHistogram, CaptureModeConfiguration::kWindowScreenshot, 1);
 }
 
+// Tests that there is no crash when touching the capture label widget in tablet
+// mode when capturing a window. Regression test for https://crbug.com/1152938.
+TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  tablet_mode_controller_test_api.EnterTabletMode();
+
+  // Enter capture window mode.
+  CaptureModeController* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  ASSERT_TRUE(controller->IsActive());
+
+  // Press and release on where the capture label widget would be.
+  auto* event_generator = GetEventGenerator();
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  DCHECK(test_api.capture_label_widget());
+  event_generator->set_current_screen_location(
+      test_api.capture_label_widget()->GetWindowBoundsInScreen().CenterPoint());
+  event_generator->PressTouch();
+  event_generator->ReleaseTouch();
+
+  // There are no windows so the window finder algorithm will find the app list
+  // window and take a picture of that, ending capture mode.
+  EXPECT_FALSE(controller->IsActive());
+}
+
 // A test class that uses a mock time task environment.
 class CaptureModeMockTimeTest : public CaptureModeTest {
  public:

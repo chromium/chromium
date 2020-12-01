@@ -693,8 +693,15 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_TOUCH_PRESSED:
       case ui::ET_TOUCH_MOVED: {
         if (is_capture_window) {
+          // Make sure the capture label widget will not get picked up by the
+          // get topmost window algorithm otherwise a crash will happen since
+          // the snapshot code tries snap a deleted window.
+          std::set<aura::Window*> ignore_windows;
+          if (capture_label_widget_)
+            ignore_windows.insert(capture_label_widget_->GetNativeWindow());
+
           capture_window_observer_->UpdateSelectedWindowAtPosition(
-              screen_location);
+              screen_location, ignore_windows);
         }
         UpdateCursor(screen_location, is_touch);
         break;

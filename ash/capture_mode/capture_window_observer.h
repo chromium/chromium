@@ -33,10 +33,12 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
 
   ~CaptureWindowObserver() override;
 
-  // Updates selected window depending on the mouse/touch event location. If
-  // there is an eligible window under the current mouse/touch event location,
-  // its bounds will be highlighted.
-  void UpdateSelectedWindowAtPosition(const gfx::Point& location_in_screen);
+  // Updates selected window depending on the mouse/touch event location,
+  // ignoring |ignore_windows|. If there is an eligible window under the current
+  // mouse/touch event location, its bounds will be highlighted.
+  void UpdateSelectedWindowAtPosition(
+      const gfx::Point& location_in_screen,
+      const std::set<aura::Window*>& ignore_windows);
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -56,12 +58,6 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
  private:
   void StartObserving(aura::Window* window);
   void StopObserving();
-
-  // Updates selected window depending on the mouse/touch event location with
-  // ignoring |ignore_windows|.
-  void UpdateSelectedWindowAtPosition(
-      const gfx::Point& location_in_screen,
-      const std::set<aura::Window*>& ignore_windows);
 
   // Repaints the window capture region.
   void RepaintCaptureRegion();

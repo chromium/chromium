@@ -25,8 +25,26 @@ CaptureWindowObserver::~CaptureWindowObserver() {
 }
 
 void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
-    const gfx::Point& location_in_screen) {
-  UpdateSelectedWindowAtPosition(location_in_screen, /*ignore_windows=*/{});
+    const gfx::Point& location_in_screen,
+    const std::set<aura::Window*>& ignore_windows) {
+  location_in_screen_ = location_in_screen;
+  // Find the toplevel window under the mouse/touch position.
+  aura::Window* window =
+      GetTopmostWindowAtPoint(location_in_screen_, ignore_windows);
+  if (window_ == window)
+    return;
+
+  // Don't capture wallpaper window.
+  if (window && window->parent() &&
+      window->parent()->id() == kShellWindowId_WallpaperContainer) {
+    window = nullptr;
+  }
+
+  // Stop observing the current selected window if there is one.
+  StopObserving();
+  if (window)
+    StartObserving(window);
+  RepaintCaptureRegion();
 }
 
 void CaptureWindowObserver::OnWindowBoundsChanged(
@@ -74,29 +92,6 @@ void CaptureWindowObserver::StopObserving() {
     window_->RemoveObserver(this);
     window_ = nullptr;
   }
-}
-
-void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
-    const gfx::Point& location_in_screen,
-    const std::set<aura::Window*>& ignore_windows) {
-  location_in_screen_ = location_in_screen;
-  // Find the toplevel window under the mouse/touch position.
-  aura::Window* window =
-      GetTopmostWindowAtPoint(location_in_screen_, ignore_windows);
-  if (window_ == window)
-    return;
-
-  // Don't capture wallpaper window.
-  if (window && window->parent() &&
-      window->parent()->id() == kShellWindowId_WallpaperContainer) {
-    window = nullptr;
-  }
-
-  // Stop observing the current selected window if there is one.
-  StopObserving();
-  if (window)
-    StartObserving(window);
-  RepaintCaptureRegion();
 }
 
 void CaptureWindowObserver::RepaintCaptureRegion() {
