@@ -50,6 +50,9 @@ TEST_F(KaleidoscopeMetricsRecorderTest, OnExitRecordsCurrentStep) {
       media::mojom::KaleidoscopeFirstRunExperienceStep::kProviderSelection);
   ExpectFirstRunProgressTotalCount(0);
   recorder().OnFirstRunExperienceStepChanged(
+      media::mojom::KaleidoscopeFirstRunExperienceStep::kWelcome);
+  ExpectFirstRunProgressTotalCount(0);
+  recorder().OnFirstRunExperienceStepChanged(
       media::mojom::KaleidoscopeFirstRunExperienceStep::kMediaFeedsConsent);
   ExpectFirstRunProgressTotalCount(0);
   recorder().OnExitPage();

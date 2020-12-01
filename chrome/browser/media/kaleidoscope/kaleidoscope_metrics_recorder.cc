@@ -17,6 +17,8 @@ KaleidoscopeMetricsRecorder::FirstRunProgress MojoStepToMetricsStep(
       return KaleidoscopeMetricsRecorder::FirstRunProgress::kProviderSelection;
     case media::mojom::KaleidoscopeFirstRunExperienceStep::kMediaFeedsConsent:
       return KaleidoscopeMetricsRecorder::FirstRunProgress::kMediaFeedsConsent;
+    case media::mojom::KaleidoscopeFirstRunExperienceStep::kWelcome:
+      return KaleidoscopeMetricsRecorder::FirstRunProgress::kWelcome;
   }
   NOTREACHED();
 }

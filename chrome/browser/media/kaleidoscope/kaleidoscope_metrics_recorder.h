@@ -18,7 +18,8 @@ class KaleidoscopeMetricsRecorder {
     kCompleted = 0,
     kProviderSelection = 1,
     kMediaFeedsConsent = 2,
-    kMaxValue = kMediaFeedsConsent,
+    kWelcome = 3,
+    kMaxValue = kWelcome,
   };
 
   KaleidoscopeMetricsRecorder();

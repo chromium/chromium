@@ -39759,6 +39759,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Completed"/>
   <int value="1" label="Provider Selection"/>
   <int value="2" label="Media Feeds Consent"/>
+  <int value="3" label="Welcome Screen"/>
 </enum>
 
 <enum name="KaleidoscopeNavigation">

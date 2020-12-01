@@ -44,6 +44,7 @@ enum KaleidoscopeFirstRunExperienceStep {
   kCompleted,
   kProviderSelection,
   kMediaFeedsConsent,
+  kWelcome,
 };
 
 // Provides data for the kaleidoscope page.
