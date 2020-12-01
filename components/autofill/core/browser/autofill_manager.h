@@ -177,10 +177,6 @@ class AutofillManager : public AutofillHandler,
 
   AutofillClient* client() { return client_; }
 
-  AutofillDownloadManager* download_manager() {
-    return download_manager_.get();
-  }
-
   CreditCardAccessManager* credit_card_access_manager() {
     return credit_card_access_manager_.get();
   }
@@ -374,11 +370,6 @@ class AutofillManager : public AutofillHandler,
 
   AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
     return form_interactions_ukm_logger_.get();
-  }
-
-  // Exposed for testing.
-  void set_download_manager(AutofillDownloadManager* manager) {
-    download_manager_.reset(manager);
   }
 
   // Exposed for testing.
@@ -647,10 +638,6 @@ class AutofillManager : public AutofillHandler,
   FieldFiller field_filler_;
 
   base::circular_deque<std::string> autofilled_form_signatures_;
-
-  // Handles queries and uploads to Autofill servers. Will be NULL if
-  // the download manager functionality is disabled.
-  std::unique_ptr<AutofillDownloadManager> download_manager_;
 
   // Handles single-field autocomplete form data.
   // May be NULL.  NULL indicates OTR.

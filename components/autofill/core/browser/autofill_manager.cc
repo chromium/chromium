@@ -78,7 +78,6 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -91,8 +90,6 @@
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/version_info/channel.h"
-#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -187,19 +184,6 @@ void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
         form_structure->developer_engagement_metrics(),
         form_structure->form_signature());
   }
-}
-
-std::string GetAPIKeyForUrl(version_info::Channel channel) {
-  // First look if we can get API key from command line flag.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kAutofillAPIKey))
-    return command_line.GetSwitchValueASCII(switches::kAutofillAPIKey);
-
-  // Get the API key from Chrome baked keys.
-  if (channel == version_info::Channel::STABLE)
-    return google_apis::GetAPIKey();
-  return google_apis::GetNonStableAPIKey();
 }
 
 ValuePatternsMetric GetValuePattern(const base::string16& value) {
@@ -1561,7 +1545,7 @@ void AutofillManager::UploadFormDataAsyncCallback(
 
 void AutofillManager::UploadFormData(const FormStructure& submitted_form,
                                      bool observed_submission) {
-  if (!download_manager_)
+  if (!download_manager())
     return;
 
   // Check if the form is among the forms that were recently auto-filled.
@@ -1582,7 +1566,7 @@ void AutofillManager::UploadFormData(const FormStructure& submitted_form,
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
 
-  download_manager_->StartUploadRequest(
+  download_manager()->StartUploadRequest(
       submitted_form, was_autofilled, non_empty_types,
       /*login_form_signature=*/std::string(), observed_submission,
       client_->GetPrefs());
@@ -1632,7 +1616,10 @@ AutofillManager::AutofillManager(
     const std::string app_locale,
     AutofillDownloadManagerState enable_download_manager,
     std::unique_ptr<CreditCardAccessManager> cc_access_manager)
-    : AutofillHandler(driver, client->GetLogManager()),
+    : AutofillHandler(driver,
+                      client->GetLogManager(),
+                      enable_download_manager,
+                      client->GetChannel()),
       client_(client),
       log_manager_(client_->GetLogManager()),
       app_locale_(app_locale),
@@ -1661,11 +1648,6 @@ AutofillManager::AutofillManager(
                                     : std::make_unique<CreditCardAccessManager>(
                                           driver, client_, personal_data_,
                                           credit_card_form_event_logger_.get());
-  if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
-    version_info::Channel channel = client_->GetChannel();
-    download_manager_.reset(new AutofillDownloadManager(
-        driver, this, GetAPIKeyForUrl(channel), client_->GetLogManager()));
-  }
   CountryNames::SetLocaleString(app_locale_);
   offer_manager_ = client_->GetAutofillOfferManager();
 }
@@ -2138,8 +2120,8 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
   LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
 
   // Query the server if at least one of the forms was parsed.
-  if (!queryable_forms.empty() && download_manager_) {
-    download_manager_->StartQueryRequest(queryable_forms);
+  if (!queryable_forms.empty() && download_manager()) {
+    download_manager()->StartQueryRequest(queryable_forms);
   }
 }
 

@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/version_info/channel.h"
 
 namespace gfx {
 class RectF;
@@ -143,6 +144,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 
   AutofillDriver* driver() { return driver_; }
 
+  AutofillDownloadManager* download_manager() {
+    return download_manager_.get();
+  }
+
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.
@@ -158,7 +163,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 #endif
 
  protected:
-  AutofillHandler(AutofillDriver* driver, LogManager* log_manager);
+  AutofillHandler(AutofillDriver* driver,
+                  LogManager* log_manager,
+                  AutofillDownloadManagerState enable_download_manager,
+                  version_info::Channel channel);
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -221,6 +229,11 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
     return &form_structures_;
   }
 
+  // Exposed for testing.
+  void set_download_manager(AutofillDownloadManager* manager) {
+    download_manager_.reset(manager);
+  }
+
  private:
   // AutofillDownloadManager::Observer:
   void OnLoadedServerPredictions(
@@ -238,6 +251,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 
   // Our copy of the form data.
   std::map<FormRendererId, std::unique_ptr<FormStructure>> form_structures_;
+
+  // Handles queries and uploads to Autofill servers. Will be nullptr if
+  // the download manager functionality is disabled.
+  std::unique_ptr<AutofillDownloadManager> download_manager_;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;

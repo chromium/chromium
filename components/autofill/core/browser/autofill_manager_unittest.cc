@@ -7583,7 +7583,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
         version_info::Channel::UNKNOWN}) {
     SCOPED_TRACE(::testing::Message()
                  << "Channel " << static_cast<int>(channel));
-    EXPECT_CALL(autofill_client_, GetChannel()).WillOnce(Return(channel));
+    // One more call is from TestAutofillManager constructor.
+    EXPECT_CALL(autofill_client_, GetChannel()).WillRepeatedly(Return(channel));
     TestAutofillManager test_instance(autofill_driver_.get(), &autofill_client_,
                                       &personal_data_,
                                       autocomplete_history_manager_.get());
@@ -7618,7 +7619,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
     SCOPED_TRACE(::testing::Message()
                  << "Channel " << static_cast<int>(channel));
     EXPECT_FALSE(AutofillManager::IsRichQueryEnabled(channel));
-    EXPECT_CALL(autofill_client_, GetChannel()).WillOnce(Return(channel));
+    // One more call is from TestAutofillManager constructor.
+    EXPECT_CALL(autofill_client_, GetChannel()).WillRepeatedly(Return(channel));
     TestAutofillManager test_instance(autofill_driver_.get(), &autofill_client_,
                                       &personal_data_,
                                       autocomplete_history_manager_.get());

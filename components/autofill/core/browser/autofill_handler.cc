@@ -13,7 +13,9 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "google_apis/google_api_keys.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -55,13 +57,34 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
   return false;
 }
 
+std::string GetAPIKeyForUrl(version_info::Channel channel) {
+  // First look if we can get API key from command line flag.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kAutofillAPIKey))
+    return command_line.GetSwitchValueASCII(switches::kAutofillAPIKey);
+
+  // Get the API key from Chrome baked keys.
+  if (channel == version_info::Channel::STABLE)
+    return google_apis::GetAPIKey();
+  return google_apis::GetNonStableAPIKey();
+}
+
 }  // namespace
 
 using base::TimeTicks;
 
-AutofillHandler::AutofillHandler(AutofillDriver* driver,
-                                 LogManager* log_manager)
-    : driver_(driver), log_manager_(log_manager) {}
+AutofillHandler::AutofillHandler(
+    AutofillDriver* driver,
+    LogManager* log_manager,
+    AutofillDownloadManagerState enable_download_manager,
+    version_info::Channel channel)
+    : driver_(driver), log_manager_(log_manager) {
+  if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+    download_manager_ = std::make_unique<AutofillDownloadManager>(
+        driver, this, GetAPIKeyForUrl(channel), log_manager);
+  }
+}
 
 AutofillHandler::~AutofillHandler() = default;
 
