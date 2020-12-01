@@ -23,6 +23,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Offline"
     enum="OfflineIndicatorSurfaceState" expires_after="2021-05-09">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -33,7 +35,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Online"
-    enum="OfflineIndicatorSurfaceState" expires_after="2021-01-01">
+    enum="OfflineIndicatorSurfaceState" expires_after="2021-05-09">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -55,6 +59,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OfflineIndicator.ShownDuration" units="s"
     expires_after="2021-05-09">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
