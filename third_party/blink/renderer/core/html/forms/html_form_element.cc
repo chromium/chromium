@@ -580,7 +580,8 @@ void HTMLFormElement::reset() {
   }
 
   is_in_reset_function_ = false;
-  frame->GetPage()->GetChromeClient().FormElementReset(*this);
+  if (frame->GetPage())
+    frame->GetPage()->GetChromeClient().FormElementReset(*this);
 }
 
 void HTMLFormElement::ParseAttribute(
