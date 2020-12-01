@@ -22,7 +22,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -288,8 +287,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   ReloadType reload_type_ = ReloadType::NONE;
   int session_history_offset_ = 0;
   bool has_user_gesture_ = true;
-  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-      interface_provider_receiver_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;

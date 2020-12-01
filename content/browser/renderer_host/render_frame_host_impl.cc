@@ -211,7 +211,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -2057,7 +2056,6 @@ void RenderFrameHostImpl::RenderProcessExited(
   // reset.
   SetRenderFrameCreated(false);
   InvalidateMojoConnection();
-  document_scoped_interface_provider_receiver_.reset();
   broker_receiver_.reset();
   SetLastCommittedUrl(GURL());
   web_bundle_handle_.reset();
@@ -2220,11 +2218,6 @@ bool RenderFrameHostImpl::CreateRenderFrame(
 
   DCHECK(GetProcess()->IsInitializedAndNotDead());
 
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider;
-  BindInterfaceProviderReceiver(
-      interface_provider.InitWithNewPipeAndPassReceiver());
-
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
   BindBrowserInterfaceBrokerReceiver(
@@ -2232,7 +2225,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
 
   mojom::CreateFrameParamsPtr params = mojom::CreateFrameParams::New();
   params->interface_bundle = mojom::DocumentScopedInterfaceBundle::New(
-      std::move(interface_provider), std::move(browser_interface_broker));
+      std::move(browser_interface_broker));
 
   params->routing_id = routing_id_;
   params->previous_routing_id = previous_routing_id;
@@ -2543,8 +2536,6 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
 
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
-    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-        new_interface_provider_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
@@ -2560,7 +2551,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     const blink::mojom::FrameOwnerElementType owner_type) {
   // TODO(lukasza): Call ReceivedBadMessage when |frame_unique_name| is empty.
   DCHECK(!frame_unique_name.empty());
-  DCHECK(new_interface_provider_provider_receiver.is_valid());
   DCHECK(browser_interface_broker_receiver.is_valid());
   DCHECK(policy_container_host_receiver.is_valid());
   if (owner_type == blink::mojom::FrameOwnerElementType::kNone) {
@@ -2581,12 +2571,10 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   if (IsInactiveAndDisallowReactivation() || !render_frame_created_)
     return;
 
-  // |new_routing_id|, |new_interface_provider_provider_receiver|,
-  // |browser_interface_broker_receiver| and |devtools_frame_token| were
-  // generated on the browser's IO thread and not taken from the renderer
-  // process.
+  // |new_routing_id|, |browser_interface_broker_receiver| and
+  // |devtools_frame_token| were generated on the browser's IO thread and not
+  // taken from the renderer process.
   frame_tree_->AddFrame(this, GetProcess()->GetID(), new_routing_id,
-                        std::move(new_interface_provider_provider_receiver),
                         std::move(browser_interface_broker_receiver),
                         std::move(policy_container_host_receiver), scope,
                         frame_name, frame_unique_name, is_created_by_script,
@@ -2596,8 +2584,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
 
 void RenderFrameHostImpl::CreateChildFrame(
     int new_routing_id,
-    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-        new_interface_provider_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
@@ -2622,8 +2608,7 @@ void RenderFrameHostImpl::CreateChildFrame(
   // TODO(crbug.com/1145708). The interface exposed to tests should
   // match the mojo interface.
   OnCreateChildFrame(
-      new_routing_id, std::move(new_interface_provider_provider_receiver),
-      std::move(browser_interface_broker_receiver),
+      new_routing_id, std::move(browser_interface_broker_receiver),
       std::move(policy_container_host_receiver), scope, frame_name,
       frame_unique_name, is_created_by_script, frame_token,
       devtools_frame_token, frame_policy, *frame_owner_properties, owner_type);
@@ -4929,17 +4914,6 @@ void RenderFrameHostImpl::CapturePaintPreviewOfSubframe(
   delegate()->CapturePaintPreviewOfCrossProcessSubframe(clip_rect, guid, this);
 }
 
-void RenderFrameHostImpl::BindInterfaceProviderReceiver(
-    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-        interface_provider_receiver) {
-  DCHECK(!document_scoped_interface_provider_receiver_.is_bound());
-  DCHECK(interface_provider_receiver.is_valid());
-  document_scoped_interface_provider_receiver_.Bind(
-      std::move(interface_provider_receiver));
-  document_scoped_interface_provider_receiver_.SetFilter(
-      std::make_unique<ActiveURLMessageFilter>(this));
-}
-
 void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
   DCHECK(receiver.is_valid());
@@ -5246,11 +5220,6 @@ void RenderFrameHostImpl::CreateNewWindow(
     main_frame->frame_->BlockRequests();
   }
 
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      main_frame_interface_provider_info;
-  main_frame->BindInterfaceProviderReceiver(
-      main_frame_interface_provider_info.InitWithNewPipeAndPassReceiver());
-
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
   main_frame->BindBrowserInterfaceBrokerReceiver(
@@ -5309,7 +5278,6 @@ void RenderFrameHostImpl::CreateNewWindow(
       std::move(blink_frame_widget_receiver), std::move(blink_widget_host),
       std::move(blink_widget_receiver), std::move(page_broadcast_receiver),
       mojom::DocumentScopedInterfaceBundle::New(
-          std::move(main_frame_interface_provider_info),
           std::move(browser_interface_broker)),
       cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
       wait_for_debugger,
@@ -6796,6 +6764,7 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       remote_interfaces;
   frame_->GetInterfaceProvider(
       remote_interfaces.InitWithNewPipeAndPassReceiver());
+
   remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
       base::ThreadTaskRunnerHandle::Get());
   remote_interfaces_->Bind(std::move(remote_interfaces));
@@ -7925,18 +7894,6 @@ void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
       std::move(receiver), ComputeTopFrameOrigin(GetLastCommittedOrigin()));
 }
 
-void RenderFrameHostImpl::GetInterface(
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle interface_pipe) {
-  // Requests are serviced on |document_scoped_interface_provider_receiver_|. It
-  // is therefore safe to assume that every incoming interface request is coming
-  // from the currently active document in the corresponding RenderFrame.
-  // NOTE: this way of acquiring interfaces has been replaced with
-  // BrowserInterfaceBroker (see https://crbug.com/718652). The code below is
-  // left to support the CastWebContentsImpl use case.
-  delegate_->OnInterfaceRequest(this, interface_name, &interface_pipe);
-}
-
 void RenderFrameHostImpl::CreateAppCacheBackend(
     mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -9029,23 +8986,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
   if (IsPendingDeletion())
     return;
 
-  // Retroactive sanity check:
-  // - If this is the first real load committing in this frame, then by this
-  //   time the RenderFrameHost's InterfaceProvider implementation should have
-  //   already been bound to a message pipe whose client end is used to service
-  //   interface requests from the initial empty document.
-  // - Otherwise, the InterfaceProvider implementation should at this point be
-  //   bound to an interface connection servicing interface requests coming from
-  //   the document of the previously committed navigation.
-  DCHECK(document_scoped_interface_provider_receiver_.is_bound());
   if (interface_params) {
-    // As a general rule, expect the RenderFrame to have supplied the
-    // receiver end of a new InterfaceProvider connection that will be used by
-    // the new document to issue interface receivers to access RenderFrameHost
-    // services.
-    document_scoped_interface_provider_receiver_.reset();
-    BindInterfaceProviderReceiver(
-        std::move(interface_params->interface_provider_receiver));
     if (broker_receiver_.is_bound()) {
       auto broker_receiver_of_previous_document = broker_receiver_.Unbind();
       dropped_interface_request_logger_ =
@@ -9058,12 +8999,12 @@ void RenderFrameHostImpl::DidCommitNavigation(
     // If there had already been a real load committed in the frame, and this is
     // not a same-document navigation, then both the active document as well as
     // the global object was replaced in this browsing context. The RenderFrame
-    // should have rebound its InterfaceProvider to a new pipe, but failed to do
-    // so. Kill the renderer, and reset the old receiver to ensure that any
-    // pending interface requests originating from the previous document, hence
-    // possibly from a different security origin, will no longer be dispatched.
+    // should have rebound its BrowserInterfaceBroker to a new pipe, but failed
+    // to do so. Kill the renderer, and reset the old receiver to ensure that
+    // any pending interface requests originating from the previous document,
+    // hence possibly from a different security origin, will no longer be
+    // dispatched.
     if (frame_tree_node_->has_committed_real_load()) {
-      document_scoped_interface_provider_receiver_.reset();
       broker_receiver_.reset();
       bad_message::ReceivedBadMessage(
           process, bad_message::RFH_INTERFACE_PROVIDER_MISSING);
@@ -9071,9 +9012,9 @@ void RenderFrameHostImpl::DidCommitNavigation(
     }
 
     // Otherwise, it is the first real load committed, for which the RenderFrame
-    // is allowed to, and will re-use the existing InterfaceProvider connection
-    // if the new document is same-origin with the initial empty document, and
-    // therefore the global object is not replaced.
+    // is allowed to, and will re-use the existing BrowserInterfaceBroker
+    // connection if the new document is same-origin with the initial empty
+    // document, and therefore the global object is not replaced.
   }
 
   if (!DidCommitNavigationInternal(std::move(request), std::move(params),

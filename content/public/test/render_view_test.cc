@@ -496,10 +496,6 @@ void RenderViewTest::SetUp() {
   view_params->main_frame_routing_id = render_thread_->GetNextRoutingID();
   view_params->main_frame_interface_bundle =
       mojom::DocumentScopedInterfaceBundle::New();
-  render_thread_->PassInitialInterfaceProviderReceiverForFrame(
-      view_params->main_frame_routing_id,
-      view_params->main_frame_interface_bundle->interface_provider
-          .InitWithNewPipeAndPassReceiver());
 
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;

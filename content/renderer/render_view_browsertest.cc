@@ -1241,9 +1241,6 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   // Do the remote-to-local transition for the proxy, which is to create a
   // provisional local frame.
   int routing_id = kProxyRoutingId + 1;
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      stub_interface_provider;
-  ignore_result(stub_interface_provider.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       stub_browser_interface_broker;
   ignore_result(stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
@@ -1277,7 +1274,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   widget_params->widget_host = blink_widget_host.Unbind();
 
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, routing_id, std::move(stub_interface_provider),
+      *agent_scheduling_group_, routing_id,
       std::move(stub_browser_interface_broker), kProxyRoutingId, base::nullopt,
       MSG_ROUTING_NONE, MSG_ROUTING_NONE, base::UnguessableToken::Create(),
       base::UnguessableToken::Create(), replication_state,
@@ -1338,15 +1335,12 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // Do the first step of a remote-to-local transition for the child proxy,
   // which is to create a provisional local frame.
   int routing_id = kProxyRoutingId + 1;
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      stub_interface_provider;
-  ignore_result(stub_interface_provider.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       stub_browser_interface_broker;
   ignore_result(stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
 
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, routing_id, std::move(stub_interface_provider),
+      *agent_scheduling_group_, routing_id,
       std::move(stub_browser_interface_broker), kProxyRoutingId, base::nullopt,
       frame()->GetRoutingID(), MSG_ROUTING_NONE,
       base::UnguessableToken::Create(), base::UnguessableToken::Create(),

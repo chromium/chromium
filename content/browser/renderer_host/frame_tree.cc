@@ -180,8 +180,6 @@ FrameTreeNode* FrameTree::AddFrame(
     RenderFrameHostImpl* parent,
     int process_id,
     int new_routing_id,
-    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-        interface_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
@@ -226,10 +224,6 @@ FrameTreeNode* FrameTree::AddFrame(
   // Add the new node to the FrameTree, creating the RenderFrameHost.
   FrameTreeNode* added_node = parent->AddChild(std::move(new_node), process_id,
                                                new_routing_id, frame_token);
-
-  DCHECK(interface_provider_receiver.is_valid());
-  added_node->current_frame_host()->BindInterfaceProviderReceiver(
-      std::move(interface_provider_receiver));
 
   DCHECK(browser_interface_broker_receiver.is_valid());
   added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(

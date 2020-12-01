@@ -45,11 +45,6 @@ class MockFrameHost : public mojom::FrameHost {
     return std::move(last_commit_params_);
   }
 
-  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-  TakeLastInterfaceProviderReceiver() {
-    return std::move(last_interface_provider_receiver_);
-  }
-
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
   TakeLastBrowserInterfaceBrokerReceiver() {
     return std::move(last_browser_interface_broker_receiver_);
@@ -58,16 +53,6 @@ class MockFrameHost : public mojom::FrameHost {
   void SetDidAddMessageToConsoleCallback(
       base::OnceCallback<void(const base::string16& msg)> callback) {
     did_add_message_to_console_callback_ = std::move(callback);
-  }
-
-  // Holds on to the receiver end of the InterfaceProvider interface whose
-  // client end is bound to the corresponding RenderFrame's |remote_interfaces_|
-  // to facilitate retrieving the most recent |interface_provider_receiver| in
-  // tests.
-  void PassLastInterfaceProviderReceiver(
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver) {
-    last_interface_provider_receiver_ = std::move(interface_provider_receiver);
   }
 
   // Holds on to the receiver end of the BrowserInterfaceBroker interface whose
@@ -87,8 +72,6 @@ class MockFrameHost : public mojom::FrameHost {
       override {
     last_commit_params_ = std::move(params);
     if (interface_params) {
-      last_interface_provider_receiver_ =
-          std::move(interface_params->interface_provider_receiver);
       last_browser_interface_broker_receiver_ =
           std::move(interface_params->browser_interface_broker_receiver);
     }
@@ -134,8 +117,6 @@ class MockFrameHost : public mojom::FrameHost {
 
   void CreateChildFrame(
       int new_routing_id,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
@@ -150,8 +131,7 @@ class MockFrameHost : public mojom::FrameHost {
     MockRenderThread* mock_render_thread =
         static_cast<MockRenderThread*>(RenderThread::Get());
     mock_render_thread->OnCreateChildFrame(
-        new_routing_id, std::move(interface_provider_receiver),
-        std::move(browser_interface_broker_receiver));
+        new_routing_id, std::move(browser_interface_broker_receiver));
   }
 
   void CreatePortal(mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
@@ -223,8 +203,6 @@ class MockFrameHost : public mojom::FrameHost {
 
  private:
   mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
-  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-      last_interface_provider_receiver_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       last_browser_interface_broker_receiver_;
 
@@ -252,9 +230,6 @@ TestRenderFrame::TestRenderFrame(RenderFrameImpl::CreateParams params)
       mock_frame_host_(std::make_unique<MockFrameHost>()) {
   MockRenderThread* mock_render_thread =
       static_cast<MockRenderThread*>(RenderThread::Get());
-  mock_frame_host_->PassLastInterfaceProviderReceiver(
-      mock_render_thread->TakeInitialInterfaceProviderRequestForFrame(
-          params.routing_id));
   mock_frame_host_->PassLastBrowserInterfaceBrokerReceiver(
       mock_render_thread->TakeInitialBrowserInterfaceBrokerReceiverForFrame(
           params.routing_id));
@@ -374,11 +349,6 @@ TestRenderFrame::TakeLastCommitParams() {
 void TestRenderFrame::SetDidAddMessageToConsoleCallback(
     base::OnceCallback<void(const base::string16& msg)> callback) {
   mock_frame_host_->SetDidAddMessageToConsoleCallback(std::move(callback));
-}
-
-mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-TestRenderFrame::TakeLastInterfaceProviderReceiver() {
-  return mock_frame_host_->TakeLastInterfaceProviderReceiver();
 }
 
 mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>

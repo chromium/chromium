@@ -68,7 +68,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -140,10 +139,6 @@ namespace media {
 class MediaPermission;
 }
 
-namespace service_manager {
-class InterfaceProvider;
-}
-
 namespace url {
 class Origin;
 }
@@ -210,8 +205,6 @@ class CONTENT_EXPORT RenderFrameImpl
   static void CreateFrame(
       AgentSchedulingGroup& agent_scheduling_group,
       int routing_id,
-      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-          interface_provider,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       int previous_routing_id,
@@ -238,8 +231,6 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams(AgentSchedulingGroup& agent_scheduling_group,
                  RenderViewImpl* render_view,
                  int32_t routing_id,
-                 mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-                     interface_provider,
                  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
                      browser_interface_broker,
                  const base::UnguessableToken& devtools_frame_token);
@@ -251,8 +242,6 @@ class CONTENT_EXPORT RenderFrameImpl
     AgentSchedulingGroup* agent_scheduling_group;
     RenderViewImpl* render_view;
     int32_t routing_id;
-    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-        interface_provider;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker;
     base::UnguessableToken devtools_frame_token;
@@ -379,7 +368,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void BindLocalInterface(
       const std::string& interface_name,
       mojo::ScopedMessagePipeHandle interface_pipe) override;
-  service_manager::InterfaceProvider* GetRemoteInterfaces() override;
   blink::AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry() override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -887,17 +875,13 @@ class CONTENT_EXPORT RenderFrameImpl
   class FrameURLLoaderFactory;
 
   // Creates a new RenderFrame. |render_view| is the RenderView object that this
-  // frame belongs to, |interface_provider| is the RenderFrameHost's
-  // InterfaceProvider through which services are exposed to the RenderFrame,
-  // and |browser_interface_broker| is the RenderFrameHost's
+  // frame belongs to, and |browser_interface_broker| is the RenderFrameHost's
   // BrowserInterfaceBroker through which services are exposed to the
   // RenderFrame.
   static RenderFrameImpl* Create(
       AgentSchedulingGroup& agent_scheduling_group,
       RenderViewImpl* render_view,
       int32_t routing_id,
-      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-          interface_provider,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       const base::UnguessableToken& devtools_frame_token);
@@ -1312,7 +1296,6 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<MediaPermissionDispatcher> media_permission_dispatcher_;
 
   service_manager::BinderRegistry registry_;
-  service_manager::InterfaceProvider remote_interfaces_;
   std::unique_ptr<BlinkInterfaceRegistryImpl> blink_interface_registry_;
 
   blink::BrowserInterfaceBrokerProxy browser_interface_broker_proxy_;

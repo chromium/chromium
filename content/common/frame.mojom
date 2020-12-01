@@ -56,10 +56,6 @@ import "url/mojom/url.mojom";
 [Native]
 struct PageState;
 
-// The name of the InterfaceProviderSpec in service manifests used by the
-// frame tree to expose frame-specific interfaces between renderer and browser.
-const string kNavigation_FrameSpec = "navigation:frame";
-
 // Provided with each call to Frame::GetSerializedHtmlWithLocalLinks() so that
 // the renderer can notify the browser process each time that a chunk of HTML
 // data gets serialized, as well as when the entire process is finished.
@@ -434,8 +430,6 @@ interface FrameHost {
   // Each of these messages will have a corresponding mojom::FrameHost::Detach
   // API sent when the frame is detached from the DOM.
   CreateChildFrame(int32 child_routing_id,
-                   pending_receiver<service_manager.mojom.InterfaceProvider>
-                     new_interface_provider,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,
                    pending_associated_receiver<blink.mojom.PolicyContainerHost>
@@ -451,18 +445,18 @@ interface FrameHost {
   // Sent by the renderer when a navigation commits in the frame.
 
   // If |interface_params| is non-empty, the FrameHost implementation
-  // must unbind the old InterfaceProvider and BrowserInterfaceBroker
-  // connections, and drop any interface requests pending on them.
-  // Then it should bind the appropriate requests and start servicing
-  // GetInterface messages coming in on these new connections
-  // in a security context that is appropriate for the committed navigation.
+  // must unbind the old BrowserInterfaceBroker connections, and drop any
+  // interface requests pending on them. Then it should bind the appropriate
+  // requests and start servicing GetInterface messages coming in on these new
+  // connections in a security context that is appropriate for the committed
+  // navigation.
   //
   // The FrameHost implementation must enforce that |interface_params|
   // is set for cross-document navigations. This prevents origin confusion by
   // ensuring that interface requests racing with navigation commit will be
   // either ignored, or serviced correctly in the security context of the
-  // document they originated from (based on which InterfaceProvider or
-  // BrowserInterfaceBroker connection the GetInterface messages arrive on).
+  // document they originated from (based on which BrowserInterfaceBroker
+  // connection the GetInterface messages arrive on).
   DidCommitProvisionalLoad(
       DidCommitProvisionalLoadParams params,
       DidCommitProvisionalLoadInterfaceParams? interface_params);

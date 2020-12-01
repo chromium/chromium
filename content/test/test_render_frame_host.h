@@ -153,19 +153,12 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SimulateCommitProcessed(
       NavigationRequest* navigation_request,
       mojom::DidCommitProvisionalLoadParamsPtr params,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       bool same_document);
 
   // Creates a WebBluetooth Service with a dummy InterfaceRequest.
   WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting();
-
-  // Returns a PendingReceiver<InterfaceProvider> that is safe to bind to an
-  // implementation, but will never receive any interface receivers.
-  static mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-  CreateStubInterfaceProviderReceiver();
 
   // Returns a PendingReceiver<BrowserInterfaceBroker> that is safe to bind to
   // an implementation, but will never receive any interface requests.

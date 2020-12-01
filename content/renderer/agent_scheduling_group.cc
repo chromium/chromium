@@ -187,20 +187,17 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id,
 }
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider(
-          std::move(params->interface_bundle->interface_provider));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker(
           std::move(params->interface_bundle->browser_interface_broker));
 
   RenderFrameImpl::CreateFrame(
-      *this, params->routing_id, std::move(interface_provider),
-      std::move(browser_interface_broker), params->previous_routing_id,
-      params->opener_frame_token, params->parent_routing_id,
-      params->previous_sibling_routing_id, params->frame_token,
-      params->devtools_frame_token, params->replication_state,
-      &ToImpl(render_thread_), std::move(params->widget_params),
+      *this, params->routing_id, std::move(browser_interface_broker),
+      params->previous_routing_id, params->opener_frame_token,
+      params->parent_routing_id, params->previous_sibling_routing_id,
+      params->frame_token, params->devtools_frame_token,
+      params->replication_state, &ToImpl(render_thread_),
+      std::move(params->widget_params),
       std::move(params->frame_owner_properties),
       params->has_committed_real_load, std::move(params->policy_container));
 }

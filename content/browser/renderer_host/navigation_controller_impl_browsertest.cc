@@ -8720,12 +8720,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   params->embedding_token = base::UnguessableToken::Create();
   RenderFrameHostImpl* rfh = contents()->GetMainFrame();
   RenderProcessHostBadIpcMessageWaiter kill_waiter(rfh->GetProcess());
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      isolated_interface_provider;
   static_cast<mojom::FrameHost*>(rfh)->DidCommitProvisionalLoad(
       std::move(params),
       mojom::DidCommitProvisionalLoadInterfaceParams::New(
-          isolated_interface_provider.InitWithNewPipeAndPassReceiver(),
           mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
               .InitWithNewPipeAndPassReceiver()));
 

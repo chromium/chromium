@@ -189,6 +189,10 @@ namespace network {
 class ResourceRequestBody;
 }  // namespace network
 
+namespace service_manager {
+class InterfaceProvider;
+}
+
 namespace ui {
 class ClipboardFormatType;
 }
@@ -249,7 +253,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public BrowserAccessibilityDelegate,
       public RenderProcessHostObserver,
       public SiteInstanceImpl::Observer,
-      public service_manager::mojom::InterfaceProvider,
       public blink::mojom::BackForwardCacheControllerHost,
       public blink::mojom::LocalFrameHost,
       public network::CSPContext,
@@ -516,19 +519,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // that was partially handled on the IO thread (to allocate |new_routing_id|,
   // |frame_token| and |devtools_frame_token|), and is forwarded here. The
   // renderer has already been told to create a RenderFrame with the specified
-  // ID values. |interface_provider_receiver| is the receiver end of the
-  // InterfaceProvider interface that the RenderFrameHost corresponding to the
-  // child frame should bind to expose services to the renderer process. The
-  // caller takes care of sending down the client end of the pipe to the child
-  // RenderFrame to use. |browser_interface_broker_receiver| is the receiver end
-  // of BrowserInterfaceBroker interface in the child frame. RenderFrameHost
-  // should bind this receiver to expose services to the renderer process. The
-  // caller takes care of sending down the client end of the pipe to the child
+  // ID values. |browser_interface_broker_receiver| is the receiver end of the
+  // BrowserInterfaceBroker interface in the child frame. RenderFrameHost should
+  // bind this receiver to expose services to the renderer process. The caller
+  // takes care of sending down the client end of the pipe to the child
   // RenderFrame to use.
   void OnCreateChildFrame(
       int new_routing_id,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
@@ -1070,14 +1067,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const base::UnguessableToken& GetOverlayRoutingToken() const {
     return frame_token_;
   }
-
-  // Binds the receiver end of the InterfaceProvider interface through which
-  // services provided by this RenderFrameHost are exposed to the corresponding
-  // RenderFrame. The caller is responsible for plumbing the client end to the
-  // renderer process.
-  void BindInterfaceProviderReceiver(
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver);
 
   // Binds the receiver end of the BrowserInterfaceBroker interface through
   // which services provided by this RenderFrameHost are exposed to the
@@ -2060,8 +2049,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       override;
   void CreateChildFrame(
       int new_routing_id,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
       mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
@@ -2279,10 +2266,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindAuthenticatorReceiver(
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
 #endif
-
-  // service_manager::mojom::InterfaceProvider:
-  void GetInterface(const std::string& interface_name,
-                    mojo::ScopedMessagePipeHandle interface_pipe) override;
 
   // Allows tests to disable the unload event timer to simulate bugs that
   // happen before it fires (to avoid flakiness).
@@ -2970,41 +2953,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   class JavaInterfaceProvider;
   std::unique_ptr<JavaInterfaceProvider> java_interface_registry_;
 #endif
-
-  // Binding for the InterfaceProvider through which this RenderFrameHostImpl
-  // exposes frame-scoped Mojo services to the currently active document in the
-  // corresponding RenderFrame.
-  //
-  // GetInterface messages dispatched through this binding are guaranteed to
-  // originate from the document corresponding to the last committed navigation;
-  // or the initial empty document if no real navigation has ever been
-  // committed.
-  //
-  // The InterfaceProvider interface connection is established as follows:
-  //
-  // 1) For the initial empty document, the call site that creates this
-  //    RenderFrameHost is responsible for creating a message pipe, binding its
-  //    receiver end to this instance by calling
-  //    BindInterfaceProviderReceiver(), and plumbing the client end to the
-  //    renderer process, and ultimately supplying it to the RenderFrame
-  //    synchronously at construction time.
-  //
-  //    The only exception to this rule are out-of-process child frames, whose
-  //    RenderFrameHosts take care of this internally in CreateRenderFrame().
-  //
-  // 2) For subsequent documents, the RenderFrame creates a new message pipe
-  //    every time a cross-document navigation is committed, and pushes its
-  //    request end to the browser process as part of DidCommitProvisionalLoad.
-  //    The client end will be used by the new document corresponding to the
-  //    committed naviagation to access services exposed by the RenderFrameHost.
-  //
-  // This is required to prevent GetInterface messages racing with navigation
-  // commit from being serviced in the security context corresponding to the
-  // wrong document in the RenderFrame. The benefit of the approach taken is
-  // that it does not necessitate using channel-associated InterfaceProvider
-  // interfaces.
-  mojo::Receiver<service_manager::mojom::InterfaceProvider>
-      document_scoped_interface_provider_receiver_{this};
 
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently

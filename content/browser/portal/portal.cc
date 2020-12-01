@@ -127,17 +127,11 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
     return nullptr;
   }
 
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider;
-  auto interface_provider_receiver(
-      interface_provider.InitWithNewPipeAndPassReceiver());
-
   // Create a FrameTreeNode in the outer WebContents to host the portal, in
   // response to the creation of a portal in the renderer process.
   FrameTreeNode* outer_node = outer_contents_impl->GetFrameTree()->AddFrame(
       owner_render_frame_host_, owner_render_frame_host_->GetProcess()->GetID(),
       owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
-      std::move(interface_provider_receiver),
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
           .InitWithNewPipeAndPassReceiver(),
       // Pass a null receiver for PolicyContainerHost. The PolicyContainerHost

@@ -1944,7 +1944,6 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
   std::string unique_name0("uniqueName0");
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name0,
@@ -1983,7 +1982,6 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
   std::string unique_name1("uniqueName1");
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name1,
@@ -2022,7 +2020,6 @@ TEST_F(NavigationControllerTest, AutoSubframe) {
   std::string unique_name2("uniqueName2");
   subframe->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name2,
@@ -2079,7 +2076,6 @@ TEST_F(NavigationControllerTest, BackSubframe) {
   std::string unique_name("uniqueName0");
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
@@ -3053,7 +3049,6 @@ TEST_F(NavigationControllerTest, SameSubframe) {
   std::string unique_name("uniqueName0");
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
@@ -3203,7 +3198,6 @@ TEST_F(NavigationControllerTest, SubframeWhilePending) {
   std::string unique_name("uniqueName0");
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
@@ -4260,7 +4254,6 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
   std::string unique_name("uniqueName0");
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
-      TestRenderFrameHost::CreateStubInterfaceProviderReceiver(),
       TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       TestRenderFrameHost::CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,

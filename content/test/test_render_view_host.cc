@@ -272,11 +272,6 @@ bool TestRenderViewHost::CreateRenderView(
   RenderFrameHostImpl* main_frame =
       static_cast<RenderFrameHostImpl*>(GetMainFrame());
   if (main_frame && is_active()) {
-    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-        stub_interface_provider_remote;
-    main_frame->BindInterfaceProviderReceiver(
-        stub_interface_provider_remote.InitWithNewPipeAndPassReceiver());
-
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
     auto blink_widget_receiver =

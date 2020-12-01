@@ -55,10 +55,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace service_manager {
-class InterfaceProvider;
-}  // namespace service_manager
-
 namespace content {
 
 class ContextMenuClient;
@@ -187,11 +183,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   virtual void BindLocalInterface(
       const std::string& interface_name,
       mojo::ScopedMessagePipeHandle interface_pipe) = 0;
-
-  // DEPRECATED. Please use GetBrowserInterfaceBroker() instead.
-  // Returns the InterfaceProvider that this process can use to bind
-  // interfaces exposed to it by the application running in this frame.
-  virtual service_manager::InterfaceProvider* GetRemoteInterfaces() = 0;
 
   // Returns the BrowserInterfaceBrokerProxy that this process can use to bind
   // interfaces exposed to it by the application running in this frame.

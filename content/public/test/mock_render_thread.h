@@ -17,7 +17,6 @@
 #include "ipc/ipc_test_sink.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 namespace IPC {
@@ -109,17 +108,8 @@ class MockRenderThread : public RenderThread {
 
   void OnCreateChildFrame(
       int32_t child_routing_id,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker);
-
-  // Returns the receiver end of the InterfaceProvider interface whose client
-  // end was passed in to construct RenderFrame with |routing_id|; if any. The
-  // client end will be used by the RenderFrame to service interface receivers
-  // originating from the initial empty document.
-  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-  TakeInitialInterfaceProviderRequestForFrame(int32_t routing_id);
 
   // Returns the receiver end of the BrowserInterfaceBroker interface whose
   // client end was passed in to construct RenderFrame with |routing_id|; if
@@ -127,14 +117,6 @@ class MockRenderThread : public RenderThread {
   // requests originating from the initial empty document.
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
   TakeInitialBrowserInterfaceBrokerReceiverForFrame(int32_t routing_id);
-
-  // Called from the RenderViewTest harness to supply the receiver end of the
-  // InterfaceProvider interface connection that the harness used to service the
-  // initial empty document in the RenderFrame with |routing_id|.
-  void PassInitialInterfaceProviderReceiverForFrame(
-      int32_t routing_id,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          interface_provider_receiver);
 
  protected:
   // This function operates as a regular IPC listener. Subclasses
@@ -145,10 +127,6 @@ class MockRenderThread : public RenderThread {
 
   // Routing ID what will be assigned to the next view, widget, or frame.
   int32_t next_routing_id_;
-
-  std::map<int32_t,
-           mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>>
-      frame_routing_id_to_initial_interface_provider_receivers_;
 
   std::map<int32_t, mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
       frame_routing_id_to_initial_browser_broker_receivers_;

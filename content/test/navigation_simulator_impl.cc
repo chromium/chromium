@@ -346,10 +346,6 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
       transition_ = ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
   }
 
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      stub_interface_provider;
-  interface_provider_receiver_ =
-      stub_interface_provider.InitWithNewPipeAndPassReceiver();
   browser_interface_broker_receiver_ =
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
           .InitWithNewPipeAndPassReceiver();
@@ -611,14 +607,13 @@ void NavigationSimulatorImpl::Commit() {
     drop_unload_ack_ = true;
 
   if (same_document_) {
-    interface_provider_receiver_.reset();
     browser_interface_broker_receiver_.reset();
   }
 
   auto params = BuildDidCommitProvisionalLoadParams(
       same_document_ /* same_document */, false /* failed_navigation */);
   render_frame_host_->SimulateCommitProcessed(
-      request_, std::move(params), std::move(interface_provider_receiver_),
+      request_, std::move(params),
       std::move(browser_interface_broker_receiver_), same_document_);
 
   if (previous_rfh)
@@ -762,7 +757,7 @@ void NavigationSimulatorImpl::CommitErrorPage() {
   auto params = BuildDidCommitProvisionalLoadParams(
       false /* same_document */, true /* failed_navigation */);
   render_frame_host_->SimulateCommitProcessed(
-      request_, std::move(params), std::move(interface_provider_receiver_),
+      request_, std::move(params),
       std::move(browser_interface_broker_receiver_), false /* same_document */);
 
   SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(previous_rfh);
@@ -789,12 +784,10 @@ void NavigationSimulatorImpl::CommitSameDocument() {
   auto params = BuildDidCommitProvisionalLoadParams(
       true /* same_document */, false /* failed_navigation */);
 
-  interface_provider_receiver_.reset();
   browser_interface_broker_receiver_.reset();
 
   render_frame_host_->SimulateCommitProcessed(
       request_, std::move(params),
-      mojo::NullReceiver() /* interface_provider_receiver_ */,
       mojo::NullReceiver() /* browser_interface_broker_receiver */,
       true /* same_document */);
 

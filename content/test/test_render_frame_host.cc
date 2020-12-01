@@ -147,7 +147,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
     const blink::ParsedFeaturePolicy& allow) {
   std::string frame_unique_name = base::GenerateGUID();
   OnCreateChildFrame(
-      GetProcess()->GetNextRoutingID(), CreateStubInterfaceProviderReceiver(),
+      GetProcess()->GetNextRoutingID(),
       CreateStubBrowserInterfaceBrokerReceiver(),
       CreateStubPolicyContainerHostReceiver(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
@@ -411,8 +411,6 @@ void TestRenderFrameHost::PrepareForCommitInternal(
 void TestRenderFrameHost::SimulateCommitProcessed(
     NavigationRequest* navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params,
-    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-        interface_provider_receiver,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
     bool same_document) {
@@ -427,7 +425,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
         std::move(callback_it->second)
             .Run(std::move(params),
                  mojom::DidCommitProvisionalLoadInterfaceParams::New(
-                     std::move(interface_provider_receiver),
                      std::move(browser_interface_broker_receiver)));
         return;
       }
@@ -438,7 +435,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
         std::move(callback_it->second)
             .Run(std::move(params),
                  mojom::DidCommitProvisionalLoadInterfaceParams::New(
-                     std::move(interface_provider_receiver),
                      std::move(browser_interface_broker_receiver)));
         return;
       }
@@ -448,7 +444,6 @@ void TestRenderFrameHost::SimulateCommitProcessed(
   SendNavigateWithParamsAndInterfaceParams(
       std::move(params),
       mojom::DidCommitProvisionalLoadInterfaceParams::New(
-          std::move(interface_provider_receiver),
           std::move(browser_interface_broker_receiver)),
       same_document);
 }
@@ -556,38 +551,22 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
 
 mojom::DidCommitProvisionalLoadInterfaceParamsPtr
 TestRenderFrameHost::BuildDidCommitInterfaceParams(bool is_same_document) {
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider;
-  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-      interface_provider_receiver;
-
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver;
 
   if (!is_same_document) {
-    interface_provider_receiver =
-        interface_provider.InitWithNewPipeAndPassReceiver();
     browser_interface_broker_receiver =
         mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
             .InitWithNewPipeAndPassReceiver();
   }
 
   auto interface_params = mojom::DidCommitProvisionalLoadInterfaceParams::New(
-      std::move(interface_provider_receiver),
       std::move(browser_interface_broker_receiver));
   return interface_params;
 }
 
 void TestRenderFrameHost::AbortCommit(NavigationRequest* navigation_request) {
   NavigationRequestCancelled(navigation_request);
-}
-
-// static
-mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-TestRenderFrameHost::CreateStubInterfaceProviderReceiver() {
-  mojo::PendingRemote<::service_manager::mojom::InterfaceProvider>
-      dead_interface_provider_proxy;
-  return dead_interface_provider_proxy.InitWithNewPipeAndPassReceiver();
 }
 
 // static
