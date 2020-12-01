@@ -28,6 +28,8 @@
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,6 +38,17 @@
 namespace extensions {
 
 namespace {
+
+// The test extension will query for the state of the system token.
+constexpr char kWaitingForSystemTokenStateMessage[] =
+    "Waiting for system token state message";
+
+// The message sent from a browsertest to the background script in case the
+// system token is enabled.
+constexpr char kSystemTokenEnabledMessage[] = "System token enabled.";
+// The message sent from a browsertest to the background script in case the
+// system token is disabled.
+constexpr char kSystemTokenDisabledMessage[] = "System token disabled.";
 
 // The test extension has a certificate referencing this private key which will
 // be stored in the user's token in the test setup.
@@ -106,8 +119,7 @@ const unsigned char privateKeyPkcs8System[] = {
     0xbb, 0xc2, 0x63, 0x8a, 0xaa, 0x28, 0xd5, 0x37, 0x72, 0xed, 0x02, 0x20,
     0x16, 0xde, 0x3d, 0x57, 0xc5, 0xd5, 0x3d, 0x90, 0x8b, 0xfd, 0x90, 0x3b,
     0xd8, 0x71, 0x69, 0x5e, 0x8d, 0xb4, 0x48, 0x1c, 0xa4, 0x01, 0xce, 0xc1,
-    0xb5, 0x6f, 0xe9, 0x1b, 0x32, 0x91, 0x34, 0x38
-};
+    0xb5, 0x6f, 0xe9, 0x1b, 0x32, 0x91, 0x34, 0x38};
 
 void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
                                  size_t pkcs8_der_size,
@@ -115,8 +127,7 @@ void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
   SECItem pki_der_user = {
       siBuffer,
       // NSS requires non-const data even though it is just for input.
-      const_cast<unsigned char*>(pkcs8_der),
-      pkcs8_der_size};
+      const_cast<unsigned char*>(pkcs8_der), pkcs8_der_size};
 
   SECKEYPrivateKey* seckey_raw = nullptr;
   ASSERT_EQ(SECSuccess, PK11_ImportDERPrivateKeyInfoAndReturnKey(
@@ -208,6 +219,16 @@ class EnterprisePlatformKeysTest
   const std::string kUpdateManifestFileName =
       "enterprise_platform_keys_update_manifest.xml";
 
+  void SetUpTestListeners() {
+    catcher_ = std::make_unique<extensions::ResultCatcher>();
+    listener_ = std::make_unique<ExtensionTestMessageListener>(
+        kWaitingForSystemTokenStateMessage,
+        /*will_reply=*/true);
+  }
+
+  std::unique_ptr<extensions::ResultCatcher> catcher_;
+  std::unique_ptr<ExtensionTestMessageListener> listener_;
+
  private:
   void PrepareTestSystemSlotOnIO(
       crypto::ScopedTestSystemNSSKeySlot* system_slot) override {
@@ -252,20 +273,20 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
   {
-   base::RunLoop loop;
-   GetNSSCertDatabaseForProfile(
-       profile(),
-       base::BindOnce(&EnterprisePlatformKeysTest::DidGetCertDatabase,
-                      base::Unretained(this), loop.QuitClosure()));
-   loop.Run();
+    base::RunLoop loop;
+    GetNSSCertDatabaseForProfile(
+        profile(),
+        base::BindOnce(&EnterprisePlatformKeysTest::DidGetCertDatabase,
+                       base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
   }
   policy_test_utils::SetExtensionInstallForcelistPolicy(
       kTestExtensionID,
       embedded_test_server()->GetURL("/" + kUpdateManifestFileName), profile(),
       mock_policy_provider());
 
-  // By default, the system token is disabled.
-  std::string system_token_availability;
+  SetUpTestListeners();
+  ASSERT_TRUE(listener_->WaitUntilSatisfied());
 
   // Only if the system token exists, and the current user is of the same domain
   // as the device is enrolled to, the system token is available to the
@@ -273,13 +294,12 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
   if (system_token_status() == SystemTokenStatus::EXISTS &&
       enrollment_status() == EnrollmentStatus::ENROLLED &&
       user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN) {
-    system_token_availability = "systemTokenEnabled";
+    listener_->Reply(kSystemTokenEnabledMessage);
+  } else {
+    listener_->Reply(kSystemTokenDisabledMessage);
   }
 
-  ASSERT_TRUE(TestExtension(
-      base::StringPrintf("chrome-extension://%s/basic.html?%s",
-                         kTestExtensionID, system_token_availability.c_str())))
-      << message_;
+  ASSERT_TRUE(catcher_->GetNextResult());
 }
 
 INSTANTIATE_TEST_SUITE_P(

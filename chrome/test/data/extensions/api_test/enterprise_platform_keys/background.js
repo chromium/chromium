@@ -4,7 +4,12 @@
 
 'use strict';
 
-var systemTokenEnabled = (location.href.indexOf("systemTokenEnabled") != -1);
+// The message sent from a browsertest to the background script in case the
+// system token is enabled.
+const SYSTEM_TOKEN_ENABLED_MESSAGE = 'System token enabled.';
+// The message sent from a browsertest to the background script in case the
+// system token is disabled.
+const SYSTEM_TOKEN_DISABLED_MESSAGE = 'System token disabled.';
 
 var assertEq = chrome.test.assertEq;
 var assertTrue = chrome.test.assertTrue;
@@ -292,7 +297,7 @@ function getTokens(callback) {
 /**
  * Runs preparations before the actual tests. Calls |callback| with |userToken|.
  */
-function beforeTests(callback) {
+function beforeTests(systemTokenEnabled, callback) {
   assertTrue(!!chrome.enterprise, "No enterprise namespace.");
   assertTrue(!!chrome.enterprise.platformKeys, "No platformKeys namespace.");
   assertTrue(!!chrome.enterprise.platformKeys.getTokens,
@@ -876,4 +881,20 @@ function runTests(userToken, systemToken) {
   chrome.test.runTests(testsIndependentOfKeys.concat(testsNotParameterized));
 }
 
-beforeTests(runTests);
+// |waitForSystemTokenStateMessage()| waits for the browser test to send a
+// message with the state of the system token to run tests accordingly. The
+// browser test logic can be found at:
+// c/b/e/api/enterprise_platform_keys/enterprise_platform_keys_apitest_nss.cc
+function waitForSystemTokenStateMessage(systemTokenStateMessage) {
+  if (systemTokenStateMessage == SYSTEM_TOKEN_ENABLED_MESSAGE) {
+    beforeTests(/*systemTokenEnabled=*/ true, runTests);
+  } else if (systemTokenStateMessage == SYSTEM_TOKEN_DISABLED_MESSAGE) {
+    beforeTests(/*systemTokenEnabled=*/ false, runTests);
+  } else {
+    // No background script tests should run.
+    succeed();
+  }
+}
+
+chrome.test.sendMessage(
+    'Waiting for system token state message', waitForSystemTokenStateMessage);
