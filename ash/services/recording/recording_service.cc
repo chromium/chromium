@@ -332,7 +332,6 @@ void RecordingService::OnAudioCaptured(
     base::TimeTicks audio_capture_time) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(encoder_muxer_);
-  DCHECK(audio_capturer_);
 
   // We ignore any subsequent frames after a failure.
   if (did_failure_occur_)
