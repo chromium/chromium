@@ -4923,6 +4923,7 @@
           'all',
         ],
         'mixins': [
+          'isolate_profile_data',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -4938,6 +4939,7 @@
           'all'
         ],
         'mixins': [
+          'isolate_profile_data',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',

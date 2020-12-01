@@ -1322,6 +1322,9 @@ try_.chromium_mac_ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_exclude_sources = "ios_test_files_and_test_utils",
+    coverage_test_types = ["unit"],
     tryjob = try_.job(),
 )
 
@@ -1366,6 +1369,9 @@ try_.chromium_mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_exclude_sources = "ios_test_files_and_test_utils",
+    coverage_test_types = ["unit"],
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/ios/.+",
