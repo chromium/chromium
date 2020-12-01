@@ -181,6 +181,62 @@ void ThreadCache::Delete(void* tcache_ptr) {
   root->RawFree(tcache_ptr);
 }
 
+void ThreadCache::FillBucket(size_t bucket_index) {
+  // Filling multiple elements from the central allocator at a time has several
+  // advantages:
+  // - Amortize lock acquisition
+  // - Increase hit rate
+  // - Can improve locality, as consecutive allocations from the central
+  //   allocator will likely return close addresses, especially early on.
+  //
+  // However, do not take too many items, to prevent memory bloat.
+  //
+  // Cache filling / purging policy:
+  // We aim at keeping the buckets neither empty nor full, while minimizing
+  // requests to the central allocator.
+  //
+  // For each bucket, there is a |limit| of how many cached objects there are in
+  // the bucket, so |count| < |limit| at all times.
+  // - Clearing: limit -> limit / 2
+  // - Filling: 0 -> limit / 4
+  //
+  // These thresholds are somewhat arbitrary, with these considerations:
+  // (1) Batched filling should not completely fill the bucket
+  // (2) Batched clearing should not completely clear the bucket
+  // (3) Batched filling should not be too eager
+  //
+  // If (1) and (2) do not hold, we risk oscillations of bucket filling /
+  // clearing which would greatly increase calls to the central allocator. (3)
+  // tries to keep memory usage low. So clearing half of the bucket, and filling
+  // a quarter of it are sensible defaults.
+  Bucket& bucket = buckets_[bucket_index];
+  int count = bucket.limit / 4;
+
+  size_t utilized_slot_size;
+  bool is_already_zeroed;
+
+  // Same as calling RawAlloc() |count| times, but acquires the lock only once.
+  internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
+  for (int i = 0; i < count; i++) {
+    // We allow the allocator to return nullptr, since filling the cache may
+    // safely fail, and the proper flag will be handled by the central
+    // allocator.
+    //
+    // |raw_size| is set to the slot size, as we don't know it. However, it is
+    // only used for direct-mapped allocations and single-slot ones anyway,
+    // which are not handled here.
+    void* ptr = root_->AllocFromBucket(
+        &root_->buckets[bucket_index], PartitionAllocReturnNull,
+        root_->buckets[bucket_index].slot_size /* raw_size */,
+        &utilized_slot_size, &is_already_zeroed);
+    // Central allocator is out of memory.
+    if (!ptr)
+      break;
+
+    PutInBucket(bucket, ptr);
+  }
+}
+
 void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   // Avoids acquiring the lock needlessly.
   if (!bucket.count)

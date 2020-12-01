@@ -195,8 +195,11 @@ class BASE_EXPORT ThreadCache {
   explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
   static void Delete(void* thread_cache_ptr);
   void PurgeInternal();
+  // Fills a bucket from the central allocator.
+  void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
+  ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* ptr);
 
   // TODO(lizeb): Optimize the threshold.
   static constexpr size_t kSizeThreshold = 512;
@@ -208,7 +211,7 @@ class BASE_EXPORT ThreadCache {
       kBucketCount < kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
 
-  std::atomic<bool> should_purge_;
+  std::atomic<bool> should_purge_{false};
   Bucket buckets_[kBucketCount];
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
@@ -232,9 +235,6 @@ class BASE_EXPORT ThreadCache {
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
                                                 size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
-  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
-    PurgeInternal();
-
   INCREMENT_COUNTER(stats_.cache_fill_count);
 
   if (UNLIKELY(bucket_index >= kBucketCount)) {
@@ -246,17 +246,16 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
 
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
-  auto* entry = reinterpret_cast<PartitionFreelistEntry*>(address);
-  entry->SetNextForThreadCache(bucket.freelist_head);
-  bucket.freelist_head = entry;
-  bucket.count++;
-
+  PutInBucket(bucket, address);
   INCREMENT_COUNTER(stats_.cache_fill_hits);
 
   // Batched deallocation, amortizing lock acquisitions.
   if (UNLIKELY(bucket.count >= bucket.limit)) {
-    ClearBucket(bucket, bucket.limit >> 1);
+    ClearBucket(bucket, bucket.limit / 2);
   }
+
+  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
+    PurgeInternal();
 
   return true;
 }
@@ -272,23 +271,37 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
   }
 
   auto& bucket = buckets_[bucket_index];
-  auto* result = bucket.freelist_head;
-  if (UNLIKELY(!result)) {
+  if (LIKELY(bucket.freelist_head)) {
+    INCREMENT_COUNTER(stats_.alloc_hits);
+  } else {
     PA_DCHECK(bucket.count == 0);
     INCREMENT_COUNTER(stats_.alloc_miss_empty);
     INCREMENT_COUNTER(stats_.alloc_misses);
-    return nullptr;
+
+    FillBucket(bucket_index);
+
+    // Very unlikely, means that the central allocator is out of memory. Let it
+    // deal with it (may return nullptr, may crash).
+    if (UNLIKELY(!bucket.freelist_head))
+      return nullptr;
   }
 
   PA_DCHECK(bucket.count != 0);
+  auto* result = bucket.freelist_head;
   auto* next = result->GetNext();
   PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);
   bucket.freelist_head = next;
 
-  INCREMENT_COUNTER(stats_.alloc_hits);
   return result;
+}
+
+ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* ptr) {
+  auto* entry = reinterpret_cast<PartitionFreelistEntry*>(ptr);
+  entry->SetNextForThreadCache(bucket.freelist_head);
+  bucket.freelist_head = entry;
+  bucket.count++;
 }
 
 }  // namespace internal
