@@ -5527,6 +5527,7 @@ bool WebGL2RenderingContextBase::ValidateReadPixelsFormatAndType(
         return false;
       }
       return true;
+    case GL_UNSIGNED_SHORT:
     case GL_UNSIGNED_SHORT_5_6_5:
     case GL_UNSIGNED_SHORT_4_4_4_4:
     case GL_UNSIGNED_SHORT_5_5_5_1:
@@ -5535,23 +5536,6 @@ bool WebGL2RenderingContextBase::ValidateReadPixelsFormatAndType(
             GL_INVALID_OPERATION, "readPixels",
             "type UNSIGNED_SHORT but ArrayBufferView not Uint16Array");
         return false;
-      }
-      return true;
-    case GL_UNSIGNED_SHORT:
-      if (buffer && buffer->GetType() != DOMArrayBufferView::kTypeUint16) {
-        SynthesizeGLError(
-            GL_INVALID_OPERATION, "readPixels",
-            "type GL_UNSIGNED_SHORT but ArrayBufferView not Uint16Array");
-        return false;
-      }
-      if (format == GL_RGBA) {
-        if (!ExtensionEnabled(kEXTTextureNorm16Name)) {
-          SynthesizeGLError(
-              GL_INVALID_ENUM, "readPixels",
-              "invalid format/type combination RGBA/UNSIGNED_SHORT without "
-              "EXT_texture_norm16 support");
-          return false;
-        }
       }
       return true;
     case GL_SHORT:
