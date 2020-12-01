@@ -73,9 +73,8 @@ enum LifetimeManagementType {
 template <typename T>
 struct LifetimeOf {
  private:
-  static const bool kIsGarbageCollected =
-      WTF::IsSubclassOfTemplate<T, GarbageCollected>::value ||
-      IsGarbageCollectedMixin<T>::value;
+  // Covers GarbageCollected and GarbageCollectedMixin.
+  static const bool kIsGarbageCollected = WTF::IsGarbageCollectedType<T>::value;
 
  public:
   static const LifetimeManagementType value =

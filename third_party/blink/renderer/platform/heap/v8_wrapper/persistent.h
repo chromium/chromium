@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_PERSISTENT_H_
 
 #include "base/bind.h"
+#include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/cppgc/cross-thread-persistent.h"
 #include "v8/include/cppgc/persistent.h"
@@ -65,6 +66,12 @@ template <typename T>
 T& WrapPersistentIfNeeded(T& value) {
   return value;
 }
+
+#if BUILDFLAG(RAW_HEAP_SNAPSHOTS)
+#define PERSISTENT_FROM_HERE PersistentLocation::Current()
+#else
+#define PERSISTENT_FROM_HERE PersistentLocation()
+#endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
 
 }  // namespace blink
 

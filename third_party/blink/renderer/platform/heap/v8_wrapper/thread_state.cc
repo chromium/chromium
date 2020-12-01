@@ -13,7 +13,8 @@ base::LazyInstance<WTF::ThreadSpecific<ThreadState*>>::Leaky
     ThreadState::thread_specific_ = LAZY_INSTANCE_INITIALIZER;
 
 // static
-uint8_t ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
+alignas(ThreadState) uint8_t
+    ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
 
 // static
 ThreadState* ThreadState::AttachMainThread(v8::CppHeap& cpp_heap) {

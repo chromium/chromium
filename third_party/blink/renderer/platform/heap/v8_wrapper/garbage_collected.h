@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_GARBAGE_COLLECTED_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_GARBAGE_COLLECTED_H_
 
+#include "v8/include/cppgc/type-traits.h"
+
 // GC_PLUGIN_IGNORE is used to make the plugin ignore a particular class or
 // field when checking for proper usage.  When using GC_PLUGIN_IGNORE
 // a bug-number should be provided as an argument where the bug describes
@@ -15,5 +17,15 @@
 #else
 #define GC_PLUGIN_IGNORE(bug)
 #endif
+
+namespace blink {
+
+template <typename T>
+struct IsGarbageCollectedMixin {
+ public:
+  static const bool value = cppgc::IsGarbageCollectedMixinTypeV<T>;
+};
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_GARBAGE_COLLECTED_H_

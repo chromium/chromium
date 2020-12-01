@@ -70,7 +70,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
         std::unique_ptr<scheduler::NonMainThreadSchedulerImpl>(
             base::sequence_manager::SequenceManager*)>;
 
-    explicit SimpleThreadImpl(const String& name_prefix,
+    explicit SimpleThreadImpl(const WTF::String& name_prefix,
                               const base::SimpleThread::Options& options,
                               NonMainThreadSchedulerFactory factory,
                               bool supports_gc,

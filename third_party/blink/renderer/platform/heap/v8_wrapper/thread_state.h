@@ -72,7 +72,7 @@ class ThreadState final {
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
-  static uint8_t main_thread_state_storage_[] alignas(ThreadState);
+  static uint8_t main_thread_state_storage_[];
   // Storage for all ThreadState objects. This includes the main-thread
   // ThreadState as well.
   static base::LazyInstance<WTF::ThreadSpecific<ThreadState*>>::Leaky

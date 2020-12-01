@@ -91,7 +91,7 @@ void WorkerThread::ShutdownOnThread() {
 }
 
 WorkerThread::SimpleThreadImpl::SimpleThreadImpl(
-    const String& name_prefix,
+    const WTF::String& name_prefix,
     const base::SimpleThread ::Options& options,
     NonMainThreadSchedulerFactory factory,
     bool supports_gc,
