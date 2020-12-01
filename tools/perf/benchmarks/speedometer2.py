@@ -76,3 +76,18 @@ class V8Speedometer2Future(Speedometer2):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
+
+
+@benchmark.Info(emails=['tmrts@chromium.org'], component='Blink')
+class Speedometer2PCScan(Speedometer2):
+  """Speedometer2 benchmark with the PCSscan flag.
+
+  Shows the performance of upcoming PCScan feature.
+  """
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_speedometer2-pcscan'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--enable-features=PartitionAllocPCScan')
