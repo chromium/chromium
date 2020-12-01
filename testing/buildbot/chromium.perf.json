@@ -674,7 +674,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "QD4A.200102.001.A1",
+              "device_os": "RQ1D.201205.012",
               "device_os_flavor": "google",
               "device_type": "sunfish",
               "os": "Android",

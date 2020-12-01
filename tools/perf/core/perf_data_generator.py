@@ -538,7 +538,7 @@ BUILDERS = {
             'pool': 'chrome.tests.pinpoint',  # Sharing Pinpoint pool
             'os': 'Android',
             'device_type': 'sunfish',
-            'device_os': 'QD4A.200102.001.A1',
+            'device_os': 'RQ1D.201205.012',
             'device_os_flavor': 'google',
         },
     },
