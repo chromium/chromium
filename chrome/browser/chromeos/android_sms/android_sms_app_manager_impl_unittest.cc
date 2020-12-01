@@ -12,11 +12,13 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_urls.h"
 #include "chrome/browser/chromeos/android_sms/fake_android_sms_app_setup_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -357,6 +359,25 @@ TEST_F(AndroidSmsAppManagerImplTest, TestManualUninstall) {
   fake_android_sms_app_setup_controller()->SetAppAtUrl(install_url,
                                                        base::nullopt);
   EXPECT_TRUE(android_sms_app_manager()->HasAppBeenManuallyUninstalledByUser());
+}
+
+TEST_F(AndroidSmsAppManagerImplTest, TestGetCurrentAppUrl) {
+  // Enable staging flag and install both prod and staging apps.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kUseMessagesStagingUrl);
+  fake_android_sms_app_setup_controller()->SetAppAtUrl(
+      GetAndroidMessagesURL(true /* use_install_url */, PwaDomain::kProdGoogle),
+      kOldAppId);
+  fake_android_sms_app_setup_controller()->SetAppAtUrl(
+      GetAndroidMessagesURL(true /* use_install_url */, PwaDomain::kStaging),
+      kNewAppId);
+  CompleteAsyncInitialization();
+
+  // When both apps are installed GetCurrentAppUrl should always
+  // return the preferred app.
+  EXPECT_EQ(
+      GetAndroidMessagesURL(false /* use_install_url */, PwaDomain::kStaging),
+      android_sms_app_manager()->GetCurrentAppUrl());
 }
 
 }  // namespace android_sms

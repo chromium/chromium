@@ -76,6 +76,7 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   void ExecuteOnAppRegistryReady(base::OnceClosure task) override;
 
   base::Optional<PwaDomain> GetInstalledPwaDomain();
+  base::Optional<PwaDomain> GetInstalledPwaDomainForMigration();
   void CompleteAsyncInitialization();
   void NotifyInstalledAppUrlChangedIfNecessary();
   void OnSetUpNewAppResult(const base::Optional<PwaDomain>& migrating_from,
