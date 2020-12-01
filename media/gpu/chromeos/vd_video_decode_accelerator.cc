@@ -386,8 +386,10 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   // let's make sure the slot for the picture buffer ID is free, otherwise we
   // might lose track of the reference count and keep frames out of the pool
   // forever.
-  DCHECK(picture_at_client_.find(picture_buffer_id) ==
-         picture_at_client_.end());
+  if (picture_at_client_.erase(picture_buffer_id) > 0) {
+    VLOGF(1) << "Picture " << picture_buffer_id
+             << " still referenced, dropping it.";
+  }
 
   DCHECK(import_frame_cb_);
   import_frame_cb_.Run(std::move(wrapped_frame));
