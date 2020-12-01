@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
+
 #include "chromeos/components/phonehub/feature_status.h"
 #include "chromeos/components/phonehub/pref_names.h"
+#include "chromeos/components/phonehub/util/histogram_util.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -60,6 +62,7 @@ void OnboardingUiTrackerImpl::HandleGetStarted() {
     multidevice_setup_client_->SetFeatureEnabledState(
         multidevice_setup::mojom::Feature::kPhoneHub,
         /*enabled=*/true, /*auth_token=*/base::nullopt, base::DoNothing());
+    util::LogFeatureOptInEntryPoint(util::OptInEntryPoint::kOnboardingFlow);
     return;
   }
   LOG(ERROR)

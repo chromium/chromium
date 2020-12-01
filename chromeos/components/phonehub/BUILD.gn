@@ -80,6 +80,8 @@ static_library("phonehub") {
     "tether_controller.h",
     "tether_controller_impl.cc",
     "tether_controller_impl.h",
+    "util/histogram_util.cc",
+    "util/histogram_util.h",
   ]
 
   deps = [

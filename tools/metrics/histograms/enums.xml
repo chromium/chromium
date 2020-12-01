@@ -58078,6 +58078,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="User dismissed notification"/>
 </enum>
 
+<enum name="PhoneHubOptInEntryPoint">
+  <int value="0" label="New user opted in via multidevice setup flow"/>
+  <int value="1" label="User opted in via onboarding promotion"/>
+  <int value="2" label="User opted in via Settings page"/>
+</enum>
+
 <enum name="PhoneHubQuickAction">
   <int value="0" label="Toggle Hotspot On"/>
   <int value="1" label="Toggle Hotspot Off"/>

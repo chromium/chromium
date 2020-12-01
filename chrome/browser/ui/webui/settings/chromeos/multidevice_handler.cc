@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/util/histogram_util.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
@@ -273,6 +274,11 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
       feature, enabled, auth_token,
       base::BindOnce(&MultideviceHandler::OnSetFeatureStateEnabledResult,
                      callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
+
+  if (feature == multidevice_setup::mojom::Feature::kPhoneHub) {
+    phonehub::util::LogFeatureOptInEntryPoint(
+        phonehub::util::OptInEntryPoint::kSettings);
+  }
 }
 
 void MultideviceHandler::HandleRemoveHostDevice(const base::ListValue* args) {
