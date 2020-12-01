@@ -1004,11 +1004,16 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     extent = ResolveMainBlockLength(ConstraintSpace(), style, BorderPadding(),
                                     style.LogicalHeight(), kIndefiniteSize,
                                     LengthResolvePhase::kLayout);
+    // A specified block-size will just constrain the maximum length.
+    if (extent != kIndefiniteSize)
+      max = std::min(max, extent);
   }
-  if (extent != kIndefiniteSize) {
-    // A specified height/width will just constrain the maximum length.
-    max = std::min(max, extent);
-  }
+
+  // A specified min-block-size may increase the maximum length.
+  LayoutUnit min = ResolveMinBlockLength(
+      ConstraintSpace(), style, BorderPadding(), style.LogicalMinHeight(),
+      LengthResolvePhase::kLayout);
+  max = std::max(max, min);
 
   // If this multicol container is nested inside another fragmentation
   // context, we need to subtract the space consumed in previous fragments.
