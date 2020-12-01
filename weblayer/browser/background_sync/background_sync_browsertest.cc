@@ -104,7 +104,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, ZeroSiteEngagementPenalty) {
 }
 
 #if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, BackgroundSyncNotDisabled) {
+// TODO(crbug.com/1154332): Fix flaky test.
+IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest,
+                       DISABLED_BackgroundSyncNotDisabled) {
   auto* controller = BackgroundSyncControllerFactory::GetForBrowserContext(
       GetBrowserContext());
   ASSERT_TRUE(controller);
