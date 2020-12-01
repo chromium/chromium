@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builder_name", "cpu", "goma", "os", "xcode_cache")
+load("//lib/builders.star", "builder_name", "cpu", "goma", "os", "xcode")
 load("//lib/ci.star", "ci")
 load("//console-header.star", "HEADER")
 load("//project.star", "settings")
@@ -1645,33 +1645,27 @@ ci.clang_builder(
 ci.clang_builder(
     name = "ToTiOS",
     builderless = False,
-    caches = [xcode_cache.x12a7209],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
         short_name = "sim",
     ),
     cores = None,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
     ssd = True,
+    xcode = xcode.x12a7209,
 )
 
 ci.clang_builder(
     name = "ToTiOSDevice",
     builderless = False,
-    caches = [xcode_cache.x12a7209],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
         short_name = "dev",
     ),
     cores = None,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
     ssd = True,
+    xcode = xcode.x12a7209,
 )
 
 ci.clang_mac_builder(
@@ -3011,7 +3005,6 @@ ci.fyi_coverage_builder(
 
 ci.fyi_coverage_builder(
     name = "ios-simulator-code-coverage",
-    caches = [xcode_cache.x12a7209],
     console_view_entry = ci.console_view_entry(
         category = "code_coverage",
         short_name = "ios",
@@ -3021,9 +3014,7 @@ ci.fyi_coverage_builder(
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
+    xcode = xcode.x12a7209,
 )
 
 ci.fyi_coverage_builder(
@@ -3092,16 +3083,13 @@ ci.fyi_ios_builder(
 ci.fyi_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
-    caches = [xcode_cache.x11e146],
     console_view_entry = ci.console_view_entry(
         category = "cronet",
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
     notifies = ["cronet"],
-    properties = {
-        "xcode_build_version": "11e146",
-    },
+    xcode = xcode.x11e146,
 )
 
 ci.fyi_ios_builder(
@@ -3114,16 +3102,13 @@ ci.fyi_ios_builder(
 
 ci.fyi_ios_builder(
     name = "ios-webkit-tot",
-    caches = [xcode_cache.x11e608cwk],
     console_view_entry = ci.console_view_entry(
         category = "iOS",
         short_name = "wk",
     ),
-    properties = {
-        "xcode_build_version": "11e608cwk",
-    },
     schedule = "0 1-23/6 * * *",
     triggered_by = [],
+    xcode = xcode.x11e608cwk,
 )
 
 ci.fyi_ios_builder(
@@ -3168,10 +3153,7 @@ ci.fyi_ios_builder(
         category = "iOS|iOS14",
         short_name = "sdk14",
     ),
-    caches = [xcode_cache.x12b5044c],
-    properties = {
-        "xcode_build_version": "12b5044c",
-    },
+    xcode = xcode.x12b5044c,
 )
 
 ci.fyi_mac_builder(

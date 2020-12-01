@@ -123,21 +123,25 @@ goma = struct(
     ),
 )
 
-def xcode_enum(cache_name, cache_path):
-    return swarming.cache(name = cache_name, path = cache_path)
+def xcode_enum(version):
+    return struct(
+        version = version,
+        cache_name = "xcode_ios_{}".format(version),
+        cache_path = "xcode_ios_{}.app".format(version),
+    )
 
 # Keep this in-sync with the versions of bots in //ios/build/bots/.
-xcode_cache = struct(
+xcode = struct(
     # in use by webrtc mac builders
-    x11c29 = xcode_enum("xcode_ios_11c29", "xcode_ios_11c29.app"),
+    x11c29 = xcode_enum("11c29"),
     # in use by ci/ios-simulator-cronet and try/ios-simulator-cronet
-    x11e146 = xcode_enum("xcode_ios_11e146", "xcode_ios_11e146.app"),
+    x11e146 = xcode_enum("11e146"),
     # in use by ios-webkit-tot
-    x11e608cwk = xcode_enum("xcode_ios_11e608cwk", "xcode_ios_11e608cwk.app"),
+    x11e608cwk = xcode_enum("11e608cwk"),
     # (current default) xc12 gm seed
-    x12a7209 = xcode_enum("xcode_ios_12a7209", "xcode_ios_12a7209.app"),
+    x12a7209 = xcode_enum("12a7209"),
     # latest Xcode 12 beta version.
-    x12b5044c = xcode_enum("xcode_ios_12b5044c", "xcode_ios_12b5044c.app"),
+    x12b5044c = xcode_enum("12b5044c"),
 )
 
 ################################################################################
@@ -265,6 +269,7 @@ defaults = args.defaults(
     os = None,
     project_trigger_overrides = None,
     pool = None,
+    xcode = None,
     ssd = args.COMPUTE,
     use_clang_coverage = False,
     use_java_coverage = False,
@@ -300,6 +305,7 @@ def builder(
         builder_group = args.DEFAULT,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
+        xcode = args.DEFAULT,
         project_trigger_overrides = args.DEFAULT,
         configure_kitchen = args.DEFAULT,
         goma_backend = args.DEFAULT,
@@ -368,6 +374,13 @@ def builder(
         If True, emits a 'ssd:1' dimension. If False, emits a 'ssd:0' parameter.
         By default, considered False if builderless is considered True and
         otherwise None.
+      * xcode - a member of the `xcode` enum indicating the xcode version the
+        builder requires. Emits a cache declaration of the form
+        ```{
+          name: <xcode.cache_name>
+          path: <xcode.cache_path>
+        }```. Also emits a 'xcode_build_version:<xcode.version>' property if the
+        property is not already set.
       * project_trigger_overrides - a dict mapping the LUCI projects declared in
         recipe BotSpecs to the LUCI project to use when triggering builders. When
         this builder triggers another builder, if the BotSpec for that builder has
@@ -539,6 +552,13 @@ def builder(
     triggered_by = defaults.get_value("triggered_by", triggered_by)
     if triggered_by != args.COMPUTE:
         kwargs["triggered_by"] = triggered_by
+    xcode = defaults.get_value("xcode", xcode)
+    if xcode:
+        kwargs["caches"] = (kwargs.get("caches") or []) + [swarming.cache(
+            name = xcode.cache_name,
+            path = xcode.cache_path,
+        )]
+        properties.setdefault("xcode_build_version", xcode.version)
 
     return branches.builder(
         name = name,
@@ -568,5 +588,5 @@ builders = struct(
     defaults = defaults,
     goma = goma,
     os = os,
-    xcode_cache = xcode_cache,
+    xcode = xcode,
 )

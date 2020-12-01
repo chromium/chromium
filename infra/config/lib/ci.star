@@ -667,25 +667,17 @@ def fyi_coverage_builder(
 def fyi_ios_builder(
         *,
         name,
-        caches = None,
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_10_15,
-        properties = None,
+        xcode = builders.xcode.x12a7209,
         **kwargs):
-    # Default cache and properties sync
-    caches = caches or [builders.xcode_cache.x12a7209]
-
-    properties = properties or {}
-    properties.setdefault("xcode_build_version", "12a7209")
-
     return fyi_builder(
         name = name,
-        caches = caches,
         cores = None,
         executable = executable,
         os = os,
-        properties = properties,
+        xcode = xcode,
         **kwargs
     )
 
@@ -876,23 +868,16 @@ def mac_builder(
 def mac_ios_builder(
         *,
         name,
-        caches = None,
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
-        properties = None,
+        xcode = builders.xcode.x12a7209,
         **kwargs):
-    caches = caches or [builders.xcode_cache.x12a7209]
-
-    properties = properties or {}
-    properties.setdefault("xcode_build_version", "12a7209")
-
     return mac_builder(
         name = name,
-        caches = caches,
         goma_backend = goma_backend,
         executable = executable,
         os = builders.os.MAC_10_15,
-        properties = properties,
+        xcode = xcode,
         **kwargs
     )
 

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode_cache")
+load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode")
 
 luci.bucket(
     name = "goma",
@@ -110,12 +110,9 @@ fyi_goma_canary_builder(
 
 fyi_goma_canary_builder(
     name = "ios-device-goma-canary-clobber",
-    caches = [xcode_cache.x12a7209],
     cores = None,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
+    xcode = xcode.x12a7209,
 )
 
 fyi_goma_canary_builder(
@@ -185,12 +182,9 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "ios-device-goma-rbe-canary-clobber",
-    caches = [xcode_cache.x12a7209],
     cores = None,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
+    xcode = xcode.x12a7209,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -270,12 +264,9 @@ fyi_goma_latest_client_builder(
 
 fyi_goma_latest_client_builder(
     name = "ios-device-goma-latest-clobber",
-    caches = [xcode_cache.x12a7209],
     cores = None,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
+    xcode = xcode.x12a7209,
 )
 
 fyi_goma_latest_client_builder(
@@ -359,12 +350,9 @@ fyi_goma_rbe_latest_client_builder(
 
 fyi_goma_rbe_latest_client_builder(
     name = "ios-device-goma-rbe-latest-clobber",
-    caches = [xcode_cache.x12a7209],
     cores = None,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
+    xcode = xcode.x12a7209,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -477,12 +465,9 @@ def goma_mac_builder(
 
 goma_mac_builder(
     name = "Chromium iOS Goma RBE ToT",
-    caches = [xcode_cache.x12a7209],
     goma_backend = goma.backend.RBE_TOT,
     os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a7209",
-    },
+    xcode = xcode.x12a7209,
 )
 
 goma_mac_builder(
