@@ -1742,8 +1742,6 @@ crbug.com/492664 [ Mac ] external/wpt/css/css-writing-modes/sizing-orthog-htb-in
 crbug.com/381684 [ Mac ] fonts/family-fallback-gardiner.html [ Skip ]
 crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
 
-crbug.com/636239 [ Win7 ] media/video-zoom-controls.html [ Failure ]
-
 crbug.com/377696 printing/setPrinting.html [ Failure ]
 
 # No support for WPT print-reftests:
@@ -5145,13 +5143,6 @@ crbug.com/993671 [ Win ] http/tests/media/video-frame-size-change.html [ Pass Fa
 #Sherrif 2019-08-16
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
 crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]
-
-# Video flakily not being being rendered on Mac
-crbug.com/988248 media/controls/captions-menu-always-visible.html [ Pass Failure ]
-crbug.com/988248 [ Mac ] media/controls/overflow-menu-always-visible.html [ Pass Failure ]
-crbug.com/988248 [ Mac ] media/video-persistence.html [ Pass Failure ]
-crbug.com/988248 [ Linux ] media/video-persistence.html [ Pass Failure ]
-crbug.com/988248 [ Mac ] media/video-zoom.html [ Pass Failure ]
 
 crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
 
