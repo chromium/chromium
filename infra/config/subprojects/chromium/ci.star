@@ -189,6 +189,7 @@ ci.console_view(
             "fuchsia",
             "chromeos",
             "iOS",
+            "infra",
             "linux",
             "recipe",
             "remote_run",
@@ -2462,6 +2463,23 @@ ci.fyi_builder(
         short_name = "rel",
     ),
     notifies = ["cr-fuchsia"],
+)
+
+ci.fyi_builder(
+    name = "try-warmer",
+    console_view_entry = ci.console_view_entry(
+        category = "infra",
+        short_name = "warmer",
+    ),
+    executable = "recipe:chromium/try_warmer",
+    execution_timeout = 5 * time.minute,
+    goma_backend = None,
+    properties = {
+        "builder_to_warm": "linux-warmed",
+    },
+    schedule = "with 5m interval",
+    service_account = "chromium-led-tot-warmer@chops-service-accounts.iam.gserviceaccount.com",
+    triggered_by = [],
 )
 
 ci.fyi_builder(

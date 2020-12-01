@@ -3,11 +3,11 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61390 (scheduler total) + 344990 (weighted CQ total)
+  # 61470 (scheduler total) + 344990 (weighted CQ total)
   # (weighted CQ total) = 6899.8 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406380,
+  '*weighted total*': 406460,
   'scheduler': {
-    '*total*': 61390,
+    '*total*': 61470,
     'triggered': {
       '*total*': 59840,
       ('https://chromium.googlesource.com/chromium/src', 'regexp:refs/heads/master'): {
@@ -491,7 +491,7 @@
       },
     },
     'scheduled': {
-      '*total*': 1550,
+      '*total*': 1630,
       '0 0,12 * * *': {
         '*total*': 80,
         # jobs count assumes an 8-core machine
@@ -533,6 +533,10 @@
         '*total*': 160,
         'ci/mac-upload-perfetto': 80,
         'ci/win-upload-perfetto': 80,
+      },
+      'with 5m interval': {
+        '*total*': 80,
+        'ci/try-warmer': 80,
       },
     },
   },
@@ -591,8 +595,10 @@
     # 80 jobs x 100% experiment
     'try/linux-perfetto-rel': 80,
     'try/linux-rel': 150,
-    # 150 jobs x 10% experiment
-    'try/linux-rel-builderful': 15,
+    # 150 jobs x 5% experiment
+    'try/linux-rel-builderful': 7.5,
+    # 150 jobs x 5% experiment
+    'try/linux-warmed': 7.5,
     'try/linux_chromium_asan_rel_ng': 150,
     'try/linux_chromium_compile_dbg_ng': 150,
     'try/linux_chromium_dbg_ng': 80,

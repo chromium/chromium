@@ -1021,7 +1021,7 @@ try_.chromium_linux_builder(
     name = "linux-rel-builderful",
     builderless = False,
     goma_jobs = goma.jobs.J150,
-    tryjob = try_.job(experiment_percentage = 10),
+    tryjob = try_.job(experiment_percentage = 5),
     use_clang_coverage = True,
 )
 
@@ -1033,6 +1033,15 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux-viz-rel",
+)
+
+# crbug.com/1149606: Experimental builder to test pre-warming
+try_.chromium_linux_builder(
+    name = "linux-warmed",
+    builderless = False,
+    goma_jobs = goma.jobs.J150,
+    tryjob = try_.job(experiment_percentage = 5),
+    use_clang_coverage = True,
 )
 
 try_.chromium_linux_builder(
