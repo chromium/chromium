@@ -472,9 +472,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                     kURL);
 }
 
-// TODO(crbug.com/1144065): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       DISABLED_CreateSignedInProfileSigninAlreadyExists) {
+                       CreateSignedInProfileSigninAlreadyExists) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Create a pre-existing profile syncing with the same account as the profile
