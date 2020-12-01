@@ -25,6 +25,8 @@ using CrossThreadPersistent = cppgc::subtle::CrossThreadPersistent<T>;
 template <typename T>
 using CrossThreadWeakPersistent = cppgc::subtle::WeakCrossThreadPersistent<T>;
 
+using PersistentLocation = cppgc::SourceLocation;
+
 template <typename T>
 Persistent<T> WrapPersistent(
     T* value,
