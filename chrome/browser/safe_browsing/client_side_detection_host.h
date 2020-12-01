@@ -9,15 +9,11 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/safe_browsing/client_side_model_loader.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/core/db/database_manager.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -89,12 +85,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
                                 GURL phishing_url,
                                 bool is_phishing);
 
-  // Returns true if the user has seen a regular SafeBrowsing
-  // interstitial for the current page.  This is only true if the user has
-  // actually clicked through the warning.  This method is called on the UI
-  // thread.
-  bool DidShowSBInterstitial() const;
-
   // Used for testing.  This function does not take ownership of the service
   // class.
   void set_client_side_detection_service(ClientSideDetectionService* service);
@@ -116,14 +106,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
-  // Current host, used to help determine cur_host_redirects_.
-  std::string cur_host_;
   // The currently active message pipe to the renderer PhishingDetector.
   mojo::Remote<mojom::PhishingDetector> phishing_detector_;
-
-  // Max number of ips we save for each browse
-  static const size_t kMaxIPsPerBrowse;
-  bool pageload_complete_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;

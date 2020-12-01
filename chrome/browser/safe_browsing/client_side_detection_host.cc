@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner_helpers.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -25,24 +24,18 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -50,7 +43,6 @@
 #include "url/gurl.h"
 
 using content::BrowserThread;
-using content::NavigationEntry;
 using content::WebContents;
 
 namespace safe_browsing {
@@ -305,7 +297,6 @@ ClientSideDetectionHost::ClientSideDetectionHost(WebContents* tab)
       csd_service_(nullptr),
       tab_(tab),
       classification_request_(nullptr),
-      pageload_complete_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(tab);
   // Note: csd_service_ and sb_service will be nullptr here in testing.
@@ -355,8 +346,6 @@ void ClientSideDetectionHost::DidFinishNavigation(
   }
 
   current_url_ = navigation_handle->GetURL();
-
-  pageload_complete_ = false;
 
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
