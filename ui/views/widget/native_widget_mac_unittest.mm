@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -1244,7 +1245,13 @@ void AssertNoChildrenForWindowWithSheet(NSArray<NSWindow*>* children) {
 }
 
 // Tests behavior of window-modal dialogs, displayed as sheets.
-TEST_F(NativeWidgetMacTest, WindowModalSheet) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_WindowModalSheet DISABLED_WindowModalSheet
+#else
+#define MAYBE_WindowModalSheet WindowModalSheet
+#endif
+TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   NSWindow* native_parent = MakeClosableTitledNativeParent();
 
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
