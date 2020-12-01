@@ -16,11 +16,17 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -138,34 +144,10 @@ std::set<DlpRulesManager::RuleId> MatchUrlAndGetRulesMapping(
   return rule_ids;
 }
 
-// A singleton instance of DlpRulesManager. Set from DlpRulesManager::Init().
-static DlpRulesManager* g_dlp_rules_manager = nullptr;
+// A singleton instance of DlpRulesManager for testing.
+static DlpRulesManager* g_dlp_rules_manager_for_testing = nullptr;
 
 }  // namespace
-
-// static
-void DlpRulesManager::Init() {
-  if (!IsInitialized())
-    new DlpRulesManager();
-}
-
-// static
-bool DlpRulesManager::IsInitialized() {
-  return g_dlp_rules_manager != nullptr;
-}
-
-// static
-DlpRulesManager* DlpRulesManager::Get() {
-  DCHECK(g_dlp_rules_manager);
-  return g_dlp_rules_manager;
-}
-
-// static
-void DlpRulesManager::DeleteInstanceForTesting() {
-  DCHECK(g_dlp_rules_manager);
-  delete g_dlp_rules_manager;
-  g_dlp_rules_manager = nullptr;
-}
 
 // static
 void DlpRulesManager::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -242,13 +224,7 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedAnyOfComponents(
   return min_level;
 }
 
-DlpRulesManager::DlpRulesManager() {
-  g_dlp_rules_manager = this;
-
-  auto* local_state = g_browser_process->local_state();
-  if (!local_state)  // Sometimes it's not available in tests.
-    return;
-
+DlpRulesManager::DlpRulesManager(PrefService* local_state) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
@@ -381,6 +357,58 @@ DlpRulesManager::Level DlpRulesManager::GetMaxJoinRestrictionLevel(
                         destination_rules.begin(), destination_rules.end(),
                         std::inserter(intersection, intersection.begin()));
   return GetMaxJoinRestrictionLevel(restriction, intersection);
+}
+
+// static
+DlpRulesManagerFactory* DlpRulesManagerFactory::GetInstance() {
+  static base::NoDestructor<DlpRulesManagerFactory> factory;
+  return factory.get();
+}
+
+// static
+DlpRulesManager* DlpRulesManagerFactory::GetForPrimaryProfile() {
+  if (g_dlp_rules_manager_for_testing)
+    return g_dlp_rules_manager_for_testing;
+
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile)
+    return nullptr;
+  return static_cast<DlpRulesManager*>(
+      DlpRulesManagerFactory::GetInstance()->GetServiceForBrowserContext(
+          profile, /*create=*/false));
+}
+
+// static
+void DlpRulesManagerFactory::OverrideManagerForTesting(
+    DlpRulesManager* manager) {
+  g_dlp_rules_manager_for_testing = manager;
+}
+
+DlpRulesManagerFactory::DlpRulesManagerFactory()
+    : BrowserContextKeyedServiceFactory(
+          "DlpRulesManager",
+          BrowserContextDependencyManager::GetInstance()) {}
+
+bool DlpRulesManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  // UserManager might be not available in tests.
+  if (!user_manager::UserManager::IsInitialized() || !profile ||
+      !chromeos::ProfileHelper::IsPrimaryProfile(profile) ||
+      !profile->GetProfilePolicyConnector()->IsManaged()) {
+    return nullptr;
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  // Might be not available in tests.
+  if (!local_state)
+    return nullptr;
+
+  return new DlpRulesManager(local_state);
 }
 
 }  // namespace policy

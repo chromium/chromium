@@ -60,16 +60,8 @@ base::Value GenerateClipboardCopyDisallowedRule() {
 class DlpRulesManagerTest : public testing::Test {
  protected:
   DlpRulesManagerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
-
-  void SetUp() override {
-    testing::Test::SetUp();
-
-    DlpRulesManager::Init();
-    dlp_rules_manager_ = DlpRulesManager::Get();
-  }
-
-  void TearDown() override { DlpRulesManager::DeleteInstanceForTesting(); }
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()),
+        dlp_rules_manager_(testing_local_state_.Get()) {}
 
   void UpdatePolicyPref(base::Value rules_list) {
     DCHECK(rules_list.is_list());
@@ -77,20 +69,18 @@ class DlpRulesManagerTest : public testing::Test {
                                     std::move(rules_list));
   }
 
-  DlpRulesManager* dlp_rules_manager_;
-
- private:
   ScopedTestingLocalState testing_local_state_;
+  DlpRulesManager dlp_rules_manager_;
 };
 
 TEST_F(DlpRulesManagerTest, EmptyPref) {
   UpdatePolicyPref(base::Value(base::Value::Type::LIST));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kPrinting));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr2),
                 DlpRulesManager::Restriction::kClipboard));
 }
@@ -135,34 +125,34 @@ TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr2),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr4),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 
   // Clear pref
   UpdatePolicyPref(base::Value(base::Value::Type::LIST));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr2),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr4),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 }
 
@@ -185,7 +175,7 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
   UpdatePolicyPref(std::move(rules_1));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 
   // Second DLP rule
@@ -206,10 +196,10 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
   UpdatePolicyPref(std::move(rules_2));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr2), DlpRulesManager::Restriction::kScreenshot));
 }
 
@@ -233,11 +223,11 @@ TEST_F(DlpRulesManagerTest, IsRestrictedComponent_Clipboard) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedComponent(
+            dlp_rules_manager_.IsRestrictedComponent(
                 GURL(kUrlStr1), DlpRulesManager::Component::kArc,
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedComponent(
+            dlp_rules_manager_.IsRestrictedComponent(
                 GURL(kUrlStr1), DlpRulesManager::Component::kCrostini,
                 DlpRulesManager::Restriction::kClipboard));
 }
@@ -248,7 +238,7 @@ TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr1),
                 DlpRulesManager::Restriction::kClipboard));
 }
@@ -276,11 +266,11 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
 
   EXPECT_EQ(
       DlpRulesManager::Level::kBlock,
-      dlp_rules_manager_->IsRestrictedDestination(
+      dlp_rules_manager_.IsRestrictedDestination(
           GURL(kUrlStr1), GURL(), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(
       DlpRulesManager::Level::kAllow,
-      dlp_rules_manager_->IsRestrictedDestination(
+      dlp_rules_manager_.IsRestrictedDestination(
           GURL(kUrlStr4), GURL(), DlpRulesManager::Restriction::kClipboard));
 }
 
@@ -306,14 +296,14 @@ TEST_F(DlpRulesManagerTest, IsRestrictedAnyOfComponents_Clipboard) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedAnyOfComponents(
+            dlp_rules_manager_.IsRestrictedAnyOfComponents(
                 GURL(kUrlStr1),
                 std::vector<DlpRulesManager::Component>{
                     DlpRulesManager::Component::kPluginVm,
                     DlpRulesManager::Component::kCrostini},
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedAnyOfComponents(
+            dlp_rules_manager_.IsRestrictedAnyOfComponents(
                 GURL(kUrlStr1),
                 std::vector<DlpRulesManager::Component>{
                     DlpRulesManager::Component::kArc,
@@ -361,40 +351,40 @@ TEST_F(DlpRulesManagerTest, IsRestricted_MultipleURLs) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern1})),
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern5})),
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
                 DlpRulesManager::Restriction::kClipboard));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern1})),
                 GURL(kUrlStr2), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern2})),
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern3})),
                 GURL(kUrlStr2), DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(base::StrCat({kHttpsPrefix, kUrlPattern4})),
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
 }
@@ -405,11 +395,11 @@ TEST_F(DlpRulesManagerTest, DisabledByFeature) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr3),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 
   // Disable feature
@@ -419,11 +409,11 @@ TEST_F(DlpRulesManagerTest, DisabledByFeature) {
   UpdatePolicyPref(std::move(rules));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestrictedDestination(
+            dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kUrlStr1), GURL(kUrlStr3),
                 DlpRulesManager::Restriction::kClipboard));
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_->IsRestricted(
+            dlp_rules_manager_.IsRestricted(
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 }
 

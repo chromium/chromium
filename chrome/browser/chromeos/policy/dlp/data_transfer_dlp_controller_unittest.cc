@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +22,8 @@ constexpr char kYoutubeUrl[] = "https://www.youtube.com";
 
 class MockDlpRulesManager : public DlpRulesManager {
  public:
-  MockDlpRulesManager() = default;
+  explicit MockDlpRulesManager(PrefService* local_state)
+      : DlpRulesManager(local_state) {}
   ~MockDlpRulesManager() override = default;
 
   MOCK_CONST_METHOD3(IsRestrictedDestination,
@@ -50,12 +53,17 @@ class MockDlpController : public DataTransferDlpController {
 
 class DataTransferDlpControllerTest : public testing::Test {
  protected:
-  DataTransferDlpControllerTest() = default;
+  DataTransferDlpControllerTest()
+      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
+        rules_manager_(scoped_testing_local_state_.Get()) {
+    DlpRulesManagerFactory::OverrideManagerForTesting(&rules_manager_);
+  }
 
   ~DataTransferDlpControllerTest() override = default;
 
-  ::testing::StrictMock<MockDlpController> dlp_controller_;
+  ScopedTestingLocalState scoped_testing_local_state_;
   ::testing::StrictMock<MockDlpRulesManager> rules_manager_;
+  ::testing::StrictMock<MockDlpController> dlp_controller_;
 };
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {

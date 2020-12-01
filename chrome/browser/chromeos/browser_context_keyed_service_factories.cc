@@ -29,6 +29,7 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_engagement_metrics_service.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_token_forwarder_factory.h"
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater_factory.h"
@@ -87,6 +88,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
       GetInstance();
   plugin_vm::PluginVmEngagementMetricsService::Factory::GetInstance();
+  policy::DlpRulesManagerFactory::GetInstance();
   policy::PolicyCertServiceFactory::GetInstance();
   policy::UserCloudPolicyTokenForwarderFactory::GetInstance();
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();

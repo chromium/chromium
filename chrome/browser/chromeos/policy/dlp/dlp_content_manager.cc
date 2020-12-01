@@ -224,9 +224,10 @@ void DlpContentManager::OnWebContentsDestroyed(
 DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
     const GURL& url) const {
   DlpContentRestrictionSet set;
-  if (!DlpRulesManager::IsInitialized())
+  DlpRulesManager* dlp_rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!dlp_rules_manager)
     return set;
-  DlpRulesManager* dlp_rules_manager = DlpRulesManager::Get();
 
   const size_t kRestrictionsCount = 5;
   static constexpr std::array<

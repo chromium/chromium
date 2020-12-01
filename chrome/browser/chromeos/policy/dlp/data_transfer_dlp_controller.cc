@@ -24,21 +24,28 @@ bool IsFilesApp(const GURL& url) {
 }
 
 DlpRulesManager::Level IsDstRestricted(const GURL& src, const GURL& dst) {
-  return DlpRulesManager::Get()->IsRestrictedDestination(
-      src, dst, DlpRulesManager::Restriction::kClipboard);
+  // Safe to not check for nullptr as DataTransferDlpController is owned by
+  // DlpRulesManager.
+  return DlpRulesManagerFactory::GetForPrimaryProfile()
+      ->IsRestrictedDestination(src, dst,
+                                DlpRulesManager::Restriction::kClipboard);
 }
 
 DlpRulesManager::Level IsGuestOsRestricted(const GURL& src) {
-  return DlpRulesManager::Get()->IsRestrictedAnyOfComponents(
-      src,
-      std::vector<DlpRulesManager::Component>{
-          DlpRulesManager::Component::kPluginVm,
-          DlpRulesManager::Component::kCrostini},
-      DlpRulesManager::Restriction::kClipboard);
+  // Safe to not check for nullptr as DataTransferDlpController is owned by
+  // DlpRulesManager.
+  return DlpRulesManagerFactory::GetForPrimaryProfile()
+      ->IsRestrictedAnyOfComponents(src,
+                                    std::vector<DlpRulesManager::Component>{
+                                        DlpRulesManager::Component::kPluginVm,
+                                        DlpRulesManager::Component::kCrostini},
+                                    DlpRulesManager::Restriction::kClipboard);
 }
 
 DlpRulesManager::Level IsArcRestricted(const GURL& src) {
-  return DlpRulesManager::Get()->IsRestrictedComponent(
+  // Safe to not check for nullptr as DataTransferDlpController is owned by
+  // DlpRulesManager.
+  return DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestrictedComponent(
       src, DlpRulesManager::Component::kArc,
       DlpRulesManager::Restriction::kClipboard);
 }

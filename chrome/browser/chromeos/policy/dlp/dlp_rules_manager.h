@@ -9,6 +9,9 @@
 #include <memory>
 #include <set>
 
+#include "base/no_destructor.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
 
@@ -38,7 +41,7 @@ extern const char kBlockLevel[];
 // DlpRulesManager parses the rules set by DataLeakPreventionRulesList policy
 // and serves as an available service which can be queried anytime about the
 // restrictions set by the policy.
-class DlpRulesManager {
+class DlpRulesManager : public KeyedService {
  public:
   // A restriction that can be set by DataLeakPreventionRulesList policy.
   enum class Restriction {
@@ -78,18 +81,7 @@ class DlpRulesManager {
   using RuleId = int;
   using UrlConditionId = url_matcher::URLMatcherConditionSet::ID;
 
-  // Creates a singleton instance of the class.
-  static void Init();
-
-  // Returns whether DlpRulesManager was already created after user policy stack
-  // is initialized.
-  static bool IsInitialized();
-
-  // Returns a pointer to the existing instance of the class.
-  static DlpRulesManager* Get();
-
-  // Deletes an instance of the class. Is needed for testing purposes.
-  static void DeleteInstanceForTesting();
+  ~DlpRulesManager() override;
 
   // Registers the policy pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -126,8 +118,10 @@ class DlpRulesManager {
       Restriction restriction) const;
 
  protected:
-  DlpRulesManager();
-  virtual ~DlpRulesManager();
+  friend class DlpRulesManagerFactory;
+  friend class DlpRulesManagerTest;
+
+  explicit DlpRulesManager(PrefService* local_state);
 
  private:
   void OnPolicyUpdate();
@@ -167,6 +161,30 @@ class DlpRulesManager {
   // Map from the URL matching conditions IDs of the destinations to their
   // configured rules IDs.
   std::map<UrlConditionId, RuleId> dst_url_rules_mapping_;
+};
+
+// Initializes an instance of DlpRulesManager when a primary managed profile is
+// being created, e.g. when managed user sign in.
+class DlpRulesManagerFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  static DlpRulesManagerFactory* GetInstance();
+  // Returns nullptr if there is no primary profile, e.g. the session is not
+  // started.
+  static DlpRulesManager* GetForPrimaryProfile();
+
+  // TODO(crbug/1153146): Use TestingFactory instead.
+  static void OverrideManagerForTesting(DlpRulesManager* testing_manager);
+
+ private:
+  friend class base::NoDestructor<DlpRulesManagerFactory>;
+
+  DlpRulesManagerFactory();
+  ~DlpRulesManagerFactory() override = default;
+
+  // BrowserStateKeyedServiceFactory overrides:
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
 };
 
 }  // namespace policy

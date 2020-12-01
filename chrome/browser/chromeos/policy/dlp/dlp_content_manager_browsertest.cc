@@ -5,12 +5,16 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "base/json/json_writer.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
+#include "chrome/browser/chromeos/policy/login_policy_test_base.h"
+#include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser.h"
@@ -44,6 +48,12 @@ constexpr char kScreenCapturePausedNotificationId[] =
     "screen_capture_dlp_paused";
 constexpr char kScreenCaptureResumedNotificationId[] =
     "screen_capture_dlp_resumed";
+
+constexpr char kAllowedUrl[] = "https://example.com";
+constexpr char kUrl1[] = "https://example1.com";
+constexpr char kUrl2[] = "https://example2.com";
+constexpr char kUrl3[] = "https://example3.com";
+constexpr char kUrl4[] = "https://example4.com";
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -283,18 +293,26 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
       kScreenCaptureResumedNotificationId));
 }
 
-class DlpContentManagerPolicyBrowserTest : public PolicyTest {
+class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
  public:
   DlpContentManagerPolicyBrowserTest() = default;
+
+  void SetDlpRulesPolicy(const base::Value& rules) {
+    std::string json;
+    base::JSONWriter::Write(rules, &json);
+
+    base::DictionaryValue policy;
+    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
+    user_policy_helper()->SetPolicyAndWait(
+        policy, /*recommended=*/base::DictionaryValue(),
+        ProfileManager::GetActiveUserProfile());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
                        GetRestrictionSetForURL) {
-  const std::string kAllowedUrl = "https://example.com";
-  const std::string kUrl1 = "https://example1.com";
-  const std::string kUrl2 = "https://example2.com";
-  const std::string kUrl3 = "https://example3.com";
-  const std::string kUrl4 = "https://example4.com";
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   base::Value rules(base::Value::Type::LIST);
 
@@ -342,11 +360,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
       /*dst_components=*/base::Value(base::Value::Type::LIST),
       std::move(restrictions4)));
 
-  PolicyMap policies;
-  policies.Set(key::kDataLeakPreventionRulesList, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(rules),
-               nullptr);
-  UpdateProviderPolicy(policies);
+  SetDlpRulesPolicy(rules);
 
   DlpContentRestrictionSet screenshot_and_videocapture(kScreenshotRestricted);
   screenshot_and_videocapture.SetRestriction(

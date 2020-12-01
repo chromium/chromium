@@ -4,14 +4,15 @@
 
 #include <memory>
 
+#include "base/json/json_writer.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
-#include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "components/policy/core/common/policy_map.h"
+#include "chrome/browser/chromeos/policy/login_policy_test_base.h"
+#include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,17 +30,25 @@ constexpr char kClipboardText[] = "Hello World";
 
 }  // namespace
 
-class DataTransferDlpBrowserTest : public PolicyTest {
+class DataTransferDlpBrowserTest : public LoginPolicyTestBase {
  public:
   DataTransferDlpBrowserTest() = default;
+
+  void SetDlpRulesPolicy(const base::Value& rules) {
+    std::string json;
+    base::JSONWriter::Write(rules, &json);
+
+    base::DictionaryValue policy;
+    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
+    user_policy_helper()->SetPolicyAndWait(
+        policy, /*recommended=*/base::DictionaryValue(),
+        ProfileManager::GetActiveUserProfile());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, EmptyPolicy) {
-  PolicyMap policies;
-  policies.Set(key::kDataLeakPreventionRulesList, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, /*value=*/base::nullopt,
-               nullptr);
-  UpdateProviderPolicy(policies);
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
@@ -54,6 +63,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, EmptyPolicy) {
 }
 
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedUrl) {
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+
   const std::string kUrl1 = "https://mail.google.com";
   const std::string kUrl2 = "https://docs.google.com";
   const std::string kUrl3 = "https://example.com";
@@ -85,11 +97,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedUrl) {
       /*dst_components=*/base::Value(base::Value::Type::LIST),
       std::move(restrictions2)));
 
-  PolicyMap policies;
-  policies.Set(key::kDataLeakPreventionRulesList, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(rules),
-               nullptr);
-  UpdateProviderPolicy(policies);
+  SetDlpRulesPolicy(rules);
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
@@ -129,6 +137,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedComponent) {
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+
   const std::string kUrl1 = "https://mail.google.com";
 
   base::Value rules(base::Value::Type::LIST);
@@ -146,11 +157,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedComponent) {
       /*dst_urls=*/base::Value(base::Value::Type::LIST),
       std::move(dst_components), std::move(restrictions)));
 
-  PolicyMap policies;
-  policies.Set(key::kDataLeakPreventionRulesList, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(rules),
-               nullptr);
-  UpdateProviderPolicy(policies);
+  SetDlpRulesPolicy(rules);
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
