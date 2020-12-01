@@ -19,7 +19,6 @@
 #include "device/fido/bio/enrollment_handler.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/credential_management_handler.h"
-#include "device/fido/fido_discovery_factory.h"
 #include "device/fido/pin.h"
 #include "device/fido/reset_request_handler.h"
 #include "device/fido/set_pin_request_handler.h"
@@ -52,6 +51,12 @@ base::DictionaryValue EncodeEnrollment(const std::vector<uint8_t>& id,
 }  // namespace
 
 namespace settings {
+
+SecurityKeysHandlerBase::SecurityKeysHandlerBase() = default;
+SecurityKeysHandlerBase::SecurityKeysHandlerBase(
+    std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory)
+    : discovery_factory_(std::move(discovery_factory)) {}
+SecurityKeysHandlerBase::~SecurityKeysHandlerBase() = default;
 
 void SecurityKeysHandlerBase::OnJavascriptAllowed() {}
 
@@ -285,7 +290,33 @@ void SecurityKeysResetHandler::OnResetFinished(
 }
 
 SecurityKeysCredentialHandler::SecurityKeysCredentialHandler() = default;
+SecurityKeysCredentialHandler::SecurityKeysCredentialHandler(
+    std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory)
+    : SecurityKeysHandlerBase(std::move(discovery_factory)) {}
 SecurityKeysCredentialHandler::~SecurityKeysCredentialHandler() = default;
+
+void SecurityKeysCredentialHandler::HandleStart(const base::ListValue* args) {
+  DCHECK_EQ(State::kNone, state_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(1u, args->GetSize());
+  DCHECK(!credential_management_);
+
+  AllowJavascript();
+  DCHECK(callback_id_.empty());
+  callback_id_ = args->GetList()[0].GetString();
+
+  state_ = State::kStart;
+  credential_management_ =
+      std::make_unique<device::CredentialManagementHandler>(
+          discovery_factory(), supported_transports(),
+          base::BindOnce(
+              &SecurityKeysCredentialHandler::OnCredentialManagementReady,
+              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(&SecurityKeysCredentialHandler::OnGatherPIN,
+                              weak_factory_.GetWeakPtr()),
+          base::BindOnce(&SecurityKeysCredentialHandler::OnFinished,
+                         weak_factory_.GetWeakPtr()));
+}
 
 void SecurityKeysCredentialHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -316,36 +347,10 @@ void SecurityKeysCredentialHandler::Close() {
   // Invalidate all existing WeakPtrs so that no stale callbacks occur.
   weak_factory_.InvalidateWeakPtrs();
   state_ = State::kNone;
-  discovery_factory_.reset();
   credential_management_.reset();
   callback_id_.clear();
   credential_management_provide_pin_cb_.Reset();
   DCHECK(!credential_management_provide_pin_cb_);
-}
-
-void SecurityKeysCredentialHandler::HandleStart(const base::ListValue* args) {
-  DCHECK_EQ(State::kNone, state_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
-  DCHECK(!credential_management_);
-  DCHECK(!discovery_factory_);
-
-  AllowJavascript();
-  DCHECK(callback_id_.empty());
-  callback_id_ = args->GetList()[0].GetString();
-
-  state_ = State::kStart;
-  discovery_factory_ = std::make_unique<device::FidoDiscoveryFactory>();
-  credential_management_ =
-      std::make_unique<device::CredentialManagementHandler>(
-          discovery_factory_.get(), supported_transports(),
-          base::BindOnce(
-              &SecurityKeysCredentialHandler::OnCredentialManagementReady,
-              weak_factory_.GetWeakPtr()),
-          base::BindRepeating(&SecurityKeysCredentialHandler::OnGatherPIN,
-                              weak_factory_.GetWeakPtr()),
-          base::BindOnce(&SecurityKeysCredentialHandler::OnFinished,
-                         weak_factory_.GetWeakPtr()));
 }
 
 void SecurityKeysCredentialHandler::HandlePIN(const base::ListValue* args) {
@@ -506,7 +511,7 @@ void SecurityKeysCredentialHandler::OnFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   int error;
-
+  bool requires_pin_change = false;
   switch (status) {
     case device::CredentialManagementStatus::kSoftPINBlock:
       error = IDS_SETTINGS_SECURITY_KEYS_PIN_SOFT_LOCK;
@@ -519,10 +524,15 @@ void SecurityKeysCredentialHandler::OnFinished(
       error = IDS_SETTINGS_SECURITY_KEYS_NO_CREDENTIAL_MANAGEMENT;
       break;
     case device::CredentialManagementStatus::kNoPINSet:
+      requires_pin_change = true;
       error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_NO_PIN;
       break;
     case device::CredentialManagementStatus::kAuthenticatorResponseInvalid:
       error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_ERROR;
+      break;
+    case device::CredentialManagementStatus::kForcePINChange:
+      requires_pin_change = true;
+      error = IDS_SETTINGS_SECURITY_KEYS_FORCE_PIN_CHANGE;
       break;
     case device::CredentialManagementStatus::kSuccess:
       error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_REMOVED;
@@ -530,11 +540,36 @@ void SecurityKeysCredentialHandler::OnFinished(
   }
 
   FireWebUIListener("security-keys-credential-management-finished",
-                    base::Value(l10n_util::GetStringUTF8(std::move(error))));
+                    base::Value(l10n_util::GetStringUTF8(error)),
+                    base::Value(requires_pin_change));
 }
 
 SecurityKeysBioEnrollmentHandler::SecurityKeysBioEnrollmentHandler() = default;
+SecurityKeysBioEnrollmentHandler::SecurityKeysBioEnrollmentHandler(
+    std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory)
+    : SecurityKeysHandlerBase(std::move(discovery_factory)) {}
 SecurityKeysBioEnrollmentHandler::~SecurityKeysBioEnrollmentHandler() = default;
+
+void SecurityKeysBioEnrollmentHandler::HandleStart(
+    const base::ListValue* args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(state_, State::kNone);
+  DCHECK_EQ(1u, args->GetSize());
+  DCHECK(callback_id_.empty());
+
+  AllowJavascript();
+  state_ = State::kStart;
+  callback_id_ = args->GetList()[0].GetString();
+  bio_ = std::make_unique<device::BioEnrollmentHandler>(
+      supported_transports(),
+      base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnReady,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnError,
+                     weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&SecurityKeysBioEnrollmentHandler::OnGatherPIN,
+                          weak_factory_.GetWeakPtr()),
+      discovery_factory());
+}
 
 void SecurityKeysBioEnrollmentHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -577,33 +612,9 @@ void SecurityKeysBioEnrollmentHandler::RegisterMessages() {
 void SecurityKeysBioEnrollmentHandler::Close() {
   weak_factory_.InvalidateWeakPtrs();
   state_ = State::kNone;
-  discovery_factory_.reset();
   bio_.reset();
   callback_id_.clear();
-  discovery_factory_.reset();
   provide_pin_cb_.Reset();
-}
-
-void SecurityKeysBioEnrollmentHandler::HandleStart(
-    const base::ListValue* args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(state_, State::kNone);
-  DCHECK_EQ(1u, args->GetSize());
-  DCHECK(callback_id_.empty());
-
-  AllowJavascript();
-  state_ = State::kStart;
-  callback_id_ = args->GetList()[0].GetString();
-  discovery_factory_ = std::make_unique<device::FidoDiscoveryFactory>();
-  bio_ = std::make_unique<device::BioEnrollmentHandler>(
-      supported_transports(),
-      base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnReady,
-                     weak_factory_.GetWeakPtr()),
-      base::BindOnce(&SecurityKeysBioEnrollmentHandler::OnError,
-                     weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&SecurityKeysBioEnrollmentHandler::OnGatherPIN,
-                          weak_factory_.GetWeakPtr()),
-      discovery_factory_.get());
 }
 
 void SecurityKeysBioEnrollmentHandler::OnReady() {
@@ -622,6 +633,7 @@ void SecurityKeysBioEnrollmentHandler::OnError(
   state_ = State::kNone;
 
   int error;
+  bool requires_pin_change = false;
   switch (status) {
     case device::BioEnrollmentStatus::kSoftPINBlock:
       error = IDS_SETTINGS_SECURITY_KEYS_PIN_SOFT_LOCK;
@@ -633,10 +645,15 @@ void SecurityKeysBioEnrollmentHandler::OnError(
       error = IDS_SETTINGS_SECURITY_KEYS_NO_BIOMETRIC_ENROLLMENT;
       break;
     case device::BioEnrollmentStatus::kNoPINSet:
-      error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_NO_PIN;
+      requires_pin_change = true;
+      error = IDS_SETTINGS_SECURITY_KEYS_BIO_NO_PIN;
       break;
     case device::BioEnrollmentStatus::kAuthenticatorResponseInvalid:
       error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_ERROR;
+      break;
+    case device::BioEnrollmentStatus::kForcePINChange:
+      requires_pin_change = true;
+      error = IDS_SETTINGS_SECURITY_KEYS_FORCE_PIN_CHANGE;
       break;
     case device::BioEnrollmentStatus::kSuccess:
       error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_REMOVED;
@@ -644,7 +661,8 @@ void SecurityKeysBioEnrollmentHandler::OnError(
   }
 
   FireWebUIListener("security-keys-bio-enroll-error",
-                    base::Value(l10n_util::GetStringUTF8(error)));
+                    base::Value(l10n_util::GetStringUTF8(error)),
+                    base::Value(requires_pin_change));
 
   // If |callback_id_| is not empty, there is an ongoing operation,
   // which means there is an unresolved Promise. Reject it so that

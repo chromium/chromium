@@ -95,6 +95,9 @@ Polymer({
   /** @private {?Set<string>} */
   checkedCredentialIds_: null,
 
+  /** @private {boolean} */
+  showSetPINButton_: false,
+
   /** @override */
   attached() {
     this.$.dialog.showModal();
@@ -112,9 +115,11 @@ Polymer({
   /**
    * @private
    * @param {string} error
+   * @param {boolean=} requiresPINChange
    */
-  onError_(error) {
+  onError_(error, requiresPINChange = false) {
     this.errorMsg_ = error;
+    this.showSetPINButton_ = requiresPINChange;
     this.dialogPage_ = CredentialManagementDialogPage.ERROR;
   },
 
@@ -175,9 +180,10 @@ Polymer({
         this.closeButtonVisible_ = false;
         break;
       case CredentialManagementDialogPage.ERROR:
-        this.cancelButtonVisible_ = false;
-        this.confirmButtonVisible_ = false;
-        this.closeButtonVisible_ = true;
+        this.cancelButtonVisible_ = true;
+        this.confirmButtonLabel_ = this.i18n('securityKeysSetPinButton');
+        this.confirmButtonVisible_ = this.showSetPINButton_;
+        this.closeButtonVisible_ = false;
         break;
       default:
         assertNotReached();
@@ -193,6 +199,10 @@ Polymer({
         break;
       case CredentialManagementDialogPage.CREDENTIALS:
         this.deleteSelectedCredentials_();
+        break;
+      case CredentialManagementDialogPage.ERROR:
+        this.$.dialog.close();
+        this.fire('credential-management-set-pin');
         break;
       default:
         assertNotReached();
@@ -274,10 +284,10 @@ Polymer({
     this.confirmButtonDisabled_ = true;
     this.deleteInProgress_ = true;
     this.browserProxy_.deleteCredentials(Array.from(this.checkedCredentialIds_))
-        .then((err) => {
+        .then((error) => {
           this.confirmButtonDisabled_ = false;
           this.deleteInProgress_ = false;
-          this.onError_(err);
+          this.onError_(error);
         });
   },
 });

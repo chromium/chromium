@@ -64,6 +64,9 @@ Polymer({
     confirmButtonVisible_: Boolean,
 
     /** @private */
+    confirmButtonLabel_: String,
+
+    /** @private */
     deleteInProgress_: Boolean,
 
     /**
@@ -104,6 +107,9 @@ Polymer({
   /** @private {string} */
   recentEnrollmentId_: '',
 
+  /** @private {boolean} */
+  showSetPINButton_: false,
+
   /** @override */
   attached() {
     afterNextRender(this, function() {
@@ -125,9 +131,11 @@ Polymer({
   /**
    * @private
    * @param {string} error
+   * @param {boolean=} requiresPINChange
    */
-  onError_(error) {
+  onError_(error, requiresPINChange = false) {
     this.errorMsg_ = error;
+    this.showSetPINButton_ = requiresPINChange;
     this.dialogPage_ = BioEnrollDialogPage.ERROR;
   },
 
@@ -175,6 +183,7 @@ Polymer({
         this.cancelButtonVisible_ = true;
         this.cancelButtonDisabled_ = false;
         this.confirmButtonVisible_ = true;
+        this.confirmButtonLabel_ = this.i18n('continue');
         this.confirmButtonDisabled_ = false;
         this.doneButtonVisible_ = false;
         this.$.pin.focus();
@@ -193,14 +202,16 @@ Polymer({
       case BioEnrollDialogPage.CHOOSE_NAME:
         this.cancelButtonVisible_ = false;
         this.confirmButtonVisible_ = true;
+        this.confirmButtonLabel_ = this.i18n('continue');
         this.confirmButtonDisabled_ = !this.recentEnrollmentName_.length;
         this.doneButtonVisible_ = false;
         this.$.enrollmentName.focus();
         break;
       case BioEnrollDialogPage.ERROR:
-        this.cancelButtonVisible_ = false;
-        this.confirmButtonVisible_ = false;
-        this.doneButtonVisible_ = true;
+        this.cancelButtonVisible_ = true;
+        this.confirmButtonVisible_ = this.showSetPINButton_;
+        this.confirmButtonLabel_ = this.i18n('securityKeysSetPinButton');
+        this.doneButtonVisible_ = false;
         break;
       default:
         assertNotReached();
@@ -302,6 +313,10 @@ Polymer({
         break;
       case BioEnrollDialogPage.CHOOSE_NAME:
         this.renameNewEnrollment_();
+        break;
+      case BioEnrollDialogPage.ERROR:
+        this.$.dialog.close();
+        this.fire('bio-enroll-set-pin');
         break;
       default:
         assertNotReached();

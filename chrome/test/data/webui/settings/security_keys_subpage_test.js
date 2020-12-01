@@ -628,11 +628,35 @@ suite('SecurityKeysCredentialManagement', function() {
     assertShown(allDivs, dialog, 'initial');
     startResolver.resolve([currentMinPinLength]);
 
-    const errorString = 'foo bar baz';
+    const error = 'foo bar baz';
     webUIListenerCallback(
-        'security-keys-credential-management-finished', errorString);
+        'security-keys-credential-management-finished', error);
     assertShown(allDivs, dialog, 'error');
-    assertTrue(dialog.$.error.textContent.trim().includes(errorString));
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
+  });
+
+  test('PINChangeError', async function() {
+    const startResolver = new PromiseResolver();
+    browserProxy.setResponseFor(
+        'startCredentialManagement', startResolver.promise);
+
+    document.body.appendChild(dialog);
+    await browserProxy.whenCalled('startCredentialManagement');
+    assertShown(allDivs, dialog, 'initial');
+    startResolver.resolve([currentMinPinLength]);
+
+    const error = 'foo bar baz';
+    webUIListenerCallback(
+        'security-keys-credential-management-finished', error,
+        true /* requiresPINChange */);
+    assertShown(allDivs, dialog, 'error');
+    assertFalse(dialog.$.confirmButton.hidden);
+    assertFalse(dialog.$.confirmButton.disabled);
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
+
+    const setPinEvent = eventToPromise('credential-management-set-pin', dialog);
+    dialog.$.confirmButton.click();
+    await setPinEvent;
   });
 
   test('Credentials', async function() {
@@ -754,10 +778,33 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'initial');
     resolver.resolve([currentMinPinLength]);
 
-    const errorString = 'foo bar baz';
-    webUIListenerCallback('security-keys-bio-enroll-error', errorString);
+    const error = 'foo bar baz';
+    webUIListenerCallback('security-keys-bio-enroll-error', error);
     assertShown(allDivs, dialog, 'error');
-    assertTrue(dialog.$.error.textContent.trim().includes(errorString));
+    assertTrue(dialog.$.confirmButton.hidden);
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
+  });
+
+  test('PINChangeError', async function() {
+    const resolver = new PromiseResolver();
+    browserProxy.setResponseFor('startBioEnroll', resolver.promise);
+
+    document.body.appendChild(dialog);
+    await browserProxy.whenCalled('startBioEnroll');
+    assertShown(allDivs, dialog, 'initial');
+    resolver.resolve([currentMinPinLength]);
+
+    const error = 'something about setting a new PIN';
+    webUIListenerCallback(
+        'security-keys-bio-enroll-error', error, true /* requiresPINChange */);
+    assertShown(allDivs, dialog, 'error');
+    assertFalse(dialog.$.confirmButton.hidden);
+    assertFalse(dialog.$.confirmButton.disabled);
+    assertTrue(dialog.$.error.textContent.trim().includes(error));
+
+    const setPinEvent = eventToPromise('bio-enroll-set-pin', dialog);
+    dialog.$.confirmButton.click();
+    await setPinEvent;
   });
 
   test('Enrollments', async function() {

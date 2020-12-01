@@ -4671,6 +4671,7 @@ test("unit_tests") {
       "../browser/ui/webui/settings/safety_check_handler_unittest.cc",
       "../browser/ui/webui/settings/settings_cookies_view_handler_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
+      "../browser/ui/webui/settings/settings_security_key_handler_unittest.cc",
       "../browser/ui/webui/settings/site_settings_handler_unittest.cc",
       "../browser/ui/webui/settings/site_settings_helper_unittest.cc",
       "../browser/ui/webui/settings_utils_unittest.cc",

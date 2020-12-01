@@ -32,6 +32,7 @@ enum class CredentialManagementStatus {
   kHardPINBlock,
   kAuthenticatorMissingCredentialManagement,
   kNoPINSet,
+  kForcePINChange,
 };
 
 // CredentialManagementHandler implements the authenticatorCredentialManagement

@@ -28,6 +28,7 @@ enum class BioEnrollmentStatus {
   kHardPINBlock,
   kNoPINSet,
   kAuthenticatorMissingBioEnrollment,
+  kForcePINChange,
 };
 
 // BioEnrollmentHandler exercises the CTAP2.1 authenticatorBioEnrollment

@@ -33,6 +33,7 @@
 
     <template is="dom-if" if="[[showCredentialManagementDialog_]]" restamp>
       <settings-security-keys-credential-management-dialog
+        on-credential-management-set-pin="onSetPIN_"
         on-close="onCredentialManagementDialogClosed_">
       </settings-security-keys-credential-management-dialog>
     </template>
@@ -44,6 +45,7 @@
 
     <template is="dom-if" if="[[showBioEnrollDialog_]]" restamp>
       <settings-security-keys-bio-enroll-dialog
+          on-bio-enroll-set-pin="onSetPIN_"
           on-close="onBioEnrollDialogClosed_">
       </settings-security-keys-bio-enroll-dialog>
     </template>

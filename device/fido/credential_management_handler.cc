@@ -77,6 +77,13 @@ void CredentialManagementHandler::OnTouch(FidoAuthenticator* authenticator) {
     return;
   }
 
+  if (authenticator->ForcePINChange()) {
+    state_ = State::kFinished;
+    std::move(finished_callback_)
+        .Run(CredentialManagementStatus::kForcePINChange);
+    return;
+  }
+
   authenticator_ = authenticator;
   authenticator_->GetPinRetries(
       base::BindOnce(&CredentialManagementHandler::OnRetriesResponse,

@@ -2379,6 +2379,7 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
       {"securityKeysTitle", IDS_SETTINGS_SECURITY_KEYS_TITLE},
       {"securityKeysTouchToContinue",
        IDS_SETTINGS_SECURITY_KEYS_TOUCH_TO_CONTINUE},
+      {"securityKeysSetPinButton", IDS_SETTINGS_SECURITY_KEYS_SET_PIN_BUTTON},
   };
   AddLocalizedStringsBulk(html_source, kSecurityKeysStrings);
   bool win_native_api_available = false;

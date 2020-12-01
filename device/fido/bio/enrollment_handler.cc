@@ -165,6 +165,11 @@ void BioEnrollmentHandler::OnTouch(FidoAuthenticator* authenticator) {
     return;
   }
 
+  if (authenticator->ForcePINChange()) {
+    Finish(BioEnrollmentStatus::kForcePINChange);
+    return;
+  }
+
   authenticator_ = authenticator;
   state_ = State::kGettingRetries;
   authenticator_->GetPinRetries(base::BindOnce(

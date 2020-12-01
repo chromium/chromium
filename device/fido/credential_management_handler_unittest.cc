@@ -113,8 +113,28 @@ TEST_F(CredentialManagementHandlerTest, Test) {
   EXPECT_FALSE(finished_callback_.was_called());
 }
 
+TEST_F(CredentialManagementHandlerTest, TestForcePINChange) {
+  virtual_device_factory_.mutable_state()->pin = kPIN;
+  virtual_device_factory_.mutable_state()->force_pin_change = true;
+
+  VirtualCtap2Device::Config ctap_config;
+  ctap_config.pin_support = true;
+  ctap_config.resident_key_support = true;
+  ctap_config.credential_management_support = true;
+  ctap_config.min_pin_length_support = true;
+  ctap_config.pin_uv_auth_token_support = true;
+  ctap_config.ctap2_versions = {Ctap2Version::kCtap2_1};
+  virtual_device_factory_.SetCtap2Config(ctap_config);
+  virtual_device_factory_.SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+
+  auto handler = MakeHandler();
+  finished_callback_.WaitForCallback();
+  ASSERT_EQ(finished_callback_.value(),
+            CredentialManagementStatus::kForcePINChange);
+}
+
 TEST_F(CredentialManagementHandlerTest,
-       EnmerateCredentialResponse_TruncatedUTF8) {
+       EnumerateCredentialResponse_TruncatedUTF8) {
   // Webauthn says[1] that authenticators may truncate strings in user entities.
   // Since authenticators aren't going to do UTF-8 processing, that means that
   // they may truncate a multi-byte code point and thus produce an invalid

@@ -101,6 +101,24 @@ TEST_F(BioEnrollmentHandlerTest, NoPINSupport) {
   EXPECT_EQ(error_callback_.value(), BioEnrollmentStatus::kNoPINSet);
 }
 
+// Tests bio enrollment handler against device with the forcePINChange flag on.
+TEST_F(BioEnrollmentHandlerTest, ForcePINChange) {
+  VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.bio_enrollment_preview_support = true;
+  config.min_pin_length_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {Ctap2Version::kCtap2_1};
+  virtual_device_factory_.mutable_state()->force_pin_change = true;
+
+  virtual_device_factory_.SetCtap2Config(config);
+
+  auto handler = MakeHandler();
+  error_callback_.WaitForCallback();
+
+  EXPECT_EQ(error_callback_.value(), BioEnrollmentStatus::kForcePINChange);
+}
+
 // Tests enrollment handler PIN soft block.
 TEST_F(BioEnrollmentHandlerTest, SoftPINBlock) {
   VirtualCtap2Device::Config config;
