@@ -928,9 +928,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2020-12-01">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the display compositor receives the notification of the first
@@ -945,9 +945,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.GpuSwap2"
-    units="microseconds" expires_after="2020-12-01">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap a ScrollUpdate gesture event with scrollbar
@@ -964,9 +964,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.HandledToRendererSwap2"
-    units="microseconds" expires_after="2020-12-01">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the ScrollUpdate gesture event with scrollbar source, is
@@ -985,9 +985,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Scrollbar.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2020-12-01">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame (generates compositor
@@ -1002,9 +1002,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2020-12-01">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of an input event that results in a scrollbar
@@ -1024,9 +1024,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Scrollbar.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2021-04-04">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+    units="microseconds" expires_after="2021-12-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
