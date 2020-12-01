@@ -119,11 +119,6 @@ public class AutofillPaymentInstrument
     }
 
     @Override
-    public boolean isServerAutofillInstrument() {
-        return !mCard.getIsLocal();
-    }
-
-    @Override
     public boolean isValidForPaymentMethodData(String method, PaymentMethodData data) {
         boolean isSupportedMethod = super.isValidForPaymentMethodData(method, data);
         if (!isSupportedMethod) return false;

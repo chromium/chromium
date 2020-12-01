@@ -52,7 +52,6 @@ import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +80,6 @@ public class ChromePaymentRequestService
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
-    private boolean mHideServerAutofillCards;
     private PaymentHandlerHost mPaymentHandlerHost;
 
     /**
@@ -581,24 +579,12 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
-        mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
         paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
     }
 
     // Implements BrowserPaymentRequest:
     @Override
     public void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps) {
-        if (mHideServerAutofillCards) {
-            List<PaymentApp> nonServerAutofillCards = new ArrayList<>();
-            int numberOfPendingApps = pendingApps.size();
-            for (int i = 0; i < numberOfPendingApps; i++) {
-                if (!pendingApps.get(i).isServerAutofillInstrument()) {
-                    nonServerAutofillCards.add(pendingApps.get(i));
-                }
-            }
-            pendingApps = nonServerAutofillCards;
-        }
-
         // Load the validation rules for each unique region code in the credit card billing
         // addresses and check for validity.
         Set<String> uniqueCountryCodes = new HashSet<>();

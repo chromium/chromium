@@ -106,20 +106,6 @@ public abstract class PaymentApp extends EditableOption {
         return false;
     }
 
-    /** @return Whether this is a server autofill app. */
-    public boolean isServerAutofillInstrument() {
-        return false;
-    }
-
-    /**
-     * @return Whether this is a replacement for all server autofill apps. If at least one of
-     *         the displayed apps returns true here, then all apps that return true in
-     *         isServerAutofillInstrument() should be hidden.
-     */
-    public boolean isServerAutofillInstrumentReplacement() {
-        return false;
-    }
-
     /**
      * @return Whether the app supports the payment method with the method data. For example,
      *         supported card types and networks in the data should be verified for 'basic-card'
