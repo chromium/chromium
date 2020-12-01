@@ -1974,6 +1974,8 @@ static_library("ui") {
       "ash/launcher/chrome_launcher_controller_util.h",
       "ash/launcher/crostini_app_display.cc",
       "ash/launcher/crostini_app_display.h",
+      "ash/launcher/crostini_app_window.cc",
+      "ash/launcher/crostini_app_window.h",
       "ash/launcher/extension_shelf_context_menu.cc",
       "ash/launcher/extension_shelf_context_menu.h",
       "ash/launcher/extension_uninstaller.cc",

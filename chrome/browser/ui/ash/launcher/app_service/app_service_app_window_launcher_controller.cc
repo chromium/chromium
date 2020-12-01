@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/crostini_app_window.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -421,6 +422,13 @@ void AppServiceAppWindowLauncherController::AddWindowToShelf(
             arc::ArcAppShelfId::FromString(shelf_id.app_id),
             views::Widget::GetWidgetForNativeWindow(window), this,
             owner()->profile());
+    app_window = app_window_ptr.get();
+    aura_window_to_app_window_[window] = std::move(app_window_ptr);
+  } else if (crostini_tracker_ &&
+             !crostini_tracker_->GetShelfAppId(window).empty()) {
+    auto app_window_ptr = std::make_unique<CrostiniAppWindow>(
+        owner()->profile(), shelf_id,
+        views::Widget::GetWidgetForNativeWindow(window));
     app_window = app_window_ptr.get();
     aura_window_to_app_window_[window] = std::move(app_window_ptr);
   } else {
