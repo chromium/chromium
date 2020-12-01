@@ -556,7 +556,6 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(https://crbug.com/1148848): Sort out path sanitization for Lacros.
   // This will require refactoring the ash-only code below so it can be shared.
-  // For now, only allow downloads into the Downloads directory and children.
   const base::FilePath default_downloads_path =
       GetDefaultDownloadDirectoryForProfile();
   // Relative paths might be unsafe, so use the default path.
@@ -567,6 +566,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   // useful, but many tests assume they can download files into a subdirectory,
   // and allowing subdirectories doesn't hurt.
   if (default_downloads_path == path || default_downloads_path.IsParent(path))
+    return path;
+
+  // Allow documents directory ("MyFiles") and subdirectories.
+  base::FilePath documents_path =
+      base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
+  if (documents_path == path || documents_path.IsParent(path))
     return path;
 
   // Otherwise, return the safe default.

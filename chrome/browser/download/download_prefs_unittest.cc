@@ -26,6 +26,11 @@
 #include "components/drive/drive_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using safe_browsing::FileTypePolicies;
 
 namespace {
@@ -381,8 +386,18 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   const base::FilePath default_dir =
       prefs.GetDefaultDownloadDirectoryForProfile();
 
-  // Test a valid path.
+  // Test a valid subdirectory of downloads.
   ExpectValidDownloadDir(&profile, &prefs, default_dir.AppendASCII("testdir"));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Test a valid subdirectory of documents. This isn't tested for ash because
+  // these tests run on the linux "emulator", where ash uses ~/Documents, but
+  // the ash path sanitization code doesn't handle that path.
+  base::FilePath documents_path =
+      base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
+  ExpectValidDownloadDir(&profile, &prefs,
+                         documents_path.AppendASCII("testdir"));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Test with an invalid path outside the download directory.
   profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
