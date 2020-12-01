@@ -2060,8 +2060,12 @@ void LockContentsView::ShowAuthErrorMessage() {
     return;
 
   // Show gaia signin if this is login and the user has failed too many times.
+  // Do not show on secondary login screen – even though it has type kLogin – as
+  // there is no OOBE there.
   if (screen_type_ == LockScreen::ScreenType::kLogin &&
-      unlock_attempt_ >= kLoginAttemptsBeforeGaiaDialog) {
+      unlock_attempt_ >= kLoginAttemptsBeforeGaiaDialog &&
+      Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::LOGIN_SECONDARY) {
     Shell::Get()->login_screen_controller()->ShowGaiaSignin(
         big_view->auth_user()->current_user().basic_user_info.account_id);
     return;
