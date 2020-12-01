@@ -36,9 +36,9 @@ enum GeneralSignInError {
   //   due to Host/Instance version mismatch.
   MOJO_VERSION_MISMATCH = 1,
 
-  // PROVISIONING_TIMEOUT: is sent when provisioning is started
+  // GENERIC_PROVISIONING_TIMEOUT: is sent when provisioning is started
   //   but not completed with time out.
-  PROVISIONING_TIMEOUT = 2,
+  GENERIC_PROVISIONING_TIMEOUT = 2,
 
   // Network connection is unavailable.
   NO_NETWORK_CONNECTION = 3,
@@ -57,39 +57,39 @@ enum GeneralSignInError {
 };
 
 [Extensible]
-enum DeviceCheckInError {
+enum GMSCheckInError {
   // Next value: 4.
 
-  // DEVICE_CHECK_IN_FAILED: is sent when "check-in" procedure is completed
+  // GMS_CHECK_IN_FAILED: is sent when "check-in" procedure is completed
   //   but is actually failed.
-  DEVICE_CHECK_IN_FAILED = 1,
+  GMS_CHECK_IN_FAILED = 1,
 
-  // DEVICE_CHECK_IN_TIMEOUT: is sent when "check-in" procedure started
+  // GMS_CHECK_IN_TIMEOUT: is sent when "check-in" procedure started
   //   but is not completed.
-  DEVICE_CHECK_IN_TIMEOUT = 2,
+  GMS_CHECK_IN_TIMEOUT = 2,
 
-  // DEVICE_CHECK_IN_INTERNAL_ERROR: is sent when "check-in" procedure is
+  // GMS_CHECK_IN_INTERNAL_ERROR: is sent when "check-in" procedure is
   //   started, but some unexpected error situation happens so that it could
   //   not completed.
-  DEVICE_CHECK_IN_INTERNAL_ERROR = 3,
+  GMS_CHECK_IN_INTERNAL_ERROR = 3,
 };
 
 [Extensible]
-enum GMSError {
+enum GMSSignInError {
   // Next value: 7.
 
-  // GMS_NETWORK_ERROR: is sent when GMS sign-in procedure is started, but
-  //   it reports NETWORK_ERROR.
-  GMS_NETWORK_ERROR = 1,
+  // GMS_SIGN_IN_NETWORK_ERROR: is sent when GMS sign-in procedure is
+  //   started, but it reports NETWORK_ERROR.
+  GMS_SIGN_IN_NETWORK_ERROR = 1,
 
-  // GMS_SERVICE_UNAVAILABLE: is sent when GMS sign-in procedure is started
-  //   but it reports SERVICE_UNAVAILABLE. Note that this is not generic
-  //   service unavailable error code.
-  GMS_SERVICE_UNAVAILABLE = 2,
+  // GMS_SIGN_IN_SERVICE_UNAVAILABLE: is sent when GMS sign-in
+  //   procedure is started but it reports SERVICE_UNAVAILABLE. Note
+  //   that this is not generic service unavailable error code.
+  GMS_SIGN_IN_SERVICE_UNAVAILABLE = 2,
 
-  // GMS_BAD_AUTHENTICATION: is sent when GMS sign-in procedure is started
-  //   but it reports BAD_AUTHENTICATION.
-  GMS_BAD_AUTHENTICATION = 3,
+  // GMS_SIGN_IN_BAD_AUTHENTICATION: is sent when GMS sign-in procedure
+  //   is started but it reports BAD_AUTHENTICATION.
+  GMS_SIGN_IN_BAD_AUTHENTICATION = 3,
 
   // GMS_SIGN_IN_FAILED: is sent when GMS sign in procedure is started but
   //   it reports an error other than above NETWORK_ERROR, SERVICE_UNAVAILABLE
@@ -178,8 +178,8 @@ enum ArcSignInSuccess {
 union ArcSignInError {
   CloudProvisionFlowError cloud_provision_flow_error;
   [MinVersion=26] GeneralSignInError general_error;
-  [MinVersion=26] GMSError gms_error;
-  [MinVersion=26] DeviceCheckInError checkin_error;
+  [MinVersion=26] GMSSignInError sign_in_error;
+  [MinVersion=26] GMSCheckInError check_in_error;
 };
 
 union ArcSignInResult {

@@ -16,28 +16,28 @@ enum class ProvisioningResultUMA : int;
 namespace arc {
 
 // A struct that represents timeout of ARC provisioning from Chrome.
-struct OverallSignInTimeout {};
+struct ChromeProvisioningTimeout {};
 
 // A class that encapsulates the result of provisioning ARC.
 class ArcProvisioningResult {
  public:
   explicit ArcProvisioningResult(mojom::ArcSignInResultPtr result);
   explicit ArcProvisioningResult(ArcStopReason reason);
-  explicit ArcProvisioningResult(OverallSignInTimeout timeout);
+  explicit ArcProvisioningResult(ChromeProvisioningTimeout timeout);
   ArcProvisioningResult(ArcProvisioningResult&& other);
   ~ArcProvisioningResult();
 
   // Returns true if signin_result from ARC is present.
-  bool has_signin_result() const;
+  bool has_sign_in_result() const;
 
   // Returns the result of provisioning from inside ARC.
-  const mojom::ArcSignInResult* signin_result() const;
+  const mojom::ArcSignInResult* sign_in_result() const;
 
   // Returns true if signin_result is present with an error.
-  bool has_signin_error() const;
+  bool has_sign_in_error() const;
 
   // Returns the error of signin_result coming from ARC.
-  const mojom::ArcSignInError* signin_error() const;
+  const mojom::ArcSignInError* sign_in_error() const;
 
   // Returns true if result has given general sign-in error.
   bool has_general_error(mojom::GeneralSignInError error) const;
@@ -55,7 +55,9 @@ class ArcProvisioningResult {
   bool is_timedout() const;
 
  private:
-  absl::variant<mojom::ArcSignInResultPtr, ArcStopReason, OverallSignInTimeout>
+  absl::variant<mojom::ArcSignInResultPtr,
+                ArcStopReason,
+                ChromeProvisioningTimeout>
       result_;
 };
 

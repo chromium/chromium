@@ -691,8 +691,8 @@ TEST_F(ArcSessionManagerTest, Provisioning_Restart) {
 
   // Report failure.
   arc::mojom::ArcSignInResultPtr result = arc::mojom::ArcSignInResult::NewError(
-      arc::mojom::ArcSignInError::NewGmsError(
-          arc::mojom::GMSError::GMS_NETWORK_ERROR));
+      arc::mojom::ArcSignInError::NewSignInError(
+          arc::mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR));
   arc_session_manager()->OnProvisioningFinished(
       ArcProvisioningResult(std::move(result)));
 
@@ -897,8 +897,8 @@ TEST_F(ArcSessionManagerTest, IgnoreSecondErrorReporting) {
 
   // Report some failure that does not stop the bridge.
   arc::mojom::ArcSignInResultPtr result = arc::mojom::ArcSignInResult::NewError(
-      arc::mojom::ArcSignInError::NewGmsError(
-          arc::mojom::GMSError::GMS_SIGN_IN_FAILED));
+      arc::mojom::ArcSignInError::NewSignInError(
+          arc::mojom::GMSSignInError::GMS_SIGN_IN_FAILED));
   arc_session_manager()->OnProvisioningFinished(
       ArcProvisioningResult(std::move(result)));
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
@@ -1636,11 +1636,11 @@ struct ArcSessionRetryTestParam {
   bool data_removed;
 
   absl::variant<arc::mojom::GeneralSignInError,
-                arc::mojom::GMSError,
-                arc::mojom::DeviceCheckInError,
+                arc::mojom::GMSSignInError,
+                arc::mojom::GMSCheckInError,
                 arc::mojom::CloudProvisionFlowError,
                 ArcStopReason,
-                OverallSignInTimeout>
+                ChromeProvisioningTimeout>
       error;
 };
 
@@ -1648,29 +1648,29 @@ ArcSessionRetryTestParam kRetryTestCases[] = {
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, true,
      arc::mojom::GeneralSignInError::UNKNOWN_ERROR},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GMSError::GMS_NETWORK_ERROR},
+     arc::mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GMSError::GMS_SERVICE_UNAVAILABLE},
+     arc::mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GMSError::GMS_BAD_AUTHENTICATION},
+     arc::mojom::GMSSignInError::GMS_SIGN_IN_BAD_AUTHENTICATION},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::DeviceCheckInError::DEVICE_CHECK_IN_FAILED},
+     arc::mojom::GMSCheckInError::GMS_CHECK_IN_FAILED},
     {ArcSessionRetryTestParam::Negotiation::SKIPPED, true, true,
      arc::mojom::CloudProvisionFlowError::ERROR_OTHER},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
      arc::mojom::GeneralSignInError::MOJO_VERSION_MISMATCH},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GeneralSignInError::PROVISIONING_TIMEOUT},
+     arc::mojom::GeneralSignInError::GENERIC_PROVISIONING_TIMEOUT},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::DeviceCheckInError::DEVICE_CHECK_IN_TIMEOUT},
+     arc::mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::DeviceCheckInError::DEVICE_CHECK_IN_INTERNAL_ERROR},
+     arc::mojom::GMSCheckInError::GMS_CHECK_IN_INTERNAL_ERROR},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GMSError::GMS_SIGN_IN_FAILED},
+     arc::mojom::GMSSignInError::GMS_SIGN_IN_FAILED},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GMSError::GMS_SIGN_IN_TIMEOUT},
+     arc::mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
-     arc::mojom::GMSError::GMS_SIGN_IN_INTERNAL_ERROR},
+     arc::mojom::GMSSignInError::GMS_SIGN_IN_INTERNAL_ERROR},
     {ArcSessionRetryTestParam::Negotiation::SKIPPED, true, true,
      arc::mojom::CloudProvisionFlowError::ERROR_TIMEOUT},
     {ArcSessionRetryTestParam::Negotiation::SKIPPED, true, true,
@@ -1678,7 +1678,7 @@ ArcSessionRetryTestParam kRetryTestCases[] = {
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, false, false,
      ArcStopReason::CRASH},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, true,
-     OverallSignInTimeout{}},
+     ChromeProvisioningTimeout{}},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, false, false,
      arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR},
     {ArcSessionRetryTestParam::Negotiation::REQUIRED, true, false,
@@ -1752,10 +1752,10 @@ TEST_P(ArcSessionRetryTest, ContainerRestarted) {
   arc_session_manager()->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
-  absl::variant<arc::mojom::GeneralSignInError, arc::mojom::GMSError,
-                arc::mojom::DeviceCheckInError,
+  absl::variant<arc::mojom::GeneralSignInError, arc::mojom::GMSSignInError,
+                arc::mojom::GMSCheckInError,
                 arc::mojom::CloudProvisionFlowError, ArcStopReason,
-                OverallSignInTimeout>
+                ChromeProvisioningTimeout>
       error = std::move(GetParam().error);
 
   if (absl::holds_alternative<arc::mojom::CloudProvisionFlowError>(error)) {
@@ -1771,19 +1771,19 @@ TEST_P(ArcSessionRetryTest, ContainerRestarted) {
         arc::mojom::ArcSignInError::NewGeneralError(
             absl::get<arc::mojom::GeneralSignInError>(error))));
     arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<arc::mojom::GMSError>(error)) {
+  } else if (absl::holds_alternative<arc::mojom::GMSSignInError>(error)) {
     ArcProvisioningResult result(arc::mojom::ArcSignInResult::NewError(
-        arc::mojom::ArcSignInError::NewGmsError(
-            absl::get<arc::mojom::GMSError>(error))));
+        arc::mojom::ArcSignInError::NewSignInError(
+            absl::get<arc::mojom::GMSSignInError>(error))));
     arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<arc::mojom::DeviceCheckInError>(error)) {
+  } else if (absl::holds_alternative<arc::mojom::GMSCheckInError>(error)) {
     ArcProvisioningResult result(arc::mojom::ArcSignInResult::NewError(
-        arc::mojom::ArcSignInError::NewCheckinError(
-            absl::get<arc::mojom::DeviceCheckInError>(error))));
+        arc::mojom::ArcSignInError::NewCheckInError(
+            absl::get<arc::mojom::GMSCheckInError>(error))));
     arc_session_manager()->OnProvisioningFinished(result);
-  } else if (absl::holds_alternative<OverallSignInTimeout>(error)) {
+  } else if (absl::holds_alternative<ChromeProvisioningTimeout>(error)) {
     arc_session_manager()->OnProvisioningFinished(
-        ArcProvisioningResult(OverallSignInTimeout{}));
+        ArcProvisioningResult(ChromeProvisioningTimeout{}));
   }
 
   // In case of permanent error data removal request is scheduled.

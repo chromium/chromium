@@ -11,21 +11,21 @@ namespace arc {
 
 TEST(ArcProvisioningResultTest, HasSignInResult) {
   ArcProvisioningResult result1(ArcStopReason::CRASH);
-  EXPECT_FALSE(result1.has_signin_result());
+  EXPECT_FALSE(result1.has_sign_in_result());
 
   ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewSuccess(
       arc::mojom::ArcSignInSuccess::SUCCESS));
-  EXPECT_TRUE(result2.has_signin_result());
+  EXPECT_TRUE(result2.has_sign_in_result());
 }
 
 TEST(ArcProvisioningResultTest, HasSignInError) {
   ArcProvisioningResult result1(ArcStopReason::CRASH);
-  EXPECT_FALSE(result1.has_signin_error());
+  EXPECT_FALSE(result1.has_sign_in_error());
 
   ArcProvisioningResult result2(arc::mojom::ArcSignInResult::NewError(
       arc::mojom::ArcSignInError::NewGeneralError(
           arc::mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR)));
-  EXPECT_TRUE(result2.has_signin_error());
+  EXPECT_TRUE(result2.has_sign_in_error());
 }
 
 TEST(ArcProvisioningResultTest, Success) {
@@ -63,7 +63,7 @@ TEST(ArcProvisioningResultTest, Timedout) {
   ArcProvisioningResult result1(ArcStopReason::CRASH);
   EXPECT_FALSE(result1.is_timedout());
 
-  ArcProvisioningResult result2(OverallSignInTimeout{});
+  ArcProvisioningResult result2(ChromeProvisioningTimeout{});
   EXPECT_TRUE(result2.is_timedout());
 }
 

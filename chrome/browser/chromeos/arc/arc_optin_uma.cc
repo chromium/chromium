@@ -214,7 +214,7 @@ ProvisioningResultUMA GetProvisioningResultUMA(
   if (provisioning_result.is_timedout())
     return ProvisioningResultUMA::OVERALL_SIGN_IN_TIMEOUT;
 
-  const mojom::ArcSignInResult* result = provisioning_result.signin_result();
+  const mojom::ArcSignInResult* result = provisioning_result.sign_in_result();
   if (result->is_success()) {
     if (result->get_success() == mojom::ArcSignInSuccess::SUCCESS)
       return ProvisioningResultUMA::SUCCESS;
@@ -233,7 +233,7 @@ ProvisioningResultUMA GetProvisioningResultUMA(
     switch (result->get_error()->get_general_error()) {
       MAP_GENERAL_ERROR(UNKNOWN_ERROR);
       MAP_GENERAL_ERROR(MOJO_VERSION_MISMATCH);
-      MAP_GENERAL_ERROR(PROVISIONING_TIMEOUT);
+      MAP_GENERAL_ERROR(GENERIC_PROVISIONING_TIMEOUT);
       MAP_GENERAL_ERROR(NO_NETWORK_CONNECTION);
       MAP_GENERAL_ERROR(CHROME_SERVER_COMMUNICATION_ERROR);
       MAP_GENERAL_ERROR(ARC_DISABLED);
@@ -243,28 +243,28 @@ ProvisioningResultUMA GetProvisioningResultUMA(
 #undef MAP_GENERAL_ERROR
   }
 
-  if (result->get_error()->is_checkin_error()) {
-#define MAP_CHECKIN_ERROR(name)         \
-  case mojom::DeviceCheckInError::name: \
+  if (result->get_error()->is_check_in_error()) {
+#define MAP_CHECKIN_ERROR(name)      \
+  case mojom::GMSCheckInError::name: \
     return ProvisioningResultUMA::name
 
-    switch (result->get_error()->get_checkin_error()) {
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_FAILED);
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_TIMEOUT);
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_INTERNAL_ERROR);
+    switch (result->get_error()->get_check_in_error()) {
+      MAP_CHECKIN_ERROR(GMS_CHECK_IN_FAILED);
+      MAP_CHECKIN_ERROR(GMS_CHECK_IN_TIMEOUT);
+      MAP_CHECKIN_ERROR(GMS_CHECK_IN_INTERNAL_ERROR);
     }
 #undef MAP_CHECKIN_ERROR
   }
 
-  if (result->get_error()->is_gms_error()) {
-#define MAP_GMS_ERROR(name)   \
-  case mojom::GMSError::name: \
+  if (result->get_error()->is_sign_in_error()) {
+#define MAP_GMS_ERROR(name)         \
+  case mojom::GMSSignInError::name: \
     return ProvisioningResultUMA::name
 
-    switch (result->get_error()->get_gms_error()) {
-      MAP_GMS_ERROR(GMS_NETWORK_ERROR);
-      MAP_GMS_ERROR(GMS_SERVICE_UNAVAILABLE);
-      MAP_GMS_ERROR(GMS_BAD_AUTHENTICATION);
+    switch (result->get_error()->get_sign_in_error()) {
+      MAP_GMS_ERROR(GMS_SIGN_IN_NETWORK_ERROR);
+      MAP_GMS_ERROR(GMS_SIGN_IN_SERVICE_UNAVAILABLE);
+      MAP_GMS_ERROR(GMS_SIGN_IN_BAD_AUTHENTICATION);
       MAP_GMS_ERROR(GMS_SIGN_IN_FAILED);
       MAP_GMS_ERROR(GMS_SIGN_IN_TIMEOUT);
       MAP_GMS_ERROR(GMS_SIGN_IN_INTERNAL_ERROR);
@@ -285,14 +285,14 @@ std::ostream& operator<<(std::ostream& os,
   switch (result) {
     MAP_PROVISIONING_RESULT(SUCCESS);
     MAP_PROVISIONING_RESULT(UNKNOWN_ERROR);
-    MAP_PROVISIONING_RESULT(GMS_NETWORK_ERROR);
-    MAP_PROVISIONING_RESULT(GMS_SERVICE_UNAVAILABLE);
-    MAP_PROVISIONING_RESULT(GMS_BAD_AUTHENTICATION);
-    MAP_PROVISIONING_RESULT(DEVICE_CHECK_IN_FAILED);
+    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_NETWORK_ERROR);
+    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_SERVICE_UNAVAILABLE);
+    MAP_PROVISIONING_RESULT(GMS_SIGN_IN_BAD_AUTHENTICATION);
+    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_FAILED);
     MAP_PROVISIONING_RESULT(MOJO_VERSION_MISMATCH);
-    MAP_PROVISIONING_RESULT(PROVISIONING_TIMEOUT);
-    MAP_PROVISIONING_RESULT(DEVICE_CHECK_IN_TIMEOUT);
-    MAP_PROVISIONING_RESULT(DEVICE_CHECK_IN_INTERNAL_ERROR);
+    MAP_PROVISIONING_RESULT(GENERIC_PROVISIONING_TIMEOUT);
+    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_TIMEOUT);
+    MAP_PROVISIONING_RESULT(GMS_CHECK_IN_INTERNAL_ERROR);
     MAP_PROVISIONING_RESULT(GMS_SIGN_IN_FAILED);
     MAP_PROVISIONING_RESULT(GMS_SIGN_IN_TIMEOUT);
     MAP_PROVISIONING_RESULT(GMS_SIGN_IN_INTERNAL_ERROR);

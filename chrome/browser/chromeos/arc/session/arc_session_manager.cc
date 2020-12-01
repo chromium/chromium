@@ -292,25 +292,25 @@ bool ReadSaltOnDisk(const base::FilePath& salt_path, std::string* out_salt) {
   return true;
 }
 
-int GetSignInErrorCode(const arc::mojom::ArcSignInError* signin_error) {
-  if (!signin_error)
+int GetSignInErrorCode(const arc::mojom::ArcSignInError* sign_in_error) {
+  if (!sign_in_error)
     return 0;
 
 #define IF_ERROR_RETURN_CODE(name, type)                          \
-  if (signin_error->is_##name()) {                                \
+  if (sign_in_error->is_##name()) {                               \
     return static_cast<std::underlying_type_t<arc::mojom::type>>( \
-        signin_error->get_##name());                              \
+        sign_in_error->get_##name());                             \
   }
 
   IF_ERROR_RETURN_CODE(cloud_provision_flow_error, CloudProvisionFlowError)
   IF_ERROR_RETURN_CODE(general_error, GeneralSignInError)
-  IF_ERROR_RETURN_CODE(checkin_error, DeviceCheckInError)
-  IF_ERROR_RETURN_CODE(gms_error, GMSError)
+  IF_ERROR_RETURN_CODE(check_in_error, GMSCheckInError)
+  IF_ERROR_RETURN_CODE(sign_in_error, GMSSignInError)
 #undef IF_ERROR_RETURN_CODE
 
   LOG(ERROR) << "Unknown sign-in error "
              << std::underlying_type_t<arc::mojom::ArcSignInError::Tag>(
-                    signin_error->which())
+                    sign_in_error->which())
              << ".";
 
   return -1;
@@ -578,8 +578,8 @@ void ArcSessionManager::OnProvisioningFinished(
     return;
   }
 
-  const mojom::ArcSignInError* signin_error =
-      result.has_signin_error() ? result.signin_error() : nullptr;
+  const mojom::ArcSignInError* sign_in_error =
+      result.has_sign_in_error() ? result.sign_in_error() : nullptr;
 
   // Due asynchronous nature of stopping the ARC instance,
   // OnProvisioningFinished may arrive after setting the |State::STOPPED| state
@@ -625,9 +625,9 @@ void ArcSessionManager::OnProvisioningFinished(
     UpdateProvisioningTiming(base::TimeTicks::Now() - sign_in_start_time_,
                              provisioning_successful, profile_);
     UpdateProvisioningResultUMA(GetProvisioningResultUMA(result), profile_);
-    if (signin_error && signin_error->is_cloud_provision_flow_error()) {
+    if (sign_in_error && sign_in_error->is_cloud_provision_flow_error()) {
       UpdateCloudProvisionFlowErrorUMA(
-          signin_error->get_cloud_provision_flow_error(), profile_);
+          sign_in_error->get_cloud_provision_flow_error(), profile_);
     }
 
     if (!provisioning_successful)
@@ -670,20 +670,21 @@ void ArcSessionManager::OnProvisioningFinished(
 
   ArcSupportHost::Error support_error;
   VLOG(1) << "ARC provisioning failed: " << result << ".";
-  if (signin_error && signin_error->is_gms_error() &&
-      signin_error->get_gms_error() == mojom::GMSError::GMS_NETWORK_ERROR) {
+  if (sign_in_error && sign_in_error->is_sign_in_error() &&
+      sign_in_error->get_sign_in_error() ==
+          mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR) {
     support_error = ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
-  } else if (signin_error && signin_error->is_gms_error() &&
-             signin_error->get_gms_error() ==
-                 mojom::GMSError::GMS_BAD_AUTHENTICATION) {
+  } else if (sign_in_error && sign_in_error->is_sign_in_error() &&
+             sign_in_error->get_sign_in_error() ==
+                 mojom::GMSSignInError::GMS_SIGN_IN_BAD_AUTHENTICATION) {
     support_error = ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
-  } else if (signin_error && signin_error->is_gms_error()) {
+  } else if (sign_in_error && sign_in_error->is_sign_in_error()) {
     support_error = ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
-  } else if (signin_error && signin_error->is_checkin_error()) {
+  } else if (sign_in_error && sign_in_error->is_check_in_error()) {
     support_error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
-  } else if (signin_error && signin_error->is_cloud_provision_flow_error()) {
+  } else if (sign_in_error && sign_in_error->is_cloud_provision_flow_error()) {
     support_error = GetCloudProvisionFlowError(
-        signin_error->get_cloud_provision_flow_error());
+        sign_in_error->get_cloud_provision_flow_error());
   } else if (result.has_general_error(mojom::GeneralSignInError::
                                           CHROME_SERVER_COMMUNICATION_ERROR)) {
     support_error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
@@ -714,7 +715,7 @@ void ArcSessionManager::OnProvisioningFinished(
     ShutdownSession();
   }
 
-  if ((signin_error && signin_error->is_cloud_provision_flow_error()) ||
+  if ((sign_in_error && sign_in_error->is_cloud_provision_flow_error()) ||
       // OVERALL_SIGN_IN_TIMEOUT might be an indication that ARC believes it is
       // fully setup, but Chrome does not.
       result.is_timedout() ||
@@ -728,8 +729,8 @@ void ArcSessionManager::OnProvisioningFinished(
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
     error_code = static_cast<std::underlying_type_t<ProvisioningResultUMA>>(
         GetProvisioningResultUMA(result));
-  } else if (signin_error) {
-    error_code = GetSignInErrorCode(signin_error);
+  } else if (sign_in_error) {
+    error_code = GetSignInErrorCode(sign_in_error);
   }
   ShowArcSupportHostError({support_error, error_code} /* error_info */,
                           true /* should_show_send_feedback */);
@@ -917,7 +918,7 @@ void ArcSessionManager::StopAndEnableArc() {
 
 void ArcSessionManager::OnArcSignInTimeout() {
   LOG(ERROR) << "Timed out waiting for first sign in.";
-  OnProvisioningFinished(ArcProvisioningResult(OverallSignInTimeout()));
+  OnProvisioningFinished(ArcProvisioningResult(ChromeProvisioningTimeout()));
 }
 
 void ArcSessionManager::CancelAuthCode() {

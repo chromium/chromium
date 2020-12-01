@@ -13,38 +13,38 @@ ArcProvisioningResult::ArcProvisioningResult(mojom::ArcSignInResultPtr result)
     : result_(std::move(result)) {}
 ArcProvisioningResult::ArcProvisioningResult(ArcStopReason reason)
     : result_(reason) {}
-ArcProvisioningResult::ArcProvisioningResult(OverallSignInTimeout timeout)
+ArcProvisioningResult::ArcProvisioningResult(ChromeProvisioningTimeout timeout)
     : result_(timeout) {}
 ArcProvisioningResult::ArcProvisioningResult(ArcProvisioningResult&& other) =
     default;
 ArcProvisioningResult::~ArcProvisioningResult() = default;
 
-bool ArcProvisioningResult::has_signin_result() const {
+bool ArcProvisioningResult::has_sign_in_result() const {
   return absl::holds_alternative<mojom::ArcSignInResultPtr>(result_);
 }
 
-const mojom::ArcSignInResult* ArcProvisioningResult::signin_result() const {
-  DCHECK(has_signin_result());
+const mojom::ArcSignInResult* ArcProvisioningResult::sign_in_result() const {
+  DCHECK(has_sign_in_result());
   return absl::get<mojom::ArcSignInResultPtr>(result_).get();
 }
 
-bool ArcProvisioningResult::has_signin_error() const {
-  return has_signin_result() && signin_result()->is_error();
+bool ArcProvisioningResult::has_sign_in_error() const {
+  return has_sign_in_result() && sign_in_result()->is_error();
 }
 
-const mojom::ArcSignInError* ArcProvisioningResult::signin_error() const {
-  DCHECK(has_signin_error());
-  return signin_result()->get_error().get();
+const mojom::ArcSignInError* ArcProvisioningResult::sign_in_error() const {
+  DCHECK(has_sign_in_error());
+  return sign_in_result()->get_error().get();
 }
 
 bool ArcProvisioningResult::is_success() const {
-  return has_signin_result() && signin_result()->is_success();
+  return has_sign_in_result() && sign_in_result()->is_success();
 }
 
 bool ArcProvisioningResult::has_general_error(
     mojom::GeneralSignInError error) const {
-  return has_signin_error() && signin_error()->is_general_error() &&
-         signin_error()->get_general_error() == error;
+  return has_sign_in_error() && sign_in_error()->is_general_error() &&
+         sign_in_error()->get_general_error() == error;
 }
 
 bool ArcProvisioningResult::is_stopped() const {
@@ -57,7 +57,7 @@ ArcStopReason ArcProvisioningResult::stop_reason() const {
 }
 
 bool ArcProvisioningResult::is_timedout() const {
-  return absl::holds_alternative<OverallSignInTimeout>(result_);
+  return absl::holds_alternative<ChromeProvisioningTimeout>(result_);
 }
 
 std::ostream& operator<<(std::ostream& os,

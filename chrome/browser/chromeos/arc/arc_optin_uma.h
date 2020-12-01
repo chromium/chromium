@@ -114,22 +114,22 @@ enum class ProvisioningResultUMA : int {
   UNKNOWN_ERROR = 1,
 
   // GMS errors. More errors defined below.
-  GMS_NETWORK_ERROR = 2,
-  GMS_SERVICE_UNAVAILABLE = 3,
-  GMS_BAD_AUTHENTICATION = 4,
+  GMS_SIGN_IN_NETWORK_ERROR = 2,
+  GMS_SIGN_IN_SERVICE_UNAVAILABLE = 3,
+  GMS_SIGN_IN_BAD_AUTHENTICATION = 4,
 
   // Check in error. More errors defined below.
-  DEVICE_CHECK_IN_FAILED = 5,
+  GMS_CHECK_IN_FAILED = 5,
 
   // Mojo errors.
   MOJO_VERSION_MISMATCH = 7,
 
-  // Misc
-  PROVISIONING_TIMEOUT = 8,
+  // ARC did not finish provisioning within a reasonable amount of time.
+  GENERIC_PROVISIONING_TIMEOUT = 8,
 
   // Check in error.
-  DEVICE_CHECK_IN_TIMEOUT = 9,
-  DEVICE_CHECK_IN_INTERNAL_ERROR = 10,
+  GMS_CHECK_IN_TIMEOUT = 9,
+  GMS_CHECK_IN_INTERNAL_ERROR = 10,
 
   // GMS errors:
   GMS_SIGN_IN_FAILED = 11,
