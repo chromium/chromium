@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -38,6 +40,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "ui/base/ui_base_switches.h"
 
 using ::testing::ElementsAre;
 
@@ -540,4 +543,40 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   ASSERT_TRUE(login_ui_test_utils::ConfirmReauthConfirmationDialog(
       browser(), kReauthDialogTimeout));
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kUnexpectedResponse);
+}
+
+class SigninReauthViewControllerDarkModeBrowserTest
+    : public SigninReauthViewControllerBrowserTest {
+ public:
+  SigninReauthViewControllerDarkModeBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebUIDarkMode);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kForceDarkMode);
+    SigninReauthViewControllerBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests the light mode is enforced for the reauth confirmation dialog even if
+// the dark mode is enabled.
+IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerDarkModeBrowserTest,
+                       ConfirmationDialogDarkModeDisabled) {
+  ShowReauthPrompt();
+  content::WebContents* confirmation_dialog_contents =
+      signin_reauth_view_controller()->GetWebContents();
+  content::TestNavigationObserver navigation_observer(
+      confirmation_dialog_contents);
+  navigation_observer.WaitForNavigationFinished();
+
+  bool prefers_dark_mode = true;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      confirmation_dialog_contents,
+      "window.domAutomationController.send("
+      "window.matchMedia('(prefers-color-scheme: dark)').matches)",
+      &prefers_dark_mode));
+  EXPECT_EQ(prefers_dark_mode, false);
 }

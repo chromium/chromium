@@ -2984,21 +2984,26 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
       ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
 #endif  // defined(OS_ANDROID)
 
+  bool force_light = false;
   // Force a light preferred color scheme on certain URLs if kWebUIDarkMode is
   // disabled; some of the UI is not yet correctly themed.
   if (!base::FeatureList::IsEnabled(features::kWebUIDarkMode)) {
     // Update based on last committed url.
-    bool force_light = url.SchemeIs(content::kChromeUIScheme);
+    force_light |= url.SchemeIs(content::kChromeUIScheme);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (!force_light) {
-      force_light = url.SchemeIs(extensions::kExtensionScheme) &&
-                    url.host_piece() == extension_misc::kPdfExtensionId;
-    }
+    force_light |= url.SchemeIs(extensions::kExtensionScheme) &&
+                   url.host_piece() == extension_misc::kPdfExtensionId;
 #endif
-    if (force_light) {
-      web_prefs->preferred_color_scheme =
-          blink::mojom::PreferredColorScheme::kLight;
-    }
+  }
+
+  // Reauth WebUI doesn't support dark mode yet because it shares the dialog
+  // with GAIA web contents that is not correctly themed.
+  force_light |= url.SchemeIs(content::kChromeUIScheme) &&
+                 url.host_piece() == chrome::kChromeUISigninReauthHost;
+
+  if (force_light) {
+    web_prefs->preferred_color_scheme =
+        blink::mojom::PreferredColorScheme::kLight;
   }
 
   return old_preferred_color_scheme != web_prefs->preferred_color_scheme;

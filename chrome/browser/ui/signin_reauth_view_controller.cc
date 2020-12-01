@@ -29,8 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 
 namespace {
 
@@ -311,15 +309,10 @@ void SigninReauthViewController::ShowReauthConfirmationDialog() {
           browser_, account_id_, access_point_);
   dialog_delegate_observer_.Add(dialog_delegate_);
 
-  // Gaia Reauth page doesn't support dark mode. Force the confirmation dialog
-  // to use the light mode as well to match the style.
-  auto* web_contents = dialog_delegate_->GetWebContents();
-  auto prefs = web_contents->GetOrCreateWebPreferences();
-  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
-  web_contents->SetWebPreferences(prefs);
-
-  SigninReauthUI* web_dialog_ui =
-      web_contents->GetWebUI()->GetController()->GetAs<SigninReauthUI>();
+  SigninReauthUI* web_dialog_ui = dialog_delegate_->GetWebContents()
+                                      ->GetWebUI()
+                                      ->GetController()
+                                      ->GetAs<SigninReauthUI>();
   web_dialog_ui->InitializeMessageHandlerWithReauthController(this);
 }
 
