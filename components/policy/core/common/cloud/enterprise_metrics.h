@@ -283,6 +283,11 @@ POLICY_EXPORT extern const char kMetricCBCMRemoteCommandExecutedTemplate[];
 POLICY_EXPORT extern const char
     kMetricCBCMUnsignedRemoteCommandExecutedTemplate[];
 
+// Private set membership UMA histogram names.
+POLICY_EXPORT extern const char kUMAPrivateSetMembershipHashDanceComparison[];
+POLICY_EXPORT extern const char kUMAPrivateSetMembershipSuccessTime[];
+POLICY_EXPORT extern const char kUMAPrivateSetMembershipRequestStatus[];
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_ENTERPRISE_METRICS_H_
