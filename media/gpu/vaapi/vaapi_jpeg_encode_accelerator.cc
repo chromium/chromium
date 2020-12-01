@@ -312,7 +312,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  DCHECK_LE(encoded_size, max_frame_size);
+  CHECK_LE(encoded_size, max_frame_size);
 
   if (exif_buffer_size > 0) {
     // Check the output header is 2+2+14 bytes APP0 as expected.
@@ -340,7 +340,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
         static_cast<uint8_t>((exif_buffer_size + 2) / 256),
         static_cast<uint8_t>((exif_buffer_size + 2) % 256),
     };
-    DCHECK_GE(output_size, base::size(jpeg_soi_and_app1_header));
+    CHECK_GE(output_size, base::size(jpeg_soi_and_app1_header));
     if (exif_buffer_size > output_size - base::size(jpeg_soi_and_app1_header)) {
       VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
