@@ -229,10 +229,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define GR_OP_ALLOCATE_USE_NEW
 #endif
 
-#ifndef SK_SUPPORT_LEGACY_ADJUSTHQHEURISTIC
-#define SK_SUPPORT_LEGACY_ADJUSTHQHEURISTIC
-#endif
-
 // Staging for lowp::bilerp_clamp_8888, and for planned misc. others.
 #define SK_DISABLE_LOWP_BILERP_CLAMP_CLAMP_STAGE
 

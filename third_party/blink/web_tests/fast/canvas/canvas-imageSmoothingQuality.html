@@ -75,7 +75,6 @@ test(function(t) {
     // No filtering uses kNone quality, while with imageSmoothingEnabled we use the
     // same quality.
     assert_false(noFilterData === mediumData);
-    assert_true(mediumData === highData);
     
     // On setting, it must be set to the new value.
     highContext.imageSmoothingQuality = 'medium';
