@@ -51,8 +51,11 @@ class MODULES_EXPORT AudioDecoderTraits {
   using MediaConfigType = media::AudioDecoderConfig;
   using InputType = EncodedAudioChunk;
 
+  static constexpr bool kNeedsGpuFactories = false;
+
   static std::unique_ptr<MediaDecoderType> CreateDecoder(
       ExecutionContext& execution_context,
+      media::GpuVideoAcceleratorFactories* gpu_factories,
       media::MediaLog* media_log);
   static void InitializeDecoder(MediaDecoderType& decoder,
                                 const MediaConfigType& media_config,

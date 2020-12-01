@@ -26,7 +26,8 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -185,7 +186,7 @@ class AudioDecoderBrokerTest : public testing::Test {
     // that simulate gpu-accelerated decode.
     interface_factory_ = std::make_unique<FakeInterfaceFactory>();
     EXPECT_TRUE(
-        execution_context.GetBrowserInterfaceBroker().SetBinderForTesting(
+        Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             media::mojom::InterfaceFactory::Name_,
             WTF::BindRepeating(&FakeInterfaceFactory::BindRequest,
                                base::Unretained(interface_factory_.get()))));

@@ -24,6 +24,10 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
+namespace media {
+class GpuVideoAcceleratorFactories;
+}
+
 namespace blink {
 
 template <typename Traits>
@@ -58,9 +62,6 @@ class MODULES_EXPORT DecoderTemplate
   void Trace(Visitor*) const override;
 
  protected:
-  // TODO(sandersd): Consider moving these to the Traits class, and creating an
-  // instance of the traits.
-
   // Convert a configuration to a DecoderConfig.
   virtual CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                           MediaConfigType* out_media_config,
@@ -150,6 +151,8 @@ class MODULES_EXPORT DecoderTemplate
   // We might destroy |parent_media_log_| at any point, so keep a clone which
   // can be safely accessed, and whose raw pointer can be given to |decoder_|.
   std::unique_ptr<media::MediaLog> media_log_;
+
+  media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
 
   // TODO(sandersd): Store the last config, flush, and reset so that
   // duplicates can be elided.

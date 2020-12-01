@@ -8,7 +8,7 @@ enum EncodedVideoChunkType {
 };
 
 [
-    Exposed=Window,
+    Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs
 ] interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);

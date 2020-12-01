@@ -60,8 +60,11 @@ class MODULES_EXPORT VideoDecoderTraits {
   using MediaConfigType = media::VideoDecoderConfig;
   using InputType = EncodedVideoChunk;
 
+  static constexpr bool kNeedsGpuFactories = true;
+
   static std::unique_ptr<MediaDecoderType> CreateDecoder(
       ExecutionContext& execution_context,
+      media::GpuVideoAcceleratorFactories* gpu_factories,
       media::MediaLog* media_log);
   static void InitializeDecoder(MediaDecoderType& decoder,
                                 const MediaConfigType& media_config,

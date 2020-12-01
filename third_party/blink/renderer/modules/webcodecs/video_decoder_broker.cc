@@ -19,7 +19,7 @@
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -89,13 +89,11 @@ class MediaVideoTaskWrapper {
     DVLOG(2) << __func__;
     DETACH_FROM_SEQUENCE(sequence_checker_);
 
-    // TODO(chcunningham): Enable this for workers. Currently only a
-    // frame-binding (RenderFrameHostImpl) is exposed.
     // TODO(chcunningham): set_disconnect_handler?
     // Mojo connection setup must occur here on the main thread where its safe
     // to use |execution_context| APIs.
     mojo::PendingRemote<media::mojom::InterfaceFactory> media_interface_factory;
-    execution_context.GetBrowserInterfaceBroker().GetInterface(
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
         media_interface_factory.InitWithNewPipeAndPassReceiver());
 
     // Mojo remote must be bound on media thread where it will be used.
@@ -107,17 +105,13 @@ class MediaVideoTaskWrapper {
                                  WTF::CrossThreadUnretained(this),
                                  std::move(media_interface_factory)));
 
-    // TODO(chcunningham): Research usage of this and consider how to unify for
-    // worker context (no document). What follows is borrowed from
-    // HTMLMediaElement.
-    Document* document = To<LocalDOMWindow>(execution_context).document();
-    if (document && document->GetFrame()) {
-      LocalFrame* frame = document->GetFrame();
-      target_color_space_ = frame->GetPage()
-                                ->GetChromeClient()
-                                .GetScreenInfo(*frame)
-                                .display_color_spaces.GetScreenInfoColorSpace();
-    }
+    // TODO(sandersd): Target color space is used by DXVA VDA to pick an
+    // efficient conversion for FP16 HDR content, and for no other purpose.
+    // For <video>, we use the document's colorspace, but for WebCodecs we can't
+    // infer that frames will be rendered to a document (there might not even be
+    // a document). If this is relevant for WebCodecs, we should make it a
+    // configuration hint.
+    target_color_space_ = gfx::ColorSpace::CreateSRGB();
   }
 
   virtual ~MediaVideoTaskWrapper() {
