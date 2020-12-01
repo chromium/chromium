@@ -121,7 +121,7 @@ export function routineResultEntryTestSuite() {
       assertEquals(
           getNameText(),
           loadTimeData.getStringF(
-              'routineNameText',
+              'routineEntryText',
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should be empty if the test is not started.
@@ -138,7 +138,7 @@ export function routineResultEntryTestSuite() {
       assertEquals(
           getNameText(),
           loadTimeData.getStringF(
-              'routineNameText',
+              'routineEntryText',
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should be running.
@@ -158,7 +158,7 @@ export function routineResultEntryTestSuite() {
       assertEquals(
           getNameText(),
           loadTimeData.getStringF(
-              'routineNameText',
+              'routineEntryText',
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should show the passed result.
@@ -178,7 +178,7 @@ export function routineResultEntryTestSuite() {
       assertEquals(
           getNameText(),
           loadTimeData.getStringF(
-              'routineNameText',
+              'routineEntryText',
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should show the passed result.
@@ -203,7 +203,7 @@ export function routineResultEntryTestSuite() {
       assertEquals(
           getNameText(),
           loadTimeData.getStringF(
-              'routineNameText',
+              'routineEntryText',
               loadTimeData.getString('batteryChargeRoutineText')));
 
       // Status should show the passed result.

@@ -28,6 +28,9 @@
   </data-point>
 
   <routine-section slot="routines" routines="[[routines_]]"
-    is-test-running="{{isTestRunning}}">
+    is-test-running="{{isTestRunning}}"
+    run-tests-button-text="[[getRunTestsButtonText_(
+      batteryChargeStatus_.powerAdapterStatus
+    )]]">
   </routine-section>
 </diagnostics-card>

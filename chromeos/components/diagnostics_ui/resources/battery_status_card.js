@@ -191,4 +191,13 @@ Polymer({
     return loadTimeData.getStringF(
         'currentNowText', this.batteryChargeStatus_.currentNowMilliamps);
   },
+
+  /** @protected */
+  getRunTestsButtonText_() {
+    return loadTimeData.getString(
+        this.batteryChargeStatus_.powerAdapterStatus ===
+                chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected ?
+            'runBatteryDischargeTestText' :
+            'runBatteryChargeTestText')
+  }
 });

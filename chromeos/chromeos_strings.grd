@@ -727,6 +727,51 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DISCHARGE_TEST_RESULT" desc="The result text for discharging routine." translateable="false">
         Discharged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
       </message>
+      <message name="IDS_DIAGNOSTICS_TEST_FAILURE_TEXT" desc="The text displayed when a test fails." translateable="true">
+        Test failed
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT" desc="The text displayed when a test passes." translateable="true">
+        Test succeeded
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT" desc="The text displayed to indicate that a test is running." translateable="true">
+        RUNNING
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_FAILURE_BADGE_TEXT" desc="The text displayed to indicate that a test failed." translateable="true">
+        FAILED
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT" desc="The text displayed to indicate that a test passed." translateable="true">
+        SUCCESS
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_RUNNING_TEXT" desc="The text displayed while a test is running." translateable="true">
+        Test running
+      </message>
+      <message name="IDS_DIAGNOSTICS_HIDE_REPORT_TEXT" desc="The text for the button that closes the test summary report." translateable="true">
+        Hide Report
+      </message>
+      <message name="IDS_DIAGNOSTICS_SEE_REPORT_TEXT" desc="The text for the button that shows the test summary report" translateable="true">
+        See Report
+      </message>
+      <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test." translateable="true">
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test
+      </message>
+      <message name="IDS_DIAGNOSTICS_CHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery charge test." translateable="true">
+        Run Charge test
+      </message>
+      <message name="IDS_DIAGNOSTICS_DISCHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery discharge test." translateable="true">
+        Run Discharge test
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the CPU tests." translateable="true">
+        Run CPU test
+      </message>
+      <message name="IDS_DIAGNOSTICS_MEMORY_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the memory test." translateable="true">
+        Run Memory test
+      </message>
+      <message name="IDS_DIAGNOSTICS_RUN_AGAIN_BUTTON_TEXT" desc="The text for the button used to rerun a test." translateable="true">
+        Run again
+      </message>
+      <message name="IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT" desc="The text for the button used to stop a test." translateable="true">
+        Stop test
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT" desc="The title text format string used for Quick Answers definition result card. The first placeholder contains the source query text and the second placeholder contains the phonetics.">

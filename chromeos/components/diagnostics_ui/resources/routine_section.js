@@ -84,6 +84,12 @@ Polymer({
       type: Boolean,
       value: true,
     },
+
+    /** @type {string} */
+    runTestsButtonText: {
+      type: String,
+      value: '',
+    },
   },
 
   /** @private */
@@ -160,8 +166,8 @@ Polymer({
 
   /** @protected */
   getReportToggleButtonText_() {
-    // TODO(joonbug): Localize this string.
-    return this.isReportListHidden_ ? 'See Report' : 'Hide Report';
+    return loadTimeData.getString(
+        this.isReportListHidden_ ? 'seeReportText' : 'hideReportText');
   },
 
   /** @protected */
@@ -177,11 +183,12 @@ Polymer({
 
   /** @protected */
   getBadgeText_() {
-    // TODO(joonbug): Localize this string.
     if (this.executionStatus_ === ExecutionProgress.kRunning) {
-      return 'Test running';
+      return loadTimeData.getString('testRunning');
     }
-    return this.hasTestFailure_ ? 'FAILED' : 'SUCCESS';
+    return loadTimeData.getString(
+        this.hasTestFailure_ ? 'testFailedBadgeText' :
+                               'testSucceededBadgeText');
   },
 
   /** @protected */
@@ -189,7 +196,8 @@ Polymer({
     if (this.executionStatus_ === ExecutionProgress.kRunning) {
       return this.currentTestName_;
     }
-    return this.hasTestFailure_ ? 'Test failed' : 'Test succeeded';
+    return loadTimeData.getString(
+        this.hasTestFailure_ ? 'testFailure' : 'testSuccess');
   },
 
   /** @override */

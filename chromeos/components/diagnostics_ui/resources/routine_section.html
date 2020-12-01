@@ -10,8 +10,7 @@
 <div id="routineSection">
   <cr-button id="runTestsButton" class="action-button" on-click="onRunTestsClicked_"
       disabled="[[isTestRunning]]">
-    <!-- TODO(zentaro): Localize this string. -->
-    Run Tests
+    [[runTestsButtonText]]
   </cr-button>
   <cr-button id="toggleReportButton" class="action-button" on-click="onToggleReportClicked_"
       hidden="[[isResultAndStatusHidden_(executionStatus_)]]">

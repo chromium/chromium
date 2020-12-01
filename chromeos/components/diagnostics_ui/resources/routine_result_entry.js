@@ -70,7 +70,7 @@ Polymer({
    * @return {string}
    */
   getRunningRoutineString_(routine) {
-    return loadTimeData.getStringF('routineNameText', getRoutineType(routine));
+    return loadTimeData.getStringF('routineEntryText', getRoutineType(routine));
   },
 
   /**
@@ -98,25 +98,23 @@ Polymer({
    * @protected
    */
   getBadgeText_() {
-    // TODO(joonbug): Localize this string.
     if (this.item.progress === ExecutionProgress.kRunning) {
-      return 'RUNNING';
+      return loadTimeData.getString('testRunningBadgeText');
     }
 
     if (this.item.result &&
         this.getSimpleResult_(this.item.result) ===
             chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
-      return 'SUCCESS';
+      return loadTimeData.getString('testSucceededBadgeText');
     }
 
-    return 'FAILED';
+    return loadTimeData.getString('testFailedBadgeText');
   },
 
   /**
    * @protected
    */
   getBadgeType_() {
-    // TODO(joonbug): Localize this string.
     if (this.item.progress === ExecutionProgress.kRunning) {
       return BadgeType.DEFAULT;
     }
