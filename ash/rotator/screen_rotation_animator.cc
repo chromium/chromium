@@ -13,6 +13,7 @@
 #include "ash/rotator/screen_rotation_animation.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/shell.h"
+#include "ash/utility/layer_util.h"
 #include "ash/utility/transformer_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -21,7 +22,6 @@
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -360,23 +360,14 @@ void ScreenRotationAnimator::CreateOldLayerTreeForSlowAnimation() {
 
 std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
     std::unique_ptr<viz::CopyOutputResult> result) {
-  DCHECK(!result->IsEmpty());
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
-  auto transfer_resource = viz::TransferableResource::MakeGL(
-      result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-      result->GetTextureResult()->sync_token, result->size(),
-      false /* is_overlay_candidate */);
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      result->TakeTextureOwnership();
+  std::unique_ptr<ui::Layer> copy_layer =
+      CreateLayerFromCopyOutputResult(std::move(result));
   const gfx::Rect rect(
       GetScreenRotationContainer(root_window_)->layer()->size());
-  std::unique_ptr<ui::Layer> copy_layer = std::make_unique<ui::Layer>();
   copy_layer->SetBounds(rect);
   // TODO(crbug.com/1040279): This is a workaround and should be removed once
   // the issue is fixed.
   copy_layer->SetFillsBoundsOpaquely(false);
-  copy_layer->SetTransferableResource(transfer_resource,
-                                      std::move(release_callback), rect.size());
   return std::make_unique<ui::LayerTreeOwner>(std::move(copy_layer));
 }
 

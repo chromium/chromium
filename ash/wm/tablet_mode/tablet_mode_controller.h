@@ -53,10 +53,6 @@ namespace views {
 class Widget;
 }
 
-namespace viz {
-class CopyOutputResult;
-}
-
 namespace ash {
 
 class InternalInputDevicesEventBlocker;
@@ -312,9 +308,9 @@ class ASH_EXPORT TabletModeController
   // Called when a screenshot is taken. Creates |screenshot_widget_| which holds
   // the screenshot results and stacks it under top window. |root_window|
   // specifies on which root window the screen shot is taken.
-  void OnScreenshotTaken(base::OnceClosure on_screenshot_taken,
-                         aura::Window* root_window,
-                         std::unique_ptr<viz::CopyOutputResult> copy_result);
+  void OnLayerCopyed(base::OnceClosure on_screenshot_taken,
+                     aura::Window* root_window,
+                     std::unique_ptr<ui::Layer> copy_layer);
 
   // Calculates whether the device is currently in a physical tablet state,
   // using the most recent seen device events such as lid angle changes.
@@ -464,7 +460,7 @@ class ASH_EXPORT TabletModeController
   // Tracks and record transition smoothness.
   base::Optional<ui::ThroughputTracker> transition_tracker_;
 
-  base::CancelableOnceCallback<void(std::unique_ptr<viz::CopyOutputResult>)>
+  base::CancelableOnceCallback<void(std::unique_ptr<ui::Layer>)>
       screenshot_taken_callback_;
   base::CancelableOnceClosure screenshot_set_callback_;
 

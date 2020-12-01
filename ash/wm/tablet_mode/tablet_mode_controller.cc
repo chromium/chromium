@@ -20,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/utility/layer_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/internal_input_devices_event_blocker.h"
@@ -38,9 +39,6 @@
 #include "base/time/tick_clock.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/system/devicemode.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -159,26 +157,6 @@ bool ShouldObserveSequence(ui::LayerAnimationSequence* sequence) {
   DCHECK(sequence);
   return sequence->properties() &
          TabletModeController::GetObservedTabletTransitionProperty();
-}
-
-std::unique_ptr<ui::Layer> CreateLayerFromScreenshotResult(
-    std::unique_ptr<viz::CopyOutputResult> copy_result) {
-  DCHECK(!copy_result->IsEmpty());
-  DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
-
-  const gfx::Size layer_size = copy_result->size();
-  viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGL(
-          copy_result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-          copy_result->GetTextureResult()->sync_token, layer_size,
-          /*is_overlay_candidate=*/false);
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      copy_result->TakeTextureOwnership();
-  auto screenshot_layer = std::make_unique<ui::Layer>();
-  screenshot_layer->SetTransferableResource(
-      transferable_resource, std::move(release_callback), layer_size);
-
-  return screenshot_layer;
 }
 
 // Check if there is any external and internal pointing device in
@@ -1199,25 +1177,19 @@ void TabletModeController::TakeScreenshot(aura::Window* top_window) {
 
   // Request a screenshot.
   screenshot_taken_callback_.Reset(base::BindOnce(
-      &TabletModeController::OnScreenshotTaken, weak_factory_.GetWeakPtr(),
+      &TabletModeController::OnLayerCopyed, weak_factory_.GetWeakPtr(),
       std::move(callback), root_window));
 
-  const gfx::Rect request_bounds(screenshot_window->layer()->size());
-  auto screenshot_request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
-      screenshot_taken_callback_.callback());
-  screenshot_request->set_area(request_bounds);
-  screenshot_request->set_result_selection(request_bounds);
-  screenshot_window->layer()->RequestCopyOfOutput(
-      std::move(screenshot_request));
+  CopyLayerContentToNewLayer(screenshot_window->layer(),
+                             screenshot_taken_callback_.callback());
 
   VLOG(1) << "Tablet screenshot requested.";
 }
 
-void TabletModeController::OnScreenshotTaken(
+void TabletModeController::OnLayerCopyed(
     base::OnceClosure on_screenshot_taken,
     aura::Window* root_window,
-    std::unique_ptr<viz::CopyOutputResult> copy_result) {
+    std::unique_ptr<ui::Layer> copy_layer) {
   aura::Window* top_window =
       destroy_observer_ ? destroy_observer_->window() : nullptr;
   ResetDestroyObserver();
@@ -1228,14 +1200,14 @@ void TabletModeController::OnScreenshotTaken(
   if (!base::Contains(Shell::GetAllRootWindows(), root_window))
     return;
 
-  if (!copy_result || copy_result->IsEmpty() || !top_window) {
+  if (!copy_layer || !top_window) {
     std::move(on_screenshot_taken).Run();
     return;
   }
 
   // Stack the screenshot under |top_window|, to fully occlude all windows
   // except |top_window| for the duration of the enter tablet mode animation.
-  screenshot_layer_ = CreateLayerFromScreenshotResult(std::move(copy_result));
+  screenshot_layer_ = std::move(copy_layer);
   top_window->parent()->layer()->Add(screenshot_layer_.get());
   screenshot_layer_->SetBounds(top_window->GetRootWindow()->bounds());
   top_window->parent()->layer()->StackBelow(screenshot_layer_.get(),
