@@ -20,6 +20,6 @@ public @interface LoadError {
     int SSL_ERROR = 3;
     int CONNECTIVITY_ERROR = 4;
     int OTHER_ERROR = 5;
-    // Sent since 89.
+    // Sent since 88.
     int SAFE_BROWSING_ERROR = 6;
 }

@@ -48,7 +48,7 @@ public @interface LoadError {
     /**
      * Safe browsing error.
      *
-     * @since 89
+     * @since 88
      */
     int SAFE_BROWSING_ERROR =
             org.chromium.weblayer_private.interfaces.LoadError.SAFE_BROWSING_ERROR;
