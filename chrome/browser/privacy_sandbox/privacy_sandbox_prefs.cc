@@ -13,16 +13,23 @@ namespace prefs {
 
 const char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 
-const char kPrivacySandboxManauallyControlled[] =
+const char kPrivacySandboxManuallyControlled[] =
     "privacy_sandbox.manually_controlled";
+
+const char kPrivacySandboxUiAvailable[] = "privacy_sandbox.ui_available";
 
 }  // namespace prefs
 
 namespace privacy_sandbox {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxApisEnabled, false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxManauallyControlled,
-                                false);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxApisEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kPrivacySandboxManuallyControlled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxUiAvailable, false);
 }
+
 }  // namespace privacy_sandbox
