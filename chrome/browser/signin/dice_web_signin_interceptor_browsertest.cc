@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -422,4 +423,59 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   EXPECT_EQ(GetInterceptorDelegate(other_profile)->customized_browser(),
             nullptr);
   EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
+}
+
+// Close the source tab during the interception and check that the NTP is opened
+// in the new profile (regression test for https://crbug.com/1153321).
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
+  // Setup profile for interception.
+  identity_test_env()->MakeAccountAvailable("alice@example.com");
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("bob@example.com");
+  // Fill the account info, in particular for the hosted_domain field.
+  account_info.full_name = "fullname";
+  account_info.given_name = "givenname";
+  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  account_info.is_child_account = false;
+  DCHECK(account_info.IsValid());
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->tab_strip_model()->count();
+
+  // Do the signin interception.
+  ProfileWaiter profile_waiter;
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(
+          Profile::FromBrowserContext(contents->GetBrowserContext()));
+  interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+  // Close the source tab during the profile creation.
+  contents->Close();
+  // Wait for the interception to be complete.
+  Profile* new_profile = profile_waiter.WaitForProfileAdded();
+  ASSERT_TRUE(new_profile);
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
+      account_info.account_id));
+
+  // Add the account to the cookies (simulates the account reconcilor).
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  signin::SetCookieAccounts(new_identity_manager, test_url_loader_factory(),
+                            {{account_info.email, account_info.gaia}});
+
+  // A browser has been created for the new profile on the new tab page.
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  Browser* added_browser = BrowserList::GetInstance()->get(1);
+  ASSERT_TRUE(added_browser);
+  EXPECT_EQ(added_browser->profile(), new_profile);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            GURL("chrome://newtab/"));
 }

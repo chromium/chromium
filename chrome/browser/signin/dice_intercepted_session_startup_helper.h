@@ -12,7 +12,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -72,7 +71,6 @@ class DiceInterceptedSessionStartupHelper
   // Timeout while waiting for the account to be added to the cookies in the new
   // profile.
   base::CancelableOnceCallback<void()> on_cookie_update_timeout_;
-  GURL url_to_open_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_INTERCEPTED_SESSION_STARTUP_HELPER_H_

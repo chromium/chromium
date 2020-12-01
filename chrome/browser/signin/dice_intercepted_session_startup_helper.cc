@@ -15,11 +15,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -42,8 +44,6 @@ DiceInterceptedSessionStartupHelper::DiceInterceptedSessionStartupHelper(
     content::WebContents* tab_to_move)
     : profile_(profile), account_id_(account_id) {
   Observe(tab_to_move);
-  if (tab_to_move)
-    url_to_open_ = tab_to_move->GetURL();
 }
 
 DiceInterceptedSessionStartupHelper::~DiceInterceptedSessionStartupHelper() =
@@ -95,16 +95,15 @@ void DiceInterceptedSessionStartupHelper::MoveTab() {
   accounts_in_cookie_observer_.RemoveAll();
   on_cookie_update_timeout_.Cancel();
 
+  GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
   // If the intercepted web contents is still alive, close it now.
   if (web_contents()) {
-    // Update the URL once again to catch any potential navigation happening
-    // while the cookie was updated.
-    url_to_open_ = web_contents()->GetURL();
+    url_to_open = web_contents()->GetURL();
     web_contents()->Close();
   }
 
   // Open a new browser.
-  NavigateParams params(profile_, url_to_open_,
+  NavigateParams params(profile_, url_to_open,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
 
