@@ -35,7 +35,7 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kUsbInternalsResources, kUsbInternalsResourcesSize), "",
-      IDR_USB_INTERNALS_HTML);
+      IDR_USB_INTERNALS_USB_INTERNALS_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

@@ -254,7 +254,8 @@
   "chrome/browser/resources/sync_file_system_internals/sync_file_system_internals_resources.grd": {
     "includes": [2180],
   },
-  "chrome/browser/resources/usb_internals/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/usb_internals/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
     "includes": [2200],
   },
   "chrome/browser/resources/webapks/webapks_ui_resources.grd": {
