@@ -191,8 +191,8 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
       out << "SendKeystrokeEvents";
       break;
-    case ActionProto::ActionInfoCase::kSetFieldValue:
-      out << "SetFieldValue";
+    case ActionProto::ActionInfoCase::kSendChangeEvent:
+      out << "SendChangeEvent";
       break;
     case ActionProto::ActionInfoCase::kSetElementAttribute:
       out << "SetElementAttribute";

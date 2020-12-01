@@ -181,6 +181,13 @@ new Promise((fulfill, reject) => {
 })
 )";
 
+const char* const kSendChangeEventScript =
+    R"(function () {
+         const e = document.createEvent('HTMLEvents');
+         e.initEvent('change', true, true);
+         this.dispatchEvent(e);
+       })";
+
 // Converts a int that correspond to the DocumentReadyState enum into an
 // equivalent quoted Javascript string.
 std::string DocumentReadyStateToQuotedJsString(int state) {
@@ -1416,6 +1423,23 @@ void WebController::GetElementTag(
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&DecorateControllerStatusWithValue<std::string>,
                          WebControllerErrorInfoProto::GET_ELEMENT_TAG,
+                         std::move(callback))));
+}
+
+void WebController::SendChangeEvent(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id())
+          .SetFunctionDeclaration(std::string(kSendChangeEventScript))
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id(),
+      base::BindOnce(
+          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&DecorateWebControllerStatus,
+                         WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
                          std::move(callback))));
 }
 

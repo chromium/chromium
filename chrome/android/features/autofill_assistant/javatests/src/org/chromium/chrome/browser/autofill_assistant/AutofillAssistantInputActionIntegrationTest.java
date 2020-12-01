@@ -49,9 +49,10 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
+import org.chromium.chrome.browser.autofill_assistant.proto.SendChangeEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SetFieldValueProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetElementAttributeProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto.KeyPress;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
@@ -521,10 +522,16 @@ public class AutofillAssistantInputActionIntegrationTest {
                                  CheckElementIsOnTopProto.newBuilder().setClientId(clientId))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFieldValue(
-                                 SetFieldValueProto.newBuilder().setClientId(clientId).setValue(
-                                         TextValue.newBuilder().setText("")))
+                         .setSetElementAttribute(
+                                 SetElementAttributeProto.newBuilder()
+                                         .setClientId(clientId)
+                                         .addAttribute("value")
+                                         .setValue(TextValue.newBuilder().setText("")))
                          .build());
+        list.add(
+                (ActionProto) ActionProto.newBuilder()
+                        .setSendChangeEvent(SendChangeEventProto.newBuilder().setClientId(clientId))
+                        .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
                          .build());

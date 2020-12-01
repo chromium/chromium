@@ -480,6 +480,36 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
             std::move(done_callback), result_output, element_tag_output));
   }
 
+  ClientStatus SendChangeEvent(const Selector& selector) {
+    base::RunLoop run_loop;
+    ClientStatus result;
+
+    web_controller_->FindElement(
+        selector, /* strict= */ true,
+        base::BindOnce(
+            &WebControllerBrowserTest::FindSendChangeEventElementCallback,
+            base::Unretained(this), run_loop.QuitClosure(), &result));
+
+    run_loop.Run();
+    EXPECT_EQ(ACTION_APPLIED, result.proto_status());
+    return result;
+  }
+
+  void FindSendChangeEventElementCallback(
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+    ASSERT_TRUE(element_result != nullptr);
+    const ElementFinder::Result* element_result_ptr = element_result.get();
+    web_controller_->SendChangeEvent(
+        *element_result_ptr,
+        base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback), result_output));
+  }
+
   ClientStatus CheckOnTop(const ElementFinder::Result& element) {
     ClientStatus captured_status;
     base::RunLoop run_loop;
@@ -2677,6 +2707,16 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, NthMatch) {
   ASSERT_EQ(ACTION_APPLIED,
             GetElementTag(selector, &element_tag).proto_status());
   EXPECT_EQ("STRONG", element_tag);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendChangeEvent) {
+  Selector selector({"#input_with_onchange"});
+
+  GetFieldsValue({selector}, {"0"});
+  EXPECT_EQ(ACTION_APPLIED, SendChangeEvent(selector).proto_status());
+  GetFieldsValue({selector}, {"1"});
+  EXPECT_EQ(ACTION_APPLIED, SendChangeEvent(selector).proto_status());
+  GetFieldsValue({selector}, {"2"});
 }
 
 }  // namespace autofill_assistant

@@ -222,7 +222,7 @@ bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
     case ActionProto::ActionInfoCase::kSendTapEvent:
     case ActionProto::ActionInfoCase::kJsClick:
     case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
-    case ActionProto::ActionInfoCase::kSetFieldValue:
+    case ActionProto::ActionInfoCase::kSendChangeEvent:
     case ActionProto::ActionInfoCase::kSetElementAttribute:
     case ActionProto::ActionInfoCase::kSelectFieldValue:
     case ActionProto::ActionInfoCase::kFocusField:

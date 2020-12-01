@@ -12,67 +12,89 @@ package autofill_assistant;
 
 import "action_value.proto";
 
+// Identifier for elements on the client. This is used to store and retrieve
+// elements. To store an element and create a usable |ClientIdProto| use a
+// |WaitForDomProto| with a |ClientIdProto| annotated |ElementConditionProto|.
 message ClientIdProto {
   optional string identifier = 1;
 }
 
+// Scroll the element into the view center.
 message ScrollIntoViewProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Wait for the document ready status to be at least "interactive".
 message WaitForDocumentToBecomeInteractiveProto {
   optional ClientIdProto client_id = 1;
   optional int32 timeout_in_ms = 2;
 }
 
+// Wait for the document ready status to be "complete".
 message WaitForDocumentToBecomeCompleteProto {
   optional ClientIdProto client_id = 1;
   optional int32 timeout_in_ms = 2;
 }
 
+// Wait until an element has become stable, i.e. didn't move for the last few
+// rounds.
 message WaitForElementToBecomeStableProto {
   optional ClientIdProto client_id = 1;
   optional int32 stable_check_max_rounds = 2 [default = 50];
   optional int32 stable_check_interval_ms = 3 [default = 200];
 }
 
+// Check that the element is on top and not currently covered by any other
+// element.
 message CheckElementIsOnTopProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Send a mousedown followed by a mouseup event on the element.
 message SendClickEventProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Send a touchdown followed by a touchup event on the element.
 message SendTapEventProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Use JavaScript to click an element.
 message JsClickProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Send a keydown followed by a keyup event per character to the element. This
+// requires the element to have focus to receive them. Some characters (like
+// new line) are treated as special keys.
 message SendKeystrokeEventsProto {
   optional ClientIdProto client_id = 1;
   optional TextValue value = 2;
   optional int32 delay_in_ms = 3;
 }
 
-message SetFieldValueProto {
+// Send a change event on the element.
+message SendChangeEventProto {
   optional ClientIdProto client_id = 1;
-  optional TextValue value = 2;
 }
 
+// Set a potentially nested attribute of an element. Depending on the attribute
+// (e.g. "value", "checked" or similar) it may be necessary to additionally
+// send an additional change using |SendChangeEventProto|.
 message SetElementAttributeProto {
   optional ClientIdProto client_id = 1;
   repeated string attribute = 2;
   optional TextValue value = 3;
 }
 
+// Select the text value of a field. This requires to be used on an |input| or
+// |textarea|.
 message SelectFieldValueProto {
   optional ClientIdProto client_id = 1;
 }
 
+// Focus a field.
 message FocusFieldProto {
   optional ClientIdProto client_id = 1;
 }

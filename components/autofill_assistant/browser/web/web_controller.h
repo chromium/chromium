@@ -274,6 +274,11 @@ class WebController {
                               DocumentReadyState,
                               base::TimeDelta)> callback);
 
+  // Trigger a "change" event on the |element|.
+  virtual void SendChangeEvent(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
  private:

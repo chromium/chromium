@@ -286,13 +286,11 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
               base::BindOnce(&WebController::SendTextInput,
                              delegate->GetWebController()->GetWeakPtr(),
                              action.send_keystroke_events().delay_in_ms())));
-    case ActionProto::ActionInfoCase::kSetFieldValue:
+    case ActionProto::ActionInfoCase::kSendChangeEvent:
       return PerformOnSingleElementAction::WithClientId(
-          delegate, action, action.set_field_value().client_id(),
-          base::BindOnce(&action_delegate_util::PerformWithTextValue, delegate,
-                         action.set_field_value().value(),
-                         base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                        delegate->GetWeakPtr())));
+          delegate, action, action.send_change_event().client_id(),
+          base::BindOnce(&WebController::SendChangeEvent,
+                         delegate->GetWebController()->GetWeakPtr()));
     case ActionProto::ActionInfoCase::kSetElementAttribute: {
       std::vector<std::string> attributes;
       for (const auto& attribute : action.set_element_attribute().attribute()) {

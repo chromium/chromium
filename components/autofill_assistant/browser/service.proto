@@ -628,7 +628,7 @@ message ActionProto {
     SendTapEventProto send_tap_event = 61;
     JsClickProto js_click = 62;
     SendKeystrokeEventsProto send_keystroke_events = 63;
-    SetFieldValueProto set_field_value = 64;
+    SendChangeEventProto send_change_event = 64;
     SetElementAttributeProto set_element_attribute = 65;
     SelectFieldValueProto select_field_value = 66;
     FocusFieldProto focus_field = 67;
@@ -946,6 +946,9 @@ message WebControllerErrorInfoProto {
 
     // Waiting for a certain document ready state failed.
     WAIT_FOR_DOCUMENT_READY_STATE = 18;
+
+    // Trigger a change event.
+    SEND_CHANGE_EVENT = 19;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
