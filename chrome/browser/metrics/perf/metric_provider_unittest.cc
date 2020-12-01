@@ -14,6 +14,15 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
@@ -48,8 +57,44 @@ PerfDataProto GetExamplePerfDataProto() {
   stats->set_num_fork_events(400);
   stats->set_num_exit_events(500);
 
+  // MMapEvent.
+  PerfDataProto_PerfEvent* event1 = proto.add_events();
+  event1->mutable_header()->set_type(1);
+  event1->mutable_mmap_event()->set_pid(1234);
+  event1->mutable_mmap_event()->set_filename_md5_prefix(0xabcdefab);
+
+  // CommEvent.
+  PerfDataProto_PerfEvent* event2 = proto.add_events();
+  event2->mutable_header()->set_type(2);
+  event2->mutable_comm_event()->set_pid(5678);
+  event2->mutable_comm_event()->set_comm_md5_prefix(0x0123456abcd);
+
   return proto;
 }
+
+// Converts a protobuf to serialized format as a byte vector.
+std::vector<uint8_t> SerializeMessageToVector(
+    const google::protobuf::MessageLite& message) {
+  std::vector<uint8_t> result(message.ByteSize());
+  message.SerializeToArray(result.data(), result.size());
+  return result;
+}
+
+using TestSyncService = syncer::TestSyncService;
+
+std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
+    content::BrowserContext* context) {
+  return std::make_unique<TestSyncService>();
+}
+
+// Allow access to some private methods for testing.
+class TestMetricProvider : public MetricProvider {
+ public:
+  using MetricProvider::MetricProvider;
+  ~TestMetricProvider() override = default;
+
+  using MetricProvider::RecordAttemptStatus;
+};
 
 // Allows access to some private methods for testing.
 class TestMetricCollector : public internal::MetricCollector {
@@ -59,7 +104,7 @@ class TestMetricCollector : public internal::MetricCollector {
       : internal::MetricCollector("UMA.CWP.TestData", collection_params),
         weak_factory_(this) {}
 
-  const char* ToolName() const override { return "test"; }
+  const char* ToolName() const override { return "Test"; }
   base::WeakPtr<internal::MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
@@ -80,7 +125,7 @@ class TestMetricCollector : public internal::MetricCollector {
 const base::TimeDelta kPeriodicCollectionInterval =
     base::TimeDelta::FromHours(1);
 const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
-
+const uint64_t kRedactedCommMd5Prefix = 0xee1f021828a1fcbc;
 }  // namespace
 
 class MetricProviderTest : public testing::Test {
@@ -99,8 +144,8 @@ class MetricProviderTest : public testing::Test {
     test_params.restore_session.max_collection_delay = kMaxCollectionDelay;
     test_params.periodic_interval = kPeriodicCollectionInterval;
 
-    metric_provider_ = std::make_unique<MetricProvider>(
-        std::make_unique<TestMetricCollector>(test_params));
+    metric_provider_ = std::make_unique<TestMetricProvider>(
+        std::make_unique<TestMetricCollector>(test_params), nullptr);
     metric_provider_->Init();
     task_environment_.RunUntilIdle();
   }
@@ -113,7 +158,7 @@ class MetricProviderTest : public testing::Test {
   // last.
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<MetricProvider> metric_provider_;
+  std::unique_ptr<TestMetricProvider> metric_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(MetricProviderTest);
 };
@@ -212,7 +257,8 @@ TEST_F(MetricProviderTest, OnSessionRestoreDone) {
   EXPECT_TRUE(profile.has_ms_after_boot());
 }
 
-TEST_F(MetricProviderTest, EnableAndDisableRecording) {
+TEST_F(MetricProviderTest, DisableRecording) {
+  base::HistogramTester histogram_tester;
   metric_provider_->OnUserLoggedIn();
 
   // Upon disabling recording, we would expect no cached profiles after a
@@ -223,16 +269,239 @@ TEST_F(MetricProviderTest, EnableAndDisableRecording) {
   std::vector<SampledProfile> stored_profiles;
   EXPECT_FALSE(metric_provider_->GetSampledProfiles(&stored_profiles));
   EXPECT_TRUE(stored_profiles.empty());
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kRecordingDisabled, 1);
+}
+
+TEST_F(MetricProviderTest, EnableRecording) {
+  base::HistogramTester histogram_tester;
+  metric_provider_->OnUserLoggedIn();
 
   // Upon enabling recording, we would find a cached PERIODIC_COLLECTION profile
   // after a profiling interval.
   metric_provider_->EnableRecording();
   task_environment_.FastForwardBy(kPeriodicCollectionInterval);
 
+  std::vector<SampledProfile> stored_profiles;
   EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
   EXPECT_EQ(stored_profiles.size(), 1u);
   EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION,
             stored_profiles[0].trigger_event());
+  // When initializing the MetricProvider, we set the ProfileManager to nullptr.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kProfileManagerUnset, 1);
+}
+
+class MetricProviderSyncSettingsTest : public testing::Test {
+ public:
+  MetricProviderSyncSettingsTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    CollectionParams test_params;
+    test_params.periodic_interval = kPeriodicCollectionInterval;
+
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    metric_provider_ = std::make_unique<TestMetricProvider>(
+        std::make_unique<TestMetricCollector>(test_params),
+        testing_profile_manager_->profile_manager());
+    metric_provider_->Init();
+    task_environment_.RunUntilIdle();
+
+    perf_data_unchanged_ = GetExamplePerfDataProto();
+    // Perf data whose COMM event has its comm_md5_prefix redacted.
+    perf_data_redacted_ = GetExamplePerfDataProto();
+    perf_data_redacted_.mutable_events(1)
+        ->mutable_comm_event()
+        ->set_comm_md5_prefix(kRedactedCommMd5Prefix);
+  }
+
+  void TearDown() override {
+    metric_provider_.reset();
+    testing_profile_manager_.reset();
+  }
+
+ protected:
+  TestSyncService* GetSyncService(TestingProfile* profile) {
+    TestSyncService* sync_service = static_cast<TestSyncService*>(
+        ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile, base::BindRepeating(&TestingSyncFactoryFunction)));
+    sync_service->SetFirstSetupComplete(true);
+    return sync_service;
+  }
+
+  void EnableOSAppSync(TestSyncService* sync_service) {
+    sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(true);
+    sync_service->GetUserSettings()->SetSelectedOsTypes(
+        /*sync_all_os_types=*/false, {syncer::UserSelectableOsType::kOsApps});
+  }
+
+  void DisableOSAppSync(TestSyncService* sync_service) {
+    sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(true);
+    sync_service->GetUserSettings()->SetSelectedOsTypes(
+        /*sync_all_os_types=*/false, {});
+  }
+
+  void EnableAppSync(TestSyncService* sync_service) {
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kApps});
+  }
+
+  void DisableAppSync(TestSyncService* sync_service) {
+    sync_service->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                      {});
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+
+  std::unique_ptr<TestMetricProvider> metric_provider_;
+
+  base::test::ScopedFeatureList feature_list_;
+
+  PerfDataProto perf_data_unchanged_;
+
+  PerfDataProto perf_data_redacted_;
+
+  DISALLOW_COPY_AND_ASSIGN(MetricProviderSyncSettingsTest);
+};
+
+TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {
+  base::HistogramTester histogram_tester;
+  std::vector<SampledProfile> stored_profiles;
+  metric_provider_->OnUserLoggedIn();
+
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+
+  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
+  EXPECT_EQ(stored_profiles.size(), 1u);
+
+  const SampledProfile& profile = stored_profiles[0];
+  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
+  EXPECT_EQ(SerializeMessageToVector(perf_data_redacted_),
+            SerializeMessageToVector(profile.perf_data()));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kNoLoadedProfile, 1);
+}
+
+TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncEnabled) {
+  base::HistogramTester histogram_tester;
+  std::vector<SampledProfile> stored_profiles;
+  metric_provider_->OnUserLoggedIn();
+  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+
+  // Set up two testing profiles, both with OS App Sync enabled.
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableOSAppSync(sync_service1);
+  EnableOSAppSync(sync_service2);
+
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+
+  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
+  EXPECT_EQ(stored_profiles.size(), 1u);
+
+  const SampledProfile& profile = stored_profiles[0];
+  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
+  EXPECT_EQ(SerializeMessageToVector(perf_data_unchanged_),
+            SerializeMessageToVector(profile.perf_data()));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled, 1);
+}
+
+TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncDisabled) {
+  base::HistogramTester histogram_tester;
+  std::vector<SampledProfile> stored_profiles;
+  metric_provider_->OnUserLoggedIn();
+  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+
+  // Set up two testing profiles, one with OS App Sync enabled and the other
+  // disabled.
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableOSAppSync(sync_service1);
+  DisableOSAppSync(sync_service2);
+
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+
+  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
+  EXPECT_EQ(stored_profiles.size(), 1u);
+
+  const SampledProfile& profile = stored_profiles[0];
+  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
+  EXPECT_EQ(SerializeMessageToVector(perf_data_redacted_),
+            SerializeMessageToVector(profile.perf_data()));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled, 1);
+}
+
+TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncEnabled) {
+  base::HistogramTester histogram_tester;
+  std::vector<SampledProfile> stored_profiles;
+  metric_provider_->OnUserLoggedIn();
+  feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+
+  // Set up two testing profiles, both with App Sync enabled.
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableAppSync(sync_service1);
+  EnableAppSync(sync_service2);
+
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+
+  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
+  EXPECT_EQ(stored_profiles.size(), 1u);
+
+  const SampledProfile& profile = stored_profiles[0];
+  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
+  EXPECT_EQ(SerializeMessageToVector(perf_data_unchanged_),
+            SerializeMessageToVector(profile.perf_data()));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled, 1);
+}
+
+TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncDisabled) {
+  base::HistogramTester histogram_tester;
+  std::vector<SampledProfile> stored_profiles;
+  metric_provider_->OnUserLoggedIn();
+  feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+
+  // Set up two testing profiles, one with App Sync enabled and the other
+  // disabled.
+  TestSyncService* sync_service1 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
+  TestSyncService* sync_service2 =
+      GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
+  EnableAppSync(sync_service1);
+  DisableAppSync(sync_service2);
+
+  task_environment_.FastForwardBy(kPeriodicCollectionInterval);
+
+  EXPECT_TRUE(metric_provider_->GetSampledProfiles(&stored_profiles));
+  EXPECT_EQ(stored_profiles.size(), 1u);
+
+  const SampledProfile& profile = stored_profiles[0];
+  EXPECT_EQ(SampledProfile::PERIODIC_COLLECTION, profile.trigger_event());
+  EXPECT_EQ(SerializeMessageToVector(perf_data_redacted_),
+            SerializeMessageToVector(profile.perf_data()));
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.CWP.RecordTest",
+      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled, 1);
 }
 
 }  // namespace metrics

@@ -9911,6 +9911,25 @@ histogram as enum -->
   </int>
 </enum>
 
+<enum name="ChromeOSProfileRecordStatus">
+  <int value="0" label="Metrics recording is disabled">
+    Profile data was not recorded since metric recording is disabled.
+  </int>
+  <int value="1" label="Profile manager is unset">
+    Profile data was redacted since the profile manager used to obtain user
+    profile(s) is unset.
+  </int>
+  <int value="2" label="No loaded user profile is found">
+    Profile data was redacted since there is no user profile initialized.
+  </int>
+  <int value="3" label="App sync is disabled">
+    Profile data was redacted since App Sync is disabled.
+  </int>
+  <int value="4" label="App sync is enabled">
+    Profile data was recorded in full since App Sync is enabled.
+  </int>
+</enum>
+
 <enum name="ChromeOSRecoveryReason">
   <summary>
     Reason for entering Recovery Mode. See

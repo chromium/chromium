@@ -109,9 +109,9 @@ class TestProfileProvider : public ProfileProvider {
 
     collectors_.clear();
     collectors_.push_back(std::make_unique<MetricProvider>(
-        std::make_unique<TestMetricCollector<100>>(test_params)));
+        std::make_unique<TestMetricCollector<100>>(test_params), nullptr));
     collectors_.push_back(std::make_unique<MetricProvider>(
-        std::make_unique<TestMetricCollector<200>>(test_params)));
+        std::make_unique<TestMetricCollector<200>>(test_params), nullptr));
   }
 
   using ProfileProvider::collectors_;

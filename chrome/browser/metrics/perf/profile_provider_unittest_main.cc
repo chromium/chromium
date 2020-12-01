@@ -16,6 +16,7 @@
 #include "chrome/browser/metrics/perf/collection_params.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +66,7 @@ class TestProfileProvider : public ProfileProvider {
 
     collectors_.clear();
     auto metric_provider = std::make_unique<TestMetricProvider>(
-        std::make_unique<TestPerfCollector>(test_params));
+        std::make_unique<TestPerfCollector>(test_params), nullptr);
     metric_provider->set_cache_updated_callback(base::BindRepeating(
         &TestProfileProvider::OnProfileDone, base::Unretained(this)));
 
@@ -128,6 +129,10 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
+
+    // The constructor of ProfileProvider uses g_browser_process thus requiring
+    // it to be not null, so initialize it here.
+    TestingBrowserProcess::CreateInstance();
 
     std::map<std::string, std::string> field_trial_params;
     // Only "cycles" event is supported.

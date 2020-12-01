@@ -9,6 +9,13 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
@@ -21,16 +28,63 @@ namespace {
 // metric provider.
 const char kUploadCountHistogramPrefix[] = "ChromeOS.CWP.Upload";
 
+// Name prefix of the histogram that tracks the various outcomes of saving the
+// collected profile to local cache.
+const char kRecordOutcomeHistogramPrefix[] = "ChromeOS.CWP.Record";
+
 // An upper bound on the count of reports expected to be uploaded by an UMA
 // callback.
 const int kMaxValueUploadReports = 10;
+
+// The MD5 prefix to replace the original comm_md5_prefix of COMM events in perf
+// data proto, if necessary. We used string "<redacted>" to compute this MD5
+// prefix.
+const uint64_t kRedactedCommMd5Prefix = 0xee1f021828a1fcbc;
+
+// This function modifies the comm_md5_prefix of all the COMM events in the
+// given perf data proto by replacing it with the md5 prefix of an artificial
+// string.
+void RedactCommMd5Prefixes(PerfDataProto* proto) {
+  for (PerfDataProto::PerfEvent& event : *proto->mutable_events()) {
+    if (event.has_comm_event()) {
+      event.mutable_comm_event()->set_comm_md5_prefix(kRedactedCommMd5Prefix);
+    }
+  }
+}
+
+// Check if App Sync is enabled for a given user profile.
+bool IsAppSyncEnabledForUserProfile(Profile* profile) {
+  syncer::SyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service)
+    return false;
+  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+  // Chrome versions >= M78 have a feature that splits the sync settings between
+  // Chrome and ChromeOS. The App Sync toggle is moved under the ChromeOS
+  // settings. If the split sync setting is enabled, we will directly read from
+  // the OS settings. Otherwise, we read from Chrome settings. We then check if
+  // the sync feature is enabled and the App Sync toggle is on.
+  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+    return sync_settings->IsOsSyncFeatureEnabled() &&
+           sync_settings->GetSelectedOsTypes().Has(
+               syncer::UserSelectableOsType::kOsApps);
+  }
+  // Read chrome settings if split sync is disabled.
+  return sync_service->IsSyncFeatureEnabled() &&
+         sync_settings->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kApps);
+}
 
 }  // namespace
 
 using MetricCollector = internal::MetricCollector;
 
-MetricProvider::MetricProvider(std::unique_ptr<MetricCollector> collector)
+MetricProvider::MetricProvider(std::unique_ptr<MetricCollector> collector,
+                               ProfileManager* profile_manager)
     : upload_uma_histogram_(std::string(kUploadCountHistogramPrefix) +
+                            collector->ToolName()),
+      record_uma_histogram_(std::string(kRecordOutcomeHistogramPrefix) +
                             collector->ToolName()),
       // Run the collector at a higher priority to enable fast triggering of
       // profile collections. In particular, we want fast triggering when
@@ -42,6 +96,7 @@ MetricProvider::MetricProvider(std::unique_ptr<MetricCollector> collector)
       collector_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE})),
       metric_collector_(std::move(collector)),
+      profile_manager_(profile_manager),
       weak_factory_(this) {
   metric_collector_->set_profile_done_callback(base::BindRepeating(
       &MetricProvider::OnProfileDone, weak_factory_.GetWeakPtr()));
@@ -156,11 +211,46 @@ void MetricProvider::DisableRecording() {
   recording_enabled_ = false;
 }
 
+// Check the current state of App Sync in the settings. This is done by getting
+// all currently fully initialized profiles and reading the sync settings from
+// them.
+MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
+  if (!profile_manager_)
+    return RecordAttemptStatus::kProfileManagerUnset;
+
+  std::vector<Profile*> profiles = profile_manager_->GetLoadedProfiles();
+  if (profiles.size() == 0)
+    return RecordAttemptStatus::kNoLoadedProfile;
+
+  for (Profile* profile : profiles) {
+    if (!IsAppSyncEnabledForUserProfile(profile))
+      return RecordAttemptStatus::kAppSyncDisabled;
+  }
+
+  return RecordAttemptStatus::kAppSyncEnabled;
+}
+
 void MetricProvider::AddProfileToCache(
     std::unique_ptr<SampledProfile> sampled_profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!recording_enabled_)
+  if (!recording_enabled_) {
+    base::UmaHistogramEnumeration(record_uma_histogram_,
+                                  RecordAttemptStatus::kRecordingDisabled);
     return;
+  }
+
+  // For privacy reasons, Chrome can not collect Android app names that may be
+  // present in the perf data, unless the user consent to enabling App Sync.
+  // Therefore, if the user does not enable App Sync, we redact comm_md5_prefix
+  // in all COMM events of perf data proto, so these MD5 prefixes can not be
+  // used to recover Android app names. We perform the check on App Sync here
+  // because the procedure to get the user profile (from which sync settings can
+  // be obtained) must execute on the UI thread.
+  auto app_sync_state = GetAppSyncState();
+  base::UmaHistogramEnumeration(record_uma_histogram_, app_sync_state);
+  if (app_sync_state != RecordAttemptStatus::kAppSyncEnabled)
+    RedactCommMd5Prefixes(sampled_profile->mutable_perf_data());
+
   collector_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MetricCollector::AddCachedDataDelta,
                                 base::Unretained(metric_collector_.get()),

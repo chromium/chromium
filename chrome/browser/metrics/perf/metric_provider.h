@@ -19,6 +19,8 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+class ProfileManager;
+
 namespace metrics {
 
 class SampledProfile;
@@ -30,7 +32,8 @@ class SampledProfile;
 // on its dedicated sequence, via PostTask messages.
 class MetricProvider {
  public:
-  explicit MetricProvider(std::unique_ptr<internal::MetricCollector> collector);
+  MetricProvider(std::unique_ptr<internal::MetricCollector> collector,
+                 ProfileManager* profile_manager);
 
   virtual ~MetricProvider();
 
@@ -63,6 +66,18 @@ class MetricProvider {
   void OnJankStopped();
 
  protected:
+  // Enumeration representing the various outcomes of saving the collected
+  // profile to local cache. These values are persisted to logs. Entries should
+  // not be renumbererd and numeric values should never be reused.
+  enum class RecordAttemptStatus {
+    kRecordingDisabled = 0,
+    kProfileManagerUnset = 1,
+    kNoLoadedProfile = 2,
+    kAppSyncDisabled = 3,
+    kAppSyncEnabled = 4,
+    kMaxValue = kAppSyncEnabled,
+  };
+
   // For testing.
   void set_cache_updated_callback(base::RepeatingClosure callback) {
     cache_updated_callback_ = std::move(callback);
@@ -73,6 +88,9 @@ class MetricProvider {
   // may be invoked on any sequence.
   static void OnProfileDone(base::WeakPtr<MetricProvider> provider,
                             std::unique_ptr<SampledProfile> sampled_profile);
+
+  // Check the state of App Sync in the current session.
+  RecordAttemptStatus GetAppSyncState();
 
   // Saves a profile to the local cache.
   void AddProfileToCache(std::unique_ptr<SampledProfile> sampled_profile);
@@ -86,6 +104,10 @@ class MetricProvider {
   // Name of the histogram that counts the number of uploaded reports.
   const std::string upload_uma_histogram_;
 
+  // Name of the histogram that tracks the various outcomes of saving the
+  // collected profile to local cache.
+  const std::string record_uma_histogram_;
+
   // Use a dedicated sequence for the collector. Thread safe. Initialized at
   // construction time, then immutable.
   const scoped_refptr<base::SequencedTaskRunner> collector_task_runner_;
@@ -94,6 +116,10 @@ class MetricProvider {
   // sequence after all non-delayed tasks posted by the provider to the sequence
   // have executed.
   std::unique_ptr<internal::MetricCollector> metric_collector_;
+
+  // The profile manager that manages user profiles with their sync settings, we
+  // do not own this object and only hold a reference to it.
+  ProfileManager* profile_manager_;
 
   // Called when |cached_profile_data_| is populated.
   base::RepeatingClosure cache_updated_callback_;
