@@ -219,7 +219,8 @@
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
                 "justify-self", "contain", "contain-intrinsic-size", "aspect-ratio",
-                "overflow-clip-margin", "-internal-align-self-block"],
+                "overflow-clip-margin", "-internal-align-self-block", "orphans",
+                "widows"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
