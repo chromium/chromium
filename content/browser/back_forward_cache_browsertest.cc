@@ -2437,8 +2437,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       static_cast<SiteInstanceImpl*>(rfh_a->GetSiteInstance());
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
-  // 2) Use WebRTC (non-sticky) and KeyboardLock (sticky) blocklisted features.
-  EXPECT_TRUE(ExecJs(rfh_a, "new RTCPeerConnection()"));
+  // 2) Use BroadcastChannel (non-sticky) and KeyboardLock (sticky) blocklisted
+  // features.
+  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     new Promise(resolve => {
       navigator.keyboard.lock();
@@ -2468,7 +2469,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // All features (sticky and non-sticky) will be tracked, because they're
   // tracked in RenderFrameHostManager::UnloadOldFrame.
   ExpectBlocklistedFeatures(
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC,
+      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
        blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
       FROM_HERE);
 }
@@ -2491,9 +2492,9 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(rfh_a->GetSiteInstance());
 
-  // 2) Use WebRTC (non-sticky) and KeyboardLock (sticky) blocklisted
+  // 2) Use BroadcastChannel (non-sticky) and KeyboardLock (sticky) blocklisted
   // features.
-  EXPECT_TRUE(ExecJs(rfh_a, "new RTCPeerConnection()"));
+  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     new Promise(resolve => {
       navigator.keyboard.lock();
@@ -2523,7 +2524,7 @@ IN_PROC_BROWSER_TEST_F(
     // All features (sticky and non-sticky) will be tracked, because they're
     // tracked in RenderFrameHostManager::UnloadOldFrame.
     ExpectBlocklistedFeatures(
-        {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC,
+        {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
          blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
         FROM_HERE);
     ExpectBrowsingInstanceNotSwappedReason(
@@ -2574,8 +2575,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
       static_cast<SiteInstanceImpl*>(rfh_1->GetSiteInstance());
 
-  // 2) Use WebRTC (non-sticky) and KeyboardLock (sticky) blocklisted features.
-  EXPECT_TRUE(ExecJs(rfh_1, "new RTCPeerConnection()"));
+  // 2) Use BroadcastChannel (non-sticky) and KeyboardLock (sticky) blocklisted
+  // features.
+  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     new Promise(resolve => {
       navigator.keyboard.lock();
@@ -2621,8 +2623,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  // 2) Use WebRTC (a non-sticky blocklisted feature).
-  EXPECT_TRUE(ExecJs(rfh_a, "new RTCPeerConnection()"));
+  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
+  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(
           web_contents()->GetMainFrame()->GetSiteInstance());
@@ -2647,7 +2649,8 @@ IN_PROC_BROWSER_TEST_F(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       FROM_HERE);
   ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature::kWebRTC, FROM_HERE);
+      blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
+      FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -2665,8 +2668,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  // 2) Use WebRTC (a non-sticky blocklisted feature).
-  EXPECT_TRUE(ExecJs(rfh_a, "new RTCPeerConnection()"));
+  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
+  EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(
           web_contents()->GetMainFrame()->GetSiteInstance());
@@ -2691,7 +2694,8 @@ IN_PROC_BROWSER_TEST_F(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       FROM_HERE);
   ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature::kWebRTC, FROM_HERE);
+      blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
+      FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -2707,8 +2711,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   RenderFrameHostImpl* rfh_1 = current_frame_host();
-  // 2) Use WebRTC (a non-sticky blocklisted feature).
-  EXPECT_TRUE(ExecJs(rfh_1, "new RTCPeerConnection()"));
+  // 2) Use BroadcastChannel (a non-sticky blocklisted feature).
+  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
       static_cast<SiteInstanceImpl*>(
           web_contents()->GetMainFrame()->GetSiteInstance());
@@ -2733,7 +2737,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       FROM_HERE);
   ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature::kWebRTC, FROM_HERE);
+      blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel,
+      FROM_HERE);
 }
 
 // Flaky on Android, see crbug.com/1135601.
@@ -3344,11 +3349,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_1(rfh_1);
-  // 2) Use WebRTC (a non-sticky blocklisted feature), so that we would still do
-  // a RFH swap on same-site navigation and fire the 'pagehide' event during
-  // commit of the new page with 'persisted' set to true, but the page will not
-  // be eligible for back-forward cache after commit.
-  EXPECT_TRUE(ExecJs(rfh_1, "new RTCPeerConnection()"));
+  // 2) Use BroadcastChannel (a non-sticky blocklisted feature), so that we
+  // would still do a RFH swap on same-site navigation and fire the 'pagehide'
+  // event during commit of the new page with 'persisted' set to true, but the
+  // page will not be eligible for back-forward cache after commit.
+  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     window.onpagehide = (e) => {
@@ -3794,7 +3799,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // cached.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     document.addEventListener('freeze', event => {
-      new RTCPeerConnection();
+      window.foo = new BroadcastChannel('foo');
     });
   )"));
 
