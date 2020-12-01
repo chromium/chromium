@@ -26,6 +26,8 @@
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -78,7 +80,8 @@ namespace chromeos {
 EnterpriseEnrollmentHelperImpl::EnterpriseEnrollmentHelperImpl() {
   // Init the TPM if it has not been done until now (in debug build we might
   // have not done that yet).
-  CryptohomeClient::Get()->TpmCanAttemptOwnership(base::DoNothing());
+  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
+                                         base::DoNothing());
 }
 
 EnterpriseEnrollmentHelperImpl::~EnterpriseEnrollmentHelperImpl() {
