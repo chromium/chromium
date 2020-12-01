@@ -194,12 +194,12 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
 // used objects from RenderFrameImpl.
 class GpuBenchmarkingContext {
  public:
-  explicit GpuBenchmarkingContext(RenderFrameImpl* frame) {
-    web_frame_ = frame->GetWebFrame();
-    web_view_ = web_frame_->View();
-    render_widget_ = frame->GetLocalRootRenderWidget();
-    layer_tree_host_ = render_widget_->layer_tree_host();
-  }
+  explicit GpuBenchmarkingContext(RenderFrameImpl* frame)
+      : web_frame_(frame->GetWebFrame()),
+        web_view_(web_frame_->View()),
+        render_widget_(frame->GetLocalRootRenderWidget()),
+        frame_widget_(frame->GetLocalRootWebFrameWidget()),
+        layer_tree_host_(render_widget_->layer_tree_host()) {}
 
   WebLocalFrame* web_frame() const {
     DCHECK(web_frame_ != nullptr);
@@ -210,16 +210,18 @@ class GpuBenchmarkingContext {
     return web_view_;
   }
   RenderWidget* render_widget() const { return render_widget_; }
+  blink::WebFrameWidget* frame_widget() const { return frame_widget_; }
   cc::LayerTreeHost* layer_tree_host() const {
     DCHECK(layer_tree_host_ != nullptr);
     return layer_tree_host_;
   }
 
  private:
-  WebLocalFrame* web_frame_ = nullptr;
-  WebView* web_view_ = nullptr;
-  RenderWidget* render_widget_ = nullptr;
-  cc::LayerTreeHost* layer_tree_host_ = nullptr;
+  WebLocalFrame* web_frame_;
+  WebView* web_view_;
+  RenderWidget* render_widget_;
+  blink::WebFrameWidget* frame_widget_;
+  cc::LayerTreeHost* layer_tree_host_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuBenchmarkingContext);
 };
@@ -262,7 +264,7 @@ bool ThrowIfPointOutOfBounds(GpuBenchmarkingContext* context,
                              gin::Arguments* args,
                              const gfx::Point& point,
                              const std::string& message) {
-  gfx::Rect rect = context->render_widget()->GetWebWidget()->ViewRect();
+  gfx::Rect rect = context->frame_widget()->ViewRect();
   rect -= rect.OffsetFromOrigin();
 
   // If the bounds are not available here, as is the case with an OOPIF,
@@ -711,7 +713,7 @@ bool GpuBenchmarking::GestureSourceTypeSupported(int gesture_source_type) {
 // SmoothScrollByXY in telemetry/internal/actions/scroll.js.
 bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.render_widget()->GetWebWidget()->ViewRect();
+  blink::WebRect rect = context.frame_widget()->ViewRect();
 
   float pixels_to_scroll = 0;
   v8::Local<v8::Function> callback;
@@ -783,7 +785,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
 // scroll left.
 bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.render_widget()->GetWebWidget()->ViewRect();
+  blink::WebRect rect = context.frame_widget()->ViewRect();
 
   float pixels_to_scroll_x = 0;
   float pixels_to_scroll_y = 0;
@@ -891,7 +893,7 @@ bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
 // should change this to match with SmoothScrollBy or SmoothScrollByXY.
 bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.render_widget()->GetWebWidget()->ViewRect();
+  blink::WebRect rect = context.frame_widget()->ViewRect();
 
   std::string direction = "up";
   float pixels_to_scroll = 0;
@@ -941,8 +943,7 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect content_rect =
-      context.render_widget()->GetWebWidget()->ViewRect();
+  blink::WebRect content_rect = context.frame_widget()->ViewRect();
 
   std::string direction = "down";
   float distance_length = 0;

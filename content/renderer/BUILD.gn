@@ -143,7 +143,6 @@ target(link_target_type, "renderer") {
     "render_view_impl.h",
     "render_widget.cc",
     "render_widget.h",
-    "render_widget_delegate.h",
     "renderer_blink_platform_impl.cc",
     "renderer_blink_platform_impl.h",
     "renderer_main.cc",

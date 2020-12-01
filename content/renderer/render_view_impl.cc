@@ -300,12 +300,6 @@ void RenderViewImpl::RemoveObserver(RenderViewObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// RenderWidgetOwnerDelegate -----------------------------------------
-
-bool RenderViewImpl::SupportsMultipleWindowsForWidget() {
-  return webview_->GetWebPreferences().supports_multiple_windows;
-}
-
 // IPC message handlers -----------------------------------------
 
 void RenderViewImpl::OnSetHistoryOffsetAndLength(int history_offset,
@@ -502,8 +496,8 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   RenderFrameImpl::FromWebFrame(creator)->GetFrameHost()->CreateNewPopupWidget(
       std::move(blink_popup_widget_host_receiver),
       std::move(blink_widget_host_receiver), std::move(blink_widget));
-  RenderWidget* opener_render_widget =
-      RenderFrameImpl::FromWebFrame(creator)->GetLocalRootRenderWidget();
+  blink::WebFrameWidget* opener_widget =
+      RenderFrameImpl::FromWebFrame(creator)->GetLocalRootWebFrameWidget();
 
   // The returned WebPagePopup is self-referencing, so the pointer here is not
   // an owning pointer. It is de-referenced by calling Close().
@@ -511,14 +505,11 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
       std::move(blink_widget_receiver),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
-  CompositorDependencies* compositor_deps =
-      opener_render_widget->compositor_deps();
-  popup->InitializeCompositing(
-      compositor_deps->GetWebMainThreadScheduler(),
-      compositor_deps->GetTaskGraphRunner(),
-      opener_render_widget->GetWebWidget()->GetOriginalScreenInfo(),
-      compositor_deps_->CreateUkmRecorderFactory(),
-      /*settings=*/nullptr);
+  popup->InitializeCompositing(compositor_deps_->GetWebMainThreadScheduler(),
+                               compositor_deps_->GetTaskGraphRunner(),
+                               opener_widget->GetOriginalScreenInfo(),
+                               compositor_deps_->CreateUkmRecorderFactory(),
+                               /*settings=*/nullptr);
   return popup;
 }
 
@@ -529,10 +520,10 @@ base::StringPiece RenderViewImpl::GetSessionStorageNamespaceId() {
 
 void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
   RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(frame);
-  RenderWidget* render_widget = render_frame->GetLocalRootRenderWidget();
+  blink::WebFrameWidget* frame_widget =
+      render_frame->GetLocalRootWebFrameWidget();
 
-  render_frame->ScriptedPrint(
-      render_widget->GetWebWidget()->HandlingInputEvent());
+  render_frame->ScriptedPrint(frame_widget->HandlingInputEvent());
 }
 
 void RenderViewImpl::ZoomLevelChanged() {

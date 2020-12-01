@@ -544,7 +544,7 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
   if (render_frame_) {  // NULL in tests or if the frame has been destroyed.
     render_frame_->PepperInstanceCreated(this);
     view_data_.is_page_visible =
-        !render_frame_->GetLocalRootRenderWidget()->GetWebWidget()->IsHidden();
+        !render_frame_->GetLocalRootWebFrameWidget()->IsHidden();
 
     if (!module_->IsProxied()) {
       created_in_process_instance_ = true;
@@ -1199,8 +1199,7 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.css_scale =
       container_->PageZoomFactor() * container_->PageScaleFactor();
   if (IsUseZoomForDSFEnabled()) {
-    WebWidget* widget =
-        render_frame()->GetLocalRootRenderWidget()->GetWebWidget();
+    WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
 
     viewport_to_dip_scale_ =
         1.0f / widget->GetOriginalScreenInfo().device_scale_factor;
@@ -2459,9 +2458,8 @@ PP_Bool PepperPluginInstanceImpl::GetScreenSize(PP_Instance instance,
   // All other cases: Report the screen size.
   if (!render_frame_)
     return PP_FALSE;
-  blink::ScreenInfo info = render_frame_->GetLocalRootRenderWidget()
-                               ->GetWebWidget()
-                               ->GetScreenInfo();
+  blink::ScreenInfo info =
+      render_frame_->GetLocalRootWebFrameWidget()->GetScreenInfo();
   *size = PP_MakeSize(info.rect.width(), info.rect.height());
   return PP_TRUE;
 }
@@ -2885,8 +2883,7 @@ void PepperPluginInstanceImpl::DoSetCursor(std::unique_ptr<ui::Cursor> cursor) {
     // e.g., the plugin would like to set an invisible cursor when there isn't
     // any user input for a while.
     if (container()->WasTargetForLastMouseEvent()) {
-      render_frame_->GetLocalRootRenderWidget()->GetWebWidget()->SetCursor(
-          *cursor_);
+      render_frame_->GetLocalRootWebFrameWidget()->SetCursor(*cursor_);
     }
   }
 }
@@ -2954,9 +2951,8 @@ void PepperPluginInstanceImpl::SetSizeAttributesForFullscreen() {
   // behavior, the width and height should probably be set to 100%, rather than
   // a fixed screen size.
 
-  blink::ScreenInfo info = render_frame_->GetLocalRootRenderWidget()
-                               ->GetWebWidget()
-                               ->GetScreenInfo();
+  blink::ScreenInfo info =
+      render_frame_->GetLocalRootWebFrameWidget()->GetScreenInfo();
   screen_size_for_fullscreen_ = info.rect.size();
   std::string width = base::NumberToString(screen_size_for_fullscreen_.width());
   std::string height =

@@ -234,12 +234,12 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   visual_properties.compositor_viewport_pixel_rect = gfx::Rect(widget_size);
   visual_properties.visible_viewport_size = visible_size;
 
-  RenderWidget* main_frame_widget =
-      GetMainRenderFrame()->GetLocalRootRenderWidget();
+  blink::WebFrameWidget* main_frame_widget =
+      GetMainRenderFrame()->GetLocalRootWebFrameWidget();
 
   // The main frame's widget will receive the resize message before the
   // subframe's widget, and it will set the size for the WebView.
-  main_frame_widget->GetWebWidget()->ApplyVisualProperties(visual_properties);
+  main_frame_widget->ApplyVisualProperties(visual_properties);
   // The main frame widget's size is the "widget size", not the visible viewport
   // size, which is given to blink separately.
   EXPECT_EQ(gfx::Size(view_->GetWebView()->MainFrameWidget()->Size()),

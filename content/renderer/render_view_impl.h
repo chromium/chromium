@@ -35,7 +35,6 @@
 #include "content/public/renderer/render_view.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_widget.h"
-#include "content/renderer/render_widget_delegate.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -86,19 +85,8 @@ class CreateViewParams;
 // placeholders behind. Each such frame tree also includes a RenderViewImpl as
 // the owner of it. Thus a tab may have multiple RenderViewImpls, one for the
 // main frame, and one for each other frame tree generated.
-//
-// When the main frame is part of this RenderViewImpl's frame tree, then this
-// object acts as the RenderWidgetDelegate for that frame's RenderWidget. Other
-// RenderWidgets would have a null RenderWidgetDelegate.
-//
-// Note: There are cases where there may be multiple main frames in tab. For
-// example, both Portals and GuestViews create their own RenderView that's
-// nested within another RenderView's frame tree. In these cases, the
-// RenderWidget for the nested view will have a non-null RenderWidgetDelegate,
-// despite the fact that it isn't the root of the hierarchy.
 class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
                                       public IPC::Listener,
-                                      public RenderWidgetDelegate,
                                       public RenderView {
  public:
   // Creates a new RenderView. Note that if the original opener has been closed,
@@ -307,10 +295,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
                   mojom::CreateViewParamsPtr params,
                   bool was_created_by_renderer,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  // RenderWidgetDelegate implementation ----------------------------------
-
-  bool SupportsMultipleWindowsForWidget() override;
 
   // Old WebLocalFrameClient implementations
   // ----------------------------------------

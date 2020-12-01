@@ -28,10 +28,12 @@ namespace content {
 
 std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
     CompositorDependencies* compositor_deps) {
-  return std::make_unique<RenderWidget>(compositor_deps);
+  return std::make_unique<RenderWidget>(base::PassKey<RenderWidget>(),
+                                        compositor_deps);
 }
 
-RenderWidget::RenderWidget(CompositorDependencies* compositor_deps)
+RenderWidget::RenderWidget(base::PassKey<RenderWidget>,
+                           CompositorDependencies* compositor_deps)
     : compositor_deps_(compositor_deps) {
   DCHECK(RenderThread::IsMainThread());
   DCHECK(compositor_deps_);
@@ -44,21 +46,17 @@ RenderWidget::~RenderWidget() {
 }
 
 void RenderWidget::InitForMainFrame(blink::WebFrameWidget* web_frame_widget,
-                                    const blink::ScreenInfo& screen_info,
-                                    RenderWidgetDelegate& delegate) {
-  delegate_ = &delegate;
+                                    const blink::ScreenInfo& screen_info) {
   Initialize(web_frame_widget, screen_info);
 }
 
 void RenderWidget::InitForChildLocalRoot(
     blink::WebFrameWidget* web_frame_widget,
     const blink::ScreenInfo& screen_info) {
-  for_child_local_root_frame_ = true;
   Initialize(web_frame_widget, screen_info);
 }
 
 void RenderWidget::CloseForFrame(std::unique_ptr<RenderWidget> widget) {
-  DCHECK(for_frame());
   DCHECK_EQ(widget.get(), this);  // This method takes ownership of |this|.
 
   Close(std::move(widget));
@@ -72,16 +70,8 @@ void RenderWidget::Initialize(blink::WebWidget* web_widget,
   InitCompositing(screen_info);
 }
 
-void RenderWidget::UpdateTextInputState() {
-  GetWebWidget()->UpdateTextInputState();
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // WebWidgetClient
-
-void RenderWidget::SetHandlingInputEvent(bool handling_input_event) {
-  GetWebWidget()->SetHandlingInputEvent(handling_input_event);
-}
 
 void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
   TRACE_EVENT0("blink", "RenderWidget::InitializeLayerTreeView");
@@ -111,17 +101,9 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
   layer_tree_host_ = nullptr;
 }
 
-blink::WebFrameWidget* RenderWidget::GetFrameWidget() const {
-  // TODO(danakj): Remove this check and don't call this method for non-frames.
-  if (!for_frame())
-    return nullptr;
-  return static_cast<blink::WebFrameWidget*>(webwidget_);
-}
-
 void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {
   if (compositor_deps_->IsUseZoomForDSFEnabled()) {
-    float reverse =
-        1 / GetWebWidget()->GetOriginalScreenInfo().device_scale_factor;
+    float reverse = 1 / webwidget_->GetOriginalScreenInfo().device_scale_factor;
     // TODO(oshima): We may need to allow pixel precision here as the the
     // anchor element can be placed at half pixel.
     gfx::Rect window_rect = gfx::ScaleToEnclosedRect(gfx::Rect(*rect), reverse);
@@ -130,10 +112,6 @@ void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {
     rect->width = window_rect.width();
     rect->height = window_rect.height();
   }
-}
-
-void RenderWidget::UpdateSelectionBounds() {
-  GetWebWidget()->UpdateSelectionBounds();
 }
 
 }  // namespace content
