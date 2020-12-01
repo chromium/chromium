@@ -459,6 +459,15 @@ const FeatureEntry::FeatureVariation kReaderModeDiscoverabilityVariations[] = {
      base::size(kReaderModeOfferInSettings), nullptr}};
 #endif  // OS_ANDROID
 
+#if defined(OS_ANDROID)
+const FeatureEntry::FeatureParam kDismissButtonWithNoThanks[] = {
+    {"dismiss_button", "no_thanks"}};
+
+const FeatureEntry::FeatureVariation kMobileIdentityConsistencyVariations[] = {
+    {"Dismiss No Thanks", kDismissButtonWithNoThanks,
+     base::size(kDismissButtonWithNoThanks), nullptr}};
+#endif  // OS_ANDROID
+
 #if !defined(OS_CHROMEOS)
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
@@ -5295,6 +5304,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMobileIdentityConsistencyName,
      flag_descriptions::kMobileIdentityConsistencyDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(signin::kMobileIdentityConsistency)},
+    {"mobile-identity-consistency-var",
+     flag_descriptions::kMobileIdentityConsistencyVarName,
+     flag_descriptions::kMobileIdentityConsistencyVarDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(signin::kMobileIdentityConsistencyVar,
+                                    kMobileIdentityConsistencyVariations,
+                                    "MobileIdentityConsistencyVar")},
 #endif  // defined(OS_ANDROID)
 
     {"autofill-use-improved-label-disambiguation",

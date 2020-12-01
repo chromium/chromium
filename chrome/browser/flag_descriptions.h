@@ -838,6 +838,9 @@ extern const char kMixedFormsInterstitialDescription[];
 extern const char kMobileIdentityConsistencyName[];
 extern const char kMobileIdentityConsistencyDescription[];
 
+extern const char kMobileIdentityConsistencyVarName[];
+extern const char kMobileIdentityConsistencyVarDescription[];
+
 extern const char kMouseSubframeNoImplicitCaptureName[];
 extern const char kMouseSubframeNoImplicitCaptureDescription[];
 

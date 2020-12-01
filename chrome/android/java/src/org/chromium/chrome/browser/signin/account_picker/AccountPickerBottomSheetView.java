@@ -73,6 +73,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                                        .findViewById(R.id.account_picker_selected_account);
         mDismissButton = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                                  .findViewById(R.id.account_picker_dismiss_button);
+        if (AccountPickerFeatureUtils.shouldShowNoThanksOnDismissButton()) {
+            mDismissButton.setText(R.string.no_thanks);
+        }
 
         // TODO(https://crbug.com/1146990): Use different continue buttons for different view
         // states.

@@ -274,6 +274,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &safe_browsing::kSafeBrowsingSectionUIAndroid,
     &security_state::features::kMarkHttpAsFeature,
     &signin::kMobileIdentityConsistency,
+    &signin::kMobileIdentityConsistencyVar,
     &switches::kDecoupleSyncFromAndroidMasterSync,
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,

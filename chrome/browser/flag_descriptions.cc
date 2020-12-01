@@ -1412,6 +1412,12 @@ const char kMobileIdentityConsistencyName[] = "Mobile identity consistency";
 const char kMobileIdentityConsistencyDescription[] =
     "Enables stronger identity consistency on mobile";
 
+const char kMobileIdentityConsistencyVarName[] =
+    "Mobile identity consistency variations";
+const char kMobileIdentityConsistencyVarDescription[] =
+    "Enables stronger identity consistency on mobile with different UI "
+    "variations";
+
 const char kMouseSubframeNoImplicitCaptureName[] =
     "Disable mouse implicit capture for iframe";
 const char kMouseSubframeNoImplicitCaptureDescription[] =

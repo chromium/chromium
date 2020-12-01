@@ -332,6 +332,7 @@ public abstract class ChromeFeatureList {
     public static final String MESSAGES_FOR_ANDROID_INFRASTRUCTURE =
             "MessagesForAndroidInfrastructure";
     public static final String MOBILE_IDENTITY_CONSISTENCY = "MobileIdentityConsistency";
+    public static final String MOBILE_IDENTITY_CONSISTENCY_VAR = "MobileIdentityConsistencyVar";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
     public static final String NEW_PHOTO_PICKER = "NewPhotoPicker";

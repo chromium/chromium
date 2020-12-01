@@ -1283,6 +1283,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerCoordinator.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerDelegate.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerDelegateImpl.java",
+  "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerFeatureUtils.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerMediator.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerProperties.java",
   "java/src/org/chromium/chrome/browser/signin/account_picker/AddAccountRowViewBinder.java",

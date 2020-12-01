@@ -3293,6 +3293,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "mobile-identity-consistency-var",
+    "owners": [ "bsazonov", "aliceywang", "msarda", "triploblastic" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "modern-tab-strip",
     "owners": [ "nazerke", "bling-flags@google.com" ],
     "expiry_milestone": 92
