@@ -105,9 +105,7 @@ class FakeNfcService : public device::mojom::blink::NFC {
     set_tag_message(std::move(message));
     std::move(callback).Run(nullptr);
   }
-  void CancelPush(CancelPushCallback callback) override {
-    std::move(callback).Run(nullptr);
-  }
+  void CancelPush() override {}
   void Watch(uint32_t id, WatchCallback callback) override {
     if (watch_error_) {
       std::move(callback).Run(watch_error_.Clone());

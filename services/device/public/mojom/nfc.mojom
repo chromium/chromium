@@ -14,7 +14,6 @@ enum NDEFErrorType {
   NOT_READABLE,
   INVALID_MESSAGE,
   OPERATION_CANCELLED,
-  CANNOT_CANCEL,
   // Transfer data error.
   IO_ERROR
 };
@@ -114,7 +113,7 @@ interface NFC {
   Push(NDEFMessage message, NDEFWriteOptions? options) => (NDEFError? error);
 
   // Cancels pending push request.
-  CancelPush() => (NDEFError? error);
+  CancelPush();
 
   // Starts watching for nearby NFC devices. |id| identifies each watch request
   // on the current Mojo connection.

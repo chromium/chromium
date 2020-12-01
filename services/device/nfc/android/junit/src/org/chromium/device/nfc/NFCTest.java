@@ -50,7 +50,6 @@ import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
 import org.chromium.device.mojom.NdefRecordTypeCategory;
 import org.chromium.device.mojom.NdefWriteOptions;
-import org.chromium.device.mojom.Nfc.CancelPushResponse;
 import org.chromium.device.mojom.Nfc.PushResponse;
 import org.chromium.device.mojom.Nfc.WatchResponse;
 import org.chromium.device.mojom.NfcClient;
@@ -1138,7 +1137,7 @@ public class NFCTest {
     }
 
     /**
-     * Test that Nfc.cancelPush() cancels pending push opration and completes successfully.
+     * Test that Nfc.cancelPush() cancels pending push operation.
      */
     @Test
     @Feature({"NFCTest"})
@@ -1146,17 +1145,12 @@ public class NFCTest {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
         PushResponse mockPushCallback = mock(PushResponse.class);
-        CancelPushResponse mockCancelPushCallback = mock(CancelPushResponse.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockPushCallback);
-        nfc.cancelPush(mockCancelPushCallback);
+        nfc.cancelPush();
 
         // Check that push request was cancelled with OPERATION_CANCELLED.
         verify(mockPushCallback).call(mErrorCaptor.capture());
         assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
-
-        // Check that cancel request was successfuly completed.
-        verify(mockCancelPushCallback).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
     }
 
     /**
@@ -1426,8 +1420,7 @@ public class NFCTest {
                 .enableReaderMode(any(Activity.class), any(ReaderCallback.class), anyInt(),
                         (Bundle) isNull());
 
-        CancelPushResponse mockCancelPushCallback = mock(CancelPushResponse.class);
-        nfc.cancelPush(mockCancelPushCallback);
+        nfc.cancelPush();
 
         // Reader mode is disabled.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1463,8 +1456,7 @@ public class NFCTest {
         assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
 
         // Cancel the second push.
-        CancelPushResponse mockCancelPushCallback = mock(CancelPushResponse.class);
-        nfc.cancelPush(mockCancelPushCallback);
+        nfc.cancelPush();
 
         // Reader mode is disabled after cancelPush is invoked.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1494,8 +1486,7 @@ public class NFCTest {
                 .enableReaderMode(any(Activity.class), any(ReaderCallback.class), anyInt(),
                         (Bundle) isNull());
 
-        CancelPushResponse mockCancelPushCallback = mock(CancelPushResponse.class);
-        nfc.cancelPush(mockCancelPushCallback);
+        nfc.cancelPush();
 
         // Push was cancelled with OPERATION_CANCELLED.
         verify(mockPushCallback).call(mErrorCaptor.capture());

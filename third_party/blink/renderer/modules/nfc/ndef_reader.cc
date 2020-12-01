@@ -300,10 +300,8 @@ void NDEFReader::WriteOnRequestCompleted(
 
 void NDEFReader::WriteAbort(ScriptPromiseResolver* resolver) {
   // WriteOnRequestCompleted() should always be called whether the push
-  // operation is cancelled successfully or not. So do nothing for the cancelled
-  // callback.
-  // TODO(https://crbug.com/1151857) Remove the callback since it is unused.
-  GetNfcProxy()->CancelPush(device::mojom::blink::NFC::CancelPushCallback());
+  // operation is cancelled successfully or not.
+  GetNfcProxy()->CancelPush();
 }
 
 NFCProxy* NDEFReader::GetNfcProxy() const {
