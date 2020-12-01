@@ -34,8 +34,8 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
-#include "content/browser/media/video_decoder_proxy.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/tracing/tracing_service_controller.h"
@@ -782,7 +782,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateRendererHost(
       mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
-  void BindVideoDecoderService(
+  void BindMediaInterfaceProxy(
       mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
   void BindWebDatabaseHostImpl(
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
@@ -1126,7 +1126,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   std::unique_ptr<AgentMetricsCollectorHost> agent_metrics_collector_host_;
 
-  std::unique_ptr<VideoDecoderProxy> video_decoder_proxy_;
+  std::unique_ptr<FramelessMediaInterfaceProxy> media_interface_proxy_;
 
   // Forwards messages between WebRTCInternals in the browser process
   // and PeerConnectionTracker in the renderer process.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/video_decoder_proxy.h"
+#include "content/browser/media/frameless_media_interface_proxy.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -13,16 +13,16 @@
 
 namespace content {
 
-VideoDecoderProxy::VideoDecoderProxy() {
+FramelessMediaInterfaceProxy::FramelessMediaInterfaceProxy() {
   DVLOG(1) << __func__;
 }
 
-VideoDecoderProxy::~VideoDecoderProxy() {
+FramelessMediaInterfaceProxy::~FramelessMediaInterfaceProxy() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void VideoDecoderProxy::Add(
+void FramelessMediaInterfaceProxy::Add(
     mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -30,10 +30,16 @@ void VideoDecoderProxy::Add(
   receivers_.Add(this, std::move(receiver));
 }
 
-void VideoDecoderProxy::CreateAudioDecoder(
-    mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) {}
+void FramelessMediaInterfaceProxy::CreateAudioDecoder(
+    mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  InterfaceFactory* factory = GetMediaInterfaceFactory();
+  if (factory)
+    factory->CreateAudioDecoder(std::move(receiver));
+}
 
-void VideoDecoderProxy::CreateVideoDecoder(
+void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -42,24 +48,24 @@ void VideoDecoderProxy::CreateVideoDecoder(
     factory->CreateVideoDecoder(std::move(receiver));
 }
 
-void VideoDecoderProxy::CreateDefaultRenderer(
+void FramelessMediaInterfaceProxy::CreateDefaultRenderer(
     const std::string& audio_device_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
-void VideoDecoderProxy::CreateCastRenderer(
+void FramelessMediaInterfaceProxy::CreateCastRenderer(
     const base::UnguessableToken& overlay_plane_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
 #if defined(OS_ANDROID)
-void VideoDecoderProxy::CreateFlingingRenderer(
+void FramelessMediaInterfaceProxy::CreateFlingingRenderer(
     const std::string& audio_device_id,
     mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
         client_extenion,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 
-void VideoDecoderProxy::CreateMediaPlayerRenderer(
+void FramelessMediaInterfaceProxy::CreateMediaPlayerRenderer(
     mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
         client_extension_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
@@ -67,14 +73,15 @@ void VideoDecoderProxy::CreateMediaPlayerRenderer(
         renderer_extension_receiver) {}
 #endif  // defined(OS_ANDROID)
 
-void VideoDecoderProxy::CreateCdm(const std::string& key_system,
-                                  const media::CdmConfig& cdm_config,
-                                  CreateCdmCallback callback) {
+void FramelessMediaInterfaceProxy::CreateCdm(const std::string& key_system,
+                                             const media::CdmConfig& cdm_config,
+                                             CreateCdmCallback callback) {
   std::move(callback).Run(mojo::NullRemote(), base::nullopt, mojo::NullRemote(),
                           "CDM creation not supported");
 }
 
-media::mojom::InterfaceFactory* VideoDecoderProxy::GetMediaInterfaceFactory() {
+media::mojom::InterfaceFactory*
+FramelessMediaInterfaceProxy::GetMediaInterfaceFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!interface_factory_remote_)
@@ -83,7 +90,7 @@ media::mojom::InterfaceFactory* VideoDecoderProxy::GetMediaInterfaceFactory() {
   return interface_factory_remote_.get();
 }
 
-void VideoDecoderProxy::ConnectToMediaService() {
+void FramelessMediaInterfaceProxy::ConnectToMediaService() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!interface_factory_remote_);
@@ -94,12 +101,12 @@ void VideoDecoderProxy::ConnectToMediaService() {
   GetMediaService().CreateInterfaceFactory(
       interface_factory_remote_.BindNewPipeAndPassReceiver(),
       std::move(interfaces));
-  interface_factory_remote_.set_disconnect_handler(
-      base::BindOnce(&VideoDecoderProxy::OnMediaServiceConnectionError,
-                     base::Unretained(this)));
+  interface_factory_remote_.set_disconnect_handler(base::BindOnce(
+      &FramelessMediaInterfaceProxy::OnMediaServiceConnectionError,
+      base::Unretained(this)));
 }
 
-void VideoDecoderProxy::OnMediaServiceConnectionError() {
+void FramelessMediaInterfaceProxy::OnMediaServiceConnectionError() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
