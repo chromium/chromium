@@ -82,6 +82,7 @@ class VideoCodecConstraints(WebrtcPage):
                                          repeatable=False):
       action_runner.ClickElement('input[id="%s"]' % self.video_codec)
       action_runner.ClickElement('button[id="startButton"]')
+      action_runner.WaitForElement('button[id="callButton"]:enabled')
       action_runner.ClickElement('button[id="callButton"]')
       action_runner.Wait(20)
       action_runner.ClickElement('button[id="hangupButton"]')
