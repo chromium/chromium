@@ -526,12 +526,13 @@ PhysicalOffset LocalToAbsolutePoint(Node* node,
                                     float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
   auto* layout_grid = To<LayoutGrid>(layout_object);
-  FloatPoint local_in_frame = FramePointToViewport(
-      node->GetDocument().View(), FloatPoint(local.left, local.top));
-  PhysicalOffset abs_number_pos = layout_grid->LocalToAbsolutePoint(
-      PhysicalOffset::FromFloatPointRound(local_in_frame));
-  abs_number_pos.Scale(scale);
-  return abs_number_pos;
+  PhysicalOffset abs_point = layout_grid->LocalToAbsolutePoint(local);
+  FloatPoint abs_point_in_viewport = FramePointToViewport(
+      node->GetDocument().View(), FloatPoint(abs_point.left, abs_point.top));
+  PhysicalOffset scaled_abs_point =
+      PhysicalOffset::FromFloatPointRound(abs_point_in_viewport);
+  scaled_abs_point.Scale(scale);
+  return scaled_abs_point;
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildPosition(
