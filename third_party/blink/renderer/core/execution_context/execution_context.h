@@ -232,6 +232,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   virtual void RemoveURLFromMemoryCache(const KURL&);
 
+  void SetIsInBackForwardCache(bool);
   void SetLifecycleState(mojom::FrameLifecycleState);
   void NotifyContextDestroyed();
 
@@ -449,6 +450,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   mojom::FrameLifecycleState lifecycle_state_;
   bool is_context_destroyed_;
+
+  bool is_in_back_forward_cache_ = false;
 
   Member<PublicURLManager> public_url_manager_;
 
