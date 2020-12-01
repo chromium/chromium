@@ -6006,3 +6006,9 @@ crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
 #Sheriff 2020-11-26
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Timeout ]
 crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
+
+# These tests will only run in the virtual test suite where the frequency
+# capping for overlay popup detection is disabled. This eliminates the need
+# for waitings in web tests to trigger a detection event.
+crbug.com/1032681 http/tests/subresource_filter/overlay_popup_ad/* [ Skip ]
+crbug.com/1032681 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/* [ Pass ]

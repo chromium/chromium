@@ -415,11 +415,6 @@
     // instances that track visibility.
     boolean isTrackingOcclusionForIFrame(HTMLIFrameElement iframe);
 
-    // Disable the frequency capping for overlay popup detection. This
-    // eliminates the need to for waitings in web tests to trigger a detection
-    // event.
-    void DisableFrequencyCappingForOverlayPopupDetection();
-
     // Declare that the given |name| is in use by the embedder via the custom
     // element mechanism.
     [RaisesException] void addEmbedderCustomElementName(DOMString name);

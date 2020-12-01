@@ -216,6 +216,7 @@ class ContentSubresourceFilterThrottleManager
   void FrameIsAdSubframe() override;
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
+  void OnAdsViolationTriggered(mojom::AdsViolation violation) override;
 
   // Gets a filter for the navigation from |throttle|, creates and returns a new
   // filter, or returns |nullptr|. Also updates |frame_host_filter_map_| as

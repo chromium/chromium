@@ -596,8 +596,6 @@ class Internals final : public ScriptWrappable {
   bool isSiteIsolated(HTMLIFrameElement* iframe) const;
   bool isTrackingOcclusionForIFrame(HTMLIFrameElement* iframe) const;
 
-  void DisableFrequencyCappingForOverlayPopupDetection() const;
-
   void addEmbedderCustomElementName(const AtomicString& name, ExceptionState&);
 
   LocalFrame* GetFrame() const;

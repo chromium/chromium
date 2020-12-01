@@ -116,6 +116,8 @@ class SubresourceFilterAgent
   void DidFailProvisionalLoad() override;
   void DidFinishLoad() override;
   void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) override;
+  void OnOverlayPopupAdDetected() override;
+  void OnLargeStickyAdDetected() override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
   UnverifiedRulesetDealer* ruleset_dealer_;

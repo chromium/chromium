@@ -1181,6 +1181,8 @@ if (!is_android) {
       "../browser/optimization_guide/prediction/prediction_manager_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer_browsertest.cc",
+      "../browser/page_load_metrics/observers/ad_metrics/large_sticky_ad_intervention_browsertest.cc",
+      "../browser/page_load_metrics/observers/ad_metrics/overlay_popup_ad_intervention_browsertest.cc",
       "../browser/page_load_metrics/observers/back_forward_cache_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/core/amp_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/data_saver_site_breakdown_metrics_observer_browsertest.cc",

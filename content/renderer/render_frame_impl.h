@@ -649,6 +649,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebRect& intersect_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
                        ForRedirect for_redirect) override;
+  void OnOverlayPopupAdDetected() override;
+  void OnLargeStickyAdDetected() override;
   void DidLoadResourceFromMemoryCache(
       const blink::WebURLRequest& request,
       const blink::WebURLResponse& response) override;

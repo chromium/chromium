@@ -4582,6 +4582,18 @@ void RenderFrameImpl::OnMainFrameIntersectionChanged(
   }
 }
 
+void RenderFrameImpl::OnOverlayPopupAdDetected() {
+  for (auto& observer : observers_) {
+    observer.OnOverlayPopupAdDetected();
+  }
+}
+
+void RenderFrameImpl::OnLargeStickyAdDetected() {
+  for (auto& observer : observers_) {
+    observer.OnLargeStickyAdDetected();
+  }
+}
+
 void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
                                       ForRedirect for_redirect) {
   // This method is called for subresources, while transition type is

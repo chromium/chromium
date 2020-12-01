@@ -14,9 +14,9 @@ p {
 }
 </style>
 
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="resources/overlay-interstitial-ad-testharness.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -24,10 +24,6 @@ p {
 <p>some content</p>
 
 <script>
-if (window.testRunner) {
-  internals.DisableFrequencyCappingForOverlayPopupDetection();
-}
-
 promise_test(async function(t) {
   // Create the overlay pop-up ad.
   let ad_frame = appendAdFrameTo(document.body);

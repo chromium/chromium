@@ -8,8 +8,8 @@ div {
 }
 iframe {
   position: fixed;
-  margin-left: 25vw;
-  width: 50vw;
+  margin-left: 46vw;
+  width: 8vw;
   height: 100vh;
   border: 0px;
 }
@@ -25,9 +25,9 @@ div.bottom {
 }
 </style>
 
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="resources/overlay-interstitial-ad-testharness.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -41,10 +41,6 @@ div.bottom {
 <div class="bottom"></div>
 
 <script>
-if (window.testRunner) {
-  internals.DisableFrequencyCappingForOverlayPopupDetection();
-}
-
 promise_test(async function(t) {
   // After 1500ms, force a layout update so that the interstitial detector
   // is aware of the first meaningful paint, and future overlay candidates
@@ -66,9 +62,10 @@ promise_test(async function(t) {
   // the overlay candidate's dismissal.
   await forceLayoutUpdate();
 
-  // Expect the OverlayPopupAd UseCounter.
-  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
-}, "Test UseCounter for overlay-popup-ad when the frame itself has a fixed position.");
+  // Expect that the use counter kOverlayPopupAd is not recorded, as the
+  // ad size is too small relative to the viewport size.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test overlay-popup-ad when the frame itself has a fixed position and the size is less than 10% of the viewport size. In this case, we expect no use counter for kOverlayPopupAd.");
 
 </script>
 </body>

@@ -1285,6 +1285,8 @@ Unknown properties are collapsed to zero. -->
 <enum name="AdsViolations">
   <int value="0" label="kMobileAdDensityByHeightAbove30"/>
   <int value="1" label="kHeavyAdsInterventionAtHostLimit"/>
+  <int value="2" label="kLargeStickyAd"/>
+  <int value="3" label="kOverlayPopupAd"/>
 </enum>
 
 <enum name="AdUserActivationStatus">

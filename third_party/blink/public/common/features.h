@@ -26,6 +26,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kSmallScriptStreaming;
 BLINK_COMMON_EXPORT extern const base::Feature kUserLevelMemoryPressureSignal;
 BLINK_COMMON_EXPORT extern const base::Feature kFreezePurgeMemoryAllPagesFrozen;
 BLINK_COMMON_EXPORT extern const base::Feature kFreezeUserAgent;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kFrequencyCappingForOverlayPopupDetection;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kFrequencyCappingForLargeStickyAdDetection;
 BLINK_COMMON_EXPORT extern const base::Feature kFtpProtocol;
 BLINK_COMMON_EXPORT extern const base::Feature kImplicitRootScroller;
 BLINK_COMMON_EXPORT extern const base::Feature kInsertKeyToggleMode;
