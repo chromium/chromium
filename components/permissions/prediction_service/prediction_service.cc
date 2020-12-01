@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "components/permissions/features.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_common.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -130,18 +131,31 @@ void PredictionService::StartLookup(const PredictionRequestFeatures& entity,
 }
 
 // static
-const GURL PredictionService::GetPredictionServiceUrl() {
+const GURL PredictionService::GetPredictionServiceUrl(
+    bool recalculate_for_testing) {
   static base::NoDestructor<GURL> default_prediction_service_url{
       kDefaultPredictionServiceUrl};
+  static base::NoDestructor<GURL> command_line_url_override{
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kDefaultPredictionServiceUrlSwitchKey)};
+  static base::NoDestructor<GURL> feature_param_url_override{
+      feature_params::kPermissionPredictionServiceUrlOverride.Get()};
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kDefaultPredictionServiceUrlSwitchKey)) {
-    GURL command_line_url(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+  // To facilitate tests that want to exercise various url building logic,
+  // reinitialize the static variables if this flag is set.
+  if (recalculate_for_testing) {
+    *command_line_url_override =
+        GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             kDefaultPredictionServiceUrlSwitchKey));
-    if (command_line_url.is_valid())
-      return command_line_url;
+    *feature_param_url_override =
+        GURL(feature_params::kPermissionPredictionServiceUrlOverride.Get());
   }
+
+  if (command_line_url_override->is_valid())
+    return *command_line_url_override;
+
+  if (feature_param_url_override->is_valid())
+    return *feature_param_url_override;
 
   return *default_prediction_service_url;
 }
@@ -150,9 +164,10 @@ std::unique_ptr<network::ResourceRequest>
 PredictionService::GetResourceRequest() {
   auto request = std::make_unique<network::ResourceRequest>();
 
-  request->url = prediction_service_url_override_.is_empty()
-                     ? GetPredictionServiceUrl()
-                     : prediction_service_url_override_;
+  request->url =
+      prediction_service_url_override_.is_empty()
+          ? GetPredictionServiceUrl(recalculate_service_url_every_time)
+          : prediction_service_url_override_;
   request->load_flags = net::LOAD_DISABLE_CACHE;
   request->method = "POST";
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;

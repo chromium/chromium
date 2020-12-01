@@ -3,7 +3,12 @@
 # found in the LICENSE file.
 
 source_set("permissions_common") {
-  sources = [ "permission_request_enums.h" ]
+  sources = [
+    "features.cc",
+    "features.h",
+    "permission_request_enums.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("permissions") {
@@ -16,8 +21,6 @@ source_set("permissions") {
     "contexts/geolocation_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
-    "features.cc",
-    "features.h",
     "notification_permission_ui_selector.cc",
     "notification_permission_ui_selector.h",
     "permission_context_base.cc",

@@ -11,9 +11,11 @@
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_common.h"
@@ -309,7 +311,7 @@ class PredictionServiceTest : public testing::Test {
     return "";
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -382,38 +384,86 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   }
 }
 
-// These two tests together prove the assertion that you can override the server
-// url via command line, but they need to be separated since the URL is only
-// computed once, lazily initialized.
-TEST_F(PredictionServiceTest, WithoutCommandLineUseDefaultUrl) {
+// Test that the Web Prediction Service url can be overridden via feature params
+// and command line, and the fallback logic in case the provided url is not
+// valid.
+TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
+  struct {
+    base::Optional<std::string> command_line_switch_value;
+    base::Optional<std::string> url_override_param_value;
+    GURL expected_request_url;
+    permissions::GetSuggestionsResponse expected_response;
+  } kTests[] = {
+      // Test without any overrides.
+      {base::nullopt, base::nullopt, GURL(kDefaultPredictionServiceUrl),
+       kResponseLikely},
+
+      // Test only the FeatureParam override.
+      {base::nullopt, kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
+      {base::nullopt, "this is not a url", GURL(kDefaultPredictionServiceUrl),
+       kResponseLikely},
+      {base::nullopt, "", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+
+      // Test only the command line override.
+      {kUrl_Unlikely.spec(), base::nullopt, kUrl_Unlikely, kResponseUnlikely},
+      {"this is not a url", base::nullopt, GURL(kDefaultPredictionServiceUrl),
+       kResponseLikely},
+      {"", base::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+
+      // Command line takes precedence over FeatureParam, if valid.
+      {kUrl_Likely.spec(), kUrl_Unlikely.spec(), kUrl_Likely, kResponseLikely},
+      {"this is not a url", kUrl_Unlikely.spec(), kUrl_Unlikely,
+       kResponseUnlikely},
+      {"this is not a url", "this is not a url",
+       GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+  };
+
+  prediction_service_->recalculate_service_url_every_time_for_testing();
+
+  for (const auto& kTest : kTests) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (kTest.url_override_param_value.has_value()) {
+      scoped_feature_list.InitAndEnableFeatureWithParameters(
+          features::kPermissionPredictionServiceUseUrlOverride,
+          {{feature_params::kPermissionPredictionServiceUrlOverride.name,
+            kTest.url_override_param_value.value()}});
+    }
+
+    if (kTest.command_line_switch_value.has_value()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+          kDefaultPredictionServiceUrlSwitchKey,
+          kTest.command_line_switch_value.value());
+    }
+
+    base::RunLoop response_loop;
+    StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
+    Respond(kTest.expected_request_url);
+    response_loop.Run();
+    EXPECT_EQ(1u, received_responses_.size());
+    EXPECT_TRUE(received_responses_[0]);
+    EXPECT_EQ(kTest.expected_response.SerializeAsString(),
+              received_responses_[0]->SerializeAsString());
+
+    // Cleanup for next test.
+    received_responses_.clear();
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        kDefaultPredictionServiceUrlSwitchKey);
+  }
+}
+
+TEST_F(PredictionServiceTest,
+       FeatureEnabledWithNoFeatureParamFallsBackOnDefault) {
+  prediction_service_->recalculate_service_url_every_time_for_testing();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPermissionPredictionServiceUseUrlOverride);
+
   base::RunLoop response_loop;
   StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
   Respond(GURL(kDefaultPredictionServiceUrl));
   response_loop.Run();
-  EXPECT_TRUE(received_responses_[0]);
-  EXPECT_EQ(kResponseLikely.SerializeAsString(),
-            received_responses_[0]->SerializeAsString());
-}
-
-TEST_F(PredictionServiceTest, CommandLineCanOverrideServerUrl) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      kDefaultPredictionServiceUrlSwitchKey, kUrl_Unlikely.spec());
-  base::RunLoop response_loop;
-  StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
-  Respond(GURL(kUrl_Unlikely));
-  response_loop.Run();
-  EXPECT_TRUE(received_responses_[0]);
-  EXPECT_EQ(kResponseUnlikely.SerializeAsString(),
-            received_responses_[0]->SerializeAsString());
-}
-
-TEST_F(PredictionServiceTest, InvalidCommandLineUrlFallsbackOnDefault) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      kDefaultPredictionServiceUrlSwitchKey, "this_is_not_an_url");
-  base::RunLoop response_loop;
-  StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
-  Respond(GURL(kDefaultPredictionServiceUrl));
-  response_loop.Run();
+  EXPECT_EQ(1u, received_responses_.size());
   EXPECT_TRUE(received_responses_[0]);
   EXPECT_EQ(kResponseLikely.SerializeAsString(),
             received_responses_[0]->SerializeAsString());
