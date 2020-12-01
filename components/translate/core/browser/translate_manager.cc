@@ -522,8 +522,7 @@ void TranslateManager::PageTranslated(const std::string& source_lang,
                                      false);
   NotifyTranslateError(error_type);
 
-  GetActiveTranslateMetricsLogger()->LogTranslationFinished(
-      error_type == TranslateErrors::NONE);
+  GetActiveTranslateMetricsLogger()->LogTranslationFinished(error_type);
 }
 
 void TranslateManager::OnTranslateScriptFetchComplete(
@@ -545,7 +544,8 @@ void TranslateManager::OnTranslateScriptFetchComplete(
         translate::TRANSLATE_STEP_TRANSLATE_ERROR, source_lang, target_lang,
         TranslateErrors::NETWORK, false);
     NotifyTranslateError(TranslateErrors::NETWORK);
-    GetActiveTranslateMetricsLogger()->LogTranslationFinished(false);
+    GetActiveTranslateMetricsLogger()->LogTranslationFinished(
+        TranslateErrors::NETWORK);
   }
 }
 

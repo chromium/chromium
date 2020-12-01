@@ -325,8 +325,9 @@ void ContentTranslateDriver::OnPageTranslated(
     TranslateErrors::Type error_type) {
   if (cancelled) {
     // Informs the |TranslateMetricsLogger| that the translation was cancelled.
+    DCHECK(error_type != TranslateErrors::NONE);
     translate_manager_->GetActiveTranslateMetricsLogger()
-        ->LogTranslationFinished(false);
+        ->LogTranslationFinished(error_type);
     return;
   }
 

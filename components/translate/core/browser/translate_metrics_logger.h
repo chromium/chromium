@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string>
 
+#include "components/translate/core/common/translate_errors.h"
+
 namespace translate {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -85,7 +87,7 @@ class TranslateMetricsLogger {
   // Tracks the state of Translate over the course of the page load.
   virtual void LogInitialState() = 0;
   virtual void LogTranslationStarted() = 0;
-  virtual void LogTranslationFinished(bool was_successful) = 0;
+  virtual void LogTranslationFinished(TranslateErrors::Type error_type) = 0;
   virtual void LogReversion() = 0;
   virtual void LogUIChange(bool is_ui_shown) = 0;
   virtual void LogOmniboxIconChange(bool is_omnibox_icon_show) = 0;

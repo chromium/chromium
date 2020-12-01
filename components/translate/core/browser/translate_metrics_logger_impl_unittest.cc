@@ -46,6 +46,14 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
                                            expected_num_reversions, 1);
   }
 
+  void CheckTranslateErrors(TranslateErrors::Type first_translate_error_type,
+                            int num_translate_errors) {
+    EXPECT_EQ(translate_metrics_logger_->first_translate_error_type_,
+              first_translate_error_type);
+    EXPECT_EQ(translate_metrics_logger_->num_translate_errors_,
+              num_translate_errors);
+  }
+
   void CheckTotalTimeTranslated(base::TimeDelta total_time_translated,
                                 base::TimeDelta total_time_not_translated) {
     EXPECT_EQ(translate_metrics_logger_->total_time_translated_,
@@ -76,7 +84,7 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
   translate_metrics_logger()->LogInitialState();
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
   translate_metrics_logger()->LogReversion();
 
   // Simulate |RecordMetrics| being called multiple times.
@@ -152,24 +160,26 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
 
   translate_metrics_logger()->RecordMetrics(true);
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kTranslatedNoUI, 1, 0);
+  CheckTranslateErrors(TranslateErrors::NONE, 0);
 
   // Simulate a failed translation.
   ResetTest();
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(false);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kNotTranslatedNoUI, 0, 0);
+  CheckTranslateErrors(TranslateErrors::NETWORK, 1);
 
   // Simulate a translation that does not finish.
   ResetTest();
@@ -181,6 +191,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kNotTranslatedNoUI, 0, 0);
+  CheckTranslateErrors(TranslateErrors::NONE, 0);
 
   // Simulate translating an already translated page, but the second translation
   // fails.
@@ -188,14 +199,15 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(false);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kTranslatedNoUI, 1, 0);
+  CheckTranslateErrors(TranslateErrors::NETWORK, 1);
 
   // Simulate the page being auto translated. Note that in this case the
   // translation will be queued before we mark the initial state, but in general
@@ -204,23 +216,25 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   ResetTest();
   translate_metrics_logger()->LogTranslationStarted();
   translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
 
   translate_metrics_logger()->RecordMetrics(true);
 
   CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
                                 TranslateState::kTranslatedNoUI, 1, 0);
+  CheckTranslateErrors(TranslateErrors::NONE, 0);
 
   // Simulate an auto translation where the translation fails.
   ResetTest();
   translate_metrics_logger()->LogTranslationStarted();
   translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(false);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NETWORK);
 
   translate_metrics_logger()->RecordMetrics(true);
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kNotTranslatedNoUI, 0, 0);
+  CheckTranslateErrors(TranslateErrors::NETWORK, 1);
 
   // Simulate an auto translation where the translation does not finish.
   ResetTest();
@@ -231,6 +245,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kNotTranslatedNoUI, 0, 0);
+  CheckTranslateErrors(TranslateErrors::NONE, 0);
 
   // Simualte a page that is repeatedly translated and then reverted.
   ResetTest();
@@ -241,7 +256,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
 
   for (int i = 0; i < num_translations_and_reversions; i++) {
     translate_metrics_logger()->LogTranslationStarted();
-    translate_metrics_logger()->LogTranslationFinished(true);
+    translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
     translate_metrics_logger()->LogReversion();
   }
 
@@ -250,6 +265,39 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   CheckTranslateStateHistograms(
       TranslateState::kNotTranslatedNoUI, TranslateState::kNotTranslatedNoUI,
       num_translations_and_reversions, num_translations_and_reversions);
+  CheckTranslateErrors(TranslateErrors::NONE, 0);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest, LogTranslateErrors) {
+  // Sets the sequences of errors to supply.
+  const TranslateErrors::Type kTranslateErrorTypes[] = {
+      TranslateErrors::NONE,
+      TranslateErrors::NETWORK,
+      TranslateErrors::INITIALIZATION_ERROR,
+      TranslateErrors::NONE,
+      TranslateErrors::UNSUPPORTED_LANGUAGE,
+      TranslateErrors::TRANSLATION_ERROR,
+      TranslateErrors::NONE,
+      TranslateErrors::TRANSLATION_TIMEOUT,
+      TranslateErrors::SCRIPT_LOAD_ERROR,
+      TranslateErrors::NONE};
+
+  // Simulates the translations with the predefined errors.
+  for (auto translate_error_type : kTranslateErrorTypes) {
+    translate_metrics_logger()->LogTranslationStarted();
+    translate_metrics_logger()->LogTranslationFinished(translate_error_type);
+  }
+
+  translate_metrics_logger()->RecordMetrics(true);
+
+  // We expect to capture the first non-NONE value, and the total number of
+  // non-NONE errors.
+  CheckTranslateErrors(TranslateErrors::NETWORK, 6);
+
+  // The number of successful translations is equal to the number of NONE
+  // errors.
+  histogram_tester()->ExpectUniqueSample(kTranslatePageLoadNumTranslations, 4,
+                                         1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
@@ -261,7 +309,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogOmniboxIconChange(true);
 
@@ -278,7 +326,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogOmniboxIconChange(true);
   translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
 
   translate_metrics_logger()->LogReversion();
   translate_metrics_logger()->LogUIChange(false);
@@ -313,7 +361,7 @@ TEST_F(TranslateMetricsLoggerImplTest, TrackTimeTranslatedAndNotTranslated) {
 
   // Translate the page (while still in the background).
   translate_metrics_logger()->LogTranslationStarted();
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
 
   test_clock.Advance(delay3);
 
@@ -352,7 +400,7 @@ TEST_F(TranslateMetricsLoggerImplTest,
   test_clock.Advance(delay2);
 
   // Translation finally finishes.
-  translate_metrics_logger()->LogTranslationFinished(true);
+  translate_metrics_logger()->LogTranslationFinished(TranslateErrors::NONE);
 
   test_clock.Advance(delay3);
 
