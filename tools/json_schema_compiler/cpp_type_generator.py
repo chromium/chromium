@@ -178,7 +178,7 @@ class CppTypeGenerator(object):
           path = '%s/%s.h' % (namespace.source_file_dir, namespace.unix_name)
           if path not in added_paths:
             added_paths.add(path)
-            c.Append('#include "%s"' % path)
+            c.Append('#include "%s"' % cpp_util.ToPosixPath(path))
     return c
 
   def _FindType(self, full_name):

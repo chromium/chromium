@@ -122,9 +122,10 @@ class CppBundleGenerator(object):
     c = code.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
-    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % self._source_file_dir)
+    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE %
+             cpp_util.ToPosixPath(self._source_file_dir))
     ifndef_name = cpp_util.GenerateIfndefName(
-        '%s/%s.h' % (self._source_file_dir, file_base))
+        '%s/%s.h' % (cpp_util.ToPosixPath(self._source_file_dir), file_base))
     c.Append()
     c.Append('#ifndef %s' % ifndef_name)
     c.Append('#define %s' % ifndef_name)
@@ -256,8 +257,8 @@ class _APICCGenerator(object):
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
     c.Append('#include "%s"' % (
-        os.path.join(self._bundle._impl_dir,
-                     'generated_api_registration.h')))
+        cpp_util.ToPosixPath(os.path.join(self._bundle._impl_dir,
+                                          'generated_api_registration.h'))))
     c.Append()
     c.Append('#include "build/build_config.h"')
     c.Append('#include "build/chromeos_buildflags.h"')
@@ -281,7 +282,7 @@ class _APICCGenerator(object):
       if ifdefs is not None:
         c.Append("#if %s" % ifdefs, indent_level=0)
 
-      c.Append('#include "%s"' % implementation_header)
+      c.Append('#include "%s"' % cpp_util.ToPosixPath(implementation_header))
 
       if ifdefs is not None:
         c.Append("#endif  // %s" % ifdefs, indent_level=0)
@@ -341,8 +342,9 @@ class _SchemasCCGenerator(object):
     c = code.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
-    c.Append('#include "%s"' % (os.path.join(self._bundle._source_file_dir,
-                                             'generated_schemas.h')))
+    c.Append('#include "%s"' % (
+             cpp_util.ToPosixPath(os.path.join(self._bundle._source_file_dir,
+                                               'generated_schemas.h'))))
     c.Append()
     c.Append('#include <algorithm>')
     c.Append('#include <iterator>')

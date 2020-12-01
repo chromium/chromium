@@ -29,7 +29,8 @@ class _Generator(object):
     c = Code()
     (c.Append(cpp_util.CHROMIUM_LICENSE)
       .Append()
-      .Append(cpp_util.GENERATED_FEATURE_MESSAGE % self._source_file)
+      .Append(cpp_util.GENERATED_FEATURE_MESSAGE %
+              cpp_util.ToPosixPath(self._source_file))
       .Append()
     )
 

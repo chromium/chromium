@@ -10,6 +10,7 @@ from datetime import datetime
 from functools import partial
 import json
 import os
+import posixpath
 import re
 import sys
 
@@ -72,6 +73,13 @@ CC_FILE_END = """
 # Legacy keys for the allow and blocklists.
 LEGACY_ALLOWLIST_KEY = 'whitelist'
 LEGACY_BLOCKLIST_KEY = 'blacklist'
+
+def ToPosixPath(path):
+  """Returns |path| with separator converted to POSIX style.
+
+  This is needed to generate C++ #include paths.
+  """
+  return path.replace(os.path.sep, posixpath.sep)
 
 # Returns true if the list 'l' only contains strings that are a hex-encoded SHA1
 # hashes.
@@ -894,7 +902,7 @@ class FeatureCompiler(object):
         'header_guard': (header_file_path.replace('/', '_').
                              replace('.', '_').upper()),
         'method_name': self._method_name,
-        'source_files': str(self._source_files),
+        'source_files': str([ToPosixPath(f) for f in self._source_files]),
         'year': str(datetime.now().year)
     })
     if not os.path.exists(self._out_root):

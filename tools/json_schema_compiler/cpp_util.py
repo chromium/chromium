@@ -9,6 +9,7 @@ from code import Code
 from datetime import datetime
 from model import PropertyType
 import os
+import posixpath
 import re
 
 CHROMIUM_LICENSE = (
@@ -164,6 +165,14 @@ def IsUnixName(s):
   characters and underscores with at least one underscore.
   """
   return all(x.islower() or x == '_' for x in s) and '_' in s
+
+def ToPosixPath(path):
+  """Returns |path| with separator converted to POSIX style.
+
+  This is needed to generate C++ #include paths.
+  """
+  return path.replace(os.path.sep, posixpath.sep)
+
 
 def CamelCase(unix_name):
   return ''.join(word.capitalize() for word in unix_name.split('_'))

@@ -39,7 +39,8 @@ class _Generator(object):
     c = Code()
     (c.Append(cpp_util.CHROMIUM_LICENSE)
       .Append()
-      .Append(cpp_util.GENERATED_FILE_MESSAGE % self._namespace.source_file)
+      .Append(cpp_util.GENERATED_FILE_MESSAGE %
+              cpp_util.ToPosixPath(self._namespace.source_file))
       .Append()
       .Append(self._util_cc_helper.GetIncludePath())
       .Append('#include "base/check.h"')
@@ -49,7 +50,8 @@ class _Generator(object):
       .Append('#include "base/strings/utf_string_conversions.h"')
       .Append('#include "base/values.h"')
       .Append('#include "%s/%s.h"' %
-              (self._namespace.source_file_dir, self._namespace.short_filename))
+              (cpp_util.ToPosixPath(self._namespace.source_file_dir),
+               self._namespace.short_filename))
       .Append('#include <set>')
       .Append('#include <utility>')
       .Cblock(self._GenerateManifestKeysIncludes())
