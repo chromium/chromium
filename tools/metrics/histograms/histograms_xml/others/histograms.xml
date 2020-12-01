@@ -16984,6 +16984,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.UninstallAndReplaceCount" units="apps"
+    expires_after="2021-04-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web app installations uninstalled and replaced
+    an old default app (web app or Chrome app). This corresponds to the
+    &quot;uninstall_and_replace&quot; field in preinstalled web app configs.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Shortcuts.Creation.Result"
     enum="ShortcutsCreationResult" expires_after="M93">
   <owner>phillis@chromium.org</owner>
