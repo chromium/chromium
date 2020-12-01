@@ -94,9 +94,7 @@ void AccessibilityBridge::AccessibilityEventReceived(
 
   // Updates to AXTree must be applied first.
   for (const ui::AXTreeUpdate& update : details.updates) {
-    if (!update.has_tree_data &&
-        ax_tree_.GetAXTreeID() != ui::AXTreeIDUnknown() &&
-        ax_tree_.GetAXTreeID() != details.ax_tree_id) {
+    if (web_contents_->GetMainFrame()->GetAXTreeID() != details.ax_tree_id) {
       // TODO(https://crbug.com/1128954): Add support for combining AXTrees.
       continue;
     }

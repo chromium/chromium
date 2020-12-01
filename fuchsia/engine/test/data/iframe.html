@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>this page has an iframe</title>
+  </head>
+  <body>
+    <iframe id="iframeId" name="iframeName" title="iframe title"></iframe>
+    <script>
+      var iframe = document.getElementById("iframeId");
+      iframe.src = iframeSrc;
+      iframe.onload = () => {
+        document.title = "iframe loaded";
+      }
+    </script>
+  </body>
+</html>
