@@ -23,9 +23,6 @@
 namespace viz {
 namespace {
 
-constexpr bool kIsRoot = true;
-constexpr bool kIsChildRoot = false;
-
 constexpr char kMetricPrefixSurfaceAggregator[] = "SurfaceAggregator.";
 constexpr char kMetricSpeedRunsPerS[] = "speed";
 
@@ -36,6 +33,26 @@ perf_test::PerfResultReporter SetUpSurfaceAggregatorReporter(
   return reporter;
 }
 
+class ExpectedOutput {
+ public:
+  ExpectedOutput(size_t expected_render_passes, size_t expected_quads)
+      : expected_render_passes_(expected_render_passes),
+        expected_quads_(expected_quads) {}
+
+  void VerifyAggregatedFrame(const AggregatedFrame& frame) {
+    EXPECT_EQ(expected_render_passes_, frame.render_pass_list.size());
+    size_t count_quads = 0;
+    for (auto& render_pass : frame.render_pass_list) {
+      count_quads += render_pass->quad_list.size();
+    }
+    EXPECT_EQ(expected_quads_, count_quads);
+  }
+
+ private:
+  size_t expected_render_passes_;
+  size_t expected_quads_;
+};
+
 class SurfaceAggregatorPerfTest : public testing::Test {
  public:
   SurfaceAggregatorPerfTest() : manager_(&shared_bitmap_manager_) {
@@ -43,7 +60,7 @@ class SurfaceAggregatorPerfTest : public testing::Test {
     context_provider_->BindToCurrentThread();
 
     resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kGpu, context_provider_.get(),
+        DisplayResourceProvider::kSoftware, context_provider_.get(),
         &shared_bitmap_manager_);
   }
 
@@ -52,13 +69,14 @@ class SurfaceAggregatorPerfTest : public testing::Test {
                float opacity,
                bool optimize_damage,
                bool full_damage,
-               const std::string& story) {
+               const std::string& story,
+               ExpectedOutput expected_output) {
     std::vector<std::unique_ptr<CompositorFrameSinkSupport>> child_supports(
         num_surfaces);
     std::vector<base::UnguessableToken> child_tokens(num_surfaces);
     for (int i = 0; i < num_surfaces; i++) {
       child_supports[i] = std::make_unique<CompositorFrameSinkSupport>(
-          nullptr, &manager_, FrameSinkId(1, i + 1), kIsChildRoot);
+          nullptr, &manager_, FrameSinkId(1, i + 1), /*is_root=*/false);
       child_tokens[i] = base::UnguessableToken::Create();
     }
     aggregator_ = std::make_unique<SurfaceAggregator>(
@@ -74,13 +92,14 @@ class SurfaceAggregatorPerfTest : public testing::Test {
 
       auto* sqs = pass->CreateAndAppendSharedQuadState();
       for (int j = 0; j < num_textures; j++) {
-        TransferableResource resource;
+        const gfx::Size size(1, 2);
+        TransferableResource resource = TransferableResource::MakeSoftware(
+            SharedBitmap::GenerateId(), size, ResourceFormat::RGBA_8888);
         resource.id = j;
-        resource.is_software = true;
         frame_builder.AddTransferableResource(resource);
 
         auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-        const gfx::Rect rect(0, 0, 1, 2);
+        const gfx::Rect rect(size);
         // Half of rects should be visible with partial damage.
         gfx::Rect visible_rect =
             j % 2 == 0 ? gfx::Rect(0, 0, 1, 2) : gfx::Rect(0, 1, 1, 1);
@@ -117,10 +136,12 @@ class SurfaceAggregatorPerfTest : public testing::Test {
     }
 
     auto root_support = std::make_unique<CompositorFrameSinkSupport>(
-        nullptr, &manager_, FrameSinkId(1, num_surfaces + 1), kIsRoot);
+        nullptr, &manager_, FrameSinkId(1, num_surfaces + 1), /*is_root=*/true);
     auto root_token = base::UnguessableToken::Create();
     base::TimeTicks next_fake_display_time =
         base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+
+    bool first_lap = true;
     timer_.Reset();
     do {
       auto pass = CompositorRenderPass::Create();
@@ -155,6 +176,18 @@ class SurfaceAggregatorPerfTest : public testing::Test {
                     LocalSurfaceId(num_surfaces + 1, root_token)),
           next_fake_display_time, gfx::OVERLAY_TRANSFORM_NONE);
       next_fake_display_time += BeginFrameArgs::DefaultInterval();
+
+      if (!timer_.IsWarmedUp()) {
+        // Verify the expected number of RenderPasses and DrawQuads are
+        // produced for all warmup laps except the first. The first frame will
+        // have full damage regardless of what |full_damage| specifies which
+        // can impact how many quads are aggregated.
+        if (first_lap) {
+          first_lap = false;
+        } else {
+          expected_output.VerifyAggregatedFrame(aggregated);
+        }
+      }
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -172,47 +205,57 @@ class SurfaceAggregatorPerfTest : public testing::Test {
 };
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque) {
-  RunTest(20, 100, 1.f, false, true, "many_surfaces_opaque");
+  RunTest(20, 100, 1.f, false, true, "many_surfaces_opaque",
+          ExpectedOutput(1, 2000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque_100) {
-  RunTest(100, 1, 1.f, true, false, "100_surfaces_1_quad_each");
+  RunTest(100, 1, 1.f, true, false, "100_surfaces_1_quad_each",
+          ExpectedOutput(1, 100));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaque_300) {
-  RunTest(300, 1, 1.f, true, false, "300_surfaces_1_quad_each");
+  RunTest(300, 1, 1.f, true, false, "300_surfaces_1_quad_each",
+          ExpectedOutput(1, 300));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesManyQuadsOpaque_100) {
-  RunTest(100, 100, 1.f, true, false, "100_surfaces_100_quads_each");
+  RunTest(100, 100, 1.f, true, false, "100_surfaces_100_quads_each",
+          ExpectedOutput(1, 5000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesManyQuadsOpaque_300) {
-  RunTest(300, 100, 1.f, true, false, "300_surfaces_100_quads_each");
+  RunTest(300, 100, 1.f, true, false, "300_surfaces_100_quads_each",
+          ExpectedOutput(1, 15000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesTransparent) {
-  RunTest(20, 100, .5f, false, true, "many_surfaces_transparent");
+  RunTest(20, 100, .5f, false, true, "many_surfaces_transparent",
+          ExpectedOutput(20, 2019));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, FewSurfaces) {
-  RunTest(3, 1000, 1.f, false, true, "few_surfaces");
+  RunTest(3, 20, 1.f, false, true, "few_surfaces", ExpectedOutput(1, 60));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesOpaqueDamageCalc) {
-  RunTest(20, 100, 1.f, true, true, "many_surfaces_opaque_damage_calc");
+  RunTest(20, 100, 1.f, true, true, "many_surfaces_opaque_damage_calc",
+          ExpectedOutput(1, 2000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, ManySurfacesTransparentDamageCalc) {
-  RunTest(20, 100, .5f, true, true, "many_surfaces_transparent_damage_calc");
+  RunTest(20, 100, .5f, true, true, "many_surfaces_transparent_damage_calc",
+          ExpectedOutput(20, 2019));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, FewSurfacesDamageCalc) {
-  RunTest(3, 1000, 1.f, true, true, "few_surfaces_damage_calc");
+  RunTest(3, 1000, 1.f, true, true, "few_surfaces_damage_calc",
+          ExpectedOutput(1, 3000));
 }
 
 TEST_F(SurfaceAggregatorPerfTest, FewSurfacesAggregateDamaged) {
-  RunTest(3, 1000, 1.f, true, false, "few_surfaces_aggregate_damaged");
+  RunTest(3, 1000, 1.f, true, false, "few_surfaces_aggregate_damaged",
+          ExpectedOutput(1, 1500));
 }
 
 }  // namespace
