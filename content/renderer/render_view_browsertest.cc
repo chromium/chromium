@@ -568,10 +568,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     return visual_properties;
   }
 
-  void TestEmulatedSizeDprDsf(int width,
-                              int height,
-                              float dpr,
-                              float compositor_dsf) {
+  void TestEmulatedSizeDprDsf(int width, int height, float dpr, float dsf) {
     static base::string16 get_width =
         base::ASCIIToUTF16("Number(window.innerWidth)");
     static base::string16 get_height =
@@ -592,8 +589,8 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     EXPECT_EQ(height, emulated_height);
     EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_dpr, &emulated_dpr));
     EXPECT_EQ(static_cast<int>(dpr * 10), emulated_dpr);
-    cc::LayerTreeHost* host = main_widget()->layer_tree_host();
-    EXPECT_EQ(compositor_dsf, host->device_scale_factor());
+    ASSERT_EQ(dsf,
+              main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
   }
 
   void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size) {
@@ -1110,8 +1107,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
 // ScreenInfo.
 TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   const float device_scale = 2.0f;
-  float compositor_dsf =
-      compositor_deps_->IsUseZoomForDSFEnabled() ? 1.f : device_scale;
   SetDeviceScaleFactor(device_scale);
 
   LoadHTML(
@@ -1140,7 +1135,7 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
             main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
   EXPECT_EQ(device_scale, child_proxy->screen_info().device_scale_factor);
 
-  TestEmulatedSizeDprDsf(640, 480, 3.f, compositor_dsf);
+  TestEmulatedSizeDprDsf(640, 480, 3.f, device_scale);
 
   // Verify that the RenderFrameProxy device scale factor is still the same.
   EXPECT_EQ(3.f, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
@@ -3042,25 +3037,25 @@ TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF1) {
 }
 
 TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF2) {
-  SetDeviceScaleFactor(2.f);
-  float compositor_dsf = compositor_deps_->IsUseZoomForDSFEnabled() ? 1.f : 2.f;
+  float device_scale = 2.f;
+  SetDeviceScaleFactor(device_scale);
 
   LoadHTML("<body style='min-height:1000px;'></body>");
   {
     SCOPED_TRACE("327x415 1dpr");
-    TestEmulatedSizeDprDsf(327, 415, 1.f, compositor_dsf);
+    TestEmulatedSizeDprDsf(327, 415, 1.f, device_scale);
   }
   {
     SCOPED_TRACE("327x415 1.5dpr");
-    TestEmulatedSizeDprDsf(327, 415, 1.5f, compositor_dsf);
+    TestEmulatedSizeDprDsf(327, 415, 1.5f, device_scale);
   }
   {
     SCOPED_TRACE("1005x1102 2dpr");
-    TestEmulatedSizeDprDsf(1005, 1102, 2.f, compositor_dsf);
+    TestEmulatedSizeDprDsf(1005, 1102, 2.f, device_scale);
   }
   {
     SCOPED_TRACE("1005x1102 3dpr");
-    TestEmulatedSizeDprDsf(1005, 1102, 3.f, compositor_dsf);
+    TestEmulatedSizeDprDsf(1005, 1102, 3.f, device_scale);
   }
 
   ReceiveDisableDeviceEmulation(view());
