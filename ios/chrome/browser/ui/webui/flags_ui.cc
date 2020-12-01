@@ -230,6 +230,7 @@ void FlagsUI::AddFlagsIOSStrings(web::WebUIIOSDataSource* source) {
   source->AddLocalizedString("reset", IDS_FLAGS_UI_PAGE_RESET);
   source->AddLocalizedString("reset-acknowledged",
                              IDS_FLAGS_UI_RESET_ACKNOWLEDGED);
+  source->AddLocalizedString("search-label", IDS_FLAGS_UI_SEARCH_LABEL);
   source->AddLocalizedString("search-placeholder",
                              IDS_FLAGS_UI_SEARCH_PLACEHOLDER);
   source->AddLocalizedString("title", IDS_FLAGS_UI_TITLE);

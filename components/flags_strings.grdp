@@ -6,6 +6,9 @@
   <message name="IDS_FLAGS_UI_SEARCH_PLACEHOLDER" translateable="false" desc="The placeholder for the search box on the about:flags page.">
     Search flags
   </message>
+  <message name="IDS_FLAGS_UI_SEARCH_LABEL" translateable="false" desc="The accessible label for the search box on the about:flags page.">
+    Search flags
+  </message>
   <message name="IDS_FLAGS_UI_TITLE" translateable="false" desc="The page title for the about:flags page.">
     Experiments
   </message>
