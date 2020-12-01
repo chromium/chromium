@@ -122,7 +122,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     // TODO: it would be nice to see which device each response is coming from,
     // but that breaks every mock test because they aren't expecting a call to
     // GetId().
-    if (!device_response) {
+    if (!device_response || device_response->empty()) {
       FIDO_LOG(ERROR) << "-> (error reading)";
       std::move(this->callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
@@ -131,8 +131,8 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
 
     auto response_code = GetResponseCode(*device_response);
     if (response_code != CtapDeviceResponseCode::kSuccess) {
-      FIDO_LOG(DEBUG) << "-> (CTAP2 error code "
-                      << static_cast<int>(response_code) << ")";
+      FIDO_LOG(DEBUG) << "-> (CTAP2 error code " << +device_response->at(0)
+                      << ")";
       std::move(this->callback()).Run(response_code, base::nullopt);
       return;
     }

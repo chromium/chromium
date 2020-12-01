@@ -58,9 +58,8 @@ CtapDeviceResponseCode GetResponseCode(base::span<const uint8_t> buffer) {
   if (buffer.empty())
     return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
 
-  auto code = static_cast<CtapDeviceResponseCode>(buffer[0]);
-  return base::Contains(kCtapResponseCodeList, code)
-             ? code
+  return kCtapResponseCodeList.contains(buffer[0])
+             ? static_cast<CtapDeviceResponseCode>(buffer[0])
              : CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
 }
 
@@ -196,9 +195,15 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
 
 base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     base::span<const uint8_t> buffer) {
-  if (buffer.size() <= kResponseCodeLength ||
-      GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess)
+  if (buffer.size() <= kResponseCodeLength) {
+    FIDO_LOG(ERROR) << "-> (GetInfo response too short: " << buffer.size()
+                    << " bytes)";
     return base::nullopt;
+  }
+  if (GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
+    return base::nullopt;
+  }
 
   cbor::Reader::DecoderError error;
   base::Optional<CBOR> decoded_response =
