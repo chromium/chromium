@@ -1353,7 +1353,6 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 ### sheriff 2019-07-16
 crbug.com/983799 [ Win ] http/tests/navigation/redirect-on-back-updates-history-item.html [ Timeout Pass ]
 crbug.com/983789 [ Win7 ] http/tests/cookies/js-set-null.html [ Pass Failure ]
-crbug.com/984438 external/wpt/css/css-scroll-snap/snap-at-user-scroll-end-manual.html [ Failure ]
 
 ### sheriff 2018-05-28
 
