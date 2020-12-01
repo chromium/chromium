@@ -178,7 +178,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
   EXPECT_EQ(column_sizes[3], column_widths[3]);
 }
 
-TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinmax) {
+TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   scoped_refptr<NGTableTypes::Columns> column_constraints =
       base::MakeRefCounted<NGTableTypes::Columns>();
 
@@ -192,7 +192,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinmax) {
   column_constraints->data.push_back(MakeColumn(20, 200));
   column_constraints->data.push_back(MakeColumn(30, 300));
 
-  MinMaxSizes minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
+  MinMaxSizes minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       *column_constraints, undistributable_space, is_fixed_layout,
       containing_block_expects_minmax_without_percentages,
       skip_collapsed_columns);
@@ -205,7 +205,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinmax) {
   column_constraints->data.push_back(MakeColumn(10, 99, 10));
   column_constraints->data.push_back(MakeColumn(10, 10));
   column_constraints->data.push_back(MakeColumn(10, 10));
-  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
+  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       *column_constraints, undistributable_space, is_fixed_layout,
       containing_block_expects_minmax_without_percentages,
       skip_collapsed_columns);
@@ -214,7 +214,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinmax) {
 
   // Without percent, minmax ignores percent
   containing_block_expects_minmax_without_percentages = true;
-  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
+  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       *column_constraints, undistributable_space, is_fixed_layout,
       containing_block_expects_minmax_without_percentages,
       skip_collapsed_columns);
@@ -228,7 +228,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinmax) {
   column_constraints->data.push_back(MakeColumn(10, 100, 10));
   column_constraints->data.push_back(MakeColumn(10, 10, 10));
   column_constraints->data.push_back(MakeColumn(10, 800));
-  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
+  minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       *column_constraints, undistributable_space, is_fixed_layout,
       containing_block_expects_minmax_without_percentages,
       skip_collapsed_columns);

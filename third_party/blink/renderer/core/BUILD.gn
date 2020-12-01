@@ -1404,6 +1404,7 @@ source_set("unit_tests") {
     "layout/ng/ng_out_of_flow_layout_part_test.cc",
     "layout/ng/ng_physical_box_fragment_test.cc",
     "layout/ng/ng_relative_utils_test.cc",
+    "layout/ng/table/ng_table_layout_algorithm_helpers_test.cc",
     "layout/overflow_model_test.cc",
     "layout/paint_containment_test.cc",
     "layout/scroll_anchor_test.cc",
