@@ -8,5 +8,3 @@ per-file *feature_list.*=twellington@chromium.org
 per-file *EventConstants.java=twellington@chromium.org
 per-file *FeatureConstants.java=twellington@chromium.org
 
-# COMPONENT: Internals>FeatureEngagement
-

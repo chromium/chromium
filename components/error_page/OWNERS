@@ -3,6 +3,3 @@
 per-file error_page_strings.grdp=edwardjung@chromium.org
 
 file://net/OWNERS
-
-# COMPONENT: Internals>Network
-# TEAM: net-dev@chromium.org
