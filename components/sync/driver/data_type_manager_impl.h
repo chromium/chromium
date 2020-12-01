@@ -8,10 +8,7 @@
 #include "components/sync/driver/data_type_manager.h"
 
 #include <map>
-#include <vector>
 
-#include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -83,20 +80,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   };
   using DataTypeConfigStateMap = std::map<ModelType, DataTypeConfigState>;
 
-  // Helper enum for identifying which types within a priority group to
-  // associate.
-  enum AssociationGroup {
-    // Those types that were already downloaded and didn't have an error at
-    // configuration time. Corresponds with AssociationTypesInfo's
-    // |ready_types|. These types can start associating as soon as the
-    // ModelLoadManager is not busy.
-    READY_AT_CONFIG,
-    // All other types, including first time sync types and those that have
-    // encountered an error. These types must wait until the syncer has done
-    // any db changes and/or downloads before associating.
-    UNREADY_AT_CONFIG,
-  };
-
   void RecordConfigurationStats(ModelType type);
 
   // Return model types in |state_map| that match |state|.
@@ -139,7 +122,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void Restart();
 
   void DownloadCompleted(ModelTypeSet downloaded_types,
-                         ModelTypeSet first_sync_types,
+                         ModelTypeSet succeeded_configuration_types,
                          ModelTypeSet failed_configuration_types);
 
   void NotifyStart();
@@ -159,13 +142,11 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Will kick off configuration of any new ready types.
   void StartNextDownload(ModelTypeSet high_priority_types_before);
 
-  // Start association of next batch of data types after association of
-  // previous batch finishes. |group| controls which set of types within
-  // an AssociationTypesInfo to associate.
+  // Finalize a set of data types that have finished downloading.
   // TODO(crbug.com/1102837): Simplify and rename this. "Association" doesn't
   // exist anymore; all this does is record configuration stats and eventually
   // update |state_|.
-  void StartNextAssociation(AssociationGroup group);
+  void StartNextAssociation(ModelTypeSet types_to_associate);
 
   void StopImpl(ShutdownReason reason);
 
@@ -187,8 +168,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // set.
   ConfigureContext last_requested_context_;
 
-  // A set of types that were enabled at the time initialization with the
-  // |model_load_manager_| was last attempted.
+  // A set of types that were enabled at the time of Restart().
   ModelTypeSet last_enabled_types_;
 
   // A set of types that should be redownloaded even if initial sync is
@@ -223,17 +203,17 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Types waiting to be downloaded.
   base::queue<ModelTypeSet> download_types_queue_;
 
-  // Types waiting for association and related time tracking info.
+  // Pending types and related time tracking info.
   struct AssociationTypesInfo {
     AssociationTypesInfo();
     AssociationTypesInfo(const AssociationTypesInfo& other);
     ~AssociationTypesInfo();
 
-    // Types to associate.
+    // Pending types. This is generally the same as
+    // |download_types_queue_.front()|.
     ModelTypeSet types;
-    // Types that have just been downloaded and are being associated for the
-    // first time. This includes types that had previously encountered an error
-    // and had to be purged/unapplied from the sync db.
+    // Types that have just been downloaded. This includes types that had
+    // previously encountered an error and had to be purged.
     // This is a subset of |types|.
     ModelTypeSet first_sync_types;
     // Types that were already already downloaded at configuration time.
@@ -245,7 +225,8 @@ class DataTypeManagerImpl : public DataTypeManager,
     // The set of types that are higher priority, and were therefore blocking
     // the download of |types|.
     ModelTypeSet high_priority_types_before;
-    // The subset of |types| that were successfully configured.
+    // The subset of |types| that were successfully configured. Populated
+    // one-by-one as types finish configuring.
     ModelTypeSet configured_types;
   };
   base::Optional<AssociationTypesInfo> association_types_info_;
