@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 67 tests; 33 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 65 tests; 33 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL new RTCPeerConnection() should have default configuration.iceServers of undefined assert_equals: expected (undefined) undefined but got (object) []
 PASS new RTCPeerConnection(config) - {} should succeed
 PASS setConfiguration(config) - {} should succeed
@@ -119,20 +119,6 @@ FAIL setConfiguration(config) - with turns server, credentialType password, and 
           macKey: '',
           accessToken: ''
         }
-      }] })" did not throw
-FAIL new RTCPeerConnection(config) - with turns server, credentialType oauth, and string credential should throw InvalidAccessError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'turns:turn.example.org',
-        credentialType: 'oauth',
-        username: 'user',
-        credential: 'cred'
-      }] })" did not throw
-FAIL setConfiguration(config) - with turns server, credentialType oauth, and string credential should throw InvalidAccessError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'turns:turn.example.org',
-        credentialType: 'oauth',
-        username: 'user',
-        credential: 'cred'
       }] })" did not throw
 Harness: the test ran to completion.
 
