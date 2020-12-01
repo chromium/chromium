@@ -19,23 +19,34 @@ buildflag_header("browser_buildflags") {
   flags = [ "ENABLE_CAST_AUDIO_MANAGER_MIXER=$enable_cast_audio_manager_mixer" ]
 }
 
-cast_source_set("prefs") {
+group("prefs") {
+  public_deps = [ ":prefs_base" ]
+
+  if (chromecast_branding == "public") {
+    public_deps += [ ":prefs_simple" ]
+  }
+}
+
+cast_source_set("prefs_base") {
   sources = [
     "pref_service_helper.cc",
     "pref_service_helper.h",
   ]
 
-  if (chromecast_branding == "public") {
-    sources += [ "pref_service_helper_simple.cc" ]
-  }
+  public_deps = [ "//components/prefs" ]
 
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//components/cdm/browser",
-    "//components/prefs",
   ]
+}
+
+cast_source_set("prefs_simple") {
+  sources = [ "pref_service_helper_simple.cc" ]
+
+  public_deps = [ ":prefs_base" ]
 }
 
 cast_source_set("feature_list") {
@@ -64,7 +75,18 @@ cast_source_set("web_preferences") {
   ]
 }
 
-cast_source_set("browser") {
+group("browser") {
+  public_deps = [ ":browser_base" ]
+
+  if (chromecast_branding == "public") {
+    public_deps += [
+      ":simple_client",
+      ":simple_main_parts",
+    ]
+  }
+}
+
+cast_source_set("browser_base") {
   sources = [
     "application_media_capabilities.cc",
     "application_media_capabilities.h",
@@ -153,13 +175,6 @@ cast_source_set("browser") {
     "webui/constants.cc",
     "webui/constants.h",
   ]
-
-  if (chromecast_branding == "public") {
-    sources += [
-      "cast_browser_main_parts_simple.cc",
-      "cast_content_browser_client_simple.cc",
-    ]
-  }
 
   public_deps = [
     ":feature_list",
@@ -491,6 +506,20 @@ cast_source_set("browser") {
 
     defines = [ "USE_INTERNAL_OVERLAY_MANIFESTS=1" ]
   }
+}
+
+cast_source_set("simple_main_parts") {
+  sources = [ "cast_browser_main_parts_simple.cc" ]
+
+  public_deps = [ ":browser_base" ]
+}
+
+cast_source_set("simple_client") {
+  sources = [ "cast_content_browser_client_simple.cc" ]
+
+  public_deps = [ ":browser_base" ]
+
+  deps = [ "//base" ]
 }
 
 # Lightweight target for Cast interfaces that wrap //content/public/browser.

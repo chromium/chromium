@@ -24,7 +24,15 @@ grit("extensions_resources") {
   ]
 }
 
-cast_source_set("renderer") {
+group("renderer") {
+  public_deps = [ ":renderer_base" ]
+
+  if (chromecast_branding == "public") {
+    public_deps += [ ":simple_client" ]
+  }
+}
+
+cast_source_set("renderer_base") {
   sources = [
     "activity_filtering_websocket_handshake_throttle.cc",
     "activity_filtering_websocket_handshake_throttle.h",
@@ -47,50 +55,44 @@ cast_source_set("renderer") {
     "queryable_data_store.h",
   ]
 
-  public_deps = [ "//chromecast/renderer/media" ]
-
-  if (chromecast_branding == "public") {
-    sources += [ "cast_content_renderer_client_simple.cc" ]
-  }
+  public_deps = [
+    "//chromecast:chromecast_buildflags",
+    "//chromecast/common/mojom",
+    "//content/public/renderer",
+    "//media",
+    "//mojo/public/cpp/bindings",
+    "//v8",
+  ]
 
   deps = [
     "//base",
-    "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/common",
     "//chromecast/common:activity_url_filter",
     "//chromecast/common:queryable_data",
     "//chromecast/common/media",
-    "//chromecast/common/mojom",
     "//chromecast/crash",
     "//chromecast/media",
     "//chromecast/media/base:media_codec_support",
+    "//chromecast/renderer/media",
     "//components/media_control/renderer",
     "//components/network_hints/renderer",
     "//components/on_load_script_injector/renderer",
     "//content/public/common",
-    "//content/public/renderer",
     "//crypto",
     "//gin",
     "//ipc",
-    "//media",
     "//media/remoting:remoting_constants",
     "//media/remoting:remoting_renderer",
     "//net",
     "//services/network/public/cpp:cpp",
     "//services/service_manager/public/cpp",
-    "//v8",
   ]
 
   if (!is_android) {
     sources += [
       "memory_pressure_observer_impl.cc",
       "memory_pressure_observer_impl.h",
-    ]
-
-    deps += [
-      "//chromecast/common/mojom",
-      "//mojo/public/cpp/bindings",
     ]
   } else {
     deps += [ "//chromecast/media/audio:cast_audio_device_factory" ]
@@ -119,4 +121,13 @@ cast_source_set("renderer") {
       "//gin:gin",
     ]
   }
+}
+
+cast_source_set("simple_client") {
+  sources = [ "cast_content_renderer_client_simple.cc" ]
+
+  public_deps = [
+    ":renderer_base",
+    "//base",
+  ]
 }
