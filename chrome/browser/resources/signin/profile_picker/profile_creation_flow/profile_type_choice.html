@@ -31,7 +31,13 @@
     font-weight: normal;
     line-height: 20px;
     margin-top: 18px;
-    outline: none;
+  }
+
+  /* The "not now" button is styled like a link, and uses FocusOutlineManager to
+   * only show outlines when focus was triggered by keyboard.
+   */
+  :host-context(html:not(.focus-outline-visible)) #notNowButton {
+      outline: none;
   }
 
   #signInButton {
