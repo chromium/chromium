@@ -65,19 +65,23 @@ generate_grd("build_grd") {
     "images/safe_browsing_banner.svg",
     "images/sync_banner_dark.svg",
     "images/sync_banner.svg",
+    "privacy_sandbox/privacy_sandbox.html",
     "settings.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
 
+  grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
+  deps = [ "privacy_sandbox:build_grdp" ]
+
   if (optimize_webui) {
-    deps = [ ":build" ]
+    deps += [ ":build" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites = [
       "settings.rollup.js|settings.js",
       "lazy_load.rollup.js|lazy_load.js",
     ]
   } else {
-    deps = [
+    deps += [
       ":preprocess",
       ":preprocess_generated",
     ]
@@ -355,6 +359,7 @@ group("closure_compile") {
     "people_page:closure_compile",
     "prefs:closure_compile",
     "privacy_page:closure_compile",
+    "privacy_sandbox:closure_compile",
     "search_engines_page:closure_compile",
     "settings_page:closure_compile",
   ]

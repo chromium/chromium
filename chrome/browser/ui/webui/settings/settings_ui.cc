@@ -346,6 +346,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
+  // Privacy Sandbox
+  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+    html_source->AddResourcePath(
+        "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
+  }
   TryShowHatsSurveyWithTimeout();
 }
 

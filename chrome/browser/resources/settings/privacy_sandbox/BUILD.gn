@@ -1,0 +1,33 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("../settings.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "privacy_sandbox"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":web_components" ]
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "app.js" ]
+  resource_path_prefix = "privacy_sandbox"
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = settings_closure_flags
+  deps = [ ":app" ]
+}
+
+js_library("app") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "app.js" ]
+}

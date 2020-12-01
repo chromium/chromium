@@ -1142,6 +1142,14 @@
     More
   </message>
 
+  <!-- Privacy Sandbox -->
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page">
+    Privacy Sandbox
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING" desc="The heading displayed at the top of the Privacy Sandbox page">
+    The Privacy Sandbox
+  </message>
+
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE" desc="'Safety check' is a noun phrase (sentence case). 'Safety check' refers to an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.">
     Safety check
