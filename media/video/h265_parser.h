@@ -255,7 +255,6 @@ struct MEDIA_EXPORT H265SPS {
   int pic_width_in_ctbs_y;
   int pic_height_in_ctbs_y;
   int pic_size_in_ctbs_y;
-  int max_tb_log2_size_y;
   int wp_offset_half_range_y;
   int wp_offset_half_range_c;
 

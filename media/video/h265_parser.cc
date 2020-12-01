@@ -631,12 +631,12 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   TRUE_OR_RETURN(sps->pic_width_in_luma_samples % min_cb_size_y == 0);
   TRUE_OR_RETURN(sps->pic_height_in_luma_samples % min_cb_size_y == 0);
   READ_UE_OR_RETURN(&sps->log2_min_luma_transform_block_size_minus2);
+  TRUE_OR_RETURN(sps->log2_min_luma_transform_block_size_minus2 <
+                 min_cb_log2_size_y - 2);
   int min_tb_log2_size_y = sps->log2_min_luma_transform_block_size_minus2 + 2;
-  TRUE_OR_RETURN(min_tb_log2_size_y < min_cb_log2_size_y);
   READ_UE_OR_RETURN(&sps->log2_diff_max_min_luma_transform_block_size);
-  sps->max_tb_log2_size_y =
-      min_tb_log2_size_y + sps->log2_diff_max_min_luma_transform_block_size;
-  TRUE_OR_RETURN(sps->max_tb_log2_size_y <= std::min(sps->ctb_log2_size_y, 5));
+  TRUE_OR_RETURN(sps->log2_diff_max_min_luma_transform_block_size <=
+                 std::min(sps->ctb_log2_size_y, 5) - min_tb_log2_size_y);
   READ_UE_OR_RETURN(&sps->max_transform_hierarchy_depth_inter);
   IN_RANGE_OR_RETURN(sps->max_transform_hierarchy_depth_inter, 0,
                      sps->ctb_log2_size_y - min_tb_log2_size_y);
