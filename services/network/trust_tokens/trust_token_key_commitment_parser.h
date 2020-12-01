@@ -41,6 +41,10 @@ extern const char
 extern const char kTrustTokenLocalIssuanceFallbackWebIssuance[];
 extern const char kTrustTokenLocalIssuanceFallbackReturnWithError[];
 
+// WARNING WARNING WARNING: When updating the parser implementation, please make
+// sure the normative source(s) of the key commitment result data structure's
+// format (as of writing, the design doc and perhaps ISSUER_PROTOCOL.md in the
+// WICG repository) have been updated to reflect the change.
 class TrustTokenKeyCommitmentParser
     : public TrustTokenKeyCommitmentController::Parser {
  public:

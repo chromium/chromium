@@ -242,31 +242,6 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 
 }  // namespace
 
-// https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.6wh9crbxdizi
-// {
-//   "protocol_version" : ..., // Protocol Version; value of type string.
-//   "id" : ...,               // ID; value of type int.
-//   "batchsize" : ...,        // Batch size; value of type int.
-//
-//   // Optional operating systems on which to request issuance via system
-//   // mediation (valid values are: "android"), and (required if at least one
-//   // OS is specified) fallback behavior on other operating systems:
-//   "request_issuance_locally_on": [<os 1>, ..., <os N>],
-//   "unavailable_local_issuance_fallback": "web_issuance" | "return_with_error"
-//
-//   "1" : {                   // Key label, a number in uint32_t range; ignored
-//                             // except for checking that it is present and
-//                             // type-safe.
-//     "Y" : ...,              // Required token issuance verification key, in
-//                             // base64.
-//     "expiry" : ...,         // Required token issuance key expiry time, in
-//                             // microseconds since the Unix epoch.
-//   },
-//   "17" : {                  // No guarantee that key labels (1, 7) are dense.
-//     "Y" : ...,
-//     "expiry" : ...,
-//   }
-// }
 mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitmentParser::Parse(
     base::StringPiece response_body) {
   base::Optional<base::Value> maybe_value =
