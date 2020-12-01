@@ -577,7 +577,7 @@ const base::Feature kShowBluetoothDebugLogToggle{
 
 // Enables or disables verbose Bluetooth log collection for Googlers.
 const base::Feature kEnableBluetoothVerboseLogsForGooglers{
-    "EnableBluetoothVerboseLogsForGooglers", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableBluetoothVerboseLogsForGooglers", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables showing the battery level in the System Tray and Settings
 // UI for supported Bluetooth Devices.
