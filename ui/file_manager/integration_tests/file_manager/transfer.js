@@ -487,9 +487,11 @@ testcase.transferFromDownloadsToDownloads = async () => {
     destination: TRANSFER_LOCATIONS.downloads,
     isMove: true,
   }));
-  chrome.test.assertEq(
-      '',
-      (await remoteCall.waitForElement(appId, '.progress-frame label')).text);
+
+  // Check: No feedback panel items.
+  const panelItems = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, [['#progress-panel', '#panel']]);
+  chrome.test.assertEq(0, panelItems.length);
 };
 
 /**

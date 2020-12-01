@@ -254,8 +254,7 @@ class FileManagerUI {
      * @type {!ProgressCenterPanel}
      * @const
      */
-    this.progressCenterPanel = new ProgressCenterPanel(
-        queryRequiredElement('#progress-center', this.element));
+    this.progressCenterPanel = new ProgressCenterPanel();
 
     /**
      * Activity feedback panel.
@@ -539,18 +538,6 @@ class FileManagerUI {
         util.queryDecoratedElement('#directory-tree-context-menu', cr.ui.Menu);
     this.directoryTree.disabledContextMenu =
         util.queryDecoratedElement('#disabled-context-menu', cr.ui.Menu);
-
-    // Visible height of the directory tree depends on the size of progress
-    // center panel. When the size of progress center panel changes, directory
-    // tree has to be notified to adjust its components (e.g. progress bar).
-    const relayoutLimiter = new AsyncUtil.RateLimiter(
-        directoryTree.relayout.bind(directoryTree), 200);
-    const observer =
-        new MutationObserver(relayoutLimiter.run.bind(relayoutLimiter));
-    observer.observe(
-        this.progressCenterPanel.element,
-        /** @type {MutationObserverInit} */
-        ({subtree: true, attributes: true, childList: true}));
   }
 
   /**
