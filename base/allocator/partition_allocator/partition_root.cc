@@ -596,6 +596,16 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
+  // PCScan quarantines freed slots. Trigger the scan first to let it call
+  // FreeNoHooksImmediate on slots that pass the quarantine.
+  //
+  // In turn, FreeNoHooksImmediate may add slots to thread cache. Purge it next
+  // so that the slots are actually freed. (This is done synchronously only for
+  // the current thread.)
+  //
+  // Lastly decommit empty slot spans and lastly try to discard unused pages at
+  // the end of the remaining active slots.
+
   // TODO(chromium:1129751): Change to LIKELY once PCScan is enabled by default.
   if (UNLIKELY(IsScanEnabled())) {
     if (flags & PartitionPurgeForceAllFreed)
@@ -603,6 +613,10 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     else
       PCScan::Instance().PerformScanIfNeeded(PCScan::InvocationMode::kBlocking);
   }
+
+  if (with_thread_cache)
+    internal::ThreadCacheRegistry::Instance().PurgeAll();
+
   {
     ScopedGuard guard{lock_};
     if (flags & PartitionPurgeDecommitEmptySlotSpans)
@@ -615,9 +629,6 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
       }
     }
   }
-
-  if (with_thread_cache)
-    internal::ThreadCacheRegistry::Instance().PurgeAll();
 }
 
 template <bool thread_safe>
