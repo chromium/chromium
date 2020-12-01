@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -102,11 +103,20 @@ void ImageContextImpl::BeginAccessIfNecessary(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   // Prepare for accessing shared image.
-  if (mailbox_holder().mailbox.IsSharedImage() &&
-      BeginAccessIfNecessaryForSharedImage(context_state,
-                                           representation_factory,
-                                           begin_semaphores, end_semaphores)) {
-    return;
+  if (mailbox_holder().mailbox.IsSharedImage()) {
+    constexpr bool allow_legacy_mailbox_fallback =
+#if defined(OS_ANDROID)
+        false;
+#else
+        true;
+#endif
+    bool result = BeginAccessIfNecessaryForSharedImage(
+        context_state, representation_factory, begin_semaphores,
+        end_semaphores);
+    if (!result && !allow_legacy_mailbox_fallback) {
+      CreateFallbackImage(context_state);
+      return;
+    }
   }
 
   // Prepare for accessing legacy mailbox.
