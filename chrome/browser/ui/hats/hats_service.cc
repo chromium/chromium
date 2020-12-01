@@ -34,8 +34,14 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsSurveyTriggerSatisfaction[] = "satisfaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
+constexpr char kHatsSurveyTriggerDevToolsIssuesCOEP[] = "devtools-issues-coep";
+constexpr char kHatsSurveyTriggerDevToolsIssuesMixedContent[] =
+    "devtools-issues-mixed-content";
 constexpr char kHatsSurveyTriggerDevToolsIssuesCookiesSameSite[] =
     "devtools-issues-cookies-samesite";
+constexpr char kHatsSurveyTriggerDevToolsIssuesHeavyAd[] =
+    "devtools-issues-heavy-ad";
+constexpr char kHatsSurveyTriggerDevToolsIssuesCSP[] = "devtools-issues-csp";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "zishSVViB0kPN8UwQ150VGjBKuBP";
@@ -47,7 +53,11 @@ namespace {
 
 const base::Feature* survey_features[] = {
     &features::kHappinessTrackingSurveysForDesktop,
+    &features::kHaTSDesktopDevToolsIssuesCOEP,
+    &features::kHaTSDesktopDevToolsIssuesMixedContent,
     &features::kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite,
+    &features::kHaTSDesktopDevToolsIssuesHeavyAd,
+    &features::kHaTSDesktopDevToolsIssuesCSP,
     &features::kHappinessTrackingSurveysForDesktopSettings,
     &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy};
 

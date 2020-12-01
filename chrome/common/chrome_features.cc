@@ -445,12 +445,32 @@ const base::Feature kHappinessTrackingSurveysForDesktopDemo{
     "HappinessTrackingSurveysForDesktopDemo",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the Happiness Tracking System for COEP issues in Chrome
+// DevTools on Desktop.
+const base::Feature kHaTSDesktopDevToolsIssuesCOEP{
+    "HaTSDesktopDevToolsIssuesCOEP", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables the Happiness Tracking System for Mixed Content issues in
+// Chrome DevTools on Desktop.
+const base::Feature kHaTSDesktopDevToolsIssuesMixedContent{
+    "HaTSDesktopDevToolsIssuesMixedContent", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Happiness Tracking System for same-site cookies
 // issues in Chrome DevTools on Desktop.
 const base::Feature
     kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite{
         "HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite",
         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables the Happiness Tracking System for Heavy Ad issues in
+// Chrome DevTools on Desktop.
+const base::Feature kHaTSDesktopDevToolsIssuesHeavyAd{
+    "HaTSDesktopDevToolsIssuesHeavyAd", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables the Happiness Tracking System for CSP issues in Chrome
+// DevTools on Desktop.
+const base::Feature kHaTSDesktopDevToolsIssuesCSP{
+    "HaTSDesktopDevToolsIssuesCSP", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the migration of Happiness Tracking Surveys on Desktop (to the latest
 // version).

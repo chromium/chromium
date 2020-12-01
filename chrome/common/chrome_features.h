@@ -310,8 +310,20 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSurveysForDesktopSettingsPrivacy;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHaTSDesktopDevToolsIssuesCOEP;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHaTSDesktopDevToolsIssuesMixedContent;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature
     kHappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHaTSDesktopDevToolsIssuesHeavyAd;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHaTSDesktopDevToolsIssuesCSP;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
