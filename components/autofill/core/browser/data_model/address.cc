@@ -65,7 +65,17 @@ bool Address::FinalizeAfterImport(bool profile_is_verified) {
   // fully launched.
   if (structured_address::StructuredAddressesEnabled()) {
     structured_address_.MigrateLegacyStructure(profile_is_verified);
-    return structured_address_.CompleteFullTree();
+    bool result = structured_address_.CompleteFullTree();
+    // If the address could not be completed, it is possible that it contains an
+    // invalid structure.
+    if (!result) {
+      if (structured_address_.WipeInvalidStructure()) {
+        // If the structure was wiped because it is invalid, try to complete the
+        // address again.
+        result = structured_address_.CompleteFullTree();
+      }
+    }
+    return result;
   }
   return true;
 }
@@ -158,6 +168,22 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
   // TODO(crbug.com/1130194): Clean legacy implementation once structured
   // addresses are fully launched.
   if (structured_address::StructuredAddressesEnabled()) {
+    // The street address has a structure that may have already been set before
+    // using the settings dialog. In case the settings dialog was used to change
+    // the address to contain different tokens, the structure must be reset.
+    if (type == ADDRESS_HOME_STREET_ADDRESS) {
+      const base::string16 current_value =
+          structured_address_.GetValueForType(type);
+      if (!current_value.empty()) {
+        bool token_equivalent = structured_address::AreStringTokenEquivalent(
+            value, structured_address_.GetValueForType(type));
+        structured_address_.SetValueForTypeIfPossible(
+            ADDRESS_HOME_STREET_ADDRESS, value, status,
+            /*invalidate_child_nodes=*/!token_equivalent);
+        return;
+      }
+    }
+
     structured_address_.SetValueForTypeIfPossible(type, value, status);
     return;
   }

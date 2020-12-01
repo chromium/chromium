@@ -669,6 +669,71 @@ TEST_P(AddressTest, TestGettingTheStructuredAddress) {
             base::UTF8ToUTF16("12345"));
 }
 
+// For structured address, test that the structured information is wiped
+// correctly when the unstructured street address changes.
+TEST_P(AddressTest, ResetStructuredTokens) {
+  // This test is only applicable for structured addresses.
+  if (!StructuredAddresses())
+    return;
+
+  Address address;
+  // Set a structured address line and call the finalization routine.
+  address.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, base::ASCIIToUTF16("Erika-Mann-Str 12"),
+      structured_address::VerificationStatus::kUserVerified);
+  address.FinalizeAfterImport();
+
+  // Verify that structured tokens have been assigned correctly.
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME),
+            base::ASCIIToUTF16("Erika-Mann-Str"));
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
+            structured_address::VerificationStatus::kParsed);
+  ASSERT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
+            base::ASCIIToUTF16("12"));
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kParsed);
+
+  // Lift the verification status of the house number to be |kObserved|.
+  address.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_HOUSE_NUMBER, base::ASCIIToUTF16("12"),
+      structured_address::VerificationStatus::kObserved);
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kObserved);
+
+  // Now, set a new unstructured street address that has the same tokens in a
+  // different order.
+  address.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, base::ASCIIToUTF16("12 Erika-Mann-Str"),
+      structured_address::VerificationStatus::kUserVerified);
+
+  // After this operation, the structure should be maintained including the
+  // observed status of the house number.
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME),
+            base::ASCIIToUTF16("Erika-Mann-Str"));
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
+            structured_address::VerificationStatus::kParsed);
+  ASSERT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
+            base::ASCIIToUTF16("12"));
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kObserved);
+
+  // Now set a different street address.
+  address.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, base::ASCIIToUTF16("Marienplatz"),
+      structured_address::VerificationStatus::kUserVerified);
+
+  // The set address is not parsable and the this should unset both the street
+  // name and the house number.
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME),
+            base::ASCIIToUTF16(""));
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
+            structured_address::VerificationStatus::kNoStatus);
+  ASSERT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
+            base::ASCIIToUTF16(""));
+  EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
+            structured_address::VerificationStatus::kNoStatus);
+}
+
 // Runs the suite with the feature
 // |kAutofillSupportForStructuredStructuredNames| enabled and disabled.
 // TODO(crbug.com/1130194): Remove parameterized test once structured addresses

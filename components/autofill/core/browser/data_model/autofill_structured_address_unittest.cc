@@ -481,6 +481,67 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
   // Verify that the address was not changed by the migration.
   VerifyTestValues(&address, test_values);
 }
+
+// Tests that a valid address structure is not wiped.
+TEST(AutofillStructuredAddress,
+     TestWipingAnInvalidSubstructure_ValidStructure) {
+  Address address;
+  AddressComponentTestValues address_with_valid_structure = {
+      // This structure is valid because all structured components are contained
+      // in the unstructured representation.
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "123 Street name",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_NAME,
+       .value = "Street name",
+       .status = VerificationStatus::kParsed},
+      {.type = ADDRESS_HOME_HOUSE_NUMBER,
+       .value = "123",
+       .status = VerificationStatus::kParsed},
+  };
+
+  SetTestValues(&address, address_with_valid_structure, /*finalize=*/false);
+
+  EXPECT_FALSE(address.WipeInvalidStructure());
+  VerifyTestValues(&address, address_with_valid_structure);
+}
+
+// Tests that an invalid address structure is wiped.
+TEST(AutofillStructuredAddress,
+     TestWipingAnInvalidSubstructure_InValidStructure) {
+  Address address;
+  AddressComponentTestValues address_with_valid_structure = {
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "Some other name",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_NAME,
+       .value = "Street name",
+       .status = VerificationStatus::kParsed},
+      // The structure is invalid, because the house number is not contained in
+      // the unstructured street address.
+      {.type = ADDRESS_HOME_HOUSE_NUMBER,
+       .value = "123",
+       .status = VerificationStatus::kParsed},
+  };
+
+  SetTestValues(&address, address_with_valid_structure, /*finalize=*/false);
+
+  EXPECT_TRUE(address.WipeInvalidStructure());
+
+  AddressComponentTestValues address_with_wiped_structure = {
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "Some other name",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_NAME,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = ADDRESS_HOME_HOUSE_NUMBER,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+  };
+  VerifyTestValues(&address, address_with_wiped_structure);
+}
+
 }  // namespace
 }  // namespace structured_address
 }  // namespace autofill

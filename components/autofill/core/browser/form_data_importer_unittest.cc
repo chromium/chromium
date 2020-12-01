@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
@@ -1584,6 +1585,181 @@ TEST_P(FormDataImporterTest,
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, profile.Compare(*results2[0]));
+}
+
+TEST_P(FormDataImporterTest,
+       IncorporateStructuredNameInformationInVerifiedProfile) {
+  // This test is only applicable to structured names.
+  if (!structured_address::StructuredNamesEnabled()) {
+    return;
+  }
+
+  // Start with a verified profile.
+  AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  EXPECT_TRUE(profile.IsVerified());
+
+  // Set the verification status for the first and middle name to parsed.
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, base::ASCIIToUTF16("Marion"),
+      structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, base::ASCIIToUTF16("Mitchell"),
+      structured_address::VerificationStatus::kParsed);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
+  personal_data_manager_->AddProfile(profile);
+  run_loop.Run();
+
+  // Simulate a form submission with conflicting info.
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "Marion Mitchell",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Morrison", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "johnwayne@me.xyz", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address1", "123 Zoo St.", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "Hollywood", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "CA", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "91601", "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  // The form submission should result in a change of name structure.
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, base::ASCIIToUTF16("Marion Mitchell"),
+      structured_address::VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_MIDDLE, base::ASCIIToUTF16(""),
+      structured_address::VerificationStatus::kNoStatus);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST, base::ASCIIToUTF16("Morrison"),
+      structured_address::VerificationStatus::kObserved);
+
+  // Expect that no new profile is saved.
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(0, profile.Compare(*results[0]));
+
+  // Try the same thing, but without "Mitchell". The profiles should still match
+  // because "Marion Morrison" is a variant of the known full name.
+  test::CreateTestFormField("First name:", "first_name", "Marion", "text",
+                            &field);
+  form.fields[0] = field;
+
+  FormStructure form_structure2(form);
+  form_structure2.DetermineHeuristicTypes();
+
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure2);
+
+  // Expect that no new profile is saved.
+  const std::vector<AutofillProfile*>& results2 =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results2.size());
+  EXPECT_EQ(0, profile.Compare(*results2[0]));
+}
+
+TEST_P(FormDataImporterTest,
+       IncorporateStructuredAddressInformationInVerififedProfile) {
+  // This test is only applicable to structured addresses.
+  if (!structured_address::StructuredAddressesEnabled()) {
+    return;
+  }
+
+  // Start with a verified profile.
+  AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+  EXPECT_TRUE(profile.IsVerified());
+
+  // Reset the structured address to emulate a failed parsing attempt.
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_HOUSE_NUMBER, base::ASCIIToUTF16(""),
+      structured_address::VerificationStatus::kNoStatus);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_NAME, base::ASCIIToUTF16(""),
+      structured_address::VerificationStatus::kNoStatus);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, base::ASCIIToUTF16(""),
+      structured_address::VerificationStatus::kNoStatus);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
+  personal_data_manager_->AddProfile(profile);
+  run_loop.Run();
+
+  // Simulate a form submission with conflicting info.
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "Marion Mitchell",
+                            "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Morrison", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "johnwayne@me.xyz", "text",
+                            &field);
+  form.fields.push_back(field);
+  // This forms contains structured address information.
+  test::CreateTestFormField("Street Name:", "street_name", "Zoo St.", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("House Number:", "house_number", "123", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "Hollywood", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "CA", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "91601", "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes();
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+
+  // The form submission should result in a change of the address structure.
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
+      base::ASCIIToUTF16("Zoo St."),
+      structured_address::VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_NAME, base::ASCIIToUTF16("Zoo St."),
+      structured_address::VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_HOUSE_NUMBER, base::ASCIIToUTF16("123"),
+      structured_address::VerificationStatus::kObserved);
+
+  // Expect that no new profile is saved.
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(0, profile.Compare(*results[0]));
 }
 
 // Tests that no profile is inferred if the country is not recognized.

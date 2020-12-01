@@ -353,6 +353,13 @@ Address::Address(const Address& other) : Address() {
   *this = other;
 }
 
+bool Address::WipeInvalidStructure() {
+  // For structured addresses, currently it is sufficient to wipe the structure
+  // of the street address, because this is the only directly assignable value
+  // that has a substructure.
+  return street_address_.WipeInvalidStructure();
+}
+
 // Addresses are mergeable when all of their children are mergeable.
 // Reformat the address from their children after merge.
 Address::Address(AddressComponent* parent)

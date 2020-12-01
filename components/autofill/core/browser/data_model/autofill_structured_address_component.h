@@ -342,6 +342,11 @@ class AddressComponent {
                                         bool* validity_status,
                                         bool wipe_if_not = false);
 
+  // Deletes the stored structure if it contains strings that are not a
+  // substring of the unstructured representation.
+  // Return true if a wipe operation was performed.
+  virtual bool WipeInvalidStructure();
+
 #ifdef UNIT_TEST
   // Initiates the formatting of the values from the subcomponents.
   void FormatValueFromSubcomponentsForTesting() {
