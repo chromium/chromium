@@ -98,27 +98,50 @@ void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
-void BackgroundTabLoadingPolicy::OnIsLoadingChanged(const PageNode* page_node) {
-  if (!page_node->IsLoading()) {
-    // Once the PageNode finishes loading, stop tracking it within this policy.
-    RemovePageNode(page_node);
+void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
+    const PageNode* page_node) {
+  switch (page_node->GetLoadingState()) {
+    // Loading is complete or stalled.
+    case PageNode::LoadingState::kLoadingNotStarted:
+    case PageNode::LoadingState::kLoadedIdle:
+    case PageNode::LoadingState::kLoadingTimedOut:
 
-    // Since there is a free loading slot, load more tab if needed.
-    MaybeLoadSomeTabs();
-    return;
+    {
+      // Stop tracking the page within this policy.
+      RemovePageNode(page_node);
+
+      // Since there might be a free loading slot, attempt to load more tabs.
+      MaybeLoadSomeTabs();
+
+      return;
+    }
+
+    // Loading starts.
+    case PageNode::LoadingState::kLoading: {
+      // The PageNode started loading because of this policy or because of
+      // external factors (e.g. user-initiated). In either case, remove the
+      // PageNode from the set of PageNodes for which a load needs to be
+      // initiated and from the set of PageNodes for which a load has been
+      // initiated but hasn't started.
+      ErasePageNodeToLoadData(page_node);
+      base::Erase(page_nodes_load_initiated_, page_node);
+
+      // Keep track of all PageNodes that are loading, even when the load isn't
+      // initiated by this policy.
+      DCHECK(!base::Contains(page_nodes_loading_, page_node));
+      page_nodes_loading_.push_back(page_node);
+
+      return;
+    }
+
+    // Loading is progressing.
+    case PageNode::LoadingState::kLoadedBusy: {
+      // This PageNode should have been added to |page_nodes_loading_| when it
+      // transitioned to |kLoading|.
+      DCHECK(base::Contains(page_nodes_loading_, page_node));
+      return;
+    }
   }
-  // The PageNode started loading, either because of this policy or because of
-  // external factors (e.g. user-initiated). In either case, remove the PageNode
-  // from the set of PageNodes for which a load needs to be initiated and from
-  // the set of PageNodes for which a load has been initiated but hasn't
-  // started.
-  ErasePageNodeToLoadData(page_node);
-  base::Erase(page_nodes_load_initiated_, page_node);
-
-  // Keep track of all PageNodes that are loading, even when the load isn't
-  // initiated by this policy.
-  DCHECK(!base::Contains(page_nodes_loading_, page_node));
-  page_nodes_loading_.push_back(page_node);
 }
 
 void BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved(
@@ -187,7 +210,7 @@ base::Value BackgroundTabLoadingPolicy::DescribePageNodeData(
     const PageNode* node) const {
   base::Value dict(base::Value::Type::DICTIONARY);
   if (base::Contains(page_nodes_load_initiated_, node)) {
-    // Transient state between InitiateLoad() and OnIsLoadingChanged(),
+    // Transient state between InitiateLoad() and OnLoadingStateChanged(),
     // shouldn't be sticking around for long.
     dict.SetBoolKey("page_load_initiated", true);
   }

@@ -34,7 +34,7 @@ class TabManager::ResourceCoordinatorSignalObserver
 
   // PageNode::ObserverDefaultImpl:
   // This function run on the performance manager sequence.
-  void OnIsLoadingChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;

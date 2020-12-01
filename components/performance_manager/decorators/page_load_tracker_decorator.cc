@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
+#include "base/notreached.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
@@ -50,10 +52,12 @@ class DataImpl : public PageLoadTrackerDecorator::Data,
 // static
 const char* ToString(LoadIdleState state) {
   switch (state) {
-    case LoadIdleState::kLoadingNotStarted:
-      return "kLoadingNotStarted";
-    case LoadIdleState::kLoading:
-      return "kLoading";
+    case LoadIdleState::kLoadingWaitingForResponse:
+      return "kLoadingWaitingForResponse";
+    case LoadIdleState::kLoadingWaitingForResponseTimedOut:
+      return "kLoadingWaitingForResponseTimedOut";
+    case LoadIdleState::kLoadingDidReceiveResponse:
+      return "kLoadingDidReceiveResponse";
     case LoadIdleState::kLoadedNotIdling:
       return "kLoadedNotIdling";
     case LoadIdleState::kLoadedAndIdling:
@@ -68,8 +72,8 @@ const char kDescriberName[] = "PageLoadTrackerDecorator";
 }  // namespace
 
 // static
+constexpr base::TimeDelta PageLoadTrackerDecorator::kWaitingForResponseTimeout;
 constexpr base::TimeDelta PageLoadTrackerDecorator::kLoadedAndIdlingTimeout;
-// static
 constexpr base::TimeDelta PageLoadTrackerDecorator::kWaitingForIdleTimeout;
 
 PageLoadTrackerDecorator::PageLoadTrackerDecorator() {
@@ -104,7 +108,8 @@ base::Value PageLoadTrackerDecorator::DescribePageNodeData(
 
   base::Value ret(base::Value::Type::DICTIONARY);
   ret.SetStringKey("load_idle_state", ToString(data->load_idle_state()));
-  ret.SetBoolKey("loading_received_response", data->loading_received_response_);
+  ret.SetBoolKey("is_loading", data->is_loading_);
+  ret.SetBoolKey("received_response", data->received_response_);
 
   return ret;
 }
@@ -114,16 +119,49 @@ void PageLoadTrackerDecorator::OnMainThreadTaskLoadIsLow(
   UpdateLoadIdleStateProcess(ProcessNodeImpl::FromNode(process_node));
 }
 
-void PageLoadTrackerDecorator::DidReceiveResponse(PageNodeImpl* page_node) {
+// static
+void PageLoadTrackerDecorator::DidStartLoading(PageNodeImpl* page_node) {
   auto* data = DataImpl::GetOrCreate(page_node);
-  DCHECK(!data->loading_received_response_);
-  data->loading_received_response_ = true;
+
+  // Typically, |data| is a newly created DataImpl. However, if a load starts
+  // before the page reaches an idle state following the previous load, |data|
+  // may indicate that the page is |kLoadedNotIdling| or |kLoadedAndIdling|.
+  // In all cases, restart the state machine at |kLoadingWaitingForResponse|
+  // and clear the |loading_started_| timestamp.
+  DCHECK_NE(data->load_idle_state(),
+            LoadIdleState::kLoadingWaitingForResponseTimedOut);
+  DCHECK_NE(data->load_idle_state(), LoadIdleState::kLoadingDidReceiveResponse);
+  DCHECK_NE(data->load_idle_state(), LoadIdleState::kLoadedAndIdle);
+  DCHECK(data);
+  DCHECK(!data->is_loading_);
+  DCHECK(!data->received_response_);
+  data->is_loading_ = true;
+  data->SetLoadIdleState(page_node, LoadIdleState::kLoadingWaitingForResponse);
+  data->loading_started_ = base::TimeTicks();
   UpdateLoadIdleStatePage(page_node);
 }
 
+// static
+void PageLoadTrackerDecorator::DidReceiveResponse(PageNodeImpl* page_node) {
+  auto* data = DataImpl::Get(page_node);
+
+  DCHECK(data);
+  DCHECK(data->is_loading_);
+  DCHECK(!data->received_response_);
+  data->received_response_ = true;
+
+  UpdateLoadIdleStatePage(page_node);
+}
+
+// static
 void PageLoadTrackerDecorator::DidStopLoading(PageNodeImpl* page_node) {
-  auto* data = DataImpl::GetOrCreate(page_node);
-  data->loading_received_response_ = false;
+  auto* data = DataImpl::Get(page_node);
+
+  DCHECK(data);
+  DCHECK(data->is_loading_);
+  data->is_loading_ = false;
+  data->received_response_ = false;
+
   UpdateLoadIdleStatePage(page_node);
 }
 
@@ -163,12 +201,16 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
   if (data == nullptr)
     return;
 
-  // This is the terminal state, so should never occur.
-  DCHECK_NE(LoadIdleState::kLoadedAndIdle, data->load_idle_state());
-
   // Cancel any ongoing timers. A new timer will be set if necessary.
-  data->idling_timer_.Stop();
+  data->timer_.Stop();
   const base::TimeTicks now = base::TimeTicks::Now();
+
+  // If this is a new load, set the start time.
+  if (data->loading_started_.is_null()) {
+    DCHECK_EQ(data->load_idle_state(),
+              LoadIdleState::kLoadingWaitingForResponse);
+    data->loading_started_ = now;
+  }
 
   // Determine if the overall timeout has fired.
   if ((data->load_idle_state() == LoadIdleState::kLoadedNotIdling ||
@@ -180,48 +222,93 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
 
   // Otherwise do normal state transitions.
   switch (data->load_idle_state()) {
-    case LoadIdleState::kLoadingNotStarted: {
-      if (!data->loading_received_response_)
+    case LoadIdleState::kLoadingWaitingForResponse: {
+      if (now - data->loading_started_ >= kWaitingForResponseTimeout) {
+        data->SetLoadIdleState(
+            page_node, LoadIdleState::kLoadingWaitingForResponseTimedOut);
+      }
+
+      FALLTHROUGH;
+    }
+
+    case LoadIdleState::kLoadingWaitingForResponseTimedOut: {
+      if (data->received_response_) {
+        data->SetLoadIdleState(page_node,
+                               LoadIdleState::kLoadingDidReceiveResponse);
         return;
-      data->SetLoadIdleState(page_node, LoadIdleState::kLoading);
+      }
+
+      if (!data->is_loading_) {
+        // Transition to kLoadedAndIdle when load stops without receiving a
+        // response.
+        TransitionToLoadedAndIdle(page_node);
+        return;
+      }
+
+      // Schedule a state update to transition to
+      // |kLoadingWaitingForResponseTimedOut| when the page has been waiting for
+      // a response for too long.
+      if (data->load_idle_state() ==
+          LoadIdleState::kLoadingWaitingForResponse) {
+        ScheduleDelayedUpdateLoadIdleStatePage(
+            page_node, now,
+            data->loading_started_ + kWaitingForResponseTimeout);
+      }
+
       return;
     }
 
-    case LoadIdleState::kLoading: {
-      if (data->loading_received_response_)
+    case LoadIdleState::kLoadingDidReceiveResponse: {
+      if (data->is_loading_) {
+        // DidStopLoading() was not invoked yet.
         return;
+      }
+      // DidStartLoading() -> DidReceiveResponse() -> DidStopLoading() were all
+      // invoked. Wait for the page to become idle.
       data->SetLoadIdleState(page_node, LoadIdleState::kLoadedNotIdling);
       data->loading_stopped_ = now;
       // Let the kLoadedNotIdling state transition evaluate, allowing an
-      // effective transition directly from kLoading to kLoadedAndIdling.
+      // immediate transition to kLoadedAndIdling if the page is already idling.
       FALLTHROUGH;
     }
 
     case LoadIdleState::kLoadedNotIdling: {
-      if (IsIdling(page_node)) {
-        data->SetLoadIdleState(page_node, LoadIdleState::kLoadedAndIdling);
-        data->idling_started_ = now;
+      if (!IsIdling(page_node)) {
+        // Schedule a state update to transition to |kLoadedAndIdle| when the
+        // page has been loaded but not idling for too long.
+        ScheduleDelayedUpdateLoadIdleStatePage(
+            page_node, now, data->loading_stopped_ + kWaitingForIdleTimeout);
+        return;
       }
-      // Break out of the switch statement and set a timer to check for the
-      // next state transition.
-      break;
+
+      data->SetLoadIdleState(page_node, LoadIdleState::kLoadedAndIdling);
+      data->idling_started_ = now;
+      FALLTHROUGH;
     }
 
     case LoadIdleState::kLoadedAndIdling: {
-      // If the page is not still idling then transition back a state.
       if (!IsIdling(page_node)) {
+        // If the page is not still idling then transition back a state.
         data->SetLoadIdleState(page_node, LoadIdleState::kLoadedNotIdling);
-      } else {
+        // Schedule a state update to transition to |kLoadedAndIdle| when the
+        // page has been loaded but not idling for too long.
+        ScheduleDelayedUpdateLoadIdleStatePage(
+            page_node, now, data->loading_stopped_ + kWaitingForIdleTimeout);
+        return;
+      }
+
+      if (now - data->idling_started_ >= kLoadedAndIdlingTimeout) {
         // Idling has been happening long enough so make the last state
         // transition.
-        if (now - data->idling_started_ >= kLoadedAndIdlingTimeout) {
-          TransitionToLoadedAndIdle(page_node);
-          return;
-        }
+        TransitionToLoadedAndIdle(page_node);
+        return;
       }
-      // Break out of the switch statement and set a timer to check for the
-      // next state transition.
-      break;
+
+      // Schedule a state update to transition to |kLoadedAndIdle| when the page
+      // has been idling long enough to be considered "loaded and idle".
+      ScheduleDelayedUpdateLoadIdleStatePage(
+          page_node, now, data->idling_started_ + kLoadedAndIdlingTimeout);
+      return;
     }
 
     // This should never occur.
@@ -229,23 +316,26 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
       NOTREACHED();
   }
 
-  // Getting here means a new timer needs to be set. Use the nearer of the two
-  // applicable timeouts.
-  base::TimeDelta timeout =
-      (data->loading_stopped_ + kWaitingForIdleTimeout) - now;
-  if (data->load_idle_state() == LoadIdleState::kLoadedAndIdling) {
-    timeout = std::min(timeout,
-                       (data->idling_started_ + kLoadedAndIdlingTimeout) - now);
-  }
+  // All paths of the switch statement return.
+  NOTREACHED();
+}
 
-  // It's safe to use base::Unretained here because the graph owns the timer via
-  // PageNodeImpl, and all nodes are destroyed *before* this observer during
-  // tear down. By the time the observer is destroyed, the timer will have
-  // already been destroyed and the associated posted task canceled.
-  data->idling_timer_.Start(
-      FROM_HERE, timeout,
+// static
+void PageLoadTrackerDecorator::ScheduleDelayedUpdateLoadIdleStatePage(
+    PageNodeImpl* page_node,
+    base::TimeTicks now,
+    base::TimeTicks delayed_run_time) {
+  auto* data = DataImpl::Get(page_node);
+  DCHECK(data);
+  DCHECK_GE(delayed_run_time, now);
+
+  // |timer| is owned by |page_node| indirectly through |data|. Because of that,
+  // the |timer| will be canceled if |page_node| is deleted, making the use of
+  // Unretained() safe.
+  data->timer_.Start(
+      FROM_HERE, delayed_run_time - now,
       base::BindRepeating(&PageLoadTrackerDecorator::UpdateLoadIdleStatePage,
-                          page_node));
+                          base::Unretained(page_node)));
 }
 
 void PageLoadTrackerDecorator::UpdateLoadIdleStateProcess(
@@ -258,8 +348,8 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStateProcess(
 void PageLoadTrackerDecorator::TransitionToLoadedAndIdle(
     PageNodeImpl* page_node) {
   auto* data = DataImpl::Get(page_node);
+  DCHECK(data);
   data->SetLoadIdleState(page_node, LoadIdleState::kLoadedAndIdle);
-
   // Destroy the metadata as there are no more transitions possible. The
   // machinery will start up again if a navigation occurs.
   DataImpl::Destroy(page_node);
@@ -311,15 +401,24 @@ void PageLoadTrackerDecorator::Data::SetLoadIdleState(
   load_idle_state_ = load_idle_state;
 
   switch (load_idle_state_) {
-    case LoadIdleState::kLoadingNotStarted:
-    case LoadIdleState::kLoadedAndIdle:
-      page_node->SetIsLoading(false);
+    case LoadIdleState::kLoadingWaitingForResponse:
+    case LoadIdleState::kLoadingDidReceiveResponse: {
+      page_node->SetLoadingState(PageNode::LoadingState::kLoading);
       break;
-    case LoadIdleState::kLoading:
+    }
+    case LoadIdleState::kLoadingWaitingForResponseTimedOut: {
+      page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+      break;
+    }
     case LoadIdleState::kLoadedNotIdling:
-    case LoadIdleState::kLoadedAndIdling:
-      page_node->SetIsLoading(true);
+    case LoadIdleState::kLoadedAndIdling: {
+      page_node->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
       break;
+    }
+    case LoadIdleState::kLoadedAndIdle: {
+      page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      break;
+    }
   }
 }
 

@@ -55,11 +55,9 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     }
     outer_->first_web_contents_observer_ = this;
 
-    if (web_contents->IsLoadingToDifferentDocument() &&
-        !web_contents->IsWaitingForResponse()) {
-      // Simulate receiving the missed DidReceiveResponse() notification.
-      DidReceiveResponse();
-    }
+    // |web_contents| must not be loading when it starts being tracked by this
+    // observer. Otherwise, loading state wouldn't be tracked correctly.
+    DCHECK(!web_contents->IsLoadingToDifferentDocument());
   }
 
   WebContentsObserver(const WebContentsObserver&) = delete;
@@ -70,6 +68,20 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
   }
 
   // content::WebContentsObserver:
+  void DidStartLoading() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK(web_contents()->IsLoading());
+    DCHECK_EQ(loading_state_, LoadingState::kNotLoading);
+
+    // Only observe top-level navigation to a different document.
+    if (!web_contents()->IsLoadingToDifferentDocument())
+      return;
+
+    loading_state_ = LoadingState::kLoadingWaitingForResponse;
+    NotifyPageLoadTrackerDecoratorOnPMSequence(
+        web_contents(), &PageLoadTrackerDecorator::DidStartLoading);
+  }
+
   void DidReceiveResponse() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -78,20 +90,22 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
       return;
 
     DCHECK(web_contents()->IsLoading());
-
-#if DCHECK_IS_ON()
-    DCHECK(!did_receive_response_);
-    did_receive_response_ = true;
-#endif
+    DCHECK_EQ(loading_state_, LoadingState::kLoadingWaitingForResponse);
+    loading_state_ = LoadingState::kLoadingDidReceiveResponse;
     NotifyPageLoadTrackerDecoratorOnPMSequence(
         web_contents(), &PageLoadTrackerDecorator::DidReceiveResponse);
   }
 
   void DidStopLoading() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if DCHECK_IS_ON()
-    did_receive_response_ = false;
-#endif
+
+    // The state can be |kNotLoading| if this isn't a top-level navigation to a
+    // different document.
+    if (loading_state_ == LoadingState::kNotLoading)
+      return;
+
+    loading_state_ = LoadingState::kNotLoading;
+
     NotifyPageLoadTrackerDecoratorOnPMSequence(
         web_contents(), &PageLoadTrackerDecorator::DidStopLoading);
   }
@@ -126,11 +140,23 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
   WebContentsObserver* prev_;
   WebContentsObserver* next_;
 
-#if DCHECK_IS_ON()
-  // Used to verify the invariant that DidReceiveResponse() cannot be called
-  // twice in a row without a DidStopLoading() in between.
-  bool did_receive_response_ = false;
-#endif
+  enum class LoadingState {
+    // Initial state.
+    // DidStartLoading():     Transition to kLoadingWaitingForResponse.
+    // DidReceiveResponse():  Invalid from this state.
+    // DidStopLoading():      Invalid from this state.
+    kNotLoading,
+    // DidStartLoading():     Invalid from this state.
+    // DidReceiveResponse():  Transition to kLoadingDidReceiveResponse.
+    // DidStopLoading():      Transition to kNotLoading.
+    kLoadingWaitingForResponse,
+    // DidStartLoading():     Invalid from this state.
+    // DidReceiveResponse():  Invalid from this state.
+    // DidStopLoading():      Transition to kNotLoading.
+    kLoadingDidReceiveResponse,
+  };
+
+  LoadingState loading_state_ = LoadingState::kNotLoading;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

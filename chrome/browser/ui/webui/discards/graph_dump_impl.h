@@ -124,7 +124,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnIsAudibleChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
-  void OnIsLoadingChanged(
+  void OnLoadingStateChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnUkmSourceIdChanged(

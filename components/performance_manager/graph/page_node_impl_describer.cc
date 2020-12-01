@@ -60,7 +60,9 @@ base::Value PageNodeImplDescriber::DescribePageNodeData(
                       page_node_impl->browser_context_id_);
   result.SetBoolKey("is_visible", page_node_impl->is_visible_.value());
   result.SetBoolKey("is_audible", page_node_impl->is_audible_.value());
-  result.SetBoolKey("is_loading", page_node_impl->is_loading_.value());
+  result.SetStringKey(
+      "loading_state",
+      PageNode::ToString(page_node_impl->loading_state_.value()));
   result.SetStringKey(
       "ukm_source_id",
       base::NumberToString(page_node_impl->ukm_source_id_.value()));

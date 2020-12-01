@@ -57,7 +57,7 @@ class PageNodeImpl
 
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
-  void SetIsLoading(bool is_loading);
+  void SetLoadingState(LoadingState loading_state);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   void OnFaviconUpdated();
   void OnTitleUpdated();
@@ -87,7 +87,7 @@ class PageNodeImpl
   OpenedType opened_type() const;
   bool is_visible() const;
   bool is_audible() const;
-  bool is_loading() const;
+  LoadingState loading_state() const;
   ukm::SourceId ukm_source_id() const;
   LifecycleState lifecycle_state() const;
   bool is_holding_weblock() const;
@@ -180,7 +180,7 @@ class PageNodeImpl
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
-  bool IsLoading() const override;
+  LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
   bool IsHoldingWebLock() const override;
@@ -272,9 +272,10 @@ class PageNodeImpl
       is_audible_{false};
   // The loading state. This is driven by instrumentation in the browser
   // process.
-  ObservedProperty::NotifiesOnlyOnChanges<bool,
-                                          &PageNodeObserver::OnIsLoadingChanged>
-      is_loading_{false};
+  ObservedProperty::NotifiesOnlyOnChanges<
+      LoadingState,
+      &PageNodeObserver::OnLoadingStateChanged>
+      loading_state_{LoadingState::kLoadingNotStarted};
   // The UKM source ID associated with the URL of the main frame of this page.
   ObservedProperty::NotifiesOnlyOnChanges<
       ukm::SourceId,

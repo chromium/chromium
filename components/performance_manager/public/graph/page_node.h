@@ -51,6 +51,30 @@ class PageNode : public Node {
   // Returns a string for a PageNode::OpenedType enumeration.
   static const char* ToString(PageNode::OpenedType opened_type);
 
+  // Loading state of a page.
+  enum class LoadingState {
+    // No top-level document has started loading yet.
+    kLoadingNotStarted,
+    // A different top-level document is loading. The load started less than 5
+    // seconds ago or the initial response was received.
+    kLoading,
+    // A different top-level document is loading. The load started more than 5
+    // seconds ago and no response was received yet. Note: The state will
+    // transition back to |kLoading| if a response is received.
+    kLoadingTimedOut,
+    // A different top-level document finished loading, but the page did not
+    // reach CPU and network quiescence since then. Note: A page is considered
+    // to have reached CPU and network quiescence after 1 minute, even if the
+    // CPU and network are still busy - see page_load_tracker_decorator.h.
+    kLoadedBusy,
+    // The page reached CPU and network quiescence after loading the current
+    // top-level document, or the load failed.
+    kLoadedIdle,
+  };
+
+  // Returns a string for a PageNode::LoadingState enumeration.
+  static const char* ToString(PageNode::LoadingState loading_state);
+
   PageNode();
   ~PageNode() override;
 
@@ -77,13 +101,8 @@ class PageNode : public Node {
   // See PageNodeObserver::OnIsAudibleChanged.
   virtual bool IsAudible() const = 0;
 
-  // Returns true if this page is currently loading, false otherwise. The page
-  // starts loading when incoming data starts arriving for a top-level load to a
-  // different document. It stops loading when it reaches an "almost idle"
-  // state, based on CPU and network quiescence, or after an absolute timeout.
-  // Note: This is different from WebContents::IsLoading(). See
-  // PageNodeObserver::OnIsLoadingChanged.
-  virtual bool IsLoading() const = 0;
+  // Returns the page's loading state.
+  virtual LoadingState GetLoadingState() const = 0;
 
   // Returns the UKM source ID associated with the URL of the main frame of
   // this page.
@@ -194,8 +213,8 @@ class PageNodeObserver {
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const PageNode* page_node) = 0;
 
-  // Invoked when the IsLoading property changes.
-  virtual void OnIsLoadingChanged(const PageNode* page_node) = 0;
+  // Invoked when the GetLoadingState property changes.
+  virtual void OnLoadingStateChanged(const PageNode* page_node) = 0;
 
   // Invoked when the UkmSourceId property changes.
   virtual void OnUkmSourceIdChanged(const PageNode* page_node) = 0;
@@ -254,7 +273,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
                                 OpenedType previous_opened_type) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
-  void OnIsLoadingChanged(const PageNode* page_node) override {}
+  void OnLoadingStateChanged(const PageNode* page_node) override {}
   void OnUkmSourceIdChanged(const PageNode* page_node) override {}
   void OnPageLifecycleStateChanged(const PageNode* page_node) override {}
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override {}

@@ -43,7 +43,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // PageNodeObserver implementation:
-  void OnIsLoadingChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
   // Schedules the PageNodes in |page_nodes| to be loaded when appropriate.

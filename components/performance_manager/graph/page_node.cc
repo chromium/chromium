@@ -23,6 +23,23 @@ const char* PageNode::ToString(PageNode::OpenedType opened_type) {
   NOTREACHED();
 }
 
+// static
+const char* PageNode::ToString(PageNode::LoadingState loading_state) {
+  switch (loading_state) {
+    case LoadingState::kLoadingNotStarted:
+      return "kLoadingNotStated";
+    case LoadingState::kLoading:
+      return "kLoading";
+    case LoadingState::kLoadingTimedOut:
+      return "kLoadingTimedOut";
+    case LoadingState::kLoadedBusy:
+      return "kLoadedBusy";
+    case LoadingState::kLoadedIdle:
+      return "kLoadedIdle";
+  }
+  NOTREACHED();
+}
+
 PageNode::PageNode() = default;
 PageNode::~PageNode() = default;
 

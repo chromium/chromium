@@ -50,11 +50,18 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
   // Invoked by PageLoadTrackerDecoratorHelper when corresponding
   // WebContentsObserver methods are invoked, and the WebContents is loading to
   // a different document.
+  static void DidStartLoading(PageNodeImpl* page_node);
   static void DidReceiveResponse(PageNodeImpl* page_node);
   static void DidStopLoading(PageNodeImpl* page_node);
 
  protected:
   friend class PageLoadTrackerDecoratorTest;
+
+  // The amount of time after which a page transitions from
+  // kLoadingWaitingForResponse to kLoadingWaitingForResponseTimedOut if it
+  // hasn't received a response.
+  static constexpr base::TimeDelta kWaitingForResponseTimeout =
+      base::TimeDelta::FromSeconds(5);
 
   // The amount of time a page has to be idle post-loading in order for it to be
   // considered loaded and idle. This is used in UpdateLoadIdleState
@@ -88,6 +95,13 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
   void UpdateLoadIdleStateProcess(ProcessNodeImpl* process_node);
   static void UpdateLoadIdleStatePage(PageNodeImpl* page_node);
 
+  // Schedules a call to UpdateLoadIdleStatePage() for |page_node| after
+  // |delayed_run_time| - |now| has elapsed.
+  static void ScheduleDelayedUpdateLoadIdleStatePage(
+      PageNodeImpl* page_node,
+      base::TimeTicks now,
+      base::TimeTicks delayed_run_time);
+
   // Helper function for transitioning to the final state.
   static void TransitionToLoadedAndIdle(PageNodeImpl* page_node);
 
@@ -99,25 +113,32 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
 
 class PageLoadTrackerDecorator::Data {
  public:
-  // The state transitions associated with a load. In general a page transitions
-  // through these states from top to bottom.
+  // The state transitions associated with a load. This is more granular than
+  // the publicly exposed PageNode::LoadingState, to provide the required
+  // details to implement state transitions.
   enum class LoadIdleState {
-    // The initial state. Can only transition to kLoading from here.
-    kLoadingNotStarted,
+    // Loading started, but no data arrived yet. Can transition to
+    // kLoadingDidReceiveResponse, kLoadingWaitingForResponseTimedOut or
+    // kLoadedAndIdle from here.
+    kLoadingWaitingForResponse,
+    // Loading started and a timeout has elapsed, but no data arrived yet. Can
+    // transition to kLoadingDidReceiveResponse or kLoadedAndIdle from here.
+    kLoadingWaitingForResponseTimedOut,
     // Incoming data has started to arrive for a load. Almost idle signals are
     // ignored in this state. Can transition to kLoadedNotIdling and
     // kLoadedAndIdling from here.
-    kLoading,
+    kLoadingDidReceiveResponse,
     // Loading has completed, but the page has not started idling. Can only
     // transition to kLoadedAndIdling from here.
     kLoadedNotIdling,
     // Loading has completed, and the page is idling. Can transition to
     // kLoadedNotIdling or kLoadedAndIdle from here.
     kLoadedAndIdling,
-    // Loading has completed and the page has been idling for sufficiently long.
-    // This is the final state. Once this state has been reached a signal will
-    // be emitted and no further state transitions will be tracked. Committing a
-    // new non-same document navigation can start the cycle over again.
+    // Loading has completed and the page has been idling for sufficiently long
+    // or encountered an error. This is the final state. Once this state has
+    // been reached a signal will be emitted and no further state transitions
+    // will be tracked. Committing a new non-same document navigation can start
+    // the cycle over again.
     kLoadedAndIdle
   };
 
@@ -132,9 +153,19 @@ class PageLoadTrackerDecorator::Data {
   // Returns the LoadIdleState for the page.
   LoadIdleState load_idle_state() const { return load_idle_state_; }
 
+  // Whether there is an ongoing different-document load, i.e. DidStartLoading()
+  // was invoked but not DidStopLoading().
+  bool is_loading_ = false;
+
   // Whether there is an ongoing different-document load for which data started
-  // arriving.
-  bool loading_received_response_ = false;
+  // arriving, i.e. both DidStartLoading() and DidReceiveResponse() were
+  // invoked but not DidStopLoading().
+  bool received_response_ = false;
+
+  // Marks the point in time when the state transitioned to
+  // kLoadingWaitingForResponse. This is used as the basis for the
+  // kWaitingForResponseTimeout.
+  base::TimeTicks loading_started_;
 
   // Marks the point in time when the DidStopLoading signal was received,
   // transitioning to kLoadedAndNotIdling or kLoadedAndIdling. This is used as
@@ -142,18 +173,16 @@ class PageLoadTrackerDecorator::Data {
   base::TimeTicks loading_stopped_;
 
   // Marks the point in time when the last transition to kLoadedAndIdling
-  // occurred. Used for gating the transition to kLoadedAndIdle.
+  // occurred. This is used as the basis for the kLoadedAndIdlingTimeout.
   base::TimeTicks idling_started_;
 
-  // A one-shot timer used for transitioning between kLoadedAndIdling and
-  // kLoadedAndIdle.
-  base::OneShotTimer idling_timer_;
+  // A one-shot timer used to transition state after a timeout.
+  base::OneShotTimer timer_;
 
  private:
-  // Initially at kLoadingNotStarted. Transitions through the states via calls
-  // to UpdateLoadIdleState. Is reset to kLoadingNotStarted when a non-same
-  // document navigation is committed.
-  LoadIdleState load_idle_state_ = LoadIdleState::kLoadingNotStarted;
+  // Initially at kLoadingWaitingForResponse when a load starts. Transitions
+  // through the states via calls to UpdateLoadIdleState.
+  LoadIdleState load_idle_state_ = LoadIdleState::kLoadingWaitingForResponse;
 };
 
 }  // namespace performance_manager

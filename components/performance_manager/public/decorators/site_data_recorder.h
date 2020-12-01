@@ -37,7 +37,7 @@ class SiteDataRecorder : public GraphOwned,
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnMainFrameUrlChanged(const PageNode* page_node) override;
-  void OnIsLoadingChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnTitleUpdated(const PageNode* page_node) override;

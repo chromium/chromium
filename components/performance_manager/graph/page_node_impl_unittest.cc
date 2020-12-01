@@ -164,24 +164,26 @@ TEST_F(PageNodeImplTest, BrowserContextID) {
   EXPECT_EQ(public_page_node->GetBrowserContextID(), kTestBrowserContextId);
 }
 
-TEST_F(PageNodeImplTest, IsLoading) {
+TEST_F(PageNodeImplTest, LoadingState) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto* page_node = mock_graph.page.get();
 
-  // This should be initialized to false.
-  EXPECT_FALSE(page_node->is_loading());
+  // This should start at kLoadingNotStarted.
+  EXPECT_EQ(PageNode::LoadingState::kLoadingNotStarted,
+            page_node->loading_state());
 
-  // Set to false and the property should stay false.
-  page_node->SetIsLoading(false);
-  EXPECT_FALSE(page_node->is_loading());
+  // Set to kLoadingNotStarted and the property should stay kLoadingNotStarted.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadingNotStarted);
+  EXPECT_EQ(PageNode::LoadingState::kLoadingNotStarted,
+            page_node->loading_state());
 
-  // Set to true and the property should read true.
-  page_node->SetIsLoading(true);
-  EXPECT_TRUE(page_node->is_loading());
+  // Set to kLoading and the property should switch to kLoading.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(PageNode::LoadingState::kLoading, page_node->loading_state());
 
-  // Set to false and the property should read false again.
-  page_node->SetIsLoading(false);
-  EXPECT_FALSE(page_node->is_loading());
+  // Set to kLoading again and the property should stay kLoading.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_EQ(PageNode::LoadingState::kLoading, page_node->loading_state());
 }
 
 TEST_F(PageNodeImplTest, HadFormInteractions) {
@@ -228,7 +230,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
                void(const PageNode*, const FrameNode*, OpenedType));
   MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
-  MOCK_METHOD1(OnIsLoadingChanged, void(const PageNode*));
+  MOCK_METHOD1(OnLoadingStateChanged, void(const PageNode*));
   MOCK_METHOD1(OnUkmSourceIdChanged, void(const PageNode*));
   MOCK_METHOD1(OnPageLifecycleStateChanged, void(const PageNode*));
   MOCK_METHOD1(OnPageIsHoldingWebLockChanged, void(const PageNode*));
@@ -284,9 +286,9 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->SetIsAudible(true);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
-  EXPECT_CALL(obs, OnIsLoadingChanged(_))
+  EXPECT_CALL(obs, OnLoadingStateChanged(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
-  page_node->SetIsLoading(true);
+  page_node->SetLoadingState(PageNode::LoadingState::kLoading);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   EXPECT_CALL(obs, OnUkmSourceIdChanged(_))
@@ -349,7 +351,7 @@ TEST_F(PageNodeImplTest, PublicInterface) {
             public_page_node->GetBrowserContextID());
   EXPECT_EQ(page_node->is_visible(), public_page_node->IsVisible());
   EXPECT_EQ(page_node->is_audible(), public_page_node->IsAudible());
-  EXPECT_EQ(page_node->is_loading(), public_page_node->IsLoading());
+  EXPECT_EQ(page_node->loading_state(), public_page_node->GetLoadingState());
   EXPECT_EQ(page_node->ukm_source_id(), public_page_node->GetUkmSourceID());
   EXPECT_EQ(page_node->lifecycle_state(),
             public_page_node->GetLifecycleState());

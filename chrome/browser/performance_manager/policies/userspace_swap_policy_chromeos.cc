@@ -243,8 +243,10 @@ uint64_t UserspaceSwapPolicy::GetSwapDeviceFreeSpaceBytes() {
       GetSwapDeviceFreeSpaceBytes();
 }
 
-bool UserspaceSwapPolicy::IsPageNodeLoading(const PageNode* page_node) {
-  return page_node->IsLoading();
+bool UserspaceSwapPolicy::IsPageNodeLoadingOrBusy(const PageNode* page_node) {
+  const PageNode::LoadingState loading_state = page_node->GetLoadingState();
+  return loading_state == PageNode::LoadingState::kLoading ||
+         loading_state == PageNode::LoadingState::kLoadedBusy;
 }
 
 bool UserspaceSwapPolicy::IsPageNodeAudible(const PageNode* page_node) {
@@ -290,7 +292,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
   // it.
   if (page_node) {
     // If we're loading, audible, or visible we will not swap.
-    if (IsPageNodeLoading(page_node) || IsPageNodeVisible(page_node) ||
+    if (IsPageNodeLoadingOrBusy(page_node) || IsPageNodeVisible(page_node) ||
         IsPageNodeAudible(page_node)) {
       return false;
     }

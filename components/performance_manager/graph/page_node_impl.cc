@@ -68,8 +68,8 @@ void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
   }
 }
 
-void PageNodeImpl::SetIsLoading(bool is_loading) {
-  is_loading_.SetAndMaybeNotify(this, is_loading);
+void PageNodeImpl::SetLoadingState(LoadingState loading_state) {
+  loading_state_.SetAndMaybeNotify(this, loading_state);
 }
 
 void PageNodeImpl::SetIsVisible(bool is_visible) {
@@ -176,9 +176,9 @@ bool PageNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
-bool PageNodeImpl::is_loading() const {
+PageNode::LoadingState PageNodeImpl::loading_state() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_loading_.value();
+  return loading_state_.value();
 }
 
 ukm::SourceId PageNodeImpl::ukm_source_id() const {
@@ -358,9 +358,9 @@ bool PageNodeImpl::IsAudible() const {
   return is_audible();
 }
 
-bool PageNodeImpl::IsLoading() const {
+PageNode::LoadingState PageNodeImpl::GetLoadingState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_loading();
+  return loading_state();
 }
 
 ukm::SourceId PageNodeImpl::GetUkmSourceID() const {
