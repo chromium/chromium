@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +22,10 @@
 
 namespace ash {
 class DefaultScaleFactorRetriever;
+}
+
+namespace base {
+struct SystemMemoryInfoKB;
 }
 
 namespace cryptohome {
@@ -178,6 +181,9 @@ class ArcSessionImpl
     virtual std::unique_ptr<ArcClientAdapter> CreateClient() = 0;
   };
 
+  using SystemMemoryInfoCallback =
+      base::RepeatingCallback<bool(base::SystemMemoryInfoKB*)>;
+
   ArcSessionImpl(std::unique_ptr<Delegate> delegate,
                  chromeos::SchedulerConfigurationManagerBase*
                      scheduler_configuration_manager,
@@ -193,6 +199,8 @@ class ArcSessionImpl
 
   State GetStateForTesting() { return state_; }
   ArcClientAdapter* GetClientForTesting() { return client_.get(); }
+
+  void SetSystemMemoryInfoCallbackForTesting(SystemMemoryInfoCallback callback);
 
   // ArcSession overrides:
   void StartMiniInstance() override;
@@ -301,6 +309,9 @@ class ArcSessionImpl
   // Owned by ArcSessionManager.
   AdbSideloadingAvailabilityDelegate* const
       adb_sideloading_availability_delegate_;
+
+  // Callback to read system memory info.
+  SystemMemoryInfoCallback system_memory_info_callback_;
 
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionImpl> weak_factory_{this};

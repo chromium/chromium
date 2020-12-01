@@ -42711,6 +42711,7 @@ from previous Chrome versions.
   <int value="-1197035323" label="ZeroSuggestRedirectToChrome:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
+  <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1190174011" label="enable-hdr"/>
   <int value="-1186760297" label="ForceSpectreVariant2Mitigation:disabled"/>
@@ -42968,6 +42969,7 @@ from previous Chrome versions.
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
+  <int value="-952996862" label="ArcUseHighMemoryDalvikProfile:enabled"/>
   <int value="-951394314" label="top-chrome-md"/>
   <int value="-950793721" label="TranslateUI2016Q2:disabled"/>
   <int value="-950411190"

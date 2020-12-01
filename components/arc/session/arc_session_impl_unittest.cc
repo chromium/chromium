@@ -12,13 +12,17 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/session/arc_client_adapter.h"
 #include "components/arc/session/arc_session_impl.h"
 #include "components/arc/session/arc_start_params.h"
@@ -924,6 +928,60 @@ TEST_F(ArcSessionImplTest, CanChangeAdbSideloading_True) {
                   ->last_upgrade_params()
                   .is_managed_adb_sideloading_allowed);
 }
+
+struct DalvikMemoryProfileVariant {
+  // Memory stat file
+  const char* file_name;
+  const StartParams::DalvikMemoryProfile expected_profile;
+};
+
+constexpr DalvikMemoryProfileVariant kDalvikMemoryProfileVariant[] = {
+    {"non-existing", StartParams::DalvikMemoryProfile::DEFAULT},
+    {"2G", StartParams::DalvikMemoryProfile::DEFAULT},
+    {"4G", StartParams::DalvikMemoryProfile::M4G},
+    {"8G", StartParams::DalvikMemoryProfile::M8G},
+    {"16G", StartParams::DalvikMemoryProfile::M16G},
+};
+
+class ArcSessionImplDalvikMemoryProfileTest
+    : public ArcSessionImplTest,
+      public ::testing::WithParamInterface<DalvikMemoryProfileVariant> {};
+
+bool GetSystemMemoryInfo(const std::string& file_name,
+                         base::SystemMemoryInfoKB* mem_info) {
+  base::FilePath base_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path);
+  const base::FilePath test_path = base_path.Append("components")
+                                       .Append("test")
+                                       .Append("data")
+                                       .Append("arc_dalvik_profile")
+                                       .Append(file_name);
+  base::ScopedAllowBlockingForTesting allowBlocking;
+  std::string mem_info_data;
+  return base::ReadFileToString(test_path, &mem_info_data) &&
+         base::ParseProcMeminfo(mem_info_data, mem_info);
+}
+
+TEST_P(ArcSessionImplDalvikMemoryProfileTest, DalvikMemoryProfiles) {
+  const DalvikMemoryProfileVariant& variant = GetParam();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kUseHighMemoryDalvikProfile,
+                                    true /* use */);
+  auto arc_session = CreateArcSession();
+  arc_session->SetSystemMemoryInfoCallbackForTesting(
+      base::BindRepeating(&GetSystemMemoryInfo, variant.file_name));
+
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      variant.expected_profile,
+      GetClient(arc_session.get())->last_start_params().dalvik_memory_profile);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcSessionImplDalvikMemoryProfileTest,
+                         ::testing::ValuesIn(kDalvikMemoryProfileVariant));
 
 }  // namespace
 }  // namespace arc

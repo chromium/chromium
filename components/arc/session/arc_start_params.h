@@ -22,6 +22,17 @@ struct StartParams {
     AUTO_UPDATE_OFF,
   };
 
+  enum class DalvikMemoryProfile {
+    // Default dalvik memory profile suitable for all devices.
+    DEFAULT = 0,
+    // Dalvik memory profile suitable for 4G devices.
+    M4G,
+    // Dalvik memory profile suitable for 8G devices.
+    M8G,
+    // Dalvik memory profile suitable for 16G devices.
+    M16G,
+  };
+
   StartParams();
   ~StartParams();
   StartParams(StartParams&& other);
@@ -36,6 +47,8 @@ struct StartParams {
   // Optional mode for play store auto-update.
   PlayStoreAutoUpdate play_store_auto_update =
       PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT;
+
+  DalvikMemoryProfile dalvik_memory_profile = DalvikMemoryProfile::DEFAULT;
 
   // Experiment flag for ARC Custom Tabs.
   bool arc_custom_tabs_experiment = false;

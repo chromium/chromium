@@ -94,6 +94,7 @@ class ArcContainerClientAdapter
     request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
     request.set_disable_system_default_app(
         params.arc_disable_system_default_app);
+    // TODO(b/160760318): Add Dalvik memory profile once arc.proto is ready.
 
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));

@@ -3695,6 +3695,12 @@ const char kArcNativeBridge64BitSupportExperimentName[] =
 const char kArcNativeBridge64BitSupportExperimentDescription[] =
     "Enable experimental 64-bit native bridge support for ARC where available.";
 
+const char kArcUseHighMemoryDalvikProfileName[] =
+    "Enable ARC high-memory dalvik profile";
+const char kArcUseHighMemoryDalvikProfileDesc[] =
+    "Allow Android to use high-memory dalvik profile when applicable for "
+    "high-memory devices.";
+
 const char kArcUsbHostName[] = "Enable ARC USB host integration";
 const char kArcUsbHostDescription[] =
     "Allow Android apps to use USB host feature on ChromeOS devices.";

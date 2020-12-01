@@ -212,6 +212,20 @@ std::vector<std::string> GenerateKernelCmdline(
       break;
   }
 
+  switch (start_params.dalvik_memory_profile) {
+    case StartParams::DalvikMemoryProfile::DEFAULT:
+      break;
+    case StartParams::DalvikMemoryProfile::M4G:
+      result.push_back("androidboot.arc_dalvik_memory_profile=4G");
+      break;
+    case StartParams::DalvikMemoryProfile::M8G:
+      result.push_back("androidboot.arc_dalvik_memory_profile=8G");
+      break;
+    case StartParams::DalvikMemoryProfile::M16G:
+      result.push_back("androidboot.arc_dalvik_memory_profile=16G");
+      break;
+  }
+
   return result;
 }
 
