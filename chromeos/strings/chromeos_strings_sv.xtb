@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1018656279737460067">Avbröts</translation>
+<translation id="1059913517121127803">Det gick inte att börja söka</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Välj en fil i appen Filer</translation>
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
+<translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4985509611418653372">Kör</translation>
 <translation id="5168185087976003268">Batterinivå</translation>
@@ -164,6 +166,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7855434858642800953">Den skannade filen har sparats.</translation>
+<translation id="7928373994957558460">Visa filplats</translation>
 <translation id="7936303884198020182">Inga namnservrar hittades</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>

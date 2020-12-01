@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1018656279737460067">تم الإلغاء</translation>
+<translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
 <translation id="1071587090247825784">تم العثور على جدار ناري.</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
+<translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="5168185087976003268">حالة البطارية</translation>
@@ -164,6 +166,7 @@
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7855434858642800953">تم حفظ الملف الذي تم مسحه ضوئيًا.</translation>
+<translation id="7928373994957558460">عرض مكان الملف</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>

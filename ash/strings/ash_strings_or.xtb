@@ -91,6 +91,7 @@
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1782199038061388045">ଅନୁବାଦ</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
+<translation id="1804572139604454141">ଡିସ୍କ ସ୍ପେସ୍ ଅତ୍ୟନ୍ତ କମ୍ ଥିବା ଯୋଗୁଁ ରେକର୍ଡିଂ ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1812997170047690955">ମୋ ସ୍କ୍ରିନ୍‌ରେ କ’ଣ ଅଛି?</translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
@@ -238,6 +239,7 @@
 <translation id="3236488194889173876">କୌଣସି ମୋବାଇଲ୍ ନେଟ୍‌ୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋ <ph name="ACTIVE_DESK" /> ଡେସ୍କରୁ <ph name="TARGET_DESK" />ଡେସ୍କକୁ ଘୁଞ୍ଚାଇ ଦିଆଯାଇଛି</translation>
 <translation id="3255483164551725916">ଆପଣ କ’ଣ କରିପାରିବେ?</translation>
+<translation id="3269597722229482060">ଡାହାଣ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="3289674678944039601">ଆଡପ୍ଟର୍ ମାଧ୍ୟମରେ ଚାର୍ଜ ହେଉଛି</translation>
 <translation id="3290356915286466215">ଅସୁରକ୍ଷିତ</translation>
 <translation id="3294437725009624529">ଅତିଥି</translation>
@@ -340,6 +342,7 @@
 <translation id="4212472694152630271">PINକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="4215497585250573029">VPN ସେଟିଂସ୍</translation>
 <translation id="4217571870635786043">ଶ୍ରୁତଲିଖନ</translation>
+<translation id="4221957499226645091"><ph name="APP_NAME" />, ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପ୍, ବିରତ କରାଯାଇଛି</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
 <translation id="425364040945105958">କୌଣସି SIM ନାହିଁ</translation>
@@ -761,6 +764,7 @@
 <translation id="8142699993796781067">ବ୍ୟକ୍ତିଗତ ନେଟୱାର୍କ</translation>
 <translation id="8152092012181020186">ବନ୍ଦ କରିବାକୁ Ctrl + W ଦବାନ୍ତୁ।</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />କୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8170567869359129153">ମୋବାଇଲ ନେଟୱାର୍କ। <ph name="SIGNAL_STRENGTH" />ର ସିଗନାଲ୍ କ୍ଷମତା</translation>
 <translation id="8192202700944119416">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି।</translation>
@@ -826,6 +830,7 @@
 <translation id="8755498163081687682">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ: ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="875593634123171288">VPN ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
 <translation id="8759408218731716181">ଏକାଧିକ ସାଇନ୍-ଇନ୍ ସେଟ୍ ଅପ୍ କରିପାରିବେ ନାହିଁ</translation>
+<translation id="878215960996152260"><ph name="APP_NAME" />, ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପ୍, ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />ରେ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>

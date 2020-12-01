@@ -1654,7 +1654,7 @@
 <translation id="2858138569776157458">Популарни</translation>
 <translation id="2861301611394761800">Ажурирањето на системот заврши. Рестартирајте го системот.</translation>
 <translation id="2861941300086904918">Управник за безбедност на матичен клиент</translation>
-<translation id="2862815659905780618">Отстрани ја развојната околина на Linux</translation>
+<translation id="2862815659905780618">Отстранете ја Linux-околината за програмирање</translation>
 <translation id="2864601841139725659">Поставете ја сликата на профилот</translation>
 <translation id="2865919525181940183">Слика од екранот со прикажаните програми</translation>
 <translation id="286674810810214575">Се проверуваат изворите за напојување…</translation>
@@ -2380,7 +2380,7 @@
 <translation id="3706463572498736864">Страници на лист</translation>
 <translation id="370649949373421643">Овозможи Wi-Fi</translation>
 <translation id="370665806235115550">Се вчитува...</translation>
-<translation id="3707163604290651814">Во моменов сте најавени како <ph name="NAME" /></translation>
+<translation id="3707163604290651814">Во моментов сте најавени како <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Прелистувачот беше исклучен пред да заврши преземањето.</translation>
 <translation id="3711931198657368127">&amp;Залепи и оди на <ph name="URL" /></translation>
 <translation id="3711945201266135623">Најдени се <ph name="NUM_PRINTERS" /> печатачи од серверот за печатење</translation>
@@ -3761,7 +3761,7 @@
 <translation id="5368720394188453070">Вашиот телефон е заклучен. Отклучете го за да влезете.</translation>
 <translation id="5368779022775404937">Најавете се на <ph name="REALM" /></translation>
 <translation id="5369491905435686894">Овозможи забрзување на глувчето</translation>
-<translation id="5369694795837229225">Постави развојна околина на Linux</translation>
+<translation id="5369694795837229225">Поставете Linux-околина за програмирање</translation>
 <translation id="5370819323174483825">&amp;Повторно вчитај</translation>
 <translation id="5372529912055771682">Оваа верзија на оперативниот систем не го поддржува обезбедениот режим на запишување. Проверете дали ја користите најновата верзија и обидете се повторно.</translation>
 <translation id="5372579129492968947">Откачи екстензија</translation>
@@ -6070,7 +6070,7 @@
 <translation id="8032244173881942855">Не може да се емитува картичката.</translation>
 <translation id="8033827949643255796">избрано</translation>
 <translation id="8033958968890501070">Истекување</translation>
-<translation id="8036049989879571495">Поставете развојна околина на Linux (бета)</translation>
+<translation id="8036049989879571495">Поставете Linux-околина за програмирање (бета)</translation>
 <translation id="8037117027592400564">Прочитајте го текстот што се изговара со помош на синтетизиран говор.</translation>
 <translation id="8037357227543935929">Прашај (стандардно)</translation>
 <translation id="803771048473350947">Датотека</translation>

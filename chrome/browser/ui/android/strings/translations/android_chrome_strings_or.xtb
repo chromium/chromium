@@ -492,6 +492,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">ଏହି ପୃଷ୍ଠା <ph name="CREATION_TIME" />ର ଅଟେ ଏବଂ ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="4605958867780575332">କଢ଼ାଯାଇଥିବା ଆଇଟମ୍: <ph name="ITEM_TITLE" /></translation>
+<translation id="4614535611158687827">ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ସେଭ୍ କରନ୍ତୁ ଏବଂ ଏକ ରିମାଇଣ୍ଡର୍ ପାଆନ୍ତୁ</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="4634124774493850572">ପାସ୍‌ୱର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}other{#ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}}</translation>
@@ -974,10 +975,12 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}}</translation>
 <translation id="7778840695157240389">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ପରେ ପୁଣି ଦେଖନ୍ତୁ</translation>
 <translation id="7786595606756654269">Google Assistant ୱେବରେ ସନ୍ଧାନ କରିବାକୁ ଏବଂ ଆପଣ ଖୋଲିଥିବା ସାଇଟଗୁଡ଼ିକୁ ବ୍ୟସ୍ତ ରଖିବା ପାଇଁ ଏକ ଉନ୍ନତ ଭଏସ୍ ଅନୁଭୂତି ପ୍ରଦାନ କରେ। ଆପଣ Google Assistant ମାଧ୍ୟମରେ ବ୍ୟବହାର କରିଥିବା ସାଇଟଗୁଡ଼ିକର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Assistant ପ୍ରାପ୍ତ କରିବ।</translation>
+<translation id="7790349552933995572">ମୂଳସ୍କ୍ରିନ୍</translation>
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
 <translation id="7810647596859435254">ଏଥିରେ ଖୋଲନ୍ତୁ…</translation>
+<translation id="7815484226266492798">ଲମ୍ବା ସ୍କ୍ରିନସଟ୍</translation>
 <translation id="7821588508402923572">ଆପଣଙ୍କର ଡାଟା ସେଭିଂ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="7844171778363018843">ସିଙ୍କ୍ କରିବାକୁ କୌଣସି ଡାଟା ଚୟନ କରାଯାଇନାହିଁ</translation>
 <translation id="7846296061357476882">Google ସେବାଗୁଡ଼ିକ</translation>
@@ -1153,6 +1156,7 @@
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9065383040763568503">Chrome ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ମନେ କରୁନଥିବା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା (ଉ.ଦା. ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ସେଟିଂସ୍ ନଥିବା କିମ୍ବା ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ୍ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ)</translation>
 <translation id="9069543557624799859"><ph name="TIME" />ରେ ଡାଉନଲୋଡ୍ ଆରମ୍ଭ ହେବ।</translation>
+<translation id="9069999660519089861">ପଢ଼ାଯାଇନଥିବା କୌଣସି ପୃଷ୍ଠା ନାହିଁ</translation>
 <translation id="9070377983101773829">ଭଏସ୍ ସନ୍ଧାନ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="9074336505530349563">Google ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଷୟବସ୍ତୁ ପ୍ରାପ୍ତ କରିବାକୁ ସାଇନ୍‍ ଇନ୍‌ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍‍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="9086302186042011942">ସିଙ୍କ୍ ହେଉଛି</translation>

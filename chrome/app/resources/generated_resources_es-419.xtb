@@ -5538,7 +5538,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7443806024147773267">Cuando accedas a tu Cuenta de Google, podrás consultar tus contraseñas en cualquier momento</translation>
 <translation id="7444983668544353857">Inhabilitar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instala apps automáticamente</translation>
-<translation id="7448538354405258275">Un representante de atención al cliente puede usar el número EID para ayudarte a activar un servicio.</translation>
+<translation id="7448538354405258275">Un representante de Atención al Cliente puede usar el número EID para ayudarte a activar un servicio.</translation>
 <translation id="7449752890690775568">¿Quieres quitar la contraseña?</translation>
 <translation id="7450761244949417357">Se está abriendo en <ph name="ALTERNATIVE_BROWSER_NAME" /> en este momento</translation>
 <translation id="7453008956351770337">Al seleccionar esta impresora, concedes a la siguiente extensión permiso para acceder a tu impresora.</translation>
@@ -6997,7 +6997,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="909108997331068008">El perfil de <ph name="EXISTING_USER" /> ya accedió a <ph name="NEW_USER" /></translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9094038138851891550">El nombre de usuario no es válido</translation>
-<translation id="9094859731829297286">¿Seguro que quieres reservar un espacio fijo en el disco para Linux?</translation>
+<translation id="9094859731829297286">¿Seguro que quieres reservar un disco de tamaño fijo para Linux?</translation>
 <translation id="9094982973264386462">Quitar</translation>
 <translation id="9095253524804455615">Quitar</translation>
 <translation id="909554839118732438">Cerrar las ventanas de incógnito</translation>

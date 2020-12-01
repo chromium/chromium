@@ -1147,6 +1147,7 @@
 <translation id="2288735659267887385">ઍક્સેસિબિલિટી સેટિંગ્સ</translation>
 <translation id="2289270750774289114">જ્યારે કોઈ સાઇટ નજીકના બ્લૂટૂથ ડિવાઇસને શોધવા માગે ત્યારે પૂછો (સુઝાવ આપેલ)</translation>
 <translation id="2290615375132886363">ટૅબ્લેટ નૅવિગેશનનાં બટન</translation>
+<translation id="229182044471402145">કોઈ મેળ ખાતો ફૉન્ટ મળ્યો નથી.</translation>
 <translation id="2292848386125228270">કૃપા કરીને એક સામાન્ય વપરાશકર્તા તરીકે <ph name="PRODUCT_NAME" /> શરૂ કરો. જો તમને ડેવલપમેન્ટ માટે રૂટ તરીકે ચલાવવાની જરૂર હોય, તો --no-sandbox ચિહ્ન સાથે ફરીથી ચલાવો.</translation>
 <translation id="2294358108254308676">શું તમે <ph name="PRODUCT_NAME" /> ઇન્સ્ટોલ કરવા માંગો છો?</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> પરિણામ</translation>
@@ -4261,6 +4262,7 @@ USB ડિવાઇસ</translation>
 <translation id="5946591249682680882">રીપોર્ટ ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5949544233750246342">ફાઇલનું વિશ્લેષણ કરવામાં અસમર્થ</translation>
 <translation id="5950819593680344519">Chromeને તમારા કમ્પ્યુટરમાં હાનિકારક સૉફ્ટવેર મળ્યું નથી • ગઈકાલે ચેક કર્યું</translation>
+<translation id="5951303645598168883"><ph name="ORIGIN" /> સ્થાનિક ફૉન્ટનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="5951624318208955736">મૉનિટર</translation>
 <translation id="5955282598396714173">તમારા પાસવર્ડનો સમય પૂરો થઈ ગયો છે. કૃપા કરીને સાઇન આઉટ કરો પછી તેને બદલવા માટે ફરીથી સાઇન ઇન કરો.</translation>
 <translation id="5955304353782037793">app</translation>
@@ -5693,6 +5695,7 @@ USB ડિવાઇસ</translation>
 <translation id="7635048370253485243">તમારા વ્યવસ્થાપકે પિન કરેલું છે</translation>
 <translation id="763632859238619983">કોઈપણ સાઇટને ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરવાની મંજૂરી ન આપો</translation>
 <translation id="7636919061354591437">આ ડિવાઇસ પર ઇન્સ્ટૉલ કરો</translation>
+<translation id="7637593984496473097">ડિસ્કમાં પર્યાપ્ત સ્પેસ નથી</translation>
 <translation id="7638605456503525968">સીરિયલ પોર્ટ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />, તમને તમે સાચવેલા પાસવર્ડ વડે યોગ્ય હોય તેવી સાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરે છે.</translation>
 <translation id="7642778300616172920">સંવેદનશીલ કન્ટેન્ટ છુપાવો</translation>

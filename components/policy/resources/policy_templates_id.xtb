@@ -129,7 +129,7 @@
 <translation id="1198183996903759302">Jika kebijakan disetel ke Benar (True) (atau <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> disetel ke Salah (False)), halaman web tidak akan dapat mengakses WebGL API, dan plugin tidak dapat menggunakan Pepper 3D API.
 
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, halaman web akan menggunakan WebGL API dan plugin akan menggunakan Pepper 3D API, tetapi setelan browser default mungkin masih memerlukan argumen command line untuk menggunakan API ini.</translation>
-<translation id="1199366379198964260">Jika kebijakan disetel ke Aktif, PIN yang lemah akan diizinkan. Beberapa karakteristik PIN yang lemah: hanya satu digit (1111), digit ditambah 1 secara berurutan (1234), digit dikurangi 1 secara berurutan (4321), dan PIN umum. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat menyetel PIN yang lemah dan mudah ditebak.
+<translation id="1199366379198964260">Jika kebijakan disetel ke Aktif, PIN yang lemah akan diizinkan. Beberapa karakteristik PIN yang lemah: hanya satu digit (1111), digit ditambah 1 secara berurutan (1234), digit dikurangi 1 secara berurutan (4321), dan PIN yang umum dipakai. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat menyetel PIN yang lemah dan mudah ditebak.
 
       Secara default, pengguna akan mendapatkan peringatan tentang PIN yang lemah, dan bukan mengalami error.</translation>
 <translation id="1202216683470826356">Tampilkan kartu di Halaman Tab Baru</translation>
@@ -410,9 +410,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       * Layar akan dinonaktifkan jika pengguna tidak ada aktivitas selama kurun waktu yang telah ditentukan oleh <ph name="SCREEN_OFF_FIELD_NAME" />.
 
-      * Dialog peringatan akan muncul jika pengguna tetap tidak ada aktivitas selama kurun waktu yang telah ditentukan oleh <ph name="IDLE_WARNING_FIELD_NAME" />. Dialog tersebut memperingatkan pengguna bahwa tindakan tidak ada aktivitas akan diambil dan hanya muncul jika tindakan tidak ada aktivitas adalah untuk logout atau mematikan perangkat.
+      * Dialog peringatan akan muncul jika pengguna tetap tidak ada aktivitas selama kurun waktu yang telah ditentukan oleh <ph name="IDLE_WARNING_FIELD_NAME" />. Dialog tersebut memperingatkan pengguna bahwa tindakan tidak ada aktivitas akan diberlakukan dan hanya muncul jika tindakannya adalah untuk logout atau mematikan perangkat.
 
-      * Tindakan yang ditentukan oleh <ph name="IDLE_ACTION_FIELD_NAME" /> akan diambil jika pengguna tidak ada aktivitas selama kurun waktu yang telah ditentukan oleh <ph name="IDLE_FIELD_NAME" />.
+      * Tindakan yang ditentukan oleh <ph name="IDLE_ACTION_FIELD_NAME" /> akan diberlakukan jika pengguna tidak ada aktivitas selama kurun waktu yang telah ditentukan oleh <ph name="IDLE_FIELD_NAME" />.
 
       Untuk setiap tindakan di atas, penundaan harus ditentukan dalam milidetik dan disetel ke nilai yang lebih besar dari nol untuk memicu tindakan terkait. Jika penundaan disetel ke nol, <ph name="PRODUCT_OS_NAME" /> tidak akan melakukan tindakan terkait.
 
@@ -511,7 +511,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1690383938831887552">Cegah pemuatan Signed HTTP Exchange</translation>
 <translation id="1700811900332333712">Izinkan perangkat untuk meminta powerwash</translation>
 <translation id="1708496595873025510">Setel batasan pada pengambilan bibit Varietas</translation>
-<translation id="1713829924716792485">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan diizinkan terhubung ke host akses jarak jauh untuk mentransfer file antara klien dan host. Ini tidak berlaku untuk koneksi bantuan jarak jauh, yang tidak mendukung transfer file.
+<translation id="1713829924716792485">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna yang terhubung ke host akses jarak jauh akan diizinkan untuk mentransfer file antara klien dan host. Ini tidak berlaku untuk koneksi bantuan jarak jauh, yang tidak mendukung transfer file.
 
       Jika kebijakan disetel ke Nonaktif, transfer file tidak akan diizinkan.</translation>
 <translation id="171511968762040550">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, pengguna akan dapat menambahkan, menghapus, atau mengubah bookmark.
@@ -574,9 +574,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
 <translation id="1827523283178827583">Gunakan server proxy tetap</translation>
-<translation id="1829839214911753838">Jika kebijakan disetel ke Aktif, host bantuan jarak jauh akan berjalan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />. Ini memungkinkan pengguna jarak jauh berinteraksi dengan jendela timbul di desktop pengguna lokal.
+<translation id="1829839214911753838">Jika kebijakan disetel ke Aktif, host bantuan jarak jauh akan berjalan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />. Ini memungkinkan pengguna jarak jauh berinteraksi dengan jendela administrator di desktop pengguna lokal.
 
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela timbul di desktop.</translation>
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela administrator di desktop.</translation>
 <translation id="1839278886947586809">
       Kebijakan ini telah dihapus di M80, karena tidak diperlukan lagi karena
       WebDriver saat ini kompatibel dengan semua kebijakan yang sudah ada.
@@ -1184,7 +1184,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2702023190395322609">Mengaktifkan Rekomendasi Media</translation>
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
-<translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan dan klien jarak jauh dapat ditemukan serta dihubungkan ke perangkat ini, meskipun dipisahkan dengan firewall.
+<translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
 
       Jika kebijakan disetel ke Nonaktif saat koneksi UDP keluar difilter oleh firewall, perangkat hanya akan mengizinkan koneksi dari perangkat klien dalam jaringan lokal.</translation>
 <translation id="2716623398185506073">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik dan ID hardware yang terkait daya.
@@ -1227,7 +1227,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="2769952903507981510">Mengonfigurasi nama domain yang dibutuhkan untuk hosting akses jarak jauh</translation>
-<translation id="2772955711376920612">Menyetel kebijakan ke Aktif serta menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> dan <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan terus memicu pengaktifan daya baterai, jika didukung di perangkat. Kebijakan manajemen pengaktifan daya baterai adalah kebijakan penghematan daya yang meminimalkan penggunaan arus listrik AC selama waktu penggunaan puncak. Untuk setiap hari kerja, Anda dapat menyetel waktu mulai dan waktu akhir untuk menjalankan sistem dalam mode pengaktifan daya baterai. Selama baterai tetap berada di atas nilai minimum yang ditentukan, perangkat akan berjalan menggunakan daya baterai (meski arus listrik AC terhubung) selama waktu tersebut. Setelah waktu akhir yang ditentukan, perangkat akan berjalan menggunakan arus listrik AC (jika terhubung), tetapi tidak akan mengisi daya baterai. Perangkat akan berfungsi kembali secara normal menggunakan arus listrik AC dan mengisi ulang daya baterai setelah waktu mulai pengisian daya yang ditentukan.
+<translation id="2772955711376920612">Menyetel kebijakan ke Aktif serta menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> dan <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan terus memicu pengaktifan daya baterai, jika didukung di perangkat. Kebijakan manajemen pengaktifan daya baterai adalah kebijakan penghematan daya yang meminimalkan penggunaan arus listrik AC selama waktu penggunaan puncak. Untuk setiap hari kerja, Anda dapat menyetel waktu mulai dan waktu akhir untuk menjalankan sistem dalam mode pengaktifan daya baterai. Selama baterai tetap berada di atas nilai minimum yang ditentukan, perangkat akan berjalan menggunakan daya baterai (meski arus listrik AC terhubung) selama waktu tersebut. Setelah waktu akhir yang ditentukan, perangkat akan berjalan menggunakan arus listrik AC (jika terhubung), tetapi tidak akan mengisi daya baterai. Perangkat akan berfungsi normal kembali menggunakan arus listrik AC dan mengisi ulang daya baterai setelah waktu mulai pengisian daya yang ditentukan.
 
       Jika kebijakan disetel ke Nonaktif, pengaktifan daya baterai akan tetap nonaktif.
 
@@ -2935,9 +2935,9 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat memainkan game di <ph name="PRODUCT_OS_NAME" /> yang terdaftar, tetapi dapat memainkannya dalam kondisi lain.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
-<translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Jika entri sandi terakhir terjadi sebelum waktu jendela yang ditentukan oleh nilai terpilih, mode buka kunci cepat tidak akan tersedia setiap kali layar kunci muncul. Jika pengguna tetap berada di layar kunci melebihi jangka waktu ini, sandi akan diminta saat pengguna memasukkan lagi kode yang salah atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
+<translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
 
-      Jika kebijakan tidak disetel, pengguna yang menggunakan mode buka kunci cepat akan memasukkan sandinya di layar kunci setiap hari.</translation>
+      Jika kebijakan tidak disetel, pengguna yang menggunakan mode buka kunci cepat hanya perlu memasukkan sandi di layar kunci satu kali dalam sehari.</translation>
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
@@ -3769,7 +3769,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6536600139108165863">Booting ulang otomatis saat mematikan perangkat</translation>
 <translation id="6539246272469751178">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi Android selalu menggunakan direktori download default dan tidak dapat mengakses file apa pun yang didownload oleh <ph name="PRODUCT_OS_NAME" /> ke direktori download non-default.</translation>
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>
-<translation id="654546276700640113">Jika kebijakan disetel, panjang PIN maksimum yang dikonfigurasi akan diterapkan. Nilai 0 atau yang lebih kecil berarti pengguna dapat menyetel panjang PIN sesuai keinginan. Jika nilainya lebih kecil dari <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> tetapi lebih besar dari 0, panjang maksimum akan disetel ke panjang minimum.
+<translation id="654546276700640113">Jika kebijakan disetel, panjang PIN maksimum yang dikonfigurasi akan diterapkan. Nilai 0 atau lebih kecil berarti pengguna dapat menyetel panjang PIN sesuai keinginan. Jika nilainya lebih kecil dari <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> tetapi lebih besar dari 0, panjang maksimum akan disetel ke panjang minimum.
 
       Jika kebijakan tidak disetel, tidak akan ada panjang maksimum yang diterapkan.</translation>
 <translation id="6553143066970470539">Persentase kecerahan layar</translation>
@@ -4228,7 +4228,7 @@ Kebijakan ini hanya berlaku jika dukungan aplikasi Linux diaktifkan.</translatio
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="7091220433954923921">Menyetel kebijakan akan membatasi rentang port UDP yang digunakan oleh host akses jarak jauh di perangkat ini.
 
-      Jika kebijakan tidak disetel atau disetel ke string kosong, host akses jarak jauh akan dapat menggunakan semua port yang tersedia.
+      Jika kebijakan tidak disetel atau disetel ke string kosong, host akses jarak jauh akan dapat menggunakan port mana pun yang tersedia.
 
       Catatan: Jika <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> Dinonaktifkan, host akses jarak jauh akan menggunakan port UDP dalam rentang 12400-12409.</translation>
 <translation id="7091842872805965910">Mengaktifkan fitur kirim otomatis PIN di layar kunci dan login.</translation>
@@ -4851,7 +4851,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika tidak ditetapkan, kebijakan ini akan diaktifkan tetapi pengguna dapat mengubahnya.</translation>
 <translation id="7955263399078148032">Jika <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> disetel ke Aktif, menyetel <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> ke Aktif atau tidak menyetelnya akan mengizinkan klien jarak jauh untuk menggunakan server relai agar terhubung ke perangkat ini saat koneksi langsung tidak tersedia, misalnya karena batasan firewall.
 
-      Jika kebijakan disetel ke Nonaktif, akses jarak jauh tidak akan dinonaktifkan, tetapi hanya mengizinkan koneksi dari jaringan yang sama (bukan NAT traversal atau relai).</translation>
+      Jika kebijakan disetel ke Nonaktif, akses jarak jauh tidak akan dinonaktifkan, tetapi koneksi hanya akan diizinkan dari jaringan yang sama (bukan NAT traversal atau relai).</translation>
 <translation id="7956210013490975468">Mengonfigurasi layanan System-proxy untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Sandi harus dimasukkan setiap dua belas jam</translation>
 <translation id="7961779417826583251">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar Otoritas Sertifikat Lama</translation>
@@ -5246,7 +5246,7 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan ini tidak disetel, HTTP/0.9 akan dinonaktifkan di port non-default.</translation>
 <translation id="8504243661032323176">Menyetel kebijakan akan menerapkan panjang PIN minimum yang dipilih. (Nilai di bawah 1 akan dibulatkan ke atas ke minimum 1).
 
-      Tidak menyetel kebijakan akan membatalkan penerapan panjang PIN minimum 6 digit, nilai minimum yang direkomendasikan.</translation>
+      Tidak menyetel kebijakan akan membatalkan penerapan panjang PIN minimum 6 digit, yakni nilai minimum yang direkomendasikan.</translation>
 <translation id="8504725006737796967">Menentukan printer yang dapat digunakan pengguna.
 
       Kebijakan ini hanya digunakan jika <ph name="PRINTERS_WHITELIST" /> dipilih untuk <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />.

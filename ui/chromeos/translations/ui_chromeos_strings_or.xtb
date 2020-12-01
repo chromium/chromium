@@ -9,6 +9,8 @@
 <translation id="1062407476771304334">ପ୍ରତିସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="1119069657431255176">Bzip2 ସଙ୍କୁଚିତ ଟାର୍ ଆରକାଇଭ୍</translation>
 <translation id="1120073797882051782">ହଂଗୁଲ୍ ରୋମାଜା</translation>
+<translation id="112387589102719461">ପ୍ରୋଗାମର୍ ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="1134697384939541955">ବିସ୍ତାରିତ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" />ଟି ମିଳିଛି।
     <ph name="LINE_BREAK1" />
     ସ୍ଥାନୀୟ ଷ୍ଟୋରେଜ୍‌ରେ ପର୍ଯ୍ୟାପ୍ତ ଖାଲି ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ। ଅତିରିକ୍ତ <ph name="FILE_SIZE" /> ଆବଶ୍ୟକ ଅଟେ।
@@ -23,6 +25,7 @@
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1190144681599273207">ଏହି ଫାଇଲ୍ ଆଣିବା ପାଇଁ ଆନୁମାନିକ <ph name="FILE_SIZE" /> ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର ହେବ।</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
+<translation id="1210831758834677569">ଲାଓ</translation>
 <translation id="1243314992276662751">ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1249250836236328755">ଶୈଳୀ</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -36,34 +39,46 @@
 <translation id="1378727793141957596">Google Driveକୁ ସ୍ୱାଗତ!</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">ସୀକ୍ ସ୍ଲାଇଡର୍‍</translation>
+<translation id="1404323374378969387">ନରୱେଜୀୟ</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />କୁ ନିଆଗଲା।</translation>
 <translation id="1464724975715666883">1ଟି ତ୍ରୁଟି।</translation>
 <translation id="1467432559032391204">ବାମ</translation>
+<translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ଅପ୍‌ଲୋଡ୍‍ କରାଯାଇନଥିଲା। ଆପଣଙ୍କର Google Driveରେ ଯଥେଷ୍ଟ ମୁକ୍ତ ସ୍ଥାନ ନାହିଁ।</translation>
+<translation id="1482884275703521657">ଫିନିଶ୍</translation>
 <translation id="148466539719134488">ସ୍ଵିସ୍</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" ରିନେମ୍‌ କରିବାକୁ ଅକ୍ଷମ। <ph name="ERROR_MESSAGE" /></translation>
+<translation id="1499943022354839699">ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="1538729222189715449">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଖୋଲୁଛି...</translation>
 <translation id="1547964879613821194">କାନାଡିଆନ୍ ଇଂରାଜୀ</translation>
 <translation id="1556189134700913550">ସମସ୍ତ ପାଇଁ ଲାଗୁ ହେବ</translation>
 <translation id="1561842594491319104">Chrome ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
+<translation id="1576937952766665062">ବଙ୍ଗଳା ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
+<translation id="162175252992296058">US ଆନ୍ତର୍ଜାତୀୟ କୀବୋର୍ଡ ସହ ପର୍ତ୍ତୁଗୀଜ୍</translation>
+<translation id="1641780993263690097">ଚାଇନିଜ୍ ପିନୟିନ୍</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" />ଟି ଫାଇଲକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
 <translation id="164969095109328410">Chrome ଡିଭାଇସ୍</translation>
 <translation id="1665611772925418501">ଫାଇଲ୍‌ଟି ସଂଶୋଧିତ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1673103856845176271">ସୁରକ୍ଷା କାରଣରୁ ଏହି ଫାଇଲ୍‍କୁ ଆକ୍ସେସ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
+<translation id="1729953886957086472">ଜର୍ମାନ (ଜର୍ମାନୀ)</translation>
+<translation id="1730235522912993863">ଚାଇନିଜ୍ କାଙ୍ଗଜି</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି ହୋଇଛି।</translation>
 <translation id="174173592514158117">ସମସ୍ତ Play ଫୋଲ୍ଡର୍ ଦେଖାନ୍ତୁ</translation>
+<translation id="1742316578210444689">ହିବ୍ରୁ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="1747761757048858544">ଡଚ୍ (ନେଦରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="174937106936716857">ସମୁଦାୟ ଫାଇଲ୍ ସଂଖ୍ୟା</translation>
 <translation id="1775381402323441512">ଭିଡିଓର ସୂଚନା</translation>
 <translation id="180035236176489073">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ନିଶ୍ଚିତ ରୂପେ ଅନ୍‍ଲାଇନ୍ ରହିବାକୁ ହେବ।</translation>
 <translation id="1807938677607439181">ସମସ୍ତ ଫାଇଲ୍</translation>
 <translation id="1810764548349082891">କୌଣସି ପୂର୍ବାବଲୋକନ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="1812302367230252929">ଆମହାରିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ସତର୍କତା:<ph name="END_BOLD" />  ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କ‌ରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ହୁଏତ ସ୍ୱଚାଳିତ ରୂପେ ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ପେଙ୍ଗୁଇନ୍‍</translation>
 <translation id="183183971458492120">ସୂଚନା ଲୋଡ୍ ହେଉଛି..</translation>
@@ -72,6 +87,7 @@
 <translation id="1847880352285315359">ସେଭ୍‍ ହୋ‍ଇଗଲା</translation>
 <translation id="1853795129690976061">ଏହି ଫୋଲ୍ଡରକୁ Linux ସହିତ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="1864756863218646478">ଏହି ଫାଇଲ୍ ମିଳିଲା ନାହଁ।</translation>
+<translation id="1920670151694390848">ମାଲାୟଲମ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଇଛି</translation>
 <translation id="1931134289871235022">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1933345018156373194">ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
@@ -82,16 +98,23 @@
 <translation id="1995337122023280937">ଫାଇଲ୍ ଲୋକେସନକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2001796770603320721">Driveରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
+<translation id="2025955442973426285">ଟାଇଗ୍ରିନ୍ୟା</translation>
 <translation id="2028997212275086731">ରାର୍‌ ଆର୍କାଇଭ୍‌</translation>
+<translation id="2037845485764049925">ଋଷୀୟ</translation>
 <translation id="2046702855113914483">ରାମେନ୍</translation>
 <translation id="2070909990982335904">ଡଟ୍ ସହିତ ଆରମ୍ଭ ହେଉଥିବା ନାମଗୁଡ଼ିକ ସିଷ୍ଟମ୍ ପାଇଁ ସଂରକ୍ଷିତ ଅଛି। ଦୟାକରି ଅନ୍ୟ ଏକ ନାମ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
 <translation id="2084108471225856927">ଡିଭାଇସ୍ ସେଟିଂସ୍</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ କ’ଣ କରିବାକୁ ଚାହାନ୍ତି?</translation>
 <translation id="2121825465123208577">ଆକାର ବଦଳାନ୍ତୁ</translation>
+<translation id="2125607626296734455">ଖମେର୍</translation>
+<translation id="2142680004883808240">ଫୋନେଟିକ୍ YaZHert କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="2163152940313951844">ଅବୈଧ ବର୍ଣ୍ଣ: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2184934335987813305">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ପର୍ତ୍ତୁଗୀଜ୍</translation>
 <translation id="2198315389084035571">ସରଳୀକୃତ ଚାଇନିଜ୍</translation>
 <translation id="2208158072373999562">Zip ଆର୍କାଇଭ୍‍</translation>
+<translation id="22085916256174561">କୋରୀୟ</translation>
+<translation id="2208919847696382164">Linux ସହିତ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2225536596944493418">ଆପଣ କ'ଣ ନିଶ୍ଚିତ ରୂପେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2230062665678605299">ଫୋଲ୍ଡର୍‌ ତିଆରି କରିବାରେ ଅକ୍ଷମ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">ମୁଭ୍ କରାଯାଇଛି।</translation>
@@ -100,10 +123,12 @@
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ଫାଇଲ୍ ଖୋଲୁଛି।</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ବାହାର କରାଯାଇଛି</translation>
 <translation id="2325650632570794183">ଏହି ଫାଇଲ୍ ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ଏହି ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଖୋଜିବାକୁ ଦୟାକରି Chrome ୱେବ୍ ଷ୍ଟୋର୍‌କୁ ଯାଆନ୍ତୁ।</translation>
+<translation id="2326539130272988168">ବୁଲଗେରିଆନ୍</translation>
 <translation id="2352947182261340447">ସ୍ଥାନୀୟ ଷ୍ଟୋରେଜ୍‌ରେ ପର୍ଯ୍ୟାପ୍ତ ଖାଲି ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="2377319039870049694">ଲିଷ୍ଟ ଭ୍ୟୁକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="2377590462528165447">Linux ସହ <ph name="NUMBER_OF_ITEMS" />ଟି ଫୋଲ୍ଡର୍‌ ସେୟାର୍‌ କରାଯାଇଛି</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />ଟି ଫାଇଲ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="2389832672041313158">ବର୍ମିଜ୍/ମିଆଁମାର୍</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> ଉପଲବ୍ଧ</translation>
 <translation id="2425665904502185219">ମୋଟ ଫାଇଲ୍‍ର ଆକାର</translation>
 <translation id="2428749644083375155"><ph name="FOLDER_NAME" />ରେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି କରାଯାଉଛି</translation>
@@ -111,6 +136,7 @@
 <translation id="2453576648990281505">ପୂର୍ବରୁ ଏହି ଫାଇଲ୍‌ଟି ଅଛି</translation>
 <translation id="2464079411014186876">ଆଇସ୍‍କ୍ରିମ୍</translation>
 <translation id="2468402215065996499">ଟାମାଗୋଚୀ</translation>
+<translation id="2500392669976258912">ଗୁଜୁରାଟୀ ଫୋନେଟିକ୍</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‍ ହୋ‍ଇଛି</translation>
 <translation id="2541377937973966830">ଏହି ଫୋଲ୍ଡରରେ ଥିବା ବିଷୟବସ୍ତୁଗୁଡ଼ିକ କେବଳ-ପଢ଼ିବା ପାଇଁ ଅଟେ। କିଛି କାର୍ଯ୍ୟକଳାପ ସମର୍ଥିତ ନୁହେଁ।</translation>
@@ -120,19 +146,26 @@
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ବେଙ୍ଗ</translation>
 <translation id="2572501073504669105">ଯେତେବେଳେ ଆପଣଙ୍କ ପାଖରେ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ନଥାଏ, ସେତେବେଳେ ଆପଣ ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିପାରିବେ।</translation>
+<translation id="2578394532502990878">ତାମିଲ ଫୋନେଟିକ୍</translation>
+<translation id="2579959351793446050">ଓଡ଼ିଆ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ଭିଡିଓ</translation>
 <translation id="2620090360073999360">ଏହି ସମୟରେ Google Driveରେ ପହଞ୍ଚି ହେବ ନାହିଁ।</translation>
 <translation id="2638942478653899953">Google Drive ପର୍ଯ୍ୟନ୍ତ ପହଞ୍ଚିହେଲା ନାହିଁ। ଦୟାକରି <ph name="BEGIN_LINK" />ଲଗ୍‌ ଆଉଟ୍‍<ph name="END_LINK" /> ଏବଂ ଫେରି ଲଗ୍‍ ଇନ୍‍ କରନ୍ତୁ।</translation>
 <translation id="2649120831653069427">ରେନ୍‌ବୋଫିସ୍</translation>
 <translation id="2661146741306740526">16x9</translation>
+<translation id="2663066752008346276">ମିଆଁସାନ୍ କୀବୋର୍ଡ ସହ ବର୍ମିଜ୍/ମିଆଁମାର୍</translation>
 <translation id="2664412712123763093">ଫାଇଲ୍ ଲୋକେସନ୍</translation>
 <translation id="2672394958563893062">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। ଆରମ୍ଭରୁ ପୁଣିଥରେ ଚଲାଇବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2676946222714718093">ଏଥିରେ ଚାଲୁଛି</translation>
+<translation id="2718540689505416944">Linux ମାଧ୍ୟମରେ ଆପକୁ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
+<translation id="2724954091494693138">ତୁର୍କିଶ୍ F-କୀବୋର୍ଡ</translation>
+<translation id="2732839045120506979">ଭିଏତନାମିଜ୍ VNI</translation>
 <translation id="2735623501230989521">Parallels Desktopକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2771816809568414714">ଚିଜ୍</translation>
 <translation id="2781645665747935084">ବେଲ୍‍ଜିଆନ୍</translation>
 <translation id="2782104745158847185">Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାରେ ତ୍ରୁଟି</translation>
 <translation id="2787047795752739979">ମୂଳଲେଖାକୁ ଓଭର୍‍ରାଇଟ୍ କରନ୍ତୁ</translation>
+<translation id="2830077785865012357">ଚାଇନିଜ୍ ଝୁୟିନ୍</translation>
 <translation id="2843806747483486897">ଡିଫଲ୍ଟ ପରିବର୍ତ୍ତନ କରନ୍ତୁ...</translation>
 <translation id="2850124913210091882">ବ୍ୟାକ୍‌ଅପ୍‌ ନିଅନ୍ତୁ</translation>
 <translation id="2873951654529031587">ଟ୍ରାସ୍</translation>
@@ -142,6 +175,7 @@
 <translation id="2894654529758326923">ସୂଚନା</translation>
 <translation id="2902312830803030883">ଅଧିକ କାର୍ଯ୍ୟ</translation>
 <translation id="2902734494705624966">US ସମ୍ପ୍ରସାରିତ କୀବୋର୍ଡ</translation>
+<translation id="290843123675549676">ମରାଠୀ</translation>
 <translation id="2923240520113693977">ଏଷ୍ଟୋନିଆନ୍</translation>
 <translation id="2925966894897775835">Sheets</translation>
 <translation id="2938685643439809023">ମଙ୍ଗୋଲିଆ</translation>
@@ -151,9 +185,11 @@
 <translation id="2951236788251446349">ଜେଲିଫିସ୍</translation>
 <translation id="2984337792991268709">ଆଜି <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />ର ବ୍ୟାକ୍‍ଅପ୍ ନିଆଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="299638574917407533">ଫରାସୀ (କାନାଡ଼ା)</translation>
 <translation id="3003633581067744647">ଥମ୍ବନେଲ୍ ଭ୍ୟୁକୁ ସ୍ବିଚ୍ କରନ୍ତୁ</translation>
 <translation id="3007214526293698309">ଅନୁପାତର ସମାଧାନ କରନ୍ତୁ</translation>
 <translation id="303198083543495566">ଭୌଗଳିକ</translation>
+<translation id="3047197340186497470">ଚାଇନିଜ୍ ଡାୟି</translation>
 <translation id="3057861065630527966">ଆପଣଙ୍କର ଫଟୋ ଓ ଭିଡିଓଗୁଡ଼ିକର ବ୍ୟାକ୍‌ଅପ୍ ନିଅନ୍ତୁ</translation>
 <translation id="3067790092342515856">Windows ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -163,6 +199,7 @@
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3197563288998582412">US ଡିଭୋରାକ୍</translation>
 <translation id="3202131003361292969">ପାଥ୍</translation>
+<translation id="3205852408225871810">ପର୍ତ୍ତୁଗୀଜ୍ (ବ୍ରାଜିଲ୍)</translation>
 <translation id="3224239078034945833">କାନାଡିଆନ୍ ବହୁଭାଷୀ</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" />କୁ ମାଲିକାନା ସ୍ଥାନାନ୍ତର ହେବ।</translation>
 <translation id="3241720467332021590">ଇରିସ୍</translation>
@@ -170,28 +207,35 @@
 <translation id="3248185426436836442">ବାକି ଅଛି</translation>
 <translation id="3252266817569339921">ଫ୍ରେଞ୍ଚ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍ଗୁଡ଼ିକ ପାଇଁ ଡିଫଲ୍ଟ ଆପ୍‍ ବାଛନ୍ତୁ:</translation>
+<translation id="3255159654094949700">ଆରବିକ୍</translation>
 <translation id="3264582393905923483">ପ୍ରସଙ୍ଗ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ଖୋଲାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3280431534455935878">ପ୍ରସ୍ତୁତ ହେଉଛି</translation>
 <translation id="3280987981688031357">Vinyl ରେକର୍ଡ</translation>
 <translation id="3296763833017966289">ଜର୍ଜିଆନ୍</translation>
+<translation id="3307875152560779385">ୟୁକ୍ରେନିଆନ୍</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />କୁ ଜିପ୍ କରୁଛି...</translation>
 <translation id="3335337277364016868">ରେକର୍ଡ କରାଯାଇଥିବା ବର୍ଷ</translation>
 <translation id="3353984535370177728">ଅପ୍‌ଲୋଡ୍‍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3356580349448036450">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
+<translation id="3382143449143186018">InScript କୀବୋର୍ଡ ସହ ନେପାଳୀ</translation>
+<translation id="3408236822532681288">ନିଓ 2 କୀବୋର୍ଡ ସହ ଜର୍ମାନ (ଜର୍ମାନୀ)</translation>
 <translation id="3414856743105198592">ବାହାର କରାଯାଇପାରୁଥିବା ମେଡ଼ିଆକୁ ଫର୍ମାଟ୍ କଲେ ଏହା ସମସ୍ତ ଡାଟା ଲିଭାଇଦେବ। ଆପଣ ଜାରି ରଖିବା ଚାହାନ୍ତି କି?</translation>
 <translation id="3437801641691368414">ତିଆରି ହୋ‌ଇଥିବାର ସମୟ</translation>
+<translation id="3455931012307786678">ଇସ୍ତୋନିଆନ୍</translation>
 <translation id="3466147780910026086">ଆପଣଙ୍କର ମେଡିଆ ଡିଭାଇସ୍ ସ୍କାନ୍ ହେଉଛି...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" />ଟି ଫଟୋକୁ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‌ଅପ୍‌ ନିଆଯାଇଛି</translation>
 <translation id="3470502288861289375">କପି କରାଯାଉଛି…</translation>
 <translation id="3473378059788601120"><ph name="FOLDER_NAME" />କୁ କପି କରାଯାଇଛି।</translation>
 <translation id="3475447146579922140">Google ସ୍ପ୍ରେଡ୍‌ସିଟ୍</translation>
+<translation id="3486821258960016770">ମଙ୍ଗୋଲିଆନ୍</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />ଟି ତ୍ରୁଟି।</translation>
 <translation id="3522708245912499433">ପର୍ତ୍ତୁଗୀଜ୍</translation>
 <translation id="3524311639100184459">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ଫୋଲ୍ଡର୍</translation>
 <translation id="3549797760399244642">drive.google.comକୁ ଯାଆନ୍ତୁ …</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
+<translation id="3556731189587832921">ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
 <translation id="3603385196401704894">କାନାଡିଆନ୍ ଫ୍ରେଞ୍ଚ୍</translation>
 <translation id="3606220979431771195">ତୁର୍କୀସ୍-F</translation>
@@ -205,6 +249,7 @@
 <translation id="3645531960514756307">ଫୋଲ୍ଡର୍ ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="3685122418104378273">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବା ସମୟରେ Google ଡ୍ରାଇଭ୍ ସିଙ୍କ ଡିଫଲ୍ଟ ରୂପେ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ବାତିଲ୍ କରନ୍ତୁ।</translation>
+<translation id="3691184985318546178">ସିଂହଳ</translation>
 <translation id="3726463242007121105">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="3741243925913727067">Google ଡ୍ରାଇଭ୍‌ରେ ଆପଣଙ୍କର ମିଡିଆ ଡିଭାଇସ୍‍ର ଫଟୋ ଓ ଭିଡିଓର ବ୍ୟାକ୍ ଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
@@ -224,17 +269,25 @@
 <translation id="3855472144336161447">ଜର୍ମନ୍ ନିଓ 2</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> ମାଧ୍ୟମରେ ପ୍ୟାକ୍ କରନ୍ତୁ</translation>
 <translation id="3866249974567520381">ବିବରଣୀ</translation>
+<translation id="3899991606604168269">ବହୁଭାଷୀ କୀବୋର୍ଡ ସହ ଫରାସୀ (କାନାଡ଼ା)</translation>
 <translation id="3924145049010392604">ମେଟା</translation>
 <translation id="3930521966936686665">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="3952872973865944257">ତେଲୁଗୁ ଫୋନେଟିକ୍</translation>
 <translation id="3958548648197196644">କିୱି</translation>
 <translation id="3966388904776714213">ଅଡିଓ ପ୍ଲେୟାର୍</translation>
+<translation id="3973925058222872294">ଇଂରାଜୀ (UK)</translation>
+<translation id="3975895378829046965">ବଙ୍ଗଳା ଫୋନେଟିକ୍</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
+<translation id="4017788180641807848">ୱାର୍କମ୍ୟାନ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="4092890906744441904">ଆଇରିଶ୍</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4158739975813877944">ପ୍ଲେ ତାଲିକା ଖୋଲନ୍ତୁ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="4193154014135846272">Google ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="4197674956721858839">Zip ଚୟନ</translation>
+<translation id="4202378258276439759">ସ୍ପେନୀୟ (ଲାଟିନ୍ ଆମେରିକା)</translation>
+<translation id="4202977638116331303">ଜର୍ଜିଆନ୍</translation>
 <translation id="421017592316736757">ଏହି ଫାଇଲ୍‌କୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ଆପଣଙ୍କୁ ଅନ୍‌ଲାଇନ୍‌ ରହିବା ଆବଶ୍ୟକ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" ନାମରେ ଫୋଲ୍ଡର୍‌ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଦୟାକରି ଗୋଟିଏ ଅଲଗା ନାମ ବାଛନ୍ତୁ।</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" />ଟି ବ୍ୟାକ୍‍ଅପ୍ ନିଆଯାଉଛି</translation>
@@ -242,14 +295,20 @@
 <translation id="4290535918735525311">Linux ସହ 1ଟି ଫୋଲ୍ଡର୍ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="4299729908419173967">ବ୍ରାଜିଲିଆନ୍</translation>
 <translation id="4309915981827077375">ସାଧାରଣ ସୂଚନା</translation>
+<translation id="432252891123397018">ଷ୍ଟାଣ୍ଡାର୍ଡ କୀବୋର୍ଡ ସହ ରୋମାନିଆନ୍</translation>
+<translation id="4325128273762811722">ସ୍ଲୋଭେନିଆନ୍</translation>
 <translation id="4326192123064055915">କଫି</translation>
 <translation id="4336032328163998280">କପି କରିବା କାର୍ଯ୍ୟ ବିଫଳ ହେଲା।<ph name="ERROR_MESSAGE" /></translation>
+<translation id="4348495354623233847">ସୋରାନୀ କୁର୍ଦ୍ଦିଶ୍ ଆରବିକ୍-ଆଧାରିତ କୀବୋର୍ଡ</translation>
+<translation id="4363958938297989186">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="4364327530094270451">ମେଲୋନ୍</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">ଏକ୍ସଟର୍ନଲ୍ ଲିଙ୍କ୍</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4470564870223067757">ହଂଗୁଲ୍ 2 ସେଟ୍</translation>
+<translation id="4477002475007461989">ରୋମାନିଆନ୍</translation>
 <translation id="4477219268485577442">ବୁଲ୍‍‍ଗେରିଆନ୍ ଫୋନେଟିକ୍</translation>
+<translation id="4509667233588080747">ୱାର୍କମ୍ୟାନ୍ ଆନ୍ତର୍ଜାତୀୟ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
 <translation id="4527800702232535228">Parallels Desktop ସହିତ ଏହି ଫୋଲ୍ଡରକୁ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="4552678318981539154">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ</translation>
@@ -261,12 +320,15 @@
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> ପାଇଁ ଫଳାଫଳ ଦେଖାଉଛି।</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> କପି କରାଯାଉଛି</translation>
 <translation id="4631887759990505102">କଳାକାର</translation>
+<translation id="4646813851450205600">Qwerty କୀବୋର୍ଡ ସହ ଚେକ୍</translation>
 <translation id="4656293982926141856">ଏହି କମ୍ପ୍ୟୁଟର୍</translation>
 <translation id="4669606053856530811"><ph name="SOURCE_NAME" />ର ସଦସ୍ୟମାନେ ସେପର୍ଯ୍ୟନ୍ତ ଆକ୍ସେସ୍ ହରାଇବେ ଯେପର୍ଯ୍ୟନ୍ତ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକୁ ସେମାନଙ୍କ ସହିତ ସେୟାର୍‌ କରାଯାଇ ନାହିଁ।</translation>
 <translation id="4690246192099372265">ସ୍ୱିଡିଶ୍</translation>
 <translation id="4693155481716051732">ସୁଶି</translation>
 <translation id="4694604912444486114">ମାଙ୍କଡ଼</translation>
+<translation id="469612310041132144">ଚାଇନିଜ୍ କ୍ୱିକ୍</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
+<translation id="4706042980341760088">ଟାଇପରାଇଟର୍ କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="4711094779914110278">ତୁର୍କିସ୍</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ଖୋଲାଯାଉଛି</translation>
 <translation id="4713544552769165154">ମେସିନ୍‍ଟୋସ୍ ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରି ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍ ପାଇଁ ଏହି ଫାଇଲ୍‍କୁ ତିଆରି କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। ଆପ୍‍ର ଗୋଟିଏ ଉପଯୁକ୍ତ ବିକଳ୍ପ ପାଇଁ ଦୟାକରି <ph name="BEGIN_LINK" />Chrome ୱେବ୍ ଷ୍ଟୋର୍<ph name="END_LINK" /> ସର୍ଚ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
@@ -277,6 +339,7 @@
 <translation id="4737050008115666127">ଲ୍ୟାଣ୍ଡିଙ୍ଗ୍‌</translation>
 <translation id="4747271164117300400">ମାସିଡୋନିୟ</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
+<translation id="4779041693283480986">ପର୍ତ୍ତୁଗୀଜ୍ (ପର୍ତ୍ତୁଗାଲ୍)</translation>
 <translation id="4779136857077979611">ଓନିଗିରି</translation>
 <translation id="4784330909746505604">PowerPoint ଉପସ୍ଥାପନା</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -284,6 +347,7 @@
 <translation id="4801956050125744859">ଉଭୟ ରଖନ୍ତୁ</translation>
 <translation id="4804827417948292437">ଆଭୋକାଡୋ</translation>
 <translation id="4823651846660089135">ଡିଭାଇସ୍‌ କେବଳ ପଢ଼ିବା ପାଇଁ ଅଟେ</translation>
+<translation id="4826849268470072925">ତାମିଲ ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" />ଟି ଆଇଟମ୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
@@ -302,6 +366,7 @@
 <translation id="4969785127455456148">ଆଲ୍‌ବମ୍</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> କିମ୍ବା ତା’ଠାରୁ କମ୍‌ ଅକ୍ଷରର ନାମ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4973970068702235170">ଜିପ୍ କରିବା ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4984616446166309645">ଜାପାନିଜ</translation>
 <translation id="4988205478593450158">ଆପଣ "<ph name="FILE_NAME" />"କୁ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କି?</translation>
 <translation id="498902553138568924">ଲାଲ୍ ପ୍ରଜାପତି</translation>
 <translation id="4992066212339426712">ଅନମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
@@ -311,12 +376,15 @@
 <translation id="5024856940085636730">ଗୋଟିଏ କାର୍ଯ୍ୟ ଆଶା କରାଯାଉଥିବା ସମୟରୁ ଅଧିକ ସମୟ ନେଉଛି। ଆପଣ ଏହାକୁ ବନ୍ଦ କରିବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="5036159836254554629">Parallels Desktop ସେୟାରିଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5038625366300922036">ଅଧିକ ଦେଖନ୍ତୁ...</translation>
+<translation id="5044852990838351217">ଆର୍ମେନିଆନ୍</translation>
+<translation id="5059127710849015030">ନେପାଳୀ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="5061708541166515394">କଣ୍ଟ୍ରାଷ୍ଟ</translation>
 <translation id="5068919226082848014">ପିଜା</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" />ଟି ଫାଇଲ୍ ଡିଲିଟ୍ କରାଯିବ</translation>
 <translation id="508423945471810158"><ph name="FOLDER_NAME" />କୁ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଉଛି</translation>
 <translation id="509429900233858213">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="5098629044894065541">ହେବ୍ର୍ୟୁ</translation>
+<translation id="5110329002213341433">ଇଂରାଜୀ (କାନାଡ଼ା)</translation>
 <translation id="5123433949759960244">ବାସ୍କେଟବଲ୍</translation>
 <translation id="5129662217315786329">ପୋଲିସ୍</translation>
 <translation id="5144820558584035333">ହଂଗୁଲ୍ 3 ସେଟ୍ (390)</translation>
@@ -331,6 +399,7 @@
 <translation id="5170477580121653719">Google ଡ୍ରାଇଭ୍ ଅବଶିଷ୍ଟ ସ୍ଥାନ: <ph name="SPACE_AVAILABLE" />।</translation>
 <translation id="5177526793333269655">ଥମ୍ଵନେଲ୍ ଦର୍ଶନ</translation>
 <translation id="5194713942430106590">କଲମ୍‍କୁ ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଇବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
+<translation id="5211614973734216083">ଫାରୋସି</translation>
 <translation id="5218183485292899140">ସୁଇସ୍ ଫ୍ରେଞ୍ଚ</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="5253070652067921974">ଏହାଙ୍କ ଦ୍ୱାରା ତିଆରି କରାଯାଇଛି</translation>
@@ -348,10 +417,12 @@
 <translation id="5358764674931277">ଫ୍ରେମ୍ ହାର</translation>
 <translation id="5368191757080475556">Linux ସହ ଫୋଲ୍ଡର୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5402367795255837559">ବ୍ରେଲ୍ଲୀ</translation>
+<translation id="541890217011173530">ସୋରାନୀ କୁର୍ଦ୍ଦିଶ୍ ଇଂରାଜୀ-ଆଧାରିତ କୀବୋର୍ଡ</translation>
 <translation id="5428105026674456456">ସ୍ପାନିଶ୍</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ପାଇଁ କୌଣସି ଫଳାଫଳ ନାହିଁ।</translation>
 <translation id="5449551289610225147">ଅବୈଧ ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="5469868506864199649">ଇଟାଲିୟାନ୍</translation>
+<translation id="5489067830765222292">ଲାତଭିଆନ୍</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5500122897333236901">ଆଇସ୍ଲେଣ୍ଡିକ୍</translation>
 <translation id="5508696409934741614">ଡଟ୍</translation>
@@ -359,8 +430,11 @@
 <translation id="5524517123096967210">ଫାଇଲ୍‌କୁ ପଢ଼ାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ଛବି</translation>
 <translation id="5534520101572674276">ଆକାର ଗଣନା କରାଯାଉଛି</translation>
+<translation id="554153475311314364">ଗ୍ରୀକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
+<translation id="5602622065581044566">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ବୁଲଗେରିଆନ୍</translation>
 <translation id="5605830556594064952">US ଡିଭୋରାକ୍</translation>
+<translation id="5625294776298156701">ତାମିଲ99 କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
 <translation id="5678784840044122290">Linux ଆପ୍ଲିକେସନ୍‌ଟି ଆପଣଙ୍କର ଟର୍ମିନାଲ୍ ଭିତରେ ଉପଲବ୍ଧ ହେବ ଏବଂ ଆପଣଙ୍କର ଲଞ୍ଚର୍‌ରେ ହୁଏତ ଏକ ଆଇକନ୍ ମଧ୍ୟ ଦେଖାଇବ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ଏକ ଆର୍କାଇଭ୍‍ କିମ୍ବା ଭର୍ଚୁଆଲ୍‌ ଡିକ୍ସରୁ ବିଚ୍ଛିନ୍ନ କରାଯାଇପାରିବ ନାହିଁ<ph name="END_BOLD" />
@@ -368,13 +442,17 @@
 ଆର୍କାଇଭ୍‍ କିମ୍ବା ଭର୍ଚୁଆଲ୍‌ ଡିକ୍ସରେ ଥିବା ସମସ୍ତ ଫାଇଲ୍‌ ବନ୍ଦ କରନ୍ତୁ, ଏହାପରେ ପୁଣି ଚେଷ୍ଟାକରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5691596662111998220">ଓହୋଃ, <ph name="FILE_NAME" /> ଏବେ ଆଉ ନାହିଁ।</translation>
 <translation id="5700087501958648444">ଅଡିଓ ସୂଚନା</translation>
+<translation id="5724172041621205163">ପାଟ୍ଟାଚୋଟେ କୀବୋର୍ଡ ସହ ଥାଇ</translation>
 <translation id="5731409020711461763">1 ନୂଆ ଫଟୋ</translation>
 <translation id="5752453871435543420">Chrome OS କ୍ଲାଉଡ୍‌ ବ୍ୟାକ୍‌ଅପ୍‌</translation>
 <translation id="5756666464756035725">ହଙ୍ଗେରିଆନ୍ QWERTY</translation>
+<translation id="5763377084591234761">ଜର୍ମାନ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
+<translation id="5775750595919327203">ଉର୍ଦ୍ଦୁ</translation>
 <translation id="5776325638577448643">ଲିଭାଇ ଦିଅନ୍ତୁ ଏବଂ ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5788127256798019331">Play ଫାଇଲ୍ସ</translation>
 <translation id="5790193330357274855">କାଜାଖ୍</translation>
+<translation id="5804245609861364054">କନ୍ନଡ଼ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="5817397429773072584">ପାରମ୍ପାରିକ ଚାଇନିଜ୍</translation>
 <translation id="5818003990515275822">କୋରିୟ</translation>
 <translation id="5819442873484330149">ହଂଗୁଲ୍ 3 ସେଟ୍ (ଅନ୍ତିମ)</translation>
@@ -387,6 +465,7 @@
 <translation id="5911887972742538906">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍‌ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="5912396950572065471">ଫର୍ମାଟ୍</translation>
 <translation id="5913638992615760742">କପି କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5926082595146149752">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଡଚ୍ (ନେଦରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
@@ -397,20 +476,27 @@
 <translation id="604001903249547235">କ୍ଲାଉଡ୍ ବ୍ୟାକ୍‌ଅପ୍‌</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6074825444536523002">Google ଫର୍ମ</translation>
+<translation id="6079871810119356840">Qwerty କୀବୋର୍ଡ ସହ ହଙ୍ଗେରୀୟ</translation>
 <translation id="6096979789310008754">ସନ୍ଧାନ ଟେକ୍ସଟ୍ ଖାଲି ହୋଇଛି, ସମସ୍ତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡର୍ ଦେଖାଉଛି।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଉଛି</translation>
 <translation id="6129953537138746214">ସ୍ପେସ୍</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> ଘୁଞ୍ଚୁଛି...</translation>
+<translation id="613750717151263950">US କୀବୋର୍ଡ ସହ ଜାପାନିଜ</translation>
 <translation id="6146563240635539929">ଭିଡିଓଗୁଡ଼ିକ</translation>
 <translation id="6150853954427645995">ଅଫ୍‌ଲାଇନ୍‌ ବ୍ୟବହାର ପାଇଁ ଏହି ଫାଇଲ୍‌ ସେଭ୍‌ କରିବାକୁ, ଅନ୍‌ଲାଇନ୍‌କୁ ଫେରନ୍ତୁ, ଫାଇଲ୍‌ରେ ରାଇଟ୍‍-କ୍ଲିକ୍‌ କରନ୍ତୁ ଏବଂ <ph name="OFFLINE_CHECKBOX_NAME" />ର ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6164412158936057769">ବଟର୍‌ଫ୍ଲାଇସ୍</translation>
 <translation id="6170470584681422115">ସାଣ୍ଡୱିଚ୍</translation>
+<translation id="6187719147498869044">ହଙ୍ଗେରୀୟ</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ମାଧ୍ୟମରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6199801702437275229">ସ୍ଥାନ ସୂଚନା ପାଇଁ ଅପେକ୍ଷାରତ...</translation>
 <translation id="6205710420833115353">କିଛି କାର୍ଯ୍ୟ ପ୍ରଣାଳୀ ଆଶା କରାଯାଉଥିବା ସମୟରୁ ଅଧିକ ସମୟ ନେଇଥାଏ। ଆପଣ ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
+<translation id="6220423280121890987">ପଞ୍ଜାବୀ</translation>
+<translation id="6224240818060029162">ଡେନିସ୍</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
 <translation id="6227235786875481728">ଏହି ଫାଇଲ୍ ଚଲାଯାଇପାରିଲା ନାହିଁ।</translation>
+<translation id="6241349547798190358">ଡଚ୍ (ବେଲଜିୟମ୍)</translation>
 <translation id="6248400709929739064">ଉପଶୀର୍ଷକ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="6269630227984243955">ମଲୟ</translation>
 <translation id="6287852322318138013">ଏହି ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6339145975392024142">US ଆନ୍ତର୍ଜାତିକ (PC)</translation>
 <translation id="6346310558342052870">ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି</translation>
@@ -421,6 +507,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍</translation>
 <translation id="6398765197997659313">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="642282551015776456">ଏହି ନାମ କୌଣସି ଫାଇଲ୍‍ କିମ୍ବା ଫୋଲ୍ଡର୍‌ର ନାମ ଭାବେ ବ୍ୟବହାର କରାଯାଇନପାରେ</translation>
+<translation id="6423031066725912715">TCVN କୀବୋର୍ଡ ସହ ଭିଏତନାମିଜ୍</translation>
 <translation id="6485131920355264772">ଯାଗା ସମ୍ବନ୍ଧିତ ତଥ୍ୟ ପୁନରୁଦ୍ଧାର କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="6509122719576673235">ନରୱେଜିଆନ୍</translation>
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -437,19 +524,23 @@
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6650726141019353908">ଗୋଲାପି ପ୍ରଜାପତି</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
+<translation id="6673674183150363784">Bépo କୀବୋର୍ଡ ସହ ଫରାସୀ (ଫ୍ରାନ୍ସ)</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6718273304615422081">ଜିପ୍ ହେଉଛି...</translation>
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6795884519221689054">ପାଣ୍ଡା</translation>
 <translation id="6806699711453372963">Linux ସେୟାରିଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="6806796368146926706">ଆଲ୍ଫାନ୍ୟୁମେରିକ୍, ଜାପାନିଜ କୀବୋର୍ଡ ସହିତ</translation>
 <translation id="6808193438228982088">ଶିଆଳ</translation>
 <translation id="6820687829547641339">Gzip ଟାର୍ ଆର୍କାଇଭ୍‌କୁ ଛୋଟ କରିଦେଇଛି</translation>
 <translation id="6823166707458800069">ଏହି ଫୋଲ୍ଡରରେ ସେଭ୍ କରାଯାଇଥିବା ସମସ୍ତ ଫାଇଲର ସ୍ୱଚାଳିତରୂପେ ଅନଲାଇନରେ ବ୍ୟାକଅପ୍ ନିଆଯାଏ।</translation>
 <translation id="6825883775269213504">ଋଷିଆନ୍</translation>
 <translation id="6827236167376090743">ଏହି ଭିଡିଓଟି ଦୀର୍ଘ ସମୟ ପର୍ଯ୍ୟନ୍ତ ବାରମ୍ବାର ଚାଲୁଥିବ।</translation>
 <translation id="6847101934483209767">ଚୟନରୁ <ph name="ENTRY_NAME" /> କାଢ଼ି ଦିଆଯାଇଛି।</translation>
+<translation id="6861394552169064235">ପାର୍ସି</translation>
 <translation id="6862635236584086457">ଏହି ଫୋଲ୍ଡର୍‌ରେ ସେଭ୍ ହୋଇଥିବା ସମସ୍ତ ଫାଇଲ୍‌ଗୁଡ଼ିକ ସ୍ୱଚାଳିତରୂପେ ଅନ୍‌ଲାଇନ୍‌ରେ ବ୍ୟାକ୍‌ଅପ୍ ନିଆଯାଏ</translation>
+<translation id="6864328437977279120">ସଂସ୍କୃତ</translation>
 <translation id="6876155724392614295">ବାଇକ୍</translation>
 <translation id="6878261347041253038">ଦେବନାଗରୀ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
 <translation id="6885780034956018177">ଗେଣ୍ଡା</translation>
@@ -463,20 +554,28 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />ଟି ମିଳିଲା</translation>
 <translation id="6935521024859866267">ଓଲଟା</translation>
+<translation id="6949408524333579394">ସର୍ବିଆନ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="696203921837389374">ମୋବାଇଲ୍ ଡାଟା ଜରିଆରେ ସିଙ୍କ୍ ପ୍ରକ୍ରିୟା ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6970230597523682626">ବୁଲଗେରୀୟ</translation>
 <translation id="6973630695168034713">ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ</translation>
 <translation id="6978611942794658017">Windows ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା PC ପାଇଁ ଏହି ଫାଇଲ୍ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। ଆପ୍‍ର ଗୋଟିଏ ଉପଯୁକ୍ତ ବିକଳ୍ପ ପାଇଁ ଦୟାକରି Chrome ୱେବ୍ ଷ୍ଟୋର୍‌ରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
 <translation id="6990081529015358884">ଆପଣଙ୍କ ପାଖରେ ଥିବା ଜାଗା ସରିଯାଇଛି</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ ବଛାଯାଇଛି</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
+<translation id="7031639531908619281">ତୁର୍କିଶ୍</translation>
+<translation id="7037472120706603960">ତାମିଲ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="7040138676081995583">ଏହା ମାଧ୍ୟମରେ ଖୋଲନ୍ତୁ...</translation>
+<translation id="7075931588889865715">TIS 820-2531 କୀବୋର୍ଡ ସହ ଥାଇ</translation>
+<translation id="7086590977277044826">InScript କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="7100897339030255923"><ph name="COUNT" />ଟି ଆଇଟମ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="7103992300314999525">ମାସିଡୋନିଆନ୍</translation>
 <translation id="7106346894903675391">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ଡ୍ରାଇଭ୍‍‍ରେ ଖୋଜନ୍ତୁ&lt;/em&gt;</translation>
+<translation id="7135561821015524160">କନ୍ନଡ଼ ଫୋନେଟିକ୍</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
@@ -485,33 +584,42 @@
 <translation id="7248671827512403053">ଆପ୍ଲିକେସନ୍</translation>
 <translation id="7268659760406822741">ଉପଲବ୍ଧ ଥିବା ସେବାଗୁଡ଼ିକ</translation>
 <translation id="7283041136720745563">Google ଡ୍ରାଇଭ୍‌ରେ ଆପଣଙ୍କ ପାଇଁ ସଂରକ୍ଷିତ ଥିବା ସ୍ଥିରୀକୃତ ଅଂଶ ପର୍ଯ୍ୟାପ୍ତ ନୁହେଁ।</translation>
+<translation id="7294063083760278948">ତେଲୁଗୁ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="7295662345261934369">ଅନ୍ୟମାନଙ୍କ ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="7309413087278791451">ଜର୍ମାନ (ବେଲଜିୟମ୍)</translation>
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
+<translation id="7343393116438664539">ଭିଏତନାମିଜ୍ ଟେଲେକ୍ସ</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ କପି ହେଉଛି...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ବଡ଼ରୁ ସାନ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
+<translation id="7408870451288633753">ଚେକ୍</translation>
 <translation id="7417453074306512035">ଇଥିଓପିକ୍ କୀବୋର୍ଡ</translation>
 <translation id="7417705661718309329">Google ମ୍ୟାପ୍‌</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" />ଟି ମିଳିଛି
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ଡ୍ରାଇଭ୍‍<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‌ଅପ୍‌ ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
+<translation id="7495372004724182530">ମାଲାୟଲମ୍ ଫୋନେଟିକ୍</translation>
 <translation id="7505167922889582512">ଲୁଚିଥିବା ଫାଇଲ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="7508545000531937079">ସ୍ଲାଇଡ୍ ଶୋ</translation>
 <translation id="751507702149411736">ବେଲାରଷୀୟ</translation>
+<translation id="7532029025027028521">ପାର୍ସି ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="7544830582642184299">ଆପଣଙ୍କର Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ Linux ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ୍ ହୋଇଯିବ।</translation>
 <translation id="7544853251252956727">ଅଦଳବଦଳ</translation>
+<translation id="7547780573915868306">ଲିଥୁନିଆନ୍</translation>
 <translation id="7547811415869834682">ଡଚ୍</translation>
 <translation id="7551643184018910560">ସେଲ୍ଫରେ ପିନ୍‌ କରନ୍ତୁ</translation>
 <translation id="7553492409867692754">Linux ଆପ୍ସକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">ଗୋଟିଏ ସେକେଣ୍ଡ ଅପେକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
+<translation id="7600126690270271294">ସର୍ବିଆନ୍</translation>
 <translation id="7603724359189955920">ଗ୍ରିଡ୍ସ</translation>
 <translation id="7627790789328695202">ଓହୋଃ, <ph name="FILE_NAME" /> ପୂର୍ବରୁ ଅଛି। ଏହାକୁ ରିନେମ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> ଟି ଆଇଟମ୍ ଘୁଞ୍ଚାଯାଉଛି ...</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
+<translation id="7663224033570512922">ହିନ୍ଦୀ</translation>
 <translation id="7693909743393669729">ଏକ ଡ୍ରାଇଭକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ସେଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ ଏବଂ ଦୃଶ୍ୟମାନ ହେଉନଥିବା ପାର୍ଟିସନଗୁଡ଼ିକ ସମେତ, ପୂର୍ବରୁ ଥିବା ସମସ୍ତ ପାର୍ଟିସନକୁ କାଢ଼ି ଦିଆଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="770015031906360009">ଗ୍ରୀକ୍</translation>
@@ -520,6 +628,7 @@
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7730494089396812859">କ୍ଲାଉଡ୍‌ ବ୍ୟାକ୍‍ଅପ୍‌ ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
 <translation id="7748626145866214022">ଆକ୍ସନ୍‌ ବାର୍‌ରେ ଅଧିକ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି ଆକ୍ସନ ବାର୍‌କୁ ଫୋକସ୍‌ କରିବାକୁ Alt + A ଦବାନ୍ତୁ।</translation>
+<translation id="7760449188139285140">ଚାଇନିଜ୍ ୟୁବି</translation>
 <translation id="7765158879357617694">ନିଅନ୍ତୁ</translation>
 <translation id="7774365994322694683">Bird</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"କୁ ଅଫ୍‍ଲାଇନ୍‍‍ରେ ସେଭ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ନିଶ୍ଚିତ ରୂପେ ଅତିରିକ୍ତ <ph name="TOTAL_FILE_SIZE" />ର ସ୍ଥାନ ଖାଲି କରିବାକୁ ହେବ:<ph name="MARKUP_1" />
@@ -529,6 +638,8 @@
 <translation id="7799329977874311193">HTML ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
+<translation id="7806708061868529807">ହିବ୍ରୁ</translation>
+<translation id="78104721049218340">କେଡମାନୀ କୀବୋର୍ଡ ସହ ଥାଇ</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" />ଟି ମିଳିଛି।
     <ph name="LINE_BREAK1" />
    Google ଡ୍ରାଇଭ୍‌ ଆପଣଙ୍କ ପାଇଁ ସଂରକ୍ଷିତ ଥିବା ସ୍ଥିରୀକୃତ ଅଂଶ ପର୍ଯ୍ୟାପ୍ତ ନୁହେଁ। ଅତିରିକ୍ତ <ph name="FILE_SIZE" /> ଆବଶ୍ୟକ ଅଟେ।
@@ -539,7 +650,9 @@
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7853966320808728790">ଫ୍ରେଞ୍ଚ BÉPO</translation>
 <translation id="7864662577698025113">ନୂଆ ସେବା ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="7868774406711971383">ପୋଲିଶ୍</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />ରେ ସେଭ୍ କରିପାରିବ ନାହିଁ। ସମସ୍ତ ଏଡ଼ିଟ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ ଫୋଲ୍ଡର୍‌ର <ph name="DOWNLOADS_FOLDER" />ରେ ସେଭ୍‌ କରାଯିବ।</translation>
+<translation id="7874321682039004450">ଫିଲିପିନୋ</translation>
 <translation id="7881969471599061635">ଉପଶୀର୍ଷକ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="78946041517601018">ସେୟାର୍ ହୋଇଥିବା ଡ୍ରାଇଭ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="7908793776359722643">ଏକ ପାର୍ଟିସନକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -548,6 +661,8 @@
 <translation id="7943385054491506837">US କୋଲ୍‌ମାର୍କ</translation>
 <translation id="7953739707111622108">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌କୁ ଚିହ୍ନଟ କରାଯାଇପାରିନଥିଲା।</translation>
 <translation id="7969525169268594403">ସ୍ଲୋଭେନିଆନ୍</translation>
+<translation id="7972920761225148017">ଫରାସୀ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
+<translation id="7980421588063892270">କୋଲମାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="7982283708762922719">ଉଚ୍ଚତା</translation>
 <translation id="8008366997883261463">ଶ୍ୱାନ</translation>
 <translation id="8028993641010258682">ଆକାର</translation>
@@ -560,18 +675,21 @@
 <translation id="8079530767338315840">ପୁନର୍ବାର କରନ୍ତୁ</translation>
 <translation id="8106045200081704138">ମୋ ସହିତ ସେୟାର୍‌ କରାଯାଇଛି</translation>
 <translation id="8116072619078571545">ଥଣ୍ଡା ପାଣି</translation>
+<translation id="8128733386027980860">ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ଆପଣଙ୍କ ସହ ସେୟାର୍ ହୋଇଛି। ଆପଣଙ୍କ ପାଖରେ ଏହା ନଥିବାରୁ ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିପାରିବେ ନାହିଁ।</translation>
 <translation id="8151638057146502721">କନ୍‍ଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="8153607920959057464">ଏହି ଫାଇଲ୍‌ ପ୍ରଦର୍ଶିତ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="8154842056504218462">ସବୁ ବଛାଯାଇଛି।</translation>
 <translation id="8157684860301034423">ଆପ୍ ସୂଚନାଗୁଡ଼ିକୁ ପୁନରୁଦ୍ଧାର କରିହେଲାନାହିଁ।</translation>
 <translation id="8157939133946352716">7x5</translation>
+<translation id="8175731104491895765">ଫରାସୀ (ବେଲଜିୟମ୍)</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8193175696669055101">ଡିଭାଇସ୍‍ର ମଡେଲ୍</translation>
 <translation id="8208580316430297579">କଳାକୃତି</translation>
 <translation id="8223479393428528563">ଅଫ୍‍ଲାଇନ୍‍‍ରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ, ଅନ୍‍ଲାଇନ୍‍‍ରେ ଫେରି ଆସନ୍ତୁ, ଫାଇଲ୍‍ଗୁଡ଼ିକ ଉପରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ <ph name="OFFLINE_CHECKBOX_NAME" /> ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8249296373107784235">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8261506727792406068">ବିଲୋପ</translation>
+<translation id="8261561378965667560">ଚାଇନିଜ୍ ଆରେ</translation>
 <translation id="8269755669432358899">ଫାଇଲ୍ ମତାମତ ପ୍ୟାନେଲ୍‍ଗୁଡ଼ିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="8280151743281770066">ଆରମେନିଆନ୍ ଫୋନେଟିକ୍</translation>
 <translation id="8294431847097064396">ଉତ୍ସ</translation>
@@ -580,43 +698,59 @@
 <translation id="8312871300878166382">ଫୋଲ୍ଡର୍‌ରେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8329978297633540474">କେବଳ ଟେକ୍ସଟ୍</translation>
 <translation id="8335587457941836791">ସେଲ୍ଫରୁ ଅନପିନ୍ କରନ୍ତୁ</translation>
+<translation id="8335837413233998004">ବେଲାରୁସିଆନ୍</translation>
 <translation id="8336153091935557858">ଗତକାଲି <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ସମାନ ନାମ ଥିବା ଗୋଟିଏ ଫାଇଲ୍ କିମ୍ବା ଡିରେକ୍ଟୋରୀ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି।</translation>
+<translation id="8372852072747894550">ଗ୍ରୀକ୍</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> କୁ</translation>
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">ଅବୈଧ ନାମ</translation>
+<translation id="8463494891489624050">ଭିଏତନାମିଜ୍ VIQR</translation>
 <translation id="8466234950814670489">ଟାର୍ ଆରକାଇଭ୍</translation>
 <translation id="8475647382427415476">Google ଡ୍ରାଇଭ୍ ଏହିକ୍ଷଣି "<ph name="FILENAME" />"କୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ। Google ଡ୍ରାଇଭ୍ ପୁଣି ପରେ ଚେଷ୍ଟା କରିବ।</translation>
 <translation id="8477649328507734757">ସ୍ପିନ୍‌</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
+<translation id="853494022971700746">ଫରାସୀ (ଫ୍ରାନ୍ସ)</translation>
+<translation id="8545476925160229291">ଇଂରାଜୀ (US)</translation>
+<translation id="8549186985808798022">ଇଟାଲୀୟ</translation>
 <translation id="8551494947769799688">ଲାଟଭିଆନ୍</translation>
+<translation id="8560515948038859357">କାଣ୍ଟୋନିଜ୍</translation>
 <translation id="8561206103590473338">ହାତୀ</translation>
 <translation id="8569764466147087991">ଖୋଲିବାକୁ ଏକ ଫାଇଲ୍‌ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="8577897833047451336">କ୍ରୋଏସୀୟ</translation>
+<translation id="8578308463707544055">ଇନ୍ଦୋନେସୀୟ</translation>
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍‌ ସିଙ୍କ୍‌ ହେଉଛି...</translation>
 <translation id="8600173386174225982">ଫାଇଲ୍‌ ତାଲିକାକୁ ଥମ୍ବନେଲ୍ ଭ୍ୟୁରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="8601932370724196034">Crostini ଛବି ଫାଇଲ୍</translation>
+<translation id="8609695766746872526">ଆଇସଲାଣ୍ଡିକ୍</translation>
 <translation id="8669949407341943408">ଘୁଞ୍ଚୁଛି …</translation>
 <translation id="8698464937041809063">Google ଡ୍ରଇଂ</translation>
+<translation id="8713112442029511308">ମାଲଟିଜ୍</translation>
 <translation id="8714406895390098252">ସାଇକେଲ୍</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ବଛାଯାଇଛି।</translation>
 <translation id="872537912056138402">କ୍ରୋଏସିଆନ୍</translation>
 <translation id="8775404590947523323">ଆପଣ କରିଥିବା ଏଡିଟ୍‌ଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ସେଭ୍‌ କରାଯାଇଛି।<ph name="BREAKS" />ମୂଳ ଛବିର କପି ରଖିବାକୁ, "ଓଭର୍‌ରାଇଟ୍‍ ଓରିଜିନାଲ୍‌"କୁ ଅନ୍‌ଚେକ୍‌ କରନ୍ତୁ</translation>
 <translation id="8808686172382650546">କ୍ୟାଟ୍‌</translation>
 <translation id="8810671769985673465">ଜିପ୍ ହେବା ବିଫଳ ହେଲା, ଆଇଟମ୍ ବିଦ୍ୟମାନ ଅଛି: "<ph name="FILE_NAME" />"</translation>
+<translation id="8813284582615685103">ସ୍ପେନୀୟ (ସ୍ପେନ୍)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />'ର ସଦସ୍ୟମାନେ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକର କପିକୁ ଆକ୍ସେସ୍ ପାଇପାରିବେ।</translation>
+<translation id="8857149712089373752">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ନେପାଳୀ</translation>
 <translation id="8860454412039442620">Excel ସ୍ପ୍ରେଡ୍‍ସିଟ୍</translation>
+<translation id="8866284467018526531">ଆରବିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
 <translation id="8965697826696209160">ଯଥେଷ୍ଟ ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="8997962250644902079">ଚାଇନିଜ୍ (ପାରମ୍ପାରିକ) ପିନୟିନ୍</translation>
 <translation id="9017798300203431059">ରସିଆନ୍ (ଫୋନେଟିକ୍)</translation>
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="9035012421917565900">ଆଇଟମ୍‌କୁ <ph name="DESTINATION_NAME" />'କୁ ଫେରାଇ ନିଆଯାଇପାରିଲା ନାହିଁ, ତେଣୁ ଏହି କାର୍ଯ୍ୟକୁ ଆପଣ ପୂର୍ବବତ୍‍ କରିପାରିବେ ନାହିଁ।</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ଫାଇଲ୍ ନାମ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଏକ ଭିନ୍ନ ନାମ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9064939804718829769">ସ୍ଥାନାନ୍ତର ହେଉଛି…</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
+<translation id="908378762078012445">ଫୋନେଟିକ୍ AATSEEL କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="9099674669267916096">ପୃଷ୍ଠା ସଂଖ୍ୟା</translation>
 <translation id="9110990317705400362">ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌କୁ ସୁରକ୍ଷିତ କରିବାକୁ ଆମେ ନିରିବିଚ୍ଛିନ୍ନ ଭାବରେ ଉପାୟ ଖୋଜୁଛୁ। ପୂର୍ବରୁ, ଯେକୌଣସି ୱେବ୍‌ସାଇଟ୍‍ ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌ରେ ଗୋଟିଏ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିବାକୁ ଆପଣଙ୍କୁ ସଙ୍କେତ ଦେଇଥିଲା। Google Chromeର ନବୀନତମ ସଂସ୍କରଣରେ, ଆପଣଙ୍କୁ ଏକ୍ସଟେନ୍‍ସନ୍‍ ପୃଷ୍ଠା ମାଧ୍ୟମରେ ଏହି ଏକ୍ସଟେନ୍‍ସନ୍‌କୁ ଯୋଗ କରି Chromeକୁ ସ୍ପଷ୍ଟ ଭାବରେ କହିବାକୁ ପଡ଼ିବ ଯେ ଆପଣ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌‍ଗୁଡ଼ିକୁ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବାକୁ ଚାହୁଁଛନ୍ତି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
@@ -626,8 +760,12 @@
 <translation id="9131598836763251128">ଏକ କିମ୍ବା ଏକାଧିକ ଫାଇଲ୍‌ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="9133055936679483811">ଜିପ୍ କରିବା ବିଫଳ ହୋଇଛି। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9134524245363717059">ଏହି ଫାଇଲ୍ Macintosh ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରି ଏକ କମ୍ପ୍ୟୁଟର୍ ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା .ସୁସଙ୍ଗତ ନୁହେଁ। ଦୟାକରି ଗୋଟିଏ ଉପଯୁକ୍ତ ପ୍ରତିସ୍ଥାପନ ଆପ୍ Chrome ୱେବ୍ ଷ୍ଟୋର୍‌ରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
+<translation id="9144340019284012223">କାଟାଲାନ୍</translation>
 <translation id="9148058034647219655">ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="9154418932169119429">ଏହି ଛବି ଅଫ୍‍ଲାଇନ୍‍‍ରେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="9172592259078059678">ଗୁଜୁରାଟୀ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="9173120999827300720">ଆନ୍ତର୍ଜାତୀୟ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="9189836632794948435">କାଜାଖ୍</translation>
 <translation id="9213073329713032541">ସଫଳତାପୂର୍ବକ ଇନ୍‌ଷ୍ଟଲେସନ୍ ଆରମ୍ଭ ହେଲା।</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">ଲୁନାର୍</translation>

@@ -128,7 +128,7 @@
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fitxers seleccionats</translation>
-<translation id="2389832672041313158">Birmà (Birmània)</translation>
+<translation id="2389832672041313158">Birmà (Myanmar)</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> disponibles</translation>
 <translation id="2425665904502185219">Mida total dels fitxers</translation>
 <translation id="2428749644083375155">S'estan copiant <ph name="NUMBER_OF_ITEMS" /> elements a la carpeta <ph name="FOLDER_NAME" /></translation>
@@ -153,7 +153,7 @@
 <translation id="2638942478653899953">No s'ha pogut accedir a Google Drive. <ph name="BEGIN_LINK" />Tanqueu la sessió<ph name="END_LINK" /> i torneu-la a iniciar.</translation>
 <translation id="2649120831653069427">Peix arc iris</translation>
 <translation id="2661146741306740526">16 x 9</translation>
-<translation id="2663066752008346276">Birmà (Birmània) amb teclat myansan</translation>
+<translation id="2663066752008346276">Birmà (Myanmar) amb teclat myansan</translation>
 <translation id="2664412712123763093">Ubicació del fitxer</translation>
 <translation id="2672394958563893062">S'ha produït un error. Feu clic per reiniciar des del principi.</translation>
 <translation id="2676946222714718093">En reproducció</translation>
@@ -299,7 +299,7 @@
 <translation id="4325128273762811722">Eslovè</translation>
 <translation id="4326192123064055915">Cafè</translation>
 <translation id="4336032328163998280">L'operació de còpia ha fallat. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="4348495354623233847">Kurd central amb teclat basat en l'àrab</translation>
+<translation id="4348495354623233847">Kurd sorani amb teclat basat en l'àrab</translation>
 <translation id="4363958938297989186">Rus amb teclat fonètic</translation>
 <translation id="4364327530094270451">Meló</translation>
 <translation id="4372884569765913867">1 x 1</translation>
@@ -423,7 +423,7 @@
 <translation id="5358764674931277">Fotogrames per segon</translation>
 <translation id="5368191757080475556">Comparteix la carpeta amb Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
-<translation id="541890217011173530">Kurd central amb teclat basat en l'anglès</translation>
+<translation id="541890217011173530">Kurd sorani amb teclat basat en l'anglès</translation>
 <translation id="5428105026674456456">Espanyol</translation>
 <translation id="5438282218546237410">No hi ha cap resultat per a <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">La contrasenya no és vàlida</translation>
@@ -771,7 +771,7 @@
 <translation id="9154418932169119429">Aquesta imatge no està disponible sense connexió.</translation>
 <translation id="9172592259078059678">Gujarati (transliteració)</translation>
 <translation id="9173120999827300720">Anglès (EUA) amb teclat internacional</translation>
-<translation id="9189836632794948435">kazakh</translation>
+<translation id="9189836632794948435">Kazakh</translation>
 <translation id="9213073329713032541">La instal·lació s'ha iniciat.</translation>
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="9219908252191632183">Paisatge lunar</translation>

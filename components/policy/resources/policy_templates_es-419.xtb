@@ -42,7 +42,7 @@
 <translation id="1040446814317236570">Habilitar la eliminación de URL de PAC (para https://)</translation>
 <translation id="1041719059374171202">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar JavaScript.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="1046484220783400299">Habilitar funciones de Web Platform, que dejaron de estar disponibles, durante un período limitado</translation>
@@ -88,9 +88,9 @@
       Permite determinar el tiempo que debe transcurrir antes de que se muestre el protector de pantalla en la página de inicio de sesión para dispositivos que se encuentren en el modo de venta.
 
       El valor de la política debe especificarse en milisegundos.</translation>
-<translation id="1144540226829648811">Especifica el canal de publicaciones al que debe conectarse este dispositivo.
+<translation id="1144540226829648811">Especifica el canal de versiones al que debe asociarse de forma exclusiva este dispositivo.
 
-      <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene un efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falso.</translation>
+      <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
 <translation id="1151353063931113432">Permitir imágenes en estos sitios</translation>
 <translation id="1160479894929412407">Permitir el protocolo QUIC</translation>
 <translation id="1160939557934457296">Inhabilita continuar desde la página de advertencia de Navegación segura.</translation>
@@ -136,7 +136,7 @@
 <translation id="1204263402976895730">Impresoras empresariales habilitadas</translation>
 <translation id="1209065772997672966">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden abrir ventanas emergentes.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="120937472976628837">Envía información de los ventiladores</translation>
@@ -198,9 +198,9 @@
       restricciones en los orígenes no seguros</translation>
 <translation id="1308526987406924874">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir permiso a los usuarios para acceder a un puerto en serie.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
-      Para los patrones de URL que no coinciden con la política <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (si hay una coincidencia), tendrá prioridad <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se establece) o la configuración personal de los usuarios, en ese orden.
+      En el caso de patrones de URL que no coincidan con la política <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (si hay alguna coincidencia), tendrá prioridad <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se establece) o la configuración personal de los usuarios, en ese orden.
 
       Los patrones de URL no pueden entrar en conflicto con <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -251,7 +251,7 @@
 <translation id="1434300053894025056">Inhabilitar el corrector ortográfico</translation>
 <translation id="1434743866147056474">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden mostrar imágenes.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
        Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
 
@@ -535,9 +535,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1736269219679256369">Permitir continuar desde la página de advertencia de SSL</translation>
 <translation id="174765717426930019">Permitir que se abran todas ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente, a menos que esta página inhabilite esta interacción de forma explícita </translation>
 <translation id="1750315445671978749">Bloquear todas las descargas</translation>
-<translation id="1751429117283165017">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedirle a los usuarios acceso de escritura a archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
+<translation id="1751429117283165017">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Los patrones de URL no pueden entrar en conflicto con <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -731,9 +731,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si la inhabilitas, los dispositivos inscritos no informarán sobre las estadísticas de hardware.</translation>
 <translation id="2040479044912658454">Modo de rasterización de impresiones</translation>
-<translation id="2042513383871755994">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedirle a los usuarios, mediante la API de File System, acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
+<translation id="2042513383871755994">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir a los usuarios acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host mediante la API de File System.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Los patrones de URL no pueden entrar en conflicto con <ph name="FILE_SYSTEM_READ_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -1448,9 +1448,9 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
           Esta política solo se respeta si la política "DefaultSearchProviderEnabled" está habilitada.</translation>
 <translation id="3049115011983576556">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedir permiso a los usuarios para acceder a un puerto en serie.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
-      Para los patrones de URL que no coinciden con la política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si hay una coincidencia), tendrá prioridad <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se establece) o la configuración personal de los usuarios, en ese orden.
+      En el caso de patrones de URL que no coincidan con la política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si hay alguna coincidencia), tendrá prioridad <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se establece) o la configuración personal de los usuarios, en ese orden.
 
       Los patrones de URL no deben entrar en conflicto con <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -1488,7 +1488,7 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
 <translation id="316778957754360075">Esta opción se eliminó a partir de la versión 29 de <ph name="PRODUCT_NAME" />. La forma recomendada de configurar colecciones de aplicaciones o extensiones alojadas por una organización es incluir el sitio que aloja los paquetes CRX en la política ExtensionInstallSources y colocar vínculos de descarga directa a los paquetes en una página web. Se puede crear un selector para esa página web con la política ExtensionInstallForcelist.</translation>
 <translation id="3168303368727724798">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios pueden pedir a los usuarios permiso para acceder a un dispositivo USB.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Los patrones de URL no deben entrar en conflicto con <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -1525,7 +1525,7 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
 <translation id="3205825995289802549">Maximizar la primera ventana del navegador en la primera ejecución</translation>
 <translation id="3206959584699016689">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden acceder a sensores, como los de movimiento o luz.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Si el mismo patrón de URL aparece en esta política y en la política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, prevalecerá esta última y no se podrá acceder a los sensores de movimiento o luz.
 
@@ -1889,11 +1889,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="3727675072430693164">Si habilitas la política, los dispositivos inscritos informarán sobre las estadísticas de hardware de los componentes de SoC.
 
       Si la inhabilitas o no la estableces, los dispositivos inscritos no informarán sobre estas estadísticas.</translation>
-<translation id="3731968520685217674">Si estableces la política, podrás especificar el comportamiento del sistema al iniciar el navegador. Si desactivas esta configuración, equivale a no establecerla, dado que debe especificarse el comportamiento de <ph name="PRODUCT_NAME" /> al iniciarse.
+<translation id="3731968520685217674">Si estableces la política, podrás especificar el comportamiento del sistema al iniciar el navegador. Desactivar esta configuración equivale a no establecerla, dado que no es posible dejar sin especificar el comportamiento de <ph name="PRODUCT_NAME" /> al iniciarse.
 
       Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios podrán cambiarla.
 
-      Si estableces esta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, se desactivarán algunas opciones de configuración específicas de las sesiones o que realizan acciones al salir del navegador, como borrar cookies específicas de la sesión o datos de navegación al salir del navegador.
+      Si estableces esta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, se desactivarán algunas opciones de configuración asociadas a las sesiones o que realizan acciones al salir del navegador, como borrar cookies específicas de la sesión o los datos de navegación al salir del navegador.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="3736879847913515635">Habilitar la opción para agregar una persona en el Administrador de usuarios</translation>
@@ -2137,11 +2137,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando se muestra un diálogo de protocolo externo para omitir futuros mensajes de confirmación</translation>
 <translation id="402759845255257575">No permitir que los sitios ejecuten JavaScript.</translation>
 <translation id="4027608872760987929">Habilitar el proveedor de búsqueda predeterminado</translation>
-<translation id="4041577849977347218">Si habilitas la política o no la estableces, se enviarán los archivos descargados para que la Navegación segura los analice, incluso cuando provienen de una fuente de confianza.
+<translation id="4041577849977347218">Si habilitas la política o no la estableces, se enviarán los archivos descargados para que la Navegación segura los analice, incluso cuando provengan de una fuente de confianza.
 
-      Si inhabilitas la política, no se enviarán los archivos descargados para que la Navegación segura los analice cuando provienen de una fuente de confianza.
+      Si inhabilitas la política, no se enviarán los archivos descargados para que la Navegación segura los analice cuando provengan de una fuente de confianza.
 
-      Se aplican estas restricciones a las descargas que se inician desde el contenido de páginas web o mediante la opción "Descargar vínculo" del menú. No se aplican estas restricciones a la acción de descargar o guardar la página que se muestra actualmente ni a la opción para guardar como PDF desde las opciones de impresión.
+      Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o mediante la opción de descarga de vínculo del menú. No se aplican a las acciones de descargar o guardar la página que se muestra actualmente ni a la de guardar como PDF desde las opciones de impresión.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="4056910949759281379">Inhabilitar el protocolo SPDY</translation>
@@ -2184,7 +2184,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Esta política solo afecta a los usuarios que realizan la autenticación con SAML.</translation>
 <translation id="4105989332710272578">Inhabilitar la aplicación del Certificado de transparencia para una lista de URL</translation>
-<translation id="4114059938441379876">Si estableces la política, se establecerá la URL para que los usuarios cambien sus contraseñas en el caso de que vean una advertencia en el navegador. El servicio de protección de contraseñas envía a los usuarios a la URL (solo protocolos HTTP y HTTPS) que designes a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con sal de la nueva contraseña en esta página de cambio de contraseña, asegúrate de que la página cumpla con estos lineamientos ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
+<translation id="4114059938441379876">Si estableces la política, se configurará la URL para que los usuarios cambien su contraseña cuando vean una advertencia en el navegador. El servicio de protección de contraseñas envíará a los usuarios a la URL (solo protocolos HTTP y HTTPS) que designes a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con sal de la nueva contraseña en esta página de cambio de contraseña, asegúrate de que la página cumpla con estos lineamientos ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
       Si desactivas la política o no la estableces, el servicio enviará a los usuarios a https://myaccount.google.com para que cambien su contraseña.
 
@@ -2204,7 +2204,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Esta política no definirá las páginas que se abren al iniciar el navegador. Esa tarea está controlada por las políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Esta política afecta tanto a la página principal como a la página de inicio (si respectivamente están configuradas para abrir la página Nueva pestaña).
 
-      Se recomienda proporcionar una URL totalmente canónica. Caso contrario, <ph name="PRODUCT_NAME" /> se establecerá como https:// de forma predeterminada.
+      Se recomienda proporcionar una URL totalmente canónica. De lo contrario, <ph name="PRODUCT_NAME" /> se establecerá como https:// de forma predeterminada.
 
       Si no estableces la política o la dejas vacía, se utilizará la página Nueva pestaña predeterminada.
 
@@ -2223,7 +2223,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
           Si estableces esta política, los usuarios no podrán cambiar ni anular la configuración.
 
           Si no la estableces, los comentarios por voz estarán inicialmente inhabilitados en la pantalla de acceso, pero el usuario podrá habilitarlos en cualquier momento.</translation>
-<translation id="4175667688338118889">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si tienen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se está reutilizando la contraseña.
+<translation id="4175667688338118889">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
 
       Si inhabilitas la política o no la estableces, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
 
@@ -2326,7 +2326,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4382413175336720282">Inhabilita la verificación de URL en tiempo real</translation>
 <translation id="4387922553629365459">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden abrir ventanas emergentes.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4389073105055031853">Permitir que los usuarios administren todos los certificados</translation>
@@ -2381,9 +2381,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
 <translation id="4474167089968829729">Habilitar el guardado de contraseñas en el administrador de contraseñas</translation>
 <translation id="4476769083125004742">Si esta política se establece como <ph name="BLOCK_GEOLOCATION_SETTING" />, las apps de Android no podrán acceder a la información de la ubicación. Si estableces esta política en cualquier valor o no la estableces, se le pedirá al usuario que autorice la app de Android que quiera acceder a la información de ubicación.</translation>
-<translation id="4479671363221255277">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedirle a los usuarios, mediante la API de File System, acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
+<translation id="4479671363221255277">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedir a los usuarios acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host mediante la API de File System.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Los patrones de URL no deben entrar en conflicto con <ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -2579,11 +2579,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4834526953114077364">Elimina los usuarios que más tiempo hace que no se utilizan y que no accedieron en los últimos tres meses hasta que se libere suficiente espacio.</translation>
 <translation id="483544442646753291">Controla la experiencia del usuario de las funciones inhabilitadas que se mencionan en <ph name="SYSTEM_FEATURES_DISABLE_LIST" />.
 
-      Si estableces esta política como "blocked", las funciones inhabilitadas estarán inutilizables, pero los usuarios aún podrán verlas.
+      Si estableces esta política como bloqueada, las funciones inhabilitadas estarán inutilizables, pero los usuarios aún podrán verlas.
 
-      Si la estableces como "hidden", las funciones inhabilitadas estarán utilizables, pero los usuarios no podrán verlas.
+      Si la estableces como oculta, las funciones inhabilitadas estarán inutilizables y los usuarios no podrán verlas.
 
-      Si no la estableces o esta tiene un valor no válido, el modo de inhabilitación de las funciones del sistema estará bloqueado.</translation>
+      Si no la estableces o tiene un valor no válido, el modo de inhabilitación de las funciones del sistema estará bloqueado.</translation>
 <translation id="4835470005923546373">Inhabilitar el modo de impresión de los gráficos de fondo de forma predeterminada</translation>
 <translation id="4835622243021053389">Habilitar la autenticación NTLMv2</translation>
 <translation id="4855636880814771207">Si habilitas la política o no la estableces, los usuarios podrán activar y desactivar la conexión Bluetooth.
@@ -2603,11 +2603,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si la inhabilitas o no la estableces, la inscripción en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y no se bloqueará el proceso de ejecución de <ph name="PRODUCT_NAME" /> si esta falla.
 
-      Esta política se usa en máquinas de escritorio con inscripción a las políticas de nube. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+      Esta política se usa en máquinas de escritorio con inscripción en las políticas de nube. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="4887274746092315609">Habilita una página para cambiar la contraseña dentro de la sesión para usuarios de SAML</translation>
-<translation id="4890453377345554695">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedirle a los usuarios acceso de escritura a archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
+<translation id="4890453377345554695">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Los patrones de URL no deben entrar en conflicto con <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -2748,7 +2748,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5087424855041813182">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden mostrar notificaciones.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5090209345759901501">Extender la configuración del contenido Flash a todo el contenido</translation>
@@ -3016,9 +3016,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
           Si no la estableces, la función de portapapeles compartido estará habilitada de forma predeterminada.
 
           Los administradores son los que deben establecer las políticas en todas las plataformas que quieran. Te recomendamos que establezcas un valor para esta política en todas las plataformas.</translation>
-<translation id="5389798680516458665">Si estableces la política, podrás establecer una lista de patrones de URL que especifiquen los sitios que pueden mostrar imágenes.
+<translation id="5389798680516458665">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden mostrar imágenes.
 
-      Si no la estableces, se aplicará <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
 
@@ -3167,9 +3167,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
           Si inhabilitas esta configuración, el administrador de contraseñas no permitirá mostrar contraseñas guardadas en texto claro en la ventana del administrador de contraseñas.
 
           Si habilitas o no estableces esta política, los usuarios podrán ver las contraseñas en texto claro en el administrador de contraseñas.</translation>
-<translation id="5619498195290770056">Si estableces la política, podrás crear una lista de patrones de URL que especifiquen los sitios que no pueden establecer cookies.
+<translation id="5619498195290770056">Si estableces la política, podrás crear una lista de patrones de URL que especifiquen los sitios que no pueden configurar cookies.
 
-      Si no la estableces, se aplicará la política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (si está establecida) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Si bien no prevalece ninguna política específica, consulta <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" />. Los patrones de URL entre estas 3 políticas no deben entrar en conflicto.
 
@@ -3251,7 +3251,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Nota: El factor de escala debe ser 100% o más.</translation>
 <translation id="5738892881453299672">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden acceder a sensores, como los de movimiento o luz.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Si el mismo patrón de URL aparece en esta política y en la política <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, prevalecerá esta última y no se podrá acceder a los sensores de movimiento o luz.
 
@@ -3591,9 +3591,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6282524907402492171">Muestra las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir o rechazar la captura de audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
-<translation id="6300871921951390976">Si estableces esta política como verdadera, los usuarios solo podrán cambiar el canal de versiones del dispositivo. Si la estableces como falsa o no la estableces, los usuarios no podrán cambiar el canal.
+<translation id="6300871921951390976">Los usuarios solo podrán cambiar el canal de versiones del dispositivo si estableces esta política como verdadera. Si la estableces como falsa o no la estableces, los usuarios no podrán cambiar el canal.
 
-      <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene un efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falso.</translation>
+      <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
 <translation id="6310223829319187614">Habilitar la opción de autocompletar el nombre de dominio durante el accceso del usuario</translation>
 <translation id="631081324835911099">Fuerza el cierre de sesión del usuario cuando el token de autenticación de la cuenta principal deja de ser válido.
         Esta política puede proteger al usuario del acceso a contenido restringido en propiedades web de Google.
@@ -4117,9 +4117,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no estableces la política, los usuarios podrán cambiar esta configuración.
 
       Nota: Se mejorará la compatibilidad del aislamiento de sitios en Android, pero actualmente es posible que haya problemas de rendimiento. Esta política solo se aplica a Chrome cuando se ejecuta en dispositivos con Android que tengan exclusivamente más de 1 GB de RAM. Para aplicar la política en plataformas que no tengan Android, utiliza <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
-<translation id="6978404102280820831">A menos que establezcas la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> para restablecer las URL de sesiones anteriores de forma definitiva, la configuración <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> te permitirá crear una lista de patrones de URL donde se especifiquen los sitios que pueden y no pueden establecer cookies para una sesión determinada.
+<translation id="6978404102280820831">A menos que establezcas la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> para restablecer las URL de sesiones anteriores de forma definitiva, la configuración de <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> te permitirá crear una lista de patrones de URL donde se especifiquen los sitios que pueden y no pueden configurar cookies para una sesión determinada.
 
-      Si no estableces la política, se aplicará la política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (si está establecida) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario. Para las URL que no estén contempladas en los patrones especificados, también se utilizará la configuración predeterminada.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario. En el caso de URL que no estén contempladas en los patrones especificados, también se utilizará la configuración predeterminada.
 
       Si <ph name="PRODUCT_NAME" /> se ejecuta en segundo plano, es posible que la sesión permanezca activa hasta que el usuario cierre por completo el navegador (y no solo cierre la última ventana). Para obtener información sobre cómo configurar este comportamiento, consulta <ph name="BACKGROUND_MODE_ENABLED_POLICY_NAME" />.
 
@@ -4135,7 +4135,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6986172482189158664">Configuración de la duración de los datos de navegación</translation>
 <translation id="6986838929449128437">Esta política dejó de estar disponible; usa <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> en su lugar.
 
-      Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si tienen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se está reutilizando la contraseña.
+      Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
 
       Si inhabilitas la política o no la estableces, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
 
@@ -4209,7 +4209,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7086720321892395256">Controla las políticas de dispositivo y usuario para la función de la pantalla de privacidad.</translation>
 <translation id="7090668780328470271">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios no pueden pedir a los usuarios permiso para acceder a un dispositivo USB.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Los patrones de URL no pueden entrar en conflicto con <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
@@ -4237,7 +4237,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7127892035367404455">Reversión a la versión objetivo</translation>
 <translation id="7129052644387688634">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden mostrar notificaciones.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="712963038874313213">Proporciona un playbook de Ansible que debe ejecutarse en el contenedor predeterminado de Crostini.
@@ -4456,9 +4456,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la predicción de red, pero el usuario podrá cambiarla.</translation>
 <translation id="7415655595380180976">Esta política dejó de estar disponible. Usa la política "<ph name="URL_ALLOWLIST_POLICY_NAME" />" en su lugar.
 
-      Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de URL bloqueadas. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces "*" en la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes. Además, esta política puede permitir el acceso a una lista limitada de URL y excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, mediante el formato que se especifica en la siguiente dirección ( https://www.chromium.org/administrators/url-blacklist-filter-format ). El filtro más específico determina si una URL está bloqueada o habilitada. La lista de elementos permitidos tiene prioridad sobre la de elementos bloqueados, y se limitará a 1,000 entradas.
+      Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de URL bloqueadas. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces "*" en la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URL. Úsala a fin de abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, mediante el formato que se indica en la siguiente dirección ( https://www.chromium.org/administrators/url-blacklist-filter-format ). El filtro más específico determina si una URL está bloqueada o habilitada. La lista de elementos permitidos tiene prioridad sobre la de elementos bloqueados. Esta política se limitará a 1,000 entradas
 
-      Esta política también puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista de elementos permitidos, p. ej., "tel:" o "ssh:".
+      y puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista correspondiente, p. ej., "tel:" o "ssh:".
 
       Si no estableces la política, no se permitirán excepciones.
 
@@ -5352,7 +5352,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8656110680728938054">Habilita Seleccionar para pronunciar</translation>
 <translation id="8661297125441579970">No permitir la migración de datos y ARC</translation>
 <translation id="8665314828727504286">Nivel de protección de la Navegación segura</translation>
-<translation id="8669313549017524373">Si estableces <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> como RestoreOnStartupIsURLs, se abrirán las URL de la lista que se determinen en <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />.
+<translation id="8669313549017524373">Si estableces <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> como RestoreOnStartupIsURLs, configurar <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> con una lista de URL determinará qué URL se abrirán.
 
       Si no la estableces, se abrirá la página Nueva pestaña al iniciar el navegador.
 
@@ -5479,7 +5479,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
        Nota: Esta política no se aplica al modo Incógnito. Obtén más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8831911834413504983">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden ejecutar JavaScript.
 
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
+      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8832829916385857156">La página Nueva pestaña mostrará tarjetas si hay contenido disponible</translation>
@@ -5575,9 +5575,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Para obtener más información sobre contextos seguros, consulta
       https://www.w3.org/TR/secure-contexts/
       </translation>
-<translation id="8940519618730206658">Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces "*" en la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes. Además, esta política puede permitir el acceso a una lista limitada de URL y excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, mediante el formato que se especifica en la siguiente dirección ( https://www.chromium.org/administrators/url-blacklist-filter-format ). El filtro más específico determina si una URL está bloqueada o habilitada. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, y se limitará a 1,000 entradas.
+<translation id="8940519618730206658">Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces "*" en la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URL. Úsala a fin de abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, mediante el formato que se indica en la siguiente dirección ( https://www.chromium.org/administrators/url-blacklist-filter-format ). El filtro más específico determina si una URL está bloqueada o habilitada. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, y se limitará a 1,000 entradas.
 
-      Esta política también puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista de elementos permitidos, p. ej., "tel:" o "ssh:".
+      Esta política también puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista correspondiente, p. ej., "tel:" o "ssh:".
 
       Si no estableces la política, no se permitirán excepciones a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 

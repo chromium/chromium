@@ -4966,7 +4966,7 @@
 <translation id="6785518634832172390">PIN은 12자리 이하여야 합니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787839852456839824">단축키</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}other{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}}</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}other{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}}</translation>
 <translation id="6788210894632713004">압축해제된 확장 프로그램</translation>
 <translation id="6789592661892473991">수평 분할</translation>
 <translation id="6790428901817661496">재생</translation>

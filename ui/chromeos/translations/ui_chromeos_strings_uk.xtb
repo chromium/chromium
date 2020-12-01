@@ -128,7 +128,7 @@
 <translation id="2377319039870049694">Список</translation>
 <translation id="2377590462528165447">Linux має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Вибрано файлів: <ph name="SELCTED_FILE_COUNT" /></translation>
-<translation id="2389832672041313158">Бірманська (М'янма)</translation>
+<translation id="2389832672041313158">Бірманська/м'янмська</translation>
 <translation id="240770291734945588">Доступно <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Загальний розмір файлу</translation>
 <translation id="2428749644083375155">Копіювання елементів (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
@@ -153,7 +153,7 @@
 <translation id="2638942478653899953">Диск Google недоступний. <ph name="BEGIN_LINK" />Вийдіть<ph name="END_LINK" /> і ввійдіть знову.</translation>
 <translation id="2649120831653069427">Золота рибка</translation>
 <translation id="2661146741306740526">16x9</translation>
-<translation id="2663066752008346276">Бірманська (М'янма), розкладка м'янсан</translation>
+<translation id="2663066752008346276">Бірманська/м'янмська, розкладка м'янсан</translation>
 <translation id="2664412712123763093">Місце розташування файлу</translation>
 <translation id="2672394958563893062">Сталася помилка. Натисніть, щоб знову запустити з початку.</translation>
 <translation id="2676946222714718093">Відтворюється на пристрої</translation>

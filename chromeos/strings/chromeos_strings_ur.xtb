@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1018656279737460067">منسوخ کردہ</translation>
+<translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
 <translation id="1071587090247825784">فائروال کا پتا چلا</translation>
 <translation id="1075811647922107217">صفحہ کا سائز</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> اس <ph name="DEVICE_TYPE" /> کا نظم کرتا ہے۔</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
 <translation id="1238612778414822719">‏HTTPS تاخیر</translation>
@@ -25,6 +27,7 @@
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
+<translation id="1743558184855585519">بیٹری کو حد تک پہنچ جانے کے بعد استعمال کردہ مانا جاتا ہے</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1930797645656624981">‏Chrome OS اندراج کے طریقہ کی سروس</translation>
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
@@ -42,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} کوشش باقی ہے}other{<ph name="ERROR_MESSAGE" /> {0} کوششیں باقی ہیں}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
@@ -98,6 +102,7 @@
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> چارج کیا گیا۔</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="5168185087976003268">بیٹری کی صحت</translation>
@@ -116,6 +121,7 @@
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">مرکز امداد میں مزید جانیں</translation>
+<translation id="5719918614880940190">‏اس سے CPU استعمال کی پیمائش ہوتی ہے اور یہ سبھی کورز کا مجموعہ ہے</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" />)</translation>
@@ -151,6 +157,7 @@
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
+<translation id="7441459999606975924">استعمال کے ساتھ بیٹریز کی استعداد کم ہوتی ہے</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
@@ -158,6 +165,7 @@
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7855434858642800953">اسکین کردہ فائل محفوظ ہو گئی!</translation>
+<translation id="7928373994957558460">فائل کا مقام دکھائیں</translation>
 <translation id="7936303884198020182">کوئی نام سرور نہیں ملا</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
@@ -170,6 +178,8 @@
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
 <translation id="8364946094152050673">نام سرورز خالی ہیں</translation>
+<translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
+<translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
 <translation id="8475690821716466388">‏WiFi نیٹ ورک کمزور پروٹوکول WEP PSK کے ساتھ محفوظ ہے</translation>
 <translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
 <translation id="871560550817059752">ناکام ہو گیا - سیاہی ختم ہو گئی</translation>

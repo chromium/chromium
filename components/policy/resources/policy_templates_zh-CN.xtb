@@ -128,6 +128,9 @@
 <translation id="1197437816436565375">您无法强制 Android 应用使用代理。一小部分代理设置已可供 Android 应用使用，此类应用可能会主动选择使用这些设置。有关详情，请参阅 <ph name="PROXY_MODE_POLICY_NAME" /> 政策。</translation>
 <translation id="1198183996903759302">如果此政策设为 True（或者 <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> 设为 False），网页会无法访问 WebGL API，而且插件会无法使用 Pepper 3D API。
       如果此政策设为 False 或未设置，网页可以使用 WebGL API，而且插件可以使用 Pepper 3D API，但浏览器的默认设置可能仍然要求在使用这些 API 前先传递命令行参数。</translation>
+<translation id="1199366379198964260">如果此政策已启用，系统会允许使用安全系数低的 PIN 码。安全系数低的 PIN 码的一些特征：由同一个数字构成 (1111)、数字以 1 为单位递增 (1234)、数字以 1 为单位递减 (4321)，以及常用的 PIN 码。如果此政策已停用，用户将无法设置安全系数低且易被猜中的 PIN 码。
+
+      默认情况下，如果系统认为 PIN 码的安全系数偏低，就会向用户显示警告（而非错误消息）。</translation>
 <translation id="1202216683470826356">在“新标签页”页面上显示卡片</translation>
 <translation id="1204263402976895730">已启用企业打印机</translation>
 <translation id="1209065772997672966">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以打开弹出式窗口。
@@ -387,6 +390,37 @@
 <translation id="1600340610556453828">如果此政策已停用，<ph name="PRODUCT_OS_NAME" />会关闭 Wi-Fi，而且用户无法更改相关设置。
 
       如果此政策已启用或未设置，系统会允许用户开启或关闭 Wi-Fi。</translation>
+<translation id="1601848091543601739">通过设置此政策，您可以控制设备闲置时的电源管理策略。
+
+      系统可执行以下四种闲置操作：
+
+      * 当设备闲置时长达到 <ph name="SCREEN_DIM_FIELD_NAME" /> 指定的值后，屏幕将变暗。
+
+      * 当设备闲置时长达到 <ph name="SCREEN_OFF_FIELD_NAME" /> 指定的值后，屏幕将关闭。
+
+      * 当设备闲置时长达到 <ph name="IDLE_WARNING_FIELD_NAME" /> 指定的值后，屏幕上将显示一个警告对话框。该警告消息旨在让用户知道系统将执行闲置操作，仅会在闲置操作是退出登录或关机时显示。
+
+      * 当设备闲置时长达到 <ph name="IDLE_FIELD_NAME" /> 指定的值后，系统将执行 <ph name="IDLE_ACTION_FIELD_NAME" /> 指定的操作。
+
+      对于上述各项操作，延迟时间均应以毫秒为单位指定，并且必须设为大于 0 的值才能触发相应操作。如果延迟时间设为 0，<ph name="PRODUCT_OS_NAME" />将不会执行相应操作。
+
+      对于上述各个延迟时间，如果您未设置时间值，系统会使用默认值。
+
+      <ph name="SCREEN_DIM_FIELD_NAME" /> 的值不得大于 <ph name="SCREEN_OFF_FIELD_NAME" /> 的值，否则会被强制修改。<ph name="SCREEN_OFF_FIELD_NAME" /> 和 <ph name="IDLE_WARNING_FIELD_NAME" /> 的值不得大于 <ph name="IDLE_FIELD_NAME" /> 的值，否则会被强制修改。
+
+      <ph name="IDLE_ACTION_FIELD_NAME" /> 可以是下列四种操作之一：
+
+      * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
+
+      * <ph name="IDLE_ACTION_ENUM_LOGOUT" />
+
+      * <ph name="IDLE_ACTION_ENUM_SHUTDOWN" />
+
+      * <ph name="IDLE_ACTION_ENUM_DO_NOTHING" />
+
+      如果 <ph name="IDLE_ACTION_FIELD_NAME" /> 未设置，系统将执行 <ph name="IDLE_ACTION_ENUM_SUSPEND" />。
+
+      注意：交流电源和电池各有对应的设置。</translation>
 <translation id="1606917441621112087">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 中停用内部 PDF 查看器，将 PDF 文件视为下载项，并允许用户使用默认应用打开 PDF 文件。
 
       如果此政策设为 False 或未设置，系统将会使用 PDF 插件打开 PDF 文件，除非用户停用了该插件。</translation>
@@ -651,6 +685,19 @@
           </translation>
 <translation id="2030905906517501646">默认搜索服务提供商关键字</translation>
 <translation id="203096360153626918">此政策对 Android 应用没有任何影响。即使此政策设为 <ph name="FALSE" />，这些应用也将能够进入全屏模式。</translation>
+<translation id="2032848225007871645">通过设置此政策，您可以控制哪些快速解锁模式可为锁定屏幕解锁。
+
+      若要：
+
+      * 允许使用所有快速解锁模式（包括日后会添加的模式），请使用 ["all"]。
+
+      * 仅允许使用 PIN 码解锁，请使用 ["PIN"]。
+
+      * 允许使用 PIN 码和指纹解锁，请使用 ["PIN", "FINGERPRINT"]。
+
+      如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式。
+
+      此政策已被弃用，请改用 <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
 <translation id="2036522553891755455">如果此政策已启用，共享文件发现功能（<ph name="PRODUCT_NAME" />的网络文件共享功能）会使用 <ph name="NETBIOS_PROTOCOL" />来搜寻网络上的共享文件。如果此政策已停用，共享文件发现功能将不会使用此协议来搜寻共享文件。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
@@ -1145,6 +1192,11 @@
 <translation id="2759224876420453487">控制多用户配置会话中的用户行为</translation>
 <translation id="2761483219396643566">使用电池供电时的闲置警告延迟时间</translation>
 <translation id="2769952903507981510">为远程访问主机配置所需的域名</translation>
+<translation id="2772955711376920612">如果此政策已启用，且 <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> 和 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> 均已设置，“用电高峰期切换电源”功能会保持开启状态（如果相应设备支持的话）。“用电高峰期切换电源”电源管理政策是一种节电政策，可在用电高峰期间尽可能少用交流电。您可分别为每个工作日设置“用电高峰期切换电源”模式的运行开始时间和结束时间。在您所设定的时段内，只要电池电量高于指定阈值，即使连接了交流电，设备也会仅使用电池来维持运行。待指定的结束时间过后，设备会使用交流电（如果已连接）来维持运行，但不会为电池充电。待指定的充电开始时间过后，设备会再次使用交流电来维持正常运行，并会为电池充电。
+
+      如果此政策已停用，“用电高峰期切换电源”功能会保持关闭状态。
+
+      如果此政策未设置，“用电高峰期切换电源”功能最初会处于关闭状态。用户无法更改相关设置。</translation>
 <translation id="2787173078141616821">报告有关 Android 状态的信息</translation>
 <translation id="2787774054174244402">如果此政策设为 True，用户将无法向外部存储设备写入内容。
 
@@ -2449,6 +2501,11 @@
 <translation id="4700190441681139987">不允许任何网站使用传感器</translation>
 <translation id="4703402283970867140">启用智能调暗模式，以最大限度地推迟屏幕变暗时间</translation>
 <translation id="4722122254122249791">为指定的来源启用网站隔离功能</translation>
+<translation id="4723122879352880315">此设置允许用户使用 <ph name="PRODUCT_OS_NAME" />登录凭据向通过 NTLM 身份验证机制提供安全保护的受管理代理验证身份。
+
+      如果此政策设为 False 或未设置，<ph name="PRODUCT_OS_NAME" />登录凭据将不会被用于网络身份验证。
+
+      如果此政策设为 True，<ph name="PRODUCT_OS_NAME" />登录凭据将会被用于向受管理的代理进行网络身份验证。如果采用 <ph name="PRODUCT_OS_NAME" />登录凭据的身份验证失败，系统会提示用户提供凭据。</translation>
 <translation id="4723829699367336876">支持通过远程访问客户端穿越防火墙</translation>
 <translation id="4725528134735324213">启用 Android Backup Service</translation>
 <translation id="4725801978265372736">要求本地用户的名称和远程访问主机所有者的名称必须一致</translation>
@@ -2597,6 +2654,7 @@
 <translation id="4983201894483989687">允许运行过期的插件</translation>
 <translation id="4986560318567565414">控制用于从替代浏览器切换至 Chrome 的路径。</translation>
 <translation id="4988291787868618635">闲置延迟时间已过时执行的操作</translation>
+<translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" />登录凭据不会被用于网络身份验证。</translation>
 <translation id="4996086761250834365">允许进行 <ph name="PLUGIN_VM_NAME" /> 产品分析</translation>
 <translation id="500149597848135831">启用所有变体</translation>
 <translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
@@ -2830,6 +2888,9 @@
 
       如果此政策未设置，用户无法在已注册的 <ph name="PRODUCT_OS_NAME" />上玩恐龙游戏，但可在其他环境下玩这款游戏。</translation>
 <translation id="529457411593078576">在 CCT 首次运行期间启用《服务条款》</translation>
+<translation id="5303080953475303561">通过设置此政策，您可以控制锁定屏幕将会按照什么样的频率要求用户输入密码以实现快速解锁。每当系统显示锁定屏幕时，如果与上次密码输入时间之间的间隔超过了所选值指定的时间段，便无法快速解锁。如果用户在锁定屏幕上的停留时长超过了此时间段，那么当用户下次输错代码或重新进入锁定屏幕时（以先发生者为准），系统就会要求输入密码。
+
+      如果您未设置此政策，使用快速解锁功能的用户每天都需在锁定屏幕上输入其密码。</translation>
 <translation id="5306186200045823863">信任 Symantec Corporation 的旧版 PKI 基础架构</translation>
 <translation id="5307432759655324440">隐身模式的可用性</translation>
 <translation id="5311275381462687162">默认旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
@@ -3655,6 +3716,9 @@
 <translation id="6536600139108165863">设备关机后自动重新启动</translation>
 <translation id="6539246272469751178">此政策对 Android 应用没有任何影响。Android 应用始终都会使用默认下载目录，并且无法访问由 <ph name="PRODUCT_OS_NAME" />下载到非默认下载目录中的任何文件。</translation>
 <translation id="654303922206238013">ecryptfs 迁移策略</translation>
+<translation id="654546276700640113">如果您设置了此政策，系统会强制实施所配置的 PIN 码长度上限。如果值小于或等于 0，即表示用户可以设置任意长度的 PIN 码。如果值小于 <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> 但大于 0，则表示长度上限与下限相同。
+
+      如果您未设置此政策，系统将不会强制实施任何长度上限。</translation>
 <translation id="6553143066970470539">屏幕亮度百分比</translation>
 <translation id="6558362593755624474">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。</translation>
 <translation id="6559057113164934677">不允许任何网站使用摄像头和麦克风</translation>
@@ -4339,6 +4403,7 @@
           如果您未设置此政策，那么，倘若“DefaultKeygenSetting”政策已设置，系统便会将它的全局默认值应用于所有网站，否则就会应用用户个人配置中的全局默认值。
 
           如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
+<translation id="739556497251174388">允许将 <ph name="PRODUCT_OS_NAME" />登录凭据重用于网络身份验证</translation>
 <translation id="7400971609879083218">如果此政策已启用，系统会允许网页上的第三方图片显示身份验证提示。
 
        如果此政策已停用或未设置，第三方图片将无法显示身份验证提示。
@@ -4436,6 +4501,17 @@
 <translation id="7534199150025803530">此政策对 Android 版“Google 云端硬盘”应用没有任何影响。如果您想阻止通过移动网络连接使用 Google 云端硬盘，则应禁止安装 Android 版“Google 云端硬盘”应用。</translation>
 <translation id="7540622499178214923">允许使用 Wilco 诊断和遥测控制器</translation>
 <translation id="7540826630642174841">如果您设置了此政策，那么在指定的时间间隔内，指定的设备政策会被忽略（使用这些政策的默认设置）。当政策时段开始或结束时，<ph name="PRODUCT_NAME" /> 会重新应用设备政策。当此时段有变且设备政策设置有变时（例如，当用户使用禁用的帐号登录时），系统会通知用户并强制用户退出。</translation>
+<translation id="7540945123920084379">通过设置此政策，您可以控制哪些快速解锁模式可为锁定屏幕解锁。
+
+      若要：
+
+      * 允许使用所有快速解锁模式（包括日后会添加的模式），请使用 ["all"]。
+
+      * 仅允许使用 PIN 码解锁，请使用 ["PIN"]。
+
+      * 允许使用 PIN 码和指纹解锁，请使用 ["PIN", "FINGERPRINT"]。
+
+      如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式。</translation>
 <translation id="7547549430720182663">合并</translation>
 <translation id="7553535237300701827">设置此政策后，登录身份验证流程将采用以下其中一种方式，具体取决于设置的值：
 
@@ -4796,6 +4872,7 @@
 <translation id="8050080920415773384">本机打印</translation>
 <translation id="8053580360728293758">替换默认打印颜色模式。如果这种模式不适用，则忽略此政策。</translation>
 <translation id="8056237304861875584">允许启用 Phone Hub 任务延续功能。</translation>
+<translation id="8056273037819805106"><ph name="PRODUCT_OS_NAME" />登录凭据会被用于向受管理的代理进行网络身份验证。</translation>
 <translation id="8059164285174960932">远程访问客户端获取身份验证令牌的网址</translation>
 <translation id="8062485064082966327">使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="8076521374016204899">如果此政策已启用或未设置，使用密码验证身份的用户便可以锁定屏幕。
@@ -4940,6 +5017,7 @@
 <translation id="8266778278542911985">如果此政策设为 3，系统会允许网站请求访问串行端口。如果此政策设为 2，系统会禁止访问串行端口。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
+<translation id="827054846390793641">允许主机桌面在处于连接状态时显示与连接相关的界面</translation>
 <translation id="8274603902181597201">清空用户的 ecryptfs 主目录，并改用全新的 ext4 加密主目录。</translation>
 <translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：当设备处于演示模式时，系统应该对屏幕变暗延迟时间采取的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
@@ -5111,6 +5189,9 @@
       此政策旨在让企业能够使现有服务器迁移到 HTTP/0.9 以外的协议版本，日后会被移除。
 
       如果未设置此政策，非默认端口上将会停用 HTTP/0.9。</translation>
+<translation id="8504243661032323176">通过设置此政策，您可以强制实施所选的 PIN 码长度下限。（小于 1 的值会被向上舍入到下限值 1。）
+
+      如果您未设置此政策，系统会强制要求 PIN 码的长度下限为 6 位数（这是建议的长度下限）。</translation>
 <translation id="8504725006737796967">此政策旨在指定用户可以使用的打印机。
 
       仅当为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" /> 时，才会用到此政策。
@@ -5189,6 +5270,7 @@
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>
 <translation id="8631437968147930597">可在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中显示的笔记应用的列表。</translation>
+<translation id="8643838501942693770">允许使用第三方 Cookie，但用户可以更改相关设置</translation>
 <translation id="8649763579836720255">Chrome 操作系统设备可使用远程凭证（经验证的访问凭证）来获取由 Chrome OS CA 颁发的证书，以证明该设备符合播放受保护内容的条件。此过程涉及向 Chrome OS CA 发送用于唯一标识设备的硬件背书信息。
 
           如果该设置为 False，设备将不使用远程凭证来保护内容，并且设备可能无法播放受保护内容。

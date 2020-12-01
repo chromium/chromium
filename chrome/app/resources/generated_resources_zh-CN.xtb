@@ -335,6 +335,7 @@
 <translation id="1374844444528092021">网络“<ph name="NETWORK_NAME" />”所需的证书尚未安装或已无效。请获取新的证书并尝试重新连接。</translation>
 <translation id="1375321115329958930">已保存的密码</translation>
 <translation id="137651782282853227">已保存的地址将显示在这里</translation>
+<translation id="1376771218494401509">为窗口命名(&amp;W)…</translation>
 <translation id="1377600615067678409">暂时跳过</translation>
 <translation id="1378613616312864539">此设置由“<ph name="NAME" />”控制</translation>
 <translation id="1380028686461971526">自动联网</translation>
@@ -3177,6 +3178,7 @@
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{有 1 个安全系数低的密码}other{有 {NUM_WEAK} 个安全系数低的密码}}</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="465878909996028221">浏览器重定向仅支持 http、https 和文件协议。</translation>
 <translation id="4659077111144409915">主帐号</translation>
@@ -4961,6 +4963,7 @@
 <translation id="6785518634832172390">PIN 码不得超过 12 位数</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“附近分享”功能与这个联系人分享内容，请将其 Google 帐号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 帐号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="6788210894632713004">未封装的扩展程序</translation>
 <translation id="6789592661892473991">水平分割</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -5007,6 +5010,7 @@
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在网站想在您的屏幕上打开和放置窗口时询问您（推荐）</translation>
+<translation id="6838694093138907871">激活码无效，请重试。</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
 <translation id="6840155290835956714">发送前先询问</translation>
@@ -5247,6 +5251,7 @@
 <translation id="7093866338626856921">与具有下列名称的设备交换数据：<ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C 设备（背面左侧端口）</translation>
 <translation id="7098447629416471489">其他已保存的搜索引擎将显示在这里</translation>
+<translation id="709869441357640014">{NUM_COMPROMISED,plural, =0{}=1{有 1 个密码已遭泄露}other{有 {NUM_COMPROMISED} 个密码已遭泄露}}</translation>
 <translation id="7099337801055912064">无法加载过大的 PPD。大小上限为 250 KB。</translation>
 <translation id="7102687220333134671">已开启自动更新功能</translation>
 <translation id="7102832101143475489">此请求已超时</translation>
@@ -6253,6 +6258,7 @@
 <translation id="8253198102038551905">点击“+”可查看网络属性</translation>
 <translation id="8255451560461371599">无背景图片</translation>
 <translation id="8256319818471787266">狗狗</translation>
+<translation id="8257435388931378346">为“<ph name="ACTION" />”操作分配开关键</translation>
 <translation id="8257950718085972371">继续禁止使用摄像头</translation>
 <translation id="8259239505248583312">开始使用</translation>
 <translation id="8260864402787962391">鼠标</translation>
@@ -6516,6 +6522,7 @@
 <translation id="8584280235376696778">在新标签页中打开视频(&amp;O)</translation>
 <translation id="8584427708066927472">密码已从此设备中删除</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
+<translation id="8585841788766257444">下列网站采用的是自定义设置（而非默认设置）</translation>
 <translation id="8588866096426746242">显示个人资料统计信息</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - 正在向头戴设备显示 VR</translation>
 <translation id="8590375307970699841">设置自动更新</translation>
@@ -6950,6 +6957,7 @@
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045430190527754450">将您尝试访问的网页的网址发送至 Google</translation>
 <translation id="9046895021617826162">连接失败</translation>
+<translation id="9048868107467198961">未发现任何安全问题</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="9052208328806230490">您已使用帐号 <ph name="EMAIL" /> 将您的打印机注册为<ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9052404922357793350">继续拦截</translation>
@@ -6996,6 +7004,7 @@
 <translation id="9102610709270966160">启用扩展程序</translation>
 <translation id="9103479157856427471">放大的屏幕跟随键盘焦点</translation>
 <translation id="9103868373786083162">点按该按钮可后退，点按上下文菜单可查看历史记录</translation>
+<translation id="9108035152087032312">为窗口命名(&amp;W)…</translation>
 <translation id="9108072915170399168">当前的流量使用设置是“不使用互联网”</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite 教育版隐私权声明<ph name="LINK_END" />旨在帮助 G Suite 教育版用户和家长了解此产品会收集哪些数据、为什么收集这些数据以及会使用这些数据做什么。</translation>
 <translation id="9108808586816295166">安全 DNS 未必一直可用</translation>

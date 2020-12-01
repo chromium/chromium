@@ -32,6 +32,7 @@
 <translation id="1930797645656624981">Chrome OS ଇନ୍‍ପୁଟ୍ ପଦ୍ଧତି ସେବା</translation>
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1979103255016296513">ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନର ସମୟ ବିଳମ୍ବ ହୋଇଯାଇଛି</translation>
+<translation id="1980044825731880088">CPU ସ୍ପିଡ୍</translation>
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
@@ -40,6 +41,7 @@
 <translation id="2364498172489649528">ପାସ୍ କରିଛି</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି</translation>
 <translation id="2391082728065870591">ମତାମତ ରିପୋର୍ଟ ପଠାନ୍ତୁ</translation>
+<translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{<ph name="ERROR_MESSAGE" />{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
@@ -48,6 +50,7 @@
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3083667275341675831">ସଂଯୋଗ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
@@ -102,6 +105,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
+<translation id="5168185087976003268">ବ୍ୟାଟେରୀ ହେଲ୍ଥ</translation>
 <translation id="520299634122159966">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5212543919916444558">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ରେ ମୁଁ କିଛି ଖୋଜିପାଇଲି ନାହିଁ ଯାହାଦ୍ୱାରା ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବି।
 ମୋତେ ଯାହା କିଛି ପଚାରିବା ପାଇଁ ମାଇକ୍‌ ଟାପ୍‌ କରି ଦେଖନ୍ତୁ।</translation>
@@ -117,9 +121,11 @@
 <translation id="5457599981699367932">ଅତିଥି ହିସାବରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
+<translation id="5551702563755460533">ସହାୟତା କେନ୍ଦ୍ରରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="5719918614880940190">ଏହା CPUର ବ୍ୟବହାରକୁ ମାପେ ଏବଂ ସମସ୍ତ କୋରର ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
+<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6048107060512778456">ବିଫଳ ହୋଇଛି - କାଗଜ ଅଟକି ଯାଇଛି</translation>
 <translation id="6050189528197190982">ଗ୍ରେସ୍କେଲ୍</translation>
@@ -188,6 +194,7 @@
 <translation id="8910721771319628100">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>
+<translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>

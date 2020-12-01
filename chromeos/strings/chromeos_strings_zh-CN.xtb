@@ -5,6 +5,7 @@
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
+<translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1204296502688602597">DNS 延迟时间</translation>
 <translation id="1238612778414822719">HTTPS 延迟</translation>
@@ -26,6 +27,7 @@
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
+<translation id="1743558184855585519">电池达到循环计数上限后，就会被视为已耗尽</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1930797645656624981">Chrome 操作系统输入法服务</translation>
 <translation id="1947737735496445907">已打印</translation>
@@ -43,6 +45,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
+<translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="3008341117444806826">刷新</translation>
@@ -119,6 +122,7 @@
 <translation id="54609108002486618">托管</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">前往帮助中心了解详情</translation>
+<translation id="5719918614880940190">此指标旨在衡量 CPU 使用情况，是所有核心指标的汇总数据</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5982592372228113572">（<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />）</translation>
@@ -154,6 +158,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">文件类型</translation>
+<translation id="7441459999606975924">电池容量会随使用时长的增加而减少</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
@@ -174,6 +179,8 @@
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8352772353338965963">为多帐号登录添加帐号。用户无需使用密码即可访问所有已登录的帐号，因此您应仅通过受信任的帐号使用此功能。</translation>
 <translation id="8364946094152050673">未指定域名服务器</translation>
+<translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
+<translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>

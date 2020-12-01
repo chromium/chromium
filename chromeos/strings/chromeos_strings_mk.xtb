@@ -41,7 +41,7 @@
 <translation id="2364498172489649528">Помина</translation>
 <translation id="2375079107209812402">Преостануваат <ph name="ATTEMPTS_LEFT" /> обиди</translation>
 <translation id="2391082728065870591">Испрати извештај со повратни информации</translation>
-<translation id="2461822463642141190">Тековна</translation>
+<translation id="2461822463642141190">Моментално</translation>
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Уште {0} обид}one{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}other{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
@@ -194,7 +194,7 @@
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
-<translation id="9088306295921699330">Тековно користење</translation>
+<translation id="9088306295921699330">Моментално користење</translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Се скенира страницата <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отклучи</translation>

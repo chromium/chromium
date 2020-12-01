@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1018656279737460067">Zrušené</translation>
+<translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Vybrať priečinok v aplikácii Súbory…</translation>
 <translation id="4890353053343094602">Okamžite si zvoľte nové heslo</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
+<translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4985509611418653372">Spustiť</translation>
 <translation id="5168185087976003268">Stav batérie</translation>
@@ -164,6 +166,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7855434858642800953">Naskenovaný súbor bol uložený.</translation>
+<translation id="7928373994957558460">Zobraziť umiestnenie súboru</translation>
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>

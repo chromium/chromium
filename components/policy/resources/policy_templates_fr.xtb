@@ -576,9 +576,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> à la place.
       </translation>
 <translation id="1827523283178827583">Utiliser des serveurs proxy déterminés</translation>
-<translation id="1829839214911753838">Si cette règle est activée, l'hôte d'assistance à distance est exécuté dans un processus avec des autorisations <ph name="UIACCESS_PERMISSION_NAME" />. Les utilisateurs distants peuvent ainsi interagir avec des fenêtres élevées sur le bureau de l'utilisateur local.
+<translation id="1829839214911753838">Si cette règle est activée, l'hôte d'assistance à distance est exécuté dans un processus avec des autorisations <ph name="UIACCESS_PERMISSION_NAME" />. Les utilisateurs distants peuvent ainsi interagir avec des fenêtres de niveau administrateur sur le bureau de l'utilisateur local.
 
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres élevées sur le bureau.</translation>
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres de niveau administrateur sur le bureau.</translation>
 <translation id="1839278886947586809">
       Cette règle a été retirée de la version M80, car elle n'est plus nécessaire
       depuis que WebDriver est compatible avec toutes les règles existantes.
@@ -2050,7 +2050,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Pour que les destinations <ph name="CLOUD_PRINT_NAME" /> restent visibles, cette règle doit être définie sur "True", et le type "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" ne doit pas être ajouté à la règle "<ph name="POLICY_PRINTERTYPEDENYLIST" />".</translation>
 <translation id="3915395663995367577">URL d'un fichier .pac de proxy</translation>
-<translation id="3915587396318773837">Si cette règle est configurée, l'hôte d'accès à distance exigent des clients qui s'authentifient qu'ils obtiennent un jeton d'authentification à partir de cette URL pour se connecter.
+<translation id="3915587396318773837">Si cette règle est configurée, l'hôte d'accès à distance exige des clients qui s'authentifient qu'ils obtiennent un jeton d'authentification à partir de cette URL pour se connecter.
 
       Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.
 

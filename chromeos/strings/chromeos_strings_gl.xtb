@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1018656279737460067">Cancelados</translation>
+<translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
 <translation id="1075811647922107217">Tamaño da páxina</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Seleccionar cartafol na aplicación Ficheiros…</translation>
 <translation id="4890353053343094602">Escolle un novo inmediatamente</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
+<translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
@@ -164,6 +166,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7855434858642800953">Gardouse o ficheiro escaneado</translation>
+<translation id="7928373994957558460">Mostrar localización do ficheiro</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>

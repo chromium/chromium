@@ -2091,7 +2091,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3997519162482760140">URLs que terão acesso a dispositivos de captura de vídeo em páginas de login SAML</translation>
 <translation id="4007646377576030214"> Esta política foi suspensa na versão M87 e foi removida na M89. Use a <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar alertas de privacidade de sessões de visitante gerenciadas.
 
-      Controlar notificações de lançamento automático da sessão de visitante gerenciada no <ph name="PRODUCT_OS_NAME" />.
+      Controle as notificações de lançamento automático da sessão de visitante gerenciada no <ph name="PRODUCT_OS_NAME" />.
 
       Se esta política for definida como verdadeira, a notificação de aviso de privacidade será fechada após alguns segundos.
 
@@ -2567,7 +2567,7 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 
       Se ela for definida como "oculta", os recursos desativados não poderão ser utilizados e ficarão invisíveis para os usuários.
 
-      Se a política for deixada sem definição tiver um valor inválido, o modo de desativação de recursos do sistema será "bloqueado".</translation>
+      Se a política for deixada sem definição ou tiver um valor inválido, o modo de desativação de recursos do sistema será "bloqueado".</translation>
 <translation id="4835470005923546373">Desativar modo de impressão de gráficos de segundo plano por padrão</translation>
 <translation id="4835622243021053389">Ativar autenticação NTLMv2.</translation>
 <translation id="4855636880814771207">Se esta política for definida como ativada ou não for definida, o usuário poderá ativar ou desativar o Bluetooth.
@@ -4312,7 +4312,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7252681704926980614">Envia o nome de usuário e de arquivo para o servidor de impressoras nativas com cada trabalho de impressão. O padrão é não enviar.
 
       Se esta política for definida como verdadeira, ela também desativará impressoras que usam protocolos diferentes de IPPS, USB ou IPP-over-USB, uma vez que o nome de usuário e o nome de arquivo não podem ser enviados pela rede abertamente.</translation>
-<translation id="7257092058788772055">Se a política for definida, o URL de página inicial padrão será definido no <ph name="PRODUCT_NAME" />. Use o botão "Início" para abrir a página inicial. No computador, as políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controlam as páginas que são abertas na inicialização.
+<translation id="7257092058788772055">Se a política for definida, o URL de página inicial padrão será definido no <ph name="PRODUCT_NAME" />. O botão "Início" abrirá a página inicial. No computador, as políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controlam as páginas que são abertas na inicialização.
 
       Se a página inicial for definida como a página Nova guia, seja pelo usuário ou por <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, esta política não terá efeito.
 

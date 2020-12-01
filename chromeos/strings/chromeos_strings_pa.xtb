@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
+<translation id="1059913517121127803">ਸਕੈਨ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1071587090247825784">Firewall ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="1075811647922107217">ਪੰਨੇ ਦਾ ਆਕਾਰ</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
@@ -98,6 +99,7 @@
 <translation id="4832079907277790330">Files ਐਪ ਵਿੱਚ ਫੋਲਡਰ ਨੂੰ ਚੁਣੋ...</translation>
 <translation id="4890353053343094602">ਛੇਤੀ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="4917889632206600977">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਖਤਮ ਹੋ ਗਏ</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਚਾਰਜ ਹੋਈ।</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
 <translation id="4985509611418653372">ਚਲਾਓ</translation>
 <translation id="5168185087976003268">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
@@ -158,6 +160,7 @@
 <translation id="7690294790491645610">ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
 <translation id="7855434858642800953">ਸਕੈਨ ਕੀਤੀ ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ!</translation>
+<translation id="7928373994957558460">ਫ਼ਾਈਲ ਦਾ ਟਿਕਾਣਾ ਦਿਖਾਓ</translation>
 <translation id="7936303884198020182">ਕੋਈ ਨਾਮ ਸਰਵਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="8041089156583427627">ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>

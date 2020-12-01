@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1018656279737460067">Imeghairiwa</translation>
+<translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
 <translation id="1071587090247825784">Kinga mtandao imetambuliwa</translation>
 <translation id="1075811647922107217">Ukubwa wa ukurasa</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Chagua folda katika programu ya Faili...</translation>
 <translation id="4890353053343094602">Chagua nenosiri jipya mara moja</translation>
 <translation id="4917889632206600977">Imesimama - Karatasi zimeisha</translation>
+<translation id="4921665434385737356">Imechaji <ph name="RATE" /> baada ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="4932733599132424254">Tarehe</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
 <translation id="5168185087976003268">Muda wa kudumu wa betri</translation>
@@ -163,6 +165,7 @@
 <translation id="7690294790491645610">Thibitisha nenosiri jipya</translation>
 <translation id="7805768142964895445">Hali</translation>
 <translation id="7855434858642800953">Faili iliyochanganuliwa imehifadhiwa!</translation>
+<translation id="7928373994957558460">Onyesha faili ilipo</translation>
 <translation id="7936303884198020182">Hakuna seva za majina zilizopatikana</translation>
 <translation id="8041089156583427627">Tuma Maoni</translation>
 <translation id="808894953321890993">Badilisha nenosiri</translation>

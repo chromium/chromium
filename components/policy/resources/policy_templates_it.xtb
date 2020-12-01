@@ -129,9 +129,9 @@
 <translation id="1198183996903759302">Se il criterio è impostato su true (o se <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> è impostato su false), le pagine web non possono accedere all'API WebGL e i plug-in non possono usare l'API Pepper 3D.
 
       Se il criterio è impostato su false o non viene configurato, le pagine web possono usare l'API WebGL e i plug-in possono usare l'API Pepper 3D, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
-<translation id="1199366379198964260">Se il criterio viene impostato su Attivato, vengono consentiti PIN inefficaci. Ecco alcune caratteristiche dei PIN inefficaci: una sola cifra ripetuta (1111), cifre con incrementi di 1 (1234), cifre con decrementi di 1 (4321) e PIN comuni. Se il criterio viene impostato su Disattivato, gli utenti non possono impostare PIN inefficaci facili da indovinare.
+<translation id="1199366379198964260">Se il criterio viene impostato su Attivato, vengono consentiti PIN non sicuri. Ecco alcune caratteristiche dei PIN non sicuri: una sola cifra ripetuta (1111), cifre con incrementi di 1 (1234), cifre con decrementi di 1 (4321) e PIN comuni. Se il criterio viene impostato su Disattivato, gli utenti non possono impostare PIN non sicuri facili da indovinare.
 
-      Per impostazione predefinita, gli utenti ricevono un avviso, non un messaggio di errore, se usano un PIN inefficace.</translation>
+      Per impostazione predefinita, gli utenti ricevono un avviso, non un messaggio di errore, se usano un PIN non sicuro.</translation>
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
 <translation id="1204263402976895730">Stampanti aziendali attive</translation>
 <translation id="1209065772997672966">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono aprire popup.
@@ -400,7 +400,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       * Lo schermo viene spento se l'utente rimane inattivo per il tempo specificato nel campo <ph name="SCREEN_OFF_FIELD_NAME" />.
 
-      * Se l'utente rimane inattivo per il tempo specificato nel campo <ph name="IDLE_WARNING_FIELD_NAME" />, viene visualizzata una finestra di dialogo di avviso per indicare all'utente che verrà compiuta l'azione per inattività e tale finestra viene visualizzata soltanto se l'azione per inattività è l'uscita dall'account o l'arresto del sistema.
+      * Se l'utente rimane inattivo per il tempo specificato nel campo <ph name="IDLE_WARNING_FIELD_NAME" />, viene visualizzata una finestra di dialogo di avviso per indicare all'utente che verrà compiuta l'azione per inattività. Tale finestra viene visualizzata soltanto se l'azione per inattività è l'uscita dall'account o l'arresto del sistema.
 
       * Se l'utente rimane inattivo per il tempo specificato nel campo <ph name="IDLE_FIELD_NAME" />, viene compiuta l'azione specificata nel campo <ph name="IDLE_ACTION_FIELD_NAME" />.
 
@@ -706,7 +706,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       * PIN e impronta, usa ["PIN", "FINGERPRINT"].
 
-      Se il criterio non viene configurato o se viene impostato un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.
+      Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.
 
       Questo criterio è deprecato. Usa il criterio <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
 <translation id="2036522553891755455">Se il criterio viene impostato su Attivato, il rilevamento delle condivisioni (la funzionalità Condivisione file di rete di <ph name="PRODUCT_NAME" />) utilizza il protocollo <ph name="NETBIOS_PROTOCOL" /> per rilevare le condivisioni sulla rete. Se viene impostato su Disattivato, il rilevamento delle condivisioni non utilizza il protocollo per rilevare le condivisioni.
@@ -4545,7 +4545,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       * PIN e impronta, usa ["PIN", "FINGERPRINT"].
 
-      Se il criterio non viene configurato o se viene impostato un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.</translation>
+      Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.</translation>
 <translation id="7547549430720182663">Unisci</translation>
 <translation id="7553535237300701827">Se viene impostata questa norma, il flusso di autenticazione dell'accesso sarà uno dei seguenti, a seconda del valore dell'impostazione:
 

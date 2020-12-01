@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ...</translation>
 <translation id="4890353053343094602">ಹೊಸದೊಂದನ್ನು ತತ್‌ಕ್ಷಣ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
@@ -163,6 +165,7 @@
 <translation id="7690294790491645610">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7855434858642800953">ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್‌ ಅನ್ನು ಉಳಿಸಲಾಗಿದೆ!</translation>
+<translation id="7928373994957558460">ಫೈಲ್ ಸ್ಥಳವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7936303884198020182">ಹೆಸರು ಇಲ್ಲದ ಸರ್ವರ್‌ಗಳು ಕಂಡುಬಂದಿವೆ.</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>

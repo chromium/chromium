@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1018656279737460067">Peruutettu</translation>
+<translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
 <translation id="1175697296044146566">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="MANAGER" />.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
+<translation id="4921665434385737356"><ph name="RATE" /> ladattiin <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
@@ -164,6 +166,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7855434858642800953">Skannattu tiedosto tallennettu!</translation>
+<translation id="7928373994957558460">Näytä tiedoston sijainti</translation>
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
 <translation id="8041089156583427627">Lähetä palautetta</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>

@@ -4491,7 +4491,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6212168817037875041">Desligar a tela</translation>
 <translation id="6212752530110374741">Enviar link por e-mail</translation>
 <translation id="6213230117190778270">Receber</translation>
-<translation id="6215620815501168899">Feche EID e o pop-up do código QR</translation>
+<translation id="6215620815501168899">Feche o EID e o pop-up do código QR</translation>
 <translation id="6216601812881225442">Seu contêiner não é compatível com redimensionamento. Para ajustar a quantidade de espaço pré-alocada para o Linux, faça backup e restaure-o em um novo contêiner.</translation>
 <translation id="6216696360484424239">Fazer login automaticamente</translation>
 <translation id="6218058416316985984">O <ph name="DEVICE_TYPE" /> está off-line. Conecte-se à Internet e tente novamente.</translation>
@@ -4885,7 +4885,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
 <translation id="6681668084120808868">Tirar foto</translation>
-<translation id="6683948477137300040">Mostre EID do dispositivo e o pop-up do código QR</translation>
+<translation id="6683948477137300040">Mostre o EID do dispositivo e o pop-up do código QR</translation>
 <translation id="6684827949542560880">Fazendo o download da atualização mais recente</translation>
 <translation id="668599234725812620">Abrir o Google Play</translation>
 <translation id="6686490380836145850">Fechar guias à direita</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1018656279737460067">Скасавана</translation>
+<translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
 <translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
 <translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Выбраць папку ў праграме "Файлы"...</translation>
 <translation id="4890353053343094602">Неадкладна задайце новы</translation>
 <translation id="4917889632206600977">Спынена: скончылася папера</translation>
+<translation id="4921665434385737356">Зараджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4985509611418653372">Запусціць</translation>
 <translation id="5168185087976003268">Стан акумулятара</translation>
@@ -164,6 +166,7 @@
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7855434858642800953">Файл адсканіраванага відарыса захаваны!</translation>
+<translation id="7928373994957558460">Паказаць месцазнаходжанне файла</translation>
 <translation id="7936303884198020182">Серверы даменных імён не знойдзены</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
