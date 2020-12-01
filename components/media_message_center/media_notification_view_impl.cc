@@ -432,6 +432,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
 
   container_->OnMediaSessionMetadataChanged(metadata);
 
+  MaybeShowOrHideArtistLabel();
   PreferredSizeChanged();
   Layout();
   SchedulePaint();
@@ -463,6 +464,7 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 
   container_->OnMediaArtworkChanged(image);
 
+  MaybeShowOrHideArtistLabel();
   PreferredSizeChanged();
   Layout();
   SchedulePaint();
@@ -792,6 +794,13 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
 void MediaNotificationViewImpl::ButtonPressed(views::Button* button) {
   if (item_)
     item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*button));
+}
+
+void MediaNotificationViewImpl::MaybeShowOrHideArtistLabel() {
+  if (!is_cros_)
+    return;
+
+  artist_label_->SetVisible(!artist_label_->GetText().empty() || has_artwork_);
 }
 
 std::vector<views::View*> MediaNotificationViewImpl::GetButtons() {

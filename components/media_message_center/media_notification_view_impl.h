@@ -134,6 +134,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   void ButtonPressed(views::Button* button);
 
+  void MaybeShowOrHideArtistLabel();
+
   // Returns the buttons contained in the button row and playback button
   // container.
   std::vector<views::View*> GetButtons();
