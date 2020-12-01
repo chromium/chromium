@@ -9605,6 +9605,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.InstantMessaging.{Direction}Express.Result"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether an HTTPS call to {Direction} the Instant Messaging API
+    succeeds or fails. Emitted when the HTTPS call succeeds or fails.
+  </summary>
+  <token key="Direction">
+    <variant name="Receive" summary="receive a message from"/>
+    <variant name="Send" summary="send a message to"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Nearby.Share.InstantMessaging.{Direction}Express.Result.FailureReason"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the network error code or HTTPS response code from a failed HTTPS
+    call to {Direction} the Instant Messaging API. Emitted when the HTTPS call
+    fails.
+  </summary>
+  <token key="Direction">
+    <variant name="Receive" summary="receive a message from"/>
+    <variant name="Send" summary="send a message to"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
     enum="NearbyShareHttpResult" expires_after="2021-08-19">
   <owner>cclem@chromium.org</owner>

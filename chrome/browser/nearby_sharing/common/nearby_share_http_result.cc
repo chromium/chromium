@@ -4,6 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+
 NearbyShareHttpError NearbyShareHttpErrorForHttpResponseCode(
     int response_code) {
   if (response_code == 400)
@@ -38,6 +44,68 @@ NearbyShareHttpResult NearbyShareHttpErrorToResult(NearbyShareHttpError error) {
     case NearbyShareHttpError::kUnknown:
       return NearbyShareHttpResult::kHttpErrorUnknown;
   }
+}
+
+NearbyShareHttpStatus::NearbyShareHttpStatus(
+    const int net_error,
+    const network::mojom::URLResponseHead* head)
+    : net_error_code_(net_error) {
+  if (head && head->headers)
+    http_response_code_ = head->headers->response_code();
+
+  bool net_success = (net_error_code_ == net::OK ||
+                      net_error_code_ == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&
+                     http_response_code_;
+  bool http_success =
+      net_success && network::cors::IsOkStatus(*http_response_code_);
+
+  if (http_success) {
+    status_ = Status::kSuccess;
+  } else if (net_success) {
+    status_ = Status::kHttpFailure;
+  } else {
+    status_ = Status::kNetworkFailure;
+  }
+}
+
+NearbyShareHttpStatus::~NearbyShareHttpStatus() = default;
+
+bool NearbyShareHttpStatus::IsSuccess() const {
+  return status_ == Status::kSuccess;
+}
+
+int NearbyShareHttpStatus::GetResultCodeForMetrics() const {
+  switch (status_) {
+    case Status::kNetworkFailure:
+      return net_error_code_;
+    case Status::kSuccess:
+    case Status::kHttpFailure:
+      return *http_response_code_;
+  }
+}
+
+std::string NearbyShareHttpStatus::ToString() const {
+  std::string status;
+  switch (status_) {
+    case Status::kSuccess:
+      status = "kSuccess";
+      break;
+    case Status::kNetworkFailure:
+      status = "kNetworkFailure";
+      break;
+    case Status::kHttpFailure:
+      status = "kHttpFailure";
+      break;
+  }
+  std::string net_code = net::ErrorToString(net_error_code_);
+  std::string response_code =
+      http_response_code_.has_value()
+          ? net::GetHttpReasonPhrase(
+                static_cast<net::HttpStatusCode>(*http_response_code_))
+          : "[null]";
+
+  return "status=" + status + ", net_code=" + net_code +
+         ", response_code=" + response_code;
 }
 
 std::ostream& operator<<(std::ostream& stream,
@@ -77,5 +145,11 @@ std::ostream& operator<<(std::ostream& stream,
 std::ostream& operator<<(std::ostream& stream,
                          const NearbyShareHttpError& error) {
   stream << NearbyShareHttpErrorToResult(error);
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NearbyShareHttpStatus& status) {
+  stream << status.ToString();
   return stream;
 }

@@ -4,12 +4,17 @@
 
 #include "chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.h"
 
+#include <sstream>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -17,6 +22,7 @@
 #include "url/gurl.h"
 
 namespace {
+
 // TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("receive_messages_express", R"(
@@ -47,6 +53,31 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
               }
             }
           })");
+
+void LogReceiveResult(bool success, const network::SimpleURLLoader* loader) {
+  std::stringstream ss;
+  ss << "Instant messaging receive express "
+     << (success ? "succeeded." : "failed.");
+  base::UmaHistogramBoolean(
+      "Nearby.Share.InstantMessaging.ReceiveExpress.Result", success);
+  if (loader) {
+    NearbyShareHttpStatus http_status(loader->NetError(),
+                                      loader->ResponseInfo());
+    ss << " HTTP status: " << http_status;
+    if (!success) {
+      base::UmaHistogramSparse(
+          "Nearby.Share.InstantMessaging.ReceiveExpress.Result.FailureReason",
+          http_status.GetResultCodeForMetrics());
+    }
+  } else {
+    ss << " Missing URL loader.";
+  }
+  if (success) {
+    NS_LOG(VERBOSE) << ss.str();
+  } else {
+    NS_LOG(WARNING) << ss.str();
+  }
+}
 
 }  // namespace
 
@@ -132,6 +163,7 @@ void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
 
 void ReceiveMessagesExpress::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogReceiveResult(success, url_loader_.get());
   if (!success_callback_.is_null())
     std::move(success_callback_).Run(success);
 

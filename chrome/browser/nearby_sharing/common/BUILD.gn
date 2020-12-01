@@ -20,5 +20,8 @@ source_set("common") {
     "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/pref_registry",
     "//components/prefs",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
