@@ -110,12 +110,12 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6062854958530969723">Initialisatie van host mislukt.</translation>
 <translation id="6099500228377758828">Chrome Remote Desktop-service</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6178645564515549384">Systeemeigen berichthost voor externe ondersteuning</translation>
+<translation id="6178645564515549384">Systeemeigen berichthost voor externe support</translation>
 <translation id="618120821413932081">Externe resolutie aanpassen aan venster</translation>
 <translation id="6223301979382383752">Voorkeuren voor Schermopname openen</translation>
 <translation id="6284412385303060032">De host die werd uitgevoerd op het console-inlogscherm, is uitgeschakeld om de gordijnmodus te ondersteunen door over te schakelen naar een host die in een gebruikersspecifieke sessie wordt uitgevoerd.</translation>
 <translation id="6542902059648396432">Een probleem melden…</translation>
-<translation id="6583902294974160967">Ondersteuning</translation>
+<translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del verzenden</translation>
 <translation id="6654753848497929428">Delen</translation>
 <translation id="6681800064886881394">Copyright 2013 Google Inc. Alle rechten voorbehouden.</translation>
@@ -125,7 +125,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitschakelen? Als je van gedachten verandert, moet je naar die computer gaan om de verbindingen weer in te schakelen.</translation>
 <translation id="7019153418965365059">Onbekende hostfout: <ph name="HOST_OFFLINE_REASON" />.</translation>
-<translation id="701976023053394610">Externe ondersteuning</translation>
+<translation id="701976023053394610">Externe support</translation>
 <translation id="7026930240735156896">Volg de instructies om je computer in te stellen voor externe toegang</translation>
 <translation id="7067321367069083429">Scherm werkt als een touchscreen</translation>
 <translation id="7116737094673640201">Welkom bij Chrome Remote Desktop</translation>
