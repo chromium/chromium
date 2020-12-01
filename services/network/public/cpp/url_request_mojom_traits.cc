@@ -275,6 +275,10 @@ bool StructTraits<network::mojom::DataElementDataView, network::DataElement>::
     mojo_base::BigBufferView big_buffer;
     if (!data.ReadBuf(&big_buffer))
       return false;
+    // TODO(yoichio): Fix DataElementDataView::ReadBuf issue
+    // (crbug.com/1152664).
+    if (data.length() != big_buffer.data().size())
+      return false;
     out->buf_.clear();
     out->buf_.insert(out->buf_.end(), big_buffer.data().begin(),
                      big_buffer.data().end());
