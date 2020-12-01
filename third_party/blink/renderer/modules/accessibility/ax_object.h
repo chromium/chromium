@@ -1063,34 +1063,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* ContainerWidget() const;
   bool IsContainerWidget() const;
 
-  // Low-level accessibility tree exploration, only for use within the
-  // accessibility module.
-
-  // Returns the AXObject's first child, skipping over any children that
-  // represent continuations in the layout tree. If the AXObject has no
-  // children, returns the AXObject representing the next in pre-order
-  // continuation in the layout tree, if any.
-  //
-  // In the accessibility tree, this results in continuations becoming
-  // descendants of the nodes they "continue".
-  virtual AXObject* RawFirstChild() const { return nullptr; }
-
-  // Returns the AXObject's next sibling, skipping over any siblings that
-  // represent continuations in the layout tree. If this is the last child,
-  // returns the AXObject representing the next in pre-order continuation in the
-  // layout tree, if any.
-  //
-  // In the accessibility tree, this results in continuations becoming
-  // descendants of the nodes they "continue".
-  virtual AXObject* RawNextSibling() const { return nullptr; }
-
   virtual void AddChildren() {}
-  // If there is a DOM node, use LayoutBuilderTraversal, which visits DOM
-  // children and pseudo element nodes, otherwise this may be an anonymous node,
-  // such as an anonymous block that is inserted to enforce the rule that all
-  // children are blocks or all children are inlines. Anonymous blocks have a
-  // layout object but no DOM node.
-  virtual bool ShouldUseLayoutBuilderTraversal() const { return GetNode(); }
+  // There are two types of traversal for obtaining children:
+  // 1. LayoutTreeBuilderTraversal. Despite the name, this traverses a flattened
+  // DOM tree that includes pseudo element children such as ::before, and where
+  // shadow DOM slotting has been run.
+  // 2. LayoutObject traversal. This is necessary if there is no parent node,
+  // or if the parent node is a pseudo element.
+  bool ShouldUseLayoutObjectTraversalForChildren() const;
   virtual bool CanHaveChildren() const { return true; }
   bool HasChildren() const { return have_children_; }
   virtual void UpdateChildrenIfNecessary();

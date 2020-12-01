@@ -1406,14 +1406,14 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
         continue;
       }
 
-      bool did_use_layout_builder_traversal =
-          object->ShouldUseLayoutBuilderTraversal();
+      bool did_use_layout_object_traversal =
+          object->ShouldUseLayoutObjectTraversalForChildren();
       AXObject* parent = object->ParentObjectIncludedInTree();
       AXObject* new_object = refresh(object);
 
       // Children might change because child traversal style changed.
-      if (new_object->ShouldUseLayoutBuilderTraversal() !=
-          did_use_layout_builder_traversal) {
+      if (new_object->ShouldUseLayoutObjectTraversalForChildren() !=
+          did_use_layout_object_traversal) {
         // TODO(accessibility) Need test for this, e.g. for continuations.
         pending_children_changed_ids.insert(ax_id);
       }

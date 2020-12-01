@@ -3001,29 +3001,6 @@ AXObject* AXNodeObject::ComputeParentIfExists() const {
   return nullptr;
 }
 
-AXObject* AXNodeObject::RawFirstChild() const {
-  if (!GetNode())
-    return nullptr;
-
-  Node* first_child = LayoutTreeBuilderTraversal::FirstChild(*GetNode());
-
-  if (!first_child)
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(first_child);
-}
-
-AXObject* AXNodeObject::RawNextSibling() const {
-  if (!GetNode())
-    return nullptr;
-
-  Node* next_sibling = LayoutTreeBuilderTraversal::NextSibling(*GetNode());
-  if (!next_sibling)
-    return nullptr;
-
-  return AXObjectCache().GetOrCreate(next_sibling);
-}
-
 bool AXNodeObject::IsHtmlTable() const {
   return IsTableLikeRole() && GetLayoutObject() &&
          GetLayoutObject()->IsTable() && IsA<HTMLTableElement>(GetNode());
@@ -3225,13 +3202,8 @@ void AXNodeObject::AddPopupChildren() {
   AddChild(html_input_element->PopupRootAXObject());
 }
 
-void AXNodeObject::AddPseudoElementChildren() {
-  // Pseudo elements often have text and image children that are not
-  // visited by the LayoutTreeBuilderTraversal class used in DOM traversal.
-  Element* element = GetElement();
-  if (!element || !element->IsPseudoElement() || !GetLayoutObject())
-    return;
-
+void AXNodeObject::AddLayoutChildren() {
+  DCHECK(GetLayoutObject());
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
     AddChild(AXObjectCache().GetOrCreate(child));
@@ -3251,6 +3223,8 @@ void AXNodeObject::AddRemoteSVGChildren() {
 }
 
 void AXNodeObject::AddNodeChildren() {
+  if (!node_)
+    return;
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     if (child->IsMarkerPseudoElement() && AccessibilityIsIgnored())
@@ -3264,17 +3238,6 @@ void AXNodeObject::AddNodeChildren() {
       continue;
 
     AddChild(child_obj);
-  }
-}
-
-void AXNodeObject::AddLayoutChildren() {
-  for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
-    if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
-        obj && obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-        obj->CanIgnoreTextAsEmpty())
-      continue;
-
-    AddChild(obj);
   }
 }
 
@@ -3293,15 +3256,14 @@ void AXNodeObject::AddChildren() {
 
   if (IsHtmlTable())
     AddTableChildren();
-  else if (ShouldUseLayoutBuilderTraversal())
-    AddNodeChildren();
-  else
+  else if (ShouldUseLayoutObjectTraversalForChildren())
     AddLayoutChildren();
+  else
+    AddNodeChildren();
 
   AddPopupChildren();
   AddRemoteSVGChildren();
   AddImageMapChildren();
-  AddPseudoElementChildren();
   AddInlineTextBoxChildren(false);
   AddValidationMessageChild();
   AddAccessibleNodeChildren();
@@ -3781,14 +3743,10 @@ void AXNodeObject::SelectedOptions(AXObjectVector& options) const {
     return;
   }
 
-  // If the combobox or listbox is a descendant of a label element for another
-  // widget, it may be ignored and Children() won't return all its children.
-  // As a result, we need to use RawFirstChild and RawNextSibling to iterate
-  // over the children in search of the selected option(s).
-
+  const AXObjectVector& children = ChildrenIncludingIgnored();
   if (RoleValue() == ax::mojom::blink::Role::kComboBoxGrouping ||
       RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton) {
-    for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
+    for (const auto& obj : children) {
       if (obj->RoleValue() == ax::mojom::blink::Role::kListBox) {
         obj->SelectedOptions(options);
         return;
@@ -3796,7 +3754,7 @@ void AXNodeObject::SelectedOptions(AXObjectVector& options) const {
     }
   }
 
-  for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
+  for (const auto& obj : children) {
     if (obj->IsSelected() == kSelectedStateTrue)
       options.push_back(obj);
   }

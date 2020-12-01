@@ -215,9 +215,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObject* ComputeParent() const override;
   AXObject* ComputeParentIfExists() const override;
 
-  // Low-level accessibility tree exploration.
-  AXObject* RawFirstChild() const override;
-  AXObject* RawNextSibling() const override;
   void AddChildren() override;
 
   bool CanHaveChildren() const override;
@@ -312,7 +309,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsDescendantOfElementType(HashSet<QualifiedName>& tag_names) const;
   String PlaceholderFromNativeAttribute() const;
 
-  void AddPseudoElementChildren();
   void AddNodeChildren();
   void AddLayoutChildren();
   void AddInlineTextBoxChildren(bool force);

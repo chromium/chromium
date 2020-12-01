@@ -3519,6 +3519,22 @@ AXObject* AXObject::ContainerWidget() const {
   return ancestor;
 }
 
+bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
+  if (!GetLayoutObject())
+    return false;
+
+  // If no node, this may be an anonymous layout object, e.g. an anonymous block
+  // that is inserted to enforce the rule that all children are blocks or all
+  // children are inlines. Anonymous blocks have a layout object but no node.
+  if (!GetNode())
+    return true;
+
+  // The only other case for using layout builder traversal is for a pseudo
+  // element, such as ::before. Pseudo element child text and images are not
+  // visibited by LayoutBuilderTraversal.
+  return GetNode()->IsPseudoElement();
+}
+
 void AXObject::UpdateChildrenIfNecessary() {
   if (!HasChildren())
     AddChildren();

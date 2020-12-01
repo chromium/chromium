@@ -142,10 +142,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   AXObject* ComputeParent() const override;
   AXObject* ComputeParentIfExists() const override;
 
-  // Low-level accessibility tree exploration, only for use within the
-  // accessibility module.
-  AXObject* RawFirstChild() const override;
-  AXObject* RawNextSibling() const override;
   bool CanHaveChildren() const override;
 
   // Notifications that this object may have changed.
