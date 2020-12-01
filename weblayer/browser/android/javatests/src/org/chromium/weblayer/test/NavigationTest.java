@@ -777,7 +777,7 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     public void testCantUsePerNavigationAndDesktopMode() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
@@ -791,7 +791,7 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     public void testDesktopMode() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
@@ -804,7 +804,7 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     public void testDesktopModeSticks() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
@@ -819,7 +819,7 @@ public class NavigationTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     public void testDesktopModeGetter() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);

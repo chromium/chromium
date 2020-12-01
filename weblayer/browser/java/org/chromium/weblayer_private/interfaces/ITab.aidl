@@ -79,8 +79,6 @@ interface ITab {
   // Added in 88
   void setFloatingActionModeOverride(in int actionModeItemTypes) = 27;
   boolean willAutomaticallyReloadAfterCrash() = 28;
-
-  // Added in 89
   void setDesktopUserAgentEnabled(in boolean enable) = 29;
   boolean isDesktopUserAgentEnabled() = 30;
 }

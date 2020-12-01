@@ -796,10 +796,10 @@ public class Tab {
      * back/forward navigations. The tab will be reloaded with the new user agent.
      * @param enable if true requests desktop site, otherwise mobile site.
      *
-     * @since 89
+     * @since 88
      */
     public void setDesktopUserAgentEnabled(boolean enable) {
-        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
             throw new UnsupportedOperationException();
         }
         try {
@@ -812,10 +812,10 @@ public class Tab {
     /**
      * Returns true if the currently loaded page used a desktop user agent.
      *
-     * @since 89
+     * @since 88
      */
     public boolean isDesktopUserAgentEnabled() {
-        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
             throw new UnsupportedOperationException();
         }
         try {
