@@ -14,6 +14,7 @@
 
 #include "test/multiprocess_exec.h"
 
+#include "base/allocator/buildflags.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,7 +49,19 @@ class TestMultiprocessExec final : public MultiprocessExec {
   DISALLOW_COPY_AND_ASSIGN(TestMultiprocessExec);
 };
 
-TEST(MultiprocessExec, MultiprocessExec) {
+// TODO(tasak): enable this test after making address randomization not to
+// keep /dev/urandom open.
+// PartitionAllocator opens /dev/urandom because of address randomization.
+// (c.f. //base/rand_util_posix.cc and
+// //base/allocator/partition_allocator/random.cc) So when making
+// PartitionAllocator default, multiprocess_exec_test_child will crash because
+// of LOG(FATAL) << "close". https://crbug.com/1153544
+#if defined(OS_POSIX) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#define MAYBE_MultiprocessExec DISABLED_MultiprocessExec
+#else
+#define MAYBE_MultiprocessExec MultiprocessExec
+#endif
+TEST(MultiprocessExec, MAYBE_MultiprocessExec) {
   TestMultiprocessExec multiprocess_exec;
   base::FilePath child_test_executable = TestPaths::BuildArtifact(
       FILE_PATH_LITERAL("test"),

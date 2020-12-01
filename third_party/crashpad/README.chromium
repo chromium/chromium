@@ -36,3 +36,6 @@ $ git am --3way --message-id -p4 /tmp/patchdir
 
 Local Modifications:
  - codereview.settings has been excluded.
+ - MultiprocessExec.MultiprocessExec is disabled when OS_POSIX and
+   BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1153544
+   (third_party/crashpad/crashpad/test/multiprocess_exec_test.cc)
