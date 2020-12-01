@@ -125,12 +125,14 @@ void RegionToTracedValue(const LayoutShiftRegion& region, TracedValue& value) {
   value.EndArray();
 }
 
-#if DCHECK_IS_ON()
 bool ShouldLog(const LocalFrame& frame) {
+  if (!VLOG_IS_ON(1))
+    return false;
+
+  DCHECK(frame.GetDocument());
   const String& url = frame.GetDocument()->Url().GetString();
   return !url.StartsWith("devtools:");
 }
-#endif
 
 }  // namespace
 
@@ -263,21 +265,19 @@ void LayoutShiftTracker::ObjectShifted(
       GetMoveDistance(old_starting_point_in_root, new_starting_point_in_root);
   frame_max_distance_ = std::max(frame_max_distance_, move_distance);
 
-#if DCHECK_IS_ON()
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    DVLOG(2) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
-             << frame.GetDocument()->Url() << ", " << object << " moved from "
-             << old_rect_in_root << " to " << new_rect_in_root
-             << " (visible from " << visible_old_rect << " to "
-             << visible_new_rect << ")";
+    VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
+            << frame.GetDocument()->Url() << ", " << object << " moved from "
+            << old_rect_in_root << " to " << new_rect_in_root
+            << " (visible from " << visible_old_rect << " to "
+            << visible_new_rect << ")";
     if (old_starting_point_in_root != old_rect_in_root.Location() ||
         new_starting_point_in_root != new_rect_in_root.Location()) {
-      DVLOG(2) << " (starting point from " << old_starting_point_in_root
-               << " to " << new_starting_point_in_root << ")";
+      VLOG(1) << " (starting point from " << old_starting_point_in_root
+              << " to " << new_starting_point_in_root << ")";
     }
   }
-#endif
 
   region_.AddRect(visible_old_rect);
   region_.AddRect(visible_new_rect);
@@ -438,15 +438,13 @@ void LayoutShiftTracker::NotifyPrePaintFinished() {
 
   overall_max_distance_ = std::max(overall_max_distance_, frame_max_distance_);
 
-#if DCHECK_IS_ON()
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    DVLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
-             << frame.GetDocument()->Url() << ", viewport was "
-             << (impact_fraction * 100) << "% impacted with distance fraction "
-             << move_distance_factor;
+    VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
+            << frame.GetDocument()->Url() << ", viewport was "
+            << (impact_fraction * 100) << "% impacted with distance fraction "
+            << move_distance_factor;
   }
-#endif
 
   if (pointerdown_pending_data_.saw_pointerdown) {
     pointerdown_pending_data_.score_delta += score_delta;
@@ -517,15 +515,13 @@ void LayoutShiftTracker::ReportShift(double score_delta,
                        "data", PerFrameTraceData(score_delta, had_recent_input),
                        "frame", ToTraceValue(&frame));
 
-#if DCHECK_IS_ON()
   if (ShouldLog(frame)) {
-    DVLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
-             << frame.GetDocument()->Url().GetString() << ", layout shift of "
-             << score_delta
-             << (had_recent_input ? " excluded by recent input" : " reported")
-             << "; cumulative score is " << score_;
+    VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
+            << frame.GetDocument()->Url().GetString() << ", layout shift of "
+            << score_delta
+            << (had_recent_input ? " excluded by recent input" : " reported")
+            << "; cumulative score is " << score_;
   }
-#endif
 }
 
 void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
