@@ -217,11 +217,11 @@ crbug.com/1093466 virtual/portals/http/tests/portals/* [ Pass ]
 crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
 
 # Subpixel differences
-crbug.com/771643 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-color-5.html [ Failure ]
-crbug.com/771643 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-5.html [ Failure ]
+crbug.com/997202 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-color-5.html [ Failure ]
+crbug.com/997202 external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-image-5.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure ]
-crbug.com/986110 external/wpt/css/css-transforms/perspective-transforms-equivalence.html [ Failure ]
+crbug.com/997202 external/wpt/css/css-transforms/perspective-transforms-equivalence.html [ Failure ]
 
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 
@@ -263,9 +263,9 @@ crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transf
 crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transform.html [ Pass Crash ]
 
 # Subpixel differences due to compositing on Mac10.14+.
-crbug.com/1079418 [ Mac10.14 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
-crbug.com/1079418 [ Mac10.15 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
-crbug.com/1079418 [ Mac11.0 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/997202 [ Mac10.14 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/997202 [ Mac10.15 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/997202 [ Mac11.0 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
 
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]
@@ -347,9 +347,9 @@ crbug.com/898394 virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html
 crbug.com/1024151 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
 
 # Subpixel rounding differences that are incorrect.
-crbug.com/836886 compositing/overflow/scaled-overflow.html [ Failure ]
+crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Flaky subpixel AA difference (not necessarily incorrect, but flaky)
-crbug.com/921105 virtual/threaded-no-composited-antialiasing/animations/skew-notsequential-compositor.html [ Failure Pass ]
+crbug.com/997202 virtual/threaded-no-composited-antialiasing/animations/skew-notsequential-compositor.html [ Failure Pass ]
 
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg.html [ Failure ]
 crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg-clip.html [ Failure ]
@@ -1787,7 +1787,7 @@ crbug.com/528062 [ Win ] http/tests/security/contentSecurityPolicy/cached-frame-
 # In this configuration, the pixel smoothed glyphs will be created from subpixel smoothed glyphs.
 # This means that CoreGraphics may draw outside the reported glyph bounds, and in this case does.
 # By about a quarter or less of a pixel.
-crbug.com/421412 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
+crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
 crbug.com/574283 [ Mac ] fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Skip ]
 crbug.com/574283 [ Mac ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/fixed-background-in-iframe.html [ Skip ]
@@ -5938,10 +5938,7 @@ crbug.com/1145019 [ Win7 ] fast/events/updateLayoutForHitTest.html [ Failure ]
 
 # Lack of support for reftest fuzzy matching
 # Reftests have minor pixel differences due to antialiasing.
-crbug.com/997202 [ Mac ] external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
-crbug.com/997202 [ Mac ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
-crbug.com/997202 [ Mac ] virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
-crbug.com/997202 [ Mac ] virtual/transform-interop/external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
+crbug.com/997202 external/wpt/css/css-transforms/animation/transform-interpolation-rotate-slerp.html [ Failure ]
 
 # Sheriff 2020-11-04
 crbug.com/1144273 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Pass Failure Timeout ]
