@@ -31,7 +31,10 @@ bool IsUnderDriveMountPoint(const base::FilePath& path);
 // profile.
 base::FilePath GetCacheRootPath(Profile* profile);
 
-// Returns true if Drive is enabled for the given Profile.
+// Returns true if Drive is available for the given Profile.
+bool IsDriveAvailableForProfile(Profile* profile);
+
+// Returns true if Drive is currently enabled for the given Profile.
 bool IsDriveEnabledForProfile(Profile* profile);
 
 // Enum type for describing the current connection status to Drive.

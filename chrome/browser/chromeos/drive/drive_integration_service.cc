@@ -575,7 +575,7 @@ DriveIntegrationService::DriveIntegrationService(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::WithBaseSyncPrimitives()});
 
-  if (util::IsDriveEnabledForProfile(profile)) {
+  if (util::IsDriveAvailableForProfile(profile)) {
     preference_watcher_ =
         std::make_unique<PreferenceWatcher>(profile->GetPrefs());
     preference_watcher_->set_integration_service(this);

@@ -72,7 +72,7 @@ base::FilePath GetCacheRootPath(Profile* profile) {
   return cache_root_path.Append(kFileCacheVersionDir);
 }
 
-bool IsDriveEnabledForProfile(Profile* profile) {
+bool IsDriveAvailableForProfile(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Disable Drive for non-Gaia accounts.
@@ -90,17 +90,21 @@ bool IsDriveEnabledForProfile(Profile* profile) {
   if (!user || !user->HasGaiaAccount())
     return false;
 
-  // Disable Drive if preference is set. This can happen with commandline flag
-  // --disable-drive or enterprise policy, or with user settings.
-  if (profile->GetPrefs()->GetBoolean(prefs::kDisableDrive))
-    return false;
-
   // Disable drive if sync is disabled by command line flag. Outside tests, this
   // only occurs in cases already handled by the gaia account check above.
   if (!switches::IsSyncAllowedByFlag())
     return false;
 
   return true;
+}
+
+bool IsDriveEnabledForProfile(Profile* profile) {
+  // Disable Drive if preference is set. This can happen with commandline flag
+  // --disable-drive or enterprise policy, or with user settings.
+  if (profile->GetPrefs()->GetBoolean(prefs::kDisableDrive))
+    return false;
+
+  return IsDriveAvailableForProfile(profile);
 }
 
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {

@@ -39,8 +39,8 @@ class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
     return &fake_drivefs_helpers_[profile]->fake_drivefs();
   }
 
- private:
-  drive::DriveIntegrationService* CreateDriveIntegrationService(
+ protected:
+  virtual drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath mount_path = profile->GetPath().Append("drivefs");
@@ -52,6 +52,7 @@ class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
     return integration_service;
   }
 
+ private:
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
@@ -215,4 +216,28 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
     run_loop.Run();
   }
 }
+
+class DriveIntegrationServiceWithPrefDisabledBrowserTest
+    : public DriveIntegrationServiceBrowserTest {
+  drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) override {
+    profile->GetPrefs()->SetBoolean(prefs::kDisableDrive, true);
+    return DriveIntegrationServiceBrowserTest::CreateDriveIntegrationService(
+        profile);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceWithPrefDisabledBrowserTest,
+                       RenableAndDisableDrive) {
+  auto* profile = browser()->profile();
+  auto* drive_service = DriveIntegrationServiceFactory::FindForProfile(profile);
+  EXPECT_FALSE(drive_service->is_enabled());
+
+  profile->GetPrefs()->SetBoolean(prefs::kDisableDrive, false);
+  EXPECT_TRUE(drive_service->is_enabled());
+
+  profile->GetPrefs()->SetBoolean(prefs::kDisableDrive, true);
+  EXPECT_FALSE(drive_service->is_enabled());
+}
+
 }  // namespace drive
