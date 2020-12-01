@@ -137,7 +137,7 @@ xcode_cache = struct(
     # (current default) xc12 gm seed
     x12a7209 = xcode_enum("xcode_ios_12a7209", "xcode_ios_12a7209.app"),
     # latest Xcode 12 beta version.
-    x12b5035g = xcode_enum("xcode_ios_12b5035g", "xcode_ios_12b5035g.app"),
+    x12b5044c = xcode_enum("xcode_ios_12b5044c", "xcode_ios_12b5044c.app"),
 )
 
 ################################################################################

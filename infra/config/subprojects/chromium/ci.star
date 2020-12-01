@@ -3124,9 +3124,9 @@ ci.fyi_ios_builder(
         category = "iOS|iOS14",
         short_name = "sdk14",
     ),
-    caches = [xcode_cache.x12b5035g],
+    caches = [xcode_cache.x12b5044c],
     properties = {
-        "xcode_build_version": "12b5035g",
+        "xcode_build_version": "12b5044c",
     },
 )
 
