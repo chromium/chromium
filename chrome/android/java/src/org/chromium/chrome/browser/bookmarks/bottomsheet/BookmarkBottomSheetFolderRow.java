@@ -5,20 +5,26 @@
 package org.chromium.chrome.browser.bookmarks.bottomsheet;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.util.Pair;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 
 /**
  * Represents a folder row in bookmark bottom sheet.
  */
 class BookmarkBottomSheetFolderRow extends BookmarkRow {
     private Runnable mOnClickListener;
+    private @ColorRes int mIconColor = R.color.default_icon_color_tint_list;
 
     /**
      * Constructor for inflating from XML.
@@ -35,6 +41,11 @@ class BookmarkBottomSheetFolderRow extends BookmarkRow {
         mDescriptionView.setText(subtitle == null ? "" : subtitle);
     }
 
+    void setIcon(Pair<Drawable, Integer> drawableAndColor) {
+        mIconColor = drawableAndColor.second;
+        setStartIconDrawable(drawableAndColor.first);
+    }
+
     void setOnClickListener(@NonNull Runnable listener) {
         mOnClickListener = listener;
     }
@@ -48,9 +59,6 @@ class BookmarkBottomSheetFolderRow extends BookmarkRow {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mMoreIcon.setVisibility(GONE);
-
-        // TODO(xingliu): Load the correct icon.
-        setStartIconDrawable(BookmarkUtils.getFolderIcon(getContext()));
     }
 
     // BookmarkRow overrides.
@@ -63,5 +71,10 @@ class BookmarkBottomSheetFolderRow extends BookmarkRow {
     @Override
     public boolean onLongClick(View view) {
         return false;
+    }
+
+    @Override
+    protected ColorStateList getDefaultStartIconTint() {
+        return AppCompatResources.getColorStateList(getContext(), mIconColor);
     }
 }

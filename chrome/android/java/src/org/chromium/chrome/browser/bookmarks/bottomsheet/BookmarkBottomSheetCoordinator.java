@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -96,10 +97,15 @@ public class BookmarkBottomSheetCoordinator {
 
     // Build the model for a single item in the bookmark bottom sheet.
     private PropertyModel buildItemModel(BookmarkItem bookmarkItem) {
+        @BookmarkType
+        int type = bookmarkItem.getId().getType();
         PropertyModel model =
                 new PropertyModel.Builder(BookmarkBottomSheetItemProperties.ALL_KEYS)
                         .with(BookmarkBottomSheetItemProperties.TITLE, bookmarkItem.getTitle())
                         .with(BookmarkBottomSheetItemProperties.SUBTITLE, getSubtitle(bookmarkItem))
+                        .with(BookmarkBottomSheetItemProperties.ICON_DRAWABLE_AND_COLOR,
+                                new Pair<>(BookmarkUtils.getFolderIcon(mContext, type),
+                                        BookmarkUtils.getFolderIconTint(type)))
                         .with(BookmarkBottomSheetItemProperties.ON_CLICK_LISTENER,
                                 () -> onClick(bookmarkItem))
                         .build();

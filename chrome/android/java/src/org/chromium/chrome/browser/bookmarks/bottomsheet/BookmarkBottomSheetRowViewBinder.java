@@ -17,6 +17,8 @@ class BookmarkBottomSheetRowViewBinder {
             view.setTitle(model.get(BookmarkBottomSheetItemProperties.TITLE));
         } else if (BookmarkBottomSheetItemProperties.SUBTITLE.equals(propertyKey)) {
             view.setSubtitle(model.get(BookmarkBottomSheetItemProperties.SUBTITLE));
+        } else if (BookmarkBottomSheetItemProperties.ICON_DRAWABLE_AND_COLOR.equals(propertyKey)) {
+            view.setIcon(model.get(BookmarkBottomSheetItemProperties.ICON_DRAWABLE_AND_COLOR));
         } else if (BookmarkBottomSheetItemProperties.ON_CLICK_LISTENER.equals(propertyKey)) {
             view.setOnClickListener(model.get(BookmarkBottomSheetItemProperties.ON_CLICK_LISTENER));
         }
