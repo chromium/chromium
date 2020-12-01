@@ -561,6 +561,14 @@ export function scanningAppTest() {
           // enabled, and the cancel button shouldn't be visible.
           assertTrue(isVisible(scanButton));
           assertFalse(isVisible(cancelButton));
+          assertTrue(scanningApp.$$('#toast').open);
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
+          assertEquals(
+              scanningApp.i18n('scanCanceledToastText'),
+              scanningApp.$$('#toastText').textContent.trim());
         });
   });
 
@@ -608,6 +616,10 @@ export function scanningAppTest() {
         .then(() => {
           // After canceling fails, the error toast should pop up.
           assertTrue(scanningApp.$$('#toast').open);
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
           assertEquals(
               scanningApp.i18n('cancelFailedToastText'),
               scanningApp.$$('#toastText').textContent.trim());
@@ -649,6 +661,10 @@ export function scanningAppTest() {
         })
         .then(() => {
           assertTrue(scanningApp.$$('#toast').open);
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
           assertEquals(
               scanningApp.i18n('startScanFailedToast'),
               scanningApp.$$('#toastText').textContent.trim());

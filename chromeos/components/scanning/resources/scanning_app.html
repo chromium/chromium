@@ -180,11 +180,13 @@
   </div>
   <cr-toast id="toast" duration="5000">
     <div id="toastDiv">
-      <iron-icon id="infoIcon" icon="cr:info-outline"></iron-icon>
+      <iron-icon id="infoIcon" icon="cr:info-outline"
+          hidden="[[!showToastInfoIcon_]]"></iron-icon>
       <span id="toastText">[[i18n(toastMessageKey_)]]</span>
       <!-- TODO(gavinwill): Add href to the help link when available -->
       <div id="getHelpDiv">
-        <a id="getHelpLink" href="#">[[i18n('getHelpLinkText')]]</a>
+        <a id="getHelpLink" href="#" hidden="[[!showToastHelpLink_]]">
+          [[i18n('getHelpLinkText')]]</a>
       </div>
     </div>
   </cr-toast>
