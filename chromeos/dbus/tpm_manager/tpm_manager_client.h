@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 
 namespace dbus {
@@ -23,6 +24,13 @@ namespace chromeos {
 // definitions of the D-Bus methods and their arguments.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnOwnershipTaken() = 0;
+  };
+
+ public:
+  // Callbacks of the D-Bus methods.
   using GetTpmNonsensitiveStatusCallback = base::OnceCallback<void(
       const ::tpm_manager::GetTpmNonsensitiveStatusReply&)>;
   using GetVersionInfoCallback =
@@ -94,6 +102,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
   virtual void ClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordRequest& request,
       ClearStoredOwnerPasswordCallback callback) = 0;
+
+  // Adds an observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  // Removes an observer.
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns an interface for testing (fake only), or returns nullptr.
   virtual TestInterface* GetTestInterface() = 0;

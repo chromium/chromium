@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -49,6 +50,14 @@ bool ParseProto(dbus::Response* response,
   }
 
   return true;
+}
+
+void OnSignalConnected(const std::string& interface_name,
+                       const std::string& signal_name,
+                       bool success) {
+  DCHECK_EQ(interface_name, ::tpm_manager::kTpmManagerInterface);
+  LOG_IF(DFATAL, !success) << "Failed to connect to D-Bus signal; interface: "
+                           << interface_name << "; signal: " << signal_name;
 }
 
 // "Real" implementation of TpmManagerClient taking to the TpmManager daemon
@@ -96,10 +105,18 @@ class TpmManagerClientImpl : public TpmManagerClient {
                     std::move(callback));
   }
 
+  void AddObserver(Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+  void RemoveObserver(Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
+
   void Init(dbus::Bus* bus) {
     proxy_ = bus->GetObjectProxy(
         ::tpm_manager::kTpmManagerServiceName,
         dbus::ObjectPath(::tpm_manager::kTpmManagerServicePath));
+    ConnectToOwnershipTakenSignal();
   }
 
  private:
@@ -156,8 +173,28 @@ class TpmManagerClientImpl : public TpmManagerClient {
     std::move(callback).Run(reply_proto);
   }
 
+  // Called when receiving ownership taken signal.
+  void OnOwnershipTakenSignal(dbus::Signal*) {
+    for (auto& observer : observer_list_) {
+      observer.OnOwnershipTaken();
+    }
+  }
+
+  // Connects to ownership taken signal.
+  void ConnectToOwnershipTakenSignal() {
+    proxy_->ConnectToSignal(
+        ::tpm_manager::kTpmManagerInterface,
+        ::tpm_manager::kOwnershipTakenSignal,
+        base::BindRepeating(&TpmManagerClientImpl::OnOwnershipTakenSignal,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
+  }
+
   // D-Bus proxy for the TpmManager daemon, not owned.
   dbus::ObjectProxy* proxy_ = nullptr;
+
+  // The observer list of ownership taken signal.
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<TpmManagerClientImpl> weak_factory_{this};
 };

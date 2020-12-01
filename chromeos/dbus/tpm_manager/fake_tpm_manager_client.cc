@@ -66,6 +66,14 @@ void FakeTpmManagerClient::ClearStoredOwnerPassword(
                     ::tpm_manager::ClearStoredOwnerPasswordReply());
 }
 
+void FakeTpmManagerClient::AddObserver(Observer* observer) {
+  NOTIMPLEMENTED();
+}
+
+void FakeTpmManagerClient::RemoveObserver(Observer* observer) {
+  NOTIMPLEMENTED();
+}
+
 TpmManagerClient::TestInterface* FakeTpmManagerClient::GetTestInterface() {
   return this;
 }

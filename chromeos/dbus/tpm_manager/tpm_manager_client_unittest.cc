@@ -12,6 +12,7 @@
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
+#include "dbus/object_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/tpm_manager/dbus-constants.h"
@@ -19,6 +20,7 @@
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
+using ::testing::SaveArg;
 
 namespace chromeos {
 
@@ -30,6 +32,19 @@ void RunResponseCallback(dbus::ObjectProxy::ResponseCallback callback,
                          std::unique_ptr<dbus::Response> response) {
   std::move(callback).Run(response.get());
 }
+
+// The observer class used for testing to watch the invocation of the signal
+// callbacks.
+class TestObserver : public TpmManagerClient::Observer {
+ public:
+  // TpmManagerClient::Observer.
+  void OnOwnershipTaken() override { ++signal_count_; }
+
+  int signal_count() const { return signal_count_; }
+
+ private:
+  int signal_count_ = 0;
+};
 
 }  // namespace
 
@@ -59,10 +74,16 @@ class TpmManagerClientTest : public testing::Test {
     EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
         .WillRepeatedly(Invoke(this, &TpmManagerClientTest::OnCallMethod));
 
+    EXPECT_CALL(*proxy_,
+                DoConnectToSignal(::tpm_manager::kTpmManagerInterface,
+                                  ::tpm_manager::kOwnershipTakenSignal, _, _))
+        .WillOnce(SaveArg<2>(&ownership_taken_signal_callback_));
     TpmManagerClient::Initialize(bus_.get());
 
     // Execute callbacks posted by `client_->Init()`.
     base::RunLoop().RunUntilIdle();
+
+    ASSERT_FALSE(ownership_taken_signal_callback_.is_null());
 
     client_ = TpmManagerClient::Get();
   }
@@ -70,6 +91,16 @@ class TpmManagerClientTest : public testing::Test {
   void TearDown() override { TpmManagerClient::Shutdown(); }
 
  protected:
+  void EmitOwnershipTakenSignal() {
+    ::tpm_manager::OwnershipTakenSignal ownership_taken_signal;
+    dbus::Signal signal(::tpm_manager::kTpmManagerInterface,
+                        ::tpm_manager::kOwnershipTakenSignal);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(
+        ownership_taken_signal);
+    // Emit signal.
+    ASSERT_FALSE(ownership_taken_signal_callback_.is_null());
+    ownership_taken_signal_callback_.Run(&signal);
+  }
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Mock bus and proxy for simulating calls.
@@ -123,6 +154,8 @@ class TpmManagerClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(RunResponseCallback, std::move(*callback),
                                   std::move(response)));
   }
+
+  dbus::ObjectProxy::SignalCallback ownership_taken_signal_callback_;
 };
 
 TEST_F(TpmManagerClientTest, GetTpmNonsensitiveStatus) {
@@ -274,6 +307,21 @@ TEST_F(TpmManagerClientTest, ClearStoredOwnerPassword) {
       ::tpm_manager::ClearStoredOwnerPasswordRequest(), std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(expected_clear_password_reply_.status(), result_reply.status());
+}
+
+TEST_F(TpmManagerClientTest, OnwershipTakenSignal) {
+  TestObserver observer;
+  ASSERT_EQ(observer.signal_count(), 0);
+
+  client_->AddObserver(&observer);
+  EmitOwnershipTakenSignal();
+
+  EXPECT_EQ(observer.signal_count(), 1);
+
+  client_->RemoveObserver(&observer);
+  EmitOwnershipTakenSignal();
+
+  EXPECT_EQ(observer.signal_count(), 1);
 }
 
 TEST_F(TpmManagerClientTest, ClearStoredOwnerPasswordDBusFailure) {
