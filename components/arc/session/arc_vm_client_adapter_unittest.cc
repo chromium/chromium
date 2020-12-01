@@ -22,10 +22,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -1189,7 +1189,7 @@ TEST_F(ArcVmClientAdapterTest, TestCreateArcVmClientAdapter) {
 }
 
 TEST_F(ArcVmClientAdapterTest, ChromeOsChannelStable) {
-  base::SysInfo::SetChromeOSVersionInfoForTest(
+  base::test::ScopedChromeOSVersionInfo info(
       "CHROMEOS_RELEASE_TRACK=stable-channel", base::Time::Now());
 
   StartParams start_params(GetPopulatedStartParams());
@@ -1199,13 +1199,11 @@ TEST_F(ArcVmClientAdapterTest, ChromeOsChannelStable) {
   EXPECT_TRUE(
       base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
                      "androidboot.chromeos_channel=stable"));
-
-  base::SysInfo::ResetChromeOSVersionInfoForTest();
 }
 
 TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
-  base::SysInfo::SetChromeOSVersionInfoForTest("CHROMEOS_RELEASE_TRACK=invalid",
-                                               base::Time::Now());
+  base::test::ScopedChromeOSVersionInfo info("CHROMEOS_RELEASE_TRACK=invalid",
+                                             base::Time::Now());
 
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
@@ -1214,8 +1212,6 @@ TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
   EXPECT_TRUE(
       base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
                      "androidboot.chromeos_channel=unknown"));
-
-  base::SysInfo::ResetChromeOSVersionInfoForTest();
 }
 
 // Tests that the binary translation type is set to None when no library is
