@@ -56,7 +56,11 @@ void ReportUVPlatformAuthenticatorAvailabilityMainThreadMac() {
   }
   Profile* profile = profile_manager->GetProfileByPath(
       profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
-  DCHECK(profile);
+  // Some tests have profiles but do not load the last profile before
+  // PostBrowserStart().
+  if (!profile) {
+    return;
+  }
 
   // Return to a low-priority thread for the actual check.
   base::ThreadPool::PostTask(
