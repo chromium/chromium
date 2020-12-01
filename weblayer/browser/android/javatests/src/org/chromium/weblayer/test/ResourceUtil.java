@@ -10,7 +10,7 @@ import android.content.Context;
  * Util class for dealing with resources.
  */
 public class ResourceUtil {
-    public static final int REQUIRED_PACKAGE_IDENTIFIER = 12;
+    public static final int REQUIRED_PACKAGE_IDENTIFIER = 36;
 
     private ResourceUtil() {}
 
