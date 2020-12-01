@@ -98,6 +98,14 @@ const char* const kDesktopSwitches[] = {
     "no-service-autorun",
 };
 
+#if defined(OS_WIN)
+
+const char* const kWindowsDesktopSwitches[] = {
+    "disable-backgrounding-occluded-windows",
+};
+
+#endif
+
 const char* const kAndroidSwitches[] = {
     "disable-fre", "enable-remote-debugging",
 };
@@ -141,6 +149,10 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     switches.SetUnparsedSwitch(common_switch);
   for (auto* desktop_switch : kDesktopSwitches)
     switches.SetUnparsedSwitch(desktop_switch);
+#if defined(OS_WIN)
+  for (auto* win_desktop_switch : kWindowsDesktopSwitches)
+    switches.SetUnparsedSwitch(win_desktop_switch);
+#endif
 
   // Chrome logs are normally sent to a file (whose location can be controlled
   // via the logPath capability). We expose a flag, --enable-chrome-logs, that

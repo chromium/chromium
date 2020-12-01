@@ -3012,6 +3012,20 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         is_desktop,
         self._driver.capabilities['webauthn:extension:largeBlob'])
 
+class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
+  def setUp(self):
+    self._driver1 = self.CreateDriver()
+    self._driver2 = self.CreateDriver()
+
+  def testBackgroundScreenshot(self):
+    self._driver2.Load(self._http_server.GetUrl('localhost')
+                      + '/chromedriver/empty.html')
+    self._driver1.Load(self._http_server.GetUrl('localhost')
+                      + '/chromedriver/empty.html')
+
+    screenshotPNGBase64  = self._driver1.TakeScreenshot()
+    self.assertIsNotNone(screenshotPNGBase64)
+
 # Tests that require a secure context.
 class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
   # The example attestation private key from the U2F spec at
