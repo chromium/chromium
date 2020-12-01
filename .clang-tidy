@@ -1,5 +1,6 @@
 ---
   Checks:          '-*,
+                    bugprone-argument-comment,
                     bugprone-string-integer-assignment,
                     bugprone-unused-raii,
                     bugprone-use-after-move,
@@ -32,4 +33,3 @@
     - key:          modernize-use-emplace.IgnoreImplicitConstructors
       value:        1
 ...
-

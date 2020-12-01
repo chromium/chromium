@@ -1,5 +1,6 @@
 ---
 Checks: '-*,
+         bugprone-argument-comment,
          google-build-namespaces,
          google-readability-namespace-comments,
          modernize-avoid-bind,
