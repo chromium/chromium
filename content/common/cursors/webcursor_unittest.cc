@@ -62,15 +62,23 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 #if defined(USE_OZONE)
   // Test if the rotating custom cursor works correctly.
   display::Display display;
+#if defined(OS_CHROMEOS)
   display.set_panel_rotation(display::Display::ROTATE_90);
+#endif
   webcursor.SetDisplayInfo(display);
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
   native_cursor = webcursor.GetNativeCursor();
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
+#if defined(OS_CHROMEOS)
   // Hotspot should be scaled & rotated.  We're using the icon created for 2.0,
   // on the display with dsf=1.0, so the host spot should be
   // ((32 - 20) / 2, 10 / 2) = (6, 5).
   EXPECT_EQ(gfx::Point(6, 5), native_cursor.custom_hotspot());
+#else
+  // For non-CrOS platforms, the cursor mustn't be rotated as logical and
+  // physical location is the same.
+  EXPECT_EQ(gfx::Point(5, 10), native_cursor.custom_hotspot());
+#endif
 #endif
 #endif
 }
