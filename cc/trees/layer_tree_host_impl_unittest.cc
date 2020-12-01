@@ -14253,7 +14253,7 @@ TEST_F(LayerTreeHostImplTest, JumpOnScrollbarClick) {
     InputHandlerPointerResult result = GetInputHandler().MouseDown(
         gfx::PointF(350, 400), /*jump_key_modifier*/ true);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
-    EXPECT_EQ(result.scroll_offset.y(), 2194);
+    EXPECT_FLOAT_EQ(result.scroll_offset.y(), 2194.2856f);
     result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_offset.y(), 0);
@@ -14266,7 +14266,7 @@ TEST_F(LayerTreeHostImplTest, JumpOnScrollbarClick) {
     InputHandlerPointerResult result = GetInputHandler().MouseDown(
         gfx::PointF(350, 400), /*jump_key_modifier*/ false);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
-    EXPECT_EQ(result.scroll_offset.y(), 2194);
+    EXPECT_FLOAT_EQ(result.scroll_offset.y(), 2194.2856f);
     result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_offset.y(), 0);
@@ -14343,7 +14343,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
             gfx::PointF(350, 560), /*jump_key_modifier*/ true);
 
     // This verifies that the jump click took place as expected.
-    EXPECT_EQ(gfx::ScrollOffset(0, 243), result.scroll_offset);
+    EXPECT_EQ(0, result.scroll_offset.x());
+    EXPECT_FLOAT_EQ(result.scroll_offset.y(), 243.80952f);
 
     // This verifies that the drag_state_ was initialized when a jump click
     // occurred.
@@ -14352,10 +14353,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
                     ->drag_state_.has_value());
 
     // This verifies that the jump click delta was accounted for correctly.
-    EXPECT_EQ(GetInputHandler()
-                  .scrollbar_controller_for_testing()
-                  ->drag_state_->scroll_position_at_start_,
-              243);
+    EXPECT_FLOAT_EQ(GetInputHandler()
+                        .scrollbar_controller_for_testing()
+                        ->drag_state_->scroll_position_at_start_,
+                    243.80952f);
   }
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
@@ -14531,7 +14532,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
   result = GetInputHandler().MouseMoveAt(gfx::Point(350, 20));
-  EXPECT_EQ(result.scroll_offset.y(), 12);
+  EXPECT_FLOAT_EQ(result.scroll_offset.y(), 12.190476f);
 
   // This is intentional. The thumb drags that follow will test the behavior
   // *after* the scroller length expansion.
@@ -14564,7 +14565,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
   result = GetInputHandler().MouseMoveAt(gfx::Point(350, 26));
-  EXPECT_EQ(result.scroll_offset.y(), 49);
+  EXPECT_FLOAT_EQ(result.scroll_offset.y(), 48.761906f);
   GetInputHandler().MouseUp(gfx::PointF(350, 26));
   host_impl_->DidFinishImplFrame(begin_frame_args);
 
@@ -17404,7 +17405,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
   GetInputHandler().BindToClient(&input_handler_client);
 
   // Test scrolling with device scale factor = 3.
-  const float expected_delta = floorf(kPercentDeltaForDirectionalScroll * 500);
+  const float expected_delta = kPercentDeltaForDirectionalScroll * 500;
 
   host_impl_->active_tree()->set_painted_device_scale_factor(3);
 

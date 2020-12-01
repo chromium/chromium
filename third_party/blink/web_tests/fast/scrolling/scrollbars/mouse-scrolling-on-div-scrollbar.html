@@ -90,7 +90,7 @@ window.onload = () => {
     let y = standardRectFast.bottom - SCROLL_CORNER - BUTTON_WIDTH - 2;
     await mouseClickOn(x, y);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_equals(standardDivFast.scrollTop, 74, "Pressing the down trackpart didn't scroll.");
+    assert_approx_equals(standardDivFast.scrollTop, 74, 1, "Pressing the down trackpart didn't scroll.");
 
     // Click on the track part just below the up arrow.
     x = standardRectFast.right - BUTTON_WIDTH / 2;
@@ -104,7 +104,7 @@ window.onload = () => {
     y = standardRectFast.bottom - BUTTON_WIDTH / 2;
     await mouseClickOn(x, y);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-    assert_equals(standardDivFast.scrollLeft, 74, "Pressing the right trackpart didn't scroll.");
+    assert_approx_equals(standardDivFast.scrollLeft, 74, 1, "Pressing the right trackpart didn't scroll.");
 
     // Click on the track part just to the right of the left arrow.
     x = standardRectFast.left + BUTTON_WIDTH + 2;

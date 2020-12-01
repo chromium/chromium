@@ -122,7 +122,7 @@ window.onload = () => {
 
     assert_equals(document.scrollingElement.scrollTop, 0,
         "Vertical thumb drag downwards on root scrollbars should not scroll layout viewport");
-    assert_equals(visualViewport.pageTop, EXPECTED_FIRST_VIEWPORT_DELTA,
+    assert_approx_equals(visualViewport.pageTop, EXPECTED_FIRST_VIEWPORT_DELTA, 1,
       "Vertical thumb drag downwards on root scroller did not scroll visual viewport as expected");
 
     await mouseMoveTo(x, y + FIRST_DELTA);

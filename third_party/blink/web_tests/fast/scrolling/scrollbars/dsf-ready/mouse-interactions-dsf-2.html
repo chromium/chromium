@@ -79,7 +79,7 @@ window.onload = () => {
     if (onLinuxPlatform)
       expected_offset = 92;
     else if (onMacPlatform)
-      expected_offset = 46;
+      expected_offset = 46.5;
     else
       expected_offset = window.devicePixelRatio == 1 ? 71 : 73;
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
@@ -124,7 +124,7 @@ window.onload = () => {
     if (onLinuxPlatform)
       expected_offset = 87;
     else if (onMacPlatform)
-      expected_offset = 72;
+      expected_offset = 72.5;
     else
       expected_offset = 82;
 

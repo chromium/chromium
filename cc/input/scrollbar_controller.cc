@@ -255,7 +255,7 @@ float ScrollbarController::GetScrollDeltaForAbsoluteJump() const {
   return delta * GetScrollerToScrollbarRatio() * GetPageScaleFactorForScroll();
 }
 
-int ScrollbarController::GetScrollDeltaForDragPosition(
+float ScrollbarController::GetScrollDeltaForDragPosition(
     const gfx::PointF pointer_position_in_widget) const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
   // Convert the move position to scrollbar layer relative for comparison with
@@ -278,9 +278,7 @@ int ScrollbarController::GetScrollDeltaForDragPosition(
   // correct amount, we have to convert the delta to be unscaled (i.e. multiply
   // by the page scale factor), as GSU deltas are always unscaled.
   scroll_delta *= GetPageScaleFactorForScroll();
-
-  // Scroll delta floored to match main thread per pixel behavior
-  return floorf(scroll_delta);
+  return scroll_delta;
 }
 
 // Performs hit test and prepares scroll deltas that will be used by GSU.
@@ -333,7 +331,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
   // valid ScrollNode.
   DCHECK(target_node);
 
-  int delta = GetScrollDeltaForDragPosition(position_in_widget);
+  float delta = GetScrollDeltaForDragPosition(position_in_widget);
   if (drag_state_->scroller_length_at_previous_move !=
       scrollbar->scroll_layer_length()) {
     drag_state_->scroller_displacement = delta;
@@ -436,7 +434,7 @@ float ScrollbarController::GetScrollerToScrollbarRatio() const {
       scrollbar->orientation() == ScrollbarOrientation::VERTICAL
           ? thumb_rect.height()
           : thumb_rect.width();
-  int viewport_length = GetViewportLength();
+  float viewport_length = GetViewportLength();
 
   return (scroll_layer_length - viewport_length) /
          (scrollbar_track_length - scrollbar_thumb_length);
@@ -627,7 +625,7 @@ LayerImpl* ScrollbarController::GetLayerHitByPoint(
   return layer_impl;
 }
 
-int ScrollbarController::GetViewportLength() const {
+float ScrollbarController::GetViewportLength() const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
   const ScrollNode* scroll_node =
       layer_tree_host_impl_->active_tree()
@@ -649,7 +647,7 @@ int ScrollbarController::GetViewportLength() const {
   return length / GetPageScaleFactorForScroll();
 }
 
-int ScrollbarController::GetScrollDeltaForPercentBasedScroll() const {
+float ScrollbarController::GetScrollDeltaForPercentBasedScroll() const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
 
   const ScrollNode* scroll_node =
@@ -677,10 +675,10 @@ float ScrollbarController::GetPageScaleFactorForScroll() const {
   return layer_tree_host_impl_->active_tree()->page_scale_factor_for_scroll();
 }
 
-int ScrollbarController::GetScrollDeltaForScrollbarPart(
+float ScrollbarController::GetScrollDeltaForScrollbarPart(
     const ScrollbarPart scrollbar_part,
     const bool jump_key_modifier) const {
-  int scroll_delta = 0;
+  float scroll_delta = 0;
 
   switch (scrollbar_part) {
     case ScrollbarPart::BACK_BUTTON:

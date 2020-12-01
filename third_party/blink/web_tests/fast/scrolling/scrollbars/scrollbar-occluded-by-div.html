@@ -71,6 +71,6 @@
     const expected = onMacPlatform ? 74 : EXPECTED_BUTTON_SCROLL_AMOUNT;
     const pressedPart = onMacPlatform ? "track" : "down arrow";
     await waitForAnimationEndTimeBased(() => {return scroller.scrollTop;});
-    assert_equals(scroller.scrollTop, expected, "Pressing the " + pressedPart + " didn't scroll.");
+    assert_approx_equals(scroller.scrollTop, expected, 1, "Pressing the " + pressedPart + " didn't scroll.");
   },"Test hit-testing when scrollbar is occluded.");
 </script>
