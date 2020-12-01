@@ -96,8 +96,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.fs.write_text_file(self.wpt_output,
                                 json.dumps(output_json))
 
-    def _handle_log_artifact(self, log_artifact, root_node, results_dir,
+    def _handle_text_outputs(self, actual_metadata, root_node, results_dir,
                              path_so_far):
+        """Produces actual, expected and diff text outputs."""
         # If the test passed, there are no artifacts to output. Note that if a
         # baseline file (*.ini file) exists, an actual of PASS means that the
         # test matched the baseline, not that the test itself passed. As such,
@@ -106,9 +107,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         if root_node["actual"] == "PASS":
             return
 
-        # Note that the log_artifact is a list of strings, so we join
+        # Note that the actual_metadata is a list of strings, so we join
         # them on new lines when writing to file.
-        actual_text = "\n".join(log_artifact)
+        actual_text = "\n".join(actual_metadata)
         actual_subpath = self._write_text_artifact(
             test_failures.FILENAME_SUFFIX_ACTUAL,
             results_dir, path_so_far, actual_text)
@@ -157,21 +158,33 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # Found a leaf, process it
             if "artifacts" not in root_node:
                 return
-            log_artifact = root_node["artifacts"].pop("log", None)
-            if log_artifact:
-                self._handle_log_artifact(log_artifact, root_node, results_dir,
-                                          path_so_far)
 
-            screenshot_artifact = root_node["artifacts"].pop("screenshots",
-                                                             None)
+            actual_metadata = root_node["artifacts"].pop(
+                "wpt_actual_metadata", None)
+            if actual_metadata:
+                self._handle_text_outputs(
+                    actual_metadata, root_node, results_dir, path_so_far)
+
+            screenshot_artifact = root_node["artifacts"].pop(
+                "screenshots", None)
             if screenshot_artifact:
                 screenshot_paths_dict = self._write_screenshot_artifact(
                     results_dir, path_so_far, screenshot_artifact)
                 for screenshot_key, path in screenshot_paths_dict.items():
                     root_node["artifacts"][screenshot_key] = [path]
 
-            crashlog_artifact = root_node["artifacts"].pop("wpt_crash_log",
-                                                           None)
+            log_artifact = root_node["artifacts"].pop("wpt_log", None)
+            if log_artifact:
+                artifact_subpath = self._write_text_artifact(
+                    test_failures.FILENAME_SUFFIX_STDERR,
+                    results_dir, path_so_far, "\n".join(log_artifact))
+                if artifact_subpath:
+                    # Required by fast/harness/results.html to show stderr.
+                    root_node["has_stderr"] = True
+                    root_node["artifacts"]["stderr"] = [artifact_subpath]
+
+            crashlog_artifact = root_node["artifacts"].pop(
+                "wpt_crash_log", None)
             if crashlog_artifact:
                 # Note that the crashlog_artifact is a list of strings, so we
                 # join them on new lines when writing to file.

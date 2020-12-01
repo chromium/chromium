@@ -81,8 +81,8 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         return json.loads(self.host.filesystem.read_text_file(
             OUTPUT_JSON_FILENAME))
 
-    def test_write_log_artifact(self):
-        # Ensure that log artifacts are written to the correct location.
+    def test_write_text_outputs(self):
+        # Ensure that text outputs are written to the correct location.
 
         # We only generate an actual.txt if our actual wasn't PASS, so in this
         # case we shouldn't write anything.
@@ -93,7 +93,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     'actual': 'PASS',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
-                        'log': ['test.html actual text'],
+                        'wpt_actual_metadata': ['test.html actual text'],
                     },
                 },
             },
@@ -121,8 +121,8 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         # Ensure the artifact in the json was replaced with the location of
         # the newly-created file.
         updated_json = self._load_json_output()
-        self.assertFalse(
-            "log" in updated_json["tests"]["test.html"]["artifacts"])
+        self.assertFalse("wpt_actual_metadata" in
+                         updated_json["tests"]["test.html"]["artifacts"])
         self.assertEqual(
             [actual_path],
             updated_json["tests"]["test.html"]["artifacts"]["actual_text"])
@@ -141,6 +141,36 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self.assertEqual(
             [pretty_diff_path],
             updated_json["tests"]["test.html"]["artifacts"]["pretty_text_diff"])
+
+    def test_write_log_artifact(self):
+        # Ensure that crash log artifacts are written to the correct location.
+        json_dict = {
+            'tests': {
+                'test.html': {
+                    'expected': 'PASS',
+                    'actual': 'FAIL',
+                    'artifacts': {
+                        'wpt_actual_status': ['ERROR'],
+                        'wpt_log': ['test.html exceptions'],
+                    },
+                },
+            },
+            'path_delimiter': '/',
+        }
+        self._create_json_output(json_dict)
+        self.wpt_adapter.do_post_test_run_tasks()
+        written_files = self.wpt_adapter.fs.written_files
+        stderr_path = os.path.join("layout-test-results", "test-stderr.txt")
+        self.assertEqual("test.html exceptions", written_files[stderr_path])
+        # Ensure the artifact in the json was replaced with the location of
+        # the newly-created file.
+        updated_json = self._load_json_output()
+        self.assertFalse(
+            "wpt_log" in updated_json["tests"]["test.html"]["artifacts"])
+        self.assertEqual(
+            [stderr_path],
+            updated_json["tests"]["test.html"]["artifacts"]["stderr"])
+        self.assertTrue(updated_json["tests"]["test.html"]["has_stderr"])
 
     def test_write_crashlog_artifact(self):
         # Ensure that crash log artifacts are written to the correct location.
@@ -225,7 +255,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
-                        'log': ['test.html actual text'],
+                        'wpt_actual_metadata': ['test.html actual text'],
                     },
                 },
             },
@@ -247,8 +277,8 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.
         updated_json = self._load_json_output()
-        self.assertFalse(
-            "log" in updated_json["tests"]["test.html"]["artifacts"])
+        self.assertFalse("wpt_actual_metadata" in
+                         updated_json["tests"]["test.html"]["artifacts"])
         self.assertEqual(
             [actual_path],
             updated_json["tests"]["test.html"]["artifacts"]["actual_text"])
@@ -289,7 +319,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
-                        'log': ['variant bar/abc actual text'],
+                        'wpt_actual_metadata': ['variant bar/abc actual text'],
                     },
                 },
             },
@@ -316,7 +346,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.
         updated_json = self._load_json_output()
-        self.assertFalse("log" in updated_json["tests"]
+        self.assertFalse("wpt_actual_metadata" in updated_json["tests"]
                          ["variant.html?foo=bar/abc"]["artifacts"])
         self.assertEqual(
             [actual_path],
@@ -343,7 +373,8 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
                     'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
-                        'log': ['dir/multiglob worker actual text'],
+                        'wpt_actual_metadata':
+                        ['dir/multiglob worker actual text'],
                     },
                 },
             },
@@ -372,8 +403,8 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.
         updated_json = self._load_json_output()
-        self.assertFalse("log" in updated_json["tests"]
-            ["dir/multiglob.https.any.worker.html"]["artifacts"])
+        self.assertFalse("wpt_actual_metadata" in updated_json["tests"]
+                         ["dir/multiglob.https.any.worker.html"]["artifacts"])
         self.assertEqual(
             [actual_path],
             updated_json["tests"]["dir/multiglob.https.any.worker.html"]
