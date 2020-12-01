@@ -295,9 +295,10 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
     webrtc::PeerConnectionInterface::RTCConfiguration config;
     config.sdp_semantics = webrtc::SdpSemantics::kPlanB;
     MediaConstraints constraints;
-    EXPECT_TRUE(pc_handler_->InitializeForTest(
-        config, constraints, mock_tracker_.get()->AsWeakPtr()));
-
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_TRUE(pc_handler_->InitializeForTest(config, constraints,
+                                               mock_tracker_.get()->AsWeakPtr(),
+                                               exception_state));
     mock_peer_connection_ = pc_handler_->native_peer_connection();
     ASSERT_TRUE(mock_peer_connection_);
     EXPECT_CALL(*mock_peer_connection_, Close());

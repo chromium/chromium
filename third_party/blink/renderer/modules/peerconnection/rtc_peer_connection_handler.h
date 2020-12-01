@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -124,14 +125,16 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       const MediaConstraints& options,
-      const base::WeakPtr<PeerConnectionTracker>& peer_connection_tracker);
+      const base::WeakPtr<PeerConnectionTracker>& peer_connection_tracker,
+      ExceptionState& exception_state);
 
   // RTCPeerConnectionHandlerPlatform implementation
   virtual bool Initialize(
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       const MediaConstraints& options,
-      WebLocalFrame* web_frame);
+      WebLocalFrame* web_frame,
+      ExceptionState& exception_state);
 
   virtual void Stop();
   virtual void StopAndUnregister();

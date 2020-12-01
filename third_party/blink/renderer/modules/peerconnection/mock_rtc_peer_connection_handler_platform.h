@@ -29,7 +29,8 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
 
   bool Initialize(const webrtc::PeerConnectionInterface::RTCConfiguration&,
                   const MediaConstraints&,
-                  WebLocalFrame*) override;
+                  WebLocalFrame*,
+                  ExceptionState&) override;
   void Stop() override;
   void StopAndUnregister() override;
 

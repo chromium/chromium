@@ -32,6 +32,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
@@ -346,7 +347,8 @@ scoped_refptr<webrtc::PeerConnectionInterface>
 PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
-    webrtc::PeerConnectionObserver* observer) {
+    webrtc::PeerConnectionObserver* observer,
+    ExceptionState& exception_state) {
   CHECK(web_frame);
   CHECK(observer);
   if (!GetPcFactory().get())
@@ -357,9 +359,16 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   webrtc::PeerConnectionDependencies dependencies(observer);
   dependencies.allocator = CreatePortAllocator(web_frame);
   dependencies.async_resolver_factory = CreateAsyncResolverFactory();
-  return GetPcFactory()
-      ->CreatePeerConnection(config, std::move(dependencies))
-      .get();
+  auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
+      config, std::move(dependencies));
+  if (pc_or_error.ok()) {
+    // Convert from rtc::scoped_refptr to scoped_refptr
+    return pc_or_error.value().get();
+  } else {
+    // Convert error
+    ThrowExceptionFromRTCError(pc_or_error.error(), exception_state);
+    return nullptr;
+  }
 }
 
 std::unique_ptr<cricket::PortAllocator>

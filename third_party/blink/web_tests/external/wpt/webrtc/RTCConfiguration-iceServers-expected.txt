@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 67 tests; 32 PASS, 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 67 tests; 33 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL new RTCPeerConnection() should have default configuration.iceServers of undefined assert_equals: expected (undefined) undefined but got (object) []
 PASS new RTCPeerConnection(config) - {} should succeed
 PASS setConfiguration(config) - {} should succeed
@@ -23,9 +23,9 @@ FAIL new RTCPeerConnection(config) - with 2 stun servers should succeed assert_e
 FAIL setConfiguration(config) - with 2 stun servers should succeed assert_equals: expected 1 but got 2
 FAIL new RTCPeerConnection(config) - with turn server, username, credential should succeed assert_equals: expected (string) "password" but got (undefined) undefined
 FAIL setConfiguration(config) - with turn server, username, credential should succeed assert_equals: expected (string) "password" but got (undefined) undefined
-FAIL new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': Failed to initialize native PeerConnection.
+FAIL new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parse failed
 FAIL setConfiguration(config) - with turns server and empty string username, credential should succeed Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
-FAIL new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': Failed to initialize native PeerConnection.
+FAIL new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parse failed
 FAIL setConfiguration(config) - with turn server and empty string username, credential should succeed Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
 FAIL new RTCPeerConnection(config) - with one turns server, one turn server, username, credential should succeed assert_equals: expected 1 but got 2
 FAIL setConfiguration(config) - with one turns server, one turn server, username, credential should succeed assert_equals: expected 1 but got 2
@@ -59,10 +59,7 @@ FAIL setConfiguration(config) - with invalid turn url should throw SyntaxError a
       makePc({ iceServers: [{
         urls: 'turn://example.org/foo?x=y'
       }] })" threw object "InvalidAccessError: Failed to execute 'setConfiguration' on 'RTCPeerConnection': Both username and credential are required when the URL scheme is "turn" or "turns"." that is not a DOMException SyntaxError: property "code" is equal to 15, expected 12
-FAIL new RTCPeerConnection(config) - with invalid stun url should throw SyntaxError assert_throws_dom: function "() =>
-      makePc({ iceServers: [{
-        urls: 'stun://example.org/foo?x=y'
-      }] })" threw object "NotSupportedError: Failed to construct 'RTCPeerConnection': Failed to initialize native PeerConnection." that is not a DOMException SyntaxError: property "code" is equal to 9, expected 12
+PASS new RTCPeerConnection(config) - with invalid stun url should throw SyntaxError
 FAIL setConfiguration(config) - with invalid stun url should throw SyntaxError assert_throws_dom: function "() =>
       makePc({ iceServers: [{
         urls: 'stun://example.org/foo?x=y'
