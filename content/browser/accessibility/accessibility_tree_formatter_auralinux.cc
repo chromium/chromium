@@ -72,16 +72,21 @@ class AccessibilityTreeFormatterAuraLinux
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
+  return AXInspectFactory::CreateFormatter(kLinux);
 }
 
 // static
-std::vector<AccessibilityTreeFormatter::TestPass>
-AccessibilityTreeFormatter::GetTestPasses() {
-  return {
-      {"blink", &AXInspectFactory::CreateBlinkFormatter},
-      {"linux", &AXInspectFactory::CreatePlatformFormatter},
-  };
+std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
+    AXInspectFactory::Type type) {
+  switch (type) {
+    case kBlink:
+      return std::make_unique<AccessibilityTreeFormatterBlink>();
+    case kLinux:
+      return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
+    default:
+      NOTREACHED() << "Unsupported formatter type " << type;
+  }
+  return nullptr;
 }
 
 AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() {}

@@ -82,11 +82,9 @@ using ui::AXTreeFormatter;
 
 // DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
-    : formatter_factory_(nullptr),
-      event_recorder_factory_(nullptr),
+    : event_recorder_factory_(nullptr),
       enable_accessibility_after_navigating_(false),
-      test_helper_(
-          AccessibilityTreeFormatter::GetTestPasses()[GetParam()].name) {}
+      test_helper_(DumpAccessibilityTestHelper::TestPasses()[GetParam()]) {}
 
 DumpAccessibilityTestBase::~DumpAccessibilityTestBase() {}
 
@@ -145,7 +143,7 @@ void DumpAccessibilityTestBase::ChooseFeatures(
 
 std::string
 DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
-  std::unique_ptr<AXTreeFormatter> formatter(formatter_factory_());
+  std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
   std::vector<AXPropertyFilter> property_filters;
   property_filters.emplace_back("*", AXPropertyFilter::ALLOW);
   formatter->SetPropertyFilters(property_filters);
@@ -193,29 +191,26 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
 void DumpAccessibilityTestBase::RunTest(const base::FilePath file_path,
                                         const char* file_dir) {
   // Get all the tree formatters; the test is run independently on each one.
-  auto formatters = AccessibilityTreeFormatter::GetTestPasses();
+  auto test_passes = DumpAccessibilityTestHelper::TestPasses();
   auto event_recorders = AccessibilityEventRecorder::GetTestPasses();
-  CHECK(event_recorders.size() == formatters.size());
+  CHECK(event_recorders.size() == test_passes.size());
 
   // The current test number is supplied as a test parameter.
   size_t current_pass = GetParam();
-  CHECK_LT(current_pass, formatters.size());
-  CHECK_EQ(std::string(formatters[current_pass].name),
-           std::string(event_recorders[current_pass].name));
+  CHECK_LT(current_pass, test_passes.size());
+  CHECK_EQ(test_passes.size(), event_recorders.size());
 
-  formatter_factory_ = formatters[current_pass].create_formatter;
   event_recorder_factory_ = event_recorders[current_pass].create_recorder;
 
   RunTestForPlatform(file_path, file_dir);
 
-  formatter_factory_ = nullptr;
   event_recorder_factory_ = nullptr;
 }
 
 void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath file_path,
     const char* file_dir) {
-  formatter_ = formatter_factory_();
+  formatter_ = CreateFormatter();
 
   // Disable the "hot tracked" state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
@@ -481,6 +476,12 @@ BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   return web_contents->GetRootBrowserAccessibilityManager();
+}
+
+std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
+    const {
+  return AXInspectFactory::CreateFormatter(
+      DumpAccessibilityTestHelper::TestPasses()[GetParam()]);
 }
 
 BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(

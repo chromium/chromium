@@ -36,7 +36,7 @@ namespace content {
 // This is extended by a subclass for each platform where accessibility is
 // implemented.
 class CONTENT_EXPORT AccessibilityTreeFormatterBase
-    : public AccessibilityTreeFormatter {
+    : public ui::AXTreeFormatter {
  public:
   AccessibilityTreeFormatterBase();
   ~AccessibilityTreeFormatterBase() override;

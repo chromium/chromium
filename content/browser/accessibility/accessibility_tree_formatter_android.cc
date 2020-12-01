@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 
 using base::StringPrintf;
@@ -109,17 +110,21 @@ class AccessibilityTreeFormatterAndroid
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return std::make_unique<AccessibilityTreeFormatterAndroid>();
+  return AXInspectFactory::CreateFormatter(kAndroid);
 }
 
 // static
-std::vector<AccessibilityTreeFormatter::TestPass>
-AccessibilityTreeFormatter::GetTestPasses() {
-  // Note: Android doesn't do a "blink" pass; the blink tree is different on
-  // Android because we exclude inline text boxes, for performance.
-  return {
-      {"android", &AXInspectFactory::CreatePlatformFormatter},
-  };
+std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
+    AXInspectFactory::Type type) {
+  switch (type) {
+    case kAndroid:
+      return std::make_unique<AccessibilityTreeFormatterAndroid>();
+    case kBlink:
+      return std::make_unique<AccessibilityTreeFormatterBlink>();
+    default:
+      NOTREACHED() << "Unsupported formatter type " << type;
+  }
+  return nullptr;
 }
 
 AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {}

@@ -120,6 +120,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
+using content::AXInspectFactory;
 using content::WebContents;
 using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewManager;
@@ -3110,14 +3111,13 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          PDFExtensionAccessibilityTextExtractionTest,
                          testing::Bool());
 
-using AXTestPass = content::AccessibilityTreeFormatter::TestPass;
+using AXInspectType = AXInspectFactory::Type;
 
 class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionTest,
-      public ::testing::WithParamInterface<std::pair<bool, AXTestPass>> {
+      public ::testing::WithParamInterface<std::pair<bool, AXInspectType>> {
  public:
-  PDFExtensionAccessibilityTreeDumpTest()
-      : test_pass_(GetParam().second), test_helper_(test_pass_.name) {}
+  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(GetParam().second) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3177,7 +3177,8 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Set up the tree formatter. Parse filters and other directives in the test
     // file.
-    std::unique_ptr<AXTreeFormatter> formatter = test_pass_.create_formatter();
+    std::unique_ptr<AXTreeFormatter> formatter =
+        AXInspectFactory::CreateFormatter(GetParam().second);
     std::vector<AXPropertyFilter> property_filters;
     formatter->AddDefaultFilters(&property_filters);
     AddDefaultFilters(&property_filters);
@@ -3264,15 +3265,14 @@ class PDFExtensionAccessibilityTreeDumpTest
     property_filters->push_back(AXPropertyFilter(filter, type));
   }
 
-  content::AccessibilityTreeFormatter::TestPass test_pass_;
   content::DumpAccessibilityTestHelper test_helper_;
 };
 
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::pair<bool, AXTestPass>>& i) const {
-    std::string result = i.param.second.name;
+      const ::testing::TestParamInfo<std::pair<bool, AXInspectType>>& i) const {
+    std::string result(i.param.second);
     return result + (i.param.first ? "_updateEnabled" : "_updateDisabled");
   }
 };
@@ -3280,10 +3280,11 @@ struct DumpAccessibilityTreeTestPassToString {
 // Constructs a list of accessibility tests, two for each accessibility tree
 // formatter testpasses: one when pdf update is enabled and the second one when
 // pdf update is disabled.
-const std::vector<std::pair<bool, AXTestPass>> GetAXTestPairValues() {
-  std::vector<std::pair<bool, AXTestPass>> values;
-  std::vector<AXTestPass> passes =
-      content::AccessibilityTreeFormatter::GetTestPasses();
+const std::vector<std::pair<bool, AXInspectFactory::Type>>
+GetAXTestPairValues() {
+  std::vector<std::pair<bool, AXInspectFactory::Type>> values;
+  std::vector<AXInspectFactory::Type> passes =
+      content::DumpAccessibilityTestHelper::TestPasses();
   for (auto pass : passes) {
     values.emplace_back(std::make_pair(true, pass));
     values.emplace_back(std::make_pair(false, pass));

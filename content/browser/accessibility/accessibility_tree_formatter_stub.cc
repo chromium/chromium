@@ -9,19 +9,25 @@
 namespace content {
 
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
+
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateBlinkFormatter();
+  return AXInspectFactory::CreateFormatter(kBlink);
 }
 
 // static
-std::vector<AccessibilityTreeFormatter::TestPass>
-AccessibilityTreeFormatter::GetTestPasses() {
-  return {
-      {"blink", &AXInspectFactory::CreateBlinkFormatter},
-  };
+std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
+    AXInspectFactory::Type type) {
+  switch (type) {
+    case kBlink:
+      return std::make_unique<AccessibilityTreeFormatterBlink>();
+    default:
+      NOTREACHED() << "Unsupported formatter type " << type;
+  }
+  return nullptr;
 }
+
 #endif
 
 }  // namespace content

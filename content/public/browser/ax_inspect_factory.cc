@@ -9,7 +9,26 @@
 namespace content {
 
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateBlinkFormatter() {
-  return std::make_unique<AccessibilityTreeFormatterBlink>();
+  return CreateFormatter(kBlink);
+}
+
+AXInspectFactory::Type::operator std::string() const {
+  switch (type_) {
+    case kAndroid:
+      return "android";
+    case kBlink:
+      return "blink";
+    case kMac:
+      return "mac";
+    case kLinux:
+      return "linux";
+    case kWinIA2:
+      return "win";
+    case kWinUIA:
+      return "uia";
+    default:
+      return "unknown";
+  }
 }
 
 }  // namespace content

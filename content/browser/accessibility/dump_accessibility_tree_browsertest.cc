@@ -150,7 +150,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   std::vector<std::string> Dump(std::vector<std::string>& unused) override {
-    std::unique_ptr<AXTreeFormatter> formatter(formatter_factory_());
+    std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
     formatter->SetPropertyFilters(property_filters_);
     formatter->SetNodeFilters(node_filters_);
     std::string actual_contents =
@@ -247,9 +247,9 @@ void DumpAccessibilityTreeTest::AddDefaultFilters(
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(const ::testing::TestParamInfo<size_t>& i) const {
-    auto passes = AccessibilityTreeFormatter::GetTestPasses();
+    auto passes = DumpAccessibilityTestHelper::TestPasses();
     CHECK_LT(i.param, passes.size());
-    return passes[i.param].name;
+    return std::string(passes[i.param]);
   }
 };
 
@@ -257,14 +257,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTest,
     ::testing::Range(size_t{0},
-                     AccessibilityTreeFormatter::GetTestPasses().size()),
+                     DumpAccessibilityTestHelper::TestPasses().size()),
     DumpAccessibilityTreeTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTestWithIgnoredNodes,
     ::testing::Range(size_t{0},
-                     AccessibilityTreeFormatter::GetTestPasses().size()),
+                     DumpAccessibilityTestHelper::TestPasses().size()),
     DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSColor) {

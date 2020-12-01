@@ -28,20 +28,31 @@ class CONTENT_EXPORT AXInspectFactory {
   // Creates the internal accessibility tree formatter, AKA the Blink tree
   // formatter, which is used to dump the Blink accessibility tree to a string
   static std::unique_ptr<ui::AXTreeFormatter> CreateBlinkFormatter();
-};
 
-// A helper class used to instantiate platform-specific accessibility
-// tree formatters.
-class CONTENT_EXPORT AccessibilityTreeFormatter : public ui::AXTreeFormatter {
- public:
-  // Get a set of factory methods to create tree-formatters, one for each test
-  // pass; see |DumpAccessibilityTestBase|.
-  using FormatterFactory = std::unique_ptr<ui::AXTreeFormatter> (*)();
-  struct TestPass {
-    const char* name;
-    FormatterFactory create_formatter;
+  // Inspect types for all platforms.
+  enum TypeConstant {
+    kAndroid,
+    kBlink,
+    kMac,
+    kLinux,
+    kWinIA2,
+    kWinUIA,
   };
-  static std::vector<TestPass> GetTestPasses();
+
+  // Inspect type.
+  class CONTENT_EXPORT Type final {
+   public:
+    Type(TypeConstant type) : type_(type) {}
+
+    explicit operator std::string() const;
+    operator TypeConstant() const { return type_; }
+
+   private:
+    TypeConstant type_;
+  };
+
+  // Creates a tree formatter of a given inspect type if supported by platform.
+  static std::unique_ptr<ui::AXTreeFormatter> CreateFormatter(Type);
 };
 
 }  // namespace content

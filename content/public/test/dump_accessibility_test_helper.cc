@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_switches.h"
-#include "ui/accessibility/platform/inspect/tree_formatter.h"
+#include "ui/base/buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -123,6 +123,10 @@ const TypeInfo::Mapping* TypeMapping(const std::string& type) {
 }
 
 }  // namespace
+
+DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
+    AXInspectFactory::Type type)
+    : expectation_type_(type) {}
 
 DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
     const char* expectation_type)
@@ -260,6 +264,24 @@ DumpAccessibilityTestHelper::ParseDirective(const std::string& line) const {
   return {};
 }
 
+// static
+std::vector<AXInspectFactory::Type> DumpAccessibilityTestHelper::TestPasses() {
+  return
+#if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
+      {AXInspectFactory::kBlink};
+#elif defined(OS_WIN)
+      {AXInspectFactory::kBlink, AXInspectFactory::kWinIA2,
+       AXInspectFactory::kWinUIA};
+#elif defined(OS_MAC)
+      {AXInspectFactory::kBlink, AXInspectFactory::kMac};
+#elif defined(OS_ANDROID)
+      {AXInspectFactory::kAndroid};
+#else  // linux
+      {AXInspectFactory::kBlink, AXInspectFactory::kLinux};
+#endif
+}
+
+// static
 base::Optional<std::vector<std::string>>
 DumpAccessibilityTestHelper::LoadExpectationFile(
     const base::FilePath& expected_file) {
@@ -284,6 +306,7 @@ DumpAccessibilityTestHelper::LoadExpectationFile(
   return expected_lines;
 }
 
+// static
 bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
     const base::FilePath& test_file_path,
     const base::FilePath& expected_file,

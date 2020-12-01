@@ -24,8 +24,6 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   AccessibilityTreeFormatterUia();
   ~AccessibilityTreeFormatterUia() override;
 
-  static std::unique_ptr<ui::AXTreeFormatter> CreateUia();
-
   // AccessibilityTreeFormatterBase:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;

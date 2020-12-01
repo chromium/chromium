@@ -89,20 +89,25 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  base::win::AssertComInitialized();
-  return std::make_unique<AccessibilityTreeFormatterWin>();
+  return CreateFormatter(kWinIA2);
 }
 
 // static
-std::vector<AccessibilityTreeFormatter::TestPass>
-AccessibilityTreeFormatter::GetTestPasses() {
-  // In addition to the 'Blink' pass, Windows includes two accessibility APIs
-  // that need to be tested independently (MSAA & UIA).
-  return {
-      {"blink", &AXInspectFactory::CreateBlinkFormatter},
-      {"win", &AXInspectFactory::CreatePlatformFormatter},
-      {"uia", &AccessibilityTreeFormatterUia::CreateUia},
-  };
+std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
+    AXInspectFactory::Type type) {
+  switch (type) {
+    case kBlink:
+      return std::make_unique<AccessibilityTreeFormatterBlink>();
+    case kWinIA2:
+      base::win::AssertComInitialized();
+      return std::make_unique<AccessibilityTreeFormatterWin>();
+    case kWinUIA:
+      base::win::AssertComInitialized();
+      return std::make_unique<AccessibilityTreeFormatterUia>();
+    default:
+      NOTREACHED() << "Unsupported formatter type " << type;
+  }
+  return nullptr;
 }
 
 void AccessibilityTreeFormatterWin::AddDefaultFilters(
