@@ -106,8 +106,11 @@ void CreateSyntheticCrashReportForUte(
                                       base::SysInfo::HardwareModelName());
   AppendConfigWithBreakpadServerParam(config, "breadcrumbs",
                                       base::JoinString(breadcrumbs, "\n"));
-  AppendConfigWithBreakpadServerParam(
-      config, "signature", breadcrumbs.back().substr(strlen("00:00 ")));
+
+  std::string signature = breadcrumbs.empty()
+                              ? "No Breadcrumbs"
+                              : breadcrumbs.back().substr(strlen("00:00 "));
+  AppendConfigWithBreakpadServerParam(config, "signature", signature);
 
   for (NSString* key in previous_session.reportParameters.allKeys) {
     AppendConfigWithBreakpadServerParam(
