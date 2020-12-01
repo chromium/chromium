@@ -698,16 +698,14 @@ void SVGElementResourceClient::ResourceElementChanged() {
   LayoutObject* layout_object = element_->GetLayoutObject();
   if (!layout_object)
     return;
-  ClearFilterData();
+  // TODO(fs): If the resource element (for a filter) doesn't actually change
+  // we don't need to perform the associated invalidations.
+  InvalidateFilterData();
   if (layout_object->Parent()) {
     SVGResourcesCache::UpdateResources(*layout_object);
     LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
         *layout_object, true);
   }
-  // TODO(fs): If the resource element (for a filter) doesn't actually change
-  // we don't need to perform the associated invalidations.
-  layout_object->SetNeedsPaintPropertyUpdate();
-  MarkFilterDataDirty();
 }
 
 void SVGElementResourceClient::ResourceDestroyed(
@@ -773,18 +771,15 @@ void SVGElementResourceClient::UpdateFilterData(
 }
 
 void SVGElementResourceClient::InvalidateFilterData() {
-  if (!ClearFilterData())
+  // If we performed an "optimized" invalidation via FilterPrimitiveChanged(),
+  // we could have set |filter_data_dirty_| but not cleared |filter_data_|.
+  if (filter_data_dirty_ && !filter_data_)
     return;
+  if (FilterData* filter_data = filter_data_.Release())
+    filter_data->Dispose();
   LayoutObject* layout_object = element_->GetLayoutObject();
   layout_object->SetNeedsPaintPropertyUpdate();
   MarkFilterDataDirty();
-}
-
-bool SVGElementResourceClient::ClearFilterData() {
-  FilterData* filter_data = filter_data_.Release();
-  if (filter_data)
-    filter_data->Dispose();
-  return !!filter_data;
 }
 
 void SVGElementResourceClient::MarkFilterDataDirty() {
