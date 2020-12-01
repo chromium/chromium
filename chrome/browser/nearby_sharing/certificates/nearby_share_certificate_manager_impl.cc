@@ -77,17 +77,22 @@ base::Optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
     metadata.set_icon_url(*icon_url);
   }
   std::array<uint8_t, 6> bytes;
-  if (bluetooth_adapter &&
-      device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes)) {
+  bool has_address =
+      bluetooth_adapter &&
+      device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes);
+  if (has_address) {
     metadata.set_bluetooth_mac_address(std::string(bytes.begin(), bytes.end()));
   } else {
     NS_LOG(WARNING) << __func__
                     << ": No valid Bluetooth MAC available for private "
                     << "certificate metadata.";
     // TODO(https://crbug.com/1122641): Decide the best way to handle
-    // missing/invalid Bluetooth MAC addresses. Also, log a metric to track how
-    // often this happens.
+    // missing/invalid Bluetooth MAC addresses.
   }
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Manager."
+      "BluetoothMacAddressSetInPrivateCertificate",
+      has_address);
 
   return metadata;
 }
