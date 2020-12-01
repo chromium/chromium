@@ -177,7 +177,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     // TODO(jie.a.chen@intel.com): Handle data of float type.
     // Full copy #1
-    WTF::Vector<uint8_t> pixel_data = source->CopyBitmapData();
+    WTF::Vector<uint8_t> pixel_data =
+        source->CopyBitmapData(source->GetBitmapSkImageInfo(), false);
     if (pixel_data.size() <
         media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_ARGB, size)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kBufferOverrunError,

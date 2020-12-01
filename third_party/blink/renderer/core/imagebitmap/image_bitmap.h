@@ -72,25 +72,23 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
               base::Optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   // This constructor may called by structured-cloning an ImageBitmap.
-  // isImageBitmapPremultiplied indicates whether the original ImageBitmap is
-  // premultiplied or not.
   // isImageBitmapOriginClean indicates whether the original ImageBitmap is
   // origin clean or not.
-  ImageBitmap(const void* pixel_data,
-              uint32_t width,
-              uint32_t height,
-              bool is_image_bitmap_premultiplied,
-              bool is_image_bitmap_origin_clean,
-              const CanvasColorParams&);
+  ImageBitmap(const SkPixmap& pixmap, bool is_image_bitmap_origin_clean);
 
   // Type and helper function required by CallbackPromiseAdapter:
   using WebType = sk_sp<SkImage>;
   static ImageBitmap* Take(ScriptPromiseResolver*, sk_sp<SkImage>);
 
   scoped_refptr<StaticBitmapImage> BitmapImage() const { return image_; }
-  Vector<uint8_t> CopyBitmapData();
-  Vector<uint8_t> CopyBitmapData(AlphaDisposition,
-                                 DataU8ColorType = kRGBAColorType);
+
+  // Retrieve the SkImageInfo that best represents BitmapImage().
+  SkImageInfo GetBitmapSkImageInfo() const;
+
+  // When apply_orientation is true this method will orient the data according
+  // to the source's EXIF information.
+  Vector<uint8_t> CopyBitmapData(const SkImageInfo& info,
+                                 bool apply_orientation);
   unsigned width() const;
   unsigned height() const;
   IntSize Size() const;
@@ -102,8 +100,6 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   void close();
 
   ~ImageBitmap() override;
-
-  CanvasColorParams GetCanvasColorParams();
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,

@@ -304,7 +304,8 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
       return false;
     }
     WriteTag(kImageBitmapTag);
-    SerializedColorParams color_params(image_bitmap->GetCanvasColorParams());
+    SkImageInfo info = image_bitmap->GetBitmapSkImageInfo();
+    SerializedColorParams color_params((CanvasColorParams(info)));
     WriteUint32Enum(ImageSerializationTag::kCanvasColorSpaceTag);
     WriteUint32Enum(color_params.GetSerializedColorSpace());
     WriteUint32Enum(ImageSerializationTag::kCanvasPixelFormatTag);
@@ -318,7 +319,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUint32Enum(ImageSerializationTag::kEndTag);
     WriteUint32(image_bitmap->width());
     WriteUint32(image_bitmap->height());
-    Vector<uint8_t> pixels = image_bitmap->CopyBitmapData();
+    Vector<uint8_t> pixels = image_bitmap->CopyBitmapData(info, false);
     // Check if we succeeded to copy the BitmapData.
     if (image_bitmap->width() != 0 && image_bitmap->height() != 0 &&
         pixels.size() == 0) {

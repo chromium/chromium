@@ -6070,8 +6070,13 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   if (peek_succeed) {
     pixel_data_ptr = static_cast<uint8_t*>(pixmap.writable_addr());
   } else {
-    pixel_data = bitmap->CopyBitmapData(
-        bitmap->IsPremultiplied() ? kPremultiplyAlpha : kUnpremultiplyAlpha);
+    SkImageInfo info = bitmap->GetBitmapSkImageInfo();
+    info =
+        info.makeAlphaType(bitmap->IsPremultiplied() ? kPremul_SkAlphaType
+                                                     : kUnpremul_SkAlphaType);
+    if (info.colorType() == kN32_SkColorType)
+      info = info.makeColorType(kRGBA_8888_SkColorType);
+    pixel_data = bitmap->CopyBitmapData(info, true);
     pixel_data_ptr = pixel_data.data();
   }
   Vector<uint8_t> data;

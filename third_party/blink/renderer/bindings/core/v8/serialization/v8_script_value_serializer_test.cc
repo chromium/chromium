@@ -1037,12 +1037,12 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
+  sk_sp<SkColorSpace> p3 =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kDisplayP3);
   V8TestingScope scope;
   // Make a 10x7 red ImageBitmap in P3 color space.
   SkImageInfo info =
-      SkImageInfo::Make(10, 7, kRGBA_F16_SkColorType, kPremul_SkAlphaType,
-                        SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB,
-                                              SkNamedGamut::kDisplayP3));
+      SkImageInfo::Make(10, 7, kRGBA_F16_SkColorType, kPremul_SkAlphaType, p3);
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
   surface->getCanvas()->clear(SK_ColorRED);
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
@@ -1059,9 +1059,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
   ASSERT_EQ(IntSize(10, 7), new_image_bitmap->Size());
 
   // Check the color settings.
-  CanvasColorParams color_params = new_image_bitmap->GetCanvasColorParams();
-  EXPECT_EQ(CanvasColorSpace::kP3, color_params.ColorSpace());
-  EXPECT_EQ(CanvasPixelFormat::kF16, color_params.PixelFormat());
+  SkImageInfo bitmap_info = new_image_bitmap->GetBitmapSkImageInfo();
+  EXPECT_EQ(kRGBA_F16_SkColorType, bitmap_info.colorType());
+  EXPECT_TRUE(SkColorSpace::Equals(p3.get(), bitmap_info.colorSpace()));
 
   // Check that the pixel at (3, 3) is red. We expect red in P3 to be
   // {0x57, 0x3B, 0x68, 0x32, 0x6E, 0x30, 0x00, 0x3C} when each color
@@ -1128,6 +1128,8 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
       {0xff, 0x12, 0xff, 0x0d, 0x5c, 0x67, 0x01, 0x03, 0x02, 0x01, 0x04, 0x01,
        0x05, 0x01, 0x00, 0x02, 0x01, 0x10, 0x94, 0x3a, 0x3f, 0x28, 0x5f, 0x24,
        0x00, 0x3c, 0x94, 0x3a, 0x3f, 0x28, 0x5f, 0x24, 0x00, 0x3c});
+  sk_sp<SkColorSpace> p3 =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kDisplayP3);
 
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializer(script_state, input).Deserialize();
@@ -1137,16 +1139,14 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
   ASSERT_EQ(IntSize(2, 1), new_image_bitmap->Size());
 
   // Check the color settings.
-  CanvasColorParams color_params = new_image_bitmap->GetCanvasColorParams();
-  EXPECT_EQ(CanvasColorSpace::kP3, color_params.ColorSpace());
-  EXPECT_EQ(CanvasPixelFormat::kF16, color_params.PixelFormat());
+  SkImageInfo bitmap_info = new_image_bitmap->GetBitmapSkImageInfo();
+  EXPECT_EQ(kRGBA_F16_SkColorType, bitmap_info.colorType());
+  EXPECT_TRUE(SkColorSpace::Equals(p3.get(), bitmap_info.colorSpace()));
 
   // Check that the pixel at (1, 0) is red.
   uint8_t pixel[8] = {};
   SkImageInfo info =
-      SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType, kPremul_SkAlphaType,
-                        SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB,
-                                              SkNamedGamut::kDisplayP3));
+      SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType, kPremul_SkAlphaType, p3);
   ASSERT_TRUE(
       new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
           info, &pixel, 8, 1, 0));

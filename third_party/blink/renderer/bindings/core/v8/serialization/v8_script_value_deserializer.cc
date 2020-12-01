@@ -374,8 +374,12 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         // been deprecated.
         return nullptr;
       }
-      return MakeGarbageCollected<ImageBitmap>(
-          pixels, width, height, is_premultiplied, origin_clean, color_params);
+      SkImageInfo info = SkImageInfo::Make(
+          width, height, color_params.GetSkColorType(),
+          is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
+          color_params.GetSkColorSpace());
+      SkPixmap pixmap(info, pixels, info.minRowBytes());
+      return MakeGarbageCollected<ImageBitmap>(pixmap, origin_clean);
     }
     case kImageBitmapTransferTag: {
       uint32_t index = 0;

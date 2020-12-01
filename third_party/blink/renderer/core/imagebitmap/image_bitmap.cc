@@ -211,11 +211,6 @@ Vector<uint8_t> CopyImageData(const scoped_refptr<StaticBitmapImage>& input,
   return dst_buffer;
 }
 
-Vector<uint8_t> CopyImageData(const scoped_refptr<StaticBitmapImage>& input) {
-  SkImageInfo info = GetSkImageInfo(input);
-  return CopyImageData(std::move(input), info, false);
-}
-
 static inline bool ShouldAvoidPremul(
     const ImageBitmap::ParsedOptions& options) {
   return options.source_is_unpremul && !options.premultiply_alpha;
@@ -740,18 +735,8 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
   UpdateImageBitmapMemoryUsage();
 }
 
-ImageBitmap::ImageBitmap(const void* pixel_data,
-                         uint32_t width,
-                         uint32_t height,
-                         bool is_image_bitmap_premultiplied,
-                         bool is_image_bitmap_origin_clean,
-                         const CanvasColorParams& color_params) {
-  SkImageInfo info =
-      SkImageInfo::Make(width, height, color_params.GetSkColorType(),
-                        is_image_bitmap_premultiplied ? kPremul_SkAlphaType
-                                                      : kUnpremul_SkAlphaType,
-                        color_params.GetSkColorSpace());
-  SkPixmap pixmap(info, pixel_data, info.bytesPerPixel() * width);
+ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
+                         bool is_image_bitmap_origin_clean) {
   sk_sp<SkImage> raster_copy = SkImage::MakeRasterCopy(pixmap);
   if (!raster_copy)
     return;
@@ -1058,28 +1043,13 @@ ImageBitmap* ImageBitmap::Take(ScriptPromiseResolver*, sk_sp<SkImage> image) {
       UnacceleratedStaticBitmapImage::Create(std::move(image)));
 }
 
-CanvasColorParams ImageBitmap::GetCanvasColorParams() {
-  return CanvasColorParams(GetSkImageInfo(image_));
+SkImageInfo ImageBitmap::GetBitmapSkImageInfo() const {
+  return GetSkImageInfo(image_);
 }
 
-Vector<uint8_t> ImageBitmap::CopyBitmapData(AlphaDisposition alpha_op,
-                                            DataU8ColorType u8_color_type) {
-  DCHECK(alpha_op != kDontChangeAlpha);
-  SkImageInfo info = GetSkImageInfo(image_);
-  auto color_type = info.colorType();
-  if (color_type == kN32_SkColorType && u8_color_type == kRGBAColorType)
-    color_type = kRGBA_8888_SkColorType;
-  // Note that width() and height() here apply EXIF orientation
-  info =
-      SkImageInfo::Make(width(), height(), color_type,
-                        (alpha_op == kPremultiplyAlpha) ? kPremul_SkAlphaType
-                                                        : kUnpremul_SkAlphaType,
-                        info.refColorSpace());
-  return CopyImageData(image_, info, true);
-}
-
-Vector<uint8_t> ImageBitmap::CopyBitmapData() {
-  return CopyImageData(image_);
+Vector<uint8_t> ImageBitmap::CopyBitmapData(const SkImageInfo& info,
+                                            bool apply_orientation) {
+  return CopyImageData(image_, info, apply_orientation);
 }
 
 unsigned ImageBitmap::width() const {
