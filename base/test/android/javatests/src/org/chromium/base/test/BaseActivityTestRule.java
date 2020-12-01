@@ -9,7 +9,8 @@ import android.content.Intent;
 import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.rules.TestRule;
@@ -41,6 +42,7 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
     }
 
     @Override
+    @CallSuper
     public Statement apply(final Statement base, final Description desc) {
         return new Statement() {
             @Override
@@ -76,19 +78,31 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
         mActivity = activity;
     }
 
+    protected Intent getActivityIntent() {
+        return new Intent(ContextUtils.getApplicationContext(), mActivityClass);
+    }
+
     /**
-     * Launches the Activity under test using the provided intent.
+     * Launches the Activity under test using the provided intent. If the provided intent is null,
+     * an explicit intent targeting the Activity is created and used.
      */
-    public void launchActivity(@NonNull Intent startIntent) {
-        String packageName = ContextUtils.getApplicationContext().getPackageName();
-        Assert.assertTrue(TextUtils.equals(startIntent.getPackage(), packageName)
-                || TextUtils.equals(startIntent.getComponent().getPackageName(), packageName));
+    public void launchActivity(@Nullable Intent startIntent) {
+        if (startIntent == null) {
+            startIntent = getActivityIntent();
+        } else {
+            String packageName = ContextUtils.getApplicationContext().getPackageName();
+            Assert.assertTrue(TextUtils.equals(startIntent.getPackage(), packageName)
+                    || (startIntent.getComponent() != null
+                            && TextUtils.equals(
+                                    startIntent.getComponent().getPackageName(), packageName)));
+        }
 
         startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Log.d(TAG, String.format("Launching activity %s", mActivityClass.getName()));
 
+        final Intent intent = startIntent;
         mActivity = ApplicationTestUtils.waitForActivityWithClass(mActivityClass, Stage.CREATED,
-                () -> ContextUtils.getApplicationContext().startActivity(startIntent));
+                () -> ContextUtils.getApplicationContext().startActivity(intent));
     }
 }

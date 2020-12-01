@@ -5,7 +5,6 @@
 package org.chromium.webview_shell.page_cycler;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -59,8 +59,8 @@ public class PageCyclerTest {
     }
 
     @Rule
-    public ActivityTestRule<PageCyclerTestActivity> mRule =
-            new ActivityTestRule<>(PageCyclerTestActivity.class);
+    public BaseActivityTestRule<PageCyclerTestActivity> mRule =
+            new BaseActivityTestRule<>(PageCyclerTestActivity.class);
 
     @Before
     public void setUp() {
