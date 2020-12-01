@@ -35,8 +35,7 @@ declare_args() {
 # Allows different projects to specify their own suppression/ignore lists for
 # sanitizer tools.
 # asan_suppressions_file = "path/to/asan_suppressions.cc"
-# asan_blacklist_path = "path/to/asan/blacklist.txt"
-# asan_win_blacklist_path = "path/to/asan/blacklist_win.txt"
+# asan_win_blacklist_path = "path/to/asan/blocklist_win.txt"
 # lsan_suppressions_file = "path/to/lsan_suppressions.cc"
 # tsan_suppressions_file = "path/to/tsan_suppressions.cc"
 # tsan_blacklist_path = "path/to/tsan/ignores.txt"

@@ -104,9 +104,6 @@ declare_args() {
   #     trace-pc-guard,indirect-calls
   sanitizer_coverage_flags = ""
 
-  # Use blacklists from tools/memory/asan when compiling with asan.
-  asan_use_blacklist = true
-
   # When enabled, only relevant sanitizer defines are set, but compilation
   # happens with no extra flags. This is useful when in component build
   # enabling sanitizers only in some of the components.

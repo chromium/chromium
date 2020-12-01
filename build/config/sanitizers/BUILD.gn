@@ -271,22 +271,12 @@ config("asan_flags") {
   cflags = []
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
-    if (asan_use_blacklist) {
-      if (is_win) {
-        if (!defined(asan_win_blacklist_path)) {
-          asan_win_blacklist_path =
-              rebase_path("//tools/memory/asan/blacklist_win.txt",
-                          root_build_dir)
-        }
-        cflags += [ "-fsanitize-blacklist=$asan_win_blacklist_path" ]
-      } else {
-        # TODO(rnk): Remove this as discussed in http://crbug.com/427202.
-        if (!defined(asan_blacklist_path)) {
-          asan_blacklist_path =
-              rebase_path("//tools/memory/asan/blacklist.txt", root_build_dir)
-        }
-        cflags += [ "-fsanitize-blacklist=$asan_blacklist_path" ]
+    if (is_win) {
+      if (!defined(asan_win_blacklist_path)) {
+        asan_win_blacklist_path =
+            rebase_path("//tools/memory/asan/blocklist_win.txt", root_build_dir)
       }
+      cflags += [ "-fsanitize-blacklist=$asan_win_blacklist_path" ]
     }
   }
 }
