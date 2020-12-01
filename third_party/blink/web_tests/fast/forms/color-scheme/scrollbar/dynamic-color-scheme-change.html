@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<head>
+    <meta name="color-scheme" content="light dark">
+    <script src="../../../../resources/run-after-layout-and-paint.js"></script>
+    <script>
+
+        function endTest() {
+            if (window.testRunner)
+                testRunner.notifyDone();
+        }
+
+        function doTest() {
+            window.internals.setForcedColorsAndDarkPreferredColorScheme(document);
+            runAfterLayoutAndPaint(endTest);
+        }
+
+        runAfterLayoutAndPaint(doTest);
+
+        if (window.testRunner)
+            testRunner.waitUntilDone();
+    </script>
+</head>
+
+<body style='height:5000px; width:5000px'></body>

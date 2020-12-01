@@ -298,6 +298,8 @@
 
     [RaisesException] void forceCompositingUpdate(Document document);
 
+    void setForcedColorsAndDarkPreferredColorScheme(Document document);
+
     [RaisesException] void setShouldRevealPassword(Element element, boolean reveal);
 
     [CallWith=ScriptState] Promise<any> createResolvedPromise(any value);

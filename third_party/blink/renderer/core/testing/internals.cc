@@ -3143,6 +3143,15 @@ void Internals::forceCompositingUpdate(Document* document,
   document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
 }
 
+void Internals::setForcedColorsAndDarkPreferredColorScheme(Document* document) {
+  DCHECK(document);
+  ColorSchemeHelper color_scheme_helper(*document);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  color_scheme_helper.SetForcedColors(*document, ForcedColors::kActive);
+  document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
+}
+
 void Internals::setShouldRevealPassword(Element* element,
                                         bool reveal,
                                         ExceptionState& exception_state) {
