@@ -2160,7 +2160,10 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
 
   // If we are asked to return a related SiteInstance but the BrowsingInstance
   // has a different cross_origin_isolated state, something went wrong.
-  CHECK(descriptor.relation != SiteInstanceRelation::RELATED ||
+  // This can be wrong for speculative frames, as the COOP mismatch mechanic has
+  // not yet been invoked.
+  CHECK(is_speculative ||
+        descriptor.relation != SiteInstanceRelation::RELATED ||
         current_instance->IsCoopCoepCrossOriginIsolated() ==
             descriptor.cross_origin_isolated_info.is_isolated());
 

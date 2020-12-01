@@ -2401,6 +2401,62 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                   .IsSameOriginWith(url::Origin::Create(isolated_page)));
 }
 
+// Reproducer test for https://crbug.com/1150938.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       MainFrameA_IframeB_Opens_WindowA) {
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+  GURL isolated_page_b(
+      https_server()->GetURL("cdn.a.com",
+                             "/set-header?"
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Cross-Origin-Resource-Policy: cross-origin"));
+
+  // Initial cross-origin isolated page.
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_si->IsCoopCoepCrossOriginIsolated());
+
+  TestNavigationManager cross_origin_iframe_navigation(web_contents(),
+                                                       isolated_page_b);
+
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("var iframe = document.createElement('iframe'); "
+                               "iframe.src = $1; "
+                               "document.body.appendChild(iframe);",
+                               isolated_page_b)));
+
+  cross_origin_iframe_navigation.WaitForNavigationFinished();
+  EXPECT_TRUE(cross_origin_iframe_navigation.was_successful());
+  RenderFrameHostImpl* iframe =
+      current_frame_host()->child_at(0)->current_frame_host();
+  SiteInstanceImpl* iframe_si = iframe->GetSiteInstance();
+  EXPECT_TRUE(iframe_si->IsCoopCoepCrossOriginIsolated());
+  EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
+  EXPECT_EQ(iframe_si->GetProcess(), main_si->GetProcess());
+
+  // Open an isolated popup, but cross-origin.
+  {
+    RenderFrameHostImpl* popup_frame =
+        static_cast<WebContentsImpl*>(
+            OpenPopup(iframe, isolated_page, "")->web_contents())
+            ->GetFrameTree()
+            ->root()
+            ->current_frame_host();
+
+    EXPECT_TRUE(
+        popup_frame->GetSiteInstance()->IsCoopCoepCrossOriginIsolated());
+    EXPECT_FALSE(popup_frame->GetSiteInstance()->IsRelatedSiteInstance(
+        current_frame_host()->GetSiteInstance()));
+    EXPECT_FALSE(popup_frame->frame_tree_node()->opener());
+    EXPECT_NE(popup_frame->GetSiteInstance()->GetProcess(),
+              current_frame_host()->GetSiteInstance()->GetProcess());
+  }
+}
+
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
 // context group when using window.open from an iframe, same-origin and
 // cross-origin.
