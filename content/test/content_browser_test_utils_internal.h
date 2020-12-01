@@ -103,6 +103,13 @@ class FrameTreeVisualizer {
   DISALLOW_COPY_AND_ASSIGN(FrameTreeVisualizer);
 };
 
+// Uses FrameTreeVisualizer to draw a text representation of the FrameTree that
+// is appropriate for use in assertions. If you are going to depict multiple
+// trees in a single test, you might want to construct a longer-lived instance
+// of FrameTreeVisualizer as this will ensure consistent naming of the site
+// instances across all calls.
+std::string DepictFrameTree(FrameTreeNode& root);
+
 // Uses window.open to open a popup from the frame |opener| with the specified
 // |url|, |name| and window |features|. |expect_return_from_window_open| is used
 // to indicate if the caller expects window.open() to return a non-null value.

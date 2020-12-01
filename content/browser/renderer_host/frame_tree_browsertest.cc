@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToBlob) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "a.com", "/cross_site_iframe_factory.html?a(b(a))")));
-  std::string reference_tree = FrameTreeVisualizer().DepictFrameTree(root);
+  std::string reference_tree = DepictFrameTree(*root);
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToBlob) {
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
   EXPECT_EQ("This is blob content.",
             EvalJs(target, "document.body.children[0].innerHTML"));
-  EXPECT_EQ(reference_tree, FrameTreeVisualizer().DepictFrameTree(root));
+  EXPECT_EQ(reference_tree, DepictFrameTree(*root));
 }
 
 IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateChildToAboutBlank) {
@@ -1298,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
                                "Where A = %s\n"
                                "      B = http://b.is/",
                                kExpectedSiteURL.c_str()),
-            FrameTreeVisualizer().DepictFrameTree(root));
+            DepictFrameTree(*root));
 }
 
 }  // namespace content

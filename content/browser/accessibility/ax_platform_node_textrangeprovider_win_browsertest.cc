@@ -2114,13 +2114,12 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                                 "Text in iframe");
 
   WaitForHitTestData(iframe_node->current_frame_host());
-  FrameTreeVisualizer visualizer;
   ASSERT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"
       "Where A = http://a.com/\n"
       "      B = http://b.com/",
-      visualizer.DepictFrameTree(root));
+      DepictFrameTree(*root));
 
   auto* node = FindNode(ax::mojom::Role::kStaticText, "After frame");
   ASSERT_NE(nullptr, node);

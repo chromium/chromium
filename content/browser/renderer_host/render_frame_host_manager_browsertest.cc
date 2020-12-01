@@ -3933,7 +3933,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, CoReferencingFrames) {
         "                  +--Site B -- proxies for A\n"
         "Where A = http://a.com/\n"
         "      B = http://b.com/",
-        FrameTreeVisualizer().DepictFrameTree(root));
+        DepictFrameTree(*root));
   } else {
     const GURL kExpectedSiteURL = AreDefaultSiteInstancesEnabled()
                                       ? SiteInstanceImpl::GetDefaultSiteURL()
@@ -3945,7 +3945,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, CoReferencingFrames) {
                           "                  +--Site A\n"
                           "Where A = ") +
                   kExpectedSiteURL.spec(),
-              FrameTreeVisualizer().DepictFrameTree(root));
+              DepictFrameTree(*root));
   }
   FrameTreeNode* bottom_child =
       root->child_at(0)->child_at(0)->child_at(0)->child_at(0);
@@ -4001,7 +4001,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                         "        +--Site A\n"
                         "Where A = ") +
                 kExpectedSiteURL.spec(),
-            FrameTreeVisualizer().DepictFrameTree(root));
+            DepictFrameTree(*root));
 
   // The URL of the grandchild has not changed.
   EXPECT_EQ(expected_url, grandchild->current_url());
@@ -4035,7 +4035,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                         "        +--Site A\n"
                         "Where A = ") +
                 kExpectedSiteURL.spec(),
-            FrameTreeVisualizer().DepictFrameTree(root));
+            DepictFrameTree(*root));
 
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             root->child_at(0)->child_at(0)->current_url());

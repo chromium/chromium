@@ -2130,7 +2130,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Check the end result of the frame tree.
   if (AreAllSitesIsolatedForTesting()) {
-    FrameTreeVisualizer visualizer;
     EXPECT_EQ(
         " Site A ------------ proxies for B\n"
         "   |--Site A ------- proxies for B\n"
@@ -2138,7 +2137,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
         "   +--Site B ------- proxies for A\n"
         "Where A = http://127.0.0.1/\n"
         "      B = http://foo.com/",
-        visualizer.DepictFrameTree(root));
+        DepictFrameTree(*root));
   }
 }
 
@@ -2649,7 +2648,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Check the end result of the frame tree.
   if (AreAllSitesIsolatedForTesting()) {
-    FrameTreeVisualizer visualizer;
     EXPECT_EQ(
         " Site A ------------ proxies for B\n"
         "   |--Site A ------- proxies for B\n"
@@ -2659,7 +2657,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
         "        +--Site A -- proxies for B\n"
         "Where A = http://127.0.0.1/\n"
         "      B = http://foo.com/",
-        visualizer.DepictFrameTree(root));
+        DepictFrameTree(*root));
   }
 }
 
@@ -2802,14 +2800,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Check the end result of the frame tree.
   if (AreAllSitesIsolatedForTesting()) {
-    FrameTreeVisualizer visualizer;
     EXPECT_EQ(
         " Site A ------------ proxies for B\n"
         "   |--Site A ------- proxies for B\n"
         "   +--Site B ------- proxies for A\n"
         "Where A = http://127.0.0.1/\n"
         "      B = http://baz.com/",
-        visualizer.DepictFrameTree(root));
+        DepictFrameTree(*root));
   }
 }
 

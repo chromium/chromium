@@ -299,6 +299,10 @@ std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
     return base::StringPrintf("Z%d", static_cast<int>(index - 25));
 }
 
+std::string DepictFrameTree(FrameTreeNode& root) {
+  return FrameTreeVisualizer().DepictFrameTree(&root);
+}
+
 Shell* OpenPopup(const ToRenderFrameHost& opener,
                  const GURL& url,
                  const std::string& name) {

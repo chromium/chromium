@@ -4391,7 +4391,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
       "Where A = http://127.0.0.1/\n"
       "      B = http://bar.com/\n"
       "      C = http://baz.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
 
   // But none are isolated, so all should share the default process for their
   // BrowsingInstance.
@@ -4466,7 +4466,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
       "Where A = http://foo.com/\n"
       "      B = http://isolated.foo.com/\n"
       "      C = http://bar.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
 }
 
 // Navigate a frame into and out of an isolated origin. This should not
@@ -4518,7 +4518,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
       "   +--Site B ------- proxies for A\n"
       "Where A = http://isolated.foo.com/\n"
       "      B = http://foo.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
 }
 
 // Ensure a popup and its opener can go in the same process, even though
@@ -4561,15 +4561,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
       "   +--Site A ------- proxies for B\n"
       "Where A = http://foo.com/\n"
       "      B = http://bar.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "Where A = http://bar.com/\n"
       "      B = http://foo.com/",
-      FrameTreeVisualizer().DepictFrameTree(
-          static_cast<WebContentsImpl*>(new_shell->web_contents())
-              ->GetFrameTree()
-              ->root()));
+      DepictFrameTree(*static_cast<WebContentsImpl*>(new_shell->web_contents())
+                           ->GetFrameTree()
+                           ->root()));
 }
 
 class WildcardOriginIsolationTest : public IsolatedOriginTestBase {
@@ -4720,7 +4719,7 @@ IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, SubFrameNavigation) {
       "      B = http://isolated.foo.com/\n"
       "      C = http://b.isolated.foo.com/\n"
       "      D = http://isolated.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
 }
 
 }  // namespace content

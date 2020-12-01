@@ -122,13 +122,12 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     }
 
     WaitForHitTestData(iframe_node->current_frame_host());
-    FrameTreeVisualizer visualizer;
     ASSERT_EQ(
         " Site A ------------ proxies for B\n"
         "   +--Site B ------- proxies for A\n"
         "Where A = http://a.com/\n"
         "      B = http://b.com/",
-        visualizer.DepictFrameTree(root));
+        DepictFrameTree(*root));
 
     root_view_ = static_cast<RenderWidgetHostViewBase*>(
         root->current_frame_host()->GetRenderWidgetHost()->GetView());

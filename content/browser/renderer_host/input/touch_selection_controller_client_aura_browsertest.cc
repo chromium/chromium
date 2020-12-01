@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       " Site A\n"
       "   +--Site A\n"
       "Where A = http://a.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
   TestNavigationObserver observer(shell()->web_contents());
   EXPECT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0);
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       "   +--Site B ------- proxies for A\n"
       "Where A = http://a.com/\n"
       "      B = http://b.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
 
   // The child will change with the cross-site navigation. It shouldn't change
   // after this.
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       " Site A\n"
       "   +--Site A\n"
       "Where A = http://a.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
   TestNavigationObserver observer(shell()->web_contents());
   EXPECT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0);
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
       "   +--Site B ------- proxies for A\n"
       "Where A = http://a.com/\n"
       "      B = http://b.com/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+      DepictFrameTree(*root));
 
   // The child will change with the cross-site navigation. It shouldn't change
   // after this.
