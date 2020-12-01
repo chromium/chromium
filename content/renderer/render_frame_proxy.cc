@@ -228,6 +228,7 @@ RenderFrameProxy::RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
                                    int routing_id)
     : agent_scheduling_group_(agent_scheduling_group),
       routing_id_(routing_id),
+      provisional_frame_routing_id_(MSG_ROUTING_NONE),
       // TODO(samans): Investigate if it is safe to delay creation of this
       // object until a FrameSinkId is provided.
       parent_local_surface_id_allocator_(
@@ -580,6 +581,20 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
 
 void RenderFrameProxy::FrameDetached(DetachType type) {
   web_frame_->Close();
+
+  // If this proxy was associated with a provisional RenderFrame, and we're not
+  // in the process of swapping with it, clean it up as well.
+  if (type == DetachType::kRemove &&
+      provisional_frame_routing_id_ != MSG_ROUTING_NONE) {
+    RenderFrameImpl* provisional_frame =
+        RenderFrameImpl::FromRoutingID(provisional_frame_routing_id_);
+    // |provisional_frame| should always exist.  If it was deleted via
+    // FrameMsg_Delete right before this proxy was removed,
+    // RenderFrameImpl::frameDetached would've cleared this proxy's
+    // |provisional_frame_routing_id_| and we wouldn't get here.
+    CHECK(provisional_frame);
+    provisional_frame->GetWebFrame()->Detach();
+  }
 
   // Remove the entry in the WebFrame->RenderFrameProxy map, as the |web_frame_|
   // is no longer valid.

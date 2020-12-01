@@ -156,6 +156,12 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   blink::WebRemoteFrame* web_frame() { return web_frame_; }
   std::string unique_name() const;
 
+  void set_provisional_frame_routing_id(int routing_id) {
+    provisional_frame_routing_id_ = routing_id;
+  }
+
+  int provisional_frame_routing_id() { return provisional_frame_routing_id_; }
+
   const gfx::Rect& screen_space_rect() const {
     return pending_visual_properties_.screen_space_rect;
   }

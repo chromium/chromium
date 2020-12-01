@@ -1874,8 +1874,6 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       sandbox_flags, feature_state);
 
   LocalFrame* new_frame = web_frame->GetFrame();
-  previous_frame->SetProvisionalFrame(new_frame);
-
   new_frame->SetOwner(previous_frame->Owner());
   if (auto* remote_frame_owner =
           DynamicTo<RemoteFrameOwner>(new_frame->Owner())) {
