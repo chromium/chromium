@@ -114,7 +114,7 @@ void FrameSorter::FlushFrames() {
   DCHECK(!pending_frames_.empty());
   size_t flushed_count = 0;
   while (!pending_frames_.empty()) {
-    const auto first = pending_frames_.front();
+    const auto& first = pending_frames_.front();
     auto& frame_state = frame_states_[first.frame_id];
     if (!frame_state.IsComplete())
       break;
