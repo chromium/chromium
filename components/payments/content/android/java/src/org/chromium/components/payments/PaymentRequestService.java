@@ -743,9 +743,7 @@ public class PaymentRequestService
 
         mIsFinishedQueryingPaymentApps = true;
 
-        if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
-            return;
-        }
+        if (mIsShowCalled && disconnectIfNoPaymentMethodsSupported()) return;
 
         // Always return false when can make payment is disabled.
         mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
@@ -790,12 +788,11 @@ public class PaymentRequestService
 
     /**
      * If no payment methods are supported, disconnect from the client and return true.
-     * @param hasAvailableApps Whether any payment app is available.
      * @return Whether client has been disconnected.
      */
-    private boolean disconnectIfNoPaymentMethodsSupported(boolean hasAvailableApps) {
-        if (!mIsFinishedQueryingPaymentApps || !mIsShowCalled) return false;
-        if (!mCanMakePayment || (mPendingApps.isEmpty() && !hasAvailableApps)) {
+    private boolean disconnectIfNoPaymentMethodsSupported() {
+        if (!mCanMakePayment
+                || (mPendingApps.isEmpty() && !mBrowserPaymentRequest.hasAvailableApps())) {
             // All factories have responded, but none of them have apps. It's possible to add credit
             // cards, but the merchant does not support them either. The payment request must be
             // rejected.
@@ -1025,10 +1022,9 @@ public class PaymentRequestService
         mIsShowWaitingForUpdatedDetails = waitForUpdatedDetails;
 
         mJourneyLogger.setTriggerTime();
-        if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
-            return;
-        }
+
         if (mIsFinishedQueryingPaymentApps) {
+            if (disconnectIfNoPaymentMethodsSupported()) return;
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
             if (error != null) {
