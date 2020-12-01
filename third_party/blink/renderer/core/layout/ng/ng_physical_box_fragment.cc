@@ -523,7 +523,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
           rect.offset.ConvertToLogical(writing_direction, container.Size(),
                                        rect.size) +
           rect.size.ConvertToLogical(writing_direction.GetWritingMode());
-      return rect_logical_end.inline_offset > border_inline_start &&
+      return rect_logical_end.inline_offset > border_inline_start ||
              rect_logical_end.block_offset > border_block_start;
     }
 
