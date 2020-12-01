@@ -455,12 +455,12 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
     if (keyword.IsEmpty())
       continue;
 
-    if (!CodeUnitCompareIgnoringASCIICase(keyword, "any")) {
+    if (EqualIgnoringASCIICase(keyword, "any")) {
       purposes.push_back(mojom::blink::ManifestImageResource::Purpose::ANY);
-    } else if (!CodeUnitCompareIgnoringASCIICase(keyword, "monochrome")) {
+    } else if (EqualIgnoringASCIICase(keyword, "monochrome")) {
       purposes.push_back(
           mojom::blink::ManifestImageResource::Purpose::MONOCHROME);
-    } else if (!CodeUnitCompareIgnoringASCIICase(keyword, "maskable")) {
+    } else if (EqualIgnoringASCIICase(keyword, "maskable")) {
       purposes.push_back(
           mojom::blink::ManifestImageResource::Purpose::MASKABLE);
     } else {

@@ -161,11 +161,9 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
   if (type.IsEmpty())
     return true;
 
-  const bool video =
-      !CodeUnitCompareIgnoringASCIICase(type, "video/webm") ||
-      !CodeUnitCompareIgnoringASCIICase(type, "video/x-matroska");
-  const bool audio =
-      video ? false : (!CodeUnitCompareIgnoringASCIICase(type, "audio/webm"));
+  const bool video = EqualIgnoringASCIICase(type, "video/webm") ||
+                     EqualIgnoringASCIICase(type, "video/x-matroska");
+  const bool audio = !video && EqualIgnoringASCIICase(type, "audio/webm");
   if (!video && !audio)
     return false;
 
@@ -195,7 +193,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     String codec_string = String::FromUTF8(codec);
     auto* const* found = std::find_if(
         &codecs[0], &codecs[codecs_count], [&codec_string](const char* name) {
-          return !CodeUnitCompareIgnoringASCIICase(codec_string, name);
+          return EqualIgnoringASCIICase(codec_string, name);
         });
     if (found == &codecs[codecs_count])
       return false;
