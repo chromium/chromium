@@ -37,6 +37,9 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
   // We skip copying the drag images.
   clone->html_ = html_;
   clone->base_url_ = base_url_;
+  clone->source_ =
+      source_ ? std::make_unique<ui::DataTransferEndpoint>(*source_.get())
+              : nullptr;
 
   return clone;
 }
