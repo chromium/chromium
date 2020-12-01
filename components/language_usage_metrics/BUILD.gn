@@ -8,7 +8,10 @@ static_library("language_usage_metrics") {
     "language_usage_metrics.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/language/core/browser:browser",
+  ]
 }
 
 source_set("unit_tests") {
@@ -17,6 +20,9 @@ source_set("unit_tests") {
 
   deps = [
     ":language_usage_metrics",
+    "//base",
+    "//components/language/core/browser:browser",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_tokenizer.h"
+#include "components/language/core/browser/url_language_histogram.h"
 
 namespace language_usage_metrics {
 
@@ -22,6 +23,27 @@ void LanguageUsageMetrics::RecordAcceptLanguages(
                            languages.size());
   for (int language_code : languages) {
     base::UmaHistogramSparse("LanguageUsage.AcceptLanguage", language_code);
+  }
+}
+
+// static
+void LanguageUsageMetrics::RecordPageLanguages(
+    const language::UrlLanguageHistogram& language_counts) {
+  const float kMinLanguageFrequency = 0.05;
+  std::vector<language::UrlLanguageHistogram::LanguageInfo> top_languages =
+      language_counts.GetTopLanguages();
+
+  for (const language::UrlLanguageHistogram::LanguageInfo& language_info :
+       top_languages) {
+    if (language_info.frequency < kMinLanguageFrequency) {
+      continue;
+    }
+
+    const int language_code = ToLanguageCode(language_info.language_code);
+    if (language_code != 0) {
+      base::UmaHistogramSparse("LanguageUsage.MostFrequentPageLanguages",
+                               language_code);
+    }
   }
 }
 

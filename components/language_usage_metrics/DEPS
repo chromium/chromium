@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/language",
+]
+
+specific_include_rules = {
+  ".*unittest.cc": [
+    "+components/prefs",
+  ],
+}
