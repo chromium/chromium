@@ -2101,6 +2101,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.CorsForcedOffForIsolatedWorldOrigin"
+    enum="BooleanForceDisabled" expires_after="M92">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <summary>
+    Whether CORS was turned off based on the origin of an isolated world (e.g.
+    for a content script of a platform app).
+
+    Logged in CorsURLLoader::HandleComplete for all successful requests.
+
+    The logged value depends on whether CorsURLLoader::SetCorsFlagIfNeeded had
+    been affected by network::ResourceRequest::isolated_world_origin.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.CrossOriginResourcePolicy.ReportOnlyResult"
     enum="NetworkServiceCorpResult" expires_after="2020-09-30">
   <owner>mkwst@chromium.org</owner>
