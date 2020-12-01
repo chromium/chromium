@@ -14,13 +14,13 @@
 namespace {
 
 void CreateVideoEncodeAccelerator(
-    const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback) {
+    media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
   // Do nothing.
 }
 
 void CreateVideoEncodeMemory(
     size_t size,
-    const media::cast::ReceiveVideoEncodeMemoryCallback& callback) {
+    media::cast::ReceiveVideoEncodeMemoryCallback callback) {
   // Do nothing.
 }
 
@@ -95,11 +95,11 @@ FrameSenderConfig GetDefaultVideoSenderConfig() {
 
 CreateVideoEncodeAcceleratorCallback
 CreateDefaultVideoEncodeAcceleratorCallback() {
-  return base::Bind(&CreateVideoEncodeAccelerator);
+  return base::BindRepeating(&CreateVideoEncodeAccelerator);
 }
 
 CreateVideoEncodeMemoryCallback CreateDefaultVideoEncodeMemoryCallback() {
-  return base::Bind(&CreateVideoEncodeMemory);
+  return base::BindRepeating(&CreateVideoEncodeMemory);
 }
 
 }  // namespace cast

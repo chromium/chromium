@@ -529,7 +529,7 @@ Session::GetSupportedVeaProfiles() {
 }
 
 void Session::CreateVideoEncodeAccelerator(
-    const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback) {
+    media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
   if (callback.is_null())
     return;
   std::unique_ptr<media::VideoEncodeAccelerator> mojo_vea;
@@ -545,12 +545,13 @@ void Session::CreateVideoEncodeAccelerator(
     mojo_vea.reset(new media::MojoVideoEncodeAccelerator(std::move(vea),
                                                          supported_profiles_));
   }
-  callback.Run(base::ThreadTaskRunnerHandle::Get(), std::move(mojo_vea));
+  std::move(callback).Run(base::ThreadTaskRunnerHandle::Get(),
+                          std::move(mojo_vea));
 }
 
 void Session::CreateVideoEncodeMemory(
     size_t size,
-    const media::cast::ReceiveVideoEncodeMemoryCallback& callback) {
+    media::cast::ReceiveVideoEncodeMemoryCallback callback) {
   DVLOG(1) << __func__;
 
   base::UnsafeSharedMemoryRegion buf =
@@ -559,7 +560,7 @@ void Session::CreateVideoEncodeMemory(
   if (!buf.IsValid())
     LOG(WARNING) << "Browser failed to allocate shared memory.";
 
-  callback.Run(std::move(buf));
+  std::move(callback).Run(std::move(buf));
 }
 
 void Session::OnTransportStatusChanged(CastTransportStatus status) {

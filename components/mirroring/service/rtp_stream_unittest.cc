@@ -38,11 +38,10 @@ class DummyClient final : public RtpStreamClient {
   void OnError(const std::string& message) override {}
   void RequestRefreshFrame() override {}
   void CreateVideoEncodeAccelerator(
-      const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback)
-      override {}
+      media::cast::ReceiveVideoEncodeAcceleratorCallback callback) override {}
   void CreateVideoEncodeMemory(
       size_t size,
-      const media::cast::ReceiveVideoEncodeMemoryCallback& callback) override {}
+      media::cast::ReceiveVideoEncodeMemoryCallback callback) override {}
 
   base::WeakPtr<RtpStreamClient> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

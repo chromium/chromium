@@ -182,7 +182,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         create_video_encode_memory_cb_.Run(
             media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
                                               frame_coded_size_),
-            base::Bind(&VEAClientImpl::OnCreateInputSharedMemory, this));
+            base::BindOnce(&VEAClientImpl::OnCreateInputSharedMemory, this));
       }
       AbortLatestEncodeAttemptDueToErrors();
       return;
@@ -657,9 +657,9 @@ ExternalVideoEncoder::ExternalVideoEncoder(
   DCHECK_GT(bit_rate_, 0);
 
   create_vea_cb.Run(
-      base::Bind(&ExternalVideoEncoder::OnCreateVideoEncodeAccelerator,
-                 weak_factory_.GetWeakPtr(), video_config, first_frame_id,
-                 std::move(status_change_cb)));
+      base::BindOnce(&ExternalVideoEncoder::OnCreateVideoEncodeAccelerator,
+                     weak_factory_.GetWeakPtr(), video_config, first_frame_id,
+                     std::move(status_change_cb)));
 }
 
 ExternalVideoEncoder::~ExternalVideoEncoder() {

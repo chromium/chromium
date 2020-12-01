@@ -74,11 +74,12 @@ class VideoEncoderTest
         cast_environment_, video_config_,
         base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
                             base::Unretained(this)),
-        base::Bind(
+        base::BindRepeating(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
             base::Unretained(vea_factory_.get())),
-        base::Bind(&FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
-                   base::Unretained(vea_factory_.get())));
+        base::BindRepeating(
+            &FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
+            base::Unretained(vea_factory_.get())));
     RunTasksAndAdvanceClock();
     if (is_encoder_present())
       ASSERT_EQ(STATUS_INITIALIZED, operational_status_);

@@ -38,7 +38,7 @@ void FakeVideoEncodeAcceleratorFactory::SetAutoRespond(bool auto_respond) {
 }
 
 void FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator(
-      const ReceiveVideoEncodeAcceleratorCallback& callback) {
+    ReceiveVideoEncodeAcceleratorCallback callback) {
   DCHECK(!callback.is_null());
   DCHECK(!next_response_vea_);
 
@@ -46,18 +46,19 @@ void FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator(
       new FakeVideoEncodeAccelerator(task_runner_);
   vea->SetWillInitializationSucceed(will_init_succeed_);
   next_response_vea_.reset(vea);
-  vea_response_callback_ = callback;
+  vea_response_callback_ = std::move(callback);
   if (auto_respond_)
     RespondWithVideoEncodeAccelerator();
 }
 
 void FakeVideoEncodeAcceleratorFactory::CreateSharedMemory(
-    size_t size, const ReceiveVideoEncodeMemoryCallback& callback) {
+    size_t size,
+    ReceiveVideoEncodeMemoryCallback callback) {
   DCHECK(!callback.is_null());
   DCHECK(!next_response_shm_.IsValid());
 
   next_response_shm_ = base::UnsafeSharedMemoryRegion::Create(size);
-  shm_response_callback_ = callback;
+  shm_response_callback_ = std::move(callback);
   if (auto_respond_)
     RespondWithSharedMemory();
 }

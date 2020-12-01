@@ -75,11 +75,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   void OnError(const std::string& message) override;
   void RequestRefreshFrame() override;
   void CreateVideoEncodeAccelerator(
-      const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback)
-      override;
+      media::cast::ReceiveVideoEncodeAcceleratorCallback callback) override;
   void CreateVideoEncodeMemory(
       size_t size,
-      const media::cast::ReceiveVideoEncodeMemoryCallback& callback) override;
+      media::cast::ReceiveVideoEncodeMemoryCallback callback) override;
 
   // Callbacks by media::cast::CastTransport::Client.
   void OnTransportStatusChanged(media::cast::CastTransportStatus status);

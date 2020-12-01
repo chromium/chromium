@@ -193,11 +193,12 @@ class VideoSenderTest : public ::testing::Test {
       video_sender_.reset(new PeerVideoSender(
           cast_environment_, video_config,
           base::BindRepeating(&SaveOperationalStatus, &operational_status_),
-          base::Bind(
+          base::BindRepeating(
               &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
               base::Unretained(&vea_factory_)),
-          base::Bind(&FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
-                     base::Unretained(&vea_factory_)),
+          base::BindRepeating(
+              &FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
+              base::Unretained(&vea_factory_)),
           transport_sender_.get()));
     } else {
       video_sender_.reset(new PeerVideoSender(

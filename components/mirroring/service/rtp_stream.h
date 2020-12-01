@@ -46,13 +46,13 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
   // The following are for hardware video encoding.
 
   virtual void CreateVideoEncodeAccelerator(
-      const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback) = 0;
+      media::cast::ReceiveVideoEncodeAcceleratorCallback callback) = 0;
 
   // TODO(crbug.com/1015472): Remove this interface. Instead, create the shared
   // memory in external video encoder through mojo::ScopedSharedBufferHandle.
   virtual void CreateVideoEncodeMemory(
       size_t size,
-      const media::cast::ReceiveVideoEncodeMemoryCallback& callback) = 0;
+      media::cast::ReceiveVideoEncodeMemoryCallback callback) = 0;
 };
 
 // Receives video frames and submits the data to media::cast::VideoSender. It

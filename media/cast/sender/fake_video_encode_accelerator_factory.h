@@ -45,13 +45,12 @@ class FakeVideoEncodeAcceleratorFactory {
   // Creates a media::FakeVideoEncodeAccelerator.  If in auto-respond mode,
   // |callback| is run synchronously (i.e., before this method returns).
   void CreateVideoEncodeAccelerator(
-      const ReceiveVideoEncodeAcceleratorCallback& callback);
+      ReceiveVideoEncodeAcceleratorCallback callback);
 
   // Creates shared memory of the requested |size|.  If in auto-respond mode,
   // |callback| is run synchronously (i.e., before this method returns).
-  void CreateSharedMemory(
-      size_t size,
-      const ReceiveVideoEncodeMemoryCallback& callback);
+  void CreateSharedMemory(size_t size,
+                          ReceiveVideoEncodeMemoryCallback callback);
 
   // Runs the |callback| provided to the last call to
   // CreateVideoEncodeAccelerator() with the new VideoEncodeAccelerator
