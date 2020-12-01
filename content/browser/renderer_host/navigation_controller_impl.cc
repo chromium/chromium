@@ -320,7 +320,7 @@ mojom::NavigationType GetNavigationType(const GURL& old_url,
       break;  // Fall through to rest of function.
   }
 
-  if (entry->restore_type() != RestoreType::NONE) {
+  if (entry->IsRestored()) {
     return entry->GetHasPostData() ? mojom::NavigationType::RESTORE_WITH_POST
                                    : mojom::NavigationType::RESTORE;
   }
@@ -1093,8 +1093,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // except for restored entries.
   bool was_restored = false;
   DCHECK(pending_entry_index_ == -1 || pending_entry_->site_instance() ||
-         pending_entry_->restore_type() != RestoreType::NONE);
-  if (pending_entry_ && pending_entry_->restore_type() != RestoreType::NONE) {
+         pending_entry_->IsRestored());
+  if (pending_entry_ && pending_entry_->IsRestored()) {
     pending_entry_->set_restore_type(RestoreType::NONE);
     was_restored = true;
   }
@@ -2712,7 +2712,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   // from happening, we drop the navigation here and stop the slow-to-commit
   // page from loading (which would normally happen during the navigation).
   if (pending_entry_index_ == last_committed_entry_index_ &&
-      pending_entry_->restore_type() == RestoreType::NONE &&
+      !pending_entry_->IsRestored() &&
       pending_entry_->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK) {
     delegate_->Stop();
 

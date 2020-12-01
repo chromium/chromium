@@ -384,9 +384,8 @@ class RenderFrameHostManagerTest
                                                    ->navigator()
                                                    .GetController());
     mojom::NavigationType navigate_type =
-        entry->restore_type() == RestoreType::NONE
-            ? mojom::NavigationType::DIFFERENT_DOCUMENT
-            : mojom::NavigationType::RESTORE;
+        entry->IsRestored() ? mojom::NavigationType::RESTORE
+                            : mojom::NavigationType::DIFFERENT_DOCUMENT;
     scoped_refptr<network::ResourceRequestBody> request_body;
     std::string post_content_type;
     if (frame_entry->method() == "POST") {
