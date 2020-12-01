@@ -57,6 +57,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"blackAndWhiteOptionText", IDS_SCANNING_APP_BLACK_AND_WHITE_OPTION_TEXT},
       {"cancelButtonText", IDS_SCANNING_APP_CANCEL_BUTTON_TEXT},
       {"cancelFailedToastText", IDS_SCANNING_APP_CANCEL_FAILED_TOAST_TEXT},
+      {"cancelingScanningText", IDS_SCANNING_APP_CANCELING_SCANNING_TEXT},
       {"colorModeDropdownLabel", IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL},
       {"colorOptionText", IDS_SCANNING_APP_COLOR_OPTION_TEXT},
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},

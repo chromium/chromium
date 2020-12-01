@@ -553,6 +553,8 @@ export function scanningAppTest() {
           return fakeScanService_.whenCalled('cancelScan');
         })
         .then(() => {
+          // Cancel button should be disabled while canceling is in progress.
+          assertTrue(cancelButton.disabled);
           // Simulate cancel completing successfully.
           return fakeScanService_.simulateCancelComplete(true);
         })
@@ -610,6 +612,8 @@ export function scanningAppTest() {
           return fakeScanService_.whenCalled('cancelScan');
         })
         .then(() => {
+          // Cancel button should be disabled while canceling is in progress.
+          assertTrue(cancelButton.disabled);
           // Simulate cancel failing.
           return fakeScanService_.simulateCancelComplete(false);
         })

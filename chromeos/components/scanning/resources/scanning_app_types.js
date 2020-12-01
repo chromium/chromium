@@ -13,6 +13,7 @@ export const AppState = {
   READY: 3,
   SCANNING: 4,
   DONE: 5,
+  CANCELING: 6,
 };
 
 /**

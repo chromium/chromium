@@ -23,6 +23,8 @@ export function scanPreviewTest() {
   let scanProgress;
   /** @type {!HTMLElement} */
   let scannedImages;
+  /** @type {!HTMLElement} */
+  let cancelingProgress;
 
   setup(() => {
     scanPreview = /** @type {!ScanPreviewElement} */ (
@@ -38,6 +40,8 @@ export function scanPreviewTest() {
         /** @type {!HTMLElement} */ (scanPreview.$$('#scanProgress'));
     scannedImages =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
+    cancelingProgress =
+        /** @type {!HTMLElement} */ (scanPreview.$$('#cancelingProgress'));
   });
 
   teardown(() => {
@@ -52,14 +56,16 @@ export function scanPreviewTest() {
    * @param {boolean} isHelperTextVisible
    * @param {boolean} isScanProgressVisible
    * @param {boolean} isScannedImagesVisible
+   * @param {boolean} isCancelingProgressVisible
    */
   function assertVisible(
       isHelpOrProgressVisible, isHelperTextVisible, isScanProgressVisible,
-      isScannedImagesVisible) {
+      isScannedImagesVisible, isCancelingProgressVisible) {
     assertEquals(isHelpOrProgressVisible, isVisible(helpOrProgress));
     assertEquals(isHelperTextVisible, isVisible(helperText));
     assertEquals(isScanProgressVisible, isVisible(scanProgress));
     assertEquals(isScannedImagesVisible, isVisible(scannedImages));
+    assertEquals(isCancelingProgressVisible, isVisible(cancelingProgress));
   }
 
   test('initializeScanPreview', () => {
@@ -86,37 +92,50 @@ export function scanPreviewTest() {
     flush();
     assertVisible(
         /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ true,
-        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false);
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ false);
 
     scanPreview.appState = AppState.GOT_SCANNERS;
     flush();
     assertVisible(
         /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ true,
-        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false);
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ false);
 
     scanPreview.appState = AppState.GETTING_CAPS;
     flush();
     assertVisible(
         /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ true,
-        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false);
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ false);
 
     scanPreview.appState = AppState.READY;
     flush();
     assertVisible(
         /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ true,
-        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false);
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ false);
 
     scanPreview.appState = AppState.SCANNING;
     flush();
     assertVisible(
         /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ false,
-        /*isScanProgressVisible*/ true, /*isScannedImagesVisible*/ false);
+        /*isScanProgressVisible*/ true, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ false);
+
+    scanPreview.appState = AppState.CANCELING;
+    flush();
+    assertVisible(
+        /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ false,
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ true);
 
     scanPreview.objectUrls = ['image'];
     scanPreview.appState = AppState.DONE;
     flush();
     assertVisible(
         /*isHelpOrProgressVisible*/ false, /*isHelperTextVisible*/ false,
-        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ true);
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ true,
+        /*isCancelingProgressVisible*/ false);
   });
 }

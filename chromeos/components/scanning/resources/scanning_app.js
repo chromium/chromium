@@ -174,6 +174,12 @@ Polymer({
       value: false,
     },
 
+    /** @private {boolean} */
+    cancelButtonDisabled_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * The file path of the last scanned page of a successful scan job. Used to
      * open the Files app with the correct file highlighted.
@@ -240,7 +246,9 @@ Polymer({
    * @param {number} progressPercent
    */
   onPageProgress(pageNumber, progressPercent) {
-    assert(this.appState_ === AppState.SCANNING);
+    assert(
+        this.appState_ === AppState.SCANNING ||
+        this.appState_ === AppState.CANCELING);
     this.pageNumber_ = pageNumber;
     this.progressPercent_ = progressPercent;
   },
@@ -250,7 +258,9 @@ Polymer({
    * @param {!Array<number>} pageData
    */
   onPageComplete(pageData) {
-    assert(this.appState_ === AppState.SCANNING);
+    assert(
+        this.appState_ === AppState.SCANNING ||
+        this.appState_ === AppState.CANCELING);
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
     this.push('objectUrls_', URL.createObjectURL(blob));
   },
@@ -278,6 +288,7 @@ Polymer({
   onCancelComplete(success) {
     // If the cancel request fails, continue showing the scan progress page.
     if (!success) {
+      this.setAppState_(AppState.SCANNING);
       this.showToast_('cancelFailedToastText');
       return;
     }
@@ -444,6 +455,7 @@ Polymer({
   /** @private */
   onCancelClick_() {
     assert(this.appState_ === AppState.SCANNING);
+    this.setAppState_(AppState.CANCELING);
     this.scanService_.cancelScan();
   },
 
@@ -480,13 +492,21 @@ Polymer({
         assert(
             this.appState_ === AppState.GETTING_CAPS ||
             this.appState_ === AppState.SCANNING ||
-            this.appState_ === AppState.DONE);
+            this.appState_ === AppState.DONE ||
+            this.appState_ === AppState.CANCELING);
         this.clearObjectUrls_();
         break;
       case (AppState.SCANNING):
-        assert(this.appState_ === AppState.READY);
+        assert(
+            this.appState_ === AppState.READY ||
+            this.appState_ === AppState.CANCELING);
         break;
       case (AppState.DONE):
+        assert(
+            this.appState_ === AppState.SCANNING ||
+            this.appState_ === AppState.CANCELING);
+        break;
+      case (AppState.CANCELING):
         assert(this.appState_ === AppState.SCANNING);
         break;
     }
@@ -498,7 +518,9 @@ Polymer({
   onAppStateChange_() {
     this.scannersLoaded_ = this.appState_ !== AppState.GETTING_SCANNERS;
     this.settingsDisabled_ = this.appState_ !== AppState.READY;
-    this.showCancelButton_ = this.appState_ === AppState.SCANNING;
+    this.showCancelButton_ = this.appState_ === AppState.SCANNING ||
+        this.appState_ === AppState.CANCELING;
+    this.cancelButtonDisabled_ = this.appState_ === AppState.CANCELING;
     this.showDoneSection_ = this.appState_ === AppState.DONE;
   },
 

@@ -164,7 +164,8 @@
             [[i18n('scanButtonText')]]
           </cr-button>
           <cr-button id="cancelButton" on-click="onCancelClick_"
-              hidden$="[[!showCancelButton_]]">
+              hidden$="[[!showCancelButton_]]"
+              disabled$="[[cancelButtonDisabled_]]">
             [[i18n('cancelButtonText')]]
           </cr-button>
         </div>

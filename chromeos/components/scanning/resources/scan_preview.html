@@ -18,12 +18,14 @@
     height: calc(1.2941 * var(--left-panel-width));
   }
 
-  #progressText {
+  #progressText,
+  #cancelingText {
     @apply --scanning-progress-text-font;
     color: var(--scanning-progress-text-color);
   }
 
-  #scanProgress {
+  #scanProgress,
+  #cancelingProgress {
     margin: auto;
     text-align: center;
     width: 60%;
@@ -57,12 +59,20 @@
   }
 
   paper-progress {
-    --paper-progress-active-color: var(--google-blue-600);
-    --paper-progress-container-color: var(--google-blue-200);
     border-radius: 4px;
     height: 4px;
     margin-top: 12px;
     width: 256px;
+  }
+
+  #scanProgressBar {
+    --paper-progress-active-color: var(--google-blue-600);
+    --paper-progress-container-color: var(--google-blue-200);
+  }
+
+  #cancelingProgressBar {
+    --paper-progress-active-color: var(--google-grey-refresh-500);
+    --paper-progress-container-color: var(--google-grey-200);
   }
 </style>
 <div class="preview">
@@ -73,7 +83,12 @@
     </div>
     <div id="scanProgress" hidden$="[[!showScanProgress_]]">
       <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
-      <paper-progress value="[[progressPercent]]"></paper-progress>
+      <paper-progress id="scanProgressBar" value="[[progressPercent]]">
+      </paper-progress>
+    </div>
+    <div id="cancelingProgress" hidden$="[[!showCancelingProgress_]]">
+      <span id="cancelingText">[[i18n('cancelingScanningText')]]</span>
+      <paper-progress id="cancelingProgressBar" indeterminate></paper-progress>
     </div>
   </div>
   <div id="scannedImages" hidden$="[[!showScannedImages_]]">

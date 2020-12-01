@@ -59,6 +59,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private {boolean} */
+    showCancelingProgress_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -84,8 +90,10 @@ Polymer({
   onAppStateChange_() {
     this.showScannedImages_ =
         this.appState === AppState.DONE && this.objectUrls.length > 0;
+    this.showScanProgress_ =
+        this.appState === AppState.SCANNING || this.appState === AppState.DONE;
+    this.showCancelingProgress_ = this.appState === AppState.CANCELING;
     this.showHelperText_ =
-        this.appState !== AppState.SCANNING && this.appState !== AppState.DONE;
-    this.showScanProgress_ = !this.showHelperText_;
+        !this.showScanProgress_ && !this.showCancelingProgress_;
   },
 });
