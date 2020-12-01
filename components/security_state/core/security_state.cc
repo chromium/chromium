@@ -322,12 +322,6 @@ bool IsSHA1InChain(const VisibleSecurityState& visible_security_state) {
           net::CERT_STATUS_SHA1_SIGNATURE_PRESENT);
 }
 
-// TODO(crbug.com/1015626): Clean this up once the experiment is fully
-// launched.
-bool ShouldShowDangerTriangleForWarningLevel() {
-  return true;
-}
-
 bool IsSafetyTipUIFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kSafetyTipUI) ||
          base::FeatureList::IsEnabled(

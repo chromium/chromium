@@ -21,18 +21,11 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
   switch (security_level) {
     case security_state::NONE:
       return omnibox::kHttpIcon;
-    case security_state::WARNING:
-      // When kMarkHttpAsParameterDangerWarning is enabled, show a danger
-      // triangle icon.
-      if (security_state::ShouldShowDangerTriangleForWarningLevel()) {
-        return omnibox::kNotSecureWarningIcon;
-      }
-      NOTREACHED();
-      return omnibox::kHttpIcon;
     case security_state::SECURE:
       return omnibox::kHttpsValidIcon;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return vector_icons::kBusinessIcon;
+    case security_state::WARNING:
     case security_state::DANGEROUS:
       return omnibox::kNotSecureWarningIcon;
     case security_state::SECURITY_LEVEL_COUNT:

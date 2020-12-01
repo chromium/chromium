@@ -475,9 +475,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 !SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
                 || mNtpDelegate.isCurrentlyVisible();
 
-        return SecurityStatusIcon.getSecurityIconResource(securityLevel,
-                SecurityStateModel.shouldShowDangerTriangleForWarningLevel(), isSmallDevice,
-                skipIconForNeutralState);
+        return SecurityStatusIcon.getSecurityIconResource(
+                securityLevel, isSmallDevice, skipIconForNeutralState);
     }
 
     @Override

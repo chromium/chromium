@@ -1626,12 +1626,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL mixed_content_url(https_server_.GetURL(replacement_path));
   ui_test_utils::NavigateToURL(browser(), mixed_content_url);
 
-  blink::SecurityStyle expected_mixed_content_security_style =
-      security_state::ShouldShowDangerTriangleForWarningLevel()
-          ? blink::SecurityStyle::kInsecure
-          : blink::SecurityStyle::kNeutral;
-  EXPECT_EQ(expected_mixed_content_security_style,
-            observer.latest_security_style());
+  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
 
   const content::SecurityStyleExplanations& mixed_content_explanation =
       observer.latest_explanations();
@@ -1923,10 +1918,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
 
-  EXPECT_EQ(security_state::ShouldShowDangerTriangleForWarningLevel()
-                ? blink::SecurityStyle::kInsecure
-                : blink::SecurityStyle::kNeutral,
-            observer.latest_security_style());
+  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
 
   for (const auto& explanation :
        observer.latest_explanations().secure_explanations) {

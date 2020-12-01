@@ -81,11 +81,6 @@ UrlBarControllerImpl::GetPublisherUrl(JNIEnv* env) {
 jint UrlBarControllerImpl::GetConnectionSecurityLevel(JNIEnv* env) {
   return GetConnectionSecurityLevel();
 }
-
-jboolean UrlBarControllerImpl::ShouldShowDangerTriangleForWarningLevel(
-    JNIEnv* env) {
-  return ShouldShowDangerTriangleForWarningLevel();
-}
 #endif
 
 base::string16 UrlBarControllerImpl::GetUrlForDisplay() {
@@ -102,10 +97,6 @@ UrlBarControllerImpl::GetConnectionSecurityLevel() {
   DCHECK(state);
   return security_state::GetSecurityLevel(
       *state, /* used_policy_installed_certificate= */ false);
-}
-
-bool UrlBarControllerImpl::ShouldShowDangerTriangleForWarningLevel() {
-  return security_state::ShouldShowDangerTriangleForWarningLevel();
 }
 
 bool UrlBarControllerImpl::GetURL(GURL* url) const {

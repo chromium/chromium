@@ -278,8 +278,6 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
             return SecurityStatusIcon.getSecurityIconResource(
                     UrlBarControllerImplJni.get().getConnectionSecurityLevel(
                             mNativeUrlBarController),
-                    UrlBarControllerImplJni.get().shouldShowDangerTriangleForWarningLevel(
-                            mNativeUrlBarController),
                     mBrowserImpl.isWindowOnSmallDevice(),
                     /* skipIconForNeutralState= */ true);
         }
@@ -292,6 +290,5 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
         String getUrlForDisplay(long nativeUrlBarControllerImpl);
         String getPublisherUrl(long nativeUrlBarControllerImpl);
         int getConnectionSecurityLevel(long nativeUrlBarControllerImpl);
-        boolean shouldShowDangerTriangleForWarningLevel(long nativeUrlBarControllerImpl);
     }
 }

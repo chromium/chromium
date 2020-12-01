@@ -39,9 +39,3 @@ jint JNI_SecurityStateModel_GetSecurityLevelForWebContents(
       *security_state::GetVisibleSecurityState(web_contents),
       /* used_policy_installed_certificate= */ false);
 }
-
-// static
-jboolean JNI_SecurityStateModel_ShouldShowDangerTriangleForWarningLevel(
-    JNIEnv* env) {
-  return security_state::ShouldShowDangerTriangleForWarningLevel();
-}

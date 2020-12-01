@@ -265,10 +265,6 @@ std::string GetLegacyTLSHistogramName(
 
 bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
 
-// Returns whether the WARNING state should downgrade the security icon from
-// info to danger triangle as part of an experiment (crbug.com/997972).
-bool ShouldShowDangerTriangleForWarningLevel();
-
 // Returns true if Safety Tip UI should be shown because a relevant field trial
 // is enabled.
 bool IsSafetyTipUIFeatureEnabled();

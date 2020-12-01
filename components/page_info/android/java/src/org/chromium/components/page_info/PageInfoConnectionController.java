@@ -60,13 +60,12 @@ public class PageInfoConnectionController
         mInfoView.onDismiss();
     }
 
-    private static @ColorRes int getSecurityIconColor(
-            @ConnectionSecurityLevel int securityLevel, boolean showDangerTriangleForWarningLevel) {
+    private static @ColorRes int getSecurityIconColor(@ConnectionSecurityLevel int securityLevel) {
         switch (securityLevel) {
             case ConnectionSecurityLevel.DANGEROUS:
                 return R.color.default_text_color_error;
             case ConnectionSecurityLevel.WARNING:
-                return showDangerTriangleForWarningLevel ? R.color.default_text_color_error : 0;
+                return R.color.default_text_color_error;
             case ConnectionSecurityLevel.NONE:
             case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
@@ -84,13 +83,10 @@ public class PageInfoConnectionController
         rowParams.subtitle = params.message;
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
-        boolean showTriangleForWarning =
-                SecurityStateModel.shouldShowDangerTriangleForWarningLevel();
-        rowParams.iconResId =
-                SecurityStatusIcon.getSecurityIconResource(securityLevel, showTriangleForWarning,
-                        /*isSmallDevice=*/false,
-                        /*skipIconForNeutralState=*/false);
-        rowParams.iconTint = getSecurityIconColor(securityLevel, showTriangleForWarning);
+        rowParams.iconResId = SecurityStatusIcon.getSecurityIconResource(securityLevel,
+                /*isSmallDevice=*/false,
+                /*skipIconForNeutralState=*/false);
+        rowParams.iconTint = getSecurityIconColor(securityLevel);
         if (params.clickCallback != null) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
     }

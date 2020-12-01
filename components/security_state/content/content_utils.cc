@@ -45,9 +45,7 @@ blink::SecurityStyle SecurityLevelToSecurityStyle(
     case security_state::NONE:
       return blink::SecurityStyle::kNeutral;
     case security_state::WARNING:
-      if (security_state::ShouldShowDangerTriangleForWarningLevel())
-        return blink::SecurityStyle::kInsecure;
-      return blink::SecurityStyle::kNeutral;
+      return blink::SecurityStyle::kInsecure;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
     case security_state::SECURE:
       return blink::SecurityStyle::kSecure;

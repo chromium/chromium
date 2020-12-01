@@ -19,7 +19,6 @@ class UrlBarController {
   virtual ~UrlBarController() {}
   virtual base::string16 GetUrlForDisplay() = 0;
   virtual security_state::SecurityLevel GetConnectionSecurityLevel() = 0;
-  virtual bool ShouldShowDangerTriangleForWarningLevel() = 0;
 };
 
 }  // namespace weblayer

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -107,7 +106,6 @@ public final class ToolbarSecurityIconTest {
     @SmallTest
     @UiThreadTest
     public void testGetSecurityIconResource() {
-        when(mSecurityStateMocks.shouldShowDangerTriangleForWarningLevel()).thenReturn(false);
         for (int securityLevel : SECURITY_LEVELS) {
             assertEquals("Wrong phone resource for security level " + securityLevel,
                     R.drawable.ic_offline_pin_24dp,
@@ -151,10 +149,10 @@ public final class ToolbarSecurityIconTest {
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.NONE,
                         !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
 
-        assertEquals(R.drawable.omnibox_info,
+        assertEquals(R.drawable.omnibox_not_secure_warning,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.WARNING,
                         IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
-        assertEquals(R.drawable.omnibox_info,
+        assertEquals(R.drawable.omnibox_not_secure_warning,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.WARNING,
                         !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
 
@@ -179,27 +177,6 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testGetSecurityIconResourceForMarkHttpAsDangerWarning() {
-        when(mSecurityStateMocks.shouldShowDangerTriangleForWarningLevel()).thenReturn(false);
-        assertEquals(0,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.NONE,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
-        assertEquals(R.drawable.omnibox_info,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.NONE,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
-
-        when(mSecurityStateMocks.shouldShowDangerTriangleForWarningLevel()).thenReturn(true);
-        assertEquals(R.drawable.omnibox_not_secure_warning,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.WARNING,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
-        assertEquals(R.drawable.omnibox_not_secure_warning,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.WARNING,
                         !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
     }
 }

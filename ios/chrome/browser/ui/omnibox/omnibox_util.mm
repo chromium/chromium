@@ -90,14 +90,11 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     case security_state::NONE:
       return INFO;
     case security_state::WARNING:
-      if (security_state::ShouldShowDangerTriangleForWarningLevel())
-        return NOT_SECURE_WARNING;
-      return INFO;
+    case security_state::DANGEROUS:
+      return NOT_SECURE_WARNING;
     case security_state::SECURE:
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return SECURE;
-    case security_state::DANGEROUS:
-      return NOT_SECURE_WARNING;
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();
       return LOCATION_BAR_SECURITY_ICON_TYPE_COUNT;

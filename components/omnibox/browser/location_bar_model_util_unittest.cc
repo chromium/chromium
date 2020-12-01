@@ -37,9 +37,5 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::WARNING);
-  if (security_state::ShouldShowDangerTriangleForWarningLevel()) {
-    EXPECT_EQ(icon.name, omnibox::kNotSecureWarningIcon.name);
-  } else {
-    EXPECT_EQ(icon.name, omnibox::kHttpIcon.name);
-  }
+  EXPECT_EQ(icon.name, omnibox::kNotSecureWarningIcon.name);
 }

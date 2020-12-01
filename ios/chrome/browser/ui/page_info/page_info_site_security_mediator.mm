@@ -112,11 +112,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     // Not HTTPS. This maps to the WARNING security level. Show the grey
     // triangle icon in page info based on the same logic used to determine
     // the iconography in the omnibox.
-    if (security_state::ShouldShowDangerTriangleForWarningLevel()) {
-      dataHolder.iconImageName = kSecurityIconDangerous;
-    } else {
-      dataHolder.iconImageName = kSecurityIconNotSecure;
-    }
+    dataHolder.iconImageName = kSecurityIconDangerous;
 
     dataHolder.message =
         [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
@@ -168,11 +164,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     // so assume the WARNING state when determining whether to swap the icon for
     // a grey triangle. This will result in an inconsistency between the omnibox
     // and page info if the mixed content WARNING feature is disabled.
-    if (security_state::ShouldShowDangerTriangleForWarningLevel()) {
-      dataHolder.iconImageName = kSecurityIconDangerous;
-    } else {
-      dataHolder.iconImageName = kSecurityIconNotSecure;
-    }
+    dataHolder.iconImageName = kSecurityIconDangerous;
 
     dataHolder.message = BuildMessage(@[
       [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
