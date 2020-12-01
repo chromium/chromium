@@ -560,9 +560,7 @@ public class NfcImpl implements Nfc {
      * Notify all active watchers that an error happened when trying to read the tag coming nearby.
      */
     private void notifyErrorToAllWatchers(NdefError error) {
-        for (int i = 0; i < mWatchIds.size(); i++) {
-            mClient.onError(error);
-        }
+        if (mWatchIds.size() != 0) mClient.onError(error);
     }
 
     /**
