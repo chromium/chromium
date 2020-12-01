@@ -311,7 +311,7 @@ TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
                          url.GetOrigin().spec().c_str()),
       "GET", &delegate, NavigationDownloadPolicy(), true /*is_main_frame*/,
       false /*upgrade_if_insecure*/);
-  delegate.WaitForRequestStarted();
+  delegate.WaitForResponseStarted();
 
   ASSERT_TRUE(most_recent_resource_request_);
   ASSERT_TRUE(most_recent_resource_request_->trusted_params);

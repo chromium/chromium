@@ -2721,14 +2721,6 @@ NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
   return ErrorPageProcess::kDestinationProcess;
 }
 
-void NavigationRequest::OnRequestStarted(base::TimeTicks timestamp) {
-  // Nothing to be done in production code.
-  //
-  // TODO(lukasza): Consider refactoring tests that depend on
-  // TestNavigationURLLoaderDelegate::OnRequestStarted and remove the
-  // OnRequestStarted method from NavigationURLLoaderDelegate.
-}
-
 namespace {
 
 void OnServiceWorkerAccessedThreadSafeWrapper(

@@ -69,12 +69,6 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   virtual void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  // Called after the network request has begun on the IO thread at time
-  // |timestamp|. This is just a thread hop but is used to compare timing
-  // against the pre-PlzNavigate codepath which didn't start the network request
-  // until after the renderer was initialized.
-  virtual void OnRequestStarted(base::TimeTicks timestamp) = 0;
-
  protected:
   NavigationURLLoaderDelegate() {}
   virtual ~NavigationURLLoaderDelegate() {}

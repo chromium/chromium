@@ -326,11 +326,6 @@ void NavigationURLLoaderImpl::Start(
   head_ = network::mojom::URLResponseHead::New();
   started_ = true;
 
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NavigationURLLoaderImpl::NotifyRequestStarted,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
-
   // TODO(kinuko): This can likely be initialized in the ctor.
   network_loader_factory_ = network_loader_factory;
   if (needs_loader_factory_interceptor && g_loader_factory_interceptor.Get()) {
@@ -1237,11 +1232,6 @@ void NavigationURLLoaderImpl::FollowRedirect(
   FollowRedirectInternal(removed_headers, modified_headers,
                          modified_cors_exempt_headers, new_previews_state,
                          base::Time::Now());
-}
-
-void NavigationURLLoaderImpl::NotifyRequestStarted(base::TimeTicks timestamp) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  delegate_->OnRequestStarted(timestamp);
 }
 
 void NavigationURLLoaderImpl::NotifyResponseStarted(

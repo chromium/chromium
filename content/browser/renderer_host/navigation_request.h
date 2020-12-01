@@ -772,7 +772,6 @@ class CONTENT_EXPORT NavigationRequest
       override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  void OnRequestStarted(base::TimeTicks timestamp) override;
 
   // To be called whenever a navigation request fails. If |skip_throttles| is
   // true, the registered NavigationThrottle(s) won't get a chance to intercept

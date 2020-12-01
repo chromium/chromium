@@ -50,7 +50,6 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   void WaitForRequestRedirected();
   void WaitForResponseStarted();
   void WaitForRequestFailed();
-  void WaitForRequestStarted();
 
   void ReleaseURLLoaderClientEndpoints();
 
@@ -69,7 +68,6 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  void OnRequestStarted(base::TimeTicks timestamp) override;
 
  private:
   net::RedirectInfo redirect_info_;
@@ -85,7 +83,6 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   std::unique_ptr<base::RunLoop> request_redirected_;
   std::unique_ptr<base::RunLoop> response_started_;
   std::unique_ptr<base::RunLoop> request_failed_;
-  std::unique_ptr<base::RunLoop> request_started_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderDelegate);
 };

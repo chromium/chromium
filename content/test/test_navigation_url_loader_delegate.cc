@@ -36,12 +36,6 @@ void TestNavigationURLLoaderDelegate::WaitForRequestFailed() {
   request_failed_.reset();
 }
 
-void TestNavigationURLLoaderDelegate::WaitForRequestStarted() {
-  request_started_.reset(new base::RunLoop);
-  request_started_->Run();
-  request_started_.reset();
-}
-
 void TestNavigationURLLoaderDelegate::ReleaseURLLoaderClientEndpoints() {
   url_loader_client_endpoints_ = nullptr;
   response_body_.reset();
@@ -64,6 +58,7 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     bool is_download,
     NavigationDownloadPolicy download_policy,
     base::Optional<SubresourceLoaderParams> subresource_loader_params) {
+  on_request_handled_counter_++;
   response_head_ = std::move(response_head);
   response_body_ = std::move(response_body);
   url_loader_client_endpoints_ = std::move(url_loader_client_endpoints);
@@ -76,19 +71,12 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
 
 void TestNavigationURLLoaderDelegate::OnRequestFailed(
     const network::URLLoaderCompletionStatus& status) {
+  on_request_handled_counter_++;
   net_error_ = status.error_code;
   if (status.ssl_info.has_value())
     ssl_info_ = status.ssl_info.value();
   if (request_failed_)
     request_failed_->Quit();
-}
-
-void TestNavigationURLLoaderDelegate::OnRequestStarted(
-    base::TimeTicks timestamp) {
-  ASSERT_FALSE(timestamp.is_null());
-  ++on_request_handled_counter_;
-  if (request_started_)
-    request_started_->Quit();
 }
 
 }  // namespace content
