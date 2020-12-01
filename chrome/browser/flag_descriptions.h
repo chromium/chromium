@@ -1105,6 +1105,9 @@ extern const char kForceEnablePrivetPrintingDescription[];
 extern const char kSafetyCheckAndroidName[];
 extern const char kSafetyCheckAndroidDescription[];
 
+extern const char kSafetyCheckWeakPasswordsName[];
+extern const char kSafetyCheckWeakPasswordsDescription[];
+
 extern const char kProminentDarkModeActiveTabTitleName[];
 extern const char kProminentDarkModeActiveTabTitleDescription[];
 

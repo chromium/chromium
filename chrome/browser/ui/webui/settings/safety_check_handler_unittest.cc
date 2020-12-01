@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/ui/webui/help/test_version_updater.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/crx_file/id_util.h"
@@ -299,6 +301,7 @@ class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
   content::TestWebUI test_web_ui_;
   std::unique_ptr<TestingSafetyCheckHandler> safety_check_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   TestChromeCleanerControllerDelegate test_chrome_cleaner_controller_delegate_;
 #endif
@@ -306,6 +309,8 @@ class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
 
 void SafetyCheckHandlerTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
+
+  feature_list_.InitWithFeatures({features::kSafetyCheckWeakPasswords}, {});
 
   // The unique pointer to a TestVersionUpdater gets moved to
   // SafetyCheckHandler, but a raw pointer is retained here to change its

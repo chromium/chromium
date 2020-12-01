@@ -6879,6 +6879,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kUseOfHashAffiliationFetcher)},
 
+    {"safety-check-weak-passwords",
+     flag_descriptions::kSafetyCheckWeakPasswordsName,
+     flag_descriptions::kSafetyCheckWeakPasswordsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSafetyCheckWeakPasswords)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

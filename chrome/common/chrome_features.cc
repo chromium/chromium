@@ -733,6 +733,9 @@ const base::Feature kSafetyCheckChromeCleanerChild{
     "SafetyCheckChromeCleanerChild", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kSafetyCheckWeakPasswords{
+    "SafetyCheckWeakPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for multiple scheduler configurations.
 const base::Feature kSchedulerConfiguration{"SchedulerConfiguration",

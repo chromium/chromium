@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/version_ui.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -649,9 +651,19 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
                                         base::FormatNumber(total.value()));
     }
     case PasswordsStatus::kSafe:
+      // TODO(crbug.com/1128904): Clean up the old code path.
+      if (!base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords)) {
+        return l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, 0);
+      }
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_SAFE);
     case PasswordsStatus::kCompromisedExist:
+      // TODO(crbug.com/1128904): Clean up the old code path.
+      if (!base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords)) {
+        return l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, compromised.value());
+      }
       if (weak.value() == 0) {
         // Only compromised passwords, no weak passwords.
         return l10n_util::GetPluralStringFUTF16(
@@ -874,7 +886,10 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
   size_t num_compromised =
       passwords_delegate_->GetCompromisedCredentials().size();
   size_t num_weak = passwords_delegate_->GetWeakCredentials().size();
-  if (num_compromised == 0 && num_weak == 0) {
+  // TODO(crbug.com/1128904): Clean up the old code path.
+  if (num_compromised == 0 &&
+      (num_weak == 0 ||
+       !base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords))) {
     // If there are no |OnCredentialDone| callbacks with is_leaked = true, no
     // need to wait for InsecureCredentialsManager callbacks any longer, since
     // there should be none for the current password check.

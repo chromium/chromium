@@ -1886,6 +1886,11 @@ const char kSafetyCheckAndroidDescription[] =
     "A settings component for checking multiple areas of browser safety. "
     "Requires #password-check to also be enabled.";
 
+const char kSafetyCheckWeakPasswordsName[] = "Safety check for weak passwords";
+const char kSafetyCheckWeakPasswordsDescription[] =
+    "If weak passwords were found, show them in safety check."
+    "Requires #passwords-weakness-check to also be enabled.";
+
 const char kProminentDarkModeActiveTabTitleName[] =
     "Prominent Dark Mode Active Tab Titles";
 const char kProminentDarkModeActiveTabTitleDescription[] =

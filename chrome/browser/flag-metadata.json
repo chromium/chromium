@@ -4163,6 +4163,15 @@
     "expiry_milestone": 90
   },
   {
+    "name": "safety-check-weak-passwords",
+    "owners": [
+      "rainhard",
+      "msramek",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "safety-tips",
     "owners": [ "jdeblasio", "estark", "meacer" ],
     "expiry_milestone": 89
