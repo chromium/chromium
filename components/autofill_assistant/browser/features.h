@@ -18,6 +18,7 @@ extern const base::Feature kAutofillAssistantChromeEntry;
 extern const base::Feature kAutofillAssistantDirectActions;
 extern const base::Feature kAutofillAssistantProactiveHelp;
 extern const base::Feature kAutofillAssistantWithTabHelper;
+extern const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB;
 
 }  // namespace features
 }  // namespace autofill_assistant

@@ -50,11 +50,21 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
             @Nullable String callerAccount, @Nullable String userName) {
         if (shouldStartTriggerScript(parameters)) {
-            if (TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))
+            if (!AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
+                // Opt-out users who have disabled the proactive help Chrome setting.
+                AutofillAssistantMetrics.recordLiteScriptStarted(
+                        webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
+                return;
+            }
+            if ((!TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER))
+                        || !TextUtils.isEmpty(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT)))
                     && !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                             AutofillAssistantUiController.getProfile())) {
-                // Opt-out users who have disabled anonymous data collection, unless the trigger
-                // scripts are directly specified in base64 format.
+                // Proactive help that requires communicating with a remote endpoint is tied to the
+                // MSBB flag. Even though proactive help is toggled on, we need to stop if MSBB is
+                // off. The proactive help setting will appear disabled to the user.
+                AutofillAssistantMetrics.recordLiteScriptStarted(
+                        webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
                 return;
             }
 

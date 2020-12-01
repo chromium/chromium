@@ -119,20 +119,12 @@ public class AutofillAssistantFacade {
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_INTENT_RECEIVED);
 
-                // For trigger scripts since M-88, there is a dedicated Chrome setting that can be
-                // used to forever opt-out.
-                if (arguments.requestsTriggerScript()
-                        && !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
-                    // Opt out users who have disabled the proactive help Chrome setting.
-                    AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
-                            LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
-                    return;
-                }
-
                 // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
-                // regular autofill assistant Chrome setting.
+                // regular autofill assistant Chrome setting. Since M-88, they also respect the new
+                // proactive help setting.
                 if (arguments.containsTriggerScript()
-                        && !AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+                        && (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()
+                                || !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn())) {
                     if (AutofillAssistantPreferencesUtil
                                     .isAutofillAssistantLiteScriptCancelThresholdReached()) {
                         AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),

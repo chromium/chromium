@@ -27,5 +27,13 @@ const base::Feature kAutofillAssistantProactiveHelp{
 const base::Feature kAutofillAssistantWithTabHelper{
     "AutofillAssistantWithTabHelper", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// By default, proactive help is only offered if MSBB is turned on. This feature
+// flag allows disabling the link. Proactive help can still be offered to users
+// so long as no communication to a remote backend is required. Specifically,
+// base64-injected trigger scripts can be shown even in the absence of MSBB.
+const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
+    "AutofillAssistantDisableProactiveHelpTiedToMSBB",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace autofill_assistant
