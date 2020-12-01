@@ -26,7 +26,7 @@ void OnOpenResult(const base::FilePath& path,
   LOG(ERROR) << "Unable to open " << path.AsUTF8Unsafe() << " " << result;
 }
 
-// File manager remote can only be accessed on UI thread.
+// Requests that ash open an item at |path|.
 void OpenItemOnUiThread(const base::FilePath& path, OpenItemType type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* service = chromeos::LacrosChromeServiceImpl::Get();
@@ -51,7 +51,7 @@ void OpenItemOnUiThread(const base::FilePath& path, OpenItemType type) {
 namespace internal {
 
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
-  // This function is called on a blocking thread, so open on the UI thread.
+  // The file manager remote can only be accessed on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OpenItemOnUiThread, path, type));
 }
