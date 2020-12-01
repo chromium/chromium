@@ -205,8 +205,6 @@ crbug.com/1110111 [ win nvidia ] conformance/rendering/point-no-attributes.html 
 # under crbug.com/963205 and crbug.com/964321 once these two failures are fixed.
 crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-crbug.com/1152259 [ win ] conformance/reading/read-pixels-test.html [ Failure ]
-crbug.com/1152259 [ linux ] conformance/reading/read-pixels-test.html [ Failure ]
 
 # Skipping new tests
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
