@@ -9,6 +9,7 @@
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 
 namespace ash {
 namespace {
@@ -28,6 +29,7 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
           base::Unretained(container))),
       container_(container) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
 
   // Let the parent handle accessibility features.
   GetViewAccessibility().OverrideIsIgnored(/*value=*/true);
@@ -47,9 +49,34 @@ const char* ClipboardHistoryMainButton::GetClassName() const {
   return "ClipboardHistoryMainButton";
 }
 
+std::unique_ptr<views::InkDrop> ClipboardHistoryMainButton::CreateInkDrop() {
+  std::unique_ptr<views::InkDrop> ink_drop = views::Button::CreateInkDrop();
+
+  // We do not use the ripple highlight due to the following reasons:
+  // (1) Events may be intercepted by the menu controller. As a result, the
+  // ripple highlight may not update properly.
+  // (2) The animation to fade in/out highlight does not look good when the menu
+  // selection is advanced by the up/down arrow key.
+  // Hence, highlighted background is implemented by customizing in
+  // `PaintButtonContents()`.
+  ink_drop->SetShowHighlightOnHover(false);
+
+  return ink_drop;
+}
+
 void ClipboardHistoryMainButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  SchedulePaint();
+
+  // Use the light mode as default because the light mode is the default mode
+  // of the native theme which decides the context menu's background color.
+  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is
+  // fixed.
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  const AshColorProvider::RippleAttributes ripple_attributes =
+      AshColorProvider::Get()->GetRippleAttributes();
+  SetInkDropBaseColor(ripple_attributes.base_color);
+  SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 }
 
 void ClipboardHistoryMainButton::OnGestureEvent(ui::GestureEvent* event) {
