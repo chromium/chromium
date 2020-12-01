@@ -160,6 +160,7 @@ class OsIntegrationManager {
                                bool add_to_desktop,
                                CreateShortcutsCallback callback);
 
+  // Installation:
   virtual void RegisterFileHandlers(
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback);
@@ -178,6 +179,21 @@ class OsIntegrationManager {
   virtual void AddAppToQuickLaunchBar(const AppId& app_id);
   virtual void RegisterWebAppOsUninstallation(const AppId& app_id,
                                               const std::string& name);
+
+  // Uninstallation:
+  virtual bool UnregisterShortcutsMenu(const AppId& app_id);
+  virtual void UnregisterRunOnOsLogin(const base::FilePath& profile_path,
+                                      const base::string16& shortcut_title,
+                                      UnregisterRunOnOsLoginCallback callback);
+  virtual void DeleteShortcuts(const AppId& app_id,
+                               const base::FilePath& shortcuts_data_dir,
+                               std::unique_ptr<ShortcutInfo> shortcut_info,
+                               DeleteShortcutsCallback callback);
+  virtual void UnregisterFileHandlers(const AppId& app_id);
+  virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
+
+  // Utility mathods:
+  virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);
 
  private:
   class OsHooksBarrier;
