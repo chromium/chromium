@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
@@ -269,6 +270,10 @@ void ToolbarView::Init() {
 
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
+
+  if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
+    chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>());
+  }
 
   if (cast)
     cast_ = AddChildView(std::move(cast));

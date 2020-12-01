@@ -96,6 +96,16 @@ class FlagsState {
                               const char* enable_features_flag_name,
                               const char* disable_features_flag_name);
 
+  // Returns the FeatureEntry named |internal_name|. Returns null if no entry is
+  // matched.
+  const FeatureEntry* FindFeatureEntryByName(
+      const std::string& internal_name) const;
+
+  // Gets sanitized entries from |flags_storage|, filtering out any entries that
+  // don't exist in |feature_entries_|, and updates |flags_storage|.
+  void GetSanitizedEnabledFlags(FlagsStorage* flags_storage,
+                                std::set<std::string>* result) const;
+
   // Reads the state from |flags_storage| and fills |switches| with the set of
   // switches corresponding to enabled entries and |features| with the set of
   // strings corresponding to enabled/disabled base::Feature states. Feature
@@ -214,10 +224,6 @@ class FlagsState {
       const std::set<std::string>& enabled_entries,
       int platform_mask) const;
 
-  // Gets sanitized entries from |flags_storage|, filtering out any entries that
-  // don't exist in |feature_entries_|, and updates |flags_storage|.
-  void GetSanitizedEnabledFlags(FlagsStorage* flags_storage,
-                                std::set<std::string>* result) const;
 
   // Variant of GetSanitizedEnabledFlags that also removes any flags that aren't
   // enabled on the current platform.
@@ -234,10 +240,6 @@ class FlagsState {
       std::set<std::string>* enabled_entries,
       std::map<std::string, SwitchEntry>* name_to_switch_map) const;
 
-  // Returns the FeatureEntry named |internal_name|. Returns null if no entry is
-  // matched.
-  const FeatureEntry* FindFeatureEntryByName(
-      const std::string& internal_name) const;
 
   // Returns whether there is a FeatureEntry named by |name| in
   // |feature_entries_| that:

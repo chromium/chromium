@@ -46,6 +46,7 @@ class BrowserAppMenuButton;
 class Browser;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
+class ChromeLabsButton;
 class HomeButton;
 class MediaToolbarButtonView;
 class ReloadButton;
@@ -135,6 +136,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   Browser* browser() const { return browser_; }
   BrowserActionsContainer* browser_actions() const { return browser_actions_; }
+  ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
   ExtensionsToolbarContainer* extensions_container() const {
     return extensions_container_;
   }
@@ -267,6 +269,7 @@ class ToolbarView : public views::AccessiblePaneView,
   LocationBarView* location_bar_ = nullptr;
   BrowserActionsContainer* browser_actions_ = nullptr;
   ExtensionsToolbarContainer* extensions_container_ = nullptr;
+  ChromeLabsButton* chrome_labs_button_ = nullptr;
   media_router::CastToolbarButton* cast_ = nullptr;
   ToolbarAccountIconContainerView* toolbar_account_icon_container_ = nullptr;
   AvatarToolbarButton* avatar_ = nullptr;

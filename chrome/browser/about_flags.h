@@ -72,6 +72,9 @@ void GetFlagFeatureEntriesForDeprecatedPage(
     base::ListValue* supported_entries,
     base::ListValue* unsupported_entries);
 
+// Gets the FlagsState used in about_flags.
+flags_ui::FlagsState* GetCurrentFlagsState();
+
 // Returns true if one of the feature entry flags has been flipped since
 // startup.
 bool IsRestartNeededToCommitChanges();

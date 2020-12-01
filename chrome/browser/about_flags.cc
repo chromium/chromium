@@ -7005,6 +7005,7 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 #endif  // OS_WIN
 
   if (!strcmp("dns-over-https", entry.internal_name) &&
+      SystemNetworkContextManager::GetInstance() &&
       (SystemNetworkContextManager::GetStubResolverConfigReader()
            ->ShouldDisableDohForManaged() ||
        features::kDnsOverHttpsShowUiParam.Get())) {
@@ -7081,6 +7082,10 @@ void GetFlagFeatureEntriesForDeprecatedPage(
   FlagsStateSingleton::GetFlagsState()->GetFlagFeatureEntries(
       flags_storage, access, supported_entries, unsupported_entries,
       base::BindRepeating(&ShouldSkipNonDeprecatedFeatureEntry));
+}
+
+flags_ui::FlagsState* GetCurrentFlagsState() {
+  return FlagsStateSingleton::GetFlagsState();
 }
 
 bool IsRestartNeededToCommitChanges() {

@@ -8,6 +8,10 @@
 
 namespace features {
 
+// Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
+const base::Feature kChromeLabs{"ChromeLabs",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
