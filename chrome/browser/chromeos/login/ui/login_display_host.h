@@ -153,6 +153,9 @@ class LoginDisplayHost {
   // Hide any visible oobe dialog.
   virtual void HideOobeDialog() = 0;
 
+  // Sets whether shelf buttons are enabled.
+  virtual void SetShelfButtonsEnabled(bool enabled) = 0;
+
   // Update the state of the oobe dialog.
   virtual void UpdateOobeDialogState(ash::OobeDialogState state) = 0;
 

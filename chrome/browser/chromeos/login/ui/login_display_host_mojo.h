@@ -83,6 +83,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
+  void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(ash::OobeDialogState state) override;
   void OnCancelPasswordChangedFlow() override;
   void HandleDisplayCaptivePortal() override;

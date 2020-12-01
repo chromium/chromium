@@ -1009,6 +1009,10 @@ void LoginDisplayHostWebUI::HideOobeDialog() {
   NOTREACHED();
 }
 
+void LoginDisplayHostWebUI::SetShelfButtonsEnabled(bool enabled) {
+  ash::LoginScreen::Get()->EnableShelfButtons(enabled);
+}
+
 void LoginDisplayHostWebUI::UpdateOobeDialogState(ash::OobeDialogState state) {
   ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(state);
 }

@@ -37,6 +37,7 @@ namespace ash {
 enum class LockScreenActionBackgroundState;
 
 class KioskAppsButton;
+class TrayBackgroundView;
 
 // LoginShelfView contains the shelf buttons visible outside of an active user
 // session. ShelfView and LoginShelfView should never be shown together.
@@ -101,6 +102,10 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // Sets whether shutdown button is enabled in the login screen.
   void SetShutdownButtonEnabled(bool enable_shutdown_button);
+
+  // Disable shelf buttons and tray buttons temporarily and enable them back
+  // later. It could be used for temporary disable due to opened modal dialog.
+  void SetButtonEnabled(bool enabled);
 
   // Sets and animates the opacity of login shelf buttons.
   void SetButtonOpacity(float target_opacity);
@@ -207,6 +212,14 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // Number of active scoped Guest button blockers.
   int scoped_guest_button_blockers_ = 0;
+
+  // Whether shelf buttons are temporarily disabled due to opened modal dialog.
+  bool is_shelf_temp_disabled_ = false;
+
+  // Set of the tray buttons which are in disabled state. It is used to record
+  // and recover the states of tray buttons after temporarily disable of the
+  // buttons.
+  std::set<TrayBackgroundView*> disabled_tray_buttons_;
 
   base::WeakPtrFactory<LoginShelfView> weak_ptr_factory_{this};
 

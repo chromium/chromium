@@ -83,6 +83,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
+  void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(ash::OobeDialogState state) override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;

@@ -157,6 +157,7 @@ void CoreOobeHandler::RegisterMessages() {
 
   AddCallback("hideOobeDialog", &CoreOobeHandler::HandleHideOobeDialog);
   AddCallback("updateOobeUIState", &CoreOobeHandler::HandleUpdateOobeUIState);
+  AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
 }
 
 void CoreOobeHandler::ShowSignInError(
@@ -235,6 +236,11 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
 void CoreOobeHandler::HandleHideOobeDialog() {
   if (LoginDisplayHost::default_host())
     LoginDisplayHost::default_host()->HideOobeDialog();
+}
+
+void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {
+  if (LoginDisplayHost::default_host())
+    LoginDisplayHost::default_host()->SetShelfButtonsEnabled(enable);
 }
 
 void CoreOobeHandler::HandleSkipToLoginForTesting() {

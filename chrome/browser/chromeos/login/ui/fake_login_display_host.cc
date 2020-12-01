@@ -116,6 +116,8 @@ void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
 void FakeLoginDisplayHost::HideOobeDialog() {}
 
+void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}
+
 void FakeLoginDisplayHost::UpdateOobeDialogState(ash::OobeDialogState state) {}
 
 void FakeLoginDisplayHost::CancelPasswordChangedFlow() {}

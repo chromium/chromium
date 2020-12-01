@@ -43,6 +43,8 @@ void TestLoginScreen::EnableAddUserButton(bool enable) {}
 
 void TestLoginScreen::EnableShutdownButton(bool enable) {}
 
+void TestLoginScreen::EnableShelfButtons(bool enable) {}
+
 void TestLoginScreen::SetIsFirstSigninStep(bool is_first) {}
 
 void TestLoginScreen::ShowParentAccessButton(bool show) {}

@@ -57,6 +57,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
       const base::Optional<user_manager::UserType>& user_type) override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
+  void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(ash::OobeDialogState state) override;
   void CancelPasswordChangedFlow() override;
   void MigrateUserData(const std::string& old_password) override;

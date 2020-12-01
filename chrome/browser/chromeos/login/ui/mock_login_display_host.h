@@ -60,6 +60,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, StartKiosk, (const KioskAppId&, bool), (override));
   MOCK_METHOD(void, ShowGaiaDialog, (const AccountId&), (override));
   MOCK_METHOD(void, HideOobeDialog, (), (override));
+  MOCK_METHOD(void, SetShelfButtonsEnabled, (bool), (override));
   MOCK_METHOD(void,
               UpdateOobeDialogState,
               (ash::OobeDialogState state),

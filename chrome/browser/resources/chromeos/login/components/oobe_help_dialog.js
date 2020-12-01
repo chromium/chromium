@@ -26,12 +26,17 @@ Polymer({
 
   /* Shows the help dialog and changes the focus to the close button. */
   showDialog: function() {
+    chrome.send('enableShelfButtons', [false]);
     this.$.helpDialog.showModal();
     this.$.closeButton.focus();
   },
 
   hideDialog: function() {
     this.$.helpDialog.close();
+  },
+
+  onClose_() {
+    chrome.send('enableShelfButtons', [true]);
   },
 
 });

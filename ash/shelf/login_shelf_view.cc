@@ -31,6 +31,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/lock_state_controller.h"
 #include "base/bind.h"
@@ -76,6 +77,18 @@ namespace ash {
 namespace {
 
 const char* kLoginShelfButtonClassName = "LoginShelfButton";
+
+constexpr LoginShelfView::ButtonId kButtonIds[] = {
+    LoginShelfView::kShutdown,
+    LoginShelfView::kRestart,
+    LoginShelfView::kSignOut,
+    LoginShelfView::kCloseNote,
+    LoginShelfView::kCancel,
+    LoginShelfView::kParentAccess,
+    LoginShelfView::kBrowseAsGuest,
+    LoginShelfView::kAddUser,
+    LoginShelfView::kEnterpriseEnrollment,
+};
 
 SkColor GetButtonTextColor() {
   return DeprecatedGetContentLayerColor(
@@ -655,18 +668,42 @@ void LoginShelfView::SetAddUserButtonEnabled(bool enable_add_user) {
 void LoginShelfView::SetShutdownButtonEnabled(bool enable_shutdown_button) {
   GetViewByID(kShutdown)->SetEnabled(enable_shutdown_button);
 }
+
+void LoginShelfView::SetButtonEnabled(bool enabled) {
+  // Only allow enabling shelf buttons when shelf is temporarily disabled and
+  // only allow temporarily disabling shelf buttons when shelf is not already
+  // disabled.
+  if (enabled != is_shelf_temp_disabled_)
+    return;
+  is_shelf_temp_disabled_ = !enabled;
+
+  for (const auto& button_id : kButtonIds) {
+    GetViewByID(button_id)->SetEnabled(enabled);
+  }
+
+  StatusAreaWidget* status_area_widget =
+      Shelf::ForWindow(GetWidget()->GetNativeWindow())->GetStatusAreaWidget();
+  if (enabled) {
+    for (TrayBackgroundView* tray_button : status_area_widget->tray_buttons()) {
+      // Do not enable the button if it is already in disabled state before we
+      // temporarily disable it.
+      if (disabled_tray_buttons_.count(tray_button))
+        continue;
+      tray_button->SetEnabled(true);
+    }
+    disabled_tray_buttons_.clear();
+  } else {
+    for (TrayBackgroundView* tray_button : status_area_widget->tray_buttons()) {
+      // Record the tray button if it is already in disabled state before we
+      // temporarily disable it.
+      if (!tray_button->GetEnabled())
+        disabled_tray_buttons_.insert(tray_button);
+      tray_button->SetEnabled(false);
+    }
+  }
+}
+
 void LoginShelfView::SetButtonOpacity(float target_opacity) {
-  static constexpr ButtonId kButtonIds[] = {
-      kShutdown,
-      kRestart,
-      kSignOut,
-      kCloseNote,
-      kCancel,
-      kParentAccess,
-      kBrowseAsGuest,
-      kAddUser,
-      kEnterpriseEnrollment
-  };
   for (const auto& button_id : kButtonIds) {
     AnimateButtonOpacity(GetViewByID(button_id)->layer(), target_opacity,
                          ShelfConfig::Get()->DimAnimationDuration(),

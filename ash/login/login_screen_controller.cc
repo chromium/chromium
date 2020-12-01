@@ -326,6 +326,13 @@ void LoginScreenController::EnableShutdownButton(bool enable) {
       ->SetShutdownButtonEnabled(enable);
 }
 
+void LoginScreenController::EnableShelfButtons(bool enable) {
+  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->login_shelf_view()
+      ->SetButtonEnabled(enable);
+}
+
 void LoginScreenController::SetIsFirstSigninStep(bool is_first) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()

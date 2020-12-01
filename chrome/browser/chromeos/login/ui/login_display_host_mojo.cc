@@ -338,6 +338,11 @@ void LoginDisplayHostMojo::HideOobeDialog() {
   HideDialog();
 }
 
+void LoginDisplayHostMojo::SetShelfButtonsEnabled(bool enabled) {
+  // Do nothing as we do not need to disable the shelf buttons on lock/login
+  // screen.
+}
+
 void LoginDisplayHostMojo::UpdateOobeDialogState(ash::OobeDialogState state) {
   if (dialog_)
     dialog_->SetState(state);

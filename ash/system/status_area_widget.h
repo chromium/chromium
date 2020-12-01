@@ -136,6 +136,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   Shelf* shelf() { return shelf_; }
 
+  const std::vector<TrayBackgroundView*>& tray_buttons() const {
+    return tray_buttons_;
+  }
+
   LoginStatus login_status() const { return login_status_; }
 
   // Returns true if the shelf should be visible. This is used when the

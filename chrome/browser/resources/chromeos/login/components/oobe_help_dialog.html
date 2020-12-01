@@ -48,7 +48,7 @@ The dialog provides two properties that can be set directly from HTML.
         padding-bottom: 12px;
       }
     </style>
-    <cr-dialog id="helpDialog">
+    <cr-dialog id="helpDialog" on-close="onClose_">
       <!-- Title -->
       <div id="helpDialogTitle" slot="title">
         <slot name="title">[[i18nDynamic(locale, titleKey)]]</slot>

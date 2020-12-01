@@ -152,6 +152,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Handlers for JS WebUI messages.
   void HandleHideOobeDialog();
+  void HandleEnableShelfButtons(bool enable);
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
   void HandleSkipToLoginForTesting();
