@@ -103,9 +103,11 @@ struct NDEFWriteOptions {
   bool overwrite;
 };
 
+// Interface used by Web NFC to push data to NFC devices and get notified of
+// nearby NFC devices.
 interface NFC {
-  // NFCClient interface is used to notify |client| when NDEFMessage matches one
-  // or more pending watch operations.
+  // NFCClient interface is used to notify |client| when watching for nearby
+  // NFC devices.
   SetClient(pending_remote<NFCClient> client);
 
   // Pushes data to NFC device.
@@ -121,11 +123,10 @@ interface NFC {
 
   // Cancels watch operation with provided id.
   CancelWatch (uint32 id) => (NDEFError? error);
-
-  // Cancels all watch operations.
-  CancelAllWatches () => (NDEFError? error);
 };
 
+// Interface that client of the NFC interface must implement to get notified of
+// nearby NFC devices.
 interface NFCClient {
   // Sends |message| to those readers that have registered |watch_ids| via
   // NFC.Watch(), i.e. |message| matches their filtering criteria.

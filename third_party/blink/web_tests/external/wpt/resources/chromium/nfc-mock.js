@@ -224,15 +224,6 @@ var WebNFCTest = (() => {
       return createNDEFError(null);
     }
 
-    async cancelAllWatches() {
-      if (this.watchers_.length === 0) {
-        return createNDEFError(device.mojom.NDEFErrorType.NOT_FOUND);
-      }
-
-      this.watchers_.splice(0, this.watchers_.length);
-      return createNDEFError(null);
-    }
-
     getHWError() {
       if (this.hw_status_ === NFCHWStatus.DISABLED)
         return createNDEFError(device.mojom.NDEFErrorType.NOT_READABLE);

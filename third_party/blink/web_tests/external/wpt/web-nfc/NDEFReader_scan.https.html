@@ -110,20 +110,6 @@ nfc_test(async (t, mockNFC) => {
 nfc_test(async (t, mockNFC) => {
   const ndef = new NDEFReader();
   const controller = new AbortController();
-  const ndefWatcher = new EventWatcher(t, ndef, ["reading", "readingerror"]);
-  const promise = ndefWatcher.wait_for("reading").then(event => {
-    assert_true(event instanceof NDEFReadingEvent);
-    controller.abort();
-  });
-  await ndef.scan({signal : controller.signal});
-
-  mockNFC.setReadingMessage(createMessage([createTextRecord(test_text_data)]));
-  await promise;
-}, "Test that NDEFReader.scan matches any ids if NDEFScanOptions.id is undefined.");
-
-nfc_test(async (t, mockNFC) => {
-  const ndef = new NDEFReader();
-  const controller = new AbortController();
   controller.abort();
   await promise_rejects_dom(t, 'AbortError', ndef.scan({signal: controller.signal}));
 }, "Test that NDEFReader.scan rejects if NDEFScanOptions.signal is already aborted.");

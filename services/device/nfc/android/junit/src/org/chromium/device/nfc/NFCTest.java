@@ -50,7 +50,6 @@ import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
 import org.chromium.device.mojom.NdefRecordTypeCategory;
 import org.chromium.device.mojom.NdefWriteOptions;
-import org.chromium.device.mojom.Nfc.CancelAllWatchesResponse;
 import org.chromium.device.mojom.Nfc.CancelPushResponse;
 import org.chromium.device.mojom.Nfc.CancelWatchResponse;
 import org.chromium.device.mojom.Nfc.PushResponse;
@@ -176,8 +175,8 @@ public class NFCTest {
         doReturn(null).when(mNfcManager).getDefaultAdapter();
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        CancelAllWatchesResponse mockCallback = mock(CancelAllWatchesResponse.class);
-        nfc.cancelAllWatches(mockCallback);
+        WatchResponse mockCallback = mock(WatchResponse.class);
+        nfc.watch(mNextWatchId, mockCallback);
         verify(mockCallback).call(mErrorCaptor.capture());
         assertEquals(NdefErrorType.NOT_SUPPORTED, mErrorCaptor.getValue().errorType);
     }
@@ -192,8 +191,8 @@ public class NFCTest {
                 .when(mContext)
                 .checkPermission(anyString(), anyInt(), anyInt());
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
-        CancelAllWatchesResponse mockCallback = mock(CancelAllWatchesResponse.class);
-        nfc.cancelAllWatches(mockCallback);
+        WatchResponse mockCallback = mock(WatchResponse.class);
+        nfc.watch(mNextWatchId, mockCallback);
         verify(mockCallback).call(mErrorCaptor.capture());
         assertEquals(NdefErrorType.NOT_ALLOWED, mErrorCaptor.getValue().errorType);
     }
@@ -1249,32 +1248,6 @@ public class NFCTest {
     }
 
     /**
-     * Test that Nfc.cancelAllWatches() cancels all pending watch operations.
-     */
-    @Test
-    @Feature({"NFCTest"})
-    public void testCancelAllWatches() {
-        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
-        mDelegate.invokeCallback();
-        WatchResponse mockWatchCallback1 = mock(WatchResponse.class);
-        WatchResponse mockWatchCallback2 = mock(WatchResponse.class);
-        nfc.watch(mNextWatchId++, mockWatchCallback1);
-        verify(mockWatchCallback1).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
-
-        nfc.watch(mNextWatchId++, mockWatchCallback2);
-        verify(mockWatchCallback2).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
-
-        CancelAllWatchesResponse mockCallback = mock(CancelAllWatchesResponse.class);
-        nfc.cancelAllWatches(mockCallback);
-
-        // Check that cancel request was successfuly completed.
-        verify(mockCallback).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
-    }
-
-    /**
      * Test that Nfc.cancelWatch() with invalid id is failing with NOT_FOUND error.
      */
     @Test
@@ -1292,22 +1265,6 @@ public class NFCTest {
         nfc.cancelWatch(mNextWatchId + 1, mockCancelWatchCallback);
 
         verify(mockCancelWatchCallback).call(mErrorCaptor.capture());
-        assertEquals(NdefErrorType.NOT_FOUND, mErrorCaptor.getValue().errorType);
-    }
-
-    /**
-     * Test that Nfc.cancelAllWatches() is failing with NOT_FOUND error if there are no active
-     * watch opeartions.
-     */
-    @Test
-    @Feature({"NFCTest"})
-    public void testCancelAllWatchesWithNoWathcers() {
-        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
-        mDelegate.invokeCallback();
-        CancelAllWatchesResponse mockCallback = mock(CancelAllWatchesResponse.class);
-        nfc.cancelAllWatches(mockCallback);
-
-        verify(mockCallback).call(mErrorCaptor.capture());
         assertEquals(NdefErrorType.NOT_FOUND, mErrorCaptor.getValue().errorType);
     }
 
@@ -1574,11 +1531,11 @@ public class NFCTest {
 
         verify(mNfcAdapter, times(0)).disableReaderMode(mActivity);
 
-        CancelAllWatchesResponse mockCancelCallback = mock(CancelAllWatchesResponse.class);
-        nfc.cancelAllWatches(mockCancelCallback);
+        CancelWatchResponse mockCancelWatchCallback = mock(CancelWatchResponse.class);
+        nfc.cancelWatch(mNextWatchId, mockCancelWatchCallback);
 
         // Check that cancel request was successfuly completed.
-        verify(mockCancelCallback).call(mErrorCaptor.capture());
+        verify(mockCancelWatchCallback).call(mErrorCaptor.capture());
         assertNull(mErrorCaptor.getValue());
 
         // Reader mode is disabled when there are no pending push / watch operations.

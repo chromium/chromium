@@ -127,10 +127,6 @@ class FakeNfcService : public device::mojom::blink::NFC {
       std::move(callback).Run(nullptr);
     }
   }
-  void CancelAllWatches(CancelAllWatchesCallback callback) override {
-    watchIDs_.clear();
-    std::move(callback).Run(nullptr);
-  }
 
   device::mojom::blink::NDEFErrorPtr watch_error_;
   device::mojom::blink::NDEFMessagePtr tag_message_;
