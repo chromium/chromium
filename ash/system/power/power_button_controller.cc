@@ -113,7 +113,12 @@ PowerButtonController::PowerButtonController(
   power_manager_client->AddObserver(this);
   power_manager_client->GetSwitchStates(base::BindOnce(
       &PowerButtonController::OnGetSwitchStates, weak_factory_.GetWeakPtr()));
-  AccelerometerReader::GetInstance()->AddObserver(this);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshEnableTabletMode)) {
+    AccelerometerReader::GetInstance()->AddObserver(this);
+  }
+
   auto* shell = Shell::Get();
   shell->display_configurator()->AddObserver(this);
   backlights_forced_off_observer_.Add(backlights_forced_off_setter);
@@ -380,28 +385,20 @@ void PowerButtonController::OnGetSwitchStates(
 
   if (result->tablet_mode !=
       chromeos::PowerManagerClient::TabletMode::UNSUPPORTED) {
-    has_tablet_mode_switch_ = true;
+    AccelerometerReader::GetInstance()->RemoveObserver(this);
     InitTabletPowerButtonMembers();
   }
 }
 
 void PowerButtonController::OnAccelerometerUpdated(
     scoped_refptr<const AccelerometerUpdate> update) {
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
-    ec_lid_angle_driver_status_ =
-        AccelerometerReader::GetInstance()->GetECLidAngleDriverStatus();
-  }
+  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAshEnableTabletMode));
 
-  // When ChromeOS EC lid angle driver is supported, there's always tablet mode
-  // switch in device, so PowerButtonController doesn't need to listens to
-  // accelerometer events.
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
-    AccelerometerReader::GetInstance()->RemoveObserver(this);
-    return;
-  }
-
-  if (!has_tablet_mode_switch_ && observe_accelerometer_events_)
-    InitTabletPowerButtonMembers();
+  // This device has at least an accelerometer, therefore it is a tablet or
+  // convertible.
+  AccelerometerReader::GetInstance()->RemoveObserver(this);
+  InitTabletPowerButtonMembers();
 }
 
 void PowerButtonController::OnBacklightsForcedOffChanged(bool forced_off) {
@@ -479,7 +476,6 @@ void PowerButtonController::ProcessCommandLine() {
   button_type_ = cl->HasSwitch(switches::kAuraLegacyPowerButton)
                      ? ButtonType::LEGACY
                      : ButtonType::NORMAL;
-  observe_accelerometer_events_ = cl->HasSwitch(switches::kAshEnableTabletMode);
   force_tablet_power_button_ = cl->HasSwitch(switches::kForceTabletPowerButton);
 
   ParsePowerButtonPositionSwitch();
