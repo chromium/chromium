@@ -51,6 +51,14 @@ constexpr int kAudioMessageHeaderSize =
 
 constexpr int kRateShifterOutputFrames = 4096;
 
+enum MessageTypes : int {
+  kReadyForPlayback = 1,
+  kPushResult,
+  kEndOfStream,
+  kUnderrun,
+  kError,
+};
+
 int64_t SamplesToMicroseconds(double samples, int sample_rate) {
   return std::round(samples * 1000000 / sample_rate);
 }
@@ -269,6 +277,10 @@ bool MixerInputConnection::HandleMetadata(
   }
   if (message.has_set_paused()) {
     SetPaused(message.set_paused().paused());
+  }
+  if (message.has_eos_played_out()) {
+    // Explicit EOS.
+    HandleAudioData(nullptr, 0, INT64_MIN);
   }
   return true;
 }
@@ -567,7 +579,7 @@ void MixerInputConnection::WritePcm(scoped_refptr<net::IOBuffer> data) {
     mixer_service::Generic message;
     message.mutable_push_result()->set_next_playback_timestamp(
         next_playback_timestamp);
-    socket_->SendProto(message);
+    socket_->SendProto(kPushResult, message);
   }
 }
 
@@ -1022,14 +1034,14 @@ void MixerInputConnection::PostPcmCompletion() {
     base::AutoLock lock(lock_);
     push_result->set_next_playback_timestamp(next_playback_timestamp_);
   }
-  socket_->SendProto(message);
+  socket_->SendProto(kPushResult, message);
 }
 
 void MixerInputConnection::PostEos() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   mixer_service::Generic message;
   message.mutable_eos_played_out();
-  socket_->SendProto(message);
+  socket_->SendProto(kEndOfStream, message);
 }
 
 void MixerInputConnection::PostAudioReadyForPlayback() {
@@ -1047,7 +1059,7 @@ void MixerInputConnection::PostAudioReadyForPlayback() {
     ready_for_playback->set_delay_microseconds(
         mixer_rendering_delay_.delay_microseconds);
   }
-  socket_->SendProto(message);
+  socket_->SendProto(kReadyForPlayback, message);
   audio_ready_for_playback_fired_ = true;
 }
 
@@ -1056,7 +1068,7 @@ void MixerInputConnection::PostStreamUnderrun() {
   mixer_service::Generic message;
   message.mutable_mixer_underrun()->set_type(
       mixer_service::MixerUnderrun::INPUT_UNDERRUN);
-  socket_->SendProto(message);
+  socket_->SendProto(kUnderrun, message);
 }
 
 void MixerInputConnection::PostOutputUnderrun() {
@@ -1064,7 +1076,7 @@ void MixerInputConnection::PostOutputUnderrun() {
   mixer_service::Generic message;
   message.mutable_mixer_underrun()->set_type(
       mixer_service::MixerUnderrun::OUTPUT_UNDERRUN);
-  socket_->SendProto(message);
+  socket_->SendProto(kUnderrun, message);
 }
 
 void MixerInputConnection::OnAudioPlaybackError(MixerError error) {
@@ -1094,7 +1106,7 @@ void MixerInputConnection::PostError(MixerError error) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   mixer_service::Generic message;
   message.mutable_error()->set_type(mixer_service::Error::INVALID_STREAM_ERROR);
-  socket_->SendProto(message);
+  socket_->SendProto(kError, message);
 
   OnConnectionError();
 }

@@ -55,6 +55,7 @@ class MixerLoopbackConnection : public mixer_service::MixerSocket::Delegate {
 
   base::OnceClosure error_callback_;
 
+  bool pending_error_ = false;
   bool sent_stream_config_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MixerLoopbackConnection);

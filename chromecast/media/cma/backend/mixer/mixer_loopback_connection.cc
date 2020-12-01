@@ -15,6 +15,15 @@
 namespace chromecast {
 namespace media {
 
+namespace {
+
+enum MessageTypes : int {
+  kStreamConfig = 1,
+  kInterrupt,
+};
+
+}  // namespace
+
 MixerLoopbackConnection::MixerLoopbackConnection(
     std::unique_ptr<mixer_service::MixerSocket> socket)
     : socket_(std::move(socket)) {
@@ -25,6 +34,11 @@ MixerLoopbackConnection::MixerLoopbackConnection(
 MixerLoopbackConnection::~MixerLoopbackConnection() = default;
 
 void MixerLoopbackConnection::SetErrorCallback(base::OnceClosure callback) {
+  if (pending_error_) {
+    pending_error_ = false;
+    std::move(callback).Run();
+    return;
+  }
   error_callback_ = std::move(callback);
 }
 
@@ -38,7 +52,7 @@ void MixerLoopbackConnection::SetStreamConfig(SampleFormat sample_format,
   config->set_sample_rate(sample_rate);
   config->set_num_channels(num_channels);
   config->set_data_size(data_size);
-  socket_->SendProto(message);
+  socket_->SendProto(kStreamConfig, message);
 
   sent_stream_config_ = true;
 }
@@ -48,7 +62,10 @@ void MixerLoopbackConnection::SendAudio(
     int data_size_bytes,
     int64_t timestamp) {
   DCHECK(sent_stream_config_);
-  socket_->SendAudioBuffer(std::move(audio_buffer), data_size_bytes, timestamp);
+  if (!socket_->SendAudioBuffer(std::move(audio_buffer), data_size_bytes,
+                                timestamp)) {
+    SendInterrupt(LoopbackInterruptReason::kSocketOverflow);
+  }
 }
 
 void MixerLoopbackConnection::SendInterrupt(LoopbackInterruptReason reason) {
@@ -58,7 +75,7 @@ void MixerLoopbackConnection::SendInterrupt(LoopbackInterruptReason reason) {
   interrupt->set_reason(
       static_cast<mixer_service::StreamInterruption::InterruptionReason>(
           reason));
-  socket_->SendProto(message);
+  socket_->SendProto(kInterrupt, message);
 }
 
 bool MixerLoopbackConnection::HandleMetadata(
@@ -75,7 +92,9 @@ bool MixerLoopbackConnection::HandleAudioData(char* data,
 void MixerLoopbackConnection::OnConnectionError() {
   if (error_callback_) {
     std::move(error_callback_).Run();
+    return;
   }
+  pending_error_ = true;
 }
 
 }  // namespace media

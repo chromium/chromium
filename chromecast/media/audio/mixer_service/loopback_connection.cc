@@ -18,6 +18,14 @@ namespace chromecast {
 namespace media {
 namespace mixer_service {
 
+namespace {
+
+enum MessageTypes : int {
+  kRequest = 1,
+};
+
+}
+
 LoopbackConnection::LoopbackConnection(Delegate* delegate)
     : LoopbackConnection(delegate, nullptr) {}
 
@@ -48,7 +56,7 @@ void LoopbackConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
 
   Generic message;
   message.mutable_loopback_request();
-  socket_->SendProto(message);
+  socket_->SendProto(kRequest, message);
 }
 
 void LoopbackConnection::OnConnectionError() {

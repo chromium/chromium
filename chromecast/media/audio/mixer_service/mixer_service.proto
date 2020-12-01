@@ -145,6 +145,7 @@ message StreamInterruption {
     INTERRUPTED_UNDERRUN = 2;        // Mixer output underrun.
     INTERRUPTED_CONFIG_CHANGE = 3;   // Mixer output config changed.
     INTERRUPTED_OUTPUT_STOPPED = 4;  // Mixer stopped playing out audio.
+    INTERRUPTED_SOCKET_OVERFLOW = 5;  // Mixer couldn't send over the socket.
   }
 
   optional InterruptionReason reason = 1;

@@ -21,6 +21,15 @@
 namespace chromecast {
 namespace media {
 
+namespace {
+
+enum MessageTypes : int {
+  kStreamCounts = 1,
+  kPostProcessorList,
+};
+
+}  // namespace
+
 class MixerServiceReceiver::ControlConnection
     : public mixer_service::MixerSocket::Delegate {
  public:
@@ -45,7 +54,7 @@ class MixerServiceReceiver::ControlConnection
     auto* counts = message.mutable_stream_count();
     counts->set_primary(receiver_->primary_stream_count_);
     counts->set_sfx(receiver_->sfx_stream_count_);
-    socket_->SendProto(message);
+    socket_->SendProto(kStreamCounts, message);
   }
 
  private:
@@ -109,7 +118,7 @@ class MixerServiceReceiver::ControlConnection
     for (const auto& library_pair : PostProcessorRegistry::Get()->Libraries()) {
       postprocessor_list->add_postprocessors(library_pair.first);
     }
-    socket_->SendProto(message);
+    socket_->SendProto(kPostProcessorList, message);
   }
 
   void OnConnectionError() override {

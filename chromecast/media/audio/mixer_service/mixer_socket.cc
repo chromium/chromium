@@ -144,28 +144,30 @@ void MixerSocket::PrepareAudioBuffer(net::IOBuffer* audio_buffer,
   memset(ptr, 0, sizeof(int32_t));
 }
 
-void MixerSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
+bool MixerSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
                                   int filled_bytes,
                                   int64_t timestamp) {
   PrepareAudioBuffer(audio_buffer.get(), filled_bytes, timestamp);
-  SendPreparedAudioBuffer(std::move(audio_buffer));
+  return SendPreparedAudioBuffer(std::move(audio_buffer));
 }
 
-void MixerSocket::SendPreparedAudioBuffer(
+bool MixerSocket::SendPreparedAudioBuffer(
     scoped_refptr<net::IOBuffer> audio_buffer) {
   uint16_t payload_size;
   base::ReadBigEndian(audio_buffer->data(), &payload_size);
   DCHECK_GE(payload_size, kAudioHeaderSize);
-  SendBuffer(std::move(audio_buffer), sizeof(uint16_t) + payload_size);
+  return SendBuffer(0, std::move(audio_buffer),
+                    sizeof(uint16_t) + payload_size);
 }
 
-void MixerSocket::SendProto(const google::protobuf::MessageLite& message) {
-  int16_t type = static_cast<int16_t>(MessageType::kMetadata);
+bool MixerSocket::SendProto(int type,
+                            const google::protobuf::MessageLite& message) {
+  int16_t packet_type = static_cast<int16_t>(MessageType::kMetadata);
   size_t message_size = message.ByteSizeLong();
   int32_t padding_bytes = (4 - (message_size % 4)) % 4;
 
-  int total_size =
-      sizeof(type) + sizeof(padding_bytes) + message_size + padding_bytes;
+  int total_size = sizeof(packet_type) + sizeof(padding_bytes) + message_size +
+                   padding_bytes;
 
   scoped_refptr<net::IOBuffer> buffer;
   char* ptr = (socket_ ? static_cast<char*>(socket_->PrepareSend(total_size))
@@ -184,8 +186,8 @@ void MixerSocket::SendProto(const google::protobuf::MessageLite& message) {
     ptr += sizeof(uint16_t);
   }
 
-  base::WriteBigEndian(ptr, type);
-  ptr += sizeof(type);
+  base::WriteBigEndian(ptr, packet_type);
+  ptr += sizeof(packet_type);
   base::WriteBigEndian(ptr, padding_bytes);
   ptr += sizeof(padding_bytes);
   message.SerializeToArray(ptr, message_size);
@@ -194,36 +196,46 @@ void MixerSocket::SendProto(const google::protobuf::MessageLite& message) {
 
   if (!buffer) {
     socket_->Send();
-    return;
+    return true;
   }
-  SendBuffer(std::move(buffer), sizeof(uint16_t) + total_size);
+  return SendBuffer(type, std::move(buffer), sizeof(uint16_t) + total_size);
 }
 
-void MixerSocket::SendBuffer(scoped_refptr<net::IOBuffer> buffer,
+bool MixerSocket::SendBuffer(int type,
+                             scoped_refptr<net::IOBuffer> buffer,
                              size_t buffer_size) {
   if (counterpart_task_runner_) {
     counterpart_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&MixerSocket::OnMessageBuffer),
                        local_counterpart_, std::move(buffer), buffer_size));
-    return;
+    return true;
   }
+  return SendBufferToSocket(type, std::move(buffer), buffer_size);
+}
+
+bool MixerSocket::SendBufferToSocket(int type,
+                                     scoped_refptr<net::IOBuffer> buffer,
+                                     size_t buffer_size) {
   DCHECK(socket_);
   if (!socket_->SendBuffer(buffer, buffer_size)) {
-    write_queue_.push(std::move(buffer));
+    if (type == 0) {
+      return false;
+    }
+    pending_writes_.insert_or_assign(type, std::move(buffer));
   }
+  return true;
 }
 
 void MixerSocket::OnSendUnblocked() {
   DCHECK(socket_);
-  while (!write_queue_.empty()) {
+  base::flat_map<int, scoped_refptr<net::IOBuffer>> pending;
+  pending_writes_.swap(pending);
+  for (auto& m : pending) {
     uint16_t message_size;
-    base::ReadBigEndian(write_queue_.front()->data(), &message_size);
-    if (!socket_->SendBuffer(write_queue_.front().get(),
-                             sizeof(uint16_t) + message_size)) {
-      return;
-    }
-    write_queue_.pop();
+    base::ReadBigEndian(m.second->data(), &message_size);
+    SendBufferToSocket(m.first, std::move(m.second),
+                       sizeof(uint16_t) + message_size);
   }
 }
 
@@ -245,18 +257,18 @@ void MixerSocket::OnEndOfStream() {
 }
 
 bool MixerSocket::OnMessage(char* data, size_t size) {
-  int16_t type;
-  if (size < sizeof(type)) {
+  int16_t packet_type;
+  if (size < sizeof(packet_type)) {
     LOG(ERROR) << "Invalid message size " << size << " from " << this;
     delegate_->OnConnectionError();
     return false;
   }
 
-  memcpy(&type, data, sizeof(type));
-  data += sizeof(type);
-  size -= sizeof(type);
+  memcpy(&packet_type, data, sizeof(packet_type));
+  data += sizeof(packet_type);
+  size -= sizeof(packet_type);
 
-  switch (static_cast<MessageType>(type)) {
+  switch (static_cast<MessageType>(packet_type)) {
     case MessageType::kMetadata:
       return ParseMetadata(data, size);
     case MessageType::kAudio:

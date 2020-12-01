@@ -30,6 +30,11 @@ void FillPatterns(
   }
 }
 
+enum MessageTypes : int {
+  kRedirectionRequest = 1,
+  kStreamMatchPatterns,
+};
+
 }  // namespace
 
 RedirectedAudioConnection::RedirectedAudioConnection(const Config& config,
@@ -46,7 +51,7 @@ void RedirectedAudioConnection::SetStreamMatchPatterns(
   if (socket_) {
     Generic message;
     FillPatterns(stream_match_patterns_, &message);
-    socket_->SendProto(message);
+    socket_->SendProto(kStreamMatchPatterns, message);
   }
 }
 
@@ -75,7 +80,7 @@ void RedirectedAudioConnection::OnConnected(
   if (!stream_match_patterns_.empty()) {
     FillPatterns(stream_match_patterns_, &message);
   }
-  socket_->SendProto(message);
+  socket_->SendProto(kRedirectionRequest, message);
 }
 
 void RedirectedAudioConnection::OnConnectionError() {

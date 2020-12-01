@@ -12,10 +12,11 @@ namespace media {
 // StreamInterruption::InterruptionReason in mixer_service.proto.
 enum class LoopbackInterruptReason {
   kUnknown = 0,
-  kDisconnected = 1,   // Disconnected from mixer.
-  kUnderrun = 2,       // Mixer output underrun.
-  kConfigChange = 3,   // Mixer output config changed.
-  kOutputStopped = 4,  // Mixer stopped playing out audio.
+  kDisconnected = 1,    // Disconnected from mixer.
+  kUnderrun = 2,        // Mixer output underrun.
+  kConfigChange = 3,    // Mixer output config changed.
+  kOutputStopped = 4,   // Mixer stopped playing out audio.
+  kSocketOverflow = 5,  // Mixer couldn't send over the socket.
 };
 
 }  // namespace media

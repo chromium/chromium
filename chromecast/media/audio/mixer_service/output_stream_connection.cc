@@ -31,6 +31,16 @@ int GetFillSizeFrames(const OutputStreamParams& params) {
   return params.sample_rate() / 100;
 }
 
+enum MessageTypes : int {
+  kInitial = 1,
+  kStartTimestamp,
+  kPlaybackRate,
+  kAudioClockRate,
+  kStreamVolume,
+  kPauseResume,
+  kEndOfStream,
+};
+
 }  // namespace
 
 OutputStreamConnection::OutputStreamConnection(Delegate* delegate,
@@ -76,7 +86,12 @@ void OutputStreamConnection::SendAudioBuffer(
   }
 
   if (filled_frames == 0) {
+    // Send explicit end-of-stream message.
     sent_eos_ = true;
+    Generic message;
+    message.mutable_eos_played_out();
+    socket_->SendProto(kEndOfStream, message);
+    return;
   }
   socket_->SendAudioBuffer(std::move(audio_buffer), filled_frames * frame_size_,
                            pts);
@@ -87,7 +102,7 @@ void OutputStreamConnection::SetVolumeMultiplier(float multiplier) {
   if (socket_) {
     Generic message;
     message.mutable_set_stream_volume()->set_volume(multiplier);
-    socket_->SendProto(message);
+    socket_->SendProto(kStreamVolume, message);
   }
 }
 
@@ -100,7 +115,7 @@ void OutputStreamConnection::SetStartTimestamp(int64_t start_timestamp,
     Generic message;
     message.mutable_set_start_timestamp()->set_start_timestamp(start_timestamp);
     message.mutable_set_start_timestamp()->set_start_pts(pts);
-    socket_->SendProto(message);
+    socket_->SendProto(kStartTimestamp, message);
   }
 }
 
@@ -109,7 +124,7 @@ void OutputStreamConnection::SetPlaybackRate(float playback_rate) {
   if (socket_) {
     Generic message;
     message.mutable_set_playback_rate()->set_playback_rate(playback_rate);
-    socket_->SendProto(message);
+    socket_->SendProto(kPlaybackRate, message);
   }
 }
 
@@ -118,7 +133,7 @@ void OutputStreamConnection::SetAudioClockRate(double rate) {
   if (socket_) {
     Generic message;
     message.mutable_set_audio_clock_rate()->set_rate(rate);
-    socket_->SendProto(message);
+    socket_->SendProto(kAudioClockRate, message);
   }
 }
 
@@ -127,7 +142,7 @@ void OutputStreamConnection::Pause() {
   if (socket_) {
     Generic message;
     message.mutable_set_paused()->set_paused(true);
-    socket_->SendProto(message);
+    socket_->SendProto(kPauseResume, message);
   }
 }
 
@@ -136,7 +151,7 @@ void OutputStreamConnection::Resume() {
   if (socket_) {
     Generic message;
     message.mutable_set_paused()->set_paused(false);
-    socket_->SendProto(message);
+    socket_->SendProto(kPauseResume, message);
   }
 }
 
@@ -163,7 +178,7 @@ void OutputStreamConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   if (paused_) {
     message.mutable_set_paused()->set_paused(true);
   }
-  socket_->SendProto(message);
+  socket_->SendProto(kInitial, message);
   delegate_->FillNextBuffer(
       audio_buffer_->data() + MixerSocket::kAudioMessageHeaderSize,
       fill_size_frames_, std::numeric_limits<int64_t>::min());

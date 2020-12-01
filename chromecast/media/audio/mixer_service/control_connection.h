@@ -86,6 +86,10 @@ class ControlConnection : public MixerConnection, public MixerSocket::Delegate {
   void SetNumOutputChannels(int num_channels);
 
  private:
+  bool SendPostprocessorMessageInternal(std::string postprocessor_name,
+                                        std::string message);
+  void OnSendFailed();
+
   // MixerConnection implementation:
   void OnConnected(std::unique_ptr<MixerSocket> socket) override;
   void OnConnectionError() override;

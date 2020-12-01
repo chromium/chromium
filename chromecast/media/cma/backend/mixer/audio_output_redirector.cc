@@ -51,6 +51,10 @@ constexpr int kAudioMessageHeaderSize =
   return DecoderConfigAdapter::ToMediaChannelLayout(layout);
 }
 
+enum MessageTypes : int {
+  kStreamConfig = 1,
+};
+
 }  // namespace
 
 class AudioOutputRedirector::RedirectionConnection
@@ -82,7 +86,7 @@ class AudioOutputRedirector::RedirectionConnection
     config->set_sample_rate(sample_rate);
     config->set_num_channels(num_channels);
     config->set_data_size(data_size);
-    socket_->SendProto(message);
+    socket_->SendProto(kStreamConfig, message);
 
     sent_stream_config_ = true;
   }

@@ -7,8 +7,8 @@
 
 #include <cstdint>
 #include <memory>
-#include <queue>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -105,24 +105,39 @@ class MixerSocket : public SmallMessageSocket::Delegate {
                                  int filled_bytes,
                                  int64_t timestamp);
 
-  // Prepares |audio_buffer| and then sends it across the connection.
-  void SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
+  // Prepares |audio_buffer| and then sends it across the connection. Returns
+  // |false| if the audio could not be sent.
+  bool SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
                        int filled_bytes,
                        int64_t timestamp);
 
   // Sends |audio_buffer| across the connection. |audio_buffer| should have
-  // previously been prepared using PrepareAudioBuffer().
-  void SendPreparedAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer);
+  // previously been prepared using PrepareAudioBuffer(). Returns |false| if the
+  // audio could not be sent.
+  bool SendPreparedAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer);
 
-  // Sends an arbitrary protobuf across the connection.
-  void SendProto(const google::protobuf::MessageLite& message);
+  // Sends an arbitrary protobuf across the connection. |type| indicates the
+  // type of message; if the write cannot complete immediately, one message of
+  // each type will be stored for later sending; if a newer message is sent with
+  // the same type, then the previous message is overwritten. When writes become
+  // available again, the stored messages are written in order of |type| (lowest
+  // type first). Note that |type| is completely determined by the caller, and
+  // you can reuse the same type value for different messages as long as they
+  // are on different socket instances. A type of 0 means to never store the
+  // message. Returns |false| if the message was not sent or stored.
+  bool SendProto(int type, const google::protobuf::MessageLite& message);
 
   // Resumes receiving messages. Delegate calls may be called synchronously
   // from within this method.
   void ReceiveMoreMessages();
 
  private:
-  void SendBuffer(scoped_refptr<net::IOBuffer> buffer, size_t buffer_size);
+  bool SendBuffer(int type,
+                  scoped_refptr<net::IOBuffer> buffer,
+                  size_t buffer_size);
+  bool SendBufferToSocket(int type,
+                          scoped_refptr<net::IOBuffer> buffer,
+                          size_t buffer_size);
 
   // SmallMessageSocket::Delegate implementation:
   void OnSendUnblocked() override;
@@ -142,7 +157,7 @@ class MixerSocket : public SmallMessageSocket::Delegate {
   const std::unique_ptr<SmallMessageSocket> socket_;
 
   scoped_refptr<IOBufferPool> buffer_pool_;
-  std::queue<scoped_refptr<net::IOBuffer>> write_queue_;
+  base::flat_map<int, scoped_refptr<net::IOBuffer>> pending_writes_;
 
   base::WeakPtr<MixerSocket> local_counterpart_;
   scoped_refptr<base::SequencedTaskRunner> counterpart_task_runner_;
