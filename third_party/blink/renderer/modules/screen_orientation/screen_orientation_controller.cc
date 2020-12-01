@@ -147,6 +147,10 @@ void ScreenOrientationController::PageVisibilityChanged() {
 }
 
 void ScreenOrientationController::NotifyOrientationChanged() {
+  // TODO(dcheng): Remove this and check in the caller.
+  if (!DomWindow())
+    return;
+
   // Keep track of the frames that need to be notified before notifying the
   // current frame as it will prevent side effects from the change event
   // handlers.
