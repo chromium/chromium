@@ -58,11 +58,11 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_UI_GEOMETRY_MOJOM_LITE_JS" file="${root_gen_dir}\ui\gfx\geometry\mojom\geometry.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
       <if expr="is_android or is_linux">
-        <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
         <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals.js" type="BINDATA" />
       </if>
       <if expr="is_win">
-        <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
         <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals_win.js" type="BINDATA" />
       </if>
 

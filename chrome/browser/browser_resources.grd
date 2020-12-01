@@ -320,15 +320,15 @@
         <include name="IDR_OS_CREDITS_HTML" file="resources\chromeos\about_os_credits.html" flattenhtml="true" type="BINDATA" />
         <if expr="optimize_webui">
           <then>
-            <include name="IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_config_dialog\vulcanized.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-            <include name="IDR_INTERNET_CONFIG_DIALOG_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_config_dialog\crisper.js" use_base_dir="false" flattenhtml="true" type="BINDATA" />
-            <include name="IDR_INTERNET_DETAIL_DIALOG_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_detail_dialog\vulcanized.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-            <include name="IDR_INTERNET_DETAIL_DIALOG_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_detail_dialog\crisper.js" use_base_dir="false" flattenhtml="true" type="BINDATA" />
+            <include name="IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_config_dialog\vulcanized.html" use_base_dir="false" preprocess="true" type="BINDATA" />
+            <include name="IDR_INTERNET_CONFIG_DIALOG_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_config_dialog\crisper.js" use_base_dir="false" preprocess="true" type="BINDATA" />
+            <include name="IDR_INTERNET_DETAIL_DIALOG_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_detail_dialog\vulcanized.html" use_base_dir="false" preprocess="true" type="BINDATA" />
+            <include name="IDR_INTERNET_DETAIL_DIALOG_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\internet_detail_dialog\crisper.js" use_base_dir="false" preprocess="true" type="BINDATA" />
           </then>
           <else>
-            <include name="IDR_INTERNET_CONFIG_DIALOG_HTML" file="resources\chromeos\internet_config_dialog\internet_config_dialog.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
+            <include name="IDR_INTERNET_CONFIG_DIALOG_HTML" file="resources\chromeos\internet_config_dialog\internet_config_dialog.html" type="chrome_html" />
             <include name="IDR_INTERNET_CONFIG_DIALOG_JS" file="resources\chromeos\internet_config_dialog\internet_config_dialog.js" type="chrome_html" />
-            <include name="IDR_INTERNET_DETAIL_DIALOG_HTML" file="resources\chromeos\internet_detail_dialog\internet_detail_dialog.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
+            <include name="IDR_INTERNET_DETAIL_DIALOG_HTML" file="resources\chromeos\internet_detail_dialog\internet_detail_dialog.html" type="chrome_html" />
             <include name="IDR_INTERNET_DETAIL_DIALOG_JS" file="resources\chromeos\internet_detail_dialog\internet_detail_dialog.js" type="chrome_html" />
           </else>
         </if>
