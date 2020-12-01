@@ -45,7 +45,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   explicit CSSFontSelector(const TreeScope&);
   ~CSSFontSelector() override;
 
-  unsigned Version() const override { return font_face_cache_.Version(); }
+  unsigned Version() const override { return font_face_cache_->Version(); }
 
   void ReportNotDefGlyph() const override;
 
@@ -102,7 +102,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   ExecutionContext* GetExecutionContext() const override {
     return tree_scope_ ? GetDocument().GetExecutionContext() : nullptr;
   }
-  FontFaceCache* GetFontFaceCache() override { return &font_face_cache_; }
+  FontFaceCache* GetFontFaceCache() override { return font_face_cache_; }
 
   const GenericFontFamilySettings& GetGenericFontFamilySettings() const {
     return generic_font_family_settings_;
@@ -125,9 +125,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   // currently leak because ComputedStyle and its data are not on the heap.
   // See crbug.com/383860 for details.
   WeakMember<const TreeScope> tree_scope_;
-  // TODO(futhark): Make this a Member which can be shared between scopes
-  // sharing the same set of @font-faces.
-  FontFaceCache font_face_cache_;
+  Member<FontFaceCache> font_face_cache_;
   HeapHashSet<WeakMember<FontSelectorClient>> clients_;
   GenericFontFamilySettings generic_font_family_settings_;
 };

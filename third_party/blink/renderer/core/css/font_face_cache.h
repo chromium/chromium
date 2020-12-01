@@ -42,9 +42,7 @@ namespace blink {
 
 class FontDescription;
 
-class CORE_EXPORT FontFaceCache final {
-  DISALLOW_NEW();
-
+class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
  public:
   FontFaceCache();
 

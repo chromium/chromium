@@ -55,8 +55,9 @@ CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
   DCHECK(tree_scope.GetDocument().GetFrame());
   FontCache::GetFontCache()->AddClient(this);
   if (tree_scope.RootNode().IsDocumentNode()) {
+    font_face_cache_ = MakeGarbageCollected<FontFaceCache>();
     FontFaceSetDocument::From(tree_scope.GetDocument())
-        ->AddFontFacesToFontFaceCache(&font_face_cache_);
+        ->AddFontFacesToFontFaceCache(font_face_cache_);
   }
 }
 
@@ -75,7 +76,7 @@ void CSSFontSelector::UnregisterForInvalidationCallbacks(
 
 void CSSFontSelector::DispatchInvalidationCallbacks(
     FontInvalidationReason reason) {
-  font_face_cache_.IncrementVersion();
+  font_face_cache_->IncrementVersion();
 
   HeapVector<Member<FontSelectorClient>> clients;
   CopyToVector(clients_, clients);
@@ -99,7 +100,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
     const AtomicString& family_name) {
   Document& document = GetTreeScope()->GetDocument();
   if (CSSSegmentedFontFace* face =
-          font_face_cache_.Get(font_description, family_name)) {
+          font_face_cache_->Get(font_description, family_name)) {
     document.GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
     return face->GetFontData(font_description);
   }
@@ -130,7 +131,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
 void CSSFontSelector::WillUseFontData(const FontDescription& font_description,
                                       const AtomicString& family,
                                       const String& text) {
-  CSSSegmentedFontFace* face = font_face_cache_.Get(font_description, family);
+  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
   if (face)
     face->WillUseFontData(font_description, text);
 }
@@ -138,7 +139,7 @@ void CSSFontSelector::WillUseFontData(const FontDescription& font_description,
 void CSSFontSelector::WillUseRange(const FontDescription& font_description,
                                    const AtomicString& family,
                                    const FontDataForRangeSet& range_set) {
-  CSSSegmentedFontFace* face = font_face_cache_.Get(font_description, family);
+  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
   if (face)
     face->WillUseRange(font_description, range_set);
 }

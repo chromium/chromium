@@ -81,7 +81,7 @@ class CORE_EXPORT OffscreenFontSelector : public FontSelector {
 
   void UpdateGenericFontFamilySettings(const GenericFontFamilySettings&);
 
-  FontFaceCache* GetFontFaceCache() override { return &font_face_cache_; }
+  FontFaceCache* GetFontFaceCache() override { return font_face_cache_; }
 
   bool IsPlatformFamilyMatchAvailable(
       const FontDescription&,
@@ -99,7 +99,7 @@ class CORE_EXPORT OffscreenFontSelector : public FontSelector {
  private:
   GenericFontFamilySettings generic_font_family_settings_;
 
-  FontFaceCache font_face_cache_;
+  Member<FontFaceCache> font_face_cache_;
 
   Member<WorkerGlobalScope> worker_;
 };

@@ -21,7 +21,7 @@
 namespace blink {
 
 OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
-    : worker_(worker) {
+    : font_face_cache_(MakeGarbageCollected<FontFaceCache>()), worker_(worker) {
   DCHECK(worker);
   FontCache::GetFontCache()->AddClient(this);
 }
@@ -43,7 +43,7 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
     const FontDescription& font_description,
     const AtomicString& family_name) {
   if (CSSSegmentedFontFace* face =
-          font_face_cache_.Get(font_description, family_name)) {
+          font_face_cache_->Get(font_description, family_name)) {
     worker_->GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
     return face->GetFontData(font_description);
   }
@@ -74,7 +74,7 @@ void OffscreenFontSelector::WillUseFontData(
     const FontDescription& font_description,
     const AtomicString& family,
     const String& text) {
-  CSSSegmentedFontFace* face = font_face_cache_.Get(font_description, family);
+  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
   if (face)
     face->WillUseFontData(font_description, text);
 }
@@ -83,7 +83,7 @@ void OffscreenFontSelector::WillUseRange(
     const FontDescription& font_description,
     const AtomicString& family,
     const FontDataForRangeSet& range_set) {
-  CSSSegmentedFontFace* face = font_face_cache_.Get(font_description, family);
+  CSSSegmentedFontFace* face = font_face_cache_->Get(font_description, family);
   if (face)
     face->WillUseRange(font_description, range_set);
 }
@@ -166,7 +166,7 @@ void OffscreenFontSelector::ReportLastResortFallbackFontLookup(
 }
 
 void OffscreenFontSelector::FontCacheInvalidated() {
-  font_face_cache_.IncrementVersion();
+  font_face_cache_->IncrementVersion();
 }
 
 void OffscreenFontSelector::FontFaceInvalidated(FontInvalidationReason) {
