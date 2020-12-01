@@ -331,8 +331,11 @@ const std::vector<SearchConcept>& GetParentalSearchConcepts() {
   return *tags;
 }
 
-void AddAccountManagerPageStrings(content::WebUIDataSource* html_source) {
+void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
+                                  Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"accountManagerPrimaryAccountDescription",
+       IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_DESCRIPTION},
       {"accountManagerChildDescription",
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION},
       {"accountManagerChildFirstMessage",
@@ -376,6 +379,12 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("accountManagerLearnMoreUrl",
                          chrome::kAccountManagerLearnMoreURL);
+  html_source->AddLocalizedString(
+      "accountManagerManagementDescription",
+      profile->IsChild() ? IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_CHILD
+                         : IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS);
+  html_source->AddString("accountManagerChromeUIManagementURL",
+                         base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
 
   if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
     static constexpr webui::LocalizedString kLocalizedStringsV2[] = {
@@ -846,7 +855,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
 
-  AddAccountManagerPageStrings(html_source);
+  AddAccountManagerPageStrings(html_source, profile());
   KerberosAccountsHandler::AddLoadTimeKerberosStrings(
       html_source, kerberos_credentials_manager_);
   AddLockScreenPageStrings(html_source, profile()->GetPrefs());

@@ -1142,6 +1142,9 @@
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_SECOND_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
     Adding a school account enables easy sign-in to websites, extensions, and apps as a student while still operating under parental controls.
   </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_DESCRIPTION" desc="Description of the Account Manager Settings page for primary account. Shown above primary account picture.">
+    Your apps and OS settings will sync across Chromebooks where you're signed in with this account.<ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Sync Settings<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER" desc="List header for Account List in Account Manager Settings page.">
     Accounts
   </message>
@@ -1210,6 +1213,12 @@
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_MANAGED_ACCOUNT" desc="Management status label for managed accounts. This will be e.g. 'Managed by google.com' for Enterprise accounts and 'Managed by Family Link' for child accounts.">
     Managed by <ph name="DOMAIN">$1<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS" desc="Management status label for managed accounts.">
+    This account is managed by <ph name="BEGIN_LINK">&lt;a target="_blank"&gt;</ph><ph name="DOMAIN">$1<ex>google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_CHILD" desc="Management status label for child accounts.">
+    This user is managed by Family Link
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_PRIMARY_ACCOUNT" desc="Indicates this account is the primary account, when the primary account is a child account.">
     Primary Account

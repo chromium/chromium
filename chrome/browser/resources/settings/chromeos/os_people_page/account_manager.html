@@ -26,6 +26,7 @@
       }
 
       .account-manager-description {
+        color: var(--cr-secondary-text-color);
         display: block;
         max-width: 560px;
       }
@@ -41,6 +42,7 @@
 
       .profile-icon.device-account-icon {
         --profile-icon-size: 60px;
+        margin-top: 20px;
       }
 
       .device-account-container {
@@ -152,6 +154,15 @@
         right: var(--badge-offset);
       }
 
+      .managed-message {
+        color: var(--cr-secondary-text-color);
+        justify-content: center;
+      }
+
+      .managed-message > iron-icon {
+        margin-inline-end: 5px;
+      }
+
       .management-status {
         color: var(--cr-secondary-text-color);
         overflow: hidden;
@@ -185,15 +196,30 @@
     <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
       <!-- Primary account description -->
       <div class="settings-box first">
-        <div class="start two-line">
+        <div class="start two-line account-manager-description">
           <div>
             <h2>$i18n{accountManagerUnmanagedLabel}</h2>
-            <!-- TODO(crbug.com/1144113): add primary account description -->
+            <settings-localized-link
+                localized-string=
+                  "$i18n{accountManagerPrimaryAccountDescription}"
+                on-link-clicked="goToSyncSettings_">
+            </settings-localized-link>
           </div>
         </div>
       </div>
 
-      <!-- TODO(crbug.com/1144113): add managed icon -->
+      <template is="dom-if" if="[[isDeviceAccountManaged_]]">
+        <div class="settings-box first managed-message">
+          <iron-icon icon="[[getManagedAccountTooltipIcon_(isChildUser_,
+                            isDeviceAccountManaged_)]]">
+          </iron-icon>
+          <settings-localized-link
+              localized-string=
+                "[[getManagementDescription_(isChildUser_, deviceAccount_)]]"
+              link-url="$i18nRaw{accountManagerChromeUIManagementURL}">
+          </settings-localized-link>
+        </div>
+      </template>
 
       <!-- Primary account icon, name and email -->
       <div class="device-account-container" tabIndex="0"

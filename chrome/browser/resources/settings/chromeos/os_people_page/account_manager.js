@@ -267,6 +267,46 @@ Polymer({
   },
 
   /**
+   * @return {string} icon
+   * @private
+   */
+  getManagedAccountTooltipIcon_() {
+    if (this.isChildUser_) {
+      return 'cr20:kite';
+    }
+    if (this.isDeviceAccountManaged_) {
+      return 'cr20:domain';
+    }
+    return '';
+  },
+
+  /**
+   * @return {string} description text
+   * @private
+   */
+  getManagementDescription_() {
+    if (this.isChildUser_) {
+      return loadTimeData.getString('accountManagerManagementDescription');
+    }
+    if (!this.deviceAccount_) {
+      return '';
+    }
+    if (!this.deviceAccount_.organization) {
+      if (this.isDeviceAccountManaged_) {
+        console.error(
+            'The device account is managed, but the organization is not set.');
+      }
+      return '';
+    }
+    // Format: 'This account is managed by
+    //          <a target="_blank" href="chrome://management">google.com</a>'.
+    // Where href will be set by <settings-localized-link>.
+    return loadTimeData.getStringF(
+        'accountManagerManagementDescription',
+        this.deviceAccount_.organization);
+  },
+
+  /**
    * @param {boolean} unmigrated
    * @private
    */
@@ -373,5 +413,18 @@ Polymer({
     this.browserProxy_.removeAccount(
         /** @type {?settings.Account} */ (this.actionMenuAccount_));
     this.closeActionMenu_();
-  }
+  },
+
+  /**
+   * @param {Event} event
+   * @private
+   */
+  goToSyncSettings_(event) {
+    event.detail.event.preventDefault();
+    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+      settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
+    } else {
+      settings.Router.getInstance().navigateTo(settings.routes.SYNC_ADVANCED);
+    }
+  },
 });
