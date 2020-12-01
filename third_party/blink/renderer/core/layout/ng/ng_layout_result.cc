@@ -95,6 +95,8 @@ NGLayoutResult::NGLayoutResult(
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 
+    rare_data->has_violating_break = builder->has_violating_break_;
+
     if (builder->column_spanner_)
       rare_data->column_spanner = builder->column_spanner_;
 

@@ -593,6 +593,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_math_fraction_ = false;
   bool is_math_operator_ = false;
   bool is_at_block_end_ = false;
+  bool has_violating_break_ = false;
   LayoutUnit consumed_block_size_;
   LayoutUnit block_offset_for_additional_columns_;
   unsigned sequence_number_ = 0;

@@ -569,6 +569,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
 
     bool allow_discard_start_margin =
         column_break_token && !column_break_token->IsCausedByColumnSpanner();
+    bool has_violating_break = false;
 
     LayoutUnit column_inline_offset(BorderScrollbarPadding().inline_start);
     int actual_column_count = 0;
@@ -609,6 +610,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       if (result->HasForcedBreak())
         forced_break_count++;
 
+      has_violating_break |= result->HasViolatingBreak();
       column_inline_offset += column_inline_progression_;
 
       if (result->ColumnSpanner())
@@ -663,14 +665,15 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     // We're balancing columns. Check if the column block-size that we laid out
     // with was satisfactory. If not, stretch and retry, if possible.
     //
-    // If we didn't overflow (actual column count wasn't larger than what we
-    // have room for), we're done IF we're also out of content (no break token;
-    // in nested multicol situations there are cases where we only allow as many
-    // columns as we have room for, as additional columns normally need to
-    // continue in the next outer fragmentainer). If we have made the columns
-    // tall enough to bump into a spanner, it also means we need to stop to lay
-    // out the spanner(s), and resume column layout afterwards.
-    if (actual_column_count <= used_column_count_ &&
+    // If we didn't break at any undesirable location and actual column count
+    // wasn't larger than what we have room for, we're done IF we're also out of
+    // content (no break token; in nested multicol situations there are cases
+    // where we only allow as many columns as we have room for, as additional
+    // columns normally need to continue in the next outer fragmentainer). If we
+    // have made the columns tall enough to bump into a spanner, it also means
+    // we need to stop to lay out the spanner(s), and resume column layout
+    // afterwards.
+    if (!has_violating_break && actual_column_count <= used_column_count_ &&
         (!column_break_token || result->ColumnSpanner()))
       break;
 

@@ -150,8 +150,18 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     NGLayoutInputNode child,
     base::Optional<NGBreakAppeal> appeal,
     bool is_forced_break) {
-  if (appeal)
+  if (appeal) {
     break_appeal_ = *appeal;
+    // If we're violating any orphans / widows or
+    // break-{after,before,inside}:avoid requests, remember this. If we're
+    // balancing columns, we may be able to stretch the columns to resolve the
+    // situation. Note that we should consider handling kBreakAppealLastResort
+    // as well here, but that's currently causing trouble for large leading
+    // margins, which would cause taller columns than desirable in some cases.
+    if (break_appeal_ == kBreakAppealViolatingBreakAvoid ||
+        break_appeal_ == kBreakAppealViolatingOrphansAndWidows)
+      has_violating_break_ = true;
+  }
   if (is_forced_break) {
     SetHasForcedBreak();
     // A forced break is considered to always have perfect appeal; they should
@@ -416,6 +426,9 @@ void NGBoxFragmentBuilder::PropagateBreak(
   } else {
     PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
   }
+
+  if (!is_fragmentation_context_root_)
+    has_violating_break_ |= child_layout_result.HasViolatingBreak();
 }
 
 scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
