@@ -1209,20 +1209,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocol"
-    enum="PeerConnectionKeyProtocol" expires_after="M82">
+    enum="PeerConnectionKeyProtocol" expires_after="2021-07-01">
   <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     What key exchange protocol (DTLS or SDES) is used to establish the crypto
-    keys for a PeerConnection's RTP transport.
+    keys for a PeerConnection's RTP transport. Note: This histogram was expired
+    after M82, and resurrected in M89.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocolByMedia"
-    enum="PeerConnectionKeyProtocolByMedia" expires_after="M82">
+    enum="PeerConnectionKeyProtocolByMedia" expires_after="2021-07-01">
   <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     What key exchange protocol (DTLS or SDES) is used to establish the crypto
-    keys for a PeerConnection's RTP transport, specified per media type.
+    keys for a PeerConnection's RTP transport, specified per media type. Note:
+    This histogram was expired after M82, and resurrected in M89.
   </summary>
 </histogram>
 
@@ -1327,6 +1331,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PeerConnectionSdpFormatReceived" expires_after="2021-04-04">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     What SDP format is received in the remote offer. The value &quot;no
     tracks&quot; means that no audio or video tracks were received. The value
@@ -1343,6 +1348,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PeerConnectionSdpFormatReceived" expires_after="2021-04-04">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     What SDP format is received in the remote answer. See
     WebRTC.PeerConnection.SdpFormatReceived for the description of the values.
@@ -1366,6 +1372,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="WebRTC.PeerConnection.SdpSemanticRequested"
     enum="PeerConnectionSdpSemanticRequested" expires_after="2021-05-16">
   <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     What SDP semantic (Unified Plan, Plan B or &quot;use default&quot;) has been
     asked for by the creator of a PeerConnection.
