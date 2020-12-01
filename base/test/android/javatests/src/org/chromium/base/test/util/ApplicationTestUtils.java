@@ -5,6 +5,7 @@
 package org.chromium.base.test.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
@@ -48,11 +49,10 @@ public class ApplicationTestUtils {
                 activity.finish();
             }
         });
+        final String error = "Failed to finish the Activity. Did you start a second Activity and "
+                + "not finish it?";
         try {
-            waitForActivityState(
-                    "Failed to finish the Activity. Did you start a second Activity and not finish"
-                            + " it?",
-                    activity, Stage.DESTROYED);
+            waitForActivityState(error, activity, Stage.DESTROYED);
         } catch (Throwable e) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) throw e;
 
@@ -61,11 +61,20 @@ public class ApplicationTestUtils {
             Intent intent = new Intent(Settings.ACTION_SETTINGS);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
-            waitForActivityState(
-                    "Failed to finish the Activity. Did you start a second Activity and not finish"
-                            + " it?",
-                    activity, Stage.DESTROYED);
+            try {
+                waitForActivityState(error, activity, Stage.DESTROYED);
+            } finally {
+                // We can't finish com.android.settings, so return to launcher instead.
+                fireHomescreenIntent(activity);
+            }
         }
+    }
+
+    private static void fireHomescreenIntent(Context context) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     /**
