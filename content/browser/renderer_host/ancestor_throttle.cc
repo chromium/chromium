@@ -263,15 +263,20 @@ const char* AncestorThrottle::GetNameForLogging() {
 AncestorThrottle::AncestorThrottle(NavigationHandle* handle)
     : NavigationThrottle(handle) {}
 
-void AncestorThrottle::ParseXFrameOptionsError(const std::string& value,
-                                               HeaderDisposition disposition) {
-  DCHECK(disposition == HeaderDisposition::CONFLICT ||
-         disposition == HeaderDisposition::INVALID);
+void AncestorThrottle::ParseXFrameOptionsError(
+    const net::HttpResponseHeaders* headers,
+    network::mojom::XFrameOptionsValue disposition) {
+  DCHECK(disposition == network::mojom::XFrameOptionsValue::kConflict ||
+         disposition == network::mojom::XFrameOptionsValue::kInvalid);
+  DCHECK(headers);
   if (!navigation_handle()->GetRenderFrameHost())
     return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
 
+  std::string value;
+  headers->GetNormalizedHeader("X-Frame-Options", &value);
+
   std::string message;
-  if (disposition == HeaderDisposition::CONFLICT) {
+  if (disposition == network::mojom::XFrameOptionsValue::kConflict) {
     message = base::StringPrintf(
         "Refused to display '%s' in a frame because it set multiple "
         "'X-Frame-Options' headers with conflicting values "
@@ -330,9 +335,9 @@ void AncestorThrottle::ConsoleErrorEmbeddingRequiresOptIn() {
 }
 
 void AncestorThrottle::ConsoleErrorXFrameOptions(
-    HeaderDisposition disposition) {
-  DCHECK(disposition == HeaderDisposition::DENY ||
-         disposition == HeaderDisposition::SAMEORIGIN);
+    network::mojom::XFrameOptionsValue disposition) {
+  DCHECK(disposition == network::mojom::XFrameOptionsValue::kDeny ||
+         disposition == network::mojom::XFrameOptionsValue::kSameOrigin);
   if (!navigation_handle()->GetRenderFrameHost())
     return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
 
@@ -343,7 +348,8 @@ void AncestorThrottle::ConsoleErrorXFrameOptions(
           .GetURL()
           .spec()
           .c_str(),
-      disposition == HeaderDisposition::DENY ? "deny" : "sameorigin");
+      disposition == network::mojom::XFrameOptionsValue::kDeny ? "deny"
+                                                               : "sameorigin");
 
   // Log a console error in the parent of the current RenderFrameHost (as
   // the current RenderFrameHost itself doesn't yet have a document).
@@ -360,44 +366,43 @@ void AncestorThrottle::ConsoleErrorXFrameOptions(
 
 AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
     LoggingDisposition logging) {
-  std::string header_value;
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  HeaderDisposition disposition =
-      ParseXFrameOptionsHeader(request->GetResponseHeaders(), &header_value);
+  network::mojom::XFrameOptionsValue disposition =
+      request->response()->parsed_headers->xfo;
 
   // If 'X-Frame-Options' would potentially block the response, check whether
   // the 'frame-ancestors' CSP directive should take effect instead. See
   // https://www.w3.org/TR/CSP/#frame-ancestors-and-frame-options
-  if (disposition != HeaderDisposition::NONE &&
-      disposition != HeaderDisposition::ALLOWALL &&
+  if (disposition != network::mojom::XFrameOptionsValue::kNone &&
+      disposition != network::mojom::XFrameOptionsValue::kAllowAll &&
       HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
     RecordXFrameOptionsUsage(XFrameOptionsHistogram::BYPASS);
     return CheckResult::PROCEED;
   }
 
   switch (disposition) {
-    case HeaderDisposition::CONFLICT:
+    case network::mojom::XFrameOptionsValue::kConflict:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
-        ParseXFrameOptionsError(header_value, disposition);
+        ParseXFrameOptionsError(request->GetResponseHeaders(), disposition);
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::CONFLICT);
       return CheckResult::BLOCK;
 
-    case HeaderDisposition::INVALID:
+    case network::mojom::XFrameOptionsValue::kInvalid:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
-        ParseXFrameOptionsError(header_value, disposition);
+        ParseXFrameOptionsError(request->GetResponseHeaders(), disposition);
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::INVALID);
       // TODO(mkwst): Consider failing here, especially if we end up shipping
       // a new default behavior which requires embedees to explicitly opt-in
       // to being embedded: https://crbug.com/1153274.
       return CheckResult::PROCEED;
 
-    case HeaderDisposition::DENY:
+    case network::mojom::XFrameOptionsValue::kDeny:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ConsoleErrorXFrameOptions(disposition);
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::DENY);
       return CheckResult::BLOCK;
 
-    case HeaderDisposition::SAMEORIGIN: {
+    case network::mojom::XFrameOptionsValue::kSameOrigin: {
       // Block the request when any ancestor is not same-origin.
       RenderFrameHostImpl* parent = ParentOrOuterDelegate(
           request->frame_tree_node()->current_frame_host());
@@ -428,10 +433,10 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
       return CheckResult::PROCEED;
     }
 
-    case HeaderDisposition::NONE:
+    case network::mojom::XFrameOptionsValue::kNone:
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::NONE);
       return CheckResult::PROCEED;
-    case HeaderDisposition::ALLOWALL:
+    case network::mojom::XFrameOptionsValue::kAllowAll:
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::ALLOWALL);
       return CheckResult::PROCEED;
   }
@@ -443,15 +448,13 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
     return CheckResult::PROCEED;
 
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  std::string unused_header_value;
-  HeaderDisposition xfo_value = ParseXFrameOptionsHeader(
-      request->GetResponseHeaders(), &unused_header_value);
 
   // If embedding requires opt-in, then we check whether the response opted-into
   // embedding via either an 'X-Frame-Options' header or a 'frame-ancestors'
   // directive. If neither is present, the response will be blocked unless it is
   // same-origin with its ancestor chain.
-  if (xfo_value == HeaderDisposition::NONE &&
+  if (request->response()->parsed_headers->xfo ==
+          network::mojom::XFrameOptionsValue::kNone &&
       !HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
     RenderFrameHostImpl* parent =
         ParentOrOuterDelegate(request->frame_tree_node()->current_frame_host());
@@ -597,48 +600,6 @@ bool AncestorThrottle::AllowsBlanketEnforcementOfRequiredCSP(
   }
 
   return false;
-}
-
-AncestorThrottle::HeaderDisposition AncestorThrottle::ParseXFrameOptionsHeader(
-    const net::HttpResponseHeaders* headers,
-    std::string* header_value) {
-  DCHECK(header_value);
-  if (!headers)
-    return HeaderDisposition::NONE;
-
-  // Process the 'X-Frame-Options header as per Section 2 of RFC7034:
-  // https://tools.ietf.org/html/rfc7034#section-2
-  //
-  // Note that we do not support the 'ALLOW-FROM' value, and we special-case
-  // the invalid "ALLOWALL" value due to its prevalance in the wild.
-  HeaderDisposition result = HeaderDisposition::NONE;
-  size_t iter = 0;
-  std::string value;
-  while (headers->EnumerateHeader(&iter, "x-frame-options", &value)) {
-    HeaderDisposition current = HeaderDisposition::INVALID;
-
-    base::StringPiece trimmed =
-        base::TrimWhitespaceASCII(value, base::TRIM_ALL);
-    if (!header_value->empty())
-      header_value->append(", ");
-    header_value->append(trimmed.as_string());
-
-    if (base::LowerCaseEqualsASCII(trimmed, "deny"))
-      current = HeaderDisposition::DENY;
-    else if (base::LowerCaseEqualsASCII(trimmed, "allowall"))
-      current = HeaderDisposition::ALLOWALL;
-    else if (base::LowerCaseEqualsASCII(trimmed, "sameorigin"))
-      current = HeaderDisposition::SAMEORIGIN;
-    else
-      current = HeaderDisposition::INVALID;
-
-    if (result == HeaderDisposition::NONE)
-      result = current;
-    else if (result != current)
-      result = HeaderDisposition::CONFLICT;
-  }
-
-  return result;
 }
 
 }  // namespace content

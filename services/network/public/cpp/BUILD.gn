@@ -110,6 +110,8 @@ component("cpp") {
     "web_sandbox_flags.h",
     "wrapper_shared_url_loader_factory.cc",
     "wrapper_shared_url_loader_factory.h",
+    "x_frame_options_parser.cc",
+    "x_frame_options_parser.h",
   ]
 
   if (!is_ios) {
@@ -344,6 +346,7 @@ source_set("tests") {
     "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
     "web_sandbox_flags_unittests.cc",
+    "x_frame_options_parser_unittest.cc",
   ]
 
   if (!is_ios) {
@@ -365,6 +368,12 @@ source_set("tests") {
   ]
 
   public_deps = [ ":buildflags" ]
+}
+
+fuzzer_test("xfo_fuzzer") {
+  sources = [ "x_frame_options_parser_fuzzer.cc" ]
+  dict = "x_frame_options.dict"
+  deps = [ ":cpp" ]
 }
 
 fuzzer_test("cors_fuzzer") {

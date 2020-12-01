@@ -12,6 +12,7 @@
 #include "components/google/core/common/google_util.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/public/mojom/x_frame_options.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
@@ -152,15 +153,21 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  // Built-in additional protection for the chrome web store origin.
+  // Built-in additional protection for the chrome web store origin by ensuring
+  // that the X-Frame-Options protection mechanism is set to either DENY or
+  // SAMEORIGIN.
   GURL webstore_url(extension_urls::GetWebstoreLaunchURL());
   if (response_url.SchemeIsHTTPOrHTTPS() &&
       response_url.DomainIs(webstore_url.host_piece())) {
-    if (response_head && response_head->headers &&
-        !response_head->headers->HasHeaderValue("x-frame-options", "deny") &&
-        !response_head->headers->HasHeaderValue("x-frame-options",
-                                                "sameorigin")) {
-      response_head->headers->AddHeader("x-frame-options", "sameorigin");
+    // TODO(mkwst): Consider shifting this to a NavigationThrottle rather than
+    // relying on implicit ordering between this check and the time at which
+    // ParsedHeaders is created.
+    CHECK(response_head);
+    CHECK(response_head->parsed_headers);
+    if (response_head->parsed_headers->xfo !=
+        network::mojom::XFrameOptionsValue::kDeny) {
+      response_head->parsed_headers->xfo =
+          network::mojom::XFrameOptionsValue::kSameOrigin;
     }
   }
 }

@@ -9,6 +9,7 @@ import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
+import "services/network/public/mojom/x_frame_options.mojom";
 
 // Holds the parsed representation of several security related HTTP headers.
 // This struct should only be populated by network::PopulateParsedHeaders()
@@ -62,4 +63,7 @@ struct ParsedHeaders {
   // For more information, see:
   // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability#section-3
   array<WebClientHintsType>? critical_ch;
+
+  // The parsed value of the X-Frame-Options header.
+  XFrameOptionsValue xfo = XFrameOptionsValue.kNone;
 };

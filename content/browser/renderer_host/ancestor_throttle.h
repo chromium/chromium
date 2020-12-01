@@ -13,6 +13,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "services/network/public/mojom/x_frame_options.mojom-forward.h"
 
 class GURL;
 
@@ -31,15 +32,6 @@ class NavigationHandle;
 // rules, and blocking requests which violate them.
 class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
  public:
-  enum class HeaderDisposition {
-    NONE = 0,
-    DENY,
-    SAMEORIGIN,
-    ALLOWALL,
-    INVALID,
-    CONFLICT
-  };
-
   static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
       NavigationHandle* handle);
 
@@ -65,9 +57,10 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
   NavigationThrottle::ThrottleCheckResult ProcessResponseImpl(
       LoggingDisposition logging,
       bool is_response_check);
-  void ParseXFrameOptionsError(const std::string& value,
-                               HeaderDisposition disposition);
-  void ConsoleErrorXFrameOptions(HeaderDisposition disposition);
+  void ParseXFrameOptionsError(const net::HttpResponseHeaders* headers,
+                               network::mojom::XFrameOptionsValue disposition);
+  void ConsoleErrorXFrameOptions(
+      network::mojom::XFrameOptionsValue disposition);
   void ConsoleErrorEmbeddingRequiresOptIn();
   CheckResult EvaluateXFrameOptions(LoggingDisposition logging);
   CheckResult EvaluateFrameAncestors(
@@ -79,13 +72,6 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
       const url::Origin& request_origin,
       const GURL& response_url,
       const network::mojom::AllowCSPFromHeaderValuePtr& allow_csp_from);
-
-  // Parses an 'X-Frame-Options' header. If the result is either CONFLICT
-  // or INVALID, |header_value| will be populated with the value which caused
-  // the parse error.
-  HeaderDisposition ParseXFrameOptionsHeader(
-      const net::HttpResponseHeaders* headers,
-      std::string* header_value);
 
   DISALLOW_COPY_AND_ASSIGN(AncestorThrottle);
 };

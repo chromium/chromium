@@ -515,6 +515,7 @@ mojom("mojom") {
     "url_response_head.mojom",
     "web_client_hints_types.mojom",
     "web_sandbox_flags.mojom",
+    "x_frame_options.mojom",
   ]
 
   public_deps = [
