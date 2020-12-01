@@ -569,7 +569,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
       root->RecommitSystemPagesForData(
           addr, new_slot_span->bucket->get_bytes_per_span(),
-          PageKeepPermissionsIfPossible);
+          PageUpdatePermissions);
       new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }
