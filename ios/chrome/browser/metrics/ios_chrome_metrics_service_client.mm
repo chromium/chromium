@@ -344,9 +344,6 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
       task_info(mach_task_self(), TASK_VM_INFO,
                 reinterpret_cast<task_info_t>(&task_info_data), &count);
   if (kr == KERN_SUCCESS) {
-    base::UmaHistogramMemoryKB(
-        "Memory.Browser",
-        (task_info_data.resident_size - task_info_data.reusable) / 1024);
     mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
     base::UmaHistogramMemoryLargeMB("Memory.Browser.MemoryFootprint",
                                     footprint_mb);
