@@ -49,17 +49,19 @@ def v8_bridge_class_name(idl_definition):
     return "V8{}".format(idl_definition.identifier)
 
 
-def blink_type_info(idl_type):
+def blink_type_info(idl_type, use_new_union=False):
     """
     Returns the types of Blink implementation corresponding to the given IDL
     type.  The returned object has the following attributes.
 
-      member_t: The type of a member variable.  E.g. T => Member<T>
       ref_t: The type of a local variable that references to an already-existing
           value.  E.g. String => String&
       const_ref_t: A const-qualified reference type.
       value_t: The type of a variable that behaves as a value.  E.g. String =>
           String
+      member_t: The type of a member variable.  E.g. T => Member<T>
+      member_ref_t: The type used for input to and output from a member
+          variable.  E.g. T* for Member<T> and const String& for String.
       has_null_value: True if the Blink implementation type can represent IDL
           null value by itself without use of base::Optional<T>.
     """
@@ -72,28 +74,38 @@ def blink_type_info(idl_type):
                      ref_fmt="{}",
                      const_ref_fmt="const {}",
                      value_fmt="{}",
-                     has_null_value=False):
+                     has_null_value=False,
+                     clear_member_var_fmt="{}.Clear()"):
             self.typename = typename
-            self.member_t = member_fmt.format(typename)
+            self.is_gc_type = is_gc_type(idl_type)
             self.ref_t = ref_fmt.format(typename)
             self.const_ref_t = const_ref_fmt.format(typename)
             self.value_t = value_fmt.format(typename)
-            # Whether Blink impl type can represent IDL null or not.
+            self.member_t = member_fmt.format(typename)
+            self.member_ref_t = (self.ref_t
+                                 if self.is_gc_type else self.const_ref_t)
             self.has_null_value = has_null_value
+            self._clear_member_var_fmt = clear_member_var_fmt
+
+        def clear_member_var_expr(self, var_name):
+            """Returns an expression to reset the given member variable."""
+            return self._clear_member_var_fmt.format(var_name)
 
     def is_gc_type(idl_type):
         idl_type = idl_type.unwrap()
-        return bool(idl_type.type_definition_object
-                    and not idl_type.is_enumeration)
+        return bool(
+            idl_type.is_buffer_source_type or
+            (idl_type.type_definition_object and not idl_type.is_enumeration)
+            or (idl_type.new_union_definition_object and use_new_union))
 
     def vector_element_type(idl_type):
-        # Add |Member<T>| explicitly so that the complete type definition of
+        # Use |Member<T>| explicitly so that the complete type definition of
         # |T| will not be required.
-        typename = blink_type_info(idl_type).typename
-        if is_gc_type(idl_type):
-            return "Member<{}>".format(typename)
+        type_info = blink_type_info(idl_type)
+        if type_info.is_gc_type:
+            return type_info.member_t
         else:
-            return typename
+            return type_info.typename
 
     real_type = idl_type.unwrap(typedef=True)
 
@@ -113,15 +125,16 @@ def blink_type_info(idl_type):
             "double": "double",
             "unrestricted double": "double",
         }
-        return TypeInfo(
-            cxx_type[real_type.keyword_typename], const_ref_fmt="{}")
+        return TypeInfo(cxx_type[real_type.keyword_typename],
+                        const_ref_fmt="{}",
+                        clear_member_var_fmt="{} = 0")
 
     if real_type.is_string:
-        return TypeInfo(
-            "String",
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&",
-            has_null_value=True)
+        return TypeInfo("String",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        clear_member_var_fmt="{} = String()")
 
     if real_type.is_array_buffer:
         assert "AllowShared" not in real_type.extended_attributes
@@ -168,7 +181,7 @@ def blink_type_info(idl_type):
     if real_type.type_definition_object:
         blink_impl_type = blink_class_name(real_type.type_definition_object)
         if real_type.is_enumeration:
-            return TypeInfo(blink_impl_type)
+            return TypeInfo(blink_impl_type, clear_member_var_fmt="")
         return TypeInfo(
             blink_impl_type,
             member_fmt="Member<{}>",
@@ -181,17 +194,33 @@ def blink_type_info(idl_type):
             or real_type.is_variadic):
         typename = "VectorOf<{}>".format(
             vector_element_type(real_type.element_type))
-        return TypeInfo(typename, ref_fmt="{}&", const_ref_fmt="const {}&")
+        return TypeInfo(typename,
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        clear_member_var_fmt="{}.clear()")
 
     if real_type.is_record:
         typename = "VectorOfPairs<{}, {}>".format(
             vector_element_type(real_type.key_type),
             vector_element_type(real_type.value_type))
-        return TypeInfo(typename, ref_fmt="{}&", const_ref_fmt="const {}&")
+        return TypeInfo(typename,
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
         return TypeInfo(
             "ScriptPromise", ref_fmt="{}&", const_ref_fmt="const {}&")
+
+    if real_type.is_union and use_new_union:
+        blink_impl_type = blink_class_name(
+            real_type.new_union_definition_object)
+        return TypeInfo(blink_impl_type,
+                        member_fmt="Member<{}>",
+                        ref_fmt="{}*",
+                        const_ref_fmt="const {}*",
+                        value_fmt="{}*",
+                        has_null_value=False)
 
     if real_type.is_union:
         blink_impl_type = blink_class_name(real_type.union_definition_object)
@@ -205,10 +234,10 @@ def blink_type_info(idl_type):
         inner_type = blink_type_info(real_type.inner_type)
         if inner_type.has_null_value:
             return inner_type
-        return TypeInfo(
-            "base::Optional<{}>".format(inner_type.value_t),
-            ref_fmt="{}&",
-            const_ref_fmt="const {}&")
+        return TypeInfo("base::Optional<{}>".format(inner_type.value_t),
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        clear_member_var_fmt="{}.reset()")
 
     assert False, "Unknown type: {}".format(idl_type.syntactic_form)
 
