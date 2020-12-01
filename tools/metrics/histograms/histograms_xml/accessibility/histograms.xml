@@ -309,7 +309,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak" enum="BooleanEnabled"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -390,7 +390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosSpokenFeedback" enum="BooleanEnabled"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>aleventhal@google.com</owner>
@@ -682,7 +682,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.Mac.ReduceTransparency" enum="BooleanEnabled"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -718,7 +718,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>dmazzoni@chromium.org</owner>
   <owner>aboxhall@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>

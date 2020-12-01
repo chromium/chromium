@@ -1157,7 +1157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorkerCache.Cache.Browser.Match.RelatedFetchEvent"
-    units="ms" expires_after="2021-03-28">
+    units="ms" expires_after="2021-05-30">
   <owner>wanderview@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

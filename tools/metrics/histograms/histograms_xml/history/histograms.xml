@@ -332,7 +332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.UserDeletedFromTab"
-    enum="ClearBrowsingDataTab" expires_after="2021-03-28">
+    enum="ClearBrowsingDataTab" expires_after="2021-05-30">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -683,7 +683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.MonthlyURLCount" units="urls"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -694,7 +694,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.MonthlyVisitCount" units="visits"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>

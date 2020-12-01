@@ -233,7 +233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CriticalActionBackgroundTimeRemaining" units="ms"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>justincohen@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>

@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.DiskResize.Result" enum="CrostiniDiskImageStatus"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>clumptini@google.com</owner>
   <owner>davidmunro@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.DiskResize.Started" enum="BooleanAttempted"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>clumptini@google.com</owner>
   <owner>davidmunro@google.com</owner>
   <summary>

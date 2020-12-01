@@ -357,7 +357,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ExternalDisplayOpenResult"
-    enum="ExternalDisplayOpenResult" expires_after="2021-03-28">
+    enum="ExternalDisplayOpenResult" expires_after="2021-05-30">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The result of attempting to open an I2C device to control an external

@@ -423,7 +423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Compositing.LayerPromotionCount"
-    units="units" expires_after="2021-03-28">
+    units="units" expires_after="2021-05-30">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -883,7 +883,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ChunkCount" units="chunks"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -896,7 +896,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMax" units="microseconds"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -909,7 +909,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeMin" units="microseconds"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -922,7 +922,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ParsingTimeTotal" units="microseconds"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -935,7 +935,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedAverage" units="tokens"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -944,7 +944,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMax" units="tokens"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -953,7 +953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMin" units="tokens"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -962,7 +962,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeAverage" units="microseconds"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -975,7 +975,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMax" units="microseconds"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -988,7 +988,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMin" units="microseconds"
-    expires_after="2021-03-31">
+    expires_after="2021-05-30">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -2104,7 +2104,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.Header"
-    enum="DocumentPolicyFeature" expires_after="2021-03-31">
+    enum="DocumentPolicyFeature" expires_after="2021-05-30">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

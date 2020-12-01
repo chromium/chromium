@@ -130,7 +130,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2021-03-15">
+    expires_after="2021-05-30">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -431,7 +431,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.SuggestedFiles.LaunchType"
-    enum="LauncherRankingItemType" expires_after="2021-03-12">
+    enum="LauncherRankingItemType" expires_after="2021-05-30">
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -601,7 +601,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateResultsList.ContainsDriveFiles"
-    enum="Boolean" expires_after="2021-02-07">
+    enum="Boolean" expires_after="2021-05-30">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>

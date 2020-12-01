@@ -454,7 +454,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserDialogs.ExternalProtocol.HandleState"
-    enum="HandleStateType" expires_after="2021-03-28">
+    enum="HandleStateType" expires_after="2021-05-30">
   <owner>dominickn@chromium.org</owner>
   <owner>meacer@chromium.org</owner>
   <summary>

@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundMode.OnStartup.AutoLaunchState"
-    enum="AutoLaunchState" expires_after="2021-03-30">
+    enum="AutoLaunchState" expires_after="2021-05-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
@@ -199,7 +199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
-    enum="BooleanEnabled" expires_after="2021-03-30">
+    enum="BooleanEnabled" expires_after="2021-05-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>

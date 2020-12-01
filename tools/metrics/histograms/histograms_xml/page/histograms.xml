@@ -74,7 +74,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AdDensity.MaxPercentByArea" units="%"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>justinmron@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AdDensity.MaxPercentByHeight" units="%"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>justinmron@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds"
-    units="%" expires_after="2021-03-28">
+    units="%" expires_after="2021-05-30">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -165,7 +165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist"
-    enum="BooleanBlocked" expires_after="2021-03-28">
+    enum="BooleanBlocked" expires_after="2021-05-30">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -215,7 +215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.UserDidReload"
-    enum="BooleanReloaded" expires_after="2021-03-28">
+    enum="BooleanReloaded" expires_after="2021-05-30">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -627,7 +627,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.CookieRead2" units="Count"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>jkarlin@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <summary>
@@ -637,7 +637,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.CookieWrite2"
-    units="Count" expires_after="2021-03-28">
+    units="Count" expires_after="2021-05-30">
   <owner>jkarlin@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <summary>
@@ -844,7 +844,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Bytes.Total2" units="KB"
-    expires_after="2021-03-28">
+    expires_after="2021-05-30">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
