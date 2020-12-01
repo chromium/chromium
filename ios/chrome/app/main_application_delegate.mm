@@ -324,7 +324,7 @@ const int kMainIntentCheckDelay = 1;
           }
           if (!appStartupFromExternalIntent) {
             base::RecordAction(
-                base::UserMetricsAction("IOSLaunchedBySearchInChromeIntent"));
+                base::UserMetricsAction("IOSOpenByMainIntent"));
           }
 
           [_appState
