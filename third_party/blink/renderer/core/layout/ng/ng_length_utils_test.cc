@@ -589,5 +589,28 @@ TEST_F(NGLengthUtilsTest, testColumnWidthAndCount) {
   EXPECT_EQ(3, GetUsedColumnCount(3, 0, 10, 10));
 }
 
+LayoutUnit ComputeInlineSize(LogicalSize aspect_ratio, LayoutUnit block_size) {
+  return InlineSizeFromAspectRatio(NGBoxStrut(), aspect_ratio,
+                                   EBoxSizing::kBorderBox, block_size);
+}
+TEST_F(NGLengthUtilsTest, AspectRatio) {
+  EXPECT_EQ(LayoutUnit(8000),
+            ComputeInlineSize(LogicalSize(8000, 8000), LayoutUnit(8000)));
+  EXPECT_EQ(LayoutUnit(1),
+            ComputeInlineSize(LogicalSize(1, 10000), LayoutUnit(10000)));
+  EXPECT_EQ(LayoutUnit(4),
+            ComputeInlineSize(LogicalSize(1, 1000000), LayoutUnit(4000000)));
+  EXPECT_EQ(LayoutUnit(0),
+            ComputeInlineSize(LogicalSize(3, 5000000), LayoutUnit(5)));
+  // The literals are 8 million, 20 million, 10 million, 4 million.
+  EXPECT_EQ(
+      LayoutUnit(8000000),
+      ComputeInlineSize(LogicalSize(20000000, 10000000), LayoutUnit(4000000)));
+  // If you specify an aspect ratio of 10000:1 with a large block size,
+  // LayoutUnit saturates.
+  EXPECT_EQ(LayoutUnit::Max(),
+            ComputeInlineSize(LogicalSize(10000, 1), LayoutUnit(10000)));
+}
+
 }  // namespace
 }  // namespace blink
