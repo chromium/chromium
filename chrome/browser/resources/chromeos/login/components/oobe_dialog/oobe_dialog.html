@@ -80,9 +80,6 @@
     -->
     <style include="oobe-dialog-host cr-shared-style">
       :host {
-        --title-font-distance-to-baseline: 7px;
-        --subtitle-font-size: --oobe-default-font-size;
-        --subtitle-font-distance-to-baseline: 3px;
         --subtitle-line-height: 18px;
         @apply --oobe-default-font;
       }
@@ -192,10 +189,6 @@
         padding: var(--oobe-dialog-footer-padding)
                 calc(var(--oobe-dialog-footer-padding) - 4px);
         z-index: 1;
-      }
-
-      :host #oobe-bottom[no-buttons-padding] {
-        padding: unset;
       }
 
       #oobe-icon-div ::slotted(hd-iron-icon),

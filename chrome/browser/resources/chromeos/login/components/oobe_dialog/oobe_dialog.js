@@ -41,14 +41,6 @@ Polymer({
     },
 
     /**
-     * Removes buttons padding.
-     */
-    noButtonsPadding: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
      * If true footer would be shrunk as much as possible to fit container.
      */
     footerShrinkable: {
