@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
@@ -29,13 +30,6 @@ namespace ash {
 
 namespace {
 
-// The preferred height for the bitmap.
-constexpr int kBitmapHeight = 80;
-
-// The margins of the delete button.
-constexpr gfx::Insets kDeleteButtonMargins =
-    gfx::Insets(/*top=*/4, /*left=*/0, /*bottom=*/0, /*right=*/4);
-
 // The duration of the fade out animation for transitioning the placeholder
 // image to rendered HTML.
 constexpr base::TimeDelta kFadeOutDurationMs =
@@ -45,15 +39,6 @@ constexpr base::TimeDelta kFadeOutDurationMs =
 // to rendered HTML.
 constexpr base::TimeDelta kFadeInDurationMs =
     base::TimeDelta::FromMilliseconds(200);
-
-// The radius of the image's rounded corners.
-constexpr int kRoundedCornerRadius = 4;
-
-// The thickness of the image border.
-constexpr int kBorderThickness = 1;
-
-// The opacity of the image shown in a disabled item view.
-constexpr float kDisabledAlpha = 0.38f;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FadeImageView
@@ -68,7 +53,7 @@ class FadeImageView : public RoundedImageView,
                 const ClipboardHistoryResourceManager* resource_manager,
                 float opacity,
                 base::RepeatingClosure update_callback)
-      : RoundedImageView(kRoundedCornerRadius,
+      : RoundedImageView(ClipboardHistoryViews::kImageRoundedCornerRadius,
                          RoundedImageView::Alignment::kCenter),
         resource_manager_(resource_manager),
         clipboard_history_item_(*clipboard_history_item),
@@ -184,9 +169,12 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     auto image_view = BuildImageView();
-    image_view->SetPreferredSize(gfx::Size(INT_MAX, kBitmapHeight));
+    image_view->SetPreferredSize(
+        gfx::Size(INT_MAX, ClipboardHistoryViews::kImageViewPreferredHeight));
     image_view->SetBorder(views::CreateRoundedRectBorder(
-        kBorderThickness, kRoundedCornerRadius, gfx::kPlaceholderColor));
+        ClipboardHistoryViews::kImageBorderThickness,
+        ClipboardHistoryViews::kImageRoundedCornerRadius,
+        gfx::kPlaceholderColor));
     image_view_ = AddChildView(std::move(image_view));
 
     InstallDeleteButton();
@@ -210,7 +198,9 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     auto delete_button =
         std::make_unique<ClipboardHistoryDeleteButton>(container_);
     delete_button->SetVisible(false);
-    delete_button->SetProperty(views::kMarginsKey, kDeleteButtonMargins);
+    delete_button->SetProperty(
+        views::kMarginsKey,
+        ClipboardHistoryViews::kBitmapItemDeleteButtonMargins);
     ClipboardHistoryDeleteButton* delete_button_ptr =
         delete_button_container->AddChildView(std::move(delete_button));
     AddChildView(std::move(delete_button_container));
@@ -243,7 +233,9 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     // bounds is still visible when the context menu is in overflow.
 
     const float image_opacity =
-        container_->IsItemEnabled() ? 1.f : kDisabledAlpha;
+        container_->IsItemEnabled()
+            ? 1.f
+            : ClipboardHistoryViews::kDisabledImageAlpha;
     const auto* clipboard_history_item = container_->clipboard_history_item();
     switch (container_->data_format_) {
       case ui::ClipboardInternalFormat::kHtml:
@@ -254,7 +246,8 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
                                 weak_ptr_factory_.GetWeakPtr()));
       case ui::ClipboardInternalFormat::kBitmap: {
         auto image_view = std::make_unique<RoundedImageView>(
-            kRoundedCornerRadius, RoundedImageView::Alignment::kCenter);
+            ClipboardHistoryViews::kImageRoundedCornerRadius,
+            RoundedImageView::Alignment::kCenter);
         gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
             clipboard_history_item->data().bitmap());
         if (image_opacity != 1.f) {

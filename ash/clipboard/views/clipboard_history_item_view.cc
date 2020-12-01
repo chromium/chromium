@@ -10,6 +10,7 @@
 #include "ash/clipboard/views/clipboard_history_file_item_view.h"
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,21 +21,16 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace {
-using Action = ash::ClipboardHistoryUtil::Action;
-
-// The insets within the contents view.
-constexpr gfx::Insets kContentsInsets(/*vertical=*/4, /*horizontal=*/16);
-
-}  // namespace
-
 namespace ash {
+namespace {
+using Action = ClipboardHistoryUtil::Action;
+}  // namespace
 
 ClipboardHistoryItemView::ContentsView::ContentsView(
     ClipboardHistoryItemView* container)
     : container_(container) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-  SetBorder(views::CreateEmptyBorder(kContentsInsets));
+  SetBorder(views::CreateEmptyBorder(ClipboardHistoryViews::kContentsInsets));
 }
 
 ClipboardHistoryItemView::ContentsView::~ContentsView() = default;

@@ -5,18 +5,12 @@
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
 
 namespace ash {
-namespace {
-
-// The size of the `DeleteButton`.
-constexpr int kDeleteButtonSizeDip = 16;
-
-}  // namespace
-
 ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
     ClipboardHistoryItemView* listener)
     : views::ImageButton(base::BindRepeating(
@@ -28,7 +22,8 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
   SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  SetPreferredSize(gfx::Size(kDeleteButtonSizeDip, kDeleteButtonSizeDip));
+  SetPreferredSize(gfx::Size(ClipboardHistoryViews::kDeleteButtonSizeDip,
+                             ClipboardHistoryViews::kDeleteButtonSizeDip));
 }
 
 ClipboardHistoryDeleteButton::~ClipboardHistoryDeleteButton() = default;
@@ -44,7 +39,7 @@ void ClipboardHistoryDeleteButton::OnThemeChanged() {
   ScopedLightModeAsDefault scoped_light_mode_as_default;
 
   views::ImageButton::OnThemeChanged();
-  AshColorProvider::Get()->DecorateCloseButton(this, kDeleteButtonSizeDip,
-                                               kCloseButtonIcon);
+  AshColorProvider::Get()->DecorateCloseButton(
+      this, ClipboardHistoryViews::kDeleteButtonSizeDip, kCloseButtonIcon);
 }
 }  // namespace ash

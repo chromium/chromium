@@ -9,17 +9,11 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_label.h"
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-// The margins of the delete button.
-constexpr gfx::Insets kDeleteButtonMargins =
-    gfx::Insets(/*top=*/0, /*left=*/8, /*bottom=*/0, /*right=*/4);
-}  // namespace
 
 namespace ash {
 
@@ -53,7 +47,9 @@ class ClipboardHistoryTextItemView::TextContentsView
     auto delete_button =
         std::make_unique<ClipboardHistoryDeleteButton>(container());
     delete_button->SetVisible(false);
-    delete_button->SetProperty(views::kMarginsKey, kDeleteButtonMargins);
+    delete_button->SetProperty(
+        views::kMarginsKey,
+        ClipboardHistoryViews::kDefaultItemDeleteButtonMargins);
     return AddChildView(std::move(delete_button));
   }
 

@@ -4,20 +4,15 @@
 
 #include "ash/clipboard/views/clipboard_history_label.h"
 
+#include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
-
-namespace {
-
-// The preferred height for the label.
-constexpr int kLabelPreferredHeight = 32;
-
-}  // namespace
 
 namespace ash {
 ClipboardHistoryLabel::ClipboardHistoryLabel(const base::string16& text)
     : views::Label(text) {
-  SetPreferredSize(gfx::Size(INT_MAX, kLabelPreferredHeight));
+  SetPreferredSize(
+      gfx::Size(INT_MAX, ClipboardHistoryViews::kLabelPreferredHeight));
   SetFontList(views::style::GetFont(views::style::CONTEXT_TOUCH_MENU,
                                     views::style::STYLE_PRIMARY));
   SetMultiLine(false);
