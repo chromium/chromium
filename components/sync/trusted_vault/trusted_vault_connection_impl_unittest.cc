@@ -17,6 +17,7 @@
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -42,8 +43,6 @@ const char kTestJoinSecurityDomainsURL[] =
     "https://test.com/test/domain:join?alt=proto";
 const char kTestListSecurityDomainsURL[] =
     "https://test.com/test/domain:list?view=1&alt=proto";
-const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
-                                     'e', 'd', '_', 'k', 'e', 'y'};
 
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   std::vector<uint8_t> private_key_bytes;
@@ -178,9 +177,9 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
   EXPECT_THAT(shared_key.epoch(), Eq(kLastKeyVersion));
 
   base::Optional<std::vector<uint8_t>> decrypted_trusted_vault_key =
-      key_pair->private_key().Decrypt(
-          /*shared_key=*/base::span<const uint8_t>(), kWrappedKeyHeader,
-          /*encrypted_payload=*/ProtoStringToBytes(shared_key.wrapped_key()));
+      DecryptTrustedVaultWrappedKey(
+          key_pair->private_key(),
+          /*wrapped_key=*/ProtoStringToBytes(shared_key.wrapped_key()));
   ASSERT_THAT(decrypted_trusted_vault_key, Ne(base::nullopt));
   EXPECT_THAT(*decrypted_trusted_vault_key, Eq(kTrustedVaultKey));
 

@@ -22,6 +22,8 @@ static_library("trusted_vault") {
     "trusted_vault_connection.h",
     "trusted_vault_connection_impl.cc",
     "trusted_vault_connection_impl.h",
+    "trusted_vault_crypto.cc",
+    "trusted_vault_crypto.h",
     "trusted_vault_request.cc",
     "trusted_vault_request.h",
   ]

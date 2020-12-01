@@ -10,7 +10,7 @@
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
-#include "crypto/hmac.h"
+#include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,11 +22,8 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
 
-const size_t kKeyProofLength = 32;
 const char kEncodedPrivateKey[] =
     "49e052293c29b5a50b0013eec9d030ac2ad70a42fe093be084264647cb04e16f";
-const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
-                                     'e', 'd', '_', 'k', 'e', 'y'};
 const char kSecurityDomainName[] = "chromesync";
 
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
@@ -53,19 +50,13 @@ void FillSecurityDomainMember(
     sync_pb::SharedKey* shared_key = member->add_keys();
     shared_key->set_epoch(trusted_vault_keys_versions[i]);
     AssignBytesToProtoString(
-        public_key.Encrypt(
-            /*shared_secret=*/base::span<const uint8_t>(), kWrappedKeyHeader,
-            /*payload=*/trusted_vault_keys[i]),
+        ComputeTrustedVaultWrappedKey(public_key, trusted_vault_keys[i]),
         shared_key->mutable_wrapped_key());
 
     if (!signing_keys[i].empty()) {
-      crypto::HMAC hmac(crypto::HMAC::SHA256);
-      CHECK(hmac.Init(signing_keys[i]));
-
-      std::vector<uint8_t> key_proof_bytes(kKeyProofLength);
-      CHECK(hmac.Sign(trusted_vault_keys[i], key_proof_bytes));
-      AssignBytesToProtoString(key_proof_bytes,
-                               shared_key->mutable_key_proof());
+      AssignBytesToProtoString(
+          ComputeTrustedVaultHMAC(signing_keys[i], trusted_vault_keys[i]),
+          shared_key->mutable_key_proof());
     }
   }
 }

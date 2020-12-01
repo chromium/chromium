@@ -10,17 +10,12 @@
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
-#include "crypto/hmac.h"
+#include "components/sync/trusted_vault/trusted_vault_crypto.h"
 
 namespace syncer {
 
 namespace {
 
-// TODO(crbug.com/1113598): move these constants to a dedicated header, since
-// they are used in multiple places already.
-const size_t kKeyProofLength = 32;
-const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
-                                     'e', 'd', '_', 'k', 'e', 'y'};
 const char kSecurityDomainName[] = "chromesync";
 
 struct ExtractedSharedKey {
@@ -73,9 +68,8 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
   std::vector<ExtractedSharedKey> result;
   for (const sync_pb::SharedKey& shared_key : member.keys()) {
     base::Optional<std::vector<uint8_t>> decrypted_key =
-        member_private_key.Decrypt(
-            base::span<const uint8_t>(), kWrappedKeyHeader,
-            /*encrypted_payload=*/ProtoStringToBytes(shared_key.wrapped_key()));
+        DecryptTrustedVaultWrappedKey(
+            member_private_key, ProtoStringToBytes(shared_key.wrapped_key()));
     if (!decrypted_key.has_value()) {
       // Decryption failed.
       return std::vector<ExtractedSharedKey>();
@@ -115,14 +109,12 @@ bool IsValidKeyChain(const std::vector<ExtractedSharedKey>& key_chain,
       return false;
     }
 
-    crypto::HMAC hmac(crypto::HMAC::SHA256);
-    CHECK(hmac.Init(last_valid_key));
-
-    std::vector<uint8_t> digest_bytes(kKeyProofLength);
-    if (!hmac.Verify(next_key.trusted_vault_key, next_key.key_proof)) {
+    if (!VerifyTrustedVaultHMAC(last_valid_key, next_key.trusted_vault_key,
+                                next_key.key_proof)) {
       // |key_proof| isn't valid.
       return false;
     }
+
     last_valid_key_version = next_key.version;
     last_valid_key = next_key.trusted_vault_key;
   }

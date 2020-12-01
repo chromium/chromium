@@ -13,17 +13,14 @@
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
-#include "crypto/hmac.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
 
 namespace {
 
-const size_t kMemberProofLength = 32;
-const uint8_t kWrappedKeyHeader[] = {'V', '1', ' ', 's', 'h', 'a', 'r',
-                                     'e', 'd', '_', 'k', 'e', 'y'};
 const char kJoinSecurityDomainsURLPath[] = "/domain:join";
 const char kListSecurityDomainsURLPathAndQuery[] = "/domain:list?view=1";
 const char kSecurityDomainName[] = "chromesync";
@@ -48,36 +45,19 @@ void ProcessRegisterDeviceResponse(
   std::move(callback).Run(registration_status);
 }
 
-std::vector<uint8_t> ComputeWrappedKey(
-    const SecureBoxPublicKey& public_key,
-    const std::vector<uint8_t>& trusted_vault_key) {
-  return public_key.Encrypt(
-      /*shared_secret=*/base::span<const uint8_t>(), kWrappedKeyHeader,
-      /*payload=*/trusted_vault_key);
-}
-
-std::vector<uint8_t> ComputeMemberProof(
-    const SecureBoxPublicKey& public_key,
-    const std::vector<uint8_t>& trusted_vault_key) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(trusted_vault_key));
-
-  std::vector<uint8_t> digest_bytes(kMemberProofLength);
-  CHECK(hmac.Sign(public_key.ExportToBytes(), digest_bytes));
-
-  return digest_bytes;
-}
-
 sync_pb::SharedKey CreateMemberSharedKey(
     int trusted_vault_key_version,
     const std::vector<uint8_t>& trusted_vault_key,
     const SecureBoxPublicKey& public_key) {
   sync_pb::SharedKey shared_key;
   shared_key.set_epoch(trusted_vault_key_version);
-  AssignBytesToProtoString(ComputeWrappedKey(public_key, trusted_vault_key),
-                           shared_key.mutable_wrapped_key());
-  AssignBytesToProtoString(ComputeMemberProof(public_key, trusted_vault_key),
-                           shared_key.mutable_member_proof());
+  AssignBytesToProtoString(
+      ComputeTrustedVaultWrappedKey(public_key, trusted_vault_key),
+      shared_key.mutable_wrapped_key());
+  AssignBytesToProtoString(
+      ComputeTrustedVaultHMAC(/*key=*/trusted_vault_key,
+                              /*data=*/public_key.ExportToBytes()),
+      shared_key.mutable_member_proof());
   return shared_key;
 }
 
