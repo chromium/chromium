@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -242,6 +244,9 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::ProcessResponseImpl(
   if (EvaluateXFrameOptions(logging) == CheckResult::BLOCK)
     return NavigationThrottle::BLOCK_RESPONSE;
 
+  if (EvaluateEmbeddingOptIn(logging) == CheckResult::BLOCK)
+    return NavigationThrottle::BLOCK_RESPONSE;
+
   // CSPEE is checked only for the final response.
   if (is_response_check &&
       EvaluateCSPEmbeddedEnforcement() == CheckResult::BLOCK) {
@@ -289,6 +294,35 @@ void AncestorThrottle::ParseXFrameOptionsError(const std::string& value,
 
   // Log a console error in the parent of the current RenderFrameHost (as
   // the current RenderFrameHost itself doesn't yet have a document).
+  auto* frame = static_cast<RenderFrameHostImpl*>(
+      navigation_handle()->GetRenderFrameHost());
+  ParentOrOuterDelegate(frame)->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError, message);
+}
+
+void AncestorThrottle::ConsoleErrorEmbeddingRequiresOptIn() {
+  DCHECK(base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn));
+
+  if (!navigation_handle()->GetRenderFrameHost())
+    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
+
+  std::string message = base::StringPrintf(
+      "Refused to display '%s' in a frame: It did not opt-into cross-origin "
+      "embedding by setting either an 'X-Frame-Options' header, or a "
+      "'Content-Security-Policy' header containing a 'frame-ancestors' "
+      "directive.",
+      url::Origin::Create(navigation_handle()->GetURL())
+          .GetURL()
+          .spec()
+          .c_str());
+
+  // Log a console error in the parent of the current RenderFrameHost (as
+  // the current RenderFrameHost itself doesn't yet have a document).
+  //
+  // TODO(https://crbug.com/1146651): We should not leak any information at all
+  // to the parent frame. Send a message directly to Devtools instead (without
+  // passing through a renderer): that can also contain more information (like
+  // the full blocked url).
   auto* frame = static_cast<RenderFrameHostImpl*>(
       navigation_handle()->GetRenderFrameHost());
   ParentOrOuterDelegate(frame)->AddMessageToConsole(
@@ -352,7 +386,9 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ParseXFrameOptionsError(header_value, disposition);
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::INVALID);
-      // TODO(mkwst): Consider failing here.
+      // TODO(mkwst): Consider failing here, especially if we end up shipping
+      // a new default behavior which requires embedees to explicitly opt-in
+      // to being embedded: https://crbug.com/1153274.
       return CheckResult::PROCEED;
 
     case HeaderDisposition::DENY:
@@ -399,6 +435,38 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
       RecordXFrameOptionsUsage(XFrameOptionsHistogram::ALLOWALL);
       return CheckResult::PROCEED;
   }
+}
+
+AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
+    LoggingDisposition logging) {
+  if (!base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn))
+    return CheckResult::PROCEED;
+
+  NavigationRequest* request = NavigationRequest::From(navigation_handle());
+  std::string unused_header_value;
+  HeaderDisposition xfo_value = ParseXFrameOptionsHeader(
+      request->GetResponseHeaders(), &unused_header_value);
+
+  // If embedding requires opt-in, then we check whether the response opted-into
+  // embedding via either an 'X-Frame-Options' header or a 'frame-ancestors'
+  // directive. If neither is present, the response will be blocked unless it is
+  // same-origin with its ancestor chain.
+  if (xfo_value == HeaderDisposition::NONE &&
+      !HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
+    RenderFrameHostImpl* parent =
+        ParentOrOuterDelegate(request->frame_tree_node()->current_frame_host());
+    url::Origin current_origin =
+        url::Origin::Create(navigation_handle()->GetURL());
+    while (parent) {
+      if (!parent->GetLastCommittedOrigin().IsSameOriginWith(current_origin)) {
+        if (logging == LoggingDisposition::LOG_TO_CONSOLE)
+          ConsoleErrorEmbeddingRequiresOptIn();
+        return CheckResult::BLOCK;
+      }
+      parent = ParentOrOuterDelegate(parent);
+    }
+  }
+  return CheckResult::PROCEED;
 }
 
 AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(

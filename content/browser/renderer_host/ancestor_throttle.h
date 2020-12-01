@@ -68,10 +68,12 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
   void ParseXFrameOptionsError(const std::string& value,
                                HeaderDisposition disposition);
   void ConsoleErrorXFrameOptions(HeaderDisposition disposition);
+  void ConsoleErrorEmbeddingRequiresOptIn();
   CheckResult EvaluateXFrameOptions(LoggingDisposition logging);
   CheckResult EvaluateFrameAncestors(
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           content_security_policy);
+  CheckResult EvaluateEmbeddingOptIn(LoggingDisposition logging);
   CheckResult EvaluateCSPEmbeddedEnforcement();
   static bool AllowsBlanketEnforcementOfRequiredCSP(
       const url::Origin& request_origin,

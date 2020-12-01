@@ -191,6 +191,11 @@ const base::Feature kDocumentPolicy{"DocumentPolicy",
 const base::Feature kDocumentPolicyNegotiation{
     "DocumentPolicyNegotiation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Requires documents embedded via <iframe>, etc, to explicitly opt-into the
+// embedding: https://github.com/mikewest/embedding-requires-opt-in.
+const base::Feature kEmbeddingRequiresOptIn{"EmbeddingRequiresOptIn",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables new canvas 2d api features. Enabled either with either
 // enable-experimental-canvas-features or new-canvas-2d-api runtime flags
 const base::Feature kEnableNewCanvas2DAPI{"EnableNewCanvas2DAPI",
