@@ -265,3 +265,5 @@
 /xstream/lib/
 /xulrunner-sdk
 /zstd
+/zstd-linux-arm64
+/zstd-linux-x64
