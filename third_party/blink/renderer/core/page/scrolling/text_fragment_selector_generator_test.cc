@@ -768,7 +768,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Node* img = GetDocument().getElementById("link1");
   Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  const auto& start = Position(img, PositionAnchorType::kAfterChildren);
+  const auto& start = Position::LastPositionInNode(*img);
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("  \nFirst", PlainText(EphemeralRange(start, end)));
 

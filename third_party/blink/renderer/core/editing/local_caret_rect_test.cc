@@ -782,9 +782,9 @@ TEST_P(ParameterizedLocalCaretRectTest, CollapsedSpace) {
   // TODO(yoichio): Following should return valid rect: crbug.com/812535.
   EXPECT_EQ(
       LocalCaretRect(first_span->GetLayoutObject(), PhysicalRect(0, 0, 0, 0)),
-      LocalCaretRectOfPosition(PositionWithAffinity(
-          Position(first_span, PositionAnchorType::kAfterChildren),
-          TextAffinity::kDownstream)));
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position::LastPositionInNode(*first_span),
+                               TextAffinity::kDownstream)));
   EXPECT_EQ(LayoutNGEnabled() ? LocalCaretRect(foo->GetLayoutObject(),
                                                PhysicalRect(30, 0, 1, 10))
                               : LocalCaretRect(white_spaces->GetLayoutObject(),
@@ -832,9 +832,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteSelectionBoundsOfWithImage) {
   SetBodyContent("<div>foo<img></div>");
 
   Node* node = GetDocument().QuerySelector("img");
-  IntRect rect =
-      AbsoluteSelectionBoundsOf(VisiblePosition::Create(PositionWithAffinity(
-          Position(node, PositionAnchorType::kAfterChildren))));
+  IntRect rect = AbsoluteSelectionBoundsOf(VisiblePosition::Create(
+      PositionWithAffinity(Position::LastPositionInNode(*node))));
   EXPECT_FALSE(rect.IsEmpty());
 }
 

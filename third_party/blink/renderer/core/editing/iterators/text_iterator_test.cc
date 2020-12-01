@@ -338,15 +338,15 @@ TEST_P(TextIteratorTest, StartingAtNodeInShadowRoot) {
   Node* outer_div = GetDocument().getElementById("outer");
   Node* span_in_shadow = shadow_root->firstChild();
   Position start = Position::FirstPositionInNode(*span_in_shadow);
-  Position end(outer_div, PositionAnchorType::kAfterChildren);
+  Position end = Position::LastPositionInNode(*outer_div);
   EXPECT_EQ(
       "[ shadow][text][ iterator.]",
       IteratePartial<DOMTree>(start, end, EntersOpenShadowRootsBehavior()));
 
   PositionInFlatTree start_in_flat_tree =
       PositionInFlatTree::FirstPositionInNode(*span_in_shadow);
-  PositionInFlatTree end_in_flat_tree(outer_div,
-                                      PositionAnchorType::kAfterChildren);
+  PositionInFlatTree end_in_flat_tree =
+      PositionInFlatTree::LastPositionInNode(*outer_div);
   EXPECT_EQ("[text][ shadow][ iterator.]",
             IteratePartial<FlatTree>(start_in_flat_tree, end_in_flat_tree,
                                      EntersOpenShadowRootsBehavior()));
@@ -363,15 +363,15 @@ TEST_P(TextIteratorTest, FinishingAtNodeInShadowRoot) {
   Node* outer_div = GetDocument().getElementById("outer");
   Node* span_in_shadow = shadow_root->firstChild();
   Position start = Position::FirstPositionInNode(*outer_div);
-  Position end(span_in_shadow, PositionAnchorType::kAfterChildren);
+  Position end = Position::LastPositionInNode(*span_in_shadow);
   EXPECT_EQ(
       "[Hello, ][ shadow]",
       IteratePartial<DOMTree>(start, end, EntersOpenShadowRootsBehavior()));
 
   PositionInFlatTree start_in_flat_tree =
       PositionInFlatTree::FirstPositionInNode(*outer_div);
-  PositionInFlatTree end_in_flat_tree(span_in_shadow,
-                                      PositionAnchorType::kAfterChildren);
+  PositionInFlatTree end_in_flat_tree =
+      PositionInFlatTree::LastPositionInNode(*span_in_shadow);
   EXPECT_EQ("[Hello, ][text][ shadow]",
             IteratePartial<FlatTree>(start_in_flat_tree, end_in_flat_tree,
                                      EntersOpenShadowRootsBehavior()));

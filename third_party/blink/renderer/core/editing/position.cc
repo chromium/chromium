@@ -600,10 +600,11 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
     int offset = pos.ComputeOffsetInContainerNode();
     Node* child = NodeTraversal::ChildAt(*anchor, offset);
     if (!child) {
-      if (anchor->IsShadowRoot())
-        return PositionInFlatTree(anchor->OwnerShadowHost(),
-                                  PositionAnchorType::kAfterChildren);
-      return PositionInFlatTree(anchor, PositionAnchorType::kAfterChildren);
+      if (anchor->IsShadowRoot()) {
+        return PositionInFlatTree::LastPositionInNode(
+            *anchor->OwnerShadowHost());
+      }
+      return PositionInFlatTree::LastPositionInNode(*anchor);
     }
     child->UpdateDistributionForFlatTreeTraversal();
     if (!child->CanParticipateInFlatTree()) {
@@ -616,10 +617,10 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
     // When |pos| isn't appeared in flat tree, we map |pos| to after
     // children of shadow host.
     // e.g. "foo",0 in <progress>foo</progress>
-    if (anchor->IsShadowRoot())
-      return PositionInFlatTree(anchor->OwnerShadowHost(),
-                                PositionAnchorType::kAfterChildren);
-    return PositionInFlatTree(anchor, PositionAnchorType::kAfterChildren);
+    if (anchor->IsShadowRoot()) {
+      return PositionInFlatTree::LastPositionInNode(*anchor->OwnerShadowHost());
+    }
+    return PositionInFlatTree::LastPositionInNode(*anchor);
   }
 
   if (anchor->IsShadowRoot())
@@ -656,7 +657,7 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
   switch (position.AnchorType()) {
     case PositionAnchorType::kAfterChildren:
       // FIXME: When anchorNode is <img>, assertion fails in the constructor.
-      return Position(anchor_node, PositionAnchorType::kAfterChildren);
+      return Position::LastPositionInNode(*anchor_node);
     case PositionAnchorType::kAfterAnchor:
       return Position::AfterNode(*anchor_node);
     case PositionAnchorType::kBeforeChildren:
@@ -675,7 +676,7 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
 
       // |child| is null when the position is at the end of the children.
       // <div>foo|</div>
-      return Position(anchor_node, PositionAnchorType::kAfterChildren);
+      return Position::LastPositionInNode(*anchor_node);
     }
     default:
       NOTREACHED();
