@@ -84,7 +84,7 @@ class ResultSinkClient(object):
     if len(test_log) > report_check_size:
       test_log_formatted = ('<pre>' + test_log[:report_check_size] +
                             '...Full output in Artifact.</pre>')
-    else:
+    elif test_log:
       test_log_formatted = '<pre>' + test_log + '</pre>'
 
     tr = {
