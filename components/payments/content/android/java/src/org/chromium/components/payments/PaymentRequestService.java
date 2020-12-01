@@ -749,7 +749,11 @@ public class PaymentRequestService
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
         if (mIsShowCalled) {
-            if (disconnectIfNoPaymentMethodsSupported()) return;
+            PaymentNotShownError notShownError = ensureHasSupportedPaymentMethods();
+            if (notShownError != null) {
+                onShowFailed(notShownError);
+                return;
+            }
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
             if (error != null) {
@@ -777,6 +781,11 @@ public class PaymentRequestService
         onShowFailed(NotShownReason.OTHER, error, PaymentErrorReason.USER_CANCEL);
     }
 
+    private void onShowFailed(PaymentNotShownError error) {
+        onShowFailed(
+                error.getNotShownReason(), error.getErrorMessage(), error.getPaymentErrorReason());
+    }
+
     // notShowReason is defined in NotShownReason.
     // paymentErrorReason is defined in PaymentErrorReason.
     private void onShowFailed(int notShowReason, String error, int paymentErrorReason) {
@@ -786,10 +795,11 @@ public class PaymentRequestService
     }
 
     /**
-     * If no payment methods are supported, disconnect from the client and return true.
-     * @return Whether client has been disconnected.
+     * Ensures the available payment apps can make payment.
+     * @return The error if the payment cannot be made; null otherwise.
      */
-    private boolean disconnectIfNoPaymentMethodsSupported() {
+    @Nullable
+    private PaymentNotShownError ensureHasSupportedPaymentMethods() {
         assert mIsShowCalled;
         assert mIsFinishedQueryingPaymentApps;
         if (!mCanMakePayment || !mBrowserPaymentRequest.hasAvailableApps()) {
@@ -821,31 +831,32 @@ public class PaymentRequestService
                                         : " " + mRejectShowErrorMessage);
                 paymentErrorReason = PaymentErrorReason.NOT_SUPPORTED;
             }
-            onShowFailed(notShowReason, debugMessage, paymentErrorReason);
-            return true;
+            return new PaymentNotShownError(notShowReason, debugMessage, paymentErrorReason);
         }
-        return disconnectForStrictShow(mIsUserGestureShow);
+        return ensureHasSupportedPaymentMethodsForStrictShow(mIsUserGestureShow);
     }
 
     /**
-     * If strict show() conditions are not satisfied, disconnect from client and return true.
+     * Ensures the available payment apps can make payment under the strict show() conditions.
      * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
-     * @return Whether client has been disconnected.
+     * @return The error if the payment cannot be made; null otherwise.
      */
-    private boolean disconnectForStrictShow(boolean isUserGestureShow) {
+    @Nullable
+    private PaymentNotShownError ensureHasSupportedPaymentMethodsForStrictShow(
+            boolean isUserGestureShow) {
         if (!isUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
                 || mHasEnrolledInstrument || mHasNonAutofillApp
                 || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
-            return false;
+            return null;
         }
 
         mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
         String debugMessage =
                 ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
                 + mRejectShowErrorMessage;
-        onShowFailed(NotShownReason.OTHER, debugMessage, PaymentErrorReason.NOT_SUPPORTED);
-        return true;
+        return new PaymentNotShownError(
+                NotShownReason.OTHER, debugMessage, PaymentErrorReason.NOT_SUPPORTED);
     }
 
     private boolean isInTwa() {
@@ -1024,7 +1035,11 @@ public class PaymentRequestService
         mJourneyLogger.setTriggerTime();
 
         if (mIsFinishedQueryingPaymentApps) {
-            if (disconnectIfNoPaymentMethodsSupported()) return;
+            PaymentNotShownError notShownError = ensureHasSupportedPaymentMethods();
+            if (notShownError != null) {
+                onShowFailed(notShownError);
+                return;
+            }
             String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
                     mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
             if (error != null) {
