@@ -25,6 +25,12 @@ Polymer({
     webAppList_: Array,
 
     /**
+     * Debug information about preinstalled web apps.
+     * @private {!mojom.webAppInternals.PreinstalledWebAppDebugInfo|null}
+     */
+    preinstalledWebAppDebugInfo_: Object,
+
+    /**
      * Prefs associated with non-user installed web apps.
      * @private {!string}
      */
@@ -44,6 +50,9 @@ Polymer({
 
       this.webAppList_ = (await remote.getWebApps()).webAppList;
       this.webAppList_.sort((a, b) => a.name.localeCompare(b.name));
+
+      this.preinstalledWebAppDebugInfo_ =
+          (await remote.getPreinstalledWebAppDebugInfo()).status;
 
       this.externallyInstalledWebAppPrefs_ =
           (await remote.getExternallyInstalledWebAppPrefs())

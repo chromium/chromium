@@ -1139,6 +1139,9 @@ extern const char kRawClipboardDescription[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];
 
+extern const char kRecordWebAppDebugInfoName[];
+extern const char kRecordWebAppDebugInfoDescription[];
+
 extern const char kRewriteLevelDBOnDeletionName[];
 extern const char kRewriteLevelDBOnDeletionDescription[];
 

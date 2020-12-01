@@ -15,6 +15,51 @@ struct WebApp {
   string debug_info;
 };
 
+struct DisabledConfig {
+  // The string representation of the config.
+  string config;
+
+  // The reason the config was disabled.
+  string reason;
+};
+
+struct InstallResult {
+  // The install_url of the config being installed.
+  string install_url;
+
+  // The InstallResultCode returned by the installation process.
+  string install_result_code;
+};
+
+struct UninstallResult {
+  // The install_url of the config being uninstalled.
+  string install_url;
+
+  // Whether the uninstallation was successful.
+  bool is_success;
+};
+
+struct PreinstalledWebAppDebugInfo {
+  // Whether preinstalled web apps have completed start up synchronization.
+  bool is_start_up_task_complete;
+
+  // Errors encountered when parsing preinstalled web app configs.
+  array<string> parse_errors;
+
+  // String representations of enabled preinstalled app configs.
+  array<string> enabled_configs;
+
+  // String representations of disabled preinstalled app configs plus the reason
+  // why they are disabled.
+  array<DisabledConfig> disabled_configs;
+
+  // The results of any new preinstalled app installations.
+  array<InstallResult> install_results;
+
+  // The results of any preinstalled app removals.
+  array<UninstallResult> uninstall_results;
+};
+
 // Provides access to browser side internal information about installed web apps
 // (also known as PWAs) for chrome://internals/web-app.
 interface WebAppInternalsPageHandler {
@@ -23,6 +68,9 @@ interface WebAppInternalsPageHandler {
 
   // Returns details of all the installed web apps for the current profile.
   GetWebApps() => (array<WebApp> web_app_list);
+
+  // Returns debug information about the state of preinstalled web apps.
+  GetPreinstalledWebAppDebugInfo() => (PreinstalledWebAppDebugInfo? status);
 
   // Returns the prefs used for keeping track of non-user installed web apps.
   GetExternallyInstalledWebAppPrefs() =>

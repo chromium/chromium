@@ -105,8 +105,7 @@ std::ostream& operator<<(std::ostream& out,
                          const ExternalInstallOptions& install_options) {
   return out
          << "install_url: " << install_options.install_url
-         << "\n user_display_mode: "
-         << static_cast<int32_t>(install_options.user_display_mode)
+         << "\n user_display_mode: " << install_options.user_display_mode
          << "\n install_source: "
          << static_cast<int32_t>(install_options.install_source)
          << "\n add_to_applications_menu: "
@@ -143,12 +142,13 @@ std::ostream& operator<<(std::ostream& out,
          << install_options.load_and_await_service_worker_registration
          << "\n service_worker_registration_url: "
          << install_options.service_worker_registration_url.value_or(GURL())
-         << "\n uninstall_and_replace:\n  "
-         << base::JoinString(install_options.uninstall_and_replace, "\n  ")
-         << "\n only_use_app_info_factory:\n "
-         << install_options.only_use_app_info_factory
-         << "\n additional_search_terms:\n "
-         << base::JoinString(install_options.additional_search_terms, "\n ");
+         << "\n uninstall_and_replace:\n   "
+         << base::JoinString(install_options.uninstall_and_replace, "\n   ")
+         << "\n additional_search_terms:\n   "
+         << base::JoinString(install_options.additional_search_terms, "\n   ")
+         << "\n only_use_app_info_factory: "
+         << install_options.only_use_app_info_factory << "\n app_info_factory: "
+         << !install_options.app_info_factory.is_null();
 }
 
 InstallManager::InstallParams ConvertExternalInstallOptionsToParams(

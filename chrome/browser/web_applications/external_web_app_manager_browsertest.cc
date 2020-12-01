@@ -60,7 +60,7 @@ class ExternalWebAppManagerBrowserTest
 
     base::RunLoop run_loop;
     WebAppProvider::Get(browser()->profile())
-        ->external_web_app_manager_for_testing()
+        ->external_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, InstallResultCode> install_results,
                 std::map<GURL, bool> uninstall_results) {
@@ -97,7 +97,7 @@ class ExternalWebAppManagerBrowserTest
     base::Optional<InstallResultCode> code;
     base::RunLoop sync_run_loop;
     WebAppProvider::Get(browser()->profile())
-        ->external_web_app_manager_for_testing()
+        ->external_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, InstallResultCode> install_results,
                 std::map<GURL, bool> uninstall_results) {
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
   auto& provider = *WebAppProvider::Get(browser()->profile());
 
   base::RunLoop run_loop;
-  provider.external_web_app_manager_for_testing().LoadAndSynchronizeForTesting(
+  provider.external_web_app_manager().LoadAndSynchronizeForTesting(
       base::BindLambdaForTesting(
           [&](std::map<GURL, InstallResultCode> install_results,
               std::map<GURL, bool> uninstall_results) {

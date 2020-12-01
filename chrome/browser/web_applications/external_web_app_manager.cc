@@ -44,6 +44,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,7 +76,7 @@ struct LoadedConfig {
 
 struct LoadedConfigs {
   std::vector<LoadedConfig> configs;
-  int error_count = 0;
+  std::vector<std::string> errors;
 };
 
 LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
@@ -98,8 +99,10 @@ LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
     std::unique_ptr<base::Value> app_config =
         deserializer.Deserialize(nullptr, &error_msg);
     if (!app_config) {
-      LOG(ERROR) << file.value() << " was not valid JSON: " << error_msg;
-      ++result.error_count;
+      result.errors.push_back(
+          (std::stringstream() << file << " was not valid JSON: " << error_msg)
+              .str());
+      VLOG(1) << result.errors.back();
       continue;
     }
     result.configs.push_back(
@@ -110,28 +113,102 @@ LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
 
 struct ParsedConfigs {
   std::vector<ExternalInstallOptions> options_list;
-  int error_count = 0;
+  std::vector<std::string> errors;
 };
 
 ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
                                    LoadedConfigs loaded_configs) {
   ParsedConfigs result;
-  result.error_count = loaded_configs.error_count;
+  result.errors = std::move(loaded_configs.errors);
 
   auto file_utils = g_file_utils_for_testing
                         ? g_file_utils_for_testing->Clone()
                         : std::make_unique<FileUtilsWrapper>();
 
   for (const LoadedConfig& loaded_config : loaded_configs.configs) {
-    base::Optional<ExternalInstallOptions> parse_result = ParseConfig(
+    OptionsOrError parse_result = ParseConfig(
         *file_utils, config_dir, loaded_config.file, loaded_config.contents);
-    if (parse_result)
-      result.options_list.push_back(std::move(*parse_result));
-    else
-      ++result.error_count;
+    if (ExternalInstallOptions* options =
+            absl::get_if<ExternalInstallOptions>(&parse_result)) {
+      result.options_list.push_back(std::move(*options));
+    } else {
+      result.errors.push_back(std::move(absl::get<std::string>(parse_result)));
+      VLOG(1) << result.errors.back();
+    }
   }
 
   return result;
+}
+
+base::Optional<std::string> GetDisableReason(
+    const ExternalInstallOptions& options,
+    Profile* profile,
+    bool is_new_user,
+    const std::string& user_type) {
+  // Remove if not applicable to current user type.
+  DCHECK_GT(options.user_type_allowlist.size(), 0u);
+  if (!base::Contains(options.user_type_allowlist, user_type)) {
+    return options.install_url.spec() + " disabled for user type: " + user_type;
+  }
+
+  // Remove if gated on a disabled feature.
+  if (options.gate_on_feature &&
+      !IsExternalAppInstallFeatureEnabled(*options.gate_on_feature)) {
+    return options.install_url.spec() +
+           " disabled because feature is disabled: " + *options.gate_on_feature;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Remove if ARC is supported and app should be disabled.
+  if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
+    return options.install_url.spec() + " disabled because ARC is available.";
+  }
+
+  // Remove if device is tablet and app should be disabled.
+  if (options.disable_if_tablet_form_factor &&
+      chromeos::switches::IsTabletFormFactor()) {
+    return options.install_url.spec() + " disabled because device is tablet.";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Remove if only for new users, user isn't new and app was not
+  // installed previously.
+  if (options.only_for_new_users && !is_new_user) {
+    bool was_previously_installed =
+        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
+            .LookupAppId(options.install_url)
+            .has_value();
+    if (!was_previously_installed) {
+      return options.install_url.spec() +
+             " disabled because user was not new when config was added.";
+    }
+  }
+
+  // Remove if any apps to replace are blocked by admin policy.
+  for (const AppId& app_id : options.uninstall_and_replace) {
+    if (extensions::IsExtensionBlockedByPolicy(profile, app_id)) {
+      return options.install_url.spec() +
+             " disabled due to admin policy blocking replacement "
+             "Extension.";
+    }
+  }
+
+  // Keep if any apps to replace are installed.
+  for (const AppId& app_id : options.uninstall_and_replace) {
+    if (extensions::IsExtensionInstalled(profile, app_id)) {
+      return base::nullopt;
+    }
+  }
+
+  // Remove if any apps to replace were previously uninstalled.
+  for (const AppId& app_id : options.uninstall_and_replace) {
+    if (extensions::IsExternalExtensionUninstalled(profile, app_id)) {
+      return options.install_url.spec() +
+             " disabled because apps to replace were uninstalled.";
+    }
+  }
+
+  return base::nullopt;
 }
 
 }  // namespace
@@ -169,7 +246,11 @@ void ExternalWebAppManager::SetFileUtilsForTesting(
 }
 
 ExternalWebAppManager::ExternalWebAppManager(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
+    debug_info_ = std::make_unique<DebugInfo>();
+  }
+}
 
 ExternalWebAppManager::~ExternalWebAppManager() = default;
 
@@ -179,8 +260,11 @@ void ExternalWebAppManager::SetSubsystems(
 }
 
 void ExternalWebAppManager::Start() {
-  if (!g_skip_startup_for_testing_)
-    LoadAndSynchronize({});
+  if (!g_skip_startup_for_testing_) {
+    LoadAndSynchronize(
+        base::BindOnce(&ExternalWebAppManager::OnStartUpTaskCompleted,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ExternalWebAppManager::LoadForTesting(ConsumeInstallOptions callback) {
@@ -246,83 +330,38 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
   for (ExternalInstallOptions& options : GetPreinstalledWebApps())
     parsed_configs.options_list.push_back(std::move(options));
 
-  const int total_count = parsed_configs.options_list.size();
-  int disabled_count = 0;
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);
+  size_t disabled_count = 0;
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
-        // Remove if not applicable to current user type.
-        DCHECK_GT(options.user_type_allowlist.size(), 0u);
-        if (!base::Contains(options.user_type_allowlist, user_type)) {
+        base::Optional<std::string> disable_reason =
+            GetDisableReason(options, profile_, is_new_user, user_type);
+        if (disable_reason) {
+          VLOG(1) << *disable_reason;
           ++disabled_count;
-          return true;
-        }
-
-        // Remove if gated on a disabled feature.
-        if (options.gate_on_feature &&
-            !IsExternalAppInstallFeatureEnabled(*options.gate_on_feature)) {
-          ++disabled_count;
-          return true;
-        }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        // Remove if ARC is supported and app should be disabled.
-        if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
-          ++disabled_count;
-          return true;
-        }
-
-        // Remove if device is tablet and app should be disabled.
-        if (options.disable_if_tablet_form_factor &&
-            chromeos::switches::IsTabletFormFactor()) {
-          ++disabled_count;
-          return true;
-        }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-        // Remove if only for new users, user isn't new and app was not
-        // installed previously.
-        if (options.only_for_new_users && !is_new_user) {
-          bool was_previously_installed =
-              ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
-                  .LookupAppId(options.install_url)
-                  .has_value();
-          if (!was_previously_installed)
-            return true;
-        }
-
-        // Remove if any apps to replace are blocked by admin policy.
-        for (const AppId& app_id : options.uninstall_and_replace) {
-          if (extensions::IsExtensionBlockedByPolicy(profile_, app_id)) {
-            ++disabled_count;
-            return true;
+          if (debug_info_) {
+            debug_info_->disabled_configs.emplace_back(
+                std::move(options), std::move(*disable_reason));
           }
+          return true;
         }
-
-        // Keep if any apps to replace are installed.
-        for (const AppId& app_id : options.uninstall_and_replace) {
-          if (extensions::IsExtensionInstalled(profile_, app_id))
-            return false;
-        }
-
-        // Remove if any apps to replace were previously uninstalled.
-        for (const AppId& app_id : options.uninstall_and_replace) {
-          if (extensions::IsExternalExtensionUninstalled(profile_, app_id))
-            return true;
-        }
-
         return false;
       });
 
+  if (debug_info_) {
+    debug_info_->parse_errors = parsed_configs.errors;
+    debug_info_->enabled_configs = parsed_configs.options_list;
+  }
+
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramEnabledCount,
-                              total_count - disabled_count);
+                              parsed_configs.options_list.size());
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramDisabledCount,
                               disabled_count);
   base::UmaHistogramCounts100(ExternalWebAppManager::kHistogramConfigErrorCount,
-                              parsed_configs.error_count);
+                              parsed_configs.errors.size());
 
-  std::move(callback).Run(std::move(parsed_configs.options_list));
+  std::move(callback).Run(parsed_configs.options_list);
 }
 
 void ExternalWebAppManager::Synchronize(
@@ -352,6 +391,16 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
   if (callback) {
     std::move(callback).Run(std::move(install_results),
                             std::move(uninstall_results));
+  }
+}
+
+void ExternalWebAppManager::OnStartUpTaskCompleted(
+    std::map<GURL, InstallResultCode> install_results,
+    std::map<GURL, bool> uninstall_results) {
+  if (debug_info_) {
+    debug_info_->is_start_up_task_complete = true;
+    debug_info_->install_results = std::move(install_results);
+    debug_info_->uninstall_results = std::move(uninstall_results);
   }
 }
 
@@ -396,5 +445,9 @@ bool ExternalWebAppManager::IsNewUser() {
   // app installs. Remove this after a few Chrome versions have passed.
   return ExternallyInstalledWebAppPrefs(prefs).HasNoApps();
 }
+
+ExternalWebAppManager::DebugInfo::DebugInfo() = default;
+
+ExternalWebAppManager::DebugInfo::~DebugInfo() = default;
 
 }  //  namespace web_app

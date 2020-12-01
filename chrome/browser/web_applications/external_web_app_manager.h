@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNAL_WEB_APP_MANAGER_H_
 
+#include <map>
+#include <memory>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "url/gurl.h"
 
 namespace base {
 class FilePath;
@@ -71,6 +74,22 @@ class ExternalWebAppManager {
 
   void LoadForTesting(ConsumeInstallOptions callback);
 
+  // Debugging info used by: chrome://internals/web-app
+  struct DebugInfo {
+    DebugInfo();
+    ~DebugInfo();
+
+    bool is_start_up_task_complete = false;
+    std::vector<std::string> parse_errors;
+    std::vector<ExternalInstallOptions> enabled_configs;
+    using DisabledConfigWithReason =
+        std::pair<ExternalInstallOptions, std::string>;
+    std::vector<DisabledConfigWithReason> disabled_configs;
+    std::map<GURL, InstallResultCode> install_results;
+    std::map<GURL, bool> uninstall_results;
+  };
+  const DebugInfo* debug_info() const { return debug_info_.get(); }
+
  private:
   void LoadAndSynchronize(SynchronizeCallback callback);
 
@@ -87,6 +106,8 @@ class ExternalWebAppManager {
       PendingAppManager::SynchronizeCallback callback,
       std::map<GURL, InstallResultCode> install_results,
       std::map<GURL, bool> uninstall_results);
+  void OnStartUpTaskCompleted(std::map<GURL, InstallResultCode> install_results,
+                              std::map<GURL, bool> uninstall_results);
 
   base::FilePath GetConfigDir();
 
@@ -96,6 +117,8 @@ class ExternalWebAppManager {
 
   PendingAppManager* pending_app_manager_ = nullptr;
   Profile* const profile_;
+
+  std::unique_ptr<DebugInfo> debug_info_;
 
   base::WeakPtrFactory<ExternalWebAppManager> weak_ptr_factory_{this};
 

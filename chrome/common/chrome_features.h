@@ -488,6 +488,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kQuietNotificationPrompts;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kRecordWebAppDebugInfo;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAbusiveNotificationPermissionRevocation;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

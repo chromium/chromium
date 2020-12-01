@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_CONSTANTS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_CONSTANTS_H_
 
+#include <iosfwd>
 #include <vector>
 
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -118,6 +119,8 @@ bool IsSuccess(InstallResultCode code);
 
 // Checks if InstallResultCode indicates a new app was installed.
 bool IsNewInstall(InstallResultCode code);
+
+std::ostream& operator<<(std::ostream& os, InstallResultCode code);
 
 // PendingAppManager: Where an app was installed from. This affects what flags
 // will be used when installing the app.

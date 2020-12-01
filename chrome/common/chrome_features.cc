@@ -732,6 +732,11 @@ const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
 const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables recording additional web app related debugging data to be displayed
+// in: chrome://internals/web-app
+const base::Feature kRecordWebAppDebugInfo{"RecordWebAppDebugInfo",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables notification permission revocation for abusive origins.
 const base::Feature kAbusiveNotificationPermissionRevocation{
     "AbusiveOriginNotificationPermissionRevocation",

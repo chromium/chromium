@@ -45,9 +45,14 @@ class ExternalWebAppUtilsTest : public testing::Test {
         base::JSONReader::Read(app_config_string);
     DCHECK(app_config);
     FileUtilsWrapper file_utils;
-    return ::web_app::ParseConfig(file_utils, /*dir=*/base::FilePath(),
-                                  /*file=*/base::FilePath(),
-                                  app_config.value());
+    OptionsOrError result =
+        ::web_app::ParseConfig(file_utils, /*dir=*/base::FilePath(),
+                               /*file=*/base::FilePath(), app_config.value());
+    if (ExternalInstallOptions* options =
+            absl::get_if<ExternalInstallOptions>(&result)) {
+      return std::move(*options);
+    }
+    return base::nullopt;
   }
 
   base::Optional<WebApplicationInfoFactory> ParseOfflineManifest(
@@ -55,10 +60,15 @@ class ExternalWebAppUtilsTest : public testing::Test {
     base::Optional<base::Value> offline_manifest =
         base::JSONReader::Read(offline_manifest_string);
     DCHECK(offline_manifest);
-    return ::web_app::ParseOfflineManifest(
+    WebApplicationInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
         *file_utils_, base::FilePath(FILE_PATH_LITERAL("test_dir")),
         base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
         *offline_manifest);
+    if (WebApplicationInfoFactory* factory =
+            absl::get_if<WebApplicationInfoFactory>(&result)) {
+      return std::move(*factory);
+    }
+    return base::nullopt;
   }
 
  protected:

@@ -4002,6 +4002,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "record-web-app-debug-info",
+    "owners": [ "desktop-pwas-team@google.com" ],
+    // This flag is used for in-the-field debugging of preinstalled web apps on
+    // Chrome OS.
+    "expiry_milestone": -1
+  },
+  {
     "name": "recover-from-never-save-android",
     "owners": [ "ioanap" ],
     "expiry_milestone": 88

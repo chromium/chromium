@@ -81,6 +81,7 @@
   "memlog-stack-mode",
   "overlay-strategies",
   "reader-mode-heuristics",
+  "record-web-app-debug-info",
   "release-notes-notification-all-channels",
   "set-market-url-for-testing",
   "show-autofill-type-predictions",

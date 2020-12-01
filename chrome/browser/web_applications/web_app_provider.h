@@ -92,7 +92,7 @@ class WebAppProvider : public WebAppProviderBase {
     return on_registry_ready_;
   }
 
-  ExternalWebAppManager& external_web_app_manager_for_testing() {
+  ExternalWebAppManager& external_web_app_manager() {
     return *external_web_app_manager_;
   }
 
