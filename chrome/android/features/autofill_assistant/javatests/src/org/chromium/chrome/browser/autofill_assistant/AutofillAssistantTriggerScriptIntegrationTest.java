@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
@@ -264,9 +263,11 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    // Disable translate to prevent the popup from covering part of the website.
+    @Features.DisableFeatures("Translate")
     public void elementCondition() throws Exception {
         SelectorProto.Builder touch_area_four = SelectorProto.newBuilder().addFilters(
-                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_four"));
+                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"));
         TriggerScriptProto.Builder buttonVisibleTriggerScript =
                 TriggerScriptProto.newBuilder()
                         .setTriggerCondition(TriggerScriptConditionProto.newBuilder().setSelector(
@@ -296,7 +297,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
 
-        tapElement(mTestRule, "touch_area_four");
+        tapElement(mTestRule, "touch_area_one");
         waitUntilViewMatchesCondition(withText("Area invisible"), isCompletelyDisplayed());
         onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(not(isDisplayed())));
@@ -357,7 +358,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @DisabledTest(message = "https://crbug.com/1149965")
     public void transitionToRegularScriptWithoutOnboarding() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -365,7 +365,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         /* no trigger condition */
                         .setUserInterface(createDefaultUI("Trigger script",
                                 /* bubbleMessage = */ "",
-                                /* withProgressBar = */ true)
+                                /* withProgressBar = */ false)
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
 
@@ -399,8 +399,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -419,7 +417,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         /* no trigger condition */
                         .setUserInterface(createDefaultUI("Trigger script",
                                 /* bubbleMessage = */ "",
-                                /* withProgressBar = */ true));
+                                /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
                 (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
                         .addTriggerScripts(triggerScript)
