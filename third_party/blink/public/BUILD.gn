@@ -95,6 +95,7 @@ source_set("test_headers") {
     "platform/scheduler/test/renderer_scheduler_test_support.h",
     "platform/scheduler/test/web_fake_thread_scheduler.h",
     "platform/scheduler/test/web_mock_thread_scheduler.h",
+    "test/frame_widget_test_helper.h",
   ]
   public_deps = [ ":blink_headers" ]
   deps = [

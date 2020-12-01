@@ -286,9 +286,10 @@ void WidgetBase::ForceRedraw(
       base::BindOnce(&OnDidPresentForceDrawFrame, std::move(callback)));
   LayerTreeHost()->SetNeedsCommitWithForcedRedraw();
 
-  // ScheduleAnimationForWebTests() which is implemented by WebWidgetTestProxy,
-  // providing the additional control over the lifecycle of compositing required
-  // by web tests. This will be a no-op on production.
+  // ScheduleAnimationForWebTests() which is implemented by
+  // WebTestWebFrameWidgetImpl, providing the additional control over the
+  // lifecycle of compositing required by web tests. This will be a no-op on
+  // production.
   client_->ScheduleAnimationForWebTests();
 }
 

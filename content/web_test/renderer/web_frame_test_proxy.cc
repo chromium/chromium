@@ -15,9 +15,9 @@
 #include "content/web_test/renderer/test_plugin.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/web_view_test_proxy.h"
-#include "content/web_test/renderer/web_widget_test_proxy.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_testing_support.h"
@@ -271,7 +271,8 @@ void WebFrameTestProxy::Reset() {
     web_view_test_proxy_->Reset();
   }
   if (IsLocalRoot()) {
-    GetLocalRootWebWidgetTestProxy()->Reset();
+    test_runner()->ResetWebFrameWidget(GetLocalRootWebFrameWidget());
+    GetLocalRootFrameWidgetTestHelper()->Reset();
   }
 
   spell_check_->Reset();
@@ -413,8 +414,9 @@ WebFrameTestProxy::GetEffectiveConnectionType() {
 void WebFrameTestProxy::ShowContextMenu(
     const blink::WebContextMenuData& context_menu_data,
     const base::Optional<gfx::Point>& location) {
-  WebWidgetTestProxy* widget_proxy = GetLocalRootWebWidgetTestProxy();
-  widget_proxy->event_sender()->SetContextMenuData(context_menu_data);
+  blink::FrameWidgetTestHelper* frame_widget =
+      GetLocalRootFrameWidgetTestHelper();
+  frame_widget->GetEventSender()->SetContextMenuData(context_menu_data);
 
   RenderFrameImpl::ShowContextMenu(context_menu_data, location);
 }
@@ -709,7 +711,8 @@ void WebFrameTestProxy::DidClearWindowObject() {
     GCController::Install(GetWebFrame());
     test_runner()->Install(this, spell_check_.get());
     web_view_test_proxy_->Install(GetWebFrame());
-    GetLocalRootWebWidgetTestProxy()->Install(GetWebFrame());
+    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(
+        GetWebFrame());
     blink::WebTestingSupport::InjectInternalsObject(GetWebFrame());
   }
   RenderFrameImpl::DidClearWindowObject();
@@ -723,8 +726,9 @@ void WebFrameTestProxy::OnReactivated() {
   test_runner()->OnFrameReactivated(this);
 }
 
-WebWidgetTestProxy* WebFrameTestProxy::GetLocalRootWebWidgetTestProxy() {
-  return static_cast<WebWidgetTestProxy*>(GetLocalRootRenderWidget());
+blink::FrameWidgetTestHelper*
+WebFrameTestProxy::GetLocalRootFrameWidgetTestHelper() {
+  return GetLocalRootWebFrameWidget()->GetFrameWidgetTestHelperForTesting();
 }
 
 WebViewTestProxy* WebFrameTestProxy::GetWebViewTestProxy() {
@@ -736,7 +740,7 @@ void WebFrameTestProxy::SynchronouslyCompositeAfterTest(
   // When the TestFinished() occurred, if the browser is capturing pixels, it
   // asks each composited RenderFrame to submit a new frame via here.
   if (IsLocalRoot())
-    GetLocalRootWebWidgetTestProxy()->SynchronouslyCompositeAfterTest();
+    GetLocalRootFrameWidgetTestHelper()->SynchronouslyCompositeAfterTest();
   std::move(callback).Run();
 }
 

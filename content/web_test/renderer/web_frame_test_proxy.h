@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "ui/accessibility/ax_event.h"
@@ -26,7 +27,6 @@ namespace content {
 class SpellCheckClient;
 class TestRunner;
 class WebViewTestProxy;
-class WebWidgetTestProxy;
 
 // WebFrameTestProxy is used during running web tests instead of a
 // RenderFrameImpl to inject test-only behaviour by overriding methods in the
@@ -51,8 +51,8 @@ class WebFrameTestProxy : public RenderFrameImpl,
   // tests.
   std::string GetFrameDescriptionForWebTests();
 
-  // Returns the test-subclass of RenderWidget for the local root of this frame.
-  WebWidgetTestProxy* GetLocalRootWebWidgetTestProxy();
+  // Returns the test helper of WebFrameWidget for the local root of this frame.
+  blink::FrameWidgetTestHelper* GetLocalRootFrameWidgetTestHelper();
   // Returns the test-subclass of RenderViewImpl that is hosting this frame's
   // frame tree fragment.
   WebViewTestProxy* GetWebViewTestProxy();

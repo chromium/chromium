@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/types/pass_key.h",
     "+base/unguessable_token.h",
     "-third_party/blink/renderer/bindings",
     "-third_party/blink/renderer/core",

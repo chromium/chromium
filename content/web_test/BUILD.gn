@@ -215,6 +215,12 @@ static_library("web_test_renderer") {
     check_includes = false
   }
 
+  # We allow a circular include from blink's web_test implementation. This
+  # is an incremental step to moving the renderer web_test implementation
+  # into blink.
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/core/web_test" ]
+
   sources = [
     "renderer/accessibility_controller.cc",
     "renderer/accessibility_controller.h",
@@ -268,8 +274,6 @@ static_library("web_test_renderer") {
     "renderer/web_test_spell_checker.h",
     "renderer/web_view_test_proxy.cc",
     "renderer/web_view_test_proxy.h",
-    "renderer/web_widget_test_proxy.cc",
-    "renderer/web_widget_test_proxy.h",
   ]
   deps = [
     ":web_test_common",
@@ -298,6 +302,7 @@ static_library("web_test_renderer") {
     "//skia:test_fonts",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core/web_test",
     "//ui/accessibility:ax_base",
     "//ui/base/ime:ime_types",
     "//ui/display",

@@ -684,6 +684,10 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
   return MainFrame().GetEventHandler().KeyEvent(event);
 }
 
+cc::LayerTreeHost* WebPagePopupImpl::LayerTreeHostForTesting() {
+  return widget_base_->LayerTreeHost();
+}
+
 void WebPagePopupImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   if (!page_)
     return;

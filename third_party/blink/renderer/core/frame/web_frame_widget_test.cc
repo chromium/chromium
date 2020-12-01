@@ -240,7 +240,7 @@ class MockWebFrameWidgetImpl : public WebFrameWidgetImpl {
   MOCK_METHOD1(WillHandleGestureEvent, bool(const WebGestureEvent& event));
 };
 
-WebFrameWidgetImpl* CreateMainFrameWebFrameWidget(
+WebFrameWidget* CreateWebFrameWidget(
     base::PassKey<WebFrameWidget> pass_key,
     WebWidgetClient& client,
     CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>
@@ -266,7 +266,7 @@ WebFrameWidgetImpl* CreateMainFrameWebFrameWidget(
 class WebFrameWidgetImplSimTest : public SimTest {
  public:
   void SetUp() override {
-    InstallCreateMainFrameWebFrameWidgetHook(CreateMainFrameWebFrameWidget);
+    InstallCreateWebFrameWidgetHook(CreateWebFrameWidget);
     SimTest::SetUp();
   }
 

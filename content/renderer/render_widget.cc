@@ -25,27 +25,10 @@
 
 namespace content {
 
-namespace {
-
-RenderWidget::CreateRenderWidgetFunction g_create_render_widget_for_frame =
-    nullptr;
-
-}  // namespace
-
 // RenderWidget ---------------------------------------------------------------
-
-// static
-void RenderWidget::InstallCreateForFrameHook(
-    CreateRenderWidgetFunction create_widget) {
-  g_create_render_widget_for_frame = create_widget;
-}
 
 std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
     CompositorDependencies* compositor_deps) {
-  if (g_create_render_widget_for_frame) {
-    return g_create_render_widget_for_frame(compositor_deps);
-  }
-
   return std::make_unique<RenderWidget>(compositor_deps);
 }
 

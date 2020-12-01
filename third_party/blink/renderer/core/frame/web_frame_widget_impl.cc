@@ -218,12 +218,11 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
 
 // WebFrameWidget ------------------------------------------------------------
 
-static CreateMainFrameWebFrameWidgetFunction
-    g_create_main_frame_web_frame_widget = nullptr;
+static CreateWebFrameWidgetFunction g_create_web_frame_widget = nullptr;
 
-void InstallCreateMainFrameWebFrameWidgetHook(
-    CreateMainFrameWebFrameWidgetFunction create_widget) {
-  g_create_main_frame_web_frame_widget = create_widget;
+void InstallCreateWebFrameWidgetHook(
+    CreateWebFrameWidgetFunction create_widget) {
+  g_create_web_frame_widget = create_widget;
 }
 
 WebFrameWidget* WebFrameWidget::CreateForMainFrame(
@@ -254,14 +253,14 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
   WebViewImpl& web_view_impl = *main_frame_impl.ViewImpl();
 
   WebFrameWidgetImpl* widget = nullptr;
-  if (g_create_main_frame_web_frame_widget) {
-    widget = g_create_main_frame_web_frame_widget(
+  if (g_create_web_frame_widget) {
+    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget(
         base::PassKey<WebFrameWidget>(), *client,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
         main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
         frame_sink_id, hidden, never_composited,
-        /*is_for_child_local_root=*/false, is_for_nested_main_frame);
+        /*is_for_child_local_root=*/false, is_for_nested_main_frame));
   } else {
     // Note: this isn't a leak, as the object has a self-reference that the
     // caller needs to release by calling Close().
@@ -300,15 +299,26 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
   // root.
   DCHECK(local_root->Parent()->IsWebRemoteFrame());
 
-  // Note: this isn't a leak, as the object has a self-reference that the
-  // caller needs to release by calling Close().
-  auto* widget = MakeGarbageCollected<WebFrameWidgetImpl>(
-      base::PassKey<WebFrameWidget>(), *client,
-      std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-      std::move(mojo_widget_host), std::move(mojo_widget),
-      local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-      frame_sink_id, hidden, never_composited, /*is_for_child_local_root=*/true,
-      /*is_for_nested_main_frame=*/false);
+  WebFrameWidgetImpl* widget = nullptr;
+  if (g_create_web_frame_widget) {
+    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget(
+        base::PassKey<WebFrameWidget>(), *client,
+        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
+        std::move(mojo_widget_host), std::move(mojo_widget),
+        local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
+        frame_sink_id, hidden, never_composited,
+        /*is_for_child_local_root=*/true, /*is_for_nested_main_frame=*/false));
+  } else {
+    // Note: this isn't a leak, as the object has a self-reference that the
+    // caller needs to release by calling Close().
+    widget = MakeGarbageCollected<WebFrameWidgetImpl>(
+        base::PassKey<WebFrameWidget>(), *client,
+        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
+        std::move(mojo_widget_host), std::move(mojo_widget),
+        local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
+        frame_sink_id, hidden, never_composited,
+        /*is_for_child_local_root=*/true, /*is_for_nested_main_frame=*/false);
+  }
   widget->BindLocalRoot(*local_root);
   return widget;
 }
@@ -1237,11 +1247,6 @@ void WebFrameWidgetImpl::RequestDecode(
     const PaintImage& image,
     base::OnceCallback<void(bool)> callback) {
   widget_base_->LayerTreeHost()->QueueImageDecode(image, std::move(callback));
-
-  // In web tests the request does not actually cause a commit, because the
-  // compositor is scheduled by the test runner to avoid flakiness. So for this
-  // case we must request a main frame.
-  Client()->ScheduleAnimationForWebTests();
 }
 
 void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
@@ -1381,10 +1386,6 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
       }
     }
   }
-}
-
-void WebFrameWidgetImpl::WillBeginMainFrame() {
-  Client()->WillBeginMainFrame();
 }
 
 void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
@@ -1576,10 +1577,6 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
 
     Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
   }
-}
-
-void WebFrameWidgetImpl::ScheduleAnimationForWebTests() {
-  Client()->ScheduleAnimationForWebTests();
 }
 
 int WebFrameWidgetImpl::GetLayerTreeId() {
@@ -3936,6 +3933,11 @@ void WebFrameWidgetImpl::SetDeviceScaleFactorForTesting(float factor) {
     // `UpdateCompositorViewportAndScreenInfo()` has applied a new value.
     Resize(widget_base_->DIPsToCeiledBlinkSpace(size_in_dips));
   }
+}
+
+FrameWidgetTestHelper*
+WebFrameWidgetImpl::GetFrameWidgetTestHelperForTesting() {
+  return nullptr;
 }
 
 WebPlugin* WebFrameWidgetImpl::GetFocusedPluginContainer() {

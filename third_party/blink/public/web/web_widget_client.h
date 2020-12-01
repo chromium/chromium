@@ -75,12 +75,6 @@ class WebWidgetClient {
   // a synchronous composite.
   virtual void ScheduleAnimation() {}
 
-  // Called to request a BeginMainFrame from the compositor, meant to be used
-  // for web tests only, where commits must be explicitly scheduled. Contrary to
-  // ScheduleAnimation() this will be a no-op on multi-threaded environments and
-  // will unconditionally ensure that the compositor is actually run.
-  virtual void ScheduleAnimationForWebTests() {}
-
   // Called when the cursor for the widget changes.
   virtual void DidChangeCursor(const ui::Cursor&) {}
 
@@ -104,11 +98,6 @@ class WebWidgetClient {
 
   // For more information on the sequence of when these callbacks are made
   // consult cc/trees/layer_tree_host_client.h.
-
-  // Indicates that the compositor is about to begin a frame. This is primarily
-  // to signal to flow control mechanisms that a frame is beginning, not to
-  // perform actual painting work.
-  virtual void WillBeginMainFrame() {}
 
   // Notifies that the layer tree host has completed a call to
   // RequestMainFrameUpdate in response to a BeginMainFrame.

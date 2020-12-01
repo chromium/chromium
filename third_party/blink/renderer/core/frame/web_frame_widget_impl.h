@@ -128,7 +128,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebRect ComputeBlockBound(const gfx::Point& point_in_root_frame,
                             bool ignore_clipping) const;
 
-  void BindLocalRoot(WebLocalFrame&);
+  virtual void BindLocalRoot(WebLocalFrame&);
 
   // If this widget is for the top most main frame. This is different than
   // |ForMainFrame| because |ForMainFrame| could return true but this method
@@ -181,7 +181,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
   void RegisterSelection(cc::LayerSelection selection) final;
   void RequestDecode(const cc::PaintImage&,
-                     base::OnceCallback<void(bool)>) final;
+                     base::OnceCallback<void(bool)>) override;
   void NotifySwapAndPresentationTimeInBlink(
       WebReportTimeCallback swap_callback,
       WebReportTimeCallback presentation_callback) final;
@@ -344,12 +344,13 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetZoomLevelForTesting(double zoom_level) override;
   void ResetZoomLevelForTesting() override;
   void SetDeviceScaleFactorForTesting(float factor) override;
+  FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
 
   // Called when a drag-n-drop operation should begin.
-  void StartDragging(const WebDragData&,
-                     DragOperationsMask,
-                     const SkBitmap& drag_image,
-                     const gfx::Point& drag_image_offset);
+  virtual void StartDragging(const WebDragData&,
+                             DragOperationsMask,
+                             const SkBitmap& drag_image,
+                             const gfx::Point& drag_image_offset);
 
   bool DoingDragAndDrop() { return doing_drag_and_drop_; }
   static void SetIgnoreInputEvents(bool value) { ignore_input_events_ = value; }
@@ -601,6 +602,12 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Return the focused WebPlugin if there is one.
   WebPlugin* GetFocusedPluginContainer();
 
+ protected:
+  // WidgetBaseClient overrides:
+  void ScheduleAnimation() override;
+
+  bool doing_drag_and_drop_ = false;
+
  private:
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
@@ -629,7 +636,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
   void DidBeginMainFrame() override;
-  void WillBeginMainFrame() override;
   void DidCompletePageScaleAnimation() override;
   void FocusChangeComplete() override;
   bool WillHandleGestureEvent(const WebGestureEvent& event) override;
@@ -644,12 +650,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebTextInputType GetTextInputType() override;
   void SetCursorVisibilityState(bool is_visible) override;
   blink::FrameWidget* FrameWidget() override { return this; }
-  void ScheduleAnimation() override;
   void FocusChanged(bool enable) override;
   bool ShouldAckSyntheticInputImmediately() override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
-  void ScheduleAnimationForWebTests() override;
   bool UpdateScreenRects(const gfx::Rect& widget_screen_rect,
                          const gfx::Rect& window_screen_rect) override;
   void OrientationChanged() override;
@@ -807,8 +811,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
-
-  bool doing_drag_and_drop_ = false;
 
   // The available drag operations (copy, move link...) allowed by the source.
   DragOperation operations_allowed_ = kDragOperationNone;
@@ -992,35 +994,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   SelfKeepAlive<WebFrameWidgetImpl> self_keep_alive_;
 };
-
-// Convenience type for creation method taken by
-// InstallCreateMainFrameWebFrameWidgetHook(). The method signature matches the
-// WebFrameWidgetImpl constructor.
-using CreateMainFrameWebFrameWidgetFunction =
-    WebFrameWidgetImpl* (*)(base::PassKey<WebFrameWidget>,
-                            WebWidgetClient&,
-                            CrossVariantMojoAssociatedRemote<
-                                mojom::blink::FrameWidgetHostInterfaceBase>
-                                frame_widget_host,
-                            CrossVariantMojoAssociatedReceiver<
-                                mojom::blink::FrameWidgetInterfaceBase>
-                                frame_widget,
-                            CrossVariantMojoAssociatedRemote<
-                                mojom::blink::WidgetHostInterfaceBase>
-                                widget_host,
-                            CrossVariantMojoAssociatedReceiver<
-                                mojom::blink::WidgetInterfaceBase> widget,
-                            scoped_refptr<base::SingleThreadTaskRunner>
-                                task_runner,
-                            const viz::FrameSinkId& frame_sink_id,
-                            bool hidden,
-                            bool never_composited,
-                            bool is_for_child_local_root,
-                            bool is_for_nested_main_frame);
-// Overrides the implementation of WebFrameWidget::CreateForMainFrame() function
-// below. Used by tests to override some functionality on WebFrameWidgetImpl.
-void CORE_EXPORT InstallCreateMainFrameWebFrameWidgetHook(
-    CreateMainFrameWebFrameWidgetFunction create_widget);
 
 }  // namespace blink
 

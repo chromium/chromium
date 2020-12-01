@@ -94,15 +94,6 @@ class CONTENT_EXPORT RenderWidget
 
   ~RenderWidget() override;
 
-  // Convenience type for creation method taken by InstallCreateForFrameHook().
-  // The method signature matches the RenderWidget constructor.
-  using CreateRenderWidgetFunction =
-      std::unique_ptr<RenderWidget> (*)(CompositorDependencies*);
-  // Overrides the implementation of CreateForFrame() function below. Used by
-  // web tests to return a partial fake of RenderWidget.
-  static void InstallCreateForFrameHook(
-      CreateRenderWidgetFunction create_widget);
-
   // Creates a RenderWidget that is meant to be associated with a RenderFrame.
   // Testing infrastructure, such as test_runner, can override this function
   // by calling InstallCreateForFrameHook().
@@ -194,7 +185,6 @@ class CONTENT_EXPORT RenderWidget
   // that is not a WebFrameWidget. A WebFrameWidget only makes sense when there
   // a local root associated with it.
   blink::WebFrameWidget* GetFrameWidget() const;
-
   // Whether this widget is for a frame. This excludes widgets that are not for
   // a frame (eg popups, pepper), but includes both the main frame
   // (via delegate_) and subframes (via for_child_local_root_frame_).

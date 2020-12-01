@@ -116,6 +116,9 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // PageWidgetEventHandler implementation.
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
 
+  // Return the LayerTreeHost backing this popup widget.
+  cc::LayerTreeHost* LayerTreeHostForTesting();
+
  private:
   // WidgetBaseClient overrides:
   void BeginMainFrame(base::TimeTicks last_frame_time) override;

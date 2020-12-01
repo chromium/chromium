@@ -34,7 +34,6 @@
 #include "content/web_test/renderer/test_preferences.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "content/web_test/renderer/web_view_test_proxy.h"
-#include "content/web_test/renderer/web_widget_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/handle.h"
@@ -54,6 +53,7 @@
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
@@ -1829,7 +1829,7 @@ void TestRunnerBindings::RemoveWebPageOverlay() {
 void TestRunnerBindings::UpdateAllLifecyclePhasesAndComposite() {
   if (invalid_)
     return;
-  static_cast<WebWidgetTestProxy*>(frame_->GetLocalRootRenderWidget())
+  frame_->GetLocalRootFrameWidgetTestHelper()
       ->UpdateAllLifecyclePhasesAndComposite(base::DoNothing());
 }
 
@@ -1837,7 +1837,7 @@ void TestRunnerBindings::UpdateAllLifecyclePhasesAndCompositeThen(
     v8::Local<v8::Function> v8_callback) {
   if (invalid_)
     return;
-  static_cast<WebWidgetTestProxy*>(frame_->GetLocalRootRenderWidget())
+  frame_->GetLocalRootFrameWidgetTestHelper()
       ->UpdateAllLifecyclePhasesAndComposite(
           WrapV8Closure(std::move(v8_callback)));
 }
@@ -2311,19 +2311,16 @@ void TestRunner::ResetWebView(WebViewTestProxy* web_view_test_proxy) {
   web_view->UseSynchronousResizeModeForTesting(false);
 }
 
-void TestRunner::ResetWebWidget(WebWidgetTestProxy* web_widget_test_proxy) {
-  blink::WebFrameWidget* web_widget =
-      web_widget_test_proxy->GetWebFrameWidget();
-
-  web_widget->SetDeviceScaleFactorForTesting(0);
-  web_widget->ReleaseMouseLockAndPointerCaptureForTesting();
+void TestRunner::ResetWebFrameWidget(blink::WebFrameWidget* web_frame_widget) {
+  web_frame_widget->SetDeviceScaleFactorForTesting(0);
+  web_frame_widget->ReleaseMouseLockAndPointerCaptureForTesting();
 
   // These things are only modified/valid for the main frame's widget.
-  if (web_widget_test_proxy->delegate()) {
-    web_widget->ResetZoomLevelForTesting();
+  if (!web_frame_widget->LocalRoot()->Parent()) {
+    web_frame_widget->ResetZoomLevelForTesting();
 
-    web_widget->SetMainFrameOverlayColor(SK_ColorTRANSPARENT);
-    web_widget->SetTextZoomFactor(1);
+    web_frame_widget->SetMainFrameOverlayColor(SK_ColorTRANSPARENT);
+    web_frame_widget->SetTextZoomFactor(1);
   }
 }
 

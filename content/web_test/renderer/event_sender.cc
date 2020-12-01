@@ -88,6 +88,11 @@ const char* const kPointerTypeStringTouch = "touch";
 const char* const kPointerTypeStringPen = "pen";
 const char* const kPointerTypeStringEraser = "eraser";
 
+WebViewTestProxy* GetWebViewTestProxy(blink::WebFrameWidget* widget) {
+  return static_cast<WebViewTestProxy*>(
+      RenderView::FromWebView(widget->LocalRoot()->View()));
+}
+
 // Assigns |pointerType| from the provided |args|. Returns false if there was
 // any error.
 bool GetPointerType(gin::Arguments* args,
@@ -1245,9 +1250,10 @@ EventSender::SavedEvent::SavedEvent()
       modifiers(0) {}
 
 EventSender::EventSender(blink::WebFrameWidget* web_frame_widget,
-                         WebViewTestProxy* web_view_test_proxy)
+                         content::TestRunner* test_runner)
     : web_frame_widget_(web_frame_widget),
-      web_view_test_proxy_(web_view_test_proxy) {
+      web_view_test_proxy_(GetWebViewTestProxy(web_frame_widget)),
+      test_runner_(test_runner) {
   Reset();
 }
 
@@ -1834,8 +1840,8 @@ void EventSender::DumpFilenameBeingDragged() {
 #else
       filename = filename.ReplaceExtension(filename_extension.Utf8());
 #endif
-      test_runner()->PrintMessage(std::string("Filename being dragged: ") +
-                                  filename.AsUTF8Unsafe() + "\n");
+      test_runner_->PrintMessage(std::string("Filename being dragged: ") +
+                                 filename.AsUTF8Unsafe() + "\n");
       return;
     }
   }
@@ -1903,7 +1909,7 @@ void EventSender::BeginDragWithItems(
   }
   if (!file_paths.empty()) {
     current_drag_data_->SetFilesystemId(
-        test_runner()->RegisterIsolatedFileSystem(file_paths));
+        test_runner_->RegisterIsolatedFileSystem(file_paths));
   }
   current_drag_effects_allowed_ = blink::kDragOperationCopy;
 
@@ -2788,10 +2794,6 @@ void EventSender::SendGesturesForMouseWheelEvent(
   if (force_layout_on_events_)
     UpdateLifecycleToPrePaint();
   HandleInputEventOnViewOrPopup(end_event);
-}
-
-TestRunner* EventSender::test_runner() {
-  return web_view_test_proxy_->GetTestRunner();
 }
 
 WebViewTestProxy* EventSender::web_view_proxy() {

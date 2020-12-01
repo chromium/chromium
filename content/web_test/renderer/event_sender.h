@@ -54,7 +54,7 @@ enum KeyLocationCode {
 
 class EventSender {
  public:
-  EventSender(blink::WebFrameWidget*, WebViewTestProxy*);
+  EventSender(blink::WebFrameWidget*, content::TestRunner* test_runner);
   virtual ~EventSender();
 
   void Reset();
@@ -108,7 +108,6 @@ class EventSender {
 
   enum class MouseScrollType { PIXEL, TICK };
 
-  TestRunner* test_runner();
   WebViewTestProxy* web_view_proxy();
   const blink::WebView* view() const;
   blink::WebView* view();
@@ -263,6 +262,7 @@ class EventSender {
 
   blink::WebFrameWidget* const web_frame_widget_;
   WebViewTestProxy* const web_view_test_proxy_;
+  TestRunner* const test_runner_;
 
   bool force_layout_on_events_;
 

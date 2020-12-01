@@ -42,6 +42,7 @@ class DictionaryValue;
 namespace blink {
 class WebContentSettingsClient;
 class WebFrame;
+class WebFrameWidget;
 class WebString;
 class WebView;
 }  // namespace blink
@@ -57,7 +58,6 @@ class RenderView;
 class SpellCheckClient;
 class TestRunnerBindings;
 class WebFrameTestProxy;
-class WebWidgetTestProxy;
 class WebViewTestProxy;
 struct TestPreferences;
 
@@ -84,8 +84,8 @@ class TestRunner {
 
   // Resets state on the |web_view_test_proxy| for the next test.
   void ResetWebView(WebViewTestProxy* web_view_test_proxy);
-  // Resets state on the |web_widget_test_proxy| for the next test.
-  void ResetWebWidget(WebWidgetTestProxy* web_widget_test_proxy);
+  // Resets state on the |web_frame_widget| for the next test.
+  void ResetWebFrameWidget(blink::WebFrameWidget* web_frame_widget);
 
   void SetTestIsRunning(bool);
   bool TestIsRunning() const { return test_is_running_; }
