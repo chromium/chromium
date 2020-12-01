@@ -100,6 +100,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
   mojo::Receiver<mojom::QuicTransport> receiver_;
   mojo::Remote<mojom::QuicTransportHandshakeClient> handshake_client_;
   mojo::Remote<mojom::QuicTransportClient> client_;
+  base::queue<base::OnceCallback<void(bool)>> datagram_callbacks_;
 
   bool torn_down_ = false;
 

@@ -350,14 +350,14 @@ void QuicTransport::SendDatagram(base::span<const uint8_t> data,
                                  base::OnceCallback<void(bool)> callback) {
   DCHECK(!torn_down_);
 
+  datagram_callbacks_.emplace(std::move(callback));
+
   auto buffer = base::MakeRefCounted<net::IOBuffer>(data.size());
   memcpy(buffer->data(), data.data(), data.size());
   quic::QuicMemSlice slice(
       quic::QuicMemSliceImpl(std::move(buffer), data.size()));
-  const quic::MessageStatus status =
-      transport_->session()->datagram_queue()->SendOrQueueDatagram(
-          std::move(slice));
-  std::move(callback).Run(status == quic::MESSAGE_STATUS_SUCCESS);
+  transport_->session()->datagram_queue()->SendOrQueueDatagram(
+      std::move(slice));
 }
 
 void QuicTransport::CreateStream(
@@ -588,7 +588,11 @@ void QuicTransport::OnCanCreateNewOutgoingUnidirectionalStream() {
 
 void QuicTransport::OnDatagramProcessed(
     base::Optional<quic::MessageStatus> status) {
-  // TODO(yhirano): Implement this.
+  DCHECK(!datagram_callbacks_.empty());
+
+  std::move(datagram_callbacks_.front())
+      .Run(status == quic::MESSAGE_STATUS_SUCCESS);
+  datagram_callbacks_.pop();
 }
 
 void QuicTransport::TearDown() {

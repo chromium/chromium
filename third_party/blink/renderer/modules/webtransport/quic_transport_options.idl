@@ -6,4 +6,9 @@
 
 dictionary QuicTransportOptions {
   sequence<RTCDtlsFingerprint> serverCertificateFingerprints;
+
+  // This is an experimental and non-standard parameter. This controls the high
+  // water mark (https://streams.spec.whatwg.org/#high-water-mark) for the
+  // datagramWritable stream.
+  long datagramWritableHighWaterMark;
 };

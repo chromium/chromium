@@ -76,8 +76,8 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
 // Sends a datagram on write().
 class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
  public:
-  explicit DatagramUnderlyingSink(QuicTransport* quic_transport)
-      : quic_transport_(quic_transport) {}
+  DatagramUnderlyingSink(QuicTransport* quic_transport, int high_water_mark)
+      : quic_transport_(quic_transport), high_water_mark_(high_water_mark) {}
 
   ScriptPromise start(ScriptState* script_state,
                       WritableStreamDefaultController*,
@@ -131,6 +131,7 @@ class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(quic_transport_);
+    visitor->Trace(pending_datagrams_);
     UnderlyingSinkBase::Trace(visitor);
   }
 
@@ -145,18 +146,31 @@ class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
         quic_transport_->script_state_);
+    pending_datagrams_.push_back(resolver);
+
     quic_transport_->quic_transport_->SendDatagram(
-        data, WTF::Bind(&DatagramSent, WrapPersistent(resolver)));
+        data, WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
+                        WrapWeakPersistent(this)));
+    if (pending_datagrams_.size() < static_cast<wtf_size_t>(high_water_mark_)) {
+      // In this case we pretend that the datagram is processed immediately, to
+      // get more requests from the stream.
+      return ScriptPromise::CastUndefined(quic_transport_->script_state_);
+    }
     return resolver->Promise();
   }
 
-  // |sent| indicates whether the datagram was sent or dropped. Currently we
-  // |don't do anything with this information.
-  static void DatagramSent(ScriptPromiseResolver* resolver, bool sent) {
+  void OnDatagramProcessed(bool sent) {
+    DCHECK(!pending_datagrams_.empty());
+
+    ScriptPromiseResolver* resolver = pending_datagrams_.front();
+    pending_datagrams_.pop_front();
+
     resolver->Resolve();
   }
 
   Member<QuicTransport> quic_transport_;
+  const int high_water_mark_;
+  HeapDeque<Member<ScriptPromiseResolver>> pending_datagrams_;
 };
 
 // Captures a pointer to the ReadableStreamDefaultControllerWithScriptScope in
@@ -713,8 +727,25 @@ void QuicTransport::Init(const String& url,
   received_datagrams_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state_,
       MakeGarbageCollected<DatagramUnderlyingSource>(script_state_, this), 1);
+  int outgoing_datagrams_high_water_mark = 1;
+  if (options.hasDatagramWritableHighWaterMark()) {
+    outgoing_datagrams_high_water_mark =
+        options.datagramWritableHighWaterMark();
+  }
+
+  // We create a WritableStream with high water mark 1 and try to mimic the
+  // given high water mark in the Sink, from two reasons:
+  // 1. This is better because we can hide the RTT between the renderer and the
+  //    network service.
+  // 2. Keeping datagrams in the renderer would be confusing for the timer for
+  // the datagram
+  //    queue in the network service, because the timestamp is taken when the
+  //    datagram is added to the queue.
   outgoing_datagrams_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state_, MakeGarbageCollected<DatagramUnderlyingSink>(this), 1);
+      script_state_,
+      MakeGarbageCollected<DatagramUnderlyingSink>(
+          this, outgoing_datagrams_high_water_mark),
+      1);
 
   received_streams_underlying_source_ =
       StreamVendingUnderlyingSource::CreateWithVendor<ReceiveStreamVendor>(
