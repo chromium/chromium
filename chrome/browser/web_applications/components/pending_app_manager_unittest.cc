@@ -39,8 +39,7 @@ class PendingAppManagerTest : public testing::Test {
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
-            [&run_loop, urls](std::map<GURL, PendingAppManager::InstallResult>
-                                  install_results,
+            [&run_loop, urls](std::map<GURL, InstallResultCode> install_results,
                               std::map<GURL, bool> uninstall_results) {
               run_loop.Quit();
             }));
@@ -115,8 +114,7 @@ TEST_F(PendingAppManagerTest, DestroyDuringUninstallInSynchronize) {
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
-            [&](std::map<GURL, PendingAppManager::InstallResult>
-                    install_results,
+            [&](std::map<GURL, InstallResultCode> install_results,
                 std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
     run_loop.Run();
   }

@@ -38,8 +38,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
   }
 
   using HandleInstallRequestCallback =
-      base::RepeatingCallback<PendingAppManager::InstallResult(
-          const ExternalInstallOptions&)>;
+      base::RepeatingCallback<InstallResultCode(const ExternalInstallOptions&)>;
 
   // Set a callback to handle install requests. If set, this callback will be
   // used in place of the real installation process. The callback takes a const

@@ -293,10 +293,9 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     GetProvider().pending_app_manager().Install(
         std::move(install_options),
         base::BindLambdaForTesting(
-            [&](const GURL& installed_app_url,
-                PendingAppManager::InstallResult result) {
+            [&](const GURL& installed_app_url, InstallResultCode code) {
               EXPECT_EQ(installed_app_url, app_url);
-              EXPECT_EQ(result.code, InstallResultCode::kSuccessNewInstall);
+              EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
               run_loop.Quit();
             }));
     run_loop.Run();

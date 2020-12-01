@@ -168,12 +168,13 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
 
     auto callback = base::BindLambdaForTesting(
-        [&](std::map<GURL, PendingAppManager::InstallResult> install_results,
+        [&](std::map<GURL, InstallResultCode> install_results,
             std::map<GURL, bool> uninstall_results) {
           if (expect_install) {
-            InstallResultCode code = install_results.at(GetWebAppUrl()).code;
-            EXPECT_TRUE(code == InstallResultCode::kSuccessNewInstall ||
-                        code == InstallResultCode::kSuccessOfflineOnlyInstall);
+            InstallResultCode result = install_results.at(GetWebAppUrl());
+            EXPECT_TRUE(result == InstallResultCode::kSuccessNewInstall ||
+                        result ==
+                            InstallResultCode::kSuccessOfflineOnlyInstall);
           } else {
             EXPECT_EQ(install_results.find(GetWebAppUrl()),
                       install_results.end());

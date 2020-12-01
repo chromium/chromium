@@ -82,8 +82,10 @@ class PendingAppManagerImpl : public PendingAppManager {
 
   void OnUrlLoaded(WebAppUrlLoader::Result result);
 
-  void OnInstalled(base::Optional<AppId> app_id,
-                   PendingAppManager::InstallResult result);
+  void OnInstalled(PendingAppInstallTask::Result result);
+
+  void CurrentInstallationFinished(const base::Optional<std::string>& app_id,
+                                   InstallResultCode code);
 
   void MaybeEnqueueServiceWorkerRegistration(
       const ExternalInstallOptions& install_options);

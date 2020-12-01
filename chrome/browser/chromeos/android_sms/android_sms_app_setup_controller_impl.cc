@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -264,9 +265,9 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
     size_t num_attempts_so_far,
     const GURL& app_url,
     const GURL& install_url,
-    web_app::PendingAppManager::InstallResult result) {
-  UMA_HISTOGRAM_ENUMERATION("AndroidSms.PWAInstallationResult", result.code);
-  const bool install_succeeded = web_app::IsSuccess(result.code);
+    web_app::InstallResultCode code) {
+  UMA_HISTOGRAM_ENUMERATION("AndroidSms.PWAInstallationResult", code);
+  const bool install_succeeded = web_app::IsSuccess(code);
 
   if (!install_succeeded && num_attempts_so_far < kMaxInstallRetryCount) {
     base::TimeDelta retry_delay =
@@ -274,7 +275,7 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
     PA_LOG(VERBOSE)
         << "AndroidSmsAppSetupControllerImpl::OnAppInstallResult(): "
         << "PWA for " << install_url << " failed to install."
-        << "InstallResultCode: " << static_cast<int>(result.code)
+        << "InstallResultCode: " << static_cast<int>(code)
         << " Retrying again in " << retry_delay;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -291,7 +292,7 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
     PA_LOG(WARNING)
         << "AndroidSmsAppSetupControllerImpl::OnAppInstallResult(): "
         << "PWA for " << install_url << " failed to install. "
-        << "InstallResultCode: " << static_cast<int>(result.code);
+        << "InstallResultCode: " << static_cast<int>(code);
     std::move(callback).Run(false /* success */);
     return;
   }

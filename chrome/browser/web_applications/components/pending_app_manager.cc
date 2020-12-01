@@ -17,12 +17,6 @@
 
 namespace web_app {
 
-bool PendingAppManager::InstallResult::operator==(
-    const InstallResult& other) const {
-  return std::tie(code, did_uninstall_and_replace) ==
-         std::tie(other.code, other.did_uninstall_and_replace);
-}
-
 PendingAppManager::SynchronizeRequest::SynchronizeRequest(
     SynchronizeCallback callback,
     int remaining_requests)
@@ -89,7 +83,7 @@ void PendingAppManager::SynchronizeInstalledApps(
   if (urls_to_remove.empty() && desired_apps_install_options.empty()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), std::map<GURL, InstallResult>(),
+        base::BindOnce(std::move(callback), std::map<GURL, InstallResultCode>(),
                        std::map<GURL, bool>()));
     return;
   }
@@ -133,17 +127,16 @@ void PendingAppManager::OnRegistrationFinished(const GURL& install_url,
 void PendingAppManager::InstallForSynchronizeCallback(
     ExternalInstallSource source,
     const GURL& app_url,
-    PendingAppManager::InstallResult result) {
-  if (!IsSuccess(result.code)) {
+    InstallResultCode code) {
+  if (!IsSuccess(code)) {
     LOG(ERROR) << app_url << " from install source " << static_cast<int>(source)
-               << " failed to install with reason "
-               << static_cast<int>(result.code);
+               << " failed to install with reason " << static_cast<int>(code);
   }
 
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
-  request.install_results[app_url] = result;
+  request.install_results[app_url] = code;
 
   OnAppSynchronized(source, app_url);
 }
