@@ -232,8 +232,6 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
   } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundSync) {
     *out_type = PermissionType::BACKGROUND_SYNC;
-  } else if (type == protocol::Browser::PermissionTypeEnum::Flash) {
-    *out_type = PermissionType::FLASH;
   } else if (type == protocol::Browser::PermissionTypeEnum::Sensors) {
     *out_type = PermissionType::SENSORS;
   } else if (type ==

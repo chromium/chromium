@@ -95,8 +95,6 @@ ContentSettingsType PermissionTypeToContentSettingSafe(
       return ContentSettingsType::MEDIASTREAM_CAMERA;
     case PermissionType::BACKGROUND_SYNC:
       return ContentSettingsType::BACKGROUND_SYNC;
-    case PermissionType::FLASH:
-      return ContentSettingsType::PLUGINS;
     case PermissionType::SENSORS:
       return ContentSettingsType::SENSORS;
     case PermissionType::ACCESSIBILITY_EVENTS:

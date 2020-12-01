@@ -15,8 +15,8 @@ namespace content {
 
 // This enum is also used for UMA purposes, so it needs to adhere to
 // the UMA guidelines.
-// Make sure you update enums.xml and GetAllPermissionTypes if you add
-// new permission types.
+// Make sure you update enums.xml and GetAllPermissionTypes if you add new
+// or deprecate permission types.
 // Never delete or reorder an entry; only add new entries
 // immediately before PermissionType::NUM
 enum class PermissionType {
@@ -30,7 +30,7 @@ enum class PermissionType {
   AUDIO_CAPTURE = 8,
   VIDEO_CAPTURE = 9,
   BACKGROUND_SYNC = 10,
-  FLASH = 11,
+  // FLASH = 11,
   SENSORS = 12,
   ACCESSIBILITY_EVENTS = 13,
   // CLIPBOARD_READ = 14, // Replaced by CLIPBOARD_READ_WRITE in M81.

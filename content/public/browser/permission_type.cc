@@ -22,7 +22,7 @@ const std::vector<PermissionType>& GetAllPermissionTypes() {
         std::vector<PermissionType> all_types;
         all_types.reserve(NUM_TYPES - 4);
         for (int i = 1; i < NUM_TYPES; ++i) {
-          if (i == 2 || i == 14 || i == 15)  // Skip removed entries.
+          if (i == 2 || i == 11 || i == 14 || i == 15)  // Skip removed entries.
             continue;
           all_types.push_back(static_cast<PermissionType>(i));
         }

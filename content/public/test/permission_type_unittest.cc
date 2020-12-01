@@ -16,7 +16,7 @@ TEST(PermissionTypeHelpersTest, AllPermissionTypesSmokeTest) {
 
   // All but PermissionType::NUM should be added.
   EXPECT_EQ(all_permission_types.size(),
-            static_cast<unsigned long>(PermissionType::NUM) - 4);
+            static_cast<unsigned long>(PermissionType::NUM) - 5);
 
   // Check that some arbitrary permission types are in this vector.
   // The order is not relevant.

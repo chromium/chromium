@@ -89,8 +89,6 @@ PermissionRequestType PermissionUtil::GetRequestType(ContentSettingsType type) {
       return PermissionRequestType::PERMISSION_MIDI_SYSEX;
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       return PermissionRequestType::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
-    case ContentSettingsType::PLUGINS:
-      return PermissionRequestType::PERMISSION_FLASH;
     case ContentSettingsType::MEDIASTREAM_MIC:
       return PermissionRequestType::PERMISSION_MEDIASTREAM_MIC;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
@@ -146,8 +144,6 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     *out = PermissionType::AUDIO_CAPTURE;
   } else if (type == ContentSettingsType::BACKGROUND_SYNC) {
     *out = PermissionType::BACKGROUND_SYNC;
-  } else if (type == ContentSettingsType::PLUGINS) {
-    *out = PermissionType::FLASH;
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER) {
     *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;

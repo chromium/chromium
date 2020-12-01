@@ -327,7 +327,6 @@ int AwPermissionManager::RequestPermissions(
       case PermissionType::NOTIFICATIONS:
       case PermissionType::DURABLE_STORAGE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::FLASH:
       case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:
@@ -535,7 +534,6 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::FLASH:
       case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:

@@ -68,8 +68,6 @@ std::string GetPermissionRequestString(PermissionRequestType type) {
       return "Notifications";
     case PermissionRequestType::PERMISSION_PROTECTED_MEDIA_IDENTIFIER:
       return "ProtectedMedia";
-    case PermissionRequestType::PERMISSION_FLASH:
-      return "Flash";
     case PermissionRequestType::PERMISSION_MEDIASTREAM_MIC:
       return "AudioCapture";
     case PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA:

@@ -13764,7 +13764,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="AR" label="AR permission"/>
   <suffix name="AudioAndVideoCapture" label="Mic+Camera permission"/>
   <suffix name="AudioCapture" label="Microphone permission"/>
-  <suffix name="Flash" label="Flash permission"/>
+  <suffix name="Flash" label="Flash permission">
+    <obsolete>
+      Removed in M88, as the feature will not be included in the M89 launch.
+    </obsolete>
+  </suffix>
   <suffix name="Geolocation" label="Geolocation permission"/>
   <suffix name="MidiSysEx" label="Midi SysEx permission"/>
   <suffix name="MultipleDownload" label="Multiple downloads permission"/>
@@ -13789,7 +13793,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="AR" label="AR permission actions"/>
   <suffix name="AudioCapture" label="Microphone permission actions"/>
   <suffix name="ClipboardReadWrite" label="Clipboard permission actions"/>
-  <suffix name="Flash" label="Flash permission actions"/>
+  <suffix name="Flash" label="Flash permission actions">
+    <obsolete>
+      Removed in M88, as the feature will not be included in the M89 launch.
+    </obsolete>
+  </suffix>
   <suffix name="Geolocation" label="Geolocation permission actions"/>
   <suffix name="MidiSysEx" label="Midi SysEx permsision actions"/>
   <suffix name="Nfc" label="Nfc permsision actions"/>
