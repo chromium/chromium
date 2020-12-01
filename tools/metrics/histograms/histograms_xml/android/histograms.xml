@@ -2752,7 +2752,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Visibility.Global" enum="WebViewVisibility"
-    expires_after="2021-01-01">
+    expires_after="2021-07-01">
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -2767,7 +2767,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Visibility.PerWebView"
-    enum="WebViewVisibility" expires_after="2021-01-01">
+    enum="WebViewVisibility" expires_after="2021-07-01">
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -2784,7 +2784,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.WebViewOpenWebVisible.Global"
-    enum="WebViewOpenWebVisibility" expires_after="2021-01-01">
+    enum="WebViewOpenWebVisibility" expires_after="2021-07-01">
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -2799,7 +2799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.WebViewOpenWebVisible.PerWebView"
-    enum="WebViewOpenWebVisibility" expires_after="2021-01-01">
+    enum="WebViewOpenWebVisibility" expires_after="2021-07-01">
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -2814,7 +2814,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.WebViewOpenWebVisible.ScreenPortion"
-    enum="WebViewOpenWebScreenPortion" expires_after="2021-01-01">
+    enum="WebViewOpenWebScreenPortion" expires_after="2021-07-01">
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
