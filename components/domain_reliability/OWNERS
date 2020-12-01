@@ -1,5 +1,2 @@
 file://net/OWNERS
 file://net/network_error_logging/OWNERS
-
-# COMPONENT: Internals>Network>ReportingAndNEL
-# TEAM: net-dev@chromium.org
