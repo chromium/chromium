@@ -154,6 +154,8 @@ class StubQuicTransport : public network::mojom::blink::QuicTransport {
     was_abort_stream_called_ = true;
   }
 
+  void SetOutgoingDatagramExpirationDuration(base::TimeDelta) override {}
+
  private:
   base::OnceCallback<void(uint32_t,
                           mojo::ScopedDataPipeConsumerHandle,

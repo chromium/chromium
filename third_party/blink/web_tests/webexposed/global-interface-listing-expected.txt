@@ -10256,6 +10256,7 @@ interface WebTransport
     method constructor
     method createBidirectionalStream
     method createUnidirectionalStream
+    method setDatagramWritableQueueExpirationDuration
 interface WheelEvent : MouseEvent
     attribute @@toStringTag
     attribute DOM_DELTA_LINE

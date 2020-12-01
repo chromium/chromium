@@ -621,6 +621,11 @@ void QuicTransport::ForgetStream(uint32_t stream_id) {
   stream_map_.erase(stream_id);
 }
 
+void QuicTransport::SetDatagramWritableQueueExpirationDuration(
+    base::TimeDelta duration) {
+  quic_transport_->SetOutgoingDatagramExpirationDuration(duration);
+}
+
 void QuicTransport::Trace(Visitor* visitor) const {
   visitor->Trace(received_datagrams_);
   visitor->Trace(received_datagrams_controller_);

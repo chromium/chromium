@@ -130,6 +130,8 @@ class MockQuicTransport : public network::mojom::blink::QuicTransport {
                void(base::OnceCallback<
                     void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>));
 
+  MOCK_METHOD1(SetOutgoingDatagramExpirationDuration, void(base::TimeDelta));
+
   void SendFin(uint32_t stream_id) override {}
   void AbortStream(uint32_t stream_id, uint64_t code) override {}
 
@@ -1338,6 +1340,21 @@ TEST_F(QuicTransportTest, ReceiveBidirectionalStream) {
   BidirectionalStream* bidirectional_stream =
       V8BidirectionalStream::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
   EXPECT_TRUE(bidirectional_stream);
+}
+
+TEST_F(QuicTransportTest, SetDatagramWritableQueueExpirationDuration) {
+  V8TestingScope scope;
+
+  auto* quic_transport =
+      CreateAndConnectSuccessfully(scope, "quic-transport://example.com");
+
+  constexpr base::TimeDelta duration = base::TimeDelta::FromMilliseconds(40);
+  EXPECT_CALL(*mock_quic_transport_,
+              SetOutgoingDatagramExpirationDuration(duration));
+
+  quic_transport->SetDatagramWritableQueueExpirationDuration(duration);
+
+  test::RunPendingTasks();
 }
 
 }  // namespace

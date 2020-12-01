@@ -7,9 +7,11 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/quic/platform/impl/quic_mem_slice_impl.h"
 #include "net/third_party/quiche/src/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice_span.h"
@@ -443,6 +445,16 @@ void QuicTransport::AbortStream(uint32_t stream, uint64_t code) {
     code_to_pass = static_cast<quic::QuicRstStreamErrorCode>(code);
   }
   it->second->Abort(code_to_pass);
+}
+
+void QuicTransport::SetOutgoingDatagramExpirationDuration(
+    base::TimeDelta duration) {
+  if (torn_down_) {
+    return;
+  }
+
+  transport_->session()->datagram_queue()->SetMaxTimeInQueue(
+      quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 
 void QuicTransport::OnConnected() {

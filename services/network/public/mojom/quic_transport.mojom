@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a QuicTransport error.
@@ -65,6 +66,10 @@ interface QuicTransport {
 
   // Aborts the stream for |stream_id|.
   AbortStream(uint32 stream_id, uint64 code);
+
+  // Sets the duration which determines whether an outgoing datagram should be
+  // discarded due to being in the queue for too long.
+  SetOutgoingDatagramExpirationDuration(mojo_base.mojom.TimeDelta duration);
 };
 
 // A mojo interface for the client of QuicTransport.

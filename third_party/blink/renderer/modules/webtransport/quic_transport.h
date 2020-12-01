@@ -97,6 +97,8 @@ class MODULES_EXPORT QuicTransport final
   // Removes the reference to a stream.
   void ForgetStream(uint32_t stream_id);
 
+  void SetDatagramWritableQueueExpirationDuration(base::TimeDelta duration);
+
   // ScriptWrappable implementation
   void Trace(Visitor* visitor) const override;
 

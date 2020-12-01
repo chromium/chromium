@@ -2879,6 +2879,7 @@ interface WebTransport
     method constructor
     method createBidirectionalStream
     method createUnidirectionalStream
+    method setDatagramWritableQueueExpirationDuration
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused

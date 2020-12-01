@@ -23,4 +23,9 @@
   void close(optional WebTransportCloseInfo closeInfo = {});
   readonly attribute Promise<void> ready;
   readonly attribute Promise<WebTransportCloseInfo> closed;
+
+  // This is an experimental and non-standard function. Sets the duration
+  // which determines whether an outgoing datagram should be discarded due to
+  // being in the queue for too long, in milliseconds.
+  void setDatagramWritableQueueExpirationDuration(double ms);
 };
