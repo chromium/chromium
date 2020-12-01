@@ -112,6 +112,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // Initiates connecting to the database if no connection is in progres yet.
   void RunWhenConnected(base::OnceClosure callback);
 
+  // StorageAreas held by this LocalStorageImpl retain an unmanaged reference to
+  // `database_`. This deletes them and is used any time `database_` is reset.
+  void PurgeAllStorageAreas();
+
   // Part of our asynchronous directory opening called from RunWhenConnected().
   void InitiateConnection(bool in_memory_only = false);
   void OnDatabaseOpened(leveldb::Status status);

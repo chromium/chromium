@@ -796,6 +796,12 @@ void LocalStorageImpl::RunWhenConnected(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
+void LocalStorageImpl::PurgeAllStorageAreas() {
+  for (const auto& it : areas_)
+    it.second->storage_area()->CancelAllPendingRequests();
+  areas_.clear();
+}
+
 void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
@@ -922,9 +928,7 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
 
   // We're about to set database_ to null, so delete the StorageAreaImpls
   // that might still be using the old database.
-  for (const auto& it : areas_)
-    it.second->storage_area()->CancelAllPendingRequests();
-  areas_.clear();
+  PurgeAllStorageAreas();
 
   // Reset state to be in process of connecting. This will cause requests for
   // StorageAreas to be queued until the connection is complete.
@@ -1100,6 +1104,7 @@ void LocalStorageImpl::OnShutdownComplete() {
   // Flush any final tasks on the DB task runner before invoking the callback.
   leveldb_task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
+  PurgeAllStorageAreas();
   database_.reset();
 }
 
