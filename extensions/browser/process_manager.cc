@@ -153,22 +153,6 @@ void PropagateExtensionWakeResult(
   std::move(callback).Run(context_info != nullptr);
 }
 
-void StartServiceWorkerExternalRequest(content::ServiceWorkerContext* context,
-                                       int64_t service_worker_version_id,
-                                       const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
-  context->StartingExternalRequest(service_worker_version_id, request_uuid);
-}
-
-void FinishServiceWorkerExternalRequest(content::ServiceWorkerContext* context,
-                                        int64_t service_worker_version_id,
-                                        const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
-  content::ServiceWorkerExternalRequestResult result =
-      context->FinishedExternalRequest(service_worker_version_id, request_uuid);
-  DCHECK_EQ(result, content::ServiceWorkerExternalRequestResult::kOk);
-}
-
 }  // namespace
 
 struct ProcessManager::BackgroundPageData {
@@ -800,16 +784,8 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
       util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
           ->GetServiceWorkerContext();
 
-  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    StartServiceWorkerExternalRequest(service_worker_context,
-                                      service_worker_version_id, request_uuid);
-  } else {
-    content::ServiceWorkerContext::RunTask(
-        worker_task_runner_, FROM_HERE, service_worker_context,
-        base::BindOnce(&StartServiceWorkerExternalRequest,
-                       service_worker_context, service_worker_version_id,
-                       request_uuid));
-  }
+  service_worker_context->StartingExternalRequest(service_worker_version_id,
+                                                  request_uuid);
   return request_uuid;
 }
 
@@ -865,16 +841,10 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
       util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
           ->GetServiceWorkerContext();
 
-  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    FinishServiceWorkerExternalRequest(service_worker_context,
-                                       service_worker_version_id, request_uuid);
-  } else {
-    content::ServiceWorkerContext::RunTask(
-        worker_task_runner_, FROM_HERE, service_worker_context,
-        base::BindOnce(&FinishServiceWorkerExternalRequest,
-                       service_worker_context, service_worker_version_id,
-                       request_uuid));
-  }
+  content::ServiceWorkerExternalRequestResult result =
+      service_worker_context->FinishedExternalRequest(service_worker_version_id,
+                                                      request_uuid);
+  DCHECK_EQ(result, content::ServiceWorkerExternalRequestResult::kOk);
 }
 
 void ProcessManager::OnLazyBackgroundPageIdle(const std::string& extension_id,

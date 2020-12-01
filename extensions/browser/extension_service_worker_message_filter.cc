@@ -45,9 +45,8 @@ void ExtensionServiceWorkerMessageFilter::OverrideThreadForMessage(
     *thread = content::BrowserThread::UI;
   }
 
-  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled() &&
-      (message.type() == ExtensionHostMsg_IncrementServiceWorkerActivity::ID ||
-       message.type() == ExtensionHostMsg_DecrementServiceWorkerActivity::ID)) {
+  if (message.type() == ExtensionHostMsg_IncrementServiceWorkerActivity::ID ||
+      message.type() == ExtensionHostMsg_DecrementServiceWorkerActivity::ID) {
     *thread = content::BrowserThread::UI;
   }
 }

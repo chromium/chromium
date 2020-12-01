@@ -444,16 +444,6 @@ void ServiceWorkerMetrics::RecordFetchEventStatus(
 
 void ServiceWorkerMetrics::RecordStartWorkerTiming(const StartTimes& times,
                                                    StartSituation situation) {
-  if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    // This is in-process timing, so process consistency doesn't matter.
-    constexpr base::TimeDelta kMinTime = base::TimeDelta::FromMicroseconds(1);
-    constexpr base::TimeDelta kMaxTime = base::TimeDelta::FromMilliseconds(100);
-    constexpr int kBuckets = 50;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "ServiceWorker.StartTiming.BrowserThreadHopTime", times.thread_hop_time,
-        kMinTime, kMaxTime, kBuckets);
-  }
-
   // Bail if the timings across processes weren't consistent.
   if (!base::TimeTicks::IsHighResolution() ||
       !base::TimeTicks::IsConsistentAcrossProcesses()) {

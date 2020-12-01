@@ -987,9 +987,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                        DispatchFetchEventToStoppedWorkerSynchronously) {
   // Setup the server so that the test doesn't crash when tearing down.
   StartServerAndNavigateToSetup();
-  // This test is meaningful only when ServiceWorkerOnUI is enabled.
-  if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled())
-    return;
 
   WorkerRunningStatusObserver observer(public_context());
   EXPECT_TRUE(NavigateToURL(shell(),
@@ -1060,9 +1057,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                        DispatchFetchEventToBrokenWorker) {
   // Setup the server so that the test doesn't crash when tearing down.
   StartServerAndNavigateToSetup();
-  // This test is meaningful only when ServiceWorkerOnUI is enabled.
-  if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled())
-    return;
 
   WorkerRunningStatusObserver observer(public_context());
   EXPECT_TRUE(NavigateToURL(shell(),

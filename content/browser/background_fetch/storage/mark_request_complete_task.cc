@@ -116,14 +116,10 @@ void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
   response_->headers.insert(request_info_->GetResponseHeaders().begin(),
                             request_info_->GetResponseHeaders().end());
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&MakeBlob, request_info_),
-        base::BindOnce(&MarkRequestCompleteTask::DidMakeBlob,
-                       weak_factory_.GetWeakPtr(), std::move(done_closure)));
-  } else {
-    DidMakeBlob(std::move(done_closure), MakeBlob(request_info_));
-  }
+  GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&MakeBlob, request_info_),
+      base::BindOnce(&MarkRequestCompleteTask::DidMakeBlob,
+                     weak_factory_.GetWeakPtr(), std::move(done_closure)));
 }
 
 void MarkRequestCompleteTask::DidMakeBlob(

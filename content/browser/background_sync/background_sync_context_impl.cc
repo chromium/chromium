@@ -154,22 +154,9 @@ void BackgroundSyncContextImpl::GetSoonestWakeupDelta(
     base::OnceCallback<void(base::TimeDelta)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/824858): Remove the else branch after the feature is
-  // enabled. Also, try to make a RunOrPostTaskOnThreadAndReplyWithResult()
-  // function so the if/else isn't needed.
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    base::TimeDelta delta = GetSoonestWakeupDeltaOnCoreThread(
-        sync_type, last_browser_wakeup_for_periodic_sync);
-    DidGetSoonestWakeupDelta(std::move(callback), delta);
-  } else {
-    base::PostTaskAndReplyWithResult(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(
-            &BackgroundSyncContextImpl::GetSoonestWakeupDeltaOnCoreThread, this,
-            sync_type, last_browser_wakeup_for_periodic_sync),
-        base::BindOnce(&BackgroundSyncContextImpl::DidGetSoonestWakeupDelta,
-                       this, std::move(callback)));
-  }
+  base::TimeDelta delta = GetSoonestWakeupDeltaOnCoreThread(
+      sync_type, last_browser_wakeup_for_periodic_sync);
+  std::move(callback).Run(delta);
 }
 
 void BackgroundSyncContextImpl::RevivePeriodicBackgroundSyncRegistrations(
@@ -206,14 +193,6 @@ base::TimeDelta BackgroundSyncContextImpl::GetSoonestWakeupDeltaOnCoreThread(
 
   return background_sync_manager_->GetSoonestWakeupDelta(
       sync_type, last_browser_wakeup_for_periodic_sync);
-}
-
-void BackgroundSyncContextImpl::DidGetSoonestWakeupDelta(
-    base::OnceCallback<void(base::TimeDelta)> callback,
-    base::TimeDelta soonest_wakeup_delta) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::move(callback).Run(soonest_wakeup_delta);
 }
 
 void BackgroundSyncContextImpl::

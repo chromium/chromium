@@ -47,18 +47,6 @@ void SetDevToolsAttachedOnCoreThread(
     version->SetDevToolsAttached(attached);
 }
 
-void UpdateLoaderFactoriesOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    int64_t version_id,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle) {
-  auto* version = context->GetLiveVersion(version_id);
-  if (!version)
-    return;
-  version->embedded_worker()->UpdateLoaderFactories(
-      std::move(script_bundle), std::move(subresource_bundle));
-}
-
 }  // namespace
 
 ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
@@ -241,19 +229,13 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
       std::move(coep_reporter_for_subresource_loader),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    UpdateLoaderFactoriesOnCoreThread(context_wrapper_, version_id_,
-                                      std::move(script_bundle),
-                                      std::move(subresource_bundle));
-    std::move(callback).Run();
-  } else {
-    GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&UpdateLoaderFactoriesOnCoreThread, context_wrapper_,
-                       version_id_, std::move(script_bundle),
-                       std::move(subresource_bundle)),
-        std::move(callback));
-  }
+  auto* version = context_wrapper_->GetLiveVersion(version_id_);
+  if (!version)
+    return;
+  version->embedded_worker()->UpdateLoaderFactories(
+      std::move(script_bundle), std::move(subresource_bundle));
+
+  std::move(callback).Run();
 }
 
 DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo

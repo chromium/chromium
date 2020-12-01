@@ -78,14 +78,7 @@ void BackgroundSyncNetworkObserverAndroid::Init() {
   observer_ = Observer::Create(base::BindRepeating(
       &BackgroundSyncNetworkObserverAndroid::OnConnectionChanged,
       weak_ptr_factory_.GetWeakPtr()));
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    observer_->Init();
-  } else {
-    RunOrPostTaskOnThread(
-        FROM_HERE, BrowserThread::UI,
-        base::BindOnce(&BackgroundSyncNetworkObserverAndroid::Observer::Init,
-                       observer_));
-  }
+  observer_->Init();
 }
 
 void BackgroundSyncNetworkObserverAndroid::RegisterWithNetworkConnectionTracker(

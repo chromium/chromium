@@ -89,8 +89,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
 
-  // Temporary for crbug.com/824858. The thread the context core lives on.
-  static bool IsServiceWorkerOnUIEnabled();
   static content::BrowserThread::ID GetCoreThreadId();
 
   // Returns true if |url| is within the service worker |scope|.

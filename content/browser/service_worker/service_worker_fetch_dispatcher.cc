@@ -538,8 +538,7 @@ void ServiceWorkerFetchDispatcher::StartWorker() {
       base::BindOnce(&ServiceWorkerFetchDispatcher::DidStartWorker,
                      weak_factory_.GetWeakPtr()));
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled() &&
-      version_->is_endpoint_ready()) {
+  if (version_->is_endpoint_ready()) {
     // For an active service worker, the endpoint becomes ready synchronously
     // with StartWorker(). In that case, we can dispatch FetchEvent immediately.
     DispatchFetchEvent();

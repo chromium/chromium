@@ -184,21 +184,14 @@ void BackgroundFetchRequestInfo::CreateResponseBlobDataHandle(
                            : nullptr;
   result_->blob_handle.reset();
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    // base::Unretained is safe because |io_blob_data_| is deleted on the IO
-    // thread in a task that must run after this task.
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BlobDataOnIO::CreateBlobDataHandle,
-                       base::Unretained(io_blob_data_.get()),
-                       std::move(blob_storage_context), std::move(handle),
-                       result_->file_path, result_->file_size, response_size_));
-  } else {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    io_blob_data_->CreateBlobDataHandle(std::move(blob_storage_context),
-                                        std::move(handle), result_->file_path,
-                                        result_->file_size, response_size_);
-  }
+  // base::Unretained is safe because |io_blob_data_| is deleted on the IO
+  // thread in a task that must run after this task.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BlobDataOnIO::CreateBlobDataHandle,
+                     base::Unretained(io_blob_data_.get()),
+                     std::move(blob_storage_context), std::move(handle),
+                     result_->file_path, result_->file_size, response_size_));
 }
 
 std::unique_ptr<storage::BlobDataHandle>

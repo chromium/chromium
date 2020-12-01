@@ -31,15 +31,7 @@ BackgroundSyncNetworkObserver::BackgroundSyncNetworkObserver(
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(connection_changed_callback_);
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    RegisterWithNetworkConnectionTracker(GetNetworkConnectionTracker());
-  } else {
-    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&GetNetworkConnectionTracker),
-        base::BindOnce(&BackgroundSyncNetworkObserver::
-                           RegisterWithNetworkConnectionTracker,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  RegisterWithNetworkConnectionTracker(GetNetworkConnectionTracker());
 }
 
 BackgroundSyncNetworkObserver::~BackgroundSyncNetworkObserver() {

@@ -67,19 +67,9 @@ void PlatformNotificationServiceProxy::VerifyServiceWorkerScope(
 
   if (status == blink::ServiceWorkerStatusCode::kOk &&
       registration->scope().GetOrigin() == data.origin) {
-    task = base::BindOnce(
-        &PlatformNotificationServiceProxy::DoDisplayNotification, AsWeakPtr(),
-        data, registration->scope(), std::move(callback));
+    DoDisplayNotification(data, registration->scope(), std::move(callback));
   } else {
-    task = base::BindOnce(std::move(callback), /* success= */ false,
-                          /* notification_id= */ "");
-  }
-
-  if (ServiceWorkerContextWrapper::IsServiceWorkerOnUIEnabled()) {
-    std::move(task).Run();
-  } else {
-    GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
-        ->PostTask(FROM_HERE, std::move(task));
+    std::move(callback).Run(/* success= */ false, /* notification_id= */ "");
   }
 }
 

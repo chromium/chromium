@@ -101,8 +101,6 @@ class BackgroundSyncBaseBrowserTest : public ContentBrowserTest {
       const GURL& url,
       base::OnceCallback<void(bool)> callback);
   StoragePartitionImpl* GetStorage();
-  void SetTestClockOnCoreThread(BackgroundSyncContextImpl* sync_context,
-                                base::SimpleTestClock* clock);
 
   Shell* shell_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;

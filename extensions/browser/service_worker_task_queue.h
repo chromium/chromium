@@ -23,7 +23,6 @@
 
 namespace content {
 class BrowserContext;
-class ServiceWorkerContext;
 }
 
 namespace extensions {
@@ -147,21 +146,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   using SequencedContextId = std::pair<LazyContextId, ActivationSequence>;
 
   class WorkerState;
-
-  static void DidStartWorkerForScopeOnCoreThread(
-      const SequencedContextId& context_id,
-      base::Time start_time,
-      base::WeakPtr<ServiceWorkerTaskQueue> task_queue,
-      int64_t version_id,
-      int process_id,
-      int thread_id);
-  static void DidStartWorkerFailOnCoreThread(
-      const SequencedContextId& context_id,
-      base::WeakPtr<ServiceWorkerTaskQueue> task_queue);
-  static void StartServiceWorkerOnCoreThreadToRunTasks(
-      base::WeakPtr<ServiceWorkerTaskQueue> task_queue_weak,
-      const SequencedContextId& context_id,
-      content::ServiceWorkerContext* service_worker_context);
 
   void RunTasksAfterStartWorker(const SequencedContextId& context_id);
 

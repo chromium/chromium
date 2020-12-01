@@ -383,17 +383,9 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(const GURL& origin,
     container_host_iterator->Advance();
   }
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    bool result = FrameListContainsMainFrameOnUI(std::move(render_frames));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result));
-  } else {
-    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&FrameListContainsMainFrameOnUI,
-                       std::move(render_frames)),
-        std::move(callback));
-  }
+  bool result = FrameListContainsMainFrameOnUI(std::move(render_frames));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 base::WeakPtr<ServiceWorkerContainerHost>

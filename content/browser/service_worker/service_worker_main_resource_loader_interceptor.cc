@@ -309,18 +309,6 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   bool initialize_container_host_only = false;
   LoaderCallback original_callback;
-  if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled() &&
-      !handle_->context_wrapper()->MaybeHasRegistrationForOrigin(
-          url::Origin::Create(tentative_resource_request.url))) {
-    // We have no registrations, so it's safe to continue the request now
-    // without blocking on the IO thread. Give a dummy callback to the
-    // IO thread interceptor, and we'll run the original callback immediately
-    // after starting it.
-    original_callback = std::move(loader_callback);
-    loader_callback =
-        base::BindOnce([](scoped_refptr<network::SharedURLLoaderFactory>) {});
-    initialize_container_host_only = true;
-  }
 
   // Start the inner interceptor on the core thread. It will call back to
   // LoaderCallbackWrapper() on the UI thread.

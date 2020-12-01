@@ -311,13 +311,8 @@ BrowserContext* ServiceWorkerContextWrapper::browser_context() {
 }
 
 // static
-bool ServiceWorkerContext::IsServiceWorkerOnUIEnabled() {
-  return true;
-}
-
-// static
 BrowserThread::ID ServiceWorkerContext::GetCoreThreadId() {
-  return IsServiceWorkerOnUIEnabled() ? BrowserThread::UI : BrowserThread::IO;
+  return BrowserThread::UI;
 }
 
 void ServiceWorkerContextWrapper::OnRegistrationCompleted(
@@ -1967,15 +1962,10 @@ void ServiceWorkerContextWrapper::DidSetUpLoaderFactoryForUpdateCheck(
   // Set up a Mojo connection to the network loader factory if it's not been
   // created yet.
   if (pending_receiver) {
-    if (IsServiceWorkerOnUIEnabled()) {
-      DCHECK(storage_partition());
-      scoped_refptr<network::SharedURLLoaderFactory> network_factory =
-          storage_partition_->GetURLLoaderFactoryForBrowserProcess();
-      network_factory->Clone(std::move(pending_receiver));
-    } else {
-      context()->loader_factory_getter()->CloneNetworkFactory(
-          std::move(pending_receiver));
-    }
+    DCHECK(storage_partition());
+    scoped_refptr<network::SharedURLLoaderFactory> network_factory =
+        storage_partition_->GetURLLoaderFactoryForBrowserProcess();
+    network_factory->Clone(std::move(pending_receiver));
   }
 
   // Clone context()->loader_factory_bundle_for_update_check() and set up the

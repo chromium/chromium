@@ -119,9 +119,6 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
   base::TimeDelta GetSoonestWakeupDeltaOnCoreThread(
       blink::mojom::BackgroundSyncType sync_type,
       base::Time last_browser_wakeup_for_periodic_sync);
-  void DidGetSoonestWakeupDelta(
-      base::OnceCallback<void(base::TimeDelta)> callback,
-      base::TimeDelta soonest_wakeup_delta);
 
   void RevivePeriodicBackgroundSyncRegistrationsOnCoreThread(
       url::Origin origin);

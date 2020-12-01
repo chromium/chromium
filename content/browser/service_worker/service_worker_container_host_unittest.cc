@@ -1178,7 +1178,6 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
 TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache,
        SkipBackForwardCachedServiceWorker) {
   ASSERT_TRUE(IsBackForwardCacheEnabled());
-  ASSERT_TRUE(ServiceWorkerContext::IsServiceWorkerOnUIEnabled());
 
   TestBackForwardCachedClientsAreNotExposed(
       GURL("https://www.example.com/sw.js"));

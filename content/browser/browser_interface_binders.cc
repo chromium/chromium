@@ -1102,24 +1102,12 @@ void PopulateBinderMapWithContext(
   // static binders
   // Use a task runner if ServiceWorkerHost lives on the IO thread, as
   // CreateForWorker() needs to be called on the UI thread.
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    map->Add<blink::mojom::BackgroundFetchService>(
-        base::BindRepeating(&BackgroundFetchServiceImpl::CreateForWorker));
-    map->Add<blink::mojom::ContentIndexService>(
-        base::BindRepeating(&ContentIndexServiceImpl::CreateForWorker));
-    map->Add<blink::mojom::CookieStore>(
-        base::BindRepeating(&CookieStoreContext::CreateServiceForWorker));
-  } else {
-    map->Add<blink::mojom::BackgroundFetchService>(
-        base::BindRepeating(&BackgroundFetchServiceImpl::CreateForWorker),
-        GetUIThreadTaskRunner({}));
-    map->Add<blink::mojom::ContentIndexService>(
-        base::BindRepeating(&ContentIndexServiceImpl::CreateForWorker),
-        GetUIThreadTaskRunner({}));
-    map->Add<blink::mojom::CookieStore>(
-        base::BindRepeating(&CookieStoreContext::CreateServiceForWorker),
-        GetUIThreadTaskRunner({}));
-  }
+  map->Add<blink::mojom::BackgroundFetchService>(
+      base::BindRepeating(&BackgroundFetchServiceImpl::CreateForWorker));
+  map->Add<blink::mojom::ContentIndexService>(
+      base::BindRepeating(&ContentIndexServiceImpl::CreateForWorker));
+  map->Add<blink::mojom::CookieStore>(
+      base::BindRepeating(&CookieStoreContext::CreateServiceForWorker));
 
   // render process host binders taking an origin
   map->Add<payments::mojom::PaymentManager>(BindServiceWorkerReceiverForOrigin(
