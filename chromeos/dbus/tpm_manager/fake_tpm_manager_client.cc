@@ -61,7 +61,9 @@ void FakeTpmManagerClient::TakeOwnership(
 void FakeTpmManagerClient::ClearStoredOwnerPassword(
     const ::tpm_manager::ClearStoredOwnerPasswordRequest& request,
     ClearStoredOwnerPasswordCallback callback) {
-  NOTIMPLEMENTED();
+  ++clear_stored_owner_password_count_;
+  PostProtoResponse(std::move(callback),
+                    ::tpm_manager::ClearStoredOwnerPasswordReply());
 }
 
 TpmManagerClient::TestInterface* FakeTpmManagerClient::GetTestInterface() {
@@ -76,6 +78,10 @@ FakeTpmManagerClient::mutable_nonsensitive_status_reply() {
 ::tpm_manager::GetVersionInfoReply*
 FakeTpmManagerClient::mutable_version_info_reply() {
   return &version_info_reply_;
+}
+
+int FakeTpmManagerClient::clear_stored_owner_password_count() const {
+  return clear_stored_owner_password_count_;
 }
 
 }  // namespace chromeos

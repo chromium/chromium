@@ -218,6 +218,11 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
       int dbus_retries_remaining,
       const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
 
+  // Callback for `ClearStoredOwnerPassword()` D-Bus call. Logs status code if
+  // the call fails.
+  void OnClearStoredOwnerPassword(
+      const ::tpm_manager::ClearStoredOwnerPasswordReply& reply);
+
   CryptohomeClient* cryptohome_client_;
 
   base::WeakPtrFactory<InstallAttributes> weak_ptr_factory_{this};

@@ -102,6 +102,10 @@ TEST_F(InstallAttributesTest, Lock) {
       LockDeviceAndWaitForResult(policy::DEVICE_MODE_ENTERPRISE, kTestDomain,
                                  std::string(),  // realm
                                  kTestDeviceId));
+  EXPECT_EQ(TpmManagerClient::Get()
+                ->GetTestInterface()
+                ->clear_stored_owner_password_count(),
+            1);
 
   // Locking an already locked device should succeed if the parameters match.
   EXPECT_EQ(

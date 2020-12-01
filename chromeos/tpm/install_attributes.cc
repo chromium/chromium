@@ -290,10 +290,12 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
     return;
   }
 
-  // Clearing the TPM password seems to be always a good deal.
-  if (tpm_util::TpmIsEnabled() && tpm_util::TpmIsOwned()) {
-    cryptohome_client_->CallTpmClearStoredPasswordAndBlock();
-  }
+  // Clearing the TPM password seems to be always a good deal. At this point
+  // install attributes is ready, which implies TPM readiness as well.
+  TpmManagerClient::Get()->ClearStoredOwnerPassword(
+      ::tpm_manager::ClearStoredOwnerPasswordRequest(),
+      base::BindOnce(&InstallAttributes::OnClearStoredOwnerPassword,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // Make sure we really have a working InstallAttrs.
   if (tpm_util::InstallAttributesIsInvalid()) {
@@ -439,6 +441,12 @@ void InstallAttributes::OnTpmStatusComplete(
     std::move(post_check_action_).Run();
     post_check_action_.Reset();
   }
+}
+
+void InstallAttributes::OnClearStoredOwnerPassword(
+    const ::tpm_manager::ClearStoredOwnerPasswordReply& reply) {
+  LOG_IF(WARNING, reply.status() != ::tpm_manager::STATUS_SUCCESS)
+      << "Failed to call ClearStoredOwnerPassword; status: " << reply.status();
 }
 
 // Warning: The values for these keys (but not the keys themselves) are stored

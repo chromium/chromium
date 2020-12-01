@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     // Gets a mutable reply that is returned when `GetVersionInfo()` is called.
     virtual ::tpm_manager::GetVersionInfoReply*
     mutable_version_info_reply() = 0;
+    // Gets the count of `ClearStoredOwnerPassword()` being called.
+    virtual int clear_stored_owner_password_count() const = 0;
   };
 
   // Not copyable or movable.
