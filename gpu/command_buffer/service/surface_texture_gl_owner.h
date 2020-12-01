@@ -40,6 +40,8 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
                                   gfx::Size* coded_size,
                                   gfx::Rect* visible_rect) override;
 
+  void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
+
  protected:
   void OnTextureDestroyed(gles2::AbstractTexture*) override;
 

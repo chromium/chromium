@@ -401,6 +401,9 @@ void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
   }
 
   image_refs_.erase(it);
+  DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
+  if (buffer_available_cb_)
+    std::move(buffer_available_cb_).Run();
 }
 
 void ImageReaderGLOwner::ReleaseBackBuffers() {
@@ -426,6 +429,20 @@ void ImageReaderGLOwner::OnFrameAvailable(void* context, AImageReader* reader) {
 
   // It is safe to run this callback on any thread.
   image_reader_ptr->frame_available_cb_.Run();
+}
+
+void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
+  // Note that we handle only one simultaneous request, this is not issue
+  // because FrameInfoHelper maintain request queue and has only single
+  // outstanding request on GPU thread.
+  DCHECK(!buffer_available_cb_);
+  // If `max_images` == 1 we will drop it before acquiring new buffer. Note that
+  // this must never happen with SurfaceControl and the ImageReaderGLOwner is
+  // the sole owner of the images.
+  if (max_images_ == 1 || static_cast<int>(image_refs_.size()) < max_images_)
+    std::move(callback).Run();
+  else
+    buffer_available_cb_ = std::move(callback);
 }
 
 bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(

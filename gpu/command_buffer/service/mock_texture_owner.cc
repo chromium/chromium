@@ -8,6 +8,7 @@
 
 namespace gpu {
 
+using testing::_;
 using testing::Invoke;
 using testing::Return;
 
@@ -26,6 +27,8 @@ MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
   ON_CALL(*this, EnsureTexImageBound()).WillByDefault(Invoke([this] {
     CHECK(expect_update_tex_image);
   }));
+  ON_CALL(*this, RunWhenBufferIsAvailable(_))
+      .WillByDefault(Invoke([](base::OnceClosure cb) { std::move(cb).Run(); }));
 }
 
 MockTextureOwner::~MockTextureOwner() {

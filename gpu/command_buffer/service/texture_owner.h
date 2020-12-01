@@ -115,6 +115,10 @@ class GPU_GLES2_EXPORT TextureOwner
   virtual void SetFrameAvailableCallback(
       const base::RepeatingClosure& frame_available_cb) = 0;
 
+  // Runs callback when the free buffer is available to render to front buffer.
+  // Can be run before returning from the function.
+  virtual void RunWhenBufferIsAvailable(base::OnceClosure callback) = 0;
+
   bool binds_texture_on_update() const { return binds_texture_on_update_; }
 
  protected:

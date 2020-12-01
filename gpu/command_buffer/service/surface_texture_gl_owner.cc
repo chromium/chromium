@@ -57,6 +57,12 @@ void SurfaceTextureGLOwner::SetFrameAvailableCallback(
   surface_texture_->SetFrameAvailableCallbackOnAnyThread(frame_available_cb);
 }
 
+void SurfaceTextureGLOwner::RunWhenBufferIsAvailable(
+    base::OnceClosure callback) {
+  // SurfaceTexture can always render to front buffer.
+  std::move(callback).Run();
+}
+
 gl::ScopedJavaSurface SurfaceTextureGLOwner::CreateJavaSurface() const {
   // |surface_texture_| might be null, but that's okay.
   return gl::ScopedJavaSurface(surface_texture_.get());

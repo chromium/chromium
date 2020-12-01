@@ -40,6 +40,7 @@ class MockTextureOwner : public TextureOwner {
                bool(gfx::Size rotated_visible_size,
                     gfx::Size* coded_size,
                     gfx::Rect* visible_rect));
+  MOCK_METHOD1(RunWhenBufferIsAvailable, void(base::OnceClosure));
 
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override {

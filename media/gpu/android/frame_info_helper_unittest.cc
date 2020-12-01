@@ -12,6 +12,7 @@
 
 using testing::_;
 using testing::DoAll;
+using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::SetArgPointee;
@@ -242,6 +243,52 @@ TEST_F(FrameInfoHelperTest, FailedGetCodedSize) {
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(0);
   GetFrameInfo(CreateBufferRenderer(kTestVisibleSize, texture_owner));
   EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+}
+
+TEST_F(FrameInfoHelperTest, TextureOwnerBufferNotAvailable) {
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
+      0, nullptr, nullptr, true);
+
+  // Return CodedSize when GetCodedSizeAndVisibleRect is called.
+  ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
+      .WillByDefault(DoAll(SetArgPointee<1>(kTestCodedSize), Return(true)));
+
+  // Save buffer available callback, we will run it manually.
+  base::OnceClosure buffer_available_cb;
+  EXPECT_CALL(*texture_owner, RunWhenBufferIsAvailable(_))
+      .WillOnce(Invoke([&buffer_available_cb](base::OnceClosure cb) {
+        buffer_available_cb = std::move(cb);
+      }));
+
+  // Verify that no GetCodedSizeAndVisibleRect will be called until buffer is
+  // available.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(0);
+
+  // Note that we can't use helper above because the callback won't run until a
+  // buffer is available.
+  auto buffer_renderer = CreateBufferRenderer(kTestVisibleSize, texture_owner);
+  const auto* buffer_renderer_raw = buffer_renderer.get();
+  bool called = false;
+  auto callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
+          FrameInfoHelper::FrameInfo info) {
+        ASSERT_EQ(buffer_renderer_raw, buffer_renderer.get());
+        called = true;
+        last_frame_info_ = info;
+      });
+  helper_->GetFrameInfo(std::move(buffer_renderer), callback);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(buffer_available_cb);
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+
+  // When buffer is available we expect GetCodedSizeAndVisibleRect to be called
+  // and result should be kTestCodedSize.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  std::move(buffer_available_cb).Run();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
+  ASSERT_TRUE(called);
   Mock::VerifyAndClearExpectations(texture_owner.get());
 }
 

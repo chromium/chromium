@@ -44,6 +44,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   bool GetCodedSizeAndVisibleRect(gfx::Size rotated_visible_size,
                                   gfx::Size* coded_size,
                                   gfx::Rect* visible_rect) override;
+  void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
   const AImageReader* image_reader_for_testing() const { return image_reader_; }
   int32_t max_images_for_testing() const { return max_images_; }
@@ -130,6 +131,9 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   // AImageReader is notified when there is a new frame available which
   // in turns runs the callback function.
   base::RepeatingClosure frame_available_cb_;
+
+  // Runs when free buffer is available.
+  base::OnceClosure buffer_available_cb_;
 
   THREAD_CHECKER(thread_checker_);
 
