@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
@@ -91,6 +92,31 @@ constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
 ALWAYS_INLINE static constexpr int ConstexprLog2(size_t n) {
   return n < 1 ? -1 : (n < 2 ? 0 : (1 + ConstexprLog2(n >> 1)));
 }
+
+#if DCHECK_IS_ON()
+class ReentrancyGuard {
+ public:
+  explicit ReentrancyGuard(bool& flag) : flag_(flag) {
+    PA_CHECK(!flag_);
+    flag_ = true;
+  }
+
+  ~ReentrancyGuard() { flag_ = false; }
+
+ private:
+  bool& flag_;
+};
+
+#define PA_REENTRANCY_GUARD(x) \
+  ReentrancyGuard guard { x }
+
+#else
+
+#define PA_REENTRANCY_GUARD(x) \
+  do {                         \
+  } while (0)
+
+#endif  // DCHECK_IS_ON()
 
 // Per-thread cache. *Not* threadsafe, must only be accessed from a single
 // thread.
@@ -168,6 +194,7 @@ class BASE_EXPORT ThreadCache {
 
   explicit ThreadCache(PartitionRoot<ThreadSafe>* root);
   static void Delete(void* thread_cache_ptr);
+  void PurgeInternal();
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
 
@@ -185,6 +212,9 @@ class BASE_EXPORT ThreadCache {
   Bucket buckets_[kBucketCount];
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
+#if DCHECK_IS_ON()
+  bool is_in_thread_cache_ = false;
+#endif
 
   // Intrusive list since ThreadCacheRegistry::RegisterThreadCache() cannot
   // allocate.
@@ -201,8 +231,9 @@ class BASE_EXPORT ThreadCache {
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
                                                 size_t bucket_index) {
+  PA_REENTRANCY_GUARD(is_in_thread_cache_);
   if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
-    Purge();
+    PurgeInternal();
 
   INCREMENT_COUNTER(stats_.cache_fill_count);
 
@@ -231,6 +262,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
 }
 
 ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
+  PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
   if (UNLIKELY(bucket_index >= kBucketCount)) {

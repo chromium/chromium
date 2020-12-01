@@ -227,6 +227,11 @@ void ThreadCache::SetShouldPurge() {
 }
 
 void ThreadCache::Purge() {
+  PA_REENTRANCY_GUARD(is_in_thread_cache_);
+  PurgeInternal();
+}
+
+void ThreadCache::PurgeInternal() {
   for (auto& bucket : buckets_)
     ClearBucket(bucket, 0);
 
