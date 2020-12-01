@@ -123,12 +123,14 @@ void MoveFolderForLaterDeletion(const base::FilePath& source,
                                 const char* move_result_histogram,
                                 const char* failure_count_histogram) {
   const bool move_result = MoveWithoutFallback(source, target);
-  base::UmaHistogramBoolean(move_result_histogram, move_result);
+  if (move_result_histogram)
+    base::UmaHistogramBoolean(move_result_histogram, move_result);
   if (move_result)
     return;
   auto failure_count =
       MoveContents(source, base::GetUniquePath(target), ExclusionPredicate());
-  if (failure_count.has_value() && !base::DeleteFile(source)) {
+  if (failure_count_histogram && failure_count.has_value() &&
+      !base::DeleteFile(source)) {
     failure_count = failure_count.value() + 1;
     // Report precise values rather than an exponentially bucketed
     // histogram. Bucket 0 means that the target directory could not be
@@ -257,13 +259,11 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
   auto snapshot_dir = user_data_dir_.Append(kSnapshotsDir)
                           .AppendASCII(snapshot_version->GetString());
 
-  size_t success_count = 0;
-  size_t error_count = 0;
-  auto record_success_error = [&success_count, &error_count](bool success) {
-    if (success)
-      ++success_count;
-    else
-      ++error_count;
+  bool has_success = false;
+  bool has_error = false;
+  auto record_success_error = [&has_success, &has_error](bool success) {
+    has_success |= success;
+    has_error |= !success;
   };
   base::FileEnumerator enumerator(
       snapshot_dir, /*recursive=*/false,
@@ -283,18 +283,15 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
     else
       record_success_error(base::CopyFile(path, target_path));
   }
-  auto snapshot_result = SnapshotOperationResult::kFailure;
-  if (error_count == 0)
-    snapshot_result = SnapshotOperationResult::kSuccess;
-  else if (success_count > 0)
-    snapshot_result = SnapshotOperationResult::kPartialSuccess;
 
-  if (error_count > 0) {
-    base::UmaHistogramExactLinear("Downgrade.RestoreSnapshot.FailureCount",
-                                  error_count, 100);
-  }
-  base::UmaHistogramEnumeration("Downgrade.RestoreSnapshot.Result",
-                                snapshot_result);
+  // When there is a partial success, according to
+  // "Downgrade.RestoreSnapshot.FailureCount", the average number of items that
+  // fail to be recovered is between 2 and 3.
+  base::UmaHistogramEnumeration(
+      "Downgrade.RestoreSnapshot.Result",
+      !has_error ? SnapshotOperationResult::kSuccess
+                 : has_success ? SnapshotOperationResult::kPartialSuccess
+                               : SnapshotOperationResult::kFailure);
 
   // Mark the snapshot directory for later deletion if its contents were moved
   // into User Data. If the snapshot directory cannot be renamed, fallback to
@@ -304,20 +301,18 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
         GetTempDirNameForDelete(user_data_dir_, base::FilePath(kSnapshotsDir))
             .Append(snapshot_dir.BaseName());
 
-    // Cleans up the remnants of the moved snapshot directory. If moving the
-    // folder fails, delete the "Last Version File" so that this snapshot is
-    // considered incomplete and deleted later.
-    MoveFolderForLaterDeletion(snapshot_dir, move_target,
-                               "Downgrade.InvalidSnapshotMove.Result",
-                               "Downgrade.InvalidSnapshotMove.FailureCount");
+    // Cleans up the remnants of the moved snapshot directory, this is
+    // successful 99% of the time. If moving the directory fails, delete the
+    // "Last Version" file so that this snapshot is considered incomplete and
+    // deleted later. In case of failure to move the directory, if the Last
+    // Version file is deleted, this snapshot will now be considered invalid,
+    // and will be deleted, otherwise it will be overwritten at the next
+    // upgrade.
+    MoveFolderForLaterDeletion(snapshot_dir, move_target, nullptr, nullptr);
 
     auto last_version_file_path =
         snapshot_dir.Append(kDowngradeLastVersionFile);
     base::DeleteFile(last_version_file_path);
-
-    base::UmaHistogramBoolean(
-        "Downgrade.RestoreSnapshot.CleanupAfterFailure.Result",
-        !base::PathExists(snapshot_dir));
   }
 }
 

@@ -4319,6 +4319,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.RestoreSnapshot.CleanupAfterFailure.Result"
     enum="BooleanSuccess" expires_after="2020-12-31">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
@@ -4329,6 +4332,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.RestoreSnapshot.FailureCount" units="count"
     expires_after="2020-12-31">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
@@ -4338,7 +4344,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Downgrade.RestoreSnapshot.Result"
-    enum="SnapshotOperationResult" expires_after="2020-12-31">
+    enum="SnapshotOperationResult" expires_after="never">
+<!-- expires-never: To monitor snapshot restoration results. -->
+
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
