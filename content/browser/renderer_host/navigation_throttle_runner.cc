@@ -7,6 +7,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/portal/portal_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
+#include "content/browser/renderer_host/back_forward_cache_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
 #include "content/browser/renderer_host/form_submission_throttle.h"
 #include "content/browser/renderer_host/http_error_navigation_throttle.h"
@@ -131,6 +132,8 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // than other throttles that might care about those navigations, e.g.
   // throttles handling pages with 407 errors that require extra authentication.
   AddThrottle(HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
+
+  AddThrottle(BackForwardCacheThrottle::MaybeCreateThrottleFor(request));
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),

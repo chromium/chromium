@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -532,6 +533,12 @@ void RenderViewHostImpl::EnterBackForwardCache() {
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
+}
+
+void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
+    base::OnceClosure done_cb) {
+  page_lifecycle_state_manager_->SetIsLeavingBackForwardCache(
+      std::move(done_cb));
 }
 
 void RenderViewHostImpl::LeaveBackForwardCache(
