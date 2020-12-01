@@ -102,17 +102,6 @@ void RenderWidget::BrowserClosedIpcChannelForPopupWidget() {
   Close(base::WrapUnique(this));
 }
 
-void RenderWidget::ScheduleAnimation() {
-  // This call is not needed in single thread mode for tests without a
-  // scheduler, but they override this method in order to schedule a synchronous
-  // composite task themselves.
-  // TODO(dtapuska): ScheduleAnimation might get called before layer_tree_host_
-  // is assigned, inside the InitializeCompositing call. This should eventually
-  // go away when this is moved inside blink. https://crbug.com/1097816
-  if (layer_tree_host_)
-    layer_tree_host_->SetNeedsAnimate();
-}
-
 void RenderWidget::UpdateTextInputState() {
   GetWebWidget()->UpdateTextInputState();
 }

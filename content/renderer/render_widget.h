@@ -141,7 +141,6 @@ class CONTENT_EXPORT RenderWidget
   blink::WebWidget* GetWebWidget() const { return webwidget_; }
 
   // blink::WebWidgetClient
-  void ScheduleAnimation() override;
   void BrowserClosedIpcChannelForPopupWidget() override;
 
   void ConvertViewportToWindow(blink::WebRect* rect);

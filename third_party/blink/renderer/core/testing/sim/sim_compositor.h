@@ -52,12 +52,9 @@ class SimCompositor final : public frame_test_helpers::TestWebWidgetClient {
   // Helpers to query the state of the compositor from tests.
   //
   // Returns true if a main frame has been requested from blink, until the
-  // BeginFrame() step occurs. The AnimationScheduled() checks if an explicit
-  // requet for BeginFrame() was made, vs an implicit one by making changes
-  // to the compositor's state.
+  // BeginFrame() step occurs.
   bool NeedsBeginFrame() const {
-    return AnimationScheduled() ||
-           layer_tree_host()->RequestedMainFramePendingForTesting();
+    return layer_tree_host()->RequestedMainFramePendingForTesting();
   }
   // Returns true if commits are deferred in the compositor. Since these tests
   // use synchronous compositing through BeginFrame(), the deferred state has no

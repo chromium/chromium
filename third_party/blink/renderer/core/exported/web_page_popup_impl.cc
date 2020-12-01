@@ -866,7 +866,7 @@ void WebPagePopupImpl::FocusChanged(bool enable) {
 }
 
 void WebPagePopupImpl::ScheduleAnimation() {
-  WidgetClient()->ScheduleAnimation();
+  widget_base_->LayerTreeHost()->SetNeedsAnimate();
 }
 
 void WebPagePopupImpl::UpdateVisualProperties(

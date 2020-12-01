@@ -805,6 +805,10 @@ void RemoteFrame::SetCcLayer(cc::Layer* cc_layer,
     if (layout_object && layout_object->Layer())
       layout_object->Layer()->SetNeedsRepaint();
   }
+
+  // Schedule an animation so that a new frame is produced with the updated
+  // layer, otherwise this local root's visible content may not be up to date.
+  owner->GetDocument().GetFrame()->View()->ScheduleAnimation();
 }
 
 void RemoteFrame::AdvanceFocus(mojom::blink::FocusType type,

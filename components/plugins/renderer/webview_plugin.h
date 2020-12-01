@@ -183,7 +183,7 @@ class WebViewPlugin : public blink::WebPlugin,
                                 const SkBitmap&,
                                 const gfx::Point&) override;
     void DidChangeCursor(const ui::Cursor& cursor) override;
-    void ScheduleAnimation() override;
+    void ScheduleNonCompositedAnimation() override;
 
     // WebLocalFrameClient methods:
     void BindToFrame(blink::WebNavigationControl* frame) override;

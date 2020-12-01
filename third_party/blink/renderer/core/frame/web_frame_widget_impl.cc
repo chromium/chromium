@@ -1398,7 +1398,11 @@ void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
 }
 
 void WebFrameWidgetImpl::ScheduleAnimation() {
-  Client()->ScheduleAnimation();
+  if (!View()->does_composite()) {
+    Client()->ScheduleNonCompositedAnimation();
+    return;
+  }
+  widget_base_->LayerTreeHost()->SetNeedsAnimate();
 }
 
 void WebFrameWidgetImpl::FocusChanged(bool enable) {

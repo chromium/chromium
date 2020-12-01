@@ -945,6 +945,11 @@ void Page::WillCloseAnimationHost(LocalFrameView* view) {
   if (scrolling_coordinator_)
     scrolling_coordinator_->WillCloseAnimationHost(view);
   GetLinkHighlight().WillCloseAnimationHost();
+
+  // We may have disconnected the associated LayerTreeHost during
+  // the frame lifecycle so ensure the PageAnimator is reset to the
+  // default state.
+  animator_->SetSuppressFrameRequestsWorkaroundFor704763Only(false);
 }
 
 void Page::WillBeDestroyed() {

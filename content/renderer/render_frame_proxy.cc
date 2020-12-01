@@ -683,10 +683,6 @@ void RenderFrameProxy::SetLayer(scoped_refptr<cc::Layer> layer,
   if (web_frame()) {
     web_frame()->SetCcLayer(layer.get(), prevent_contents_opaque_changes,
                             is_surface_layer);
-
-    // Schedule an animation so that a new frame is produced with the updated
-    // layer, otherwise this local root's visible content may not be up to date.
-    ancestor_render_widget_->ScheduleAnimation();
   }
   embedded_layer_ = std::move(layer);
 }

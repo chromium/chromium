@@ -70,10 +70,9 @@ class WebWidgetClient {
  public:
   virtual ~WebWidgetClient() = default;
 
-  // Called to request a BeginMainFrame from the compositor. For tests with
-  // single thread and no scheduler, the impl should schedule a task to run
-  // a synchronous composite.
-  virtual void ScheduleAnimation() {}
+  // Called to request a BeginMainFrame from the compositor. This is only
+  // called for widget's WebView's that do not composite.
+  virtual void ScheduleNonCompositedAnimation() {}
 
   // Called when the cursor for the widget changes.
   virtual void DidChangeCursor(const ui::Cursor&) {}

@@ -330,7 +330,7 @@ void WebViewPlugin::WebViewHelper::DidChangeCursor(const ui::Cursor& cursor) {
   plugin_->current_cursor_ = cursor;
 }
 
-void WebViewPlugin::WebViewHelper::ScheduleAnimation() {
+void WebViewPlugin::WebViewHelper::ScheduleNonCompositedAnimation() {
   // Resizes must be self-contained: any lifecycle updating must
   // be triggerd from within the WebView or this WebViewPlugin.
   // This is because this WebViewPlugin is contained in another
