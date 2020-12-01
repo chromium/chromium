@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 
 namespace language_detection {
@@ -20,8 +21,8 @@ void LanguageDetectionServiceImpl::DetermineLanguage(
     const ::base::string16& text,
     DetermineLanguageCallback callback) {
   bool is_cld_reliable = false;
-  std::string cld_language =
-      translate::DetermineTextLanguage(text, &is_cld_reliable);
+  std::string cld_language = translate::DetermineTextLanguage(
+      base::UTF16ToUTF8(text), &is_cld_reliable);
   std::move(callback).Run(cld_language, is_cld_reliable);
 }
 

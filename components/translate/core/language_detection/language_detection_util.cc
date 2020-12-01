@@ -79,18 +79,52 @@ bool CanCLDComplementSubCode(const std::string& page_language,
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
+// Given a detected language and whether that detection is reliable, returns the
+// ISO 639 language code of |utf8_text|. Returns
+// |translate::kUnknownLanguageCode| for unreliable, "unknown", and xx-Latn
+// predictions that are currently not supported.
+std::string FilterDetectedLanguage(const std::string& utf8_text,
+                                   const std::string& detected_language,
+                                   bool is_detection_reliable) {
+  // Ignore unreliable, "unknown", and xx-Latn predictions that are currently
+  // not supported.
+  if (!is_detection_reliable)
+    return translate::kUnknownLanguageCode;
+  if (detected_language == "bg-Latn" || detected_language == "el-Latn" ||
+      detected_language == "ja-Latn" || detected_language == "ru-Latn" ||
+      detected_language == "zh-Latn" ||
+      detected_language == chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
+    return translate::kUnknownLanguageCode;
+  }
+
+  if (detected_language == "zh") {
+    // If prediction is "zh" (Chinese), then we need to determine whether the
+    // text is zh-Hant (Chinese Traditional) or zh-Hans (Chinese Simplified).
+    translate::ChineseScriptClassifier zh_classifier;
+
+    // The Classify function returns either "zh-Hant" or "zh-Hans".
+    // Convert to the old-style language codes used by the Translate API.
+    const std::string zh_classification = zh_classifier.Classify(utf8_text);
+    if (zh_classification == "zh-Hant")
+      return "zh-TW";
+    if (zh_classification == "zh-Hans")
+      return "zh-CN";
+    return translate::kUnknownLanguageCode;
+  }
+  // The detection is reliable and none of the cases that are not handled by the
+  // language detection model.
+  return detected_language;
+}
+
 }  // namespace
 
 namespace translate {
 
-// Returns the ISO 639 language code of the specified |text|, or 'unknown' if it
-// failed.
-// |is_cld_reliable| will be set as true if CLD says the detection is reliable.
-std::string DetermineTextLanguage(const base::string16& text,
+// Returns the ISO 639 language code of the specified |utf8_text|, or 'unknown'
+// if it failed. |is_cld_reliable| will be set as true if CLD says the detection
+// is reliable.
+std::string DetermineTextLanguage(const std::string& utf8_text,
                                   bool* is_cld_reliable) {
-  std::string language = translate::kUnknownLanguageCode;
-  const std::string utf8_text(base::UTF16ToUTF8(text));
-
   // Make a prediction.
   base::TimeTicks lang_id_start = base::TimeTicks::Now();
   chrome_lang_id::NNetLanguageIdentifier lang_id;
@@ -98,55 +132,24 @@ std::string DetermineTextLanguage(const base::string16& text,
       lang_id.FindTopNMostFreqLangs(utf8_text, /*num_langs=*/1).at(0);
   base::UmaHistogramTimes("Translate.CLD3.TopLanguageEvaluationDuration",
                           base::TimeTicks::Now() - lang_id_start);
-  const bool prediction_reliable = lang_id_result.is_reliable;
-  const std::string& predicted_language = lang_id_result.language;
+  const bool is_detection_reliable = lang_id_result.is_reliable;
+  const std::string& detected_language = lang_id_result.language;
 
   // Update histograms.
   const base::HistogramBase::Sample pred_lang_hash =
       static_cast<base::HistogramBase::Sample>(
-          base::HashMetricName(predicted_language));
+          base::HashMetricName(detected_language));
   base::UmaHistogramSparse("Translate.CLD3.LanguageDetected", pred_lang_hash);
-  if (predicted_language != chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
+  if (detected_language != chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
     UMA_HISTOGRAM_PERCENTAGE("Translate.CLD3.LanguagePercentage",
                              static_cast<int>(100 * lang_id_result.proportion));
   }
 
   if (is_cld_reliable != nullptr) {
-    *is_cld_reliable = prediction_reliable;
+    *is_cld_reliable = is_detection_reliable;
   }
-
-  // Ignore unreliable, "unknown", and xx-Latn predictions that are currently
-  // not supported.
-  if (prediction_reliable &&
-      predicted_language != "bg-Latn" &&
-      predicted_language != "el-Latn" &&
-      predicted_language != "ja-Latn" &&
-      predicted_language != "ru-Latn" &&
-      predicted_language != "zh-Latn" &&
-      predicted_language !=
-          chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
-    if (predicted_language != "zh") {
-      language = predicted_language;
-    } else {
-      // If prediction is "zh" (Chinese), then we need to determine whether the
-      // text is zh-Hant (Chinese Traditional) or zh-Hans (Chinese Simplified).
-      translate::ChineseScriptClassifier zh_classifier;
-
-      // The Classify function returns either "zh-Hant" or "zh-Hans".
-      // Convert to the old-style language codes used by the Translate API.
-      const std::string zh_classification = zh_classifier.Classify(utf8_text);
-      if (zh_classification == "zh-Hant") {
-        language = "zh-TW";
-      } else if (zh_classification == "zh-Hans") {
-        language = "zh-CN";
-      } else {
-        language = translate::kUnknownLanguageCode;
-      }
-    }
-  }
-
-  VLOG(1) << "Detected language: " << language;
-  return language;
+  return FilterDetectedLanguage(utf8_text, detected_language,
+                                is_detection_reliable);
 }
 
 std::string DeterminePageLanguage(const std::string& code,
@@ -156,7 +159,8 @@ std::string DeterminePageLanguage(const std::string& code,
                                   bool* is_cld_reliable_p) {
   // First determine the language for the test contents.
   bool is_cld_reliable;
-  std::string cld_language = DetermineTextLanguage(contents, &is_cld_reliable);
+  const std::string utf8_text(base::UTF16ToUTF8(contents));
+  std::string cld_language = DetermineTextLanguage(utf8_text, &is_cld_reliable);
   if (cld_language_p != nullptr)
     *cld_language_p = cld_language;
   if (is_cld_reliable_p != nullptr)
