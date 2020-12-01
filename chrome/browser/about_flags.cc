@@ -4183,7 +4183,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          chrome::android::kTabbedAppOverflowMenuThreeButtonActionbar,
          kTabbedAppOverflowMenuThreeButtonActionbarVariations,
-         "AndroidAppMenuThreeButtonActionbar")},
+         "AndroidAppMenuUiReworkPhase4And5")},
 #endif  // OS_ANDROID
 
     {"omnibox-display-title-for-current-url",
