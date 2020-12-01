@@ -259,8 +259,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-busy-changed.html"));
 }
 
-#if defined(OS_LINUX) && \
-    (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
+#if defined(OS_LINUX)
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) DISABLED_##name
 #else
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) name
