@@ -135,7 +135,9 @@ cr.define('settings_people_page_account_manager', function() {
     let accountManager = null;
     let accountList = null;
 
-    suiteSetup(function() {});
+    suiteSetup(function() {
+      loadTimeData.overrideValues({isDeviceAccountManaged: true});
+    });
 
     setup(function() {
       browserProxy = new TestAccountManagerBrowserProxy();
@@ -158,8 +160,14 @@ cr.define('settings_people_page_account_manager', function() {
     test('AccountListIsPopulatedAtStartup', function() {
       return browserProxy.whenCalled('getAccounts').then(() => {
         Polymer.dom.flush();
-        // 4 accounts were added in |getAccounts()| mock above.
-        assertEquals(4, accountList.items.length);
+        if (accountManager.isAccountManagementFlowsV2Enabled_) {
+          // 1 device account + 3 secondary accounts were added in
+          // |getAccounts()| mock above.
+          assertEquals(3, accountList.items.length);
+        } else {
+          // 4 accounts were added in |getAccounts()| mock above.
+          assertEquals(4, accountList.items.length);
+        }
       });
     });
 
@@ -252,10 +260,17 @@ cr.define('settings_people_page_account_manager', function() {
       return browserProxy.whenCalled('getAccounts').then(() => {
         Polymer.dom.flush();
 
-        const managementLabel =
-            accountManager.root.querySelectorAll('.management-status')[0]
-                .innerHTML.trim();
-        assertEquals('Managed by Family Link', managementLabel);
+        if (accountManager.isAccountManagementFlowsV2Enabled_) {
+          const managedBadge = accountManager.root.querySelector(
+              '.device-account-icon .managed-badge');
+          // Managed badge should be shown for managed accounts.
+          assertFalse(managedBadge.hidden);
+        } else {
+          const managementLabel =
+              accountManager.root.querySelectorAll('.management-status')[0]
+                  .innerHTML.trim();
+          assertEquals('Managed by Family Link', managementLabel);
+        }
       });
     });
   });
@@ -264,6 +279,10 @@ cr.define('settings_people_page_account_manager', function() {
     let browserProxy = null;
     let accountManager = null;
     let accountList = null;
+
+    suiteSetup(function() {
+      loadTimeData.overrideValues({isDeviceAccountManaged: false});
+    });
 
     setup(function() {
       browserProxy = new TestAccountManagerBrowserProxyForUnmanagedAccounts();
@@ -286,10 +305,17 @@ cr.define('settings_people_page_account_manager', function() {
       return browserProxy.whenCalled('getAccounts').then(() => {
         Polymer.dom.flush();
 
-        const managementLabel =
-            accountManager.root.querySelectorAll('.management-status')[0]
-                .innerHTML.trim();
-        assertEquals('Primary account', managementLabel);
+        if (accountManager.isAccountManagementFlowsV2Enabled_) {
+          const managedBadge = accountManager.root.querySelector(
+              '.device-account-icon .managed-badge');
+          // Managed badge should not be shown for unmanaged accounts.
+          assertEquals(null, managedBadge);
+        } else {
+          const managementLabel =
+              accountManager.root.querySelectorAll('.management-status')[0]
+                  .innerHTML.trim();
+          assertEquals('Primary account', managementLabel);
+        }
       });
     });
   });

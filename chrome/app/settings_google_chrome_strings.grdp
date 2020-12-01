@@ -160,6 +160,11 @@
   <message name="IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT" desc="The secondary text displayed to prompt users to enable sync for an account that is alredy present in Chrome.">
     Sync and personalize Chrome across your devices
   </message>
+<if expr="chromeos">
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
+    If you have multiple Google Accounts, you can add them to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Your accounts will be available in Chrome browser and Play Store, as well as services like Gmail, Drive, and YouTube.<ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+</if>
 
   <!-- Sync Page -->
   <message name="IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT" desc="Text alerting the user that synced data is encrypted.">

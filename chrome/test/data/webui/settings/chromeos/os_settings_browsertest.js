@@ -1382,6 +1382,11 @@ TEST_F('OSSettingsTetherConnectionDialogTest', 'All', () => {
 var OSSettingsPeoplePageAccountManagerTest =
     class extends OSSettingsBrowserTest {
   /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+
+  /** @override */
   get browsePreload() {
     return super.browsePreload + 'chromeos/os_people_page/account_manager.html';
   }
@@ -1399,6 +1404,21 @@ var OSSettingsPeoplePageAccountManagerTest =
 TEST_F('OSSettingsPeoplePageAccountManagerTest', 'AllJsTests', () => {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var OSSettingsPeoplePageAccountManagerTestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsPeoplePageAccountManagerTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsPeoplePageAccountManagerTestWithAccountManagementFlowsV2Enabled',
+    'AllJsTests', () => {
+      mocha.run();
+    });
 
 // eslint-disable-next-line no-var
 var OSSettingsPeoplePageChangePictureTest =

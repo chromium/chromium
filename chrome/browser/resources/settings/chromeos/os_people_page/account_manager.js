@@ -31,6 +31,12 @@ Polymer({
     },
 
     /**
+     * Primary / Device account.
+     * @private {?settings.Account}
+     */
+    deviceAccount_: Object,
+
+    /**
      * The targeted account for menu operations.
      * @private {?settings.Account}
      */
@@ -42,6 +48,30 @@ Polymer({
       value() {
         return loadTimeData.getBoolean('isChild');
       },
+    },
+
+    /**
+     * True if device account is managed.
+     * @private {boolean}
+     */
+    isDeviceAccountManaged_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isDeviceAccountManaged');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * True if redesign of account management flows is enabled.
+     * @private
+     */
+    isAccountManagementFlowsV2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+      },
+      readOnly: true,
     },
 
     /**
@@ -119,6 +149,18 @@ Polymer({
   },
 
   /**
+   * @return {string} accounts list header (e.g. 'Secondary accounts' for
+   *     regular users or 'School accounts' for child users).
+   * @private
+   */
+  getAccountListHeader_() {
+    if (this.isAccountManagementFlowsV2Enabled_ && this.isChildUser_) {
+      return loadTimeData.getString('accountListHeaderChild');
+    }
+    return loadTimeData.getString('accountListHeader');
+  },
+
+  /**
    * @return {string} 'Secondary Accounts disabled' message depending on
    *    account type
    * @private
@@ -145,6 +187,16 @@ Polymer({
     return this.isChildUser_ ?
         this.i18n('accountManagerPrimaryAccountChildManagedTooltip') :
         this.i18n('accountManagerPrimaryAccountTooltip');
+  },
+
+  /**
+   * @return {string} tooltip text
+   * @private
+   */
+  getSecondaryAccountsTooltip_() {
+    return this.getAccounts_().length === 0 ?
+        this.i18n('accountListTooltipNoSecondaryAccounts') :
+        this.i18n('accountListTooltip');
   },
 
   /**
@@ -179,6 +231,24 @@ Polymer({
     // invalidation) and we do not have a mechanism to change the cryptohome
     // password in-session.
     return !account.isDeviceAccount && !account.isSignedIn;
+  },
+
+  /**
+   * @return {boolean} True if 'School account' label should be displayed for
+   *     secondary accounts.
+   * @private
+   */
+  shouldDisplayEduSecondaryAccountLabel_() {
+    return this.isChildUser_ && !this.isAccountManagementFlowsV2Enabled_;
+  },
+
+  /**
+   * @return {boolean} True if managed badge should be shown next to the device
+   *     account picture.
+   * @private
+   */
+  shouldShowManagedBadge_() {
+    return this.isDeviceAccountManaged_ && !this.isChildUser_;
   },
 
   /**
@@ -235,6 +305,20 @@ Polymer({
   },
 
   /**
+   * @return {!Array<settings.Account>} list of accounts.
+   * @private
+   */
+  getAccounts_() {
+    // TODO(crbug.com/1152711): rename the method to `getSecondaryAccounts_`.
+    if (this.isAccountManagementFlowsV2Enabled_) {
+      // Return only secondary accounts.
+      return this.accounts_.filter(account => !account.isDeviceAccount);
+    }
+
+    return this.accounts_;
+  },
+
+  /**
    * @param {!CustomEvent<!{model: !{item: !settings.Account}}>} event
    * @private
    */
@@ -252,6 +336,12 @@ Polymer({
   refreshAccounts_() {
     this.browserProxy_.getAccounts().then(accounts => {
       this.set('accounts_', accounts);
+      const deviceAccount = accounts.find(account => account.isDeviceAccount);
+      if (!deviceAccount) {
+        console.error('Cannot find device account.');
+        return;
+      }
+      this.deviceAccount_ = deviceAccount;
     });
   },
 
