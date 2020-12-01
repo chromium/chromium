@@ -3783,6 +3783,7 @@
       },
       'ozone_unittests': {},
       'ozone_x11_unittests': {},
+      'shell_encryption_unittests': {},
       'ui_chromeos_unittests': {},
       'usage_time_limit_unittests': {
         'experiment_percentage': 100,

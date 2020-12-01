@@ -1554,6 +1554,10 @@
     "label": "//chrome/installer/setup:setup_unittests",
     "type": "console_test_launcher",
   },
+  "shell_encryption_unittests": {
+    "label": "//third_party/shell-encryption:shell_encryption_unittests",
+    "type": "console_test_launcher",
+  },
   "shell_dialogs_unittests": {
     "label": "//ui/shell_dialogs:shell_dialogs_unittests",
     "type": "console_test_launcher",
