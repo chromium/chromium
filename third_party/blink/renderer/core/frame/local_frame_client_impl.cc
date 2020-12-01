@@ -277,8 +277,17 @@ WebContentSecurityPolicy ConvertToPublic(
                        ConvertToPublic(std::move(directive.value))};
   }
 
+  WebVector<WebContentSecurityPolicyRawDirective> raw_directives(
+      policy->raw_directives.size());
+  i = 0;
+  for (auto& directive : policy->raw_directives) {
+    raw_directives[i++] = {ConvertToPublic(directive.key),
+                           std::move(directive.value)};
+  }
+
   return {policy->header->type,
           policy->header->source,
+          std::move(raw_directives),
           std::move(directives),
           policy->upgrade_insecure_requests,
           policy->block_all_mixed_content,

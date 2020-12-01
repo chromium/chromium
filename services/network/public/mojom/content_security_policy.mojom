@@ -148,6 +148,10 @@ struct CSPTrustedTypes {
 };
 
 struct ContentSecurityPolicy {
+  // The raw, unparsed values of the specified CSP directives. Needed for
+  // reporting.
+  map<CSPDirectiveName, string> raw_directives;
+
   map<CSPDirectiveName, CSPSourceList> directives;
 
   // Spec: https://www.w3.org/TR/upgrade-insecure-requests/

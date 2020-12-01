@@ -302,8 +302,10 @@ DirectivesMap ParseHeaderValue(base::StringPiece header) {
     // 5. Let directive value be the result of splitting token on ASCII
     // whitespace.
     base::StringPiece value;
-    if (pos != std::string::npos)
-      value = directive.substr(pos + 1);
+    if (pos != std::string::npos) {
+      value = base::TrimString(directive.substr(pos + 1),
+                               base::kWhitespaceASCII, base::TRIM_ALL);
+    }
 
     // 6. Let directive be a new directive whose name is directive name,
     // and value is directive value.
@@ -858,25 +860,33 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
       continue;
     }
 
+    CSPDirectiveName directive_name =
+        ToCSPDirectiveName(directive.first.as_string());
+
+    if (directive_name == CSPDirectiveName::Unknown) {
+      out->parsing_errors.emplace_back(base::StringPrintf(
+          "Unrecognized Content-Security-Policy directive '%s'.",
+          directive.first.as_string().c_str()));
+      continue;
+    }
+
+    // A directive with this name has already been parsed. Skip further
+    // directives per
+    // https://www.w3.org/TR/CSP3/#parse-serialized-policy.
+    if (out->raw_directives.count(directive_name)) {
+      out->parsing_errors.emplace_back(base::StringPrintf(
+          "Ignoring duplicate Content-Security-Policy directive '%s'.",
+          directive.first.as_string().c_str()));
+      continue;
+    }
+    out->raw_directives[directive_name] = directive.second.as_string();
+
     if (!base::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The value for the Content-Security-Policy directive '%s' contains "
           "one or more invalid characters. Non-whitespace characters outside "
           "ASCII 0x21-0x7E must be percent-encoded, as described in RFC 3986, "
           "section 2.1: http://tools.ietf.org/html/rfc3986#section-2.1.",
-          directive.first.as_string().c_str()));
-      continue;
-    }
-
-    CSPDirectiveName directive_name =
-        ToCSPDirectiveName(directive.first.as_string());
-
-    // A directive with this name has already been parsed. Skip further
-    // directives per
-    // https://www.w3.org/TR/CSP3/#parse-serialized-policy.
-    if (out->directives.count(directive_name)) {
-      out->parsing_errors.emplace_back(base::StringPrintf(
-          "Ignoring duplicate Content-Security-Policy directive '%s'.",
           directive.first.as_string().c_str()));
       continue;
     }
@@ -969,9 +979,6 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
                                &(out->report_endpoints));
         break;
       case CSPDirectiveName::Unknown:
-        out->parsing_errors.emplace_back(base::StringPrintf(
-            "Unrecognized Content-Security-Policy directive '%s'.",
-            directive.first.as_string().c_str()));
         break;
     }
   }

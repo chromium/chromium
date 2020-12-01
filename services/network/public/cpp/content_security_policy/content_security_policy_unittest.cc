@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -62,6 +63,9 @@ static void TestFrameAncestorsCSPParser(const std::string& header,
       policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
   EXPECT_EQ(frame_ancestors->sources.size(),
             expected_result->parsed_sources.size());
+  EXPECT_EQ(
+      policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+      header);
   for (size_t i = 0; i < expected_result->parsed_sources.size(); i++) {
     EXPECT_EQ(frame_ancestors->sources[i]->scheme,
               expected_result->parsed_sources[i].scheme);
@@ -267,7 +271,11 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
     EXPECT_EQ(2U, policies[0]->directives.size());
+    EXPECT_EQ(2U, policies[0]->raw_directives.size());
 
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.com");
     auto& frame_ancestors =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     EXPECT_EQ(frame_ancestors->sources.size(), 1U);
@@ -279,6 +287,8 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     EXPECT_EQ(frame_ancestors->sources[0]->is_port_wildcard, false);
     EXPECT_EQ(frame_ancestors->allow_self, false);
 
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
+              "example2.com");
     auto& script_src =
         policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc];
     EXPECT_EQ(script_src->sources.size(), 1U);
@@ -308,7 +318,11 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
     EXPECT_EQ(1U, policies[0]->directives.size());
+    EXPECT_EQ(1U, policies[0]->raw_directives.size());
 
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.org");
     auto& frame_ancestors =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     EXPECT_EQ(frame_ancestors->sources.size(), 1U);
@@ -337,6 +351,7 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
     EXPECT_TRUE(policies[0]->directives.empty());
+    EXPECT_TRUE(policies[0]->raw_directives.empty());
 
     EXPECT_EQ(1U, policies[0]->parsing_errors.size());
     EXPECT_EQ(
@@ -374,7 +389,11 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
     EXPECT_EQ(1U, policies[0]->directives.size());
+    EXPECT_EQ(1U, policies[0]->raw_directives.size());
 
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "object-src");
     auto& frame_ancestors =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     EXPECT_EQ(frame_ancestors->sources.size(), 1U);
@@ -405,7 +424,11 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
     EXPECT_EQ(1U, policies[0]->directives.size());
+    EXPECT_EQ(1U, policies[0]->raw_directives.size());
 
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "http://example.org/index.html?a=b");
     auto& frame_ancestors =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     EXPECT_EQ(frame_ancestors->sources.size(), 1U);
@@ -437,7 +460,11 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
     EXPECT_EQ(1U, policies[0]->directives.size());
+    EXPECT_EQ(1U, policies[0]->raw_directives.size());
 
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "http://example.org/index.html#a");
     auto& frame_ancestors =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     EXPECT_EQ(frame_ancestors->sources.size(), 1U);
@@ -473,6 +500,14 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
                                         &policies);
 
     EXPECT_EQ(2U, policies.size());
+
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.com");
+    EXPECT_EQ(
+        policies[1]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.org");
+
     auto& frame_ancestors0 =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     auto& frame_ancestors1 =
@@ -509,6 +544,10 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
                                         &policies);
 
     EXPECT_EQ(2U, policies.size());
+    EXPECT_EQ(
+        policies[1]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.org");
+
     auto& frame_ancestors1 =
         policies[1]->directives[mojom::CSPDirectiveName::FrameAncestors];
     EXPECT_EQ(frame_ancestors1->sources.size(), 1U);
@@ -535,6 +574,14 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
                                         &policies);
 
     EXPECT_EQ(2U, policies.size());
+
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.com");
+    EXPECT_EQ(
+        policies[1]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.org");
+
     auto& frame_ancestors0 =
         policies[0]->directives[mojom::CSPDirectiveName::FrameAncestors];
     auto& frame_ancestors1 =
@@ -571,6 +618,10 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
 
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::FrameAncestors],
+        "example.com");
+
     auto& report_endpoints = policies[0]->report_endpoints;
     EXPECT_EQ(report_endpoints.size(), 1U);
     EXPECT_EQ(report_endpoints[0], "http://example.com/report");
@@ -594,6 +645,8 @@ TEST(ContentSecurityPolicy, ParsePluginTypes) {
   {
     std::vector<mojom::ContentSecurityPolicyPtr> policies =
         ParseCSP("plugin-types    application/pdf text/plain  invalid a/a/a");
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::PluginTypes],
+              "application/pdf text/plain  invalid a/a/a");
     EXPECT_EQ(policies[0]->directives.size(), 0u);
     EXPECT_TRUE(policies[0]->plugin_types.has_value());
     EXPECT_EQ(policies[0]->plugin_types.value().size(), 2u);
@@ -611,6 +664,8 @@ TEST(ContentSecurityPolicy, ParsePluginTypes) {
   {
     std::vector<mojom::ContentSecurityPolicyPtr> policies =
         ParseCSP("plugin-types ; default-src 'self'");
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::PluginTypes],
+              "");
     EXPECT_TRUE(policies[0]->plugin_types.has_value());
     EXPECT_EQ(policies[0]->plugin_types.value().size(), 0u);
     EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
@@ -619,6 +674,8 @@ TEST(ContentSecurityPolicy, ParsePluginTypes) {
   {
     std::vector<mojom::ContentSecurityPolicyPtr> policies =
         ParseCSP("plugin-types 'self' ; default-src 'self'");
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::PluginTypes],
+              "'self'");
     EXPECT_TRUE(policies[0]->plugin_types.has_value());
     EXPECT_EQ(policies[0]->plugin_types.value().size(), 0u);
     EXPECT_EQ(policies[0]->parsing_errors.size(), 1u);
@@ -641,30 +698,34 @@ TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
     network::mojom::CSPRequireTrustedTypesFor expected;
   } cases[]{
       {
-          "require-trusted-types-for",
+          "",
           network::mojom::CSPRequireTrustedTypesFor::None,
       },
       {
-          "require-trusted-types-for 'script'",
+          "'script'",
           network::mojom::CSPRequireTrustedTypesFor::Script,
       },
       {
-          "require-trusted-types-for 'wasm' 'script'",
+          "'wasm' 'script'",
           network::mojom::CSPRequireTrustedTypesFor::Script,
       },
       {
-          "require-trusted-types-for 'script' 'wasm' 'script'",
+          "'script' 'wasm' 'script'",
           network::mojom::CSPRequireTrustedTypesFor::Script,
       },
       {
-          "require-trusted-types-for 'wasm'",
+          "'wasm'",
           network::mojom::CSPRequireTrustedTypesFor::None,
       },
   };
 
   for (const auto& testCase : cases) {
-    std::vector<mojom::ContentSecurityPolicyPtr> policies =
-        ParseCSP(testCase.input);
+    std::vector<mojom::ContentSecurityPolicyPtr> policies = ParseCSP(
+        base::StringPrintf("require-trusted-types-for %s", testCase.input));
+    EXPECT_EQ(
+        policies[0]
+            ->raw_directives[mojom::CSPDirectiveName::RequireTrustedTypesFor],
+        testCase.input);
     EXPECT_EQ(policies[0]->directives.size(), 0u);
     EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
     EXPECT_EQ(policies[0]->require_trusted_types_for, testCase.expected);
@@ -682,6 +743,9 @@ TEST(ContentSecurityPolicy, ParseTrustedTypes) {
   {
     std::vector<mojom::ContentSecurityPolicyPtr> policies =
         ParseCSP("trusted-types 'none'");
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::TrustedTypes],
+        "'none'");
     EXPECT_EQ(policies[0]->directives.size(), 0u);
     EXPECT_TRUE(policies[0]->trusted_types);
     EXPECT_EQ(policies[0]->trusted_types->list.size(), 0u);
@@ -694,6 +758,9 @@ TEST(ContentSecurityPolicy, ParseTrustedTypes) {
   {
     std::vector<mojom::ContentSecurityPolicyPtr> policies =
         ParseCSP("trusted-types policy   'none'  other_policy@ invalid~policy");
+    EXPECT_EQ(
+        policies[0]->raw_directives[mojom::CSPDirectiveName::TrustedTypes],
+        "policy   'none'  other_policy@ invalid~policy");
     EXPECT_EQ(policies[0]->directives.size(), 0u);
     EXPECT_TRUE(policies[0]->trusted_types);
     EXPECT_EQ(policies[0]->trusted_types->list.size(), 2u);
@@ -1134,6 +1201,8 @@ TEST(ContentSecurityPolicy, ParseSandbox) {
   std::vector<mojom::ContentSecurityPolicyPtr> policies;
   AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                       &policies);
+  EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::Sandbox],
+            "allow-downloads allow-scripts");
   EXPECT_EQ(policies[0]->sandbox,
             ~mojom::WebSandboxFlags::kDownloads &
                 ~mojom::WebSandboxFlags::kScripts &
@@ -1305,6 +1374,10 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
                                         &policies);
     EXPECT_TRUE(test.expected.Run().Equals(
         policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
+
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
+              base::TrimString(test.directive_value, " ", base::TRIM_ALL)
+                  .as_string());
 
     if (!test.expected_error.empty())
       EXPECT_EQ(test.expected_error, policies[0]->parsing_errors[0]);

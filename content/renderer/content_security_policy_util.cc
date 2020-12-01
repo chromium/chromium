@@ -40,6 +40,10 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
       policy_in.header.Utf8(), policy_in.disposition, policy_in.source);
   policy->use_reporting_api = policy_in.use_reporting_api;
 
+  for (const auto& directive : policy_in.raw_directives) {
+    auto name = network::ToCSPDirectiveName(directive.name.Utf8());
+    policy->raw_directives[name] = directive.value.Utf8();
+  }
   for (const auto& directive : policy_in.directives) {
     auto name = network::ToCSPDirectiveName(directive.name.Utf8());
     policy->directives[name] = BuildCSPSourceList(directive.source_list);

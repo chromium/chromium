@@ -73,6 +73,13 @@ struct WebContentSecurityPolicyDirective {
 
 // TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
 // from blink.
+struct WebContentSecurityPolicyRawDirective {
+  WebString name;
+  WebString value;
+};
+
+// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
+// from blink.
 struct WebCSPTrustedTypes {
   WebVector<WebString> list;
   bool allow_any;
@@ -84,6 +91,7 @@ struct WebCSPTrustedTypes {
 struct WebContentSecurityPolicy {
   network::mojom::ContentSecurityPolicyType disposition;
   network::mojom::ContentSecurityPolicySource source;
+  WebVector<WebContentSecurityPolicyRawDirective> raw_directives;
   WebVector<WebContentSecurityPolicyDirective> directives;
   bool upgrade_insecure_requests;
   bool block_all_mixed_content;

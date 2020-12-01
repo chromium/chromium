@@ -114,6 +114,18 @@ WTF::HashMap<blink::CSPDirectiveName, blink::CSPSourceListPtr> ConvertToBlink(
   return out;
 }
 
+WTF::HashMap<blink::CSPDirectiveName, String> ConvertToBlink(
+    base::flat_map<CSPDirectiveName, std::string> directives) {
+  WTF::HashMap<blink::CSPDirectiveName, String> out;
+
+  for (auto& list : directives) {
+    out.insert(ConvertToBlink(list.first),
+               String::FromUTF8(std::move(list.second)));
+  }
+
+  return out;
+}
+
 WTF::Vector<WTF::String> ConvertToBlink(std::vector<std::string> in) {
   WTF::Vector<WTF::String> out;
   for (auto& el : in)
@@ -132,6 +144,7 @@ blink::CSPTrustedTypesPtr ConvertToBlink(CSPTrustedTypesPtr trusted_types) {
 blink::ContentSecurityPolicyPtr ConvertToBlink(
     ContentSecurityPolicyPtr policy_in) {
   return blink::ContentSecurityPolicy::New(
+      ConvertToBlink(std::move(policy_in->raw_directives)),
       ConvertToBlink(std::move(policy_in->directives)),
       policy_in->upgrade_insecure_requests, policy_in->treat_as_public_address,
       policy_in->block_all_mixed_content, policy_in->sandbox,
