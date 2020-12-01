@@ -796,4 +796,27 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyInsideInlineBlock) {
   TestFirstDirtyLineIndex("container", 0);
 }
 
+// This test creates various types of |NGFragmentItem| to check "natvis" (Native
+// DebugVisualizers) for Windows Visual Studio.
+TEST_F(NGFragmentItemTest, Disabled_DebugVisualizers) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=container>
+      text
+      <span style="display: inline-block"></span>
+    </div>
+  )HTML");
+  auto* container =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  NGInlineCursor cursor(*container);
+  cursor.MoveToFirstLine();
+  const NGFragmentItem* line = cursor.Current().Item();
+  EXPECT_NE(line, nullptr);
+  cursor.MoveToNext();
+  const NGFragmentItem* text = cursor.Current().Item();
+  EXPECT_NE(text, nullptr);
+  cursor.MoveToNext();
+  const NGFragmentItem* box = cursor.Current().Item();
+  EXPECT_NE(box, nullptr);
+}
+
 }  // namespace blink
