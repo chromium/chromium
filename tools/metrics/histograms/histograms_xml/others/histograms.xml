@@ -2379,10 +2379,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ClientHints.PersistDuration" units="ms" expires_after="M88">
+<histogram name="ClientHints.PersistDuration" units="ms" expires_after="M90">
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
+  <owner>aarontag@chromium.org</owner>
   <summary>
     Duration for which the origin requested the client hints to be persisted.
     Collected on the renderer side.
@@ -2390,20 +2391,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ClientHints.UpdateEventCount" units="count"
-    expires_after="M88">
+    expires_after="M90">
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
+  <owner>aarontag@chromium.org</owner>
   <summary>
     Count of events when the client hints needs to be persisted to the disk by
     the browser.
   </summary>
 </histogram>
 
-<histogram name="ClientHints.UpdateSize" units="count" expires_after="M88">
+<histogram name="ClientHints.UpdateSize" units="count" expires_after="M90">
   <owner>yoavweiss@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
+  <owner>aarontag@chromium.org</owner>
   <summary>
     Count of client hints that need to be persisted to the disk. Recorded by the
     renderer.
