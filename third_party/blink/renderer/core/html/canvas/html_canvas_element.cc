@@ -113,6 +113,10 @@ constexpr int kDefaultCanvasHeight = 150;
 constexpr int kUndefinedQualityValue = -1.0;
 constexpr int kMinimumAccelerated2dCanvasSize = 128 * 129;
 
+// A default size used for canvas memory allocation when canvas size is greater
+// than 2^20.
+constexpr uint32_t kMaximumCanvasSize = 2 << 20;
+
 }  // namespace
 
 HTMLCanvasElement::HTMLCanvasElement(Document& document)
@@ -1534,12 +1538,15 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   const int bytes_per_pixel = ColorParams().BytesPerPixel();
 
   intptr_t gpu_memory_usage = 0;
+  uint32_t canvas_width = std::min(kMaximumCanvasSize, width());
+  uint32_t canvas_height = std::min(kMaximumCanvasSize, height());
+
   if (gpu_buffer_count) {
     // Switch from cpu mode to gpu mode
     base::CheckedNumeric<intptr_t> checked_usage =
         gpu_buffer_count * bytes_per_pixel;
-    checked_usage *= width();
-    checked_usage *= height();
+    checked_usage *= canvas_width;
+    checked_usage *= canvas_height;
     gpu_memory_usage =
         checked_usage.ValueOrDefault(std::numeric_limits<intptr_t>::max());
   }
@@ -1548,8 +1555,8 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   // in all cases.
   base::CheckedNumeric<intptr_t> checked_usage =
       non_gpu_buffer_count * bytes_per_pixel;
-  checked_usage *= width();
-  checked_usage *= height();
+  checked_usage *= canvas_width;
+  checked_usage *= canvas_height;
   checked_usage += gpu_memory_usage;
   intptr_t externally_allocated_memory =
       checked_usage.ValueOrDefault(std::numeric_limits<intptr_t>::max());
