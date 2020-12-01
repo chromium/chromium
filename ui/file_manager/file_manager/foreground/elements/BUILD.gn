@@ -58,6 +58,7 @@ js_type_check("closure_compile_jsmodules") {
     ":files_metadata_box.m",
     ":files_metadata_entry.m",
     ":files_ripple.m",
+    ":files_safe_media.m",
     ":files_toggle_ripple.m",
   ]
 }
@@ -211,6 +212,25 @@ js_library("files_ripple.m") {
 }
 
 js_library("files_safe_media") {
+}
+
+polymer_modulizer("files_safe_media") {
+  js_file = "files_safe_media.js"
+  html_file = "files_safe_media.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  auto_imports =
+      [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
+}
+
+js_library("files_safe_media.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_safe_media.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":files_safe_media_module" ]
 }
 
 js_library("files_safe_media_webview_content") {
