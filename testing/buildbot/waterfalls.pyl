@@ -2710,6 +2710,24 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
+      'linux-paeverywhere-x64-fyi-dbg': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_linux_gtests',
+        },
+        'mixins': [
+          'linux-xenial',
+          'x86-64',
+        ],
+      },
+      'linux-paeverywhere-x64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_linux_gtests',
+        },
+        'mixins': [
+          'linux-xenial',
+          'x86-64',
+        ],
+      },
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'chrome' ],
         'mixins': [
@@ -2792,6 +2810,24 @@
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
+      },
+      'mac-paeverywhere-x64-fyi-dbg': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_mac_gtests',
+        },
+        'mixins': [
+          'mac_10.15',
+          'x86-64',
+        ],
+      },
+      'mac-paeverywhere-x64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'paeverywhere_mac_gtests',
+        },
+        'mixins': [
+          'mac_10.15',
+          'x86-64',
+        ],
       },
       'mac-upload-perfetto': {
         'additional_compile_targets': [ 'trace_processor_shell' ],

@@ -2589,6 +2589,28 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "linux-paeverywhere-x64-fyi-dbg",
+    builderless = True,
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|linux",
+        short_name = "64dbg",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "linux-paeverywhere-x64-fyi-rel",
+    builderless = True,
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|linux",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
     name = "linux-perfetto-rel",
     console_view_entry = ci.console_view_entry(
         category = "linux",
@@ -2738,6 +2760,28 @@ ci.updater_builder(
         short_name = "11.0 arm64",
     ),
     triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.fyi_builder(
+    name = "mac-paeverywhere-x64-fyi-dbg",
+    builderless = True,
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|mac",
+        short_name = "64dbg",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.MAC_ANY,
+)
+
+ci.fyi_builder(
+    name = "mac-paeverywhere-x64-fyi-rel",
+    builderless = True,
+    console_view_entry = ci.console_view_entry(
+        category = "paeverywhere|mac",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.MAC_ANY,
 )
 
 ci.updater_builder(

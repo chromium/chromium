@@ -3,15 +3,15 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61150 (scheduler total) + 344990 (weighted CQ total)
+  # 61470 (scheduler total) + 344990 (weighted CQ total)
   # (weighted CQ total) = 6899.8 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406140,
+  '*weighted total*': 406460,
   'scheduler': {
-    '*total*': 61150,
+    '*total*': 61470,
     'triggered': {
-      '*total*': 59600,
+      '*total*': 59920,
       ('https://chromium.googlesource.com/chromium/src', 'regexp:refs/heads/master'): {
-        '*total*': 58720,
+        '*total*': 59040,
         # 4 concurrent builds x 80 jobs
         'ci/ASAN Debug': 320,
         # 5 concurrent builds x 80 jobs
@@ -319,6 +319,8 @@
         'ci/linux-lacros-builder-rel': 80,
         'ci/linux-official': 200,
         'ci/linux-ozone-rel': 500,
+        'ci/linux-paeverywhere-x64-fyi-dbg': 80,
+        'ci/linux-paeverywhere-x64-fyi-rel': 80,
         'ci/linux-perfetto-rel': 80,
         'ci/linux-swangle-chromium-x64': 80,
         'ci/linux-swangle-tot-angle-x64': 80,
@@ -343,6 +345,8 @@
         'ci/mac-mojo-rel': 40,
         # jobs count assumes an 8-core machine
         'ci/mac-official': 80,
+        'ci/mac-paeverywhere-x64-fyi-dbg': 80,
+        'ci/mac-paeverywhere-x64-fyi-rel': 80,
         # jobs count assumes an 8-core machine
         'ci/mac-swangle-chromium-x64': 80,
         # jobs count assumes an 8-core machine
