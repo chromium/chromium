@@ -392,22 +392,15 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
   return false;
 }
 
-static bool IsContentVisibilityAutoWithoutFirstIntersection(
-    const LayoutBox& box) {
-  if (!box.GetNode() || !box.GetNode()->IsElementNode())
-    return false;
-
-  auto* display_lock_context =
-      To<Element>(box.GetNode())->GetDisplayLockContext();
+static bool IsContentVisibilityAutoAndHidden(const LayoutBox& box) {
+  auto* display_lock_context = box.GetDisplayLockContext();
   if (!display_lock_context)
     return false;
 
-  if (!display_lock_context->IsLocked() ||
-      display_lock_context->HadAnyViewportIntersectionNotifications() ||
-      !display_lock_context->IsAuto())
+  if (!display_lock_context->IsAuto())
     return false;
 
-  return true;
+  return display_lock_context->IsLocked();
 }
 
 bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
@@ -430,20 +423,19 @@ bool BoxPaintInvalidator::NeedsToSavePreviousOverflowData() {
 
 void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
   auto mutable_box = box_.GetMutableForPainting();
-  // If a box has content-visibility:auto and has not yet been deemed to be near
-  // the viewport, then don't save its previous size. This prevents the
-  // LayoutShiftTracker (which computes CLS) from recording a layout shift when
-  // the element's subtree become unskipped for the first time. This is almost
-  // exactly equivalent to the current behavior of CLS computation for offscreen
-  // elements - i.e. those elements are not counted for CLS. The only difference
-  // is the one-frame leeway granted after box_ appears near the screen.
+  // Don't save previous sizes for hidden content-visibility: auto elements.
+  // This ensures content-visibility: auto never by itself causes a layout
+  // shift, because the LayoutShiftTracker will ignore elements whose previous
+  // or current size are empty.
   //
   // Note: The downside of this approach is that any change in size of |box_|
   // up to the time unskipping occurs will cause a full paint invalidation
   // of |box_|. Since this has no effect on its subtree (which is skipped),
   // and |box_| is not on-screen, this should not have a significant performance
   // impact.
-  if (!IsContentVisibilityAutoWithoutFirstIntersection(box_))
+  if (IsContentVisibilityAutoAndHidden(box_))
+    mutable_box.ClearPreviousSize();
+  else
     mutable_box.SavePreviousSize();
 
   if (NeedsToSavePreviousOverflowData())
