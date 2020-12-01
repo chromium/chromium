@@ -112,6 +112,7 @@
 ; Kerberos support. This should be removed after GSS is moved out of the
 ; network service. https://crbug.com/1017830
 (allow mach-lookup
+  (global-name "com.apple.GSSCred") ; https://crbug.com/1134449
   (global-name "org.h5l.kcm")
 )
 (allow file-read*
