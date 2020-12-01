@@ -327,7 +327,7 @@ void DataTypeManagerImpl::Restart() {
     NotifyStart();
 
   download_types_queue_ = PrioritizeTypes(last_enabled_types_);
-  association_types_queue_ = base::queue<AssociationTypesInfo>();
+  association_types_info_.reset();
 
   download_started_ = false;
   model_load_manager_.Initialize(
@@ -439,7 +439,7 @@ void DataTypeManagerImpl::ProcessReconfigure() {
     return;
   }
 
-  association_types_queue_ = base::queue<AssociationTypesInfo>();
+  association_types_info_.reset();
 
   // An attempt was made to reconfigure while we were already configuring.
   // This can be because a passphrase was accepted or the user changed the
@@ -489,15 +489,15 @@ void DataTypeManagerImpl::DownloadCompleted(
 
   // Those types that were already downloaded (non first sync/error types)
   // are already done. Just finalize the newly downloaded types if necessary.
-  if (!association_types_queue_.empty()) {
-    association_types_queue_.back().first_sync_types = first_sync_types;
-    association_types_queue_.back().download_ready_time = base::Time::Now();
+  if (association_types_info_) {
+    // A non-empty |association_types_info_| means there were actually types
+    // downloading. Finalize those.
+    association_types_info_->first_sync_types = first_sync_types;
+    association_types_info_->download_ready_time = base::Time::Now();
     StartNextAssociation(UNREADY_AT_CONFIG);
   } else if (download_types_queue_.empty()) {
     // There's nothing more to download or associate (implying either there were
     // no types to associate or they associated as part of |ready_types|).
-    // If the model association manager is also finished, then we're done
-    // configuring.
     state_ = CONFIGURED;
     ConfigureResult result(OK, last_requested_types_);
     NotifyDone(result);
@@ -528,12 +528,13 @@ void DataTypeManagerImpl::StartNextDownload(
   // configure request until the current request succeeds.
   configurer_->ConfigureDataTypes(std::move(config_params));
 
-  AssociationTypesInfo association_info;
-  association_info.types = download_types_queue_.front();
-  association_info.ready_types = ready_types;
-  association_info.download_start_time = base::Time::Now();
-  association_info.high_priority_types_before = high_priority_types_before;
-  association_types_queue_.push(association_info);
+  DCHECK(!association_types_info_);
+  association_types_info_ = AssociationTypesInfo();
+  association_types_info_->types = download_types_queue_.front();
+  association_types_info_->ready_types = ready_types;
+  association_types_info_->download_start_time = base::Time::Now();
+  association_types_info_->high_priority_types_before =
+      high_priority_types_before;
 
   // Start associating those types that are already downloaded.
   StartNextAssociation(READY_AT_CONFIG);
@@ -642,21 +643,19 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
 }
 
 void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
-  DCHECK(!association_types_queue_.empty());
+  DCHECK(association_types_info_);
+  DCHECK(state_ == STOPPING || state_ == CONFIGURING);
 
   ModelTypeSet types_to_associate;
   if (group == READY_AT_CONFIG) {
-    types_to_associate = association_types_queue_.front().ready_types;
+    types_to_associate = association_types_info_->ready_types;
   } else {
     DCHECK_EQ(UNREADY_AT_CONFIG, group);
-    // Only start associating the rest of the types if they have all finished
-    // downloading.
-    if (association_types_queue_.front().download_ready_time.is_null())
-      return;
+    DCHECK(!association_types_info_->download_ready_time.is_null());
     // We request the full set of types here for completeness sake. All types
     // within the READY_AT_CONFIG set will already be started and should be
     // no-ops.
-    types_to_associate = association_types_queue_.front().types;
+    types_to_associate = association_types_info_->types;
   }
 
   for (ModelType type : types_to_associate) {
@@ -664,8 +663,6 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
       RecordConfigurationStats(type);
     }
   }
-
-  DCHECK(state_ == STOPPING || state_ == CONFIGURING);
 
   if (state_ == STOPPING)
     return;
@@ -678,18 +675,17 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
   // If this model association was for the full set of types, then this priority
   // set is done. Otherwise it was just the ready types and the unready types
   // still need to be associated.
-  if (types_to_associate == association_types_queue_.front().types) {
-    association_types_queue_.pop();
-    if (!association_types_queue_.empty()) {
-      StartNextAssociation(READY_AT_CONFIG);
-    } else if (download_types_queue_.empty()) {
+  if (types_to_associate == association_types_info_->types) {
+    association_types_info_.reset();
+    if (download_types_queue_.empty()) {
       state_ = CONFIGURED;
       NotifyDone(ConfigureResult(OK, types_to_associate));
     }
   } else {
-    DCHECK_EQ(association_types_queue_.front().ready_types, types_to_associate);
-    // Will do nothing if the types are still downloading.
-    StartNextAssociation(UNREADY_AT_CONFIG);
+    DCHECK_EQ(association_types_info_->ready_types, types_to_associate);
+    // The remaining types are still downloading; this method will get called
+    // again (with UNREADY_AT_CONFIG) once the download finishes.
+    DCHECK(association_types_info_->download_ready_time.is_null());
   }
 }
 
@@ -715,7 +711,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
 }
 
 void DataTypeManagerImpl::RecordConfigurationStats(ModelType type) {
-  DCHECK(!association_types_queue_.empty());
+  DCHECK(association_types_info_);
 
   if (!debug_info_listener_.IsInitialized())
     return;
@@ -723,7 +719,7 @@ void DataTypeManagerImpl::RecordConfigurationStats(ModelType type) {
   if (configuration_stats_.count(type) > 0)
     return;
 
-  AssociationTypesInfo& info = association_types_queue_.front();
+  AssociationTypesInfo& info = *association_types_info_;
   configuration_stats_[type].model_type = type;
   if (info.types.Has(type)) {
     // Times in |info| only apply to non-slow types.

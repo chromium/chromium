@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
@@ -235,19 +236,19 @@ class DataTypeManagerImpl : public DataTypeManager,
     // and had to be purged/unapplied from the sync db.
     // This is a subset of |types|.
     ModelTypeSet first_sync_types;
-    // Types that were already ready for association at configuration time.
+    // Types that were already already downloaded at configuration time.
     ModelTypeSet ready_types;
     // Time at which |types| began downloading.
     base::Time download_start_time;
     // Time at which |types| finished downloading.
     base::Time download_ready_time;
-    // The set of types that are higher priority (and were therefore blocking)
-    // the association of |types|.
+    // The set of types that are higher priority, and were therefore blocking
+    // the download of |types|.
     ModelTypeSet high_priority_types_before;
     // The subset of |types| that were successfully configured.
     ModelTypeSet configured_types;
   };
-  base::queue<AssociationTypesInfo> association_types_queue_;
+  base::Optional<AssociationTypesInfo> association_types_info_;
 
   // The encryption handler lets the DataTypeManager know the state of sync
   // datatype encryption.
