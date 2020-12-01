@@ -2743,10 +2743,8 @@ void Document::ApplyScrollRestorationLogic() {
 }
 
 void Document::MarkHasFindInPageRequest() {
-  // Note that although find-in-page requests happen in non-main frames, we only
-  // record the main frame results (per UKM policy). Additionally, we only
-  // record the event once.
-  if (had_find_in_page_request_ || !IsInMainFrame())
+  // Only record the event once in a document.
+  if (had_find_in_page_request_)
     return;
 
   auto* recorder = UkmRecorder();
@@ -2759,10 +2757,8 @@ void Document::MarkHasFindInPageRequest() {
 }
 
 void Document::MarkHasFindInPageContentVisibilityActiveMatch() {
-  // Note that although find-in-page in content-visibility requests happen in
-  // non-main frames, we only record the main frame results (per UKM policy).
-  // Additionally, we only record the event once.
-  if (had_find_in_page_render_subtree_active_match_ || !IsInMainFrame())
+  // Only record the event once in a document.
+  if (had_find_in_page_render_subtree_active_match_)
     return;
 
   auto* recorder = UkmRecorder();
@@ -2776,11 +2772,8 @@ void Document::MarkHasFindInPageContentVisibilityActiveMatch() {
 }
 
 void Document::MarkHasFindInPageBeforematchExpandedHiddenMatchable() {
-  // Note that although find-in-page in content-visibility requests happen in
-  // non-main frames, we only record the main frame results (per UKM policy).
-  // Additionally, we only record the event once.
-  if (had_find_in_page_beforematch_expanded_hidden_matchable_ ||
-      !IsInMainFrame())
+  // Only record the event once in a document.
+  if (had_find_in_page_beforematch_expanded_hidden_matchable_)
     return;
 
   auto* recorder = UkmRecorder();
