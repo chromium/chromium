@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/config/gpu_switches.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -173,6 +175,14 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     cdm_event_cb_registration_ = cdm_context_->RegisterEventCB(
         base::BindRepeating(&VaapiVideoDecoder::OnCdmContextEvent,
                             weak_this_factory_.GetWeakPtr()));
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  } else if (config.codec() == kCodecHEVC &&
+             !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                 switches::kEnableClearHevcForTesting)) {
+    DVLOG(1) << "Clear HEVC content is not supported";
+    std::move(init_cb).Run(StatusCode::kClearContentUnsupported);
+    return;
 #endif
   }
 

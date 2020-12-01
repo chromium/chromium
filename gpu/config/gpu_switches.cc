@@ -102,4 +102,9 @@ const char kEnforceVulkanProtectedMemory[] = "enforce-vulkan-protected-memory";
 const char kDisableVulkanFallbackToGLForTesting[] =
     "disable-vulkan-fallback-to-gl-for-testing";
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+// Enables playback of clear (unencrypted) HEVC content for testing purposes.
+const char kEnableClearHevcForTesting[] = "enable-clear-hevc-for-testing";
+#endif
+
 }  // namespace switches

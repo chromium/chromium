@@ -272,6 +272,9 @@ static const char* const kSwitchNames[] = {
     switches::kVModule,
     switches::kUseAdapterLuid,
     switches::kWebViewDrawFunctorUsesVulkan,
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    switches::kEnableClearHevcForTesting,
+#endif
 #if defined(OS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
     switches::kDisableAVFoundationOverlays,
