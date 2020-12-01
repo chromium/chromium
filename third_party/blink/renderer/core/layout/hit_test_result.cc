@@ -186,8 +186,13 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   // relayout?
   if (box_fragment_ &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      !box_fragment_->IsLayoutObjectDestroyedOrMoved())
-    return box_fragment_->PostLayout()->PositionForPoint(LocalPoint());
+      !box_fragment_->IsLayoutObjectDestroyedOrMoved()) {
+    const NGPhysicalBoxFragment* fragment = box_fragment_->PostLayout();
+    // When the node is an inline object, |fragment| is the container fragment,
+    // and |LocalPoint()| is relative to the content.
+    const bool is_content_offset = fragment->GetLayoutObject() != layout_object;
+    return fragment->PositionForPoint(LocalPoint(), is_content_offset);
+  }
   return layout_object->PositionForPoint(LocalPoint());
 }
 

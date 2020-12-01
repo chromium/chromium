@@ -35,8 +35,7 @@ class SelectionControllerTest : public EditingTestBase {
 
   static PositionWithAffinity GetPositionFromHitTestResult(
       const HitTestResult& hit_test_result) {
-    return hit_test_result.InnerNode()->GetLayoutObject()->PositionForPoint(
-        hit_test_result.LocalPoint());
+    return hit_test_result.GetPosition();
   }
 
   PositionWithAffinity GetPositionAtLocation(const IntPoint& point) {
