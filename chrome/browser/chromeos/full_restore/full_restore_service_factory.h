@@ -21,9 +21,6 @@ class FullRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static FullRestoreServiceFactory* GetInstance();
 
-  static FullRestoreService* GetForBrowserContext(
-      content::BrowserContext* browser_context);
-
  private:
   friend base::NoDestructor<FullRestoreServiceFactory>;
 
@@ -37,6 +34,7 @@ class FullRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace full_restore

@@ -20,24 +20,6 @@ FullRestoreServiceFactory* FullRestoreServiceFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-FullRestoreService* FullRestoreServiceFactory::GetForBrowserContext(
-    content::BrowserContext* browser_context) {
-  if (!ash::features::IsFullRestoreEnabled())
-    return nullptr;
-
-  // No service for non-regular user profile, or ephemeral user profile.
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!ProfileHelper::IsRegularProfile(profile) ||
-      ProfileHelper::IsEphemeralUserProfile(profile)) {
-    return nullptr;
-  }
-
-  return static_cast<FullRestoreService*>(
-      FullRestoreServiceFactory::GetInstance()->GetServiceForBrowserContext(
-          browser_context, true));
-}
-
 FullRestoreServiceFactory::FullRestoreServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "FullRestoreService",
@@ -49,7 +31,21 @@ FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
 
 KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!ash::features::IsFullRestoreEnabled())
+    return nullptr;
+
+  // No service for non-regular user profile, or ephemeral user profile.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!ProfileHelper::IsRegularProfile(profile) ||
+      ProfileHelper::IsEphemeralUserProfile(profile)) {
+    return nullptr;
+  }
+
   return new FullRestoreService(Profile::FromBrowserContext(context));
+}
+
+bool FullRestoreServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
 }
 
 }  // namespace full_restore

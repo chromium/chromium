@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/file_system_provider/service_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service_factory.h"
@@ -58,6 +59,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AuthPolicyCredentialsManagerFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
+  chromeos::full_restore::FullRestoreServiceFactory::GetInstance();
   CroshLoaderFactory::GetInstance();
 #if defined(USE_CUPS)
   CupsProxyServiceManagerFactory::GetInstance();
