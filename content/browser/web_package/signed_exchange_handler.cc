@@ -540,14 +540,10 @@ SignedExchangeLoadResult SignedExchangeHandler::CheckCertRequirements(
   if (!net::asn1::HasCanSignHttpExchangesDraftExtension(
           net::x509_util::CryptoBufferAsStringPiece(
               verified_cert->cert_buffer())) &&
-      !base::FeatureList::IsEnabled(
-          features::kAllowSignedHTTPExchangeCertsWithoutExtension) &&
       !unverified_cert_chain_->ShouldIgnoreErrors()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(),
-        "Certificate must have CanSignHttpExchangesDraft extension. To ignore "
-        "this error for testing, enable "
-        "chrome://flags/#allow-sxg-certs-without-extension.",
+        "Certificate must have CanSignHttpExchangesDraft extension.",
         std::make_pair(0 /* signature_index */,
                        SignedExchangeError::Field::kSignatureCertUrl));
     return SignedExchangeLoadResult::kCertRequirementsNotMet;

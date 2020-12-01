@@ -146,7 +146,6 @@ static const char* kBadFlags[] = {
 // "stability and security will suffer".
 static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
     &blink::features::kRawClipboard,
-    &features::kAllowSignedHTTPExchangeCertsWithoutExtension,
     &features::kWebBundlesFromNetwork,
 #if defined(OS_ANDROID)
     &chrome::android::kCommandLineOnNonRooted,

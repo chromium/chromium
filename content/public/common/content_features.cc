@@ -29,14 +29,6 @@ const base::Feature kAllowContentInitiatedDataUrlNavigations{
     "AllowContentInitiatedDataUrlNavigations",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Accepts Origin-Signed HTTP Exchanges to be signed with certificates
-// that do not have CanSignHttpExchangesDraft extension.
-// TODO(https://crbug.com/862003): Remove when certificates with
-// CanSignHttpExchangesDraft extension are available from trusted CAs.
-const base::Feature kAllowSignedHTTPExchangeCertsWithoutExtension{
-    "AllowSignedHTTPExchangeCertsWithoutExtension",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Allows Blink to request fonts from the Android Downloadable Fonts API through
 // the service implemented on the Java side.
 const base::Feature kAndroidDownloadableFontsMatching{

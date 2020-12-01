@@ -4868,14 +4868,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseAAudioDriver)},
 #endif
 
-    {"allow-sxg-certs-without-extension",
-     flag_descriptions::kAllowSignedHTTPExchangeCertsWithoutExtensionName,
-     flag_descriptions::
-         kAllowSignedHTTPExchangeCertsWithoutExtensionDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         features::kAllowSignedHTTPExchangeCertsWithoutExtension)},
-
     {"enable-sxg-subresource-prefetching",
      flag_descriptions::kEnableSignedExchangeSubresourcePrefetchName,
      flag_descriptions::kEnableSignedExchangeSubresourcePrefetchDescription,

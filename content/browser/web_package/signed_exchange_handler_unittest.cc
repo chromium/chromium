@@ -656,32 +656,6 @@ TEST_P(SignedExchangeHandlerTest,
   EXPECT_EQ(static_cast<int>(expected_payload.size()), rv);
 }
 
-TEST_P(SignedExchangeHandlerTest, CertWithoutExtensionAllowedByFeatureFlag) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAllowSignedHTTPExchangeCertsWithoutExtension);
-
-  mock_cert_fetcher_factory_->ExpectFetch(
-      GURL("https://cert.example.org/cert.msg"),
-      GetTestFileContents("test.example.org-noext.public.pem.cbor"));
-  SetupMockCertVerifier("prime256v1-sha256-noext.public.pem",
-                        CreateCertVerifyResult());
-  SetSourceStreamContents("test.example.org_noext_test.sxg");
-
-  CreateSignedExchangeHandler(CreateTestURLRequestContext());
-  WaitForHeader();
-
-  ASSERT_TRUE(read_header());
-  EXPECT_EQ(SignedExchangeLoadResult::kSuccess, result());
-  EXPECT_EQ(net::OK, error());
-  std::string payload;
-  int rv = ReadPayloadStream(&payload);
-  std::string expected_payload = GetTestFileContents("test.html");
-
-  EXPECT_EQ(expected_payload, payload);
-  EXPECT_EQ(static_cast<int>(expected_payload.size()), rv);
-}
-
 TEST_P(SignedExchangeHandlerTest,
        CertWithoutExtensionAllowedByIgnoreErrorsSPKIListFlag) {
   SetIgnoreCertificateErrorsSPKIList(kPEMECDSAP256SPKIHash);

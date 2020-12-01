@@ -66,9 +66,6 @@ extern const char kAlignFontDisplayAutoTimeoutWithLCPGoalDescription[];
 extern const char kAllowInsecureLocalhostName[];
 extern const char kAllowInsecureLocalhostDescription[];
 
-extern const char kAllowSignedHTTPExchangeCertsWithoutExtensionName[];
-extern const char kAllowSignedHTTPExchangeCertsWithoutExtensionDescription[];
-
 extern const char kAllowSyncXHRInPageDismissalName[];
 extern const char kAllowSyncXHRInPageDismissalDescription[];
 
