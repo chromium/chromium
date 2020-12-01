@@ -21432,6 +21432,19 @@ Called by update_document_policy_enum.py.-->
   <int value="2144565498" label="en-ZA,bs"/>
 </enum>
 
+<enum name="EndRecordingReason">
+  <int value="0" label="Stop recording button"/>
+  <int value="1" label="Display or window closing"/>
+  <int value="2" label="Active user changed"/>
+  <int value="3" label="Session blocked"/>
+  <int value="4" label="Shutting down"/>
+  <int value="5" label="Imminent suspend"/>
+  <int value="6" label="Recording service disconnected"/>
+  <int value="7" label="File IO error"/>
+  <int value="8" label="Dlp interruption"/>
+  <int value="9" label="Low disk space"/>
+</enum>
+
 <enum name="EnhancedBookmarkViewMode">
   <obsolete>
     Deprecated 9/2015.

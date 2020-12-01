@@ -11,6 +11,8 @@ namespace ash {
 
 namespace {
 
+constexpr char kEndRecordingReasonHistogramName[] =
+    "Ash.CaptureModeController.EndRecordingReason";
 constexpr char kBarButtonHistogramName[] =
     "Ash.CaptureModeController.BarButtons";
 constexpr char kCaptureConfigurationHistogramName[] =
@@ -60,6 +62,11 @@ CaptureModeConfiguration GetConfiguration(CaptureModeType type,
 }
 
 }  // namespace
+
+void RecordEndRecordingReason(EndRecordingReason reason) {
+  base::UmaHistogramEnumeration(
+      GetCaptureModeHistogramName(kEndRecordingReasonHistogramName), reason);
+}
 
 void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type) {
   base::UmaHistogramEnumeration(

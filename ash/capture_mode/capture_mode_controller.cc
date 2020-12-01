@@ -351,7 +351,8 @@ void CaptureModeController::PerformCapture() {
     CaptureVideo(*capture_params);
 }
 
-void CaptureModeController::EndVideoRecording() {
+void CaptureModeController::EndVideoRecording(EndRecordingReason reason) {
+  RecordEndRecordingReason(reason);
   recording_service_remote_->StopRecording();
   TerminateRecordingUiElements();
 }
@@ -391,22 +392,22 @@ void CaptureModeController::OnRecordingEnded(bool success) {
 
 void CaptureModeController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
-  EndSessionOrRecording(/*for_suspend=*/false);
+  EndSessionOrRecording(EndRecordingReason::kActiveUserChange);
 }
 
 void CaptureModeController::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (Shell::Get()->session_controller()->IsUserSessionBlocked())
-    EndSessionOrRecording(/*for_suspend=*/false);
+    EndSessionOrRecording(EndRecordingReason::kSessionBlocked);
 }
 
 void CaptureModeController::OnChromeTerminating() {
-  EndSessionOrRecording(/*for_suspend=*/false);
+  EndSessionOrRecording(EndRecordingReason::kShuttingDown);
 }
 
 void CaptureModeController::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
-  EndSessionOrRecording(/*for_suspend=*/true);
+  EndSessionOrRecording(EndRecordingReason::kImminentSuspend);
 }
 
 void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
@@ -415,7 +416,7 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   OnVideoRecordCountDownFinished();
 }
 
-void CaptureModeController::EndSessionOrRecording(bool for_suspend) {
+void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
   if (IsActive()) {
     // Suspend or user session changes can happen while the capture mode session
     // is active or after the three-second countdown had started but not
@@ -427,7 +428,7 @@ void CaptureModeController::EndSessionOrRecording(bool for_suspend) {
   if (!is_recording_in_progress_)
     return;
 
-  if (for_suspend) {
+  if (reason == EndRecordingReason::kImminentSuspend) {
     // If suspend happens while recording is in progress, we consider this a
     // failure, and cut the recording immediately. The recording service may
     // have some buffered chunks that will never be received, and as a result,
@@ -436,11 +437,12 @@ void CaptureModeController::EndSessionOrRecording(bool for_suspend) {
     // end the recording normally by asking the service to StopRecording(), and
     // block the suspend until all chunks have been received, and then we can
     // resume it.
+    RecordEndRecordingReason(EndRecordingReason::kImminentSuspend);
     OnRecordingEnded(/*success=*/false);
     return;
   }
 
-  EndVideoRecording();
+  EndVideoRecording(reason);
 }
 
 base::Optional<CaptureModeController::CaptureParams>
@@ -566,6 +568,7 @@ void CaptureModeController::OnRecordingServiceDisconnected() {
   // Note that the service could disconnect between the time we ask it to
   // StopRecording(), and it calling us back with OnRecordingEnded(), so we call
   // OnRecordingEnded() in all cases.
+  RecordEndRecordingReason(EndRecordingReason::kRecordingServiceDisconnected);
   OnRecordingEnded(/*success=*/false);
 }
 
@@ -666,7 +669,7 @@ void CaptureModeController::OnVideoFileStatus(bool success) {
     return;
 
   // TODO(afakhry): Show the user a message about IO failure.
-  EndVideoRecording();
+  EndVideoRecording(EndRecordingReason::kFileIoError);
 }
 
 void CaptureModeController::OnVideoFileSaved(bool success) {
@@ -863,7 +866,7 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
 void CaptureModeController::InterruptVideoRecording() {
   ShowVideoRecordingStoppedNotification();
-  EndVideoRecording();
+  EndVideoRecording(EndRecordingReason::kDlpInterruption);
 }
 
 void CaptureModeController::OnLowDiskSpace() {
@@ -875,7 +878,7 @@ void CaptureModeController::OnLowDiskSpace() {
   // allow the remaining chunks to be saved normally. However,
   // |low_disk_space_threshold_reached_| will be used to display a different
   // message in the notification.
-  EndVideoRecording();
+  EndVideoRecording(EndRecordingReason::kLowDiskSpace);
 }
 
 }  // namespace ash

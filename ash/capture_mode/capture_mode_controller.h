@@ -88,7 +88,7 @@ class ASH_EXPORT CaptureModeController
   // the capture session.
   void PerformCapture();
 
-  void EndVideoRecording();
+  void EndVideoRecording(EndRecordingReason reason);
 
   // Called when the feedback button on the capture bar is pressed.
   void OpenFeedbackDialog();
@@ -114,9 +114,7 @@ class ASH_EXPORT CaptureModeController
 
   // Used by user session change, and suspend events to end the capture mode
   // session if it's active, or stop the video recording if one is in progress.
-  // |for_suspend| is true when this is called from |SuspendImminent()|, which
-  // leads to ending the video recording immediately as if it's a failure.
-  void EndSessionOrRecording(bool for_suspend);
+  void EndSessionOrRecording(EndRecordingReason reason);
 
   // Returns the capture parameters for the capture operation that is about to
   // be performed (i.e. the window to be captured, and the capture bounds). If

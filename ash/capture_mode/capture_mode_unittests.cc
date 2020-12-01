@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
@@ -46,6 +47,9 @@
 namespace ash {
 
 namespace {
+
+constexpr char kEndRecordingReasonInClamshellHistogramName[] =
+    "Ash.CaptureModeController.EndRecordingReason.ClamshellMode";
 
 // Returns true if the software-composited cursor is enabled.
 bool IsCursorCompositingEnabled() {
@@ -400,17 +404,10 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
-// TODO(https://crbug.com/1141927): test is flakey.
-TEST_F(CaptureModeTest, DISABLED_VideoRecordingUiBehavior) {
-  // We need a non-zero duration to avoid infinite loop on countdown.
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  auto* controller = CaptureModeController::Get();
+TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   // Start Capture Mode in a fullscreen video recording mode.
-  controller->SetSource(CaptureModeSource::kFullscreen);
-  controller->SetType(CaptureModeType::kVideo);
-  controller->Start(CaptureModeEntryType::kQuickSettings);
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   EXPECT_TRUE(controller->IsActive());
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(IsCursorCompositingEnabled());
@@ -432,10 +429,14 @@ TEST_F(CaptureModeTest, DISABLED_VideoRecordingUiBehavior) {
 
   // End recording via the stop-recording button. Expect that it's now hidden,
   // and the cursor compositing is now disabled.
+  base::HistogramTester histogram_tester;
   ClickOnView(stop_recording_button, event_generator);
   EXPECT_FALSE(stop_recording_button->visible_preferred());
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(IsCursorCompositingEnabled());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kStopRecordingButton, 1);
 }
 
 // Tests the behavior of repositioning a region with capture mode.
@@ -1364,6 +1365,7 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
   EXPECT_TRUE(controller->is_recording_in_progress());
 
   // Closing the window being recorded should end video recording.
+  base::HistogramTester histogram_tester;
   window.reset();
 
   auto* stop_recording_button = Shell::GetPrimaryRootWindowController()
@@ -1371,6 +1373,9 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
                                     ->stop_recording_button_tray();
   EXPECT_FALSE(stop_recording_button->visible_preferred());
   EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kDisplayOrWindowClosing, 1);
 }
 
 TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
@@ -1439,18 +1444,26 @@ TEST_F(CaptureModeTest, SuspendAfterRecordingStarts) {
                                          CaptureModeType::kVideo);
   controller->StartVideoRecordingImmediatelyForTesting();
   EXPECT_TRUE(controller->is_recording_in_progress());
+  base::HistogramTester histogram_tester;
   power_manager_client()->SendSuspendImminent(
       power_manager::SuspendImminent::IDLE);
   EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kImminentSuspend, 1);
 }
 
 TEST_F(CaptureModeTest, SwitchUsersWhileRecording) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   controller->StartVideoRecordingImmediatelyForTesting();
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(controller->is_recording_in_progress());
   SwitchToUser2();
   EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kActiveUserChange, 1);
 }
 
 TEST_F(CaptureModeTest, SwitchUsersAfterCountdownStarts) {
@@ -1489,6 +1502,7 @@ TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
 
   // Disconnecting the display being fullscreen recorded should end the
   // recording and remove the stop recording button.
+  base::HistogramTester histogram_tester;
   RemoveSecondaryDisplay();
   roots = Shell::GetAllRootWindows();
   ASSERT_EQ(1u, roots.size());
@@ -1498,6 +1512,9 @@ TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
                               ->GetStatusAreaWidget()
                               ->stop_recording_button_tray();
   EXPECT_FALSE(stop_recording_button->visible_preferred());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kDisplayOrWindowClosing, 1);
 }
 
 TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
