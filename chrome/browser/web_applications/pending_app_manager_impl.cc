@@ -179,7 +179,8 @@ void PendingAppManagerImpl::MaybeStartNext() {
       // Otherwise no need to do anything.
       std::move(front->callback)
           .Run(install_options.install_url,
-               InstallResultCode::kSuccessAlreadyInstalled);
+               {.code = InstallResultCode::kSuccessAlreadyInstalled,
+                .did_uninstall_and_replace = false});
       continue;
     }
 
@@ -190,7 +191,8 @@ void PendingAppManagerImpl::MaybeStartNext() {
         !install_options.override_previous_user_uninstall) {
       std::move(front->callback)
           .Run(install_options.install_url,
-               InstallResultCode::kPreviouslyUninstalled);
+               {.code = InstallResultCode::kPreviouslyUninstalled,
+                .did_uninstall_and_replace = false});
       continue;
     }
 
@@ -272,14 +274,10 @@ void PendingAppManagerImpl::OnUrlLoaded(WebAppUrlLoader::Result result) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PendingAppManagerImpl::OnInstalled(PendingAppInstallTask::Result result) {
-  CurrentInstallationFinished(result.app_id, result.code);
-}
-
-void PendingAppManagerImpl::CurrentInstallationFinished(
-    const base::Optional<AppId>& app_id,
-    InstallResultCode code) {
-  if (app_id && IsSuccess(code)) {
+void PendingAppManagerImpl::OnInstalled(
+    base::Optional<AppId> app_id,
+    PendingAppManager::InstallResult result) {
+  if (app_id && IsSuccess(result.code)) {
     MaybeEnqueueServiceWorkerRegistration(
         current_install_->task->install_options());
   }
@@ -292,7 +290,7 @@ void PendingAppManagerImpl::CurrentInstallationFinished(
   std::unique_ptr<TaskAndCallback> task_and_callback;
   task_and_callback.swap(current_install_);
   std::move(task_and_callback->callback)
-      .Run(task_and_callback->task->install_options().install_url, code);
+      .Run(task_and_callback->task->install_options().install_url, result);
 }
 
 void PendingAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(

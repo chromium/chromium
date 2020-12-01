@@ -85,7 +85,7 @@ class ExternalWebAppManager {
                    std::vector<ExternalInstallOptions>);
   void OnExternalWebAppsSynchronized(
       PendingAppManager::SynchronizeCallback callback,
-      std::map<GURL, InstallResultCode> install_results,
+      std::map<GURL, PendingAppManager::InstallResult> install_results,
       std::map<GURL, bool> uninstall_results);
 
   base::FilePath GetConfigDir();

@@ -27,16 +27,6 @@
 
 namespace web_app {
 
-PendingAppInstallTask::Result::Result(InstallResultCode code,
-                                      base::Optional<AppId> app_id)
-    : code(code), app_id(std::move(app_id)) {
-  DCHECK_EQ(IsNewInstall(code), app_id.has_value());
-}
-
-PendingAppInstallTask::Result::Result(Result&&) = default;
-
-PendingAppInstallTask::Result::~Result() = default;
-
 // static
 void PendingAppInstallTask::CreateTabHelpers(
     content::WebContents* web_contents) {
@@ -123,7 +113,8 @@ void PendingAppInstallTask::Install(content::WebContents* web_contents,
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(retry_on_failure), Result(code, base::nullopt)));
+      base::BindOnce(std::move(retry_on_failure), /*app_id=*/base::nullopt,
+                     PendingAppManager::InstallResult{.code = code}));
 }
 
 void PendingAppInstallTask::InstallFromInfo(ResultCallback result_callback) {
@@ -172,8 +163,8 @@ void PendingAppInstallTask::OnPlaceholderUninstalled(
     LOG(ERROR) << "Failed to uninstall placeholder for: "
                << install_options_.install_url;
     std::move(result_callback)
-        .Run(Result(InstallResultCode::kFailedPlaceholderUninstall,
-                    base::nullopt));
+        .Run(/*app_id=*/base::nullopt,
+             {.code = InstallResultCode::kFailedPlaceholderUninstall});
     return;
   }
   ContinueWebAppInstall(web_contents, std::move(result_callback));
@@ -203,8 +194,9 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
     // No need to install a placeholder app again.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       Result(InstallResultCode::kSuccessNewInstall, app_id)));
+        base::BindOnce(std::move(callback), app_id,
+                       PendingAppManager::InstallResult{
+                           .code = InstallResultCode::kSuccessNewInstall}));
     return;
   }
 
@@ -241,11 +233,11 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
                                               const AppId& app_id,
                                               InstallResultCode code) {
   if (!IsNewInstall(code)) {
-    std::move(result_callback).Run(Result(code, base::nullopt));
+    std::move(result_callback).Run(/*app_id=*/base::nullopt, {.code = code});
     return;
   }
 
-  ui_manager_->UninstallAndReplaceIfExists(
+  bool did_uninstall_and_replace = ui_manager_->UninstallAndReplaceIfExists(
       install_options().uninstall_and_replace, app_id);
 
   externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
@@ -258,8 +250,11 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
                ? InstallResultCode::kSuccessOfflineOnlyInstall
                : InstallResultCode::kSuccessOfflineFallbackInstall;
   }
-  base::ScopedClosureRunner scoped_closure(
-      base::BindOnce(std::move(result_callback), Result(code, app_id)));
+  base::ScopedClosureRunner scoped_closure(base::BindOnce(
+      std::move(result_callback), app_id,
+      PendingAppManager::InstallResult{
+          .code = code,
+          .did_uninstall_and_replace = did_uninstall_and_replace}));
 
   if (!is_placeholder) {
     return;
@@ -297,12 +292,13 @@ void PendingAppInstallTask::OnOsHooksCreated(
 
 void PendingAppInstallTask::TryAppInfoFactoryOnFailure(
     ResultCallback result_callback,
-    Result result) {
+    base::Optional<AppId> app_id,
+    PendingAppManager::InstallResult result) {
   if (!IsSuccess(result.code) && install_options().app_info_factory) {
     InstallFromInfo(std::move(result_callback));
     return;
   }
-  std::move(result_callback).Run(std::move(result));
+  std::move(result_callback).Run(std::move(app_id), std::move(result));
 }
 
 }  // namespace web_app

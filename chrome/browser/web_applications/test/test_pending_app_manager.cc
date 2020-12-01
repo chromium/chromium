@@ -63,7 +63,7 @@ void TestPendingAppManager::Install(ExternalInstallOptions install_options,
           }
           install_requests_.push_back(install_options);
         }
-        std::move(std::move(callback)).Run(url, result_code);
+        std::move(std::move(callback)).Run(url, {.code = result_code});
       }));
 }
 

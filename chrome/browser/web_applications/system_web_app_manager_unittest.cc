@@ -634,8 +634,9 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
   }
 
   pending_app_manager().SetHandleInstallRequestCallback(
-      base::BindLambdaForTesting([](const ExternalInstallOptions&) {
-        return InstallResultCode::kWebAppDisabled;
+      base::BindLambdaForTesting([](const ExternalInstallOptions&)
+                                     -> PendingAppManager::InstallResult {
+        return {.code = InstallResultCode::kWebAppDisabled};
       }));
 
   {
@@ -724,10 +725,11 @@ TEST_F(SystemWebAppManagerTest,
   system_web_app_manager().SetSystemAppsForTesting(system_apps);
 
   pending_app_manager().SetHandleInstallRequestCallback(
-      base::BindLambdaForTesting([](const ExternalInstallOptions& opts) {
+      base::BindLambdaForTesting([](const ExternalInstallOptions& opts)
+                                     -> PendingAppManager::InstallResult {
         if (opts.install_url == AppUrl1())
-          return InstallResultCode::kSuccessAlreadyInstalled;
-        return InstallResultCode::kSuccessNewInstall;
+          return {.code = InstallResultCode::kSuccessAlreadyInstalled};
+        return {.code = InstallResultCode::kSuccessNewInstall};
       }));
 
   StartAndWaitForAppsToSynchronize();
@@ -756,10 +758,11 @@ TEST_F(SystemWebAppManagerTest,
 
   {
     pending_app_manager().SetHandleInstallRequestCallback(
-        base::BindLambdaForTesting([](const ExternalInstallOptions& opts) {
+        base::BindLambdaForTesting([](const ExternalInstallOptions& opts)
+                                       -> PendingAppManager::InstallResult {
           if (opts.install_url == AppUrl1())
-            return InstallResultCode::kWriteDataFailed;
-          return InstallResultCode::kSuccessNewInstall;
+            return {.code = InstallResultCode::kWriteDataFailed};
+          return {.code = InstallResultCode::kSuccessNewInstall};
         }));
 
     StartAndWaitForAppsToSynchronize();
@@ -772,10 +775,11 @@ TEST_F(SystemWebAppManagerTest,
 
   {
     pending_app_manager().SetHandleInstallRequestCallback(
-        base::BindLambdaForTesting([](const ExternalInstallOptions& opts) {
+        base::BindLambdaForTesting([](const ExternalInstallOptions& opts)
+                                       -> PendingAppManager::InstallResult {
           if (opts.install_url == AppUrl1())
-            return InstallResultCode::kSuccessNewInstall;
-          return InstallResultCode::kSuccessAlreadyInstalled;
+            return {.code = InstallResultCode::kSuccessNewInstall};
+          return {.code = InstallResultCode::kSuccessAlreadyInstalled};
         }));
     StartAndWaitForAppsToSynchronize();
 

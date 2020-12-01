@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_setup_controller.h"
+#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -98,7 +99,7 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
                           size_t num_attempts_so_far,
                           const GURL& app_url,
                           const GURL& install_url,
-                          web_app::InstallResultCode code);
+                          web_app::PendingAppManager::InstallResult result);
   void SetMigrationCookie(const GURL& app_url,
                           const GURL& migrated_to_app_url,
                           SuccessCallback callback);
