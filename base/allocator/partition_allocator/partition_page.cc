@@ -114,8 +114,8 @@ SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
 
 template <bool thread_safe>
 DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
-  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
 #if DCHECK_IS_ON()
+  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
 #endif
   PA_DCHECK(this != get_sentinel_slot_span());
@@ -130,21 +130,10 @@ DeferredUnmap SlotSpanMetadata<thread_safe>::FreeSlowPath() {
       bucket->SetNewActiveSlotSpan();
     PA_DCHECK(bucket->active_slot_spans_head != this);
 
-    // Decommit the slot span, but not unconditionally. For certain slot sizes
-    // there could be enough churn to result in slot spans transitioning between
-    // decommitted<->active states often enough to cause a perf regression. In
-    // these cases it's better to register them for lazy decommitting.
-    // However, decommitting single-slot slot spans immediately has been
-    // empirically confirmed not to cause a regression, but future optimizations
-    // may base the decision on slot size instead (see crrev.com/c/2549024for
-    // more details).
-    if (CanStoreRawSize()) {
+    if (CanStoreRawSize())
       SetRawSize(0);
 
-      Decommit(root);
-    } else {
-      PartitionRegisterEmptySlotSpan(this);
-    }
+    PartitionRegisterEmptySlotSpan(this);
   } else {
     PA_DCHECK(!bucket->is_direct_mapped());
     // Ensure that the slot span is full. That's the only valid case if we
@@ -176,7 +165,6 @@ template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   root->lock_.AssertAcquired();
   PA_DCHECK(is_empty());
-  PA_DCHECK(empty_cache_index == -1);
   PA_DCHECK(!bucket->is_direct_mapped());
   void* addr = SlotSpanMetadata::ToPointer(this);
   root->DecommitSystemPagesForData(addr, bucket->get_bytes_per_span(),

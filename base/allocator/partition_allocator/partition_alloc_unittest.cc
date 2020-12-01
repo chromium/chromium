@@ -1796,7 +1796,7 @@ TEST_F(PartitionAllocTest, DumpMemoryStats) {
     allocator.root()->Free(ptr2);
   }
 
-  // This test checks single-slot slot span allocations.
+  // This test checks large-but-not-quite-direct allocations.
   {
     const size_t requested_size = 16 * SystemPageSize();
     void* ptr = allocator.root()->Alloc(requested_size + 1, type_name);
@@ -1842,12 +1842,12 @@ TEST_F(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_FALSE(stats->is_direct_map);
       EXPECT_EQ(slot_size, stats->bucket_slot_size);
       EXPECT_EQ(0u, stats->active_bytes);
-      EXPECT_EQ(0u, stats->resident_bytes);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
+      EXPECT_EQ(slot_size, stats->resident_bytes);
+      EXPECT_EQ(slot_size, stats->decommittable_bytes);
       EXPECT_EQ(0u, stats->num_full_slot_spans);
       EXPECT_EQ(0u, stats->num_active_slot_spans);
-      EXPECT_EQ(0u, stats->num_empty_slot_spans);
-      EXPECT_EQ(1u, stats->num_decommitted_slot_spans);
+      EXPECT_EQ(1u, stats->num_empty_slot_spans);
+      EXPECT_EQ(0u, stats->num_decommitted_slot_spans);
     }
 
     void* ptr2 = allocator.root()->Alloc(requested_size + SystemPageSize() + 1,
@@ -2101,12 +2101,8 @@ TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
   const size_t kFirstAllocPages = kHasLargePages ? 32 : 64;
   const size_t kSecondAllocPages = kHasLargePages ? 31 : 61;
 
-  if (kFirstAllocPages > MaxSystemPagesPerSlotSpan()) {
-    GTEST_SKIP() << "Immediate decommitting interferes with this test.";
-  }
-
   // Detect case (1) from above.
-  ASSERT_LT(kFirstAllocPages * SystemPageSize(), 1UL << kMaxBucketedOrder);
+  DCHECK_LT(kFirstAllocPages * SystemPageSize(), 1UL << kMaxBucketedOrder);
 
   const size_t kDeltaPages = kFirstAllocPages - kSecondAllocPages;
 
@@ -2132,7 +2128,7 @@ TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
   EXPECT_EQ(kFirstAllocPages * SystemPageSize(), stats->resident_bytes);
 
   for (size_t i = 0; i < kFirstAllocPages; i++)
-    CHECK_PAGE_IN_CORE(p.PageAtIndex(i), false);
+    CHECK_PAGE_IN_CORE(p.PageAtIndex(i), true);
 
   allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
 
@@ -2574,12 +2570,10 @@ TEST_F(PartitionAllocTest, Bookkeeping) {
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
-  // Freeing memory for larger buckets decommits pages right away. The address
-  // space isn't released though.
+  // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
   root.Free(ptr2);
   root.Free(ptr3);
-  expected_committed_size -= 3 * bucket->get_bytes_per_span();
   EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
   EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
 
