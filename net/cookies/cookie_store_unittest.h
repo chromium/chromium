@@ -550,14 +550,14 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
 
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", foo_foo_host, "/foo", one_hour_ago, one_hour_from_now,
           base::Time(), false /* secure */, false /* httponly */,
           CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false),
       this->www_foo_foo_.url(), true));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "C", "D", "." + foo_bar_domain, "/bar", two_hours_ago, base::Time(),
           one_hour_ago, false, true, CookieSameSite::LAX_MODE,
           COOKIE_PRIORITY_DEFAULT, false),
@@ -567,7 +567,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   EXPECT_TRUE(
       this->SetCanonicalCookieReturnAccessResult(
               cs,
-              std::make_unique<CanonicalCookie>(
+              CanonicalCookie::CreateUnsafeCookieForTesting(
                   "E", "F", http_foo_host, "/", base::Time(), base::Time(),
                   base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
                   COOKIE_PRIORITY_DEFAULT, false),
@@ -592,7 +592,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   // a secure cookie then overwriting it from a non-secure source should fail.
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "E", "F", https_foo_host, "/", base::Time(), base::Time(),
           base::Time(), true /* secure */, false /* httponly */,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
@@ -601,7 +601,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
 
   EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
                       cs,
-                      std::make_unique<CanonicalCookie>(
+                      CanonicalCookie::CreateUnsafeCookieForTesting(
                           "E", "F", http_foo_host, "/", base::Time(),
                           base::Time(), base::Time(), true /* secure */,
                           false /* httponly */, CookieSameSite::NO_RESTRICTION,
@@ -615,7 +615,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
     // httponly cookie.
     EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
                         cs,
-                        std::make_unique<CanonicalCookie>(
+                        CanonicalCookie::CreateUnsafeCookieForTesting(
                             "G", "H", http_foo_host, "/unique", base::Time(),
                             base::Time(), base::Time(), false /* secure */,
                             true /* httponly */, CookieSameSite::LAX_MODE,
@@ -642,7 +642,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
     // an httponly cookie.
     EXPECT_TRUE(this->SetCanonicalCookie(
         cs,
-        std::make_unique<CanonicalCookie>(
+        CanonicalCookie::CreateUnsafeCookieForTesting(
             "G", "H", http_foo_host, "/unique", base::Time(), base::Time(),
             base::Time(), false /* secure */, true /* httponly */,
             CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
@@ -651,7 +651,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
 
     EXPECT_TRUE(this->SetCanonicalCookieReturnAccessResult(
                         cs,
-                        std::make_unique<CanonicalCookie>(
+                        CanonicalCookie::CreateUnsafeCookieForTesting(
                             "G", "H", http_foo_host, "/unique", base::Time(),
                             base::Time(), base::Time(), false /* secure */,
                             true /* httponly */, CookieSameSite::LAX_MODE,
@@ -663,7 +663,7 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
     // Leave store in same state as if the above tests had been run.
     EXPECT_TRUE(this->SetCanonicalCookie(
         cs,
-        std::make_unique<CanonicalCookie>(
+        CanonicalCookie::CreateUnsafeCookieForTesting(
             "G", "H", http_foo_host, "/unique", base::Time(), base::Time(),
             base::Time(), false /* secure */, true /* httponly */,
             CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
@@ -742,28 +742,28 @@ TYPED_TEST_P(CookieStoreTest, SecureEnforcement) {
   // but the other combinations work.
   EXPECT_FALSE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
           base::Time(), true, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       http_url, true /*modify_httponly*/));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
           base::Time(), true, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       https_url, true /*modify_httponly*/));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
           base::Time(), false, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
       https_url, true /*modify_httponly*/));
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
-      std::make_unique<CanonicalCookie>(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "B", http_domain, "/", base::Time::Now(), base::Time(),
           base::Time(), false, false, CookieSameSite::STRICT_MODE,
           COOKIE_PRIORITY_DEFAULT, false /* same_party */),
