@@ -125,7 +125,7 @@ class MODULES_EXPORT DecoderTemplate
   void OnFlushDone(media::Status);
   void OnConfigureFlushDone(media::Status);
   void OnResetDone();
-  void OnOutput(scoped_refptr<MediaOutputType>);
+  void OnOutput(uint32_t reset_generation, scoped_refptr<MediaOutputType>);
 
   // Helper function making it easier to check |state_|.
   bool IsClosed();

@@ -289,8 +289,8 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     Traits::InitializeDecoder(
         *decoder_, *pending_request_->media_config,
         WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
-        WTF::BindRepeating(&DecoderTemplate::OnOutput,
-                           WrapWeakPersistent(this)));
+        WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
+                           reset_generation_));
     initializing_sync_ = false;
     return true;
   }
@@ -498,7 +498,8 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
   Traits::InitializeDecoder(
       *decoder_, *pending_request_->media_config,
       WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
-      WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this)));
+      WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
+                         reset_generation_));
 }
 
 template <typename Traits>
@@ -573,8 +574,14 @@ void DecoderTemplate<Traits>::OnResetDone() {
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::OnOutput(scoped_refptr<MediaOutputType> output) {
+void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
+                                       scoped_refptr<MediaOutputType> output) {
   DVLOG(3) << __func__;
+
+  // Suppress outputs belonging to an earlier reset_generation.
+  if (reset_generation != reset_generation_)
+    return;
+
   if (state_.AsEnum() != V8CodecState::Enum::kConfigured)
     return;
 
