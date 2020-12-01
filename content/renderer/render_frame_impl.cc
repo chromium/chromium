@@ -5386,10 +5386,14 @@ bool RenderFrameImpl::SwapInInternal() {
   // Note: Calling swap() will detach and delete |previous_frame|, so do not
   // reference it after this.
   WebFrame* previous_web_frame = ResolveWebFrame(previous_routing_id_);
+
+  // With RenderDocument it's possible for the frame to be deleted as a side
+  // effect of JS event handlers called during swap.
+  bool is_main_frame = is_main_frame_;
   if (!previous_web_frame->Swap(frame_)) {
     // Main frames should always swap successfully because there is no parent
     // frame to cause them to become detached.
-    DCHECK(!is_main_frame_);
+    DCHECK(!is_main_frame);
     return false;
   }
 

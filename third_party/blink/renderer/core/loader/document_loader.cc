@@ -1845,6 +1845,19 @@ void DocumentLoader::CommitNavigation() {
           previous_window != frame_->DomWindow(),
           frame_->DomWindow()->GetSandboxFlags(),
           security_init.FeaturePolicyHeader(), document_policy_.feature_state);
+      // Originally, before OOPIFs, the previous document associated with the
+      // frame will always already by detached at this point, so no JS unload
+      // handlers should run. However, with OOPIFs, this `LocalFrame` might
+      // still be provisional: it doesn't become swapped in until Blink notifies
+      // the embedder by calling `DidCommitNavigation()`. As a result,
+      // `DidCommitLoad()` might end up running the unload handlers for the
+      // previous *frame* when swapping it out, which might detach `this`.
+      //
+      // TODO(https://crbug.com/1153043): Fix this so that the frame is swapped
+      // in earlier, at `FrameLoader::DetachDocument()`. At that point, it is
+      // certain that the navigation will commit.
+      if (!frame_)
+        return;
     }
     // TODO(dgozman): make DidCreateScriptContext notification call currently
     // triggered by installing new document happen here, after commit.

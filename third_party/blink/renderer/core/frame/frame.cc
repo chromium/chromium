@@ -151,7 +151,9 @@ void Frame::Detach(FrameDetachType type) {
     //    have unset itself as the provisional frame in `Swap()` already, so
     //    this should never be reached.
     // 3. Similarly, when swapping local->local, the actual navigation is
-    //    committing in this frame tree, and the same logic applies.
+    //    committing in this frame tree, and the same logic applies except for
+    //    one edge case where RenderDocument is enabled and a JS unload handler
+    //    removes its own frame, causing it to be detached during a swap.
     DCHECK_EQ(FrameDetachType::kRemove, type);
     provisional_frame_->Detach(type);
   }
@@ -539,12 +541,6 @@ bool Frame::Swap(WebFrame* frame) {
   // is being called on an already-detached frame which should never happen...
   if (!old_frame->IsAttached())
     return false;
-  if (provisional_frame_) {
-    // `this` is about to be replaced, so if `provisional_frame_` is set, it
-    // should match `frame` which is being swapped in.
-    DCHECK_EQ(provisional_frame_, WebFrame::ToCoreFrame(*frame));
-    provisional_frame_ = nullptr;
-  }
   FrameOwner* owner = old_frame->Owner();
   FrameSwapScope frame_swap_scope(owner);
   Frame* new_frame_parent = WebFrame::ToCoreFrame(*frame) && frame->Parent()
@@ -572,6 +568,13 @@ bool Frame::Swap(WebFrame* frame) {
     return false;
   }
 
+  if (provisional_frame_) {
+    // `this` is about to be replaced, so if `provisional_frame_` is set, it
+    // should match `frame` which is being swapped in.
+    DCHECK_EQ(provisional_frame_, WebFrame::ToCoreFrame(*frame));
+
+    provisional_frame_ = nullptr;
+  }
   // If there is a local parent, it might incorrectly declare itself complete
   // during the detach phase of this swap. Suppress its completion until swap is
   // over, at which point its completion will be correctly dependent on its
