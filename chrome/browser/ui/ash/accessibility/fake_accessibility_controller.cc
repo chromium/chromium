@@ -38,12 +38,14 @@ void FakeAccessibilityController::SetSelectToSpeakEventHandlerDelegate(
 
 void FakeAccessibilityController::ShowSelectToSpeakPanel(
     const gfx::Rect& anchor,
-    bool is_paused) {}
+    bool is_paused,
+    double speed) {}
 
 void FakeAccessibilityController::HideSelectToSpeakPanel() {}
 
 void FakeAccessibilityController::OnSelectToSpeakPanelAction(
-    ash::SelectToSpeakPanelAction action) {}
+    ash::SelectToSpeakPanelAction action,
+    double value) {}
 
 void FakeAccessibilityController::HideSwitchAccessBackButton() {}
 

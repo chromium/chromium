@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_MENU_VIEW_H_
 #define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_MENU_VIEW_H_
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/system/accessibility/select_to_speak_speed_bubble_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -19,7 +21,18 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(SelectToSpeakMenuView);
 
-  // IDs Used for testing.
+  class ASH_EXPORT Delegate {
+   public:
+    Delegate() {}
+    virtual ~Delegate() {}
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    // Invoked when user selects an option in the reading speed list.
+    virtual void OnActionSelected(SelectToSpeakPanelAction action) = 0;
+  };
+
+  // Button IDs
   enum class ButtonId {
     kPause = 1,
     kPrevParagraph = 2,
@@ -27,9 +40,10 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
     kNextParagraph = 4,
     kNextSentence = 5,
     kStop = 6,
+    kSpeed = 7,
   };
 
-  SelectToSpeakMenuView();
+  SelectToSpeakMenuView(Delegate* delegate);
   SelectToSpeakMenuView(const SelectToSpeakMenuView&) = delete;
   SelectToSpeakMenuView& operator=(const SelectToSpeakMenuView&) = delete;
   ~SelectToSpeakMenuView() override = default;
@@ -47,6 +61,9 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
   FloatingMenuButton* next_sentence_button_ = nullptr;
   FloatingMenuButton* next_paragraph_button_ = nullptr;
   FloatingMenuButton* stop_button_ = nullptr;
+  FloatingMenuButton* speed_button_ = nullptr;
+
+  Delegate* delegate_;
   bool is_paused_ = false;
 };
 

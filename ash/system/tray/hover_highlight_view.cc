@@ -139,6 +139,14 @@ void HoverHighlightView::AddLabelRow(const base::string16& text) {
   SetAccessibleName(text);
 }
 
+void HoverHighlightView::AddLabelRow(const base::string16& text,
+                                     int start_inset) {
+  AddLabelRow(text);
+
+  tri_view_->SetMinSize(TriView::Container::START,
+                        gfx::Size(start_inset, kTrayPopupItemMinHeight));
+}
+
 void HoverHighlightView::SetExpandable(bool expandable) {
   if (expandable != expandable_) {
     expandable_ = expandable;

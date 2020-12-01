@@ -1,0 +1,92 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/accessibility/select_to_speak_speed_bubble_controller.h"
+
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
+#include "ash/system/accessibility/floating_menu_utils.h"
+#include "ash/system/accessibility/select_to_speak_speed_view.h"
+#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/unified_system_tray_view.h"
+
+namespace ash {
+
+namespace {
+
+constexpr int kPreferredWidth = 150;
+constexpr int kBubbleViewMargin = 2;
+
+}  // namespace
+
+SelectToSpeakSpeedBubbleController::SelectToSpeakSpeedBubbleController() =
+    default;
+
+SelectToSpeakSpeedBubbleController::~SelectToSpeakSpeedBubbleController() {
+  if (bubble_widget_ && !bubble_widget_->IsClosed())
+    bubble_widget_->CloseNow();
+}
+
+void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
+                                              double speech_rate) {
+  DCHECK(anchor_view);
+  if (!bubble_widget_) {
+    TrayBubbleView::InitParams init_params;
+    init_params.delegate = this;
+    init_params.parent_window =
+        Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                            kShellWindowId_AccessibilityBubbleContainer);
+    init_params.anchor_mode = TrayBubbleView::AnchorMode::kView;
+    init_params.anchor_view = anchor_view;
+    init_params.is_anchored_to_status_area = false;
+    init_params.margin = gfx::Insets(kBubbleViewMargin, kBubbleViewMargin);
+    init_params.corner_radius = kUnifiedTrayCornerRadius;
+    init_params.has_shadow = false;
+    init_params.translucent = true;
+    init_params.preferred_width = kPreferredWidth;
+    bubble_view_ = new TrayBubbleView(init_params);
+    // TODO(crbug.com/1143814): Ensure this works correctly for RTL languages.
+    bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
+
+    speed_view_ = new SelectToSpeakSpeedView(this, speech_rate);
+    bubble_view_->AddChildView(speed_view_);
+    speed_view_->SetPaintToLayer();
+    speed_view_->layer()->SetFillsBoundsOpaquely(false);
+
+    bubble_widget_ =
+        views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
+    TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
+    bubble_view_->InitializeAndShowBubble();
+  }
+
+  bubble_view_->ChangeAnchorView(anchor_view);
+  bubble_widget_->Show();
+}
+
+void SelectToSpeakSpeedBubbleController::Hide() {
+  if (!bubble_widget_)
+    return;
+  bubble_widget_->Hide();
+}
+
+bool SelectToSpeakSpeedBubbleController::IsVisible() const {
+  return bubble_widget_ && bubble_widget_->IsVisible();
+}
+
+void SelectToSpeakSpeedBubbleController::BubbleViewDestroyed() {
+  bubble_view_ = nullptr;
+  bubble_widget_ = nullptr;
+}
+
+void SelectToSpeakSpeedBubbleController::OnSpeechRateSelected(
+    double speech_rate) {
+  Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(
+      SelectToSpeakPanelAction::kChangeSpeed, speech_rate);
+  Hide();
+}
+
+}  // namespace ash

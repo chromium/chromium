@@ -4,10 +4,8 @@
 
 #include "ash/system/accessibility/select_to_speak_menu_view.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/floating_menu_button.h"
@@ -51,6 +49,8 @@ SelectToSpeakPanelAction PanelActionForButtonID(int button_id, bool is_paused) {
       return SelectToSpeakPanelAction::kNextSentence;
     case SelectToSpeakMenuView::ButtonId::kStop:
       return SelectToSpeakPanelAction::kExit;
+    case SelectToSpeakMenuView::ButtonId::kSpeed:
+      return SelectToSpeakPanelAction::kChangeSpeed;
   }
 
   NOTREACHED();
@@ -59,7 +59,8 @@ SelectToSpeakPanelAction PanelActionForButtonID(int button_id, bool is_paused) {
 
 }  // namespace
 
-SelectToSpeakMenuView::SelectToSpeakMenuView() {
+SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
+    : delegate_(delegate) {
   int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
   int separator_spacing = (total_height - kSeparatorHeight) / 2;
   views::Builder<SelectToSpeakMenuView>(this)
@@ -118,7 +119,17 @@ SelectToSpeakMenuView::SelectToSpeakMenuView() {
                         .SetCallback(base::BindRepeating(
                             &SelectToSpeakMenuView::OnButtonPressed,
                             base::Unretained(this),
-                            base::Unretained(next_paragraph_button_)))}),
+                            base::Unretained(next_paragraph_button_))),
+                    views::Builder<FloatingMenuButton>()
+                        .CopyAddressTo(&speed_button_)
+                        .SetID(static_cast<int>(ButtonId::kSpeed))
+                        .SetVectorIcon(kSelectToSpeakReadingSpeedIcon)
+                        .SetTooltipText(l10n_util::GetStringUTF16(
+                            IDS_ASH_SELECT_TO_SPEAK_READING_SPEED))
+                        .SetCallback(base::BindRepeating(
+                            &SelectToSpeakMenuView::OnButtonPressed,
+                            base::Unretained(this),
+                            base::Unretained(speed_button_)))}),
            views::Builder<views::Separator>()
                .SetColor(AshColorProvider::Get()->GetContentLayerColor(
                    AshColorProvider::ContentLayerType::kSeparatorColor))
@@ -160,7 +171,7 @@ void SelectToSpeakMenuView::SetPaused(bool is_paused) {
 void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {
   SelectToSpeakPanelAction action =
       PanelActionForButtonID(sender->GetID(), is_paused_);
-  Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(action);
+  delegate_->OnActionSelected(action);
 }
 
 BEGIN_METADATA(SelectToSpeakMenuView, views::BoxLayoutView)

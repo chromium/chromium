@@ -337,7 +337,8 @@ class AccessibilityManager
                                    const std::string& focus_ring_name);
 
   // Sends a panel action event to the Select-to-speak extension.
-  void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action);
+  void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,
+                                  double value);
 
   // Test helpers:
   void SetProfileForTest(Profile* profile);

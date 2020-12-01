@@ -1,0 +1,57 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
+#define ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_
+
+#include "ash/system/tray/view_click_listener.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
+
+namespace ash {
+
+// View for the Select-to-Speak reading speed (speech rate) selection list.
+class SelectToSpeakSpeedView : public views::BoxLayoutView,
+                               public ViewClickListener {
+ public:
+  METADATA_HEADER(SelectToSpeakSpeedView);
+
+  class ASH_EXPORT Delegate {
+   public:
+    Delegate() {}
+    virtual ~Delegate() {}
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual void OnSpeechRateSelected(double speech_rate) = 0;
+  };
+
+  SelectToSpeakSpeedView(Delegate* delegate, double initial_speech_rate);
+  SelectToSpeakSpeedView(const SelectToSpeakSpeedView&) = delete;
+  SelectToSpeakSpeedView& operator=(const SelectToSpeakSpeedView&) = delete;
+  ~SelectToSpeakSpeedView() override = default;
+
+ private:
+  void AddMenuItem(int option_id,
+                   const base::string16& label,
+                   bool is_selected);
+
+  // ViewClickListener:
+  void OnViewClicked(views::View* sender) override;
+
+  Delegate* delegate_ = nullptr;
+  double default_speech_rate_ = 0.0;
+};
+
+BEGIN_VIEW_BUILDER(/* no export */,
+                   SelectToSpeakSpeedView,
+                   views::BoxLayoutView)
+END_VIEW_BUILDER
+
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::SelectToSpeakSpeedView)
+
+#endif  // ASH_SYSTEM_ACCESSIBILITY_SELECT_TO_SPEAK_SPEED_VIEW_H_

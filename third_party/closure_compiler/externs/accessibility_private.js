@@ -199,6 +199,7 @@ chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
   NEXT_SENTENCE: 'nextSentence',
   NEXT_PARAGRAPH: 'nextParagraph',
   EXIT: 'exit',
+  CHANGESPEED: 'changeSpeed',
 };
 
 /**
@@ -413,10 +414,11 @@ chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
  * @param {!chrome.accessibilityPrivate.ScreenRect=} anchor A rectangle
  *     indicating the bounds of the object the panel should be displayed next
  *     to.
- * @param {boolean=} isPaused True if Select-to-speak playback is paused.
+ * @param {boolean=} isPaused Whether Select-to-speak playback is paused.
+ * @param {number=} speed Current reading speed.
  */
 chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(
-    show, anchor, isPaused) {};
+    show, anchor, isPaused, speed) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

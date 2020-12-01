@@ -4,6 +4,7 @@
 
 #include "ash/system/accessibility/select_to_speak_menu_bubble_controller.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/floating_menu_utils.h"
@@ -15,7 +16,7 @@ namespace ash {
 
 namespace {
 const int kAnchorRectVerticalSpacing = 12;
-const int kPreferredWidth = 324;
+const int kPreferredWidth = 368;
 }  // namespace
 
 SelectToSpeakMenuBubbleController::SelectToSpeakMenuBubbleController() =
@@ -27,7 +28,9 @@ SelectToSpeakMenuBubbleController::~SelectToSpeakMenuBubbleController() {
 }
 
 void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
-                                             bool is_paused) {
+                                             bool is_paused,
+                                             double initial_speech_rate) {
+  initial_speech_rate_ = initial_speech_rate;
   if (!bubble_widget_) {
     TrayBubbleView::InitParams init_params;
     init_params.delegate = this;
@@ -44,7 +47,7 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::TOP_LEFT);
 
-    menu_view_ = new SelectToSpeakMenuView();
+    menu_view_ = new SelectToSpeakMenuView(this);
     menu_view_->SetBorder(
         views::CreateEmptyBorder(kUnifiedTopShortcutSpacing, 0, 0, 0));
     bubble_view_->AddChildView(menu_view_);
@@ -68,15 +71,39 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
 }
 
 void SelectToSpeakMenuBubbleController::Hide() {
-  if (!bubble_widget_)
-    return;
-  bubble_widget_->Hide();
+  if (bubble_widget_) {
+    bubble_widget_->Hide();
+  }
+  if (speed_bubble_controller_) {
+    speed_bubble_controller_->Hide();
+    speed_bubble_controller_.reset();
+  }
 }
 
 void SelectToSpeakMenuBubbleController::BubbleViewDestroyed() {
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
   menu_view_ = nullptr;
+}
+
+void SelectToSpeakMenuBubbleController::OnActionSelected(
+    SelectToSpeakPanelAction action) {
+  if (action == SelectToSpeakPanelAction::kChangeSpeed) {
+    // Toggle reading speed selection menu.
+    if (!speed_bubble_controller_) {
+      speed_bubble_controller_ =
+          std::make_unique<SelectToSpeakSpeedBubbleController>();
+    }
+    if (speed_bubble_controller_->IsVisible()) {
+      speed_bubble_controller_->Hide();
+      speed_bubble_controller_.reset();
+    } else {
+      speed_bubble_controller_->Show(
+          /*anchor=*/menu_view_, initial_speech_rate_);
+    }
+  }
+  Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(
+      action, /*value=*/0.0);
 }
 
 }  // namespace ash

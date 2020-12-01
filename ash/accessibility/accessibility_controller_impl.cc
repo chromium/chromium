@@ -1004,7 +1004,8 @@ SelectToSpeakState AccessibilityControllerImpl::GetSelectToSpeakState() const {
 
 void AccessibilityControllerImpl::ShowSelectToSpeakPanel(
     const gfx::Rect& anchor,
-    bool is_paused) {
+    bool is_paused,
+    double speech_rate) {
   if (!features::IsSelectToSpeakNavigationControlEnabled()) {
     return;
   }
@@ -1012,7 +1013,7 @@ void AccessibilityControllerImpl::ShowSelectToSpeakPanel(
     select_to_speak_bubble_controller_ =
         std::make_unique<SelectToSpeakMenuBubbleController>();
   }
-  select_to_speak_bubble_controller_->Show(anchor, is_paused);
+  select_to_speak_bubble_controller_->Show(anchor, is_paused, speech_rate);
 }
 
 void AccessibilityControllerImpl::HideSelectToSpeakPanel() {
@@ -1024,11 +1025,12 @@ void AccessibilityControllerImpl::HideSelectToSpeakPanel() {
 }
 
 void AccessibilityControllerImpl::OnSelectToSpeakPanelAction(
-    SelectToSpeakPanelAction action) {
+    SelectToSpeakPanelAction action,
+    double value) {
   if (!features::IsSelectToSpeakNavigationControlEnabled() || !client_) {
     return;
   }
-  client_->OnSelectToSpeakPanelAction(action);
+  client_->OnSelectToSpeakPanelAction(action, value);
 }
 
 bool AccessibilityControllerImpl::IsSwitchAccessRunning() const {

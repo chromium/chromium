@@ -52,9 +52,10 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   void RequestSelectToSpeakStateChange() override {
     ++select_to_speak_state_changes_;
   }
-  void OnSelectToSpeakPanelAction(
-      ash::SelectToSpeakPanelAction action) override {
+  void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,
+                                  double value) override {
     last_select_to_speak_panel_action_ = action;
+    last_select_to_speak_panel_value_ = value;
   }
 
   ash::AccessibilityAlert last_a11y_alert_ = ash::AccessibilityAlert::NONE;
@@ -69,6 +70,7 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   int select_to_speak_state_changes_ = 0;
   ash::SelectToSpeakPanelAction last_select_to_speak_panel_action_ =
       ash::SelectToSpeakPanelAction::kNone;
+  double last_select_to_speak_panel_value_ = 0.0;
 
  private:
   bool dictation_on_ = false;
@@ -148,7 +150,9 @@ TEST_F(AccessibilityControllerClientTest, MethodCalls) {
 
   // Tests OnSelectToSpeakPanelAction method call.
   const ash::SelectToSpeakPanelAction action =
-      ash::SelectToSpeakPanelAction::kPause;
-  client.OnSelectToSpeakPanelAction(action);
+      ash::SelectToSpeakPanelAction::kChangeSpeed;
+  double panel_value = 1.5;
+  client.OnSelectToSpeakPanelAction(action, panel_value);
   EXPECT_EQ(action, client.last_select_to_speak_panel_action_);
+  EXPECT_EQ(panel_value, client.last_select_to_speak_panel_value_);
 }

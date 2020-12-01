@@ -240,7 +240,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   SetCanActivate(false);
   SetNotifyEnterExitOnChild(true);
   set_close_on_deactivate(init_params.close_on_deactivate);
-  set_margins(gfx::Insets());
+  set_margins(init_params.margin.has_value() ? init_params.margin.value()
+                                             : gfx::Insets());
 
   if (init_params.translucent) {
     // The following code will not work with bubble's shadow.

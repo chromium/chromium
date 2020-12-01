@@ -34,8 +34,8 @@ class AccessibilityControllerClient
       gfx::Point& point_in_screen) override;
   void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen) override;
   void OnSwitchAccessDisabled() override;
-  void OnSelectToSpeakPanelAction(
-      ash::SelectToSpeakPanelAction action) override;
+  void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,
+                                  double value) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClient);

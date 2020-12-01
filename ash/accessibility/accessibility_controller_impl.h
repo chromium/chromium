@@ -351,9 +351,12 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void SetSelectToSpeakState(SelectToSpeakState state) override;
   void SetSelectToSpeakEventHandlerDelegate(
       SelectToSpeakEventHandlerDelegate* delegate) override;
-  void ShowSelectToSpeakPanel(const gfx::Rect& anchor, bool is_paused) override;
+  void ShowSelectToSpeakPanel(const gfx::Rect& anchor,
+                              bool is_paused,
+                              double speech_rate) override;
   void HideSelectToSpeakPanel() override;
-  void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action) override;
+  void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
+                                  double value) override;
   void HideSwitchAccessBackButton() override;
   void HideSwitchAccessMenu() override;
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;

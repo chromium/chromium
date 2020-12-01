@@ -100,6 +100,8 @@ enum class SelectToSpeakPanelAction {
   kNextParagraph,
   // Exit Select-to-speak.
   kExit,
+  // Change reading speed.
+  kChangeSpeed,
 };
 
 enum class SwitchAccessCommand {

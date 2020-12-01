@@ -99,6 +99,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     base::Optional<SkColor> bg_color;
     base::Optional<int> corner_radius;
     base::Optional<gfx::Insets> insets;
+    base::Optional<gfx::Insets> margin;
     bool has_shadow = true;
     // Use half opaque widget instead of fully opaque.
     bool translucent = false;

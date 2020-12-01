@@ -161,6 +161,8 @@ void AccessibilityControllerClient::OnSwitchAccessDisabled() {
 }
 
 void AccessibilityControllerClient::OnSelectToSpeakPanelAction(
-    ash::SelectToSpeakPanelAction action) {
-  chromeos::AccessibilityManager::Get()->OnSelectToSpeakPanelAction(action);
+    ash::SelectToSpeakPanelAction action,
+    double value) {
+  chromeos::AccessibilityManager::Get()->OnSelectToSpeakPanelAction(action,
+                                                                    value);
 }

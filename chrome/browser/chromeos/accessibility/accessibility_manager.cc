@@ -180,6 +180,10 @@ std::string AccessibilityPrivateEnumForAction(
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::
               SELECT_TO_SPEAK_PANEL_ACTION_NEXTPARAGRAPH);
+    case ash::SelectToSpeakPanelAction::kChangeSpeed:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::
+              SELECT_TO_SPEAK_PANEL_ACTION_CHANGESPEED);
     case ash::SelectToSpeakPanelAction::kExit:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::
@@ -1704,7 +1708,8 @@ void AccessibilityManager::SetSwitchAccessKeysForTest(
 
 // Sends a panel action event to the Select-to-speak extension.
 void AccessibilityManager::OnSelectToSpeakPanelAction(
-    ash::SelectToSpeakPanelAction action) {
+    ash::SelectToSpeakPanelAction action,
+    double value) {
   if (!profile_)
     return;
 
@@ -1713,6 +1718,9 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
 
   auto event_args = std::make_unique<base::ListValue>();
   event_args->AppendString(AccessibilityPrivateEnumForAction(action));
+  if (value != 0.0) {
+    event_args->AppendDouble(value);
+  }
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION,

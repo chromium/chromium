@@ -1037,8 +1037,10 @@ class SelectToSpeak {
     if (this.shouldShowNavigationControls_()) {
       // TODO(crbug.com/1143817): Update paused state correctly once
       // pause/resume functionality is implemented.
+      // TODO(crbug.com/): Set actual initial speed.
       chrome.accessibilityPrivate.updateSelectToSpeakPanel(
-          /* show= */ true, /* anchor= */ focusRingRect, /* isPaused= */ false);
+          /* show= */ true, /* anchor= */ focusRingRect, /* isPaused= */ false,
+          /* speed= */ 1.2);
     }
   }
 

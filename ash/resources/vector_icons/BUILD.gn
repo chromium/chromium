@@ -162,6 +162,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "select_to_speak_play.icon",
     "select_to_speak_prev_paragraph.icon",
     "select_to_speak_prev_sentence.icon",
+    "select_to_speak_reading_speed.icon",
     "select_to_speak_stop.icon",
     "send.icon",
     "settings.icon",

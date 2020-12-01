@@ -58,6 +58,10 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
         ->GetSelectToSpeakMenuBubbleControllerForTest();
   }
 
+  SelectToSpeakSpeedBubbleController* GetSpeedBubbleController() {
+    return GetBubbleController()->speed_bubble_controller_.get();
+  }
+
   views::Widget* GetBubbleWidget() {
     return GetBubbleController()->bubble_widget_;
   }
@@ -76,7 +80,8 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void ShowSelectToSpeakPanel(bool is_paused) {
     gfx::Rect anchor_rect(10, 10, 0, 0);
-    GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect, is_paused);
+    GetAccessibilitController()->ShowSelectToSpeakPanel(anchor_rect, is_paused,
+                                                        /*speech_rate=*/1.2);
   }
 
  protected:
@@ -84,7 +89,7 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 };
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
-  ShowSelectToSpeakPanel(/* is_paused= */ true);
+  ShowSelectToSpeakPanel(/*is_paused=*/true);
   EXPECT_TRUE(GetMenuView());
 
   FloatingMenuButton* pause_button =
@@ -96,7 +101,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest,
        ShowSelectToSpeakPanel_notPaused) {
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   EXPECT_TRUE(GetMenuView());
 
   FloatingMenuButton* pause_button =
@@ -107,7 +112,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest,
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   GetAccessibilitController()->HideSelectToSpeakPanel();
   EXPECT_TRUE(GetMenuView());
   EXPECT_FALSE(GetBubbleWidget()->IsVisible());
@@ -115,7 +120,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PauseButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
   ui::GestureEvent event = CreateTapEvent();
@@ -127,7 +132,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, PauseButtonPressed) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, ResumeButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ true);
+  ShowSelectToSpeakPanel(/*is_paused=*/true);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
   ui::GestureEvent event = CreateTapEvent();
@@ -139,7 +144,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ResumeButtonPressed) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevParagraphButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPrevParagraph);
   ui::GestureEvent event = CreateTapEvent();
@@ -151,7 +156,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevParagraphButtonPressed) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPrevSentence);
   ui::GestureEvent event = CreateTapEvent();
@@ -163,7 +168,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceButtonPressed) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextParagraphButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kNextParagraph);
   ui::GestureEvent event = CreateTapEvent();
@@ -175,7 +180,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, NextParagraphButtonPressed) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kNextSentence);
   ui::GestureEvent event = CreateTapEvent();
@@ -187,7 +192,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceButtonPressed) {
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, StopButtonPressed) {
   TestAccessibilityControllerClient client;
-  ShowSelectToSpeakPanel(/* is_paused= */ false);
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kStop);
   ui::GestureEvent event = CreateTapEvent();
@@ -195,6 +200,22 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, StopButtonPressed) {
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kExit);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, ChangeSpeedButtonPressed) {
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
+  FloatingMenuButton* button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kSpeed);
+  ui::GestureEvent event = CreateTapEvent();
+  button->OnGestureEvent(&event);
+
+  EXPECT_TRUE(GetSpeedBubbleController() &&
+              GetSpeedBubbleController()->IsVisible());
+
+  // Clicking again hides the speed selection bubble.
+  button->OnGestureEvent(&event);
+  EXPECT_TRUE(!GetSpeedBubbleController() ||
+              !GetSpeedBubbleController()->IsVisible());
 }
 
 }  // namespace ash

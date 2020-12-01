@@ -610,14 +610,14 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  if (!params->anchor || !params->is_paused)
+  if (!params->anchor || !params->is_paused || !params->speed)
     return RespondNow(Error("Required parameters missing to show panel."));
 
   const gfx::Rect anchor =
       gfx::Rect(params->anchor->left, params->anchor->top,
                 params->anchor->width, params->anchor->height);
   ash::AccessibilityController::Get()->ShowSelectToSpeakPanel(
-      anchor, *params->is_paused);
+      anchor, *params->is_paused, *params->speed);
 
   return RespondNow(NoArguments());
 }

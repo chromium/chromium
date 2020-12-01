@@ -51,6 +51,9 @@ class HoverHighlightView : public ActionableView {
   // space that would normally be occupied by an icon.
   void AddLabelRow(const base::string16& text);
 
+  // Populates the view with a text label with custom start inset.
+  void AddLabelRow(const base::string16& text, int start_inset);
+
   // Adds an optional right icon to an already populated view. |icon_size| is
   // the size of the icon in DP.
   void AddRightIcon(const gfx::ImageSkia& image, int icon_size);

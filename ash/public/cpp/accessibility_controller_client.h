@@ -95,8 +95,9 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   virtual void OnSwitchAccessDisabled() = 0;
 
   // Called when an action occurs (such as button click) on the Select-to-speak
-  // floating control panel.
-  virtual void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action) = 0;
+  // floating control panel, with an optional value.
+  virtual void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
+                                          double value) = 0;
 };
 
 }  // namespace ash

@@ -207,7 +207,7 @@
       {
         "id": "SelectToSpeakPanelAction",
         "type": "string",
-        "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit" ],
+        "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit", "changeSpeed" ],
         "description": "Actions that can be performed in the Select-to-speak panel."
       }
     ],
@@ -551,6 +551,12 @@
             "type": "boolean",
             "description": "True if Select-to-speak playback is paused.",
             "optional": true
+          },
+          {
+            "name": "speed",
+            "type": "number",
+            "description": "Current reading speed (TTS speech rate).",
+            "optional": true
           }
         ],
         "platforms": ["chromeos"]
@@ -608,6 +614,11 @@
           {
             "name": "action",
             "$ref": "SelectToSpeakPanelAction"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "optional": true
           }
         ],
         "platforms": ["chromeos"]
