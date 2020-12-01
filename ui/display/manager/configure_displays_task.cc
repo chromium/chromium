@@ -93,6 +93,71 @@ std::__wrap_iter<const DisplayConfigureRequest*> GetRequestForDisplayId(
                  });
 }
 
+void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
+  const bool internal =
+      request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+
+  base::UmaHistogramExactLinear(
+      internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
+               : "ConfigureDisplays.External.Modeset.Resolution",
+      ComputeDisplayResolutionEnum(request.mode),
+      base::size(kDisplayResolutionSamples) *
+              base::size(kDisplayResolutionSamples) +
+          2);
+
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+      internal ? "ConfigureDisplays.Internal.Modeset.RefreshRate"
+               : "ConfigureDisplays.External.Modeset.RefreshRate",
+      1, 240, 18, base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->Add(request.mode ? std::round(request.mode->refresh_rate()) : 0);
+}
+
+void UpdateAttemptSucceededUma(DisplaySnapshot* display, bool display_success) {
+  const bool internal = display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+  base::UmaHistogramBoolean(
+      internal ? "ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
+               : "ConfigureDisplays.External.Modeset.AttemptSucceeded",
+      display_success);
+}
+
+void UpdateFinalStatusUma(const std::vector<DisplayConfigureRequest>& requests,
+                          bool config_success) {
+  int mst_external_displays = 0;
+  size_t total_external_displays = requests.size();
+  for (auto& request : requests) {
+    // Is this display SST (single-stream vs. MST multi-stream).
+    bool sst_display = request.display->base_connector_id() &&
+                       request.display->path_topology().empty();
+    if (!sst_display)
+      mst_external_displays++;
+
+    bool internal = request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+    if (internal)
+      total_external_displays--;
+
+    base::UmaHistogramBoolean(
+        internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
+                 : "ConfigureDisplays.External.Modeset.FinalStatus",
+        config_success);
+  }
+
+  base::UmaHistogramExactLinear(
+      "ConfigureDisplays.Modeset.TotalExternalDisplaysCount",
+      base::checked_cast<int>(total_external_displays), kMaxDisplaysCount);
+
+  base::UmaHistogramExactLinear(
+      "ConfigureDisplays.Modeset.MstExternalDisplaysCount",
+      mst_external_displays, kMaxDisplaysCount);
+
+  if (total_external_displays > 0) {
+    const int mst_displays_percentage =
+        100.0 * mst_external_displays / total_external_displays;
+    UMA_HISTOGRAM_PERCENTAGE(
+        "ConfigureDisplays.Modeset.MstExternalDisplaysPercentage",
+        mst_displays_percentage);
+  }
+}
+
 }  // namespace
 
 DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
@@ -123,20 +188,7 @@ void ConfigureDisplaysTask::Run() {
     config_requests.emplace_back(request.display->display_id(), request.origin,
                                  request.mode);
 
-    const bool internal =
-        request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-    base::UmaHistogramExactLinear(
-        internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
-                 : "ConfigureDisplays.External.Modeset.Resolution",
-        ComputeDisplayResolutionEnum(request.mode),
-        base::size(kDisplayResolutionSamples) *
-                base::size(kDisplayResolutionSamples) +
-            2);
-    base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-        internal ? "ConfigureDisplays.Internal.Modeset.RefreshRate"
-                 : "ConfigureDisplays.External.Modeset.RefreshRate",
-        1, 240, 18, base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(request.mode ? std::round(request.mode->refresh_rate()) : 0);
+    UpdateResolutionAndRefreshRateUma(request);
   }
 
   delegate_->Configure(config_requests,
@@ -170,12 +222,7 @@ void ConfigureDisplaysTask::OnConfigured(
             << " origin=" << request->origin.ToString()
             << " mode=" << (request->mode ? request->mode->ToString() : "null");
 
-    bool internal =
-        request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-    base::UmaHistogramBoolean(
-        internal ? "ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-                 : "ConfigureDisplays.External.Modeset.AttemptSucceeded",
-        display_success);
+    UpdateAttemptSucceededUma(request->display, display_success);
   }
 
   // Update displays upon success or prep |requests_| for reconfiguration.
@@ -210,40 +257,7 @@ void ConfigureDisplaysTask::OnConfigured(
   }
 
   // Update the final state.
-  int mst_external_displays = 0;
-  size_t total_external_displays = requests_.size();
-  for (auto& request : requests_) {
-    // Is this display SST (single-stream vs. MST multi-stream).
-    bool sst_display = request.display->base_connector_id() &&
-                       request.display->path_topology().empty();
-    if (!sst_display)
-      mst_external_displays++;
-
-    bool internal = request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-    if (internal)
-      total_external_displays--;
-
-    base::UmaHistogramBoolean(
-        internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
-                 : "ConfigureDisplays.External.Modeset.FinalStatus",
-        config_success);
-  }
-
-  base::UmaHistogramExactLinear(
-      "ConfigureDisplays.Modeset.TotalExternalDisplaysCount",
-      base::checked_cast<int>(total_external_displays), kMaxDisplaysCount);
-
-  base::UmaHistogramExactLinear(
-      "ConfigureDisplays.Modeset.MstExternalDisplaysCount",
-      mst_external_displays, kMaxDisplaysCount);
-
-  if (total_external_displays > 0) {
-    const int mst_displays_percentage =
-        100.0 * mst_external_displays / total_external_displays;
-    UMA_HISTOGRAM_PERCENTAGE(
-        "ConfigureDisplays.Modeset.MstExternalDisplaysPercentage",
-        mst_displays_percentage);
-  }
+  UpdateFinalStatusUma(requests_, config_success);
 
   if (!config_success)
     task_status_ = ERROR;
