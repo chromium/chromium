@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace content {
 class WebUI;
@@ -25,7 +27,8 @@ class PrimaryAccountAccessTokenFetcher;
 class Profile;
 
 class KaleidoscopeIdentityManagerImpl
-    : public media::mojom::KaleidoscopeIdentityManager {
+    : public media::mojom::KaleidoscopeIdentityManager,
+      public signin::IdentityManager::Observer {
  public:
   KaleidoscopeIdentityManagerImpl(
       mojo::PendingReceiver<media::mojom::KaleidoscopeIdentityManager> receiver,
@@ -43,6 +46,15 @@ class KaleidoscopeIdentityManagerImpl
   // media::mojom::KaleidoscopeIdentityManager implementation.
   void GetCredentials(GetCredentialsCallback cb) override;
   void SignIn() override;
+  void AddObserver(
+      mojo::PendingRemote<media::mojom::KaleidoscopeIdentityObserver> observer)
+      override;
+
+  // signin::IdentityManager::Observer implementation.
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
  private:
   // Called when an access token request completes (successfully or not).
@@ -63,6 +75,9 @@ class KaleidoscopeIdentityManagerImpl
 
   content::WebUI* web_ui_ = nullptr;
   Profile* profile_ = nullptr;
+
+  mojo::RemoteSet<media::mojom::KaleidoscopeIdentityObserver>
+      identity_observers_;
 
   mojo::Receiver<media::mojom::KaleidoscopeIdentityManager> receiver_;
 };

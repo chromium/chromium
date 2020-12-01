@@ -119,7 +119,25 @@ interface KaleidoscopeIdentityManager {
   GetCredentials() => (Credentials? credentials, CredentialsResult result);
 
   // Will trigger a browser signin.
+  // The caller has to use KaleidoscopeIdentityObserver in order to be notified
+  // if the user signs in. This method doesn't notify the caller directly given
+  // that the user may take no action.
   SignIn();
+
+  // Add an observer to be notified when the user signs in or out of Chrome.
+  AddObserver(pending_remote<KaleidoscopeIdentityObserver> observer);
+};
+
+// Interface to be implemented by clients of KaleidoscopeIdentityManager that
+// want to be notified when a sign in or sign out occurs. This must be used in
+// order to be notified if a call to SignIn() ultimately leads to the user
+// signing in.
+interface KaleidoscopeIdentityObserver {
+  // Called when the user signs in.
+  OnSignedIn();
+
+  // Called when the user signs out.
+  OnSignedOut();
 };
 
 enum GetCollectionsResult {

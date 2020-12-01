@@ -55,9 +55,12 @@ KaleidoscopeIdentityManagerImpl::KaleidoscopeIdentityManagerImpl(
   }
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
+  identity_manager_->AddObserver(this);
 }
 
-KaleidoscopeIdentityManagerImpl::~KaleidoscopeIdentityManagerImpl() = default;
+KaleidoscopeIdentityManagerImpl::~KaleidoscopeIdentityManagerImpl() {
+  identity_manager_->RemoveObserver(this);
+}
 
 void KaleidoscopeIdentityManagerImpl::GetCredentials(
     GetCredentialsCallback cb) {
@@ -144,4 +147,21 @@ void KaleidoscopeIdentityManagerImpl::SignIn() {
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE);
 #endif  // defined(OS_CHROMEOS)
+}
+
+void KaleidoscopeIdentityManagerImpl::AddObserver(
+    mojo::PendingRemote<media::mojom::KaleidoscopeIdentityObserver> observer) {
+  identity_observers_.Add(std::move(observer));
+}
+
+void KaleidoscopeIdentityManagerImpl::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  for (auto& observer : identity_observers_)
+    observer->OnSignedIn();
+}
+
+void KaleidoscopeIdentityManagerImpl::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  for (auto& observer : identity_observers_)
+    observer->OnSignedOut();
 }
