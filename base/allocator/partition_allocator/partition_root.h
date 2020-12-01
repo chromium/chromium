@@ -307,8 +307,10 @@ struct BASE_EXPORT PartitionRoot {
   // Enables PCScan for this root.
   void EnablePCScan() {
     PA_CHECK(thread_safe);
-    PA_CHECK(IsScannable() && !IsScanEnabled());
     ScopedGuard guard{lock_};
+    PA_CHECK(IsScannable());
+    if (IsScanEnabled())
+      return;
     PCScan::Instance().RegisterRoot(this);
     pcscan_mode = PCScanMode::kEnabled;
   }
