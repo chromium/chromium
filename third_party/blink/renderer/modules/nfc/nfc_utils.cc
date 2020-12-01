@@ -25,9 +25,6 @@ DOMException* NDEFErrorTypeToDOMException(
     case device::mojom::blink::NDEFErrorType::NOT_READABLE:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotReadableError, error_message);
-    case device::mojom::blink::NDEFErrorType::NOT_FOUND:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError, error_message);
     case device::mojom::blink::NDEFErrorType::INVALID_MESSAGE:
       return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
                                                 error_message);

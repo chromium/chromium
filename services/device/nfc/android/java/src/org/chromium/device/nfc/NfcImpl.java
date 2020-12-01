@@ -250,18 +250,11 @@ public class NfcImpl implements Nfc {
      * Cancels NFC watch operation.
      *
      * @param id of watch operation.
-     * @param callback that is used to notify caller when cancelWatch() is completed.
      */
     @Override
-    public void cancelWatch(int id, CancelWatchResponse callback) {
-        if (!checkIfReady(callback)) return;
-
-        if (!mWatchIds.contains(id)) {
-            callback.call(
-                    createError(NdefErrorType.NOT_FOUND, "No pending scan operation to cancel."));
-        } else {
+    public void cancelWatch(int id) {
+        if (mWatchIds.contains(id)) {
             mWatchIds.remove(mWatchIds.indexOf(id));
-            callback.call(null);
             disableReaderModeIfNeeded();
         }
     }
@@ -363,8 +356,7 @@ public class NfcImpl implements Nfc {
     /**
      * Uses checkIfReady() method and if NFC cannot be used, calls mojo callback with NdefError.
      *
-     * @param callback Generic callback that is provided to push(), cancelPush(), and
-     * cancelWatch() methods.
+     * @param callback Generic callback that is provided to push() and cancelPush() methods.
      * @return boolean true if NFC functionality can be used, false otherwise.
      */
     private boolean checkIfReady(Callbacks.Callback1<NdefError> callback) {

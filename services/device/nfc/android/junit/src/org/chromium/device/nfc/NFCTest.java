@@ -51,7 +51,6 @@ import org.chromium.device.mojom.NdefRecord;
 import org.chromium.device.mojom.NdefRecordTypeCategory;
 import org.chromium.device.mojom.NdefWriteOptions;
 import org.chromium.device.mojom.Nfc.CancelPushResponse;
-import org.chromium.device.mojom.Nfc.CancelWatchResponse;
 import org.chromium.device.mojom.Nfc.PushResponse;
 import org.chromium.device.mojom.Nfc.WatchResponse;
 import org.chromium.device.mojom.NfcClient;
@@ -1234,38 +1233,12 @@ public class NFCTest {
         verify(mockWatchCallback).call(mErrorCaptor.capture());
         assertNull(mErrorCaptor.getValue());
 
-        CancelWatchResponse mockCancelWatchCallback = mock(CancelWatchResponse.class);
-        nfc.cancelWatch(mNextWatchId, mockCancelWatchCallback);
-
-        // Check that cancel request was successfuly completed.
-        verify(mockCancelWatchCallback).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
+        nfc.cancelWatch(mNextWatchId);
 
         // Check that watch is not triggered when NFC tag is in proximity.
         nfc.processPendingOperationsForTesting(mNfcTagHandler);
         verify(mNfcClient, times(0))
                 .onWatch(any(int[].class), nullable(String.class), any(NdefMessage.class));
-    }
-
-    /**
-     * Test that Nfc.cancelWatch() with invalid id is failing with NOT_FOUND error.
-     */
-    @Test
-    @Feature({"NFCTest"})
-    public void testCancelWatchInvalidId() {
-        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
-        mDelegate.invokeCallback();
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
-        nfc.watch(mNextWatchId, mockWatchCallback);
-
-        verify(mockWatchCallback).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
-
-        CancelWatchResponse mockCancelWatchCallback = mock(CancelWatchResponse.class);
-        nfc.cancelWatch(mNextWatchId + 1, mockCancelWatchCallback);
-
-        verify(mockCancelWatchCallback).call(mErrorCaptor.capture());
-        assertEquals(NdefErrorType.NOT_FOUND, mErrorCaptor.getValue().errorType);
     }
 
     /**
@@ -1531,12 +1504,7 @@ public class NFCTest {
 
         verify(mNfcAdapter, times(0)).disableReaderMode(mActivity);
 
-        CancelWatchResponse mockCancelWatchCallback = mock(CancelWatchResponse.class);
-        nfc.cancelWatch(mNextWatchId, mockCancelWatchCallback);
-
-        // Check that cancel request was successfuly completed.
-        verify(mockCancelWatchCallback).call(mErrorCaptor.capture());
-        assertNull(mErrorCaptor.getValue());
+        nfc.cancelWatch(mNextWatchId);
 
         // Reader mode is disabled when there are no pending push / watch operations.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);

@@ -61,11 +61,8 @@ void NFCProxy::StopReading(NDEFReader* reader) {
   DCHECK(reader);
   auto iter = readers_.find(reader);
   if (iter != readers_.end()) {
-    if (nfc_remote_) {
-      // We do not need to notify |reader| of anything.
-      nfc_remote_->CancelWatch(
-          iter->value, device::mojom::blink::NFC::CancelWatchCallback());
-    }
+    if (nfc_remote_)
+      nfc_remote_->CancelWatch(iter->value);
     readers_.erase(iter);
   }
 }

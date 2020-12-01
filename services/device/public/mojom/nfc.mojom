@@ -5,14 +5,13 @@
 module device.mojom;
 
 enum NDEFErrorType {
-  // No permssion.
+  // No permission.
   NOT_ALLOWED,
   // No hardware support, no NFC adapter, the connection cannot be established,
   // or operation is not supported by the NFC Adapter.
   NOT_SUPPORTED,
   // NFC adapter is disabled.
   NOT_READABLE,
-  NOT_FOUND,
   INVALID_MESSAGE,
   OPERATION_CANCELLED,
   CANNOT_CANCEL,
@@ -122,7 +121,7 @@ interface NFC {
   Watch(uint32 id) => (NDEFError? error);
 
   // Cancels watch operation with provided id.
-  CancelWatch (uint32 id) => (NDEFError? error);
+  CancelWatch(uint32 id);
 };
 
 // Interface that client of the NFC interface must implement to get notified of

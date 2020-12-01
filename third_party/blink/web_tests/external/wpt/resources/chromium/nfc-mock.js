@@ -214,14 +214,11 @@ var WebNFCTest = (() => {
       return createNDEFError(null);
     }
 
-    async cancelWatch(id) {
+    cancelWatch(id) {
       let index = this.watchers_.findIndex(value => value.id === id);
-      if (index === -1) {
-        return createNDEFError(device.mojom.NDEFErrorType.NOT_FOUND);
+      if (index !== -1) {
+        this.watchers_.splice(index, 1);
       }
-
-      this.watchers_.splice(index, 1);
-      return createNDEFError(null);
     }
 
     getHWError() {
