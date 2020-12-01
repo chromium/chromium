@@ -70,7 +70,7 @@ void ExecuteScript(ScriptExecutor* script_executor,
                    ScriptExecutor::ScriptFinishedCallback callback) {
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension.id()), UserScript::ADD_JAVASCRIPT,
-      code, frame_scope, ExtensionApiFrameIdMap::kTopFrameId,
+      code, frame_scope, {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture,
@@ -108,12 +108,12 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   ScriptExecutor::FrameScope frame_scope =
       injection.target.all_frames && *injection.target.all_frames == true
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
-          : ScriptExecutor::SINGLE_FRAME;
+          : ScriptExecutor::SPECIFIED_FRAMES;
   // TODO(devlin): It'd be best to do all the permission checks for the frames
   // on the browser side, including child frames. Today, we only check the
   // parent frame, and then let the ScriptExecutor inject into all child frames
   // (there's a permission check at the time of the injection).
-  if (frame_scope == ScriptExecutor::SINGLE_FRAME) {
+  if (frame_scope == ScriptExecutor::SPECIFIED_FRAMES) {
     if (!HasPermissionToInject(*extension()->permissions_data(),
                                injection.target.tab_id, tab, &error)) {
       return RespondNow(Error(std::move(error)));

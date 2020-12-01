@@ -59,25 +59,56 @@ class Handler : public content::WebContentsObserver {
           content::WebContents* web_contents,
           const ExtensionMsg_ExecuteCode_Params& params,
           ScriptExecutor::FrameScope scope,
-          int frame_id,
+          const std::vector<int>& frame_ids,
           ScriptExecutor::ScriptFinishedCallback callback)
       : content::WebContentsObserver(web_contents),
         observer_(std::move(observer)),
         host_id_(params.host_id),
         request_id_(params.request_id),
-        include_sub_frames_(scope == ScriptExecutor::INCLUDE_SUB_FRAMES),
-        root_rfh_(ExtensionApiFrameIdMap::GetRenderFrameHostById(web_contents,
-                                                                 frame_id)),
-        root_is_main_frame_(root_rfh_ ? !root_rfh_->GetParent() : false),
         callback_(std::move(callback)) {
-    if (root_rfh_) {
-      if (include_sub_frames_) {
-        web_contents->ForEachFrame(base::BindRepeating(
-            &Handler::SendExecuteCode, base::Unretained(this), params));
-      } else {
-        SendExecuteCode(params, root_rfh_);
-      }
+    for (int frame_id : frame_ids) {
+      content::RenderFrameHost* frame =
+          ExtensionApiFrameIdMap::GetRenderFrameHostById(web_contents,
+                                                         frame_id);
+      if (!frame)
+        continue;
+
+      DCHECK(!base::Contains(pending_render_frames_, frame));
+      if (frame->IsRenderFrameLive())
+        pending_render_frames_.push_back(frame);
     }
+
+    // If there is a single frame specified (and it was valid), we consider it
+    // the "root" frame, which is used in result ordering and error collection.
+    if (frame_ids.size() == 1 && pending_render_frames_.size() == 1) {
+      root_rfh_ = pending_render_frames_[0];
+      root_is_main_frame_ = root_rfh_->GetParent() == nullptr;
+    }
+
+    // If we are to include subframes, iterate over all frames in the
+    // WebContents and add them iff they are a child of an included frame.
+    if (scope == ScriptExecutor::INCLUDE_SUB_FRAMES) {
+      auto check_frame =
+          [](std::vector<content::RenderFrameHost*>* pending_frames,
+             content::RenderFrameHost* frame) {
+            if (!frame->IsRenderFrameLive() ||
+                base::Contains(*pending_frames, frame)) {
+              return;
+            }
+
+            for (auto* pending_frame : *pending_frames) {
+              if (frame->IsDescendantOf(pending_frame)) {
+                pending_frames->push_back(frame);
+                break;
+              }
+            }
+          };
+      web_contents->ForEachFrame(
+          base::BindRepeating(check_frame, &pending_render_frames_));
+    }
+
+    for (content::RenderFrameHost* frame : pending_render_frames_)
+      SendExecuteCode(params, frame);
 
     if (pending_render_frames_.empty())
       Finish();
@@ -113,7 +144,7 @@ class Handler : public content::WebContentsObserver {
 
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
-    if (pending_render_frames_.erase(render_frame_host) == 1 &&
+    if (base::Erase(pending_render_frames_, render_frame_host) == 1 &&
         pending_render_frames_.empty()) {
       Finish();
     }
@@ -123,24 +154,10 @@ class Handler : public content::WebContentsObserver {
   // the number of pending messages.
   void SendExecuteCode(const ExtensionMsg_ExecuteCode_Params& params,
                        content::RenderFrameHost* frame) {
-    if (!frame->IsRenderFrameLive())
-      return;
-    DCHECK(!root_is_main_frame_ || ShouldIncludeFrame(frame));
-    if (!root_is_main_frame_ && !ShouldIncludeFrame(frame))
-      return;
-    pending_render_frames_.insert(frame);
+    DCHECK(frame->IsRenderFrameLive());
+    DCHECK(base::Contains(pending_render_frames_, frame));
     URLLoaderFactoryManager::WillExecuteCode(frame, host_id_);
     frame->Send(new ExtensionMsg_ExecuteCode(frame->GetRoutingID(), params));
-  }
-
-  // Returns whether a frame is the root frame or a descendant of it.
-  bool ShouldIncludeFrame(content::RenderFrameHost* frame) {
-    while (frame) {
-      if (frame == root_rfh_)
-        return true;
-      frame = frame->GetParent();
-    }
-    return false;
   }
 
   // Handles the ExecuteCodeFinished message.
@@ -151,9 +168,10 @@ class Handler : public content::WebContentsObserver {
                              const base::ListValue& result_list) {
     DCHECK_EQ(request_id_, request_id);
     DCHECK(!pending_render_frames_.empty());
-    bool erased = pending_render_frames_.erase(render_frame_host) == 1;
-    DCHECK(erased);
+    size_t erased = base::Erase(pending_render_frames_, render_frame_host);
+    DCHECK_EQ(1u, erased);
     bool is_root_frame = root_rfh_ == render_frame_host;
+    finished_any_execution_ = true;
 
     // Set the result, if there is one.
     const base::Value* script_value = nullptr;
@@ -177,11 +195,14 @@ class Handler : public content::WebContentsObserver {
   }
 
   void Finish() {
-    if (root_frame_url_.is_empty()) {
+    if (root_rfh_ && root_frame_url_.is_empty()) {
       // We never finished the root frame injection.
       root_frame_error_ =
           root_is_main_frame_ ? kRendererDestroyed : kFrameRemoved;
       results_.Clear();
+    } else if (!finished_any_execution_) {
+      // We never executed in any frame.
+      root_frame_error_ = kFrameRemoved;
     }
 
     if (observer_ && root_frame_error_.empty() &&
@@ -201,20 +222,26 @@ class Handler : public content::WebContentsObserver {
   HostID host_id_;
 
   // The request id of the injection.
-  int request_id_;
+  int request_id_ = 0;
 
-  // Whether to inject in |root_rfh_| and all of its descendant frames.
-  bool include_sub_frames_;
-
-  // The frame (and optionally its descendant frames) where the injection will
-  // occur.
-  content::RenderFrameHost* root_rfh_;
+  // The primary frame of the injection, if only a single frame is explicitly
+  // specified.
+  content::RenderFrameHost* root_rfh_ = nullptr;
 
   // Whether |root_rfh_| is the main frame of a tab.
-  bool root_is_main_frame_;
+  bool root_is_main_frame_ = false;
 
-  // The hosts of the still-running injections.
-  std::set<content::RenderFrameHost*> pending_render_frames_;
+  // Whether execution has finished in any frame.
+  bool finished_any_execution_ = false;
+
+  // The hosts of the still-running injections. Note: this is a vector because
+  // order matters (some tests - and therefore perhaps some extensions - rely on
+  // the execution mirroring the frame tree hierarchy). The contents, however,
+  // should be unique (i.e., no duplicated frames).
+  // TODO(devlin): Extensions *shouldn't* rely on order here, because there's
+  // never a guarantee. We should probably just adjust the test and disregard
+  // order (except the root frame).
+  std::vector<content::RenderFrameHost*> pending_render_frames_;
 
   // The results of the injection.
   base::ListValue results_;
@@ -244,7 +271,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    UserScript::ActionType action_type,
                                    const std::string& code,
                                    ScriptExecutor::FrameScope frame_scope,
-                                   int frame_id,
+                                   const std::vector<int>& frame_ids,
                                    ScriptExecutor::MatchAboutBlank about_blank,
                                    UserScript::RunLocation run_at,
                                    ScriptExecutor::ProcessType process_type,
@@ -287,7 +314,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
     params.injection_key = GenerateInjectionKey(host_id, script_url, code);
 
   // Handler handles IPCs and deletes itself on completion.
-  new Handler(observer_, web_contents_, params, frame_scope, frame_id,
+  new Handler(observer_, web_contents_, params, frame_scope, frame_ids,
               std::move(callback));
 }
 
