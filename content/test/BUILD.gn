@@ -2209,6 +2209,7 @@ test("content_unittests") {
     "//content/public/child",
     "//content/public/common",
     "//content/public/common:service_names",
+    "//content/public/common:trust_tokens_mojo_bindings",
     "//content/public/renderer",
     "//content/renderer:for_content_tests",
     "//crypto",

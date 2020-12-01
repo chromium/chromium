@@ -117,7 +117,9 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 #if defined(OS_ANDROID)
+#include "content/public/browser/android/java_interfaces.h"
 #include "net/android/http_auth_negotiate_android.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #else
 #include "content/browser/host_zoom_map_impl.h"
 #endif  // defined(OS_ANDROID)
@@ -1859,12 +1861,45 @@ void StoragePartitionImpl::OnTrustAnchorUsed() {
 void StoragePartitionImpl::OnTrustTokenIssuanceDivertedToSystem(
     network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
     OnTrustTokenIssuanceDivertedToSystemCallback callback) {
-  // TODO(crbug.com/1130272): Implement logic that allows executing Trust
-  // Tokens operations when available, rather than failing unconditionally.
-  auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
-  response->status =
-      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
-  std::move(callback).Run(std::move(response));
+  if (!local_trust_token_fulfiller_ &&
+      !attempted_to_bind_local_trust_token_fulfiller_) {
+    attempted_to_bind_local_trust_token_fulfiller_ = true;
+    ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem();
+  }
+
+  if (!local_trust_token_fulfiller_) {
+    auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+    response->status =
+        network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  int callback_key = next_pending_trust_token_issuance_callback_key_++;
+  pending_trust_token_issuance_callbacks_.emplace(callback_key,
+                                                  std::move(callback));
+
+  local_trust_token_fulfiller_->FulfillTrustTokenIssuance(
+      std::move(request),
+      base::BindOnce(
+          [](int callback_key, base::WeakPtr<StoragePartitionImpl> partition,
+             network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+            if (!partition)
+              return;
+
+            if (!base::Contains(
+                    partition->pending_trust_token_issuance_callbacks_,
+                    callback_key)) {
+              return;
+            }
+            auto callback =
+                std::move(partition->pending_trust_token_issuance_callbacks_.at(
+                    callback_key));
+            partition->pending_trust_token_issuance_callbacks_.erase(
+                callback_key);
+            std::move(callback).Run(std::move(answer));
+          },
+          callback_key, weak_factory_.GetWeakPtr()));
 }
 
 void StoragePartitionImpl::ClearDataImpl(
@@ -2549,6 +2584,36 @@ StoragePartitionImpl::CreateCookieAccessObserverForServiceWorker() {
       std::make_unique<ServiceWorkerCookieAccessObserver>(this),
       remote.InitWithNewPipeAndPassReceiver());
   return remote;
+}
+
+void StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError() {
+  auto not_found_answer =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+  // kNotFound represents a case where the local system was unable to provide an
+  // answer to the request.
+  not_found_answer->status =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+
+  for (auto& key_and_callback : pending_trust_token_issuance_callbacks_)
+    std::move(key_and_callback.second).Run(not_found_answer.Clone());
+  pending_trust_token_issuance_callbacks_.clear();
+}
+
+void StoragePartitionImpl::
+    ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem() {
+  if (local_trust_token_fulfiller_)
+    return;
+
+#if defined(OS_ANDROID)
+  GetGlobalJavaInterfaces()->GetInterface(
+      local_trust_token_fulfiller_.BindNewPipeAndPassReceiver());
+#endif  // defined(OS_ANDROID)
+
+  if (local_trust_token_fulfiller_) {
+    local_trust_token_fulfiller_.set_disconnect_handler(base::BindOnce(
+        &StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError,
+        weak_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace content

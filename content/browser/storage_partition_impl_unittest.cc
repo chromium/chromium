@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
@@ -38,6 +39,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -67,6 +69,11 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "url/origin.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+#if defined(OS_ANDROID)
+#include "content/public/browser/android/java_interfaces.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#endif  // defined(OS_ANDROID)
 
 using net::CanonicalCookie;
 using CookieDeletionFilter = network::mojom::CookieDeletionFilter;
@@ -1881,6 +1888,193 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
       }),
       /* cookie_deletion_filter */ nullptr, /* perform_storage_cleanup */ false,
       kBeginTime, kEndTime, base::DoNothing());
+}
+
+namespace {
+
+class MockLocalTrustTokenFulfiller : public mojom::LocalTrustTokenFulfiller {
+ public:
+  enum IgnoreRequestsTag { kIgnoreRequestsIndefinitely };
+  explicit MockLocalTrustTokenFulfiller(IgnoreRequestsTag) {}
+
+  explicit MockLocalTrustTokenFulfiller(
+      const network::mojom::FulfillTrustTokenIssuanceAnswerPtr& answer)
+      : answer_(answer.Clone()) {}
+
+  void FulfillTrustTokenIssuance(
+      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      FulfillTrustTokenIssuanceCallback callback) override {
+    if (answer_)
+      std::move(callback).Run(answer_.Clone());
+
+    // Otherwise, this class was constructed with an IgnoreRequestsTag; drop the
+    // request.
+  }
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<mojom::LocalTrustTokenFulfiller>(
+        std::move(handle)));
+  }
+
+ private:
+  network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer_;
+  mojo::Receiver<mojom::LocalTrustTokenFulfiller> receiver_{this};
+};
+
+}  // namespace
+
+#if defined(OS_ANDROID)
+TEST_F(StoragePartitionImplTest, BindsTrustTokenFulfiller) {
+  auto expected_answer = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+  expected_answer->status =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk;
+  expected_answer->response = "Okay, here are some tokens";
+  MockLocalTrustTokenFulfiller mock_fulfiller(expected_answer);
+
+  // On Android, binding a local trust token operation delegate should succeed
+  // by default, but it can be explicitly rejected by the Android-side
+  // implementation code: to avoid making assumptions about that code's
+  // behavior, manually override the bind to make it succeed.
+  service_manager::InterfaceProvider::TestApi interface_overrider(
+      content::GetGlobalJavaInterfaces());
+
+  int num_binds_attempted = 0;
+  interface_overrider.SetBinderForName(
+      mojom::LocalTrustTokenFulfiller::Name_,
+      base::BindLambdaForTesting([&num_binds_attempted, &mock_fulfiller](
+                                     mojo::ScopedMessagePipeHandle handle) {
+        ++num_binds_attempted;
+        mock_fulfiller.Bind(std::move(handle));
+      }));
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+
+  auto request = network::mojom::FulfillTrustTokenIssuanceRequest::New();
+  request->request = "Some tokens, please";
+
+  {
+    network::mojom::FulfillTrustTokenIssuanceAnswerPtr received_answer;
+    base::RunLoop run_loop;
+    partition->OnTrustTokenIssuanceDivertedToSystem(
+        request.Clone(),
+        base::BindLambdaForTesting(
+            [&run_loop, &received_answer](
+                network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+              received_answer = std::move(answer);
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+    EXPECT_TRUE(mojo::Equals(received_answer, expected_answer));
+    EXPECT_EQ(num_binds_attempted, 1);
+  }
+  {
+    network::mojom::FulfillTrustTokenIssuanceAnswerPtr received_answer;
+    base::RunLoop run_loop;
+
+    // Execute another operation to cover the case where we've already
+    // successfully bound the fulfiller, ensuring that we don't attempt to bind
+    // it again.
+    partition->OnTrustTokenIssuanceDivertedToSystem(
+        request.Clone(),
+        base::BindLambdaForTesting(
+            [&run_loop, &received_answer](
+                network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+              received_answer = std::move(answer);
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+
+    EXPECT_TRUE(mojo::Equals(received_answer, expected_answer));
+    EXPECT_EQ(num_binds_attempted, 1);
+  }
+}
+#endif  // defined(OS_ANDROID)
+
+#if defined(OS_ANDROID)
+TEST_F(StoragePartitionImplTest, HandlesDisconnectedTrustTokenFulfiller) {
+  // Construct a mock fulfiller that doesn't reply to issuance requests it
+  // receives...
+  MockLocalTrustTokenFulfiller mock_fulfiller(
+      MockLocalTrustTokenFulfiller::kIgnoreRequestsIndefinitely);
+
+  service_manager::InterfaceProvider::TestApi interface_overrider(
+      content::GetGlobalJavaInterfaces());
+  interface_overrider.SetBinderForName(
+      mojom::LocalTrustTokenFulfiller::Name_,
+      base::BindRepeating(&MockLocalTrustTokenFulfiller::Bind,
+                          base::Unretained(&mock_fulfiller)));
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+
+  auto request = network::mojom::FulfillTrustTokenIssuanceRequest::New();
+  base::RunLoop run_loop;
+  network::mojom::FulfillTrustTokenIssuanceAnswerPtr received_answer;
+  partition->OnTrustTokenIssuanceDivertedToSystem(
+      std::move(request),
+      base::BindLambdaForTesting(
+          [&run_loop, &received_answer](
+              network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+            received_answer = std::move(answer);
+            run_loop.Quit();
+          }));
+
+  // ... and, when the pipe disconnects, the disconnection handler should still
+  // ensure we get an error response.
+  partition->OnLocalTrustTokenFulfillerConnectionError();
+  run_loop.Run();
+
+  ASSERT_TRUE(received_answer);
+  EXPECT_EQ(received_answer->status,
+            network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound);
+}
+#endif  // defined(OS_ANDROID)
+
+TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
+#if defined(OS_ANDROID)
+  // On Android, binding can be explicitly rejected by the Android-side
+  // implementation code: to ensure we can handle the rejection, manually force
+  // the bind to fail.
+  //
+  // On other platforms, local Trust Tokens issuance isn't yet implemented, so
+  // StoragePartitionImpl won't attempt to bind the fulfiller.
+  service_manager::InterfaceProvider::TestApi interface_overrider(
+      content::GetGlobalJavaInterfaces());
+
+  // Instead of using interface_overrider.ClearBinder(name), it's necessary to
+  // provide a callback that explicitly closes the pipe, since
+  // InterfaceProvider's contract requires that it either bind or close pipes
+  // it's given (see its comments in interface_provider.mojom).
+  interface_overrider.SetBinderForName(
+      mojom::LocalTrustTokenFulfiller::Name_,
+      base::BindRepeating([](mojo::ScopedMessagePipeHandle handle) {
+        mojo::Close(std::move(handle));
+      }));
+#endif  // defined(OS_ANDROID)
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetDefaultStoragePartition(browser_context()));
+
+  auto request = network::mojom::FulfillTrustTokenIssuanceRequest::New();
+  base::RunLoop run_loop;
+  network::mojom::FulfillTrustTokenIssuanceAnswerPtr received_answer;
+  partition->OnTrustTokenIssuanceDivertedToSystem(
+      std::move(request),
+      base::BindLambdaForTesting(
+          [&run_loop, &received_answer](
+              network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+            received_answer = std::move(answer);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+
+  ASSERT_TRUE(received_answer);
+  EXPECT_EQ(received_answer->status,
+            network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound);
 }
 
 }  // namespace content

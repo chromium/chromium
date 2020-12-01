@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -46,6 +47,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/trust_tokens.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -362,6 +364,11 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   std::vector<std::string> GetCorsExemptHeaderList();
 
+  // Empties the collection |pending_trust_token_issuance_callbacks_| of
+  // callbacks pending responses from |local_trust_token_fulfiller_|, providing
+  // each callback a suitable error response.
+  void OnLocalTrustTokenFulfillerConnectionError();
+
  private:
   class DataDeletionHelper;
   class QuotaManagedDataDeletionHelper;
@@ -472,6 +479,17 @@ class CONTENT_EXPORT StoragePartitionImpl
   GetURLLoaderFactoryForBrowserProcessInternal(bool corb_enabled);
 
   IndexedDBContextImpl* GetIndexedDBContextInternal();
+
+  // If |local_trust_token_fulfiller_| is bound, returns immediately.
+  //
+  // Otherwise, if it's supported by the environment, attempts to bind
+  // |local_trust_token_fulfiller_|. In this case,
+  // local_trust_token_fulfiller_.is_bound() will return true after this method
+  // returns. This does NOT guarantee that |local_trust_token_fulfiller_| will
+  // ever find an implementation of the interface to talk to. If downstream code
+  // rejects the connection, this will be reflected asynchronously by a call to
+  // OnLocalTrustTokenFulfillerConnectionError.
+  void ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem();
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the
@@ -595,6 +613,24 @@ class CONTENT_EXPORT StoragePartitionImpl
   // about cookie reads and writes made by a service worker in this process.
   mojo::UniqueReceiverSet<network::mojom::CookieAccessObserver>
       service_worker_cookie_observers_;
+
+  // |local_trust_token_fulfiller_| provides responses to certain Trust Tokens
+  // operations, for instance via the content embedder calling into a system
+  // service ("platform-provided Trust Tokens operations").
+  //
+  // Binding the interface might not succeed, and failures could involve costly
+  // operations in other processes, so we attempt at most once to bind it.
+  bool attempted_to_bind_local_trust_token_fulfiller_ = false;
+  mojo::Remote<mojom::LocalTrustTokenFulfiller> local_trust_token_fulfiller_;
+  // Maintain pending callbacks provided to OnTrustTokenIssuanceDivertedToSystem
+  // so that we can provide them error responses if the Mojo pipe breaks. One
+  // likely common case where this happens is when the content embedder declines
+  // to provide an implementation when we attempt to bind the
+  // LocalTrustTokenFulfiller interface, for instance because the embedder
+  // hasn't implemented support for mediating Trust Tokens operations.
+  base::flat_map<int, OnTrustTokenIssuanceDivertedToSystemCallback>
+      pending_trust_token_issuance_callbacks_;
+  int next_pending_trust_token_issuance_callback_key_ = 0;
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 
