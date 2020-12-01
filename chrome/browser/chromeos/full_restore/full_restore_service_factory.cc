@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -40,7 +41,9 @@ FullRestoreService* FullRestoreServiceFactory::GetForBrowserContext(
 FullRestoreServiceFactory::FullRestoreServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "FullRestoreService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(NotificationDisplayServiceFactory::GetInstance());
+}
 
 FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
 

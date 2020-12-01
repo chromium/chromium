@@ -175,6 +175,7 @@ aggregate_vector_icons("chrome_vector_icons") {
   if (is_chromeos) {
     sources += [
       "autocorrect_undo.icon",
+      "full_restore_notification.icon",
       "notification_battery.icon",
       "notification_captive_portal.icon",
       "notification_cellular_alert.icon",

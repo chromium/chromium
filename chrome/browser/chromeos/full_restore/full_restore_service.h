@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_FULL_RESTORE_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_FULL_RESTORE_SERVICE_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -32,6 +34,22 @@ class FullRestoreService : public KeyedService {
 
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
+
+ private:
+  // KeyedService overrides.
+  void Shutdown() override;
+
+  // Show the restore notification on startup.
+  void ShowRestoreNotification(const std::string& id);
+
+  void HandleRestoreNotificationClicked(const std::string& id,
+                                        base::Optional<int> button_index);
+
+  Profile* profile_ = nullptr;
+
+  bool is_shut_down_ = false;
+
+  base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };
 
 }  // namespace full_restore

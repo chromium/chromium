@@ -1195,6 +1195,16 @@ Chromium is unable to recover your settings.
           To use Rosetta to play protected media, you must restart Chromium.
         </message>
       </if>
+
+      <!-- Strings for full restore notifications -->
+      <if expr="chromeos">
+        <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
+          Chromium OS system
+        </message>
+        <message name="IDS_RESTORE_FOR_CRASH_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup after crash.">
+          Chromium OS didn't shut down correctly.
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

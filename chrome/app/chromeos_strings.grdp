@@ -5924,4 +5924,17 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires you to keep your smart card inserted.
   </message>
 
+  <!-- Strings for full restore notifications -->
+  <if expr="chromeos">
+    <message name="IDS_RESTORE_NOTIFICATION_RESTORE_BUTTON" desc="The restore button label of the notification for the user to select restore apps and pages on startup.">
+      Restore
+    </message>
+    <message name="IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON" desc="The cancel button label of the notification for the user to select not restore on startup.">
+      Cancel
+    </message>
+    <message name="IDS_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup.">
+      Restore apps &amp; pages?
+    </message>
+  </if>
+
 </grit-part>
