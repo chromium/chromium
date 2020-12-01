@@ -693,14 +693,6 @@
       "use_goma": true
     }
   },
-  "linux-wpt-payments-fyi-rel": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "mac-code-coverage": {
     "gn_args": {
       "is_clang": true,

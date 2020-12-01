@@ -3,15 +3,15 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61470 (scheduler total) + 344990 (weighted CQ total)
+  # 61390 (scheduler total) + 344990 (weighted CQ total)
   # (weighted CQ total) = 6899.8 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406460,
+  '*weighted total*': 406380,
   'scheduler': {
-    '*total*': 61470,
+    '*total*': 61390,
     'triggered': {
-      '*total*': 59920,
+      '*total*': 59840,
       ('https://chromium.googlesource.com/chromium/src', 'regexp:refs/heads/master'): {
-        '*total*': 59040,
+        '*total*': 58960,
         # 4 concurrent builds x 80 jobs
         'ci/ASAN Debug': 320,
         # 5 concurrent builds x 80 jobs
@@ -335,7 +335,6 @@
         'ci/linux-wpt-fyi-rel': 80,
         'ci/linux-wpt-identity-fyi-rel': 80,
         'ci/linux-wpt-input-fyi-rel': 80,
-        'ci/linux-wpt-payments-fyi-rel': 80,
         'ci/mac-archive-dbg': 40,
         'ci/mac-archive-rel': 80,
         # jobs count assumes an 8-core machine

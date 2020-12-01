@@ -69,14 +69,14 @@ have been brought up:
 
 * [linux-wpt-identity-fyi-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-identity-fyi-rel),
   which runs tests under `external/wpt/webauthn/`.
-* [linux-wpt-payments-fyi-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-payments-fyi-rel),
-  which runs tests under `external/wpt/payment-{handler, method-basic-card,
-  request}`.
+* [linux-wpt-input-fyi-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-input-fyi-rel),
+  which runs tests under `external/wpt/{input-events, pointerevents, uievents}`,
+  as well as `external/wpt/infrastructure/testdriver/actions/`
 
 These bots run on the waterfall, but can also be run on CLs by clicking the
 `Choose Tryjobs` button in Gerrit followed by searching for the bot name in the
 modal dialog that appears. One can also include the tag `Cq-Include-Trybots:
-luci.chromium.try:linux-wpt-identity-fyi-rel` (or payments) in the description
+luci.chromium.try:linux-wpt-identity-fyi-rel` (or input) in the description
 for the CL, which will make the bot mandatory for that CL.
 
 Results for the bots use the existing layout test results viewer
