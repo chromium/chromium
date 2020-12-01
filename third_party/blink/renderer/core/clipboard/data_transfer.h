@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_TRANSFER_H_
 
 #include <memory>
+
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -128,8 +129,6 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   void SetSourceOperation(DragOperation);
   void SetDestinationOperation(DragOperation);
 
-  bool HasDropZoneType(const String&);
-
   DataTransferItemList* items();
 
   DataObject* GetDataObject() const;
@@ -179,10 +178,6 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   Member<ImageResourceContent> drag_image_;
   Member<Node> drag_image_element_;
 };
-
-DragOperation ConvertDropZoneOperationToDragOperation(
-    const String& drag_operation);
-String ConvertDragOperationToDropZoneOperation(DragOperation);
 
 }  // namespace blink
 

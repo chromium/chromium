@@ -252,10 +252,6 @@ void DataTransfer::setDropEffect(const String& effect) {
 
   // The specification states that dropEffect can be changed at all times, even
   // if the DataTransfer instance is protected or neutered.
-  //
-  // Allowing these changes seems inconsequential, but findDropZone() in
-  // EventHandler.cpp relies on being able to call setDropEffect during
-  // dragenter, when the DataTransfer policy is DataTransferTypesReadable.
   drop_effect_ = effect;
 }
 
@@ -587,16 +583,6 @@ void DataTransfer::SetDestinationOperation(DragOperation op) {
   drop_effect_ = ConvertDragOperationToEffectAllowed(op);
 }
 
-bool DataTransfer::HasDropZoneType(const String& keyword) {
-  if (keyword.StartsWith("file:"))
-    return HasFileOfType(keyword.Substring(5));
-
-  if (keyword.StartsWith("string:"))
-    return HasStringOfType(keyword.Substring(7));
-
-  return false;
-}
-
 DataTransferItemList* DataTransfer::items() {
   // TODO: According to the spec, we are supposed to return the same collection
   // of items each time. We now return a wrapper that always wraps the *same*
@@ -652,30 +638,6 @@ bool DataTransfer::HasStringOfType(const String& type) const {
     return false;
 
   return data_object_->Types().Contains(type);
-}
-
-DragOperation ConvertDropZoneOperationToDragOperation(
-    const String& drag_operation) {
-  if (drag_operation == "copy")
-    return kDragOperationCopy;
-  if (drag_operation == "move")
-    return kDragOperationMove;
-  if (drag_operation == "link")
-    return kDragOperationLink;
-  return kDragOperationNone;
-}
-
-String ConvertDragOperationToDropZoneOperation(DragOperation operation) {
-  switch (operation) {
-    case kDragOperationCopy:
-      return String("copy");
-    case kDragOperationMove:
-      return String("move");
-    case kDragOperationLink:
-      return String("link");
-    default:
-      return String("copy");
-  }
 }
 
 void DataTransfer::Trace(Visitor* visitor) const {
