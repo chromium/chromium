@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
-#include "components/exo/file_helper.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"
@@ -64,11 +64,11 @@ Display::Display(
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
     std::unique_ptr<ToastSurfaceManager> toast_surface_manager,
-    std::unique_ptr<FileHelper> file_helper)
+    std::unique_ptr<DataExchangeDelegate> data_exchange_delegate)
     : notification_surface_manager_(std::move(notification_surface_manager)),
       input_method_surface_manager_(std::move(input_method_surface_manager)),
       toast_surface_manager_(std::move(toast_surface_manager)),
-      file_helper_(std::move(file_helper)),
+      data_exchange_delegate_(std::move(data_exchange_delegate)),
       client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -282,7 +282,8 @@ std::unique_ptr<SubSurface> Display::CreateSubSurface(Surface* surface,
 
 std::unique_ptr<DataDevice> Display::CreateDataDevice(
     DataDeviceDelegate* delegate) {
-  return std::make_unique<DataDevice>(delegate, seat(), file_helper_.get());
+  return std::make_unique<DataDevice>(delegate, seat(),
+                                      data_exchange_delegate_.get());
 }
 
 }  // namespace exo

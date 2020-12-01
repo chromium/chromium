@@ -41,10 +41,10 @@ ui::DragDropTypes::DragOperation DndActionToDragOperation(
 
 DataDevice::DataDevice(DataDeviceDelegate* delegate,
                        Seat* seat,
-                       FileHelper* file_helper)
+                       DataExchangeDelegate* data_exchange_delegate)
     : delegate_(delegate),
       seat_(seat),
-      file_helper_(file_helper),
+      data_exchange_delegate_(data_exchange_delegate),
       drop_succeeded_(false) {
   WMHelper::GetInstance()->AddDragDropObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
@@ -67,7 +67,7 @@ void DataDevice::StartDrag(DataSource* source,
                            Surface* origin,
                            Surface* icon,
                            ui::mojom::DragEventSource event_source) {
-  seat_->StartDrag(file_helper_, source, origin, icon, event_source);
+  seat_->StartDrag(data_exchange_delegate_, source, origin, icon, event_source);
 }
 
 void DataDevice::SetSelection(DataSource* source) {
@@ -94,7 +94,7 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
 
   data_offer_ =
       std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
-  data_offer_->get()->SetDropData(file_helper_, surface->window(),
+  data_offer_->get()->SetDropData(data_exchange_delegate_, surface->window(),
                                   event.data());
   data_offer_->get()->SetSourceActions(dnd_actions);
   data_offer_->get()->SetActions(base::flat_set<DndAction>(), DndAction::kAsk);
@@ -204,7 +204,7 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
   DataOffer* data_offer = delegate_->OnDataOffer();
-  data_offer->SetClipboardData(file_helper_,
+  data_offer->SetClipboardData(data_exchange_delegate_,
                                *ui::Clipboard::GetForCurrentThread());
   delegate_->OnSelection(*data_offer);
 }

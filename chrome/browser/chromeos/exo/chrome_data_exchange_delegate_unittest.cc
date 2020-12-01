@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/exo/chrome_file_helper.h"
+#include "chrome/browser/chromeos/exo/chrome_data_exchange_delegate.h"
 
 #include "ash/public/cpp/app_types.h"
 #include "ash/wm/window_util.h"
@@ -52,7 +52,7 @@ void CaptureUTF16(std::string* result,
 
 }  // namespace
 
-class ChromeFileHelperTest : public testing::Test {
+class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
@@ -87,10 +87,9 @@ class ChromeFileHelperTest : public testing::Test {
         crostini_mount_name_, storage::kFileSystemTypeNativeLocal,
         storage::FileSystemMountOption(), crostini_dir_);
 
-    // ChromeFileHelper always checks app type in window->GetToplevelWindow(),
-    // so we must create a parent window with delegate and app type set, but
-    // use the child window in tests.
-    // Arc:
+    // ChromeDataExchangeDelegate always checks app type in
+    // window->GetToplevelWindow(), so we must create a parent window with
+    // delegate and app type set, but use the child window in tests. Arc:
     arc_toplevel_ = aura::test::CreateTestWindowWithDelegate(
         &delegate_, 0, gfx::Rect(), nullptr);
     arc_toplevel_->SetProperty(aura::client::kAppType,
@@ -160,12 +159,12 @@ class ChromeFileHelperTest : public testing::Test {
   chromeos::FakeSeneschalClient* fake_seneschal_client_ = nullptr;
 };
 
-TEST_F(ChromeFileHelperTest, GetFilenames) {
-  ChromeFileHelper file_helper;
+TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
 
   // Multiple lines should be parsed.
   // Arc should not translate paths.
-  std::vector<ui::FileInfo> files = file_helper.GetFilenames(
+  std::vector<ui::FileInfo> files = data_exchange_delegate.GetFilenames(
       arc_window_, Data("\n\tfile:///file1\t\r\n#ignore\r\nfile:///file2\r\n"));
   EXPECT_EQ(2, files.size());
   EXPECT_EQ("/file1", files[0].path.value());
@@ -174,42 +173,43 @@ TEST_F(ChromeFileHelperTest, GetFilenames) {
   EXPECT_EQ("", files[1].display_name.value());
 
   // Crostini shared paths should be mapped.
-  files = file_helper.GetFilenames(crostini_window_,
-                                   Data("file:///mnt/chromeos/MyFiles/file"));
+  files = data_exchange_delegate.GetFilenames(
+      crostini_window_, Data("file:///mnt/chromeos/MyFiles/file"));
   EXPECT_EQ(myfiles_dir_.Append("file"), files[0].path);
 
   // Crostini homedir should be mapped.
-  files = file_helper.GetFilenames(crostini_window_,
-                                   Data("file:///home/testuser/file"));
+  files = data_exchange_delegate.GetFilenames(
+      crostini_window_, Data("file:///home/testuser/file"));
   EXPECT_EQ(crostini_dir_.Append("file"), files[0].path);
 
   // Crostini internal paths should be mapped.
-  files = file_helper.GetFilenames(crostini_window_, Data("file:///etc/hosts"));
+  files = data_exchange_delegate.GetFilenames(crostini_window_,
+                                              Data("file:///etc/hosts"));
   EXPECT_EQ("vmfile:termina:/etc/hosts", files[0].path.value());
 
   // Plugin VM shared paths should be mapped.
-  files = file_helper.GetFilenames(plugin_vm_window_,
-                                   Data("file://ChromeOS/MyFiles/file"));
+  files = data_exchange_delegate.GetFilenames(
+      plugin_vm_window_, Data("file://ChromeOS/MyFiles/file"));
   EXPECT_EQ(myfiles_dir_.Append("file"), files[0].path);
 
   // Plugin VM internal paths should be mapped.
-  files = file_helper.GetFilenames(plugin_vm_window_,
-                                   Data("file:///C:/WINDOWS/notepad.exe"));
+  files = data_exchange_delegate.GetFilenames(
+      plugin_vm_window_, Data("file:///C:/WINDOWS/notepad.exe"));
   EXPECT_EQ("vmfile:PvmDefault:/C:/WINDOWS/notepad.exe", files[0].path.value());
 }
 
-TEST_F(ChromeFileHelperTest, GetMimeTypeForUriList) {
-  ChromeFileHelper file_helper;
+TEST_F(ChromeDataExchangeDelegateTest, GetMimeTypeForUriList) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
   EXPECT_EQ("application/x-arc-uri-list",
-            file_helper.GetMimeTypeForUriList(arc_window_));
+            data_exchange_delegate.GetMimeTypeForUriList(arc_window_));
   EXPECT_EQ("text/uri-list",
-            file_helper.GetMimeTypeForUriList(crostini_window_));
+            data_exchange_delegate.GetMimeTypeForUriList(crostini_window_));
   EXPECT_EQ("text/uri-list",
-            file_helper.GetMimeTypeForUriList(plugin_vm_window_));
+            data_exchange_delegate.GetMimeTypeForUriList(plugin_vm_window_));
 }
 
-TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
-  ChromeFileHelper file_helper;
+TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoConvertPaths) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
   ui::FileInfo file1(myfiles_dir_.Append("file1"), base::FilePath());
   ui::FileInfo file2(myfiles_dir_.Append("file2"), base::FilePath());
   auto* guest_os_share_path =
@@ -219,8 +219,8 @@ TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
 
   // Arc should convert path to UTF16 URL.
   std::string data;
-  file_helper.SendFileInfo(arc_window_, {file1},
-                           base::BindOnce(&CaptureUTF16, &data));
+  data_exchange_delegate.SendFileInfo(arc_window_, {file1},
+                                      base::BindOnce(&CaptureUTF16, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "content://org.chromium.arc.volumeprovider/"
@@ -228,8 +228,8 @@ TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
       data);
 
   // Arc should join lines with CRLF.
-  file_helper.SendFileInfo(arc_window_, {file1, file2},
-                           base::BindOnce(&CaptureUTF16, &data));
+  data_exchange_delegate.SendFileInfo(arc_window_, {file1, file2},
+                                      base::BindOnce(&CaptureUTF16, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "content://org.chromium.arc.volumeprovider/"
@@ -240,14 +240,14 @@ TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
       data);
 
   // Crostini should convert path to inside VM, and share the path.
-  file_helper.SendFileInfo(crostini_window_, {file1},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(crostini_window_, {file1},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file1", data);
 
   // Crostini should join lines with CRLF.
-  file_helper.SendFileInfo(crostini_window_, {file1, file2},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(crostini_window_, {file1, file2},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(
       "file:///mnt/chromeos/MyFiles/file1"
@@ -256,42 +256,42 @@ TEST_F(ChromeFileHelperTest, SendFileInfoConvertPaths) {
       data);
 
   // Plugin VM should convert path to inside VM.
-  file_helper.SendFileInfo(plugin_vm_window_, {file1},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file1},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file://ChromeOS/MyFiles/file1", data);
 
   // Crostini should handle vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  file_helper.SendFileInfo(crostini_window_, {file1},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(crostini_window_, {file1},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///etc/hosts", data);
 
   // Crostini should ignore vmfile:PvmDefault:C:/WINDOWS/notepad.exe.
   file1.path = base::FilePath("vmfile:PvmDefault:C:/WINDOWS/notepad.exe");
-  file_helper.SendFileInfo(crostini_window_, {file1},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(crostini_window_, {file1},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
 
   // Plugin VM should handle vmfile:PvmDefault:C:/WINDOWS/notepad.exe.
   file1.path = base::FilePath("vmfile:PvmDefault:C:/WINDOWS/notepad.exe");
-  file_helper.SendFileInfo(plugin_vm_window_, {file1},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file1},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///C:/WINDOWS/notepad.exe", data);
 
   // Crostini should handle vmfile:termina:/etc/hosts.
   file1.path = base::FilePath("vmfile:termina:/etc/hosts");
-  file_helper.SendFileInfo(plugin_vm_window_, {file1},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file1},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
 }
 
-TEST_F(ChromeFileHelperTest, SendFileInfoSharePathsCrostini) {
-  ChromeFileHelper file_helper;
+TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoSharePathsCrostini) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
 
   // A path which is already shared should not be shared again.
   base::FilePath shared_path = myfiles_dir_.Append("shared");
@@ -302,47 +302,47 @@ TEST_F(ChromeFileHelperTest, SendFileInfoSharePathsCrostini) {
   ui::FileInfo file(shared_path, base::FilePath());
   EXPECT_FALSE(fake_seneschal_client_->share_path_called());
   std::string data;
-  file_helper.SendFileInfo(crostini_window_, {file},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(crostini_window_, {file},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/shared", data);
   EXPECT_FALSE(fake_seneschal_client_->share_path_called());
 
   // A path which is not already shared should be shared.
   file = ui::FileInfo(myfiles_dir_.Append("file"), base::FilePath());
-  file_helper.SendFileInfo(crostini_window_, {file},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(crostini_window_, {file},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("file:///mnt/chromeos/MyFiles/file", data);
   EXPECT_TRUE(fake_seneschal_client_->share_path_called());
 }
 
-TEST_F(ChromeFileHelperTest, SendFileInfoSharePathsPluginVm) {
-  ChromeFileHelper file_helper;
+TEST_F(ChromeDataExchangeDelegateTest, SendFileInfoSharePathsPluginVm) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
 
   // Plugin VM should send empty data and not share path if not already shared.
   ui::FileInfo file(myfiles_dir_.Append("file"), base::FilePath());
   std::string data;
-  file_helper.SendFileInfo(plugin_vm_window_, {file},
-                           base::BindOnce(&Capture, &data));
+  data_exchange_delegate.SendFileInfo(plugin_vm_window_, {file},
+                                      base::BindOnce(&Capture, &data));
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", data);
   EXPECT_FALSE(fake_seneschal_client_->share_path_called());
 }
 
-TEST_F(ChromeFileHelperTest, HasUrlsInPickle) {
-  ChromeFileHelper file_helper;
+TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
 
   // Pickle empty.
   base::Pickle empty;
-  EXPECT_EQ(false, file_helper.HasUrlsInPickle(empty));
+  EXPECT_EQ(false, data_exchange_delegate.HasUrlsInPickle(empty));
 
   // Invalid FileInfo.url.
   base::Pickle invalid;
   content::DropData::FileSystemFileInfo file_info;
   content::DropData::FileSystemFileInfo::WriteFileSystemFilesToPickle(
       {file_info}, &invalid);
-  EXPECT_EQ(false, file_helper.HasUrlsInPickle(invalid));
+  EXPECT_EQ(false, data_exchange_delegate.HasUrlsInPickle(invalid));
 
   // Valid FileInfo.url.
   base::Pickle valid;
@@ -352,7 +352,7 @@ TEST_F(ChromeFileHelperTest, HasUrlsInPickle) {
   file_info.url = url.ToGURL();
   content::DropData::FileSystemFileInfo::WriteFileSystemFilesToPickle(
       {file_info}, &valid);
-  EXPECT_EQ(true, file_helper.HasUrlsInPickle(valid));
+  EXPECT_EQ(true, data_exchange_delegate.HasUrlsInPickle(valid));
 }
 
 }  // namespace chromeos

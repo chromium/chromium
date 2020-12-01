@@ -9,8 +9,8 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/current_thread.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/display.h"
-#include "components/exo/file_helper.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/toast_surface_manager.h"
@@ -24,12 +24,13 @@ namespace exo {
 // static
 std::unique_ptr<WaylandServerController>
 WaylandServerController::CreateIfNecessary(
-    std::unique_ptr<FileHelper> file_helper,
+    std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
     std::unique_ptr<ToastSurfaceManager> toast_surface_manager) {
   return std::make_unique<WaylandServerController>(
-      std::move(file_helper), std::move(notification_surface_manager),
+      std::move(data_exchange_delegate),
+      std::move(notification_surface_manager),
       std::move(input_method_surface_manager),
       std::move(toast_surface_manager));
 }
@@ -38,7 +39,7 @@ WaylandServerController::~WaylandServerController() {
 }
 
 WaylandServerController::WaylandServerController(
-    std::unique_ptr<FileHelper> file_helper,
+    std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
     std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
     std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
     std::unique_ptr<ToastSurfaceManager> toast_surface_manager)
@@ -47,7 +48,7 @@ WaylandServerController::WaylandServerController(
           std::make_unique<Display>(std::move(notification_surface_manager),
                                     std::move(input_method_surface_manager),
                                     std::move(toast_surface_manager),
-                                    std::move(file_helper))),
+                                    std::move(data_exchange_delegate))),
 
       wayland_server_(wayland::Server::Create(display_.get())) {
   // Wayland server creation can fail if XDG_RUNTIME_DIR is not set correctly.

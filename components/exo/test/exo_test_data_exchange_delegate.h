@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EXO_TEST_EXO_TEST_FILE_HELPER_H_
-#define COMPONENTS_EXO_TEST_EXO_TEST_FILE_HELPER_H_
+#ifndef COMPONENTS_EXO_TEST_EXO_TEST_DATA_EXCHANGE_DELEGATE_H_
+#define COMPONENTS_EXO_TEST_EXO_TEST_DATA_EXCHANGE_DELEGATE_H_
 
-#include "components/exo/file_helper.h"
+#include "components/exo/data_exchange_delegate.h"
 
 class GURL;
 
 namespace exo {
 
-class TestFileHelper : public FileHelper {
+class TestDataExchangeDelegate : public DataExchangeDelegate {
  public:
-  TestFileHelper();
-  TestFileHelper(const TestFileHelper&) = delete;
-  TestFileHelper& operator=(const TestFileHelper&) = delete;
-  ~TestFileHelper() override;
+  TestDataExchangeDelegate();
+  TestDataExchangeDelegate(const TestDataExchangeDelegate&) = delete;
+  TestDataExchangeDelegate& operator=(const TestDataExchangeDelegate&) = delete;
+  ~TestDataExchangeDelegate() override;
 
-  // FileHelper:
+  // DataExchangeDelegate:
   std::vector<ui::FileInfo> GetFilenames(
       aura::Window* source,
       const std::vector<uint8_t>& data) const override;
@@ -39,4 +39,4 @@ class TestFileHelper : public FileHelper {
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_TEST_EXO_TEST_FILE_HELPER_H_
+#endif  // COMPONENTS_EXO_TEST_EXO_TEST_DATA_EXCHANGE_DELEGATE_H_

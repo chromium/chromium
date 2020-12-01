@@ -106,14 +106,15 @@ Surface* Seat::GetFocusedSurface() {
   return GetEffectiveFocus(WMHelper::GetInstance()->GetFocusedWindow());
 }
 
-void Seat::StartDrag(FileHelper* file_helper,
+void Seat::StartDrag(DataExchangeDelegate* data_exchange_delegate,
                      DataSource* source,
                      Surface* origin,
                      Surface* icon,
                      ui::mojom::DragEventSource event_source) {
   // DragDropOperation manages its own lifetime.
-  drag_drop_operation_ = DragDropOperation::Create(
-      file_helper, source, origin, icon, last_pointer_location_, event_source);
+  drag_drop_operation_ =
+      DragDropOperation::Create(data_exchange_delegate, source, origin, icon,
+                                last_pointer_location_, event_source);
 }
 
 void Seat::SetLastPointerLocation(const gfx::PointF& last_pointer_location) {

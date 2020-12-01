@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/exo/test/exo_test_file_helper.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 
 #include <string>
 #include <utility>
@@ -19,11 +19,11 @@
 
 namespace exo {
 
-TestFileHelper::TestFileHelper() = default;
+TestDataExchangeDelegate::TestDataExchangeDelegate() = default;
 
-TestFileHelper::~TestFileHelper() = default;
+TestDataExchangeDelegate::~TestDataExchangeDelegate() = default;
 
-std::vector<ui::FileInfo> TestFileHelper::GetFilenames(
+std::vector<ui::FileInfo> TestDataExchangeDelegate::GetFilenames(
     aura::Window* source,
     const std::vector<uint8_t>& data) const {
   std::string lines(data.begin(), data.end());
@@ -37,13 +37,15 @@ std::vector<ui::FileInfo> TestFileHelper::GetFilenames(
   return filenames;
 }
 
-std::string TestFileHelper::GetMimeTypeForUriList(aura::Window* target) const {
+std::string TestDataExchangeDelegate::GetMimeTypeForUriList(
+    aura::Window* target) const {
   return "text/uri-list";
 }
 
-void TestFileHelper::SendFileInfo(aura::Window* target,
-                                  const std::vector<ui::FileInfo>& files,
-                                  SendDataCallback callback) const {
+void TestDataExchangeDelegate::SendFileInfo(
+    aura::Window* target,
+    const std::vector<ui::FileInfo>& files,
+    SendDataCallback callback) const {
   std::vector<std::string> lines;
   for (const auto& file : files) {
     lines.emplace_back("file://" + file.path.value());
@@ -52,17 +54,18 @@ void TestFileHelper::SendFileInfo(aura::Window* target,
   std::move(callback).Run(base::RefCountedString::TakeString(&result));
 }
 
-bool TestFileHelper::HasUrlsInPickle(const base::Pickle& pickle) const {
+bool TestDataExchangeDelegate::HasUrlsInPickle(
+    const base::Pickle& pickle) const {
   return true;
 }
 
-void TestFileHelper::SendPickle(aura::Window* target,
-                                const base::Pickle& pickle,
-                                SendDataCallback callback) {
+void TestDataExchangeDelegate::SendPickle(aura::Window* target,
+                                          const base::Pickle& pickle,
+                                          SendDataCallback callback) {
   send_pickle_callback_ = std::move(callback);
 }
 
-void TestFileHelper::RunSendPickleCallback(std::vector<GURL> urls) {
+void TestDataExchangeDelegate::RunSendPickleCallback(std::vector<GURL> urls) {
   std::vector<std::string> lines;
   for (const auto& url : urls) {
     lines.emplace_back(url.spec());

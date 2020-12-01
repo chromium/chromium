@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/exo/chrome_file_helper.h"
+#include "chrome/browser/chromeos/exo/chrome_data_exchange_delegate.h"
 
 #include <string>
 #include <vector>
@@ -139,7 +139,7 @@ void GetFileSystemUrlsFromPickle(
   }
 }
 
-void SendArcUrls(exo::FileHelper::SendDataCallback callback,
+void SendArcUrls(exo::DataExchangeDelegate::SendDataCallback callback,
                  const std::vector<GURL>& urls) {
   std::vector<std::string> lines;
   for (const GURL& url : urls) {
@@ -153,7 +153,7 @@ void SendArcUrls(exo::FileHelper::SendDataCallback callback,
   std::move(callback).Run(base::RefCountedString16::TakeString(&data));
 }
 
-void SendAfterShare(exo::FileHelper::SendDataCallback callback,
+void SendAfterShare(exo::DataExchangeDelegate::SendDataCallback callback,
                     scoped_refptr<base::RefCountedMemory> data,
                     bool success,
                     const std::string& failure_reason) {
@@ -171,7 +171,7 @@ struct FileInfo {
 
 void ShareAndSend(aura::Window* target,
                   std::vector<FileInfo> files,
-                  exo::FileHelper::SendDataCallback callback) {
+                  exo::DataExchangeDelegate::SendDataCallback callback) {
   Profile* primary_profile = GetPrimaryProfile();
   aura::Window* toplevel = target->GetToplevelWindow();
   bool is_crostini = crostini::IsCrostiniWindow(toplevel);
@@ -241,11 +241,11 @@ void ShareAndSend(aura::Window* target,
 
 }  // namespace
 
-ChromeFileHelper::ChromeFileHelper() = default;
+ChromeDataExchangeDelegate::ChromeDataExchangeDelegate() = default;
 
-ChromeFileHelper::~ChromeFileHelper() = default;
+ChromeDataExchangeDelegate::~ChromeDataExchangeDelegate() = default;
 
-std::vector<ui::FileInfo> ChromeFileHelper::GetFilenames(
+std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
     aura::Window* source,
     const std::vector<uint8_t>& data) const {
   Profile* primary_profile = GetPrimaryProfile();
@@ -299,16 +299,17 @@ std::vector<ui::FileInfo> ChromeFileHelper::GetFilenames(
   return filenames;
 }
 
-std::string ChromeFileHelper::GetMimeTypeForUriList(
+std::string ChromeDataExchangeDelegate::GetMimeTypeForUriList(
     aura::Window* target) const {
   return ash::window_util::IsArcWindow(target->GetToplevelWindow())
              ? kMimeTypeArcUriList
              : kMimeTypeTextUriList;
 }
 
-void ChromeFileHelper::SendFileInfo(aura::Window* target,
-                                    const std::vector<ui::FileInfo>& files,
-                                    SendDataCallback callback) const {
+void ChromeDataExchangeDelegate::SendFileInfo(
+    aura::Window* target,
+    const std::vector<ui::FileInfo>& files,
+    SendDataCallback callback) const {
   // ARC converts to ArcUrl and uses utf-16.
   if (ash::window_util::IsArcWindow(target->GetToplevelWindow())) {
     std::vector<std::string> lines;
@@ -341,15 +342,16 @@ void ChromeFileHelper::SendFileInfo(aura::Window* target,
   ShareAndSend(target, std::move(list), std::move(callback));
 }
 
-bool ChromeFileHelper::HasUrlsInPickle(const base::Pickle& pickle) const {
+bool ChromeDataExchangeDelegate::HasUrlsInPickle(
+    const base::Pickle& pickle) const {
   std::vector<storage::FileSystemURL> file_system_urls;
   GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
   return !file_system_urls.empty();
 }
 
-void ChromeFileHelper::SendPickle(aura::Window* target,
-                                  const base::Pickle& pickle,
-                                  SendDataCallback callback) {
+void ChromeDataExchangeDelegate::SendPickle(aura::Window* target,
+                                            const base::Pickle& pickle,
+                                            SendDataCallback callback) {
   std::vector<storage::FileSystemURL> file_system_urls;
   GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
 

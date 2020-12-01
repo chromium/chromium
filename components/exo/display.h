@@ -30,7 +30,7 @@ namespace exo {
 class ClientControlledShellSurface;
 class DataDevice;
 class DataDeviceDelegate;
-class FileHelper;
+class DataExchangeDelegate;
 class InputMethodSurfaceManager;
 class NotificationSurface;
 class NotificationSurfaceManager;
@@ -62,7 +62,7 @@ class Display {
       std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager,
-      std::unique_ptr<FileHelper> file_helper);
+      std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ~Display();
@@ -142,7 +142,7 @@ class Display {
   std::unique_ptr<ToastSurfaceManager> toast_surface_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  std::unique_ptr<FileHelper> file_helper_;
+  std::unique_ptr<DataExchangeDelegate> data_exchange_delegate_;
   Seat seat_;
 
   bool shutdown_ = false;

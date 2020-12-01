@@ -18,9 +18,9 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/exo/data_device.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/data_offer_observer.h"
-#include "components/exo/file_helper.h"
 #include "net/base/filename_util.h"
 #include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImageEncoder.h"
@@ -229,20 +229,21 @@ void DataOffer::SetSourceActions(
   delegate_->OnSourceActions(source_actions);
 }
 
-void DataOffer::SetDropData(FileHelper* file_helper,
+void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
                             aura::Window* target,
                             const ui::OSExchangeData& data) {
   DCHECK_EQ(0u, data_callbacks_.size());
 
   const std::string uri_list_mime_type =
-      file_helper->GetMimeTypeForUriList(target);
+      data_exchange_delegate->GetMimeTypeForUriList(target);
   if (data.HasFile()) {
     std::vector<ui::FileInfo> files;
     if (data.GetFilenames(&files)) {
-      data_callbacks_.emplace(uri_list_mime_type,
-                              base::BindOnce(&FileHelper::SendFileInfo,
-                                             base::Unretained(file_helper),
-                                             target, std::move(files)));
+      data_callbacks_.emplace(
+          uri_list_mime_type,
+          base::BindOnce(&DataExchangeDelegate::SendFileInfo,
+                         base::Unretained(data_exchange_delegate), target,
+                         std::move(files)));
       delegate_->OnOffer(uri_list_mime_type);
       return;
     }
@@ -250,11 +251,12 @@ void DataOffer::SetDropData(FileHelper* file_helper,
 
   base::Pickle pickle;
   if (data.GetPickledData(GetClipboardFormatType(), &pickle) &&
-      file_helper->HasUrlsInPickle(pickle)) {
+      data_exchange_delegate->HasUrlsInPickle(pickle)) {
     data_callbacks_.emplace(
         uri_list_mime_type,
-        base::BindOnce(&FileHelper::SendPickle, base::Unretained(file_helper),
-                       target, pickle));
+        base::BindOnce(&DataExchangeDelegate::SendPickle,
+                       base::Unretained(data_exchange_delegate), target,
+                       pickle));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -295,7 +297,7 @@ void DataOffer::SetDropData(FileHelper* file_helper,
   }
 }
 
-void DataOffer::SetClipboardData(FileHelper* file_helper,
+void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
                                  const ui::Clipboard& data) {
   DCHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);

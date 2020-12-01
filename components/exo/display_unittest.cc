@@ -10,7 +10,7 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_device_delegate.h"
-#include "components/exo/file_helper.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/shared_memory.h"
@@ -18,7 +18,7 @@
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
-#include "components/exo/test/exo_test_file_helper.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/toast_surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -228,7 +228,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
 TEST_F(DisplayTest, CreateDataDevice) {
   TestDataDeviceDelegate device_delegate;
   Display display(nullptr, nullptr, nullptr,
-                  std::make_unique<TestFileHelper>());
+                  std::make_unique<TestDataExchangeDelegate>());
 
   std::unique_ptr<DataDevice> device =
       display.CreateDataDevice(&device_delegate);

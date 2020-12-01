@@ -36,7 +36,7 @@ namespace exo {
 
 class DataOfferDelegate;
 class DataOfferObserver;
-class FileHelper;
+class DataExchangeDelegate;
 enum class DndAction;
 
 // Object representing transferred data offered to a client.
@@ -68,20 +68,21 @@ class DataOffer final : public ui::PropertyHandler {
   void SetActions(const base::flat_set<DndAction>& dnd_actions,
                   DndAction preferred_action);
 
-  // Sets the dropped data from |data| to the DataOffer object. |file_helper|
-  // will be used to convert paths to handle mount points which is mounted in
-  // the mount point namespace of client process. |target| is the drop target
-  // window and can be used to apply the target specitic logic to interpret the
-  // data. While this function immediately calls DataOfferDelegate::OnOffer
-  // inside it with found mime types, dropped data bytes may be populated
-  // asynchronously after this function call. (e.g. Asynchronous lookup is
-  // required for resolving file system urls.)
-  void SetDropData(FileHelper* file_helper,
+  // Sets the dropped data from |data| to the DataOffer object.
+  // |data_exchange_delegate| will be used to convert paths to handle mount
+  // points which is mounted in the mount point namespace of client process.
+  // |target| is the drop target window and can be used to apply the target
+  // specitic logic to interpret the data. While this function immediately calls
+  // DataOfferDelegate::OnOffer inside it with found mime types, dropped data
+  // bytes may be populated asynchronously after this function call. (e.g.
+  // Asynchronous lookup is required for resolving file system urls.)
+  void SetDropData(DataExchangeDelegate* data_exchange_delegate,
                    aura::Window* target,
                    const ui::OSExchangeData& data);
 
   // Sets the clipboard data from |data| to the DataOffer object.
-  void SetClipboardData(FileHelper* file_helper, const ui::Clipboard& data);
+  void SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
+                        const ui::Clipboard& data);
 
   // Sets the drag and drop actions which is offered by data source to the
   // DataOffer object.
@@ -94,7 +95,7 @@ class DataOffer final : public ui::PropertyHandler {
   void OnDataReady(const std::string& mime_type,
                    base::ScopedFD fd,
                    scoped_refptr<base::RefCountedMemory> data);
-  void GetUrlsFromPickle(FileHelper* file_helper,
+  void GetUrlsFromPickle(DataExchangeDelegate* data_exchange_delegate,
                          aura::Window* target,
                          const base::Pickle& pickle,
                          SendDataCallback callback);

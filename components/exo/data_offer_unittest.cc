@@ -20,10 +20,10 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/exo/data_device.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer_delegate.h"
-#include "components/exo/file_helper.h"
 #include "components/exo/test/exo_test_base.h"
-#include "components/exo/test/exo_test_file_helper.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -116,8 +116,8 @@ TEST_F(DataOfferTest, SetTextDropData) {
   EXPECT_EQ(0u, delegate.source_actions().size());
   EXPECT_EQ(DndAction::kNone, delegate.dnd_action());
 
-  TestFileHelper file_helper;
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
   data_offer.SetSourceActions(source_actions);
   data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
 
@@ -146,8 +146,8 @@ TEST_F(DataOfferTest, SetHTMLDropData) {
   EXPECT_EQ(0u, delegate.source_actions().size());
   EXPECT_EQ(DndAction::kNone, delegate.dnd_action());
 
-  TestFileHelper file_helper;
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
   data_offer.SetSourceActions(source_actions);
   data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
 
@@ -176,10 +176,10 @@ TEST_F(DataOfferTest, SetFileDropData) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
   data.SetFilename(base::FilePath("/test/downloads/file"));
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   EXPECT_EQ(1u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/uri-list"));
@@ -189,7 +189,7 @@ TEST_F(DataOfferTest, SetPickleDropData) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
 
   base::Pickle pickle;
@@ -199,7 +199,7 @@ TEST_F(DataOfferTest, SetPickleDropData) {
   pickle.WriteString("id");  // filesystem id
   data.SetPickledData(
       ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   EXPECT_EQ(1u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/uri-list"));
@@ -209,10 +209,10 @@ TEST_F(DataOfferTest, ReceiveString) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
   data.SetString(base::ASCIIToUTF16("Test data"));
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
@@ -244,10 +244,10 @@ TEST_F(DataOfferTest, ReceiveHTML) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
   data.SetHtml(base::ASCIIToUTF16("Test HTML data"), GURL());
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe_16;
   base::ScopedFD write_pipe_16;
@@ -270,10 +270,10 @@ TEST_F(DataOfferTest, ReceiveUriList) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
   data.SetFilename(base::FilePath("/test/downloads/file"));
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
@@ -289,7 +289,7 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
 
   base::Pickle pickle;
@@ -299,7 +299,7 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   pickle.WriteString("id");  // filesystem id
   data.SetPickledData(
       ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe1;
   base::ScopedFD write_pipe1;
@@ -316,7 +316,7 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   std::vector<GURL> urls;
   urls.push_back(
       GURL("content://org.chromium.arc.chromecontentprovider/path/to/file1"));
-  file_helper.RunSendPickleCallback(urls);
+  data_exchange_delegate.RunSendPickleCallback(urls);
 
   std::string result1;
   ASSERT_TRUE(ReadString(std::move(read_pipe1), &result1));
@@ -333,7 +333,7 @@ TEST_F(DataOfferTest,
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
 
   base::Pickle pickle;
@@ -343,7 +343,7 @@ TEST_F(DataOfferTest,
   pickle.WriteString("id");  // filesystem id
   data.SetPickledData(
       ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, nullptr, data);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
@@ -355,7 +355,7 @@ TEST_F(DataOfferTest,
   // Run callback with an empty URL.
   std::vector<GURL> urls;
   urls.push_back(GURL(""));
-  file_helper.RunSendPickleCallback(urls);
+  data_exchange_delegate.RunSendPickleCallback(urls);
 
   base::string16 result;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));
@@ -366,12 +366,12 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteText(base::UTF8ToUTF16("Test data"));
   }
-  data_offer.SetClipboardData(&file_helper,
+  data_offer.SetClipboardData(&data_exchange_delegate,
                               *ui::Clipboard::GetForCurrentThread());
 
   EXPECT_EQ(3u, delegate.mime_types().size());
@@ -407,12 +407,12 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteHTML(base::UTF8ToUTF16("Test data"), "");
   }
-  data_offer.SetClipboardData(&file_helper,
+  data_offer.SetClipboardData(&data_exchange_delegate,
                               *ui::Clipboard::GetForCurrentThread());
 
   EXPECT_EQ(2u, delegate.mime_types().size());
@@ -439,12 +439,12 @@ TEST_F(DataOfferTest, SetClipboardDataRTF) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteRTF("Test data");
   }
-  data_offer.SetClipboardData(&file_helper,
+  data_offer.SetClipboardData(&data_exchange_delegate,
                               *ui::Clipboard::GetForCurrentThread());
 
   EXPECT_EQ(1u, delegate.mime_types().size());
@@ -468,12 +468,12 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
   image.allocN32Pixels(10, 10);
   image.eraseColor(SK_ColorMAGENTA);
 
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteImage(image);
   }
-  data_offer.SetClipboardData(&file_helper,
+  data_offer.SetClipboardData(&data_exchange_delegate,
                               *ui::Clipboard::GetForCurrentThread());
 
   EXPECT_EQ(1u, delegate.mime_types().size());

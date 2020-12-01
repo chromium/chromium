@@ -11,12 +11,12 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "components/exo/buffer.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
-#include "components/exo/file_helper.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
-#include "components/exo/test/exo_test_file_helper.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -92,7 +92,7 @@ class DragDropOperationTest : public test::ExoTestBase,
 };
 
 TEST_F(DragDropOperationTest, DeleteDuringDragging) {
-  TestFileHelper file_helper;
+  TestDataExchangeDelegate data_exchange_delegate;
 
   auto delegate = std::make_unique<TestDataSourceDelegate>();
   auto data_source = std::make_unique<DataSource>(delegate.get());
@@ -108,8 +108,8 @@ TEST_F(DragDropOperationTest, DeleteDuringDragging) {
   icon_surface->Attach(buffer.get());
 
   auto operation = DragDropOperation::Create(
-      &file_helper, data_source.get(), origin_surface.get(), icon_surface.get(),
-      gfx::PointF(), ui::mojom::DragEventSource::kMouse);
+      &data_exchange_delegate, data_source.get(), origin_surface.get(),
+      icon_surface.get(), gfx::PointF(), ui::mojom::DragEventSource::kMouse);
   icon_surface->Commit();
 
   base::RunLoop run_loop;

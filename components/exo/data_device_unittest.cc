@@ -12,13 +12,13 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/data_device_delegate.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_offer_delegate.h"
-#include "components/exo/file_helper.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
-#include "components/exo/test/exo_test_file_helper.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -127,8 +127,8 @@ class DataDeviceTest : public test::ExoTestBase {
   void SetUp() override {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<TestSeat>();
-    device_ =
-        std::make_unique<DataDevice>(&delegate_, seat_.get(), &file_helper_);
+    device_ = std::make_unique<DataDevice>(&delegate_, seat_.get(),
+                                           &data_exchange_delegate_);
     data_.SetString(base::string16(base::ASCIIToUTF16("Test data")));
     surface_ = std::make_unique<Surface>();
   }
@@ -143,7 +143,7 @@ class DataDeviceTest : public test::ExoTestBase {
  protected:
   TestDataDeviceDelegate delegate_;
   std::unique_ptr<TestSeat> seat_;
-  TestFileHelper file_helper_;
+  TestDataExchangeDelegate data_exchange_delegate_;
   std::unique_ptr<DataDevice> device_;
   ui::OSExchangeData data_;
   std::unique_ptr<Surface> surface_;
@@ -299,8 +299,8 @@ TEST_F(DataDeviceTest, ClipboardDeviceCreatedAfterFocus) {
   std::vector<DataEvent> events;
   delegate_.PopEvents(&events);
 
-  device_ =
-      std::make_unique<DataDevice>(&delegate_, seat_.get(), &file_helper_);
+  device_ = std::make_unique<DataDevice>(&delegate_, seat_.get(),
+                                         &data_exchange_delegate_);
 
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kOffer, events[0]);

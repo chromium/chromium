@@ -39,7 +39,7 @@ class OSExchangeData;
 }
 
 namespace exo {
-class FileHelper;
+class DataExchangeDelegate;
 class ScopedDataSource;
 class Surface;
 class ScopedSurface;
@@ -58,7 +58,7 @@ class DragDropOperation : public DataSourceObserver,
  public:
   // Create an operation for a drag-drop originating from a wayland app.
   static base::WeakPtr<DragDropOperation> Create(
-      FileHelper* file_helper,
+      DataExchangeDelegate* data_exchange_delegate,
       DataSource* source,
       Surface* origin,
       Surface* icon,
@@ -89,7 +89,7 @@ class DragDropOperation : public DataSourceObserver,
 
   // A private constructor and destructor are used to prevent anyone else from
   // attempting to manage the lifetime of a DragDropOperation.
-  DragDropOperation(FileHelper* file_helper,
+  DragDropOperation(DataExchangeDelegate* data_exchange_delegate,
                     DataSource* source,
                     Surface* origin,
                     Surface* icon,
@@ -101,7 +101,7 @@ class DragDropOperation : public DataSourceObserver,
 
   void OnTextRead(const std::string& mime_type, base::string16 data);
   void OnHTMLRead(const std::string& mime_type, base::string16 data);
-  void OnFilenamesRead(FileHelper* file_helper,
+  void OnFilenamesRead(DataExchangeDelegate* data_exchange_delegate,
                        aura::Window* source,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);

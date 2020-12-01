@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EXO_FILE_HELPER_H_
-#define COMPONENTS_EXO_FILE_HELPER_H_
+#ifndef COMPONENTS_EXO_DATA_EXCHANGE_DELEGATE_H_
+#define COMPONENTS_EXO_DATA_EXCHANGE_DELEGATE_H_
 
 #include <string>
 #include <vector>
@@ -26,10 +26,11 @@ struct FileInfo;
 
 namespace exo {
 
-// Handles file-related translations for wayland clipboard and drag-and-drop.
-class FileHelper {
+// Interface for data exchange operations that are implemented in chrome such as
+// file drag and drop path translations and file sharing for VMs.
+class DataExchangeDelegate {
  public:
-  virtual ~FileHelper() {}
+  virtual ~DataExchangeDelegate() {}
 
   // Read filenames from |data| which was provided by source window |source|.
   // Translates paths from source to host format.
@@ -64,4 +65,4 @@ class FileHelper {
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_FILE_HELPER_H_
+#endif  // COMPONENTS_EXO_DATA_EXCHANGE_DELEGATE_H_

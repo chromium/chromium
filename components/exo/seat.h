@@ -32,7 +32,7 @@ class KeyEvent;
 
 namespace exo {
 class DragDropOperation;
-class FileHelper;
+class DataExchangeDelegate;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
@@ -82,7 +82,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Sets clipboard data from |source|.
   void SetSelection(DataSource* source);
 
-  void StartDrag(FileHelper* file_helper,
+  void StartDrag(DataExchangeDelegate* data_exchange_delegate,
                  DataSource* source,
                  Surface* origin,
                  Surface* icon,

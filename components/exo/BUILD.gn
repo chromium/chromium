@@ -22,6 +22,7 @@ static_library("exo") {
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
+    "data_exchange_delegate.h",
     "data_offer.cc",
     "data_offer.h",
     "data_offer_delegate.h",
@@ -34,7 +35,6 @@ static_library("exo") {
     "display.h",
     "drag_drop_operation.cc",
     "drag_drop_operation.h",
-    "file_helper.h",
     "frame_sink_resource_manager.cc",
     "frame_sink_resource_manager.h",
     "input_trace.h",
@@ -227,8 +227,8 @@ source_set("test_support") {
     sources += [
       "test/exo_test_base.cc",
       "test/exo_test_base.h",
-      "test/exo_test_file_helper.cc",
-      "test/exo_test_file_helper.h",
+      "test/exo_test_data_exchange_delegate.cc",
+      "test/exo_test_data_exchange_delegate.h",
       "test/exo_test_helper.cc",
       "test/exo_test_helper.h",
     ]
