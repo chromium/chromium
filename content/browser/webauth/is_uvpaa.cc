@@ -17,6 +17,10 @@
 #include "device/fido/win/webauthn_api.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "device/fido/cros/authenticator.h"
+#endif
+
 namespace content {
 
 #if defined(OS_MAC)
@@ -37,7 +41,8 @@ bool IsUVPlatformAuthenticatorAvailable(
 #elif defined(OS_CHROMEOS)
 bool IsUVPlatformAuthenticatorAvailable() {
   return base::FeatureList::IsEnabled(
-      device::kWebAuthCrosPlatformAuthenticator);
+             device::kWebAuthCrosPlatformAuthenticator) &&
+         device::ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable();
 }
 
 #else

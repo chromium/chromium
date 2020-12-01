@@ -1567,20 +1567,16 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 #endif  // defined(OS_WIN)
 
 #if defined(OS_CHROMEOS)
+// TODO(crbug/1150681): Better testing, e.g. use a mock/fake u2fd proxy here.
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  for (const bool flag_enabled : {false, true}) {
-    SCOPED_TRACE(::testing::Message() << "flag_enabled=" << flag_enabled);
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(
-        device::kWebAuthCrosPlatformAuthenticator, flag_enabled);
-    mojo::Remote<blink::mojom::Authenticator> authenticator =
-        ConnectToAuthenticator();
-    TestIsUvpaaCallback cb;
-    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-    cb.WaitForCallback();
-    EXPECT_EQ(flag_enabled, cb.value());
-  }
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestIsUvpaaCallback cb;
+  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
+  cb.WaitForCallback();
+  // There's no u2fd DBus proxy in tests so not available.
+  EXPECT_FALSE(cb.value());
 }
 #endif  // defined(OS_CHROMEOS)
 

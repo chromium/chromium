@@ -31,6 +31,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   bool HasCredentialForGetAssertionRequest(
       const CtapGetAssertionRequest& request);
 
+  static bool IsUVPlatformAuthenticatorAvailable();
+
   // FidoAuthenticator
   void InitializeAuthenticator(base::OnceClosure callback) override;
   void MakeCredential(CtapMakeCredentialRequest request,
