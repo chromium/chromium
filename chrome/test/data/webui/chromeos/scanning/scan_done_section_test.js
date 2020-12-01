@@ -6,7 +6,7 @@ import 'chrome://scanning/scan_done_section.js';
 
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
@@ -50,12 +50,33 @@ export function scanDoneSectionTest() {
   });
 
   test('showFileLocation', () => {
+    let fileNotFoundEventFired = false;
+    scanDoneSection.addEventListener('file-not-found', function() {
+      fileNotFoundEventFired = true;
+    });
+
     const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
     scanningBrowserProxy.setPathToFile(lastScannedFilePath.path);
     scanDoneSection.lastScannedFilePath = lastScannedFilePath;
     scanDoneSection.$$('#showFileButton').click();
     return flushTasks().then(() => {
       assertEquals(1, scanningBrowserProxy.getCallCount('showFileInLocation'));
+      assertFalse(fileNotFoundEventFired);
+    });
+  });
+
+  test('showFileLocationFileNotFound', () => {
+    let fileNotFoundEventFired = false;
+    scanDoneSection.addEventListener('file-not-found', function() {
+      fileNotFoundEventFired = true;
+    });
+
+    scanningBrowserProxy.setPathToFile('/wrong/path/file/so/not/found.jpg');
+    scanDoneSection.lastScannedFilePath = {'path': '/test/path/scan.jpg'};
+    scanDoneSection.$$('#showFileButton').click();
+    return flushTasks().then(() => {
+      assertEquals(1, scanningBrowserProxy.getCallCount('showFileInLocation'));
+      assertTrue(fileNotFoundEventFired);
     });
   });
 }

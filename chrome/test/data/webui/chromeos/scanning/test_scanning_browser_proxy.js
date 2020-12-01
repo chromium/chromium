@@ -43,8 +43,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @param {string} pathToFile */
   showFileInLocation(pathToFile) {
     this.methodCalled('showFileInLocation');
-    assertEquals(this.pathToFile_, pathToFile);
-    return Promise.resolve(true);
+    return Promise.resolve(this.pathToFile_ === pathToFile);
   }
 
   /** @param {!SelectedPath} selectedPath */

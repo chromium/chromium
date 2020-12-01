@@ -62,6 +62,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"colorOptionText", IDS_SCANNING_APP_COLOR_OPTION_TEXT},
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
       {"doneButtonText", IDS_SCANNING_APP_DONE_BUTTON_TEXT},
+      {"fileNotFoundToastText", IDS_SCANNING_APP_FILE_NOT_FOUND_TOAST_TEXT},
       {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT},
       {"fileSavedTextPlural", IDS_SCANNING_APP_FILE_SAVED_TEXT_PLURAL},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},

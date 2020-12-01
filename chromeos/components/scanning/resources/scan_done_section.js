@@ -58,6 +58,12 @@ Polymer({
 
   /** @private */
   showFileInLocation_() {
-    this.browserProxy_.showFileInLocation(this.lastScannedFilePath.path);
+    this.browserProxy_.showFileInLocation(this.lastScannedFilePath.path)
+        .then(
+            /* @type {boolean} */ (succesful) => {
+              if (!succesful) {
+                this.fire('file-not-found');
+              }
+            });
   },
 });

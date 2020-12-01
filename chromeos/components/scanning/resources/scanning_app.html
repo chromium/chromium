@@ -173,7 +173,7 @@
       </template>
       <template is="dom-if" if="[[showDoneSection_]]">
         <scan-done-section page-number="[[pageNumber_]]"
-            on-done-click="onDoneClick_"
+            on-done-click="onDoneClick_" on-file-not-found="onFileNotFound_"
             last-scanned-file-path="[[lastScannedFilePath_]]">
         </scan-done-section>
       </template>

@@ -536,6 +536,13 @@ Polymer({
   /** @private */
   onToastMessageKeyChange_() {
     this.showToastInfoIcon_ = this.toastMessageKey_ !== 'scanCanceledToastText';
-    this.showToastHelpLink_ = this.toastMessageKey_ !== 'scanCanceledToastText';
+    this.showToastHelpLink_ =
+        this.toastMessageKey_ !== 'scanCanceledToastText' &&
+        this.toastMessageKey_ !== 'fileNotFoundToastText';
+  },
+
+  /** @private */
+  onFileNotFound_() {
+    this.showToast_('fileNotFoundToastText');
   },
 });
