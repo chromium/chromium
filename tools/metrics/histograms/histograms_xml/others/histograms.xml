@@ -6542,8 +6542,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HttpCache.HardReset" enum="Boolean" expires_after="2021-06-15">
-  <owner>ericrobinson@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
   <summary>
     Whether the HttpCache was forced to reset upon creation, effectively
     clearing out its previous content. This is recorded when the cache is

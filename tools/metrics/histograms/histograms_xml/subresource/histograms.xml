@@ -23,8 +23,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
     expires_after="2021-04-18">
-  <owner>ericrobinson@google.com</owner>
-  <owner>jkarlin@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Counts of various UI and user action events related to the
@@ -84,7 +83,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
     units="microseconds" expires_after="M92">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the total time a subframe navigation was delayed while calculating
@@ -99,7 +98,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Disallowed2"
     units="microseconds" expires_after="M92">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the total time a subframe navigation was delayed while calculating
@@ -114,7 +113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.WouldDisallow"
     units="microseconds" expires_after="M92">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the total time a subframe navigation was delayed while calculating
@@ -152,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
     enum="SubresourceFilterVerifyStatus" expires_after="2021-04-04">
-  <owner>ericrobinson@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The result of the IndexRulesetMatcher Verify method. Either pass if both the
@@ -166,7 +165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify2.WallDuration"
     units="ms" expires_after="M92">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The total time it took to verify the indexed ruleset in the browser process.
@@ -262,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
     enum="ActivationList" expires_after="2021-05-09">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The ActivationList or NONE that the main frame navigation matched with.
@@ -272,7 +271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
     enum="SubresourceFilterActivationState" expires_after="2021-05-09">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a document load is committed in a main frame, records whether
@@ -352,7 +351,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
     expires_after="M92">
-  <owner>ericrobinson@google.com</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The navigation delay imposed by the subresource filter on a given navigation
@@ -420,7 +419,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
     expires_after="M92">
-  <owner>ericrobinson@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The time an individual Safe Browsing URL check took before finishing,
@@ -476,8 +475,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.WriteRuleset.Result"
-    enum="SubresourceFilterWriteRulesetResult" expires_after="M88">
-  <owner>ericrobinson@chromium.org</owner>
+    enum="SubresourceFilterWriteRulesetResult" expires_after="M92">
+  <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whether indexing a version of the ruleset and writing it to disk succeeded,

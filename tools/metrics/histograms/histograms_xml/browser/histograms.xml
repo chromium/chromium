@@ -467,8 +467,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BrowserRenderProcessHost.BackgroundTime" units="ms"
     expires_after="2021-04-04">
-  <owner>ericrobinson@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Record the time spent in the background after RenderProcessHost
     initialization of the process. Recorded when the RenderProcessHost for the
@@ -540,8 +540,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BrowserRenderProcessHost.FramePrioritiesSeen"
     enum="FramePrioritiesSeen" expires_after="2021-04-11">
-  <owner>ericrobinson@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Determines what combination of low and normal priority frames were attached
     to a render process during its lifetime. Recorded when the host for the
@@ -573,8 +573,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BrowserRenderProcessHost.TotalTime" units="ms"
     expires_after="2021-02-21">
-  <owner>ericrobinson@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Record the lifetime of the RenderProcessHost after initialization of the
     process. Recorded when the RenderProcessHost for the process is destroyed.
