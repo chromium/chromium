@@ -19,6 +19,9 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -65,6 +68,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -100,6 +106,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -137,6 +146,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -171,6 +183,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -208,6 +223,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -244,6 +262,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -278,6 +299,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -314,6 +338,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -349,6 +376,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -383,6 +413,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -420,6 +453,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "webkit_unit_tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -454,6 +490,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -490,6 +529,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -524,6 +566,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -561,6 +606,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -595,6 +643,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -632,6 +683,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -666,6 +720,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -702,6 +759,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -736,6 +796,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -868,6 +931,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -905,6 +971,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "network_service_out_of_process_components_browsertests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -939,6 +1008,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -975,6 +1047,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1015,6 +1090,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "network_service_out_of_process_content_browsertests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1051,6 +1129,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1091,6 +1172,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "network_service_out_of_process_content_shell_test_apk",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1127,6 +1211,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1161,6 +1248,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1197,6 +1287,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1231,6 +1324,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1267,6 +1363,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1301,6 +1400,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1337,6 +1439,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1372,6 +1477,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1406,6 +1514,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1445,6 +1556,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_validating",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1479,6 +1593,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1515,6 +1632,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1549,6 +1669,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1585,6 +1708,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1619,6 +1745,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1655,6 +1784,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1689,6 +1821,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1725,6 +1860,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1760,6 +1898,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1794,6 +1935,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1831,6 +1975,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1865,6 +2012,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1901,6 +2051,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1935,6 +2088,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1971,6 +2127,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2006,6 +2165,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2040,6 +2202,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2077,6 +2242,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2113,6 +2281,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2147,6 +2318,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2183,6 +2357,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2217,6 +2394,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2253,6 +2433,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2287,6 +2470,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2323,6 +2509,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2357,6 +2546,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2393,6 +2585,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2427,6 +2622,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2463,6 +2661,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2497,6 +2698,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2534,6 +2738,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2568,6 +2775,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2604,6 +2814,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2638,6 +2851,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2674,6 +2890,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2709,6 +2928,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2743,6 +2965,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2788,6 +3013,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2827,6 +3055,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "network_service_webview_instrumentation_test_apk",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2863,6 +3094,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2898,6 +3132,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2932,6 +3169,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2973,6 +3213,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "chrome_public_wpt",
+        "resultdb": {
+          "enable": true
+        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3001,6 +3244,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "system_webview_wpt",
+        "resultdb": {
+          "enable": true
+        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3029,6 +3275,9 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "weblayer_shell_wpt",
+        "resultdb": {
+          "enable": true
+        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3068,6 +3317,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3137,6 +3389,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M85_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3211,6 +3466,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M85_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3285,6 +3543,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M86_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3359,6 +3620,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M86_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3433,6 +3697,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M87_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3507,6 +3774,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M87_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3581,6 +3851,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M88 Client Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3655,6 +3928,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M88 Implementation Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3724,6 +4000,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3793,6 +4072,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M85_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3867,6 +4149,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M85_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -3941,6 +4226,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M86_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4015,6 +4303,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M86_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4089,6 +4380,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M87_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4163,6 +4457,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M87_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4237,6 +4534,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M88 Client Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4311,6 +4611,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M88 Implementation Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4380,6 +4683,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4449,6 +4755,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M85_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4523,6 +4832,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M85_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4597,6 +4909,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M86_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4671,6 +4986,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M86_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4745,6 +5063,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M87_Client_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4819,6 +5140,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M87_Implementation_Library_Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4893,6 +5217,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M88 Client Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
@@ -4967,6 +5294,9 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "weblayer_instrumentation_test_versions_apk_M88 Implementation Tests",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
