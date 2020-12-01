@@ -532,7 +532,12 @@ suite('NewTabPageRealboxTest', () => {
     });
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
-    const matches = [createSearchMatch(), createUrlMatch()];
+    const matches = [
+      createSearchMatch({
+        allowedToBeDefaultMatch: true,
+      }),
+      createUrlMatch()
+    ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
       matches,
@@ -547,6 +552,14 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
     verifyMatch(matches[0], matchEls[0]);
     verifyMatch(matches[1], matchEls[1]);
+
+    // First match is selected.
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+
+    assertEquals('      hello world', realbox.$.input.value);
+    let start = realbox.$.input.selectionStart;
+    let end = realbox.$.input.selectionEnd;
+    assertEquals('', realbox.$.input.value.substring(start, end));
   });
 
   test('autocomplete response with inline autocompletion', async () => {
@@ -577,6 +590,9 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
     assertEquals(1, matchEls.length);
     verifyMatch(matches[0], matchEls[0]);
+
+    // First match is selected.
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
 
     assertEquals('hello world', realbox.$.input.value);
     let start = realbox.$.input.selectionStart;

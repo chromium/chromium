@@ -267,11 +267,10 @@ class RealboxElement extends PolymerElement {
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.$.matches.selectFirst();
-      const inlineAutocompletion =
-          decodeString16(firstMatch.inlineAutocompletion);
-      if (inlineAutocompletion) {
-        this.updateInput_({inline: inlineAutocompletion});
-      }
+      this.updateInput_({
+        text: this.lastQueriedInput_,
+        inline: decodeString16(firstMatch.inlineAutocompletion) || '',
+      });
 
       // Navigate to the default up-to-date match if the user typed and pressed
       // 'Enter' too fast.
