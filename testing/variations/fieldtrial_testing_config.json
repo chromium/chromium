@@ -7334,6 +7334,26 @@
             ]
         }
     ],
+    "VerifyHTMLFetchedFromAppCacheBeforeDelay": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "linux",
+                "ios",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VerifyHTMLFetchedFromAppCacheBeforeDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoToolboxVp9Decoding": [
         {
             "platforms": [
