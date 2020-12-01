@@ -5,43 +5,37 @@
 #include "components/safe_browsing/content/password_protection/password_protection_request.h"
 
 #include <cstddef>
-#include <memory>
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
-#include "components/safe_browsing/core/common/visual_utils.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
+#include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/password_protection/metrics_util.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
-using content::BrowserThread;
-using content::WebContents;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(FULL_SAFE_BROWSING)
+#include "content/public/browser/web_contents.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(FULL_SAFE_BROWSING)
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "components/safe_browsing/core/common/visual_utils.h"
+#include "components/zoom/zoom_controller.h"
+#include "content/public/browser/render_widget_host_view.h"
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 namespace safe_browsing {
 
@@ -57,7 +51,7 @@ const int kMaxReusedDomains = 200;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // The maximum time to wait for DOM features to be collected, in milliseconds.
 const int kDomFeatureTimeoutMs = 3000;
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // Parameters chosen to ensure privacy is preserved by visual features.
@@ -73,7 +67,7 @@ std::unique_ptr<VisualFeatures> ExtractVisualFeatures(
   visual_utils::GetBlurredImage(screenshot, features->mutable_image());
   return features;
 }
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 std::vector<std::string> GetMatchingDomains(
     const std::vector<password_manager::MatchingReusedCredential>&
@@ -102,13 +96,13 @@ bool IsClientSideDetectionEnabled() {
 #else
   return base::FeatureList::IsEnabled(
       safe_browsing::kClientSideDetectionForAndroid);
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 }  // namespace
 
 PasswordProtectionRequest::PasswordProtectionRequest(
-    WebContents* web_contents,
+    content::WebContents* web_contents,
     const GURL& main_frame_url,
     const GURL& password_form_action,
     const GURL& password_form_frame_url,
@@ -281,7 +275,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
     request_proto_->set_content_area_height(content_area_size.height());
     request_proto_->set_content_area_width(content_area_size.width());
   }
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
@@ -477,7 +471,7 @@ void PasswordProtectionRequest::OnVisualFeatureCollectionDone(
 
   SendRequest();
 }
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));

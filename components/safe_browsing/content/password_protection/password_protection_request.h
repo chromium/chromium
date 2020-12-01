@@ -5,23 +5,32 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_PASSWORD_PROTECTION_REQUEST_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner_helpers.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "third_party/skia/include/core/SkBitmap.h"
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 #if defined(OS_IOS)
 // TODO(crbug.com/1147967): Enable in iOS once this file is moved to /core.
@@ -33,6 +42,10 @@ class GURL;
 
 namespace network {
 class SimpleURLLoader;
+}
+
+namespace content {
+class WebContents;
 }
 
 namespace safe_browsing {
@@ -68,9 +81,9 @@ using DeleteOnUIThread =
 //     |        | On request timeout, cancel request.
 //     |        | On deletion of |password_protection_service_|, cancel request.
 class PasswordProtectionRequest
-    : public base::RefCountedThreadSafe<PasswordProtectionRequest,
-                                        DeleteOnUIThread>,
-      public CancelableRequest {
+    : public CancelableRequest,
+      public base::RefCountedThreadSafe<PasswordProtectionRequest,
+                                        DeleteOnUIThread> {
  public:
   PasswordProtectionRequest(
       content::WebContents* web_contents,
@@ -86,6 +99,11 @@ class PasswordProtectionRequest
       bool password_field_exists,
       PasswordProtectionService* pps,
       int request_timeout_in_ms);
+
+  // Not copyable or movable
+  PasswordProtectionRequest(const PasswordProtectionRequest&) = delete;
+  PasswordProtectionRequest& operator=(const PasswordProtectionRequest&) =
+      delete;
 
   base::WeakPtr<PasswordProtectionRequest> GetWeakPtr() {
     return weakptr_factory_.GetWeakPtr();
@@ -192,7 +210,7 @@ class PasswordProtectionRequest
   // If appropriate, collects visual features, otherwise continues on to sending
   // the request.
   void MaybeCollectVisualFeatures();
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Collects visual features from the current login page.
@@ -204,7 +222,7 @@ class PasswordProtectionRequest
   // Called when the visual feature extraction is complete.
   void OnVisualFeatureCollectionDone(
       std::unique_ptr<VisualFeatures> visual_features);
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
   // Initiates network request to Safe Browsing backend.
   void SendRequest();
@@ -304,13 +322,12 @@ class PasswordProtectionRequest
   // Whether the DOM features collection is finished, either by timeout or by
   // successfully gathering the features.
   bool dom_features_collection_complete_;
-#endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
   // Cancels the request when it is no longer valid.
   std::unique_ptr<RequestCanceler> request_canceler_;
 
   base::WeakPtrFactory<PasswordProtectionRequest> weakptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionRequest);
 };
 
 }  // namespace safe_browsing
