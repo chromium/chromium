@@ -13,6 +13,8 @@
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/aura/window.h"
@@ -38,8 +40,10 @@ constexpr int kSeparatorHeight = 20;
 
 constexpr float kBlurQuality = 0.33f;
 
-// TODO(afakhry): Change this to depend on the height of the Shelf.
-constexpr int kDistanceFromScreenBottom = 56;
+// Distance from the bottom of the bar to the bottom of the display, top of the
+// hotseat or top of the shelf depending on the shelf alignment or hotseat
+// visibility.
+constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 }  // namespace
 
@@ -91,9 +95,23 @@ gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root) {
   DCHECK(root);
 
   auto bounds = root->GetBoundsInScreen();
-  const int y = bounds.bottom() - kDistanceFromScreenBottom - kBarSize.height();
+  int bar_y = bounds.bottom();
+  Shelf* shelf = Shelf::ForWindow(root);
+  if (shelf->IsHorizontalAlignment()) {
+    // Get the widget which has the shelf icons. This is the hotseat widget if
+    // the hotseat is extended, shelf widget otherwise.
+    const bool hotseat_extended =
+        shelf->shelf_layout_manager()->hotseat_state() ==
+        HotseatState::kExtended;
+    views::Widget* shelf_widget =
+        hotseat_extended ? static_cast<views::Widget*>(shelf->hotseat_widget())
+                         : static_cast<views::Widget*>(shelf->shelf_widget());
+    bar_y = shelf_widget->GetWindowBoundsInScreen().y();
+  }
+
+  bar_y -= (kDistanceFromShelfOrHotseatTopDp + kBarSize.height());
   bounds.ClampToCenteredSize(kBarSize);
-  bounds.set_y(y);
+  bounds.set_y(bar_y);
   return bounds;
 }
 
