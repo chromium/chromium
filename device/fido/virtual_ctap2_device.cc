@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/apdu/apdu_response.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "crypto/ec_private_key.h"
@@ -483,8 +484,6 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   Init({ProtocolVersion::kCtap2});
   std::vector<ProtocolVersion> versions = {ProtocolVersion::kCtap2};
   if (config.u2f_support) {
-    // Devices with alwaysUv may disable u2f if they don't support internal uv.
-    DCHECK(!config.always_uv || config.internal_uv_support);
     versions.emplace_back(ProtocolVersion::kU2f);
     u2f_device_ = std::make_unique<VirtualU2fDevice>(NewReferenceToState());
   }
@@ -689,8 +688,19 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
   auto cmd_type = command[0];
   // The CTAP2 commands start at one, so a "command" of zero indicates that this
   // is a U2F message.
-  if (cmd_type == 0 && config_.u2f_support &&
-      (!config_.always_uv || mutable_state()->fingerprints_enrolled)) {
+  if (cmd_type == 0 && config_.u2f_support) {
+    if (config_.always_uv && !mutable_state()->fingerprints_enrolled) {
+      // The U2F_REGISTER and U2F_AUTHENTICATE commands MUST immediately fail
+      // and return SW_COMMAND_NOT_ALLOWED if the alwaysUv option is true and
+      // the device is not protected by a built-in user verification method.
+      // Have the authenticator will just fail all u2f requests for simplicity.
+      NOTREACHED();
+      std::move(cb).Run(
+          apdu::ApduResponse({},
+                             apdu::ApduResponse::Status::SW_COMMAND_NOT_ALLOWED)
+              .GetEncodedResponse());
+      return 0;
+    }
     u2f_device_->DeviceTransact(std::move(command), std::move(cb));
     return 0;
   }

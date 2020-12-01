@@ -3947,6 +3947,11 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialAlwaysUv) {
   device::VirtualCtap2Device::Config config;
   config.pin_support = true;
   config.always_uv = true;
+
+  // Enable u2f support. Normally, this would allow chrome to create a
+  // credential without internal user verification, but we should not attempt
+  // that with the alwaysUv flag on.
+  config.u2f_support = true;
   virtual_device_factory_->SetCtap2Config(config);
   virtual_device_factory_->mutable_state()->pin = kTestPIN;
   test_client_.expected = {{device::kMaxPinRetries, kTestPIN}};
@@ -4192,6 +4197,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionAlwaysUv) {
   device::VirtualCtap2Device::Config config;
   config.pin_support = true;
   config.always_uv = true;
+  config.u2f_support = true;
   virtual_device_factory_->SetCtap2Config(config);
   virtual_device_factory_->mutable_state()->pin = kTestPIN;
   PublicKeyCredentialRequestOptionsPtr options =
