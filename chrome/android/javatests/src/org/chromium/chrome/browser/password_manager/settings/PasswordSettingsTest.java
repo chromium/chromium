@@ -89,6 +89,7 @@ import org.chromium.base.IntStringCallback;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryActivity;
@@ -1658,6 +1659,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @FlakyTest(message = "crbug.com/1154362")
     @SuppressWarnings("AlwaysShowAction") // We need to ensure the icon is in the action bar.
     public void testSearchIconVisibleInActionBarWithFeature() {
         setPasswordSource(null); // Initialize empty preferences.
