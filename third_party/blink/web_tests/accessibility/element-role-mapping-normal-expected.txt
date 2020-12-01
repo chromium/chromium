@@ -65,11 +65,9 @@ AXRole: AXGenericContainer
         AXRole: AXStaticText "Paragraph"
             AXRole: AXInlineTextBox "Paragraph"
     AXRole: AXRuby
-        AXRole: AXRubyAnnotation
-            AXRole: AXStaticText "한국"
-                AXRole: AXInlineTextBox "한국"
         AXRole: AXStaticText "韓國"
             AXRole: AXInlineTextBox "韓國"
+        AXRole: AXRubyAnnotation "한국"
     AXRole: AXDescriptionList
         AXRole: AXDescriptionListTerm
             AXRole: AXStaticText "Coffee"

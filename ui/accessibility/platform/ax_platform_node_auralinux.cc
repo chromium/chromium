@@ -2782,6 +2782,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kGenericContainer:
     case ax::mojom::Role::kFooterAsNonLandmark:
     case ax::mojom::Role::kHeaderAsNonLandmark:
+    case ax::mojom::Role::kRuby:
       return ATK_ROLE_SECTION;
     case ax::mojom::Role::kGraphicsDocument:
       return ATK_ROLE_DOCUMENT_FRAME;
@@ -2912,12 +2913,15 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_PANEL;
     case ax::mojom::Role::kRowHeader:
       return ATK_ROLE_ROW_HEADER;
-    case ax::mojom::Role::kRuby:
-      return kStaticRole;
     case ax::mojom::Role::kRubyAnnotation:
-      // TODO(accessibility) Panels are generally for containers of widgets.
-      // This should probably be a section (if a container) or static if text.
-      return ATK_ROLE_PANEL;
+      // Generally exposed as description on <ruby> (Role::kRuby) element, not
+      // as its own object in the tree.
+      // However, it's possible to make a kRubyAnnotation element show up in the
+      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
+      // element or making the source element the target of an aria-owns.
+      // Therefore, browser side needs to gracefully handle it if it actually
+      // shows up in the tree.
+      return kStaticRole;
     case ax::mojom::Role::kSection: {
       if (GetName().empty()) {
         // Do not use ARIA mapping for nameless <section>.

@@ -1,6 +1,4 @@
 Document
 ++Group IsControlElement=false
-++++Pane IsControlElement=false
-++++++Text IsControlElement=false
-++++++++Text Name='ruby text'
+++++Group
 ++++++Text Name='ruby base'

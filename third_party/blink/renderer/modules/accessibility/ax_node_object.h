@@ -322,8 +322,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsHtmlTable() const;
   void AddTableChildren();
   void AddValidationMessageChild();
-  // For some nodes, only LayoutBuilderTraversal visits the necessary children.
-  bool ShouldUseLayoutBuilderTraversal() const override;
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 
   DISALLOW_COPY_AND_ASSIGN(AXNodeObject);

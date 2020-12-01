@@ -5396,7 +5396,17 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_ROWHEADER;
 
     case ax::mojom::Role::kRuby:
-      return ROLE_SYSTEM_TEXT;
+      return ROLE_SYSTEM_GROUPING;
+
+    case ax::mojom::Role::kRubyAnnotation:
+      // Generally exposed as description on <ruby> (Role::kRuby) element, not
+      // as its own object in the tree.
+      // However, it's possible to make a kRubyAnnotation element show up in the
+      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
+      // element or making the source element the target of an aria-owns.
+      // Therefore, browser side needs to gracefully handle it if it actually
+      // shows up in the tree.
+      return ROLE_SYSTEM_STATICTEXT;
 
     case ax::mojom::Role::kSection: {
       if (GetNameAsString16().empty()) {
@@ -5425,7 +5435,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kSwitch:
       return ROLE_SYSTEM_CHECKBUTTON;
 
-    case ax::mojom::Role::kRubyAnnotation:
     case ax::mojom::Role::kStaticText:
       return ROLE_SYSTEM_STATICTEXT;
 
@@ -5798,7 +5807,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       ia2_role = IA2_ROLE_LANDMARK;
       break;
     case ax::mojom::Role::kRuby:
-      ia2_role = IA2_ROLE_TEXT_FRAME;
+      ia2_role = IA2_ROLE_SECTION;
       break;
     case ax::mojom::Role::kSearch:
       ia2_role = IA2_ROLE_LANDMARK;
@@ -6227,7 +6236,17 @@ base::string16 AXPlatformNodeWin::UIAAriaRole() {
       return L"rowheader";
 
     case ax::mojom::Role::kRuby:
-      return L"region";
+      return L"group";
+
+    case ax::mojom::Role::kRubyAnnotation:
+      // Generally exposed as description on <ruby> (Role::kRuby) element, not
+      // as its own object in the tree.
+      // However, it's possible to make a kRubyAnnotation element show up in the
+      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
+      // element or making the source element the target of an aria-owns.
+      // Therefore, browser side needs to gracefully handle it if it actually
+      // shows up in the tree.
+      return L"description";
 
     case ax::mojom::Role::kSection: {
       if (GetNameAsString16().empty()) {
@@ -6259,7 +6278,6 @@ base::string16 AXPlatformNodeWin::UIAAriaRole() {
     case ax::mojom::Role::kSwitch:
       return L"switch";
 
-    case ax::mojom::Role::kRubyAnnotation:
     case ax::mojom::Role::kStaticText:
       return L"description";
 
@@ -6889,7 +6907,17 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_DataItemControlTypeId;
 
     case ax::mojom::Role::kRuby:
-      return UIA_PaneControlTypeId;
+      return UIA_GroupControlTypeId;
+
+    case ax::mojom::Role::kRubyAnnotation:
+      // Generally exposed as description on <ruby> (Role::kRuby) element, not
+      // as its own object in the tree.
+      // However, it's possible to make a kRubyAnnotation element show up in the
+      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
+      // element or making the source element the target of an aria-owns.
+      // Therefore, browser side needs to gracefully handle it if it actually
+      // shows up in the tree.
+      return UIA_TextControlTypeId;
 
     case ax::mojom::Role::kSection:
       return UIA_GroupControlTypeId;
@@ -6912,7 +6940,6 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
     case ax::mojom::Role::kSwitch:
       return UIA_ButtonControlTypeId;
 
-    case ax::mojom::Role::kRubyAnnotation:
     case ax::mojom::Role::kStaticText:
       return UIA_TextControlTypeId;
 

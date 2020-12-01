@@ -36,6 +36,8 @@ struct AnnouncementSpec {
 };
 
 RoleMap BuildRoleMap() {
+  // TODO(accessibility) Are any missing? Consider switch statement so that
+  // compiler doesn't allow missing roles;
   const RoleMap::value_type roles[] = {
       {ax::mojom::Role::kAbbr, NSAccessibilityGroupRole},
       {ax::mojom::Role::kAlert, NSAccessibilityGroupRole},
@@ -186,9 +188,7 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kRow, NSAccessibilityRowRole},
       {ax::mojom::Role::kRowGroup, NSAccessibilityGroupRole},
       {ax::mojom::Role::kRowHeader, @"AXCell"},
-      // TODO(accessibility) What should kRuby be? It's not listed? Any others
-      // missing? Maybe use switch statement so that compiler doesn't allow us
-      // to miss any.
+      {ax::mojom::Role::kRuby, NSAccessibilityGroupRole},
       {ax::mojom::Role::kRubyAnnotation, NSAccessibilityUnknownRole},
       {ax::mojom::Role::kScrollBar, NSAccessibilityScrollBarRole},
       {ax::mojom::Role::kSearch, NSAccessibilityGroupRole},

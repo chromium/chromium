@@ -53,6 +53,7 @@ experimental domain Accessibility
       labelfor
       labelwrapped
       legend
+      rubyannotation
       tablecaption
       title
       other

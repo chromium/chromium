@@ -388,6 +388,17 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       always_included_computed_roles.end())
     return kIncludeObject;
 
+  // Avoid double speech. The ruby text describes pronunciation of the ruby
+  // base, and generally produces redundant screen reader output. Expose it only
+  // as a description on the <ruby> element so that screen reader users can
+  // toggle it on/off as with other descriptions/annotations.
+  if (RoleValue() == ax::mojom::blink::Role::kRubyAnnotation ||
+      (RoleValue() == ax::mojom::blink::Role::kStaticText && ParentObject() &&
+       ParentObject()->RoleValue() ==
+           ax::mojom::blink::Role::kRubyAnnotation)) {
+    return kIgnoreObject;
+  }
+
   // If this element has aria attributes on it, it should not be ignored.
   if (HasGlobalARIAAttribute())
     return kIncludeObject;
@@ -3239,22 +3250,6 @@ void AXNodeObject::AddRemoteSVGChildren() {
   AddChild(RemoteSVGRootElement());
 }
 
-bool AXNodeObject::ShouldUseLayoutBuilderTraversal() const {
-  // TODO(accessibility) Look into having one method of traversal, otherwise
-  // it's possible for the same object to become a child of 2 different nodes,
-  // e.g. if it has a different layout parent and DOM parent.
-
-  Node* node = GetNode();
-  if (!node)
-    return false;
-
-  // <ruby>: special layout handling
-  if (IsA<HTMLRubyElement>(*node))
-    return false;
-
-  return true;
-}
-
 void AXNodeObject::AddNodeChildren() {
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
@@ -4426,6 +4421,17 @@ String AXNodeObject::Description(
     AXRelatedObjectVector* related_objects) const {
   // If descriptionSources is non-null, relatedObjects is used in filling it in,
   // so it must be non-null as well.
+  // Important: create a DescriptionSource for every *potential* description
+  // source, even if it ends up not being present.
+  // When adding a new description_from type:
+  // * Also add it to AXValueNativeSourceType here:
+  //   blink/public/devtools_protocol/browser_protocol.pdl
+  // * Update InspectorTypeBuilderHelper to map the new enum to
+  //   the browser_protocol enum in NativeSourceType():
+  //   blink/renderer/modules/accessibility/inspector_type_builder_helper.cc
+  // * Update devtools_frontend to add a new string for the new type of
+  //   description. See AXNativeSourceTypes at:
+  //   devtools-frontend/src/front_end/accessibility/AccessibilityStrings.js
   if (description_sources)
     DCHECK(related_objects);
 
@@ -4516,6 +4522,43 @@ String AXNodeObject::Description(
       description = value;
       if (description_sources) {
         DescriptionSource& source = description_sources->back();
+        source.text = description;
+        found_description = true;
+      } else {
+        return description;
+      }
+    }
+  }
+
+  if (RoleValue() == ax::mojom::blink::Role::kRuby) {
+    description_from = ax::mojom::blink::DescriptionFrom::kRelatedElement;
+    if (description_sources) {
+      description_sources->push_back(DescriptionSource(found_description));
+      description_sources->back().type = description_from;
+      description_sources->back().native_source =
+          kAXTextFromNativeHTMLRubyAnnotation;
+    }
+    AXObject* ruby_annotation_ax_object = nullptr;
+    for (const auto& child : children_) {
+      if (child->RoleValue() == ax::mojom::blink::Role::kRubyAnnotation &&
+          child->GetNode() &&
+          child->GetNode()->HasTagName(html_names::kRtTag)) {
+        ruby_annotation_ax_object = child;
+        break;
+      }
+    }
+    if (ruby_annotation_ax_object) {
+      AXObjectSet visited;
+      description =
+          RecursiveTextAlternative(*ruby_annotation_ax_object, true, visited);
+      if (related_objects) {
+        related_objects->push_back(
+            MakeGarbageCollected<NameSourceRelatedObject>(
+                ruby_annotation_ax_object, description));
+      }
+      if (description_sources) {
+        DescriptionSource& source = description_sources->back();
+        source.related_objects = *related_objects;
         source.text = description;
         found_description = true;
       } else {

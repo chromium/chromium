@@ -1,9 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++ruby
-++++++++rubyAnnotation
-++++++++++staticText name='ruby text'
-++++++++++++inlineTextBox name='ruby text'
+++++++ruby description='ruby text' descriptionFrom=relatedElement
 ++++++++staticText name='ruby base'
 ++++++++++inlineTextBox name='ruby base'
+++++++++rubyAnnotation ignored name='ruby text'

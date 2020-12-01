@@ -94,6 +94,7 @@ enum AXTextFromNativeHTML {
   kAXTextFromNativeHTMLLabelFor,
   kAXTextFromNativeHTMLLabelWrapped,
   kAXTextFromNativeHTMLLegend,
+  kAXTextFromNativeHTMLRubyAnnotation,
   kAXTextFromNativeHTMLTableCaption,
   kAXTextFromNativeHTMLTitleElement,
 };

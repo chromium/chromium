@@ -1,6 +1,4 @@
 [document web]
 ++[section]
-++++[static]
-++++++[panel]
-++++++++[static] name='ruby text'
+++++[section] description='ruby text' described-by
 ++++++[static] name='ruby base'

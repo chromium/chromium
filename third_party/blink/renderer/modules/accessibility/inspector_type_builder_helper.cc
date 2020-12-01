@@ -200,6 +200,8 @@ String NativeSourceType(AXTextFromNativeHTML native_source) {
       return SourceType::Labelfor;
     case kAXTextFromNativeHTMLLabelWrapped:
       return SourceType::Labelwrapped;
+    case kAXTextFromNativeHTMLRubyAnnotation:
+      return SourceType::Rubyannotation;
     case kAXTextFromNativeHTMLTableCaption:
       return SourceType::Tablecaption;
     case kAXTextFromNativeHTMLLegend:
