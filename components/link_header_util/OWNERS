@@ -4,6 +4,3 @@ yoavweiss@chromium.org
 # The Link: header can be parsed at high privilege, so please include a security
 # reviewer as well:
 file://base/SECURITY_OWNERS
-
-# TEAM: loading-dev@chromium.org
-# COMPONENT: Blink>Loader
