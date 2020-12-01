@@ -257,6 +257,20 @@ Polymer({
   },
 
   /**
+   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * @param {boolean} success
+   */
+  onCancelComplete(success) {
+    // If the cancel request fails, continue showing the scan progress page.
+    if (!success) {
+      this.showToast_('cancelFailedToastText');
+      return;
+    }
+
+    this.setAppState_(AppState.READY);
+  },
+
+  /**
    * @param {string} selectedSource
    * @return {!Array<chromeos.scanning.mojom.PageSize>}
    * @private
@@ -414,16 +428,8 @@ Polymer({
   /** @private */
   onCancelClick_() {
     assert(this.appState_ === AppState.SCANNING);
-
     this.scanService_.cancelScan();
-    this.setAppState_(AppState.READY);
   },
-
-  /**
-   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
-   * @param {boolean} success
-   */
-  onCancelComplete(success) {},
 
   /**
    * Revokes and removes all of the object URLs.
