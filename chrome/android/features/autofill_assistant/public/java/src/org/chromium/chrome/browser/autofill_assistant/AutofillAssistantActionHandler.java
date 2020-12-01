@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.os.Bundle;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.DoNotInline;
 
 import java.util.List;
 
 /**
  * Interface that provides implementation for AA actions, triggered by direct actions.
  */
+// TODO(crbug.com/1145287): DexSplitter has issues with interfaces that have a single implementer
+// inside a DFM.
+@DoNotInline
 public interface AutofillAssistantActionHandler {
     /**
      * Start fetching potential actions for websites.
