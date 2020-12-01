@@ -34,6 +34,8 @@ class ComponentExtensionIMEManagerDelegateImpl
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& file_path) override;
+  bool IsInLoginLayoutAllowlist(
+      const std::vector<std::string>& layouts) override;
 
   static bool IsIMEExtensionID(const std::string& id);
 
@@ -63,6 +65,8 @@ class ComponentExtensionIMEManagerDelegateImpl
 
   // The list of component extension IME.
   std::vector<ComponentExtensionIME> component_extension_list_;
+
+  std::set<std::string> login_layout_set_;
 
   DISALLOW_COPY_AND_ASSIGN(ComponentExtensionIMEManagerDelegateImpl);
 };

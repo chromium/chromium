@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/ime/input_methods.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -162,6 +163,12 @@ void OnFilePathChecked(Profile* profile,
 ComponentExtensionIMEManagerDelegateImpl::
     ComponentExtensionIMEManagerDelegateImpl() {
   ReadComponentExtensionsInfo(&component_extension_list_);
+
+  for (const auto& input_method : input_method::kInputMethods) {
+    if (input_method.is_login_keyboard) {
+      login_layout_set_.insert(input_method.xkb_layout_id);
+    }
+  }
 }
 
 ComponentExtensionIMEManagerDelegateImpl::
@@ -190,6 +197,16 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
                      base::Owned(new std::string(extension_id)),
                      base::Owned(new std::string(manifest)),
                      base::Owned(copied_file_path)));
+}
+
+bool ComponentExtensionIMEManagerDelegateImpl::IsInLoginLayoutAllowlist(
+    const std::vector<std::string>& layouts) {
+  for (const auto& layout : layouts) {
+    if (login_layout_set_.find(layout) != login_layout_set_.end()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::unique_ptr<base::DictionaryValue>

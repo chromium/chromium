@@ -801,7 +801,7 @@ static_library("test_support") {
       "ime/chromeos/mock_input_method_manager.h",
     ]
     deps += [
-      # Generates a header used by component_extension_ime_manager.cc
+      # Generates a header used by mock_component_extension_ime_manager_delegate.cc
       "//chromeos/ime:gencode",
       "//ui/base/ime/chromeos",
     ]

@@ -94,8 +94,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
   // It's filled by ctor and never changed during runtime.
   std::set<std::string> input_method_id_set_;
 
-  std::set<std::string> login_layout_set_;
-
   DISALLOW_COPY_AND_ASSIGN(ComponentExtensionIMEManager);
 };
 

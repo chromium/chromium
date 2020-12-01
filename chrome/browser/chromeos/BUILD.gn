@@ -193,6 +193,7 @@ source_set("chromeos") {
     "//chromeos/dbus/upstart",
     "//chromeos/disks",
     "//chromeos/geolocation",
+    "//chromeos/ime:gencode",
     "//chromeos/login/auth",
     "//chromeos/login/login_state",
     "//chromeos/login/session",
