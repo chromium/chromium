@@ -14,7 +14,7 @@
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,6 +22,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -126,70 +127,68 @@ bool IsStringLowerCaseASCII(base::StringPiece s) {
   return std::none_of(s.begin(), s.end(), base::IsAsciiUpper<char>);
 }
 
-using RequestHeaderEntry = std::pair<const char*, RequestHeaderType>;
-constexpr RequestHeaderEntry kRequestHeaderEntries[] = {
-    {"accept", RequestHeaderType::kAccept},
-    {"accept-charset", RequestHeaderType::kAcceptCharset},
-    {"accept-encoding", RequestHeaderType::kAcceptEncoding},
-    {"accept-language", RequestHeaderType::kAcceptLanguage},
-    {"access-control-request-headers",
-     RequestHeaderType::kAccessControlRequestHeaders},
-    {"access-control-request-method",
-     RequestHeaderType::kAccessControlRequestMethod},
-    {"authorization", RequestHeaderType::kAuthorization},
-    {"cache-control", RequestHeaderType::kCacheControl},
-    {"connection", RequestHeaderType::kConnection},
-    {"content-encoding", RequestHeaderType::kContentEncoding},
-    {"content-language", RequestHeaderType::kContentLanguage},
-    {"content-length", RequestHeaderType::kContentLength},
-    {"content-location", RequestHeaderType::kContentLocation},
-    {"content-type", RequestHeaderType::kContentType},
-    {"cookie", RequestHeaderType::kCookie},
-    {"date", RequestHeaderType::kDate},
-    {"dnt", RequestHeaderType::kDnt},
-    {"early-data", RequestHeaderType::kEarlyData},
-    {"expect", RequestHeaderType::kExpect},
-    {"forwarded", RequestHeaderType::kForwarded},
-    {"from", RequestHeaderType::kFrom},
-    {"host", RequestHeaderType::kHost},
-    {"if-match", RequestHeaderType::kIfMatch},
-    {"if-modified-since", RequestHeaderType::kIfModifiedSince},
-    {"if-none-match", RequestHeaderType::kIfNoneMatch},
-    {"if-range", RequestHeaderType::kIfRange},
-    {"if-unmodified-since", RequestHeaderType::kIfUnmodifiedSince},
-    {"keep-alive", RequestHeaderType::kKeepAlive},
-    {"origin", RequestHeaderType::kOrigin},
-    {"pragma", RequestHeaderType::kPragma},
-    {"proxy-authorization", RequestHeaderType::kProxyAuthorization},
-    {"proxy-connection", RequestHeaderType::kProxyConnection},
-    {"range", RequestHeaderType::kRange},
-    {"referer", RequestHeaderType::kReferer},
-    {"te", RequestHeaderType::kTe},
-    {"transfer-encoding", RequestHeaderType::kTransferEncoding},
-    {"upgrade", RequestHeaderType::kUpgrade},
-    {"upgrade-insecure-requests", RequestHeaderType::kUpgradeInsecureRequests},
-    {"user-agent", RequestHeaderType::kUserAgent},
-    {"via", RequestHeaderType::kVia},
-    {"warning", RequestHeaderType::kWarning},
-    {"x-forwarded-for", RequestHeaderType::kXForwardedFor},
-    {"x-forwarded-host", RequestHeaderType::kXForwardedHost},
-    {"x-forwarded-proto", RequestHeaderType::kXForwardedProto}};
+constexpr auto kRequestHeaderEntries =
+    base::MakeFixedFlatMap<base::StringPiece, RequestHeaderType>(
+        {{"accept", RequestHeaderType::kAccept},
+         {"accept-charset", RequestHeaderType::kAcceptCharset},
+         {"accept-encoding", RequestHeaderType::kAcceptEncoding},
+         {"accept-language", RequestHeaderType::kAcceptLanguage},
+         {"access-control-request-headers",
+          RequestHeaderType::kAccessControlRequestHeaders},
+         {"access-control-request-method",
+          RequestHeaderType::kAccessControlRequestMethod},
+         {"authorization", RequestHeaderType::kAuthorization},
+         {"cache-control", RequestHeaderType::kCacheControl},
+         {"connection", RequestHeaderType::kConnection},
+         {"content-encoding", RequestHeaderType::kContentEncoding},
+         {"content-language", RequestHeaderType::kContentLanguage},
+         {"content-length", RequestHeaderType::kContentLength},
+         {"content-location", RequestHeaderType::kContentLocation},
+         {"content-type", RequestHeaderType::kContentType},
+         {"cookie", RequestHeaderType::kCookie},
+         {"date", RequestHeaderType::kDate},
+         {"dnt", RequestHeaderType::kDnt},
+         {"early-data", RequestHeaderType::kEarlyData},
+         {"expect", RequestHeaderType::kExpect},
+         {"forwarded", RequestHeaderType::kForwarded},
+         {"from", RequestHeaderType::kFrom},
+         {"host", RequestHeaderType::kHost},
+         {"if-match", RequestHeaderType::kIfMatch},
+         {"if-modified-since", RequestHeaderType::kIfModifiedSince},
+         {"if-none-match", RequestHeaderType::kIfNoneMatch},
+         {"if-range", RequestHeaderType::kIfRange},
+         {"if-unmodified-since", RequestHeaderType::kIfUnmodifiedSince},
+         {"keep-alive", RequestHeaderType::kKeepAlive},
+         {"origin", RequestHeaderType::kOrigin},
+         {"pragma", RequestHeaderType::kPragma},
+         {"proxy-authorization", RequestHeaderType::kProxyAuthorization},
+         {"proxy-connection", RequestHeaderType::kProxyConnection},
+         {"range", RequestHeaderType::kRange},
+         {"referer", RequestHeaderType::kReferer},
+         {"te", RequestHeaderType::kTe},
+         {"transfer-encoding", RequestHeaderType::kTransferEncoding},
+         {"upgrade", RequestHeaderType::kUpgrade},
+         {"upgrade-insecure-requests",
+          RequestHeaderType::kUpgradeInsecureRequests},
+         {"user-agent", RequestHeaderType::kUserAgent},
+         {"via", RequestHeaderType::kVia},
+         {"warning", RequestHeaderType::kWarning},
+         {"x-forwarded-for", RequestHeaderType::kXForwardedFor},
+         {"x-forwarded-host", RequestHeaderType::kXForwardedHost},
+         {"x-forwarded-proto", RequestHeaderType::kXForwardedProto}});
 
-constexpr bool IsValidHeaderName(const char* str) {
-  while (*str) {
-    if ((*str >= 'a' && *str <= 'z') || *str == '-') {
-      str++;
-      continue;
-    }
-    return false;
+constexpr bool IsValidHeaderName(base::StringPiece str) {
+  for (char ch : str) {
+    if ((ch < 'a' || ch > 'z') && ch != '-')
+      return false;
   }
   return true;
 }
 
 template <typename T>
 constexpr bool ValidateHeaderEntries(const T& entries) {
-  for (size_t i = 0; i < base::size(entries); ++i) {
-    if (!IsValidHeaderName(entries[i].first))
+  for (const auto& entry : entries) {
+    if (!IsValidHeaderName(entry.first))
       return false;
   }
   return true;
@@ -201,7 +200,7 @@ constexpr bool ValidateHeaderEntries(const T& entries) {
 // sec-origin-policy which does not have a corresponding entry in
 // kRequestHeaderEntries but does contribute to RequestHeaderType::kMaxValue.
 static_assert(static_cast<size_t>(RequestHeaderType::kMaxValue) - 2 ==
-                  base::size(kRequestHeaderEntries),
+                  kRequestHeaderEntries.size(),
               "Invalid number of request header entries");
 
 static_assert(ValidateHeaderEntries(kRequestHeaderEntries),
@@ -211,20 +210,10 @@ static_assert(ValidateHeaderEntries(kRequestHeaderEntries),
 // returned.
 void RecordRequestHeader(const std::string& header,
                          void (*record_func)(RequestHeaderType)) {
-  using HeaderMapType = base::flat_map<base::StringPiece, RequestHeaderType>;
-  static const base::NoDestructor<HeaderMapType> kHeaderMap([] {
-    std::vector<std::pair<base::StringPiece, RequestHeaderType>> entries;
-    entries.reserve(base::size(kRequestHeaderEntries));
-    for (const auto& entry : kRequestHeaderEntries)
-      entries.emplace_back(entry.first, entry.second);
-    return HeaderMapType(entries.begin(), entries.end());
-  }());
-
   DCHECK(IsStringLowerCaseASCII(header));
-  auto it = kHeaderMap->find(header);
-  RequestHeaderType type =
-      it != kHeaderMap->end() ? it->second : RequestHeaderType::kOther;
-  record_func(type);
+  const auto* it = kRequestHeaderEntries.find(header);
+  record_func(it != kRequestHeaderEntries.end() ? it->second
+                                                : RequestHeaderType::kOther);
 }
 
 void RecordResponseHeaderChanged(ResponseHeaderType type) {
@@ -256,97 +245,88 @@ void RecordDNRResponseHeaderRemoved(ResponseHeaderType type) {
       "Extensions.DeclarativeNetRequest.ResponseHeaderRemoved", type);
 }
 
-using ResponseHeaderEntry = std::pair<const char*, ResponseHeaderType>;
-constexpr ResponseHeaderEntry kResponseHeaderEntries[] = {
-    {"accept-patch", ResponseHeaderType::kAcceptPatch},
-    {"accept-ranges", ResponseHeaderType::kAcceptRanges},
-    {"access-control-allow-credentials",
-     ResponseHeaderType::kAccessControlAllowCredentials},
-    {"access-control-allow-headers",
-     ResponseHeaderType::kAccessControlAllowHeaders},
-    {"access-control-allow-methods",
-     ResponseHeaderType::kAccessControlAllowMethods},
-    {"access-control-allow-origin",
-     ResponseHeaderType::kAccessControlAllowOrigin},
-    {"access-control-expose-headers",
-     ResponseHeaderType::kAccessControlExposeHeaders},
-    {"access-control-max-age", ResponseHeaderType::kAccessControlMaxAge},
-    {"age", ResponseHeaderType::kAge},
-    {"allow", ResponseHeaderType::kAllow},
-    {"alt-svc", ResponseHeaderType::kAltSvc},
-    {"cache-control", ResponseHeaderType::kCacheControl},
-    {"clear-site-data", ResponseHeaderType::kClearSiteData},
-    {"connection", ResponseHeaderType::kConnection},
-    {"content-disposition", ResponseHeaderType::kContentDisposition},
-    {"content-encoding", ResponseHeaderType::kContentEncoding},
-    {"content-language", ResponseHeaderType::kContentLanguage},
-    {"content-length", ResponseHeaderType::kContentLength},
-    {"content-location", ResponseHeaderType::kContentLocation},
-    {"content-range", ResponseHeaderType::kContentRange},
-    {"content-security-policy", ResponseHeaderType::kContentSecurityPolicy},
-    {"content-security-policy-report-only",
-     ResponseHeaderType::kContentSecurityPolicyReportOnly},
-    {"content-type", ResponseHeaderType::kContentType},
-    {"date", ResponseHeaderType::kDate},
-    {"etag", ResponseHeaderType::kETag},
-    {"expect-ct", ResponseHeaderType::kExpectCT},
-    {"expires", ResponseHeaderType::kExpires},
-    {"feature-policy", ResponseHeaderType::kFeaturePolicy},
-    {"keep-alive", ResponseHeaderType::kKeepAlive},
-    {"large-allocation", ResponseHeaderType::kLargeAllocation},
-    {"last-modified", ResponseHeaderType::kLastModified},
-    {"location", ResponseHeaderType::kLocation},
-    {"pragma", ResponseHeaderType::kPragma},
-    {"proxy-authenticate", ResponseHeaderType::kProxyAuthenticate},
-    {"proxy-connection", ResponseHeaderType::kProxyConnection},
-    {"public-key-pins", ResponseHeaderType::kPublicKeyPins},
-    {"public-key-pins-report-only",
-     ResponseHeaderType::kPublicKeyPinsReportOnly},
-    {"referrer-policy", ResponseHeaderType::kReferrerPolicy},
-    {"refresh", ResponseHeaderType::kRefresh},
-    {"retry-after", ResponseHeaderType::kRetryAfter},
-    {"sec-websocket-accept", ResponseHeaderType::kSecWebSocketAccept},
-    {"server", ResponseHeaderType::kServer},
-    {"server-timing", ResponseHeaderType::kServerTiming},
-    {"set-cookie", ResponseHeaderType::kSetCookie},
-    {"sourcemap", ResponseHeaderType::kSourceMap},
-    {"strict-transport-security", ResponseHeaderType::kStrictTransportSecurity},
-    {"timing-allow-origin", ResponseHeaderType::kTimingAllowOrigin},
-    {"tk", ResponseHeaderType::kTk},
-    {"trailer", ResponseHeaderType::kTrailer},
-    {"transfer-encoding", ResponseHeaderType::kTransferEncoding},
-    {"upgrade", ResponseHeaderType::kUpgrade},
-    {"vary", ResponseHeaderType::kVary},
-    {"via", ResponseHeaderType::kVia},
-    {"warning", ResponseHeaderType::kWarning},
-    {"www-authenticate", ResponseHeaderType::kWWWAuthenticate},
-    {"x-content-type-options", ResponseHeaderType::kXContentTypeOptions},
-    {"x-dns-prefetch-control", ResponseHeaderType::kXDNSPrefetchControl},
-    {"x-frame-options", ResponseHeaderType::kXFrameOptions},
-    {"x-xss-protection", ResponseHeaderType::kXXSSProtection},
-};
+constexpr auto kResponseHeaderEntries =
+    base::MakeFixedFlatMap<base::StringPiece, ResponseHeaderType>({
+        {"accept-patch", ResponseHeaderType::kAcceptPatch},
+        {"accept-ranges", ResponseHeaderType::kAcceptRanges},
+        {"access-control-allow-credentials",
+         ResponseHeaderType::kAccessControlAllowCredentials},
+        {"access-control-allow-headers",
+         ResponseHeaderType::kAccessControlAllowHeaders},
+        {"access-control-allow-methods",
+         ResponseHeaderType::kAccessControlAllowMethods},
+        {"access-control-allow-origin",
+         ResponseHeaderType::kAccessControlAllowOrigin},
+        {"access-control-expose-headers",
+         ResponseHeaderType::kAccessControlExposeHeaders},
+        {"access-control-max-age", ResponseHeaderType::kAccessControlMaxAge},
+        {"age", ResponseHeaderType::kAge},
+        {"allow", ResponseHeaderType::kAllow},
+        {"alt-svc", ResponseHeaderType::kAltSvc},
+        {"cache-control", ResponseHeaderType::kCacheControl},
+        {"clear-site-data", ResponseHeaderType::kClearSiteData},
+        {"connection", ResponseHeaderType::kConnection},
+        {"content-disposition", ResponseHeaderType::kContentDisposition},
+        {"content-encoding", ResponseHeaderType::kContentEncoding},
+        {"content-language", ResponseHeaderType::kContentLanguage},
+        {"content-length", ResponseHeaderType::kContentLength},
+        {"content-location", ResponseHeaderType::kContentLocation},
+        {"content-range", ResponseHeaderType::kContentRange},
+        {"content-security-policy", ResponseHeaderType::kContentSecurityPolicy},
+        {"content-security-policy-report-only",
+         ResponseHeaderType::kContentSecurityPolicyReportOnly},
+        {"content-type", ResponseHeaderType::kContentType},
+        {"date", ResponseHeaderType::kDate},
+        {"etag", ResponseHeaderType::kETag},
+        {"expect-ct", ResponseHeaderType::kExpectCT},
+        {"expires", ResponseHeaderType::kExpires},
+        {"feature-policy", ResponseHeaderType::kFeaturePolicy},
+        {"keep-alive", ResponseHeaderType::kKeepAlive},
+        {"large-allocation", ResponseHeaderType::kLargeAllocation},
+        {"last-modified", ResponseHeaderType::kLastModified},
+        {"location", ResponseHeaderType::kLocation},
+        {"pragma", ResponseHeaderType::kPragma},
+        {"proxy-authenticate", ResponseHeaderType::kProxyAuthenticate},
+        {"proxy-connection", ResponseHeaderType::kProxyConnection},
+        {"public-key-pins", ResponseHeaderType::kPublicKeyPins},
+        {"public-key-pins-report-only",
+         ResponseHeaderType::kPublicKeyPinsReportOnly},
+        {"referrer-policy", ResponseHeaderType::kReferrerPolicy},
+        {"refresh", ResponseHeaderType::kRefresh},
+        {"retry-after", ResponseHeaderType::kRetryAfter},
+        {"sec-websocket-accept", ResponseHeaderType::kSecWebSocketAccept},
+        {"server", ResponseHeaderType::kServer},
+        {"server-timing", ResponseHeaderType::kServerTiming},
+        {"set-cookie", ResponseHeaderType::kSetCookie},
+        {"sourcemap", ResponseHeaderType::kSourceMap},
+        {"strict-transport-security",
+         ResponseHeaderType::kStrictTransportSecurity},
+        {"timing-allow-origin", ResponseHeaderType::kTimingAllowOrigin},
+        {"tk", ResponseHeaderType::kTk},
+        {"trailer", ResponseHeaderType::kTrailer},
+        {"transfer-encoding", ResponseHeaderType::kTransferEncoding},
+        {"upgrade", ResponseHeaderType::kUpgrade},
+        {"vary", ResponseHeaderType::kVary},
+        {"via", ResponseHeaderType::kVia},
+        {"warning", ResponseHeaderType::kWarning},
+        {"www-authenticate", ResponseHeaderType::kWWWAuthenticate},
+        {"x-content-type-options", ResponseHeaderType::kXContentTypeOptions},
+        {"x-dns-prefetch-control", ResponseHeaderType::kXDNSPrefetchControl},
+        {"x-frame-options", ResponseHeaderType::kXFrameOptions},
+        {"x-xss-protection", ResponseHeaderType::kXXSSProtection},
+    });
 
 void RecordResponseHeader(base::StringPiece header,
                           void (*record_func)(ResponseHeaderType)) {
-  using HeaderMapType = base::flat_map<base::StringPiece, ResponseHeaderType>;
-  static const base::NoDestructor<HeaderMapType> kHeaderMap([] {
-    std::vector<std::pair<base::StringPiece, ResponseHeaderType>> entries;
-    entries.reserve(base::size(kResponseHeaderEntries));
-    for (const auto& entry : kResponseHeaderEntries)
-      entries.emplace_back(entry.first, entry.second);
-    return HeaderMapType(entries.begin(), entries.end());
-  }());
-
   DCHECK(IsStringLowerCaseASCII(header));
-  auto it = kHeaderMap->find(header);
-  ResponseHeaderType type =
-      it != kHeaderMap->end() ? it->second : ResponseHeaderType::kOther;
-  record_func(type);
+  const auto* it = kResponseHeaderEntries.find(header);
+  record_func(it != kResponseHeaderEntries.end() ? it->second
+                                                 : ResponseHeaderType::kOther);
 }
 
 // All entries other than kOther and kNone are mapped.
 static_assert(static_cast<size_t>(ResponseHeaderType::kMaxValue) - 1 ==
-                  base::size(kResponseHeaderEntries),
+                  kResponseHeaderEntries.size(),
               "Invalid number of response header entries");
 
 static_assert(ValidateHeaderEntries(kResponseHeaderEntries),

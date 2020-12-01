@@ -254,9 +254,9 @@ class flat_tree {
 
   void clear();
 
-  size_type size() const;
-  size_type max_size() const;
-  bool empty() const;
+  constexpr size_type size() const;
+  constexpr size_type max_size() const;
+  constexpr bool empty() const;
 
   // --------------------------------------------------------------------------
   // Iterators.
@@ -681,19 +681,21 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::clear() {
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::size() const
-    -> size_type {
+constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::size()
+    const -> size_type {
   return body_.size();
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::max_size() const
+constexpr auto
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::max_size() const
     -> size_type {
   return body_.max_size();
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-bool flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::empty() const {
+constexpr bool flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::empty()
+    const {
   return body_.empty();
 }
 
