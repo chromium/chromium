@@ -892,6 +892,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -899,6 +900,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia_arm64",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -906,6 +908,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia_x64",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     main_list_view = "try",
     tryjob = try_.job(),
 )
