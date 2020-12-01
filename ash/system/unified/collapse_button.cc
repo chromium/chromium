@@ -8,14 +8,21 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 
 CollapseButton::CollapseButton(PressedCallback callback)
-    : CustomShapeButton(std::move(callback)) {}
+    : ImageButton(std::move(callback)) {
+  views::InstallCircleHighlightPathGenerator(this);
+  TrayPopupUtils::ConfigureTrayPopupButton(this);
+}
 
 CollapseButton::~CollapseButton() = default;
 
@@ -30,26 +37,31 @@ void CollapseButton::SetExpandedAmount(double expanded_amount) {
 }
 
 gfx::Size CollapseButton::CalculatePreferredSize() const {
-  return gfx::Size(kTrayItemSize, kTrayItemSize * 3 / 2);
-}
-
-SkPath CollapseButton::CreateCustomShapePath(const gfx::Rect& bounds) const {
-  SkPath path;
-  SkScalar bottom_radius = SkIntToScalar(kTrayItemSize / 2);
-  SkScalar radii[8] = {
-      0, 0, 0, 0, bottom_radius, bottom_radius, bottom_radius, bottom_radius};
-  path.addRoundRect(gfx::RectToSkRect(bounds), radii);
-  return path;
+  return gfx::Size(kTrayItemSize, kTrayItemSize);
 }
 
 void CollapseButton::PaintButtonContents(gfx::Canvas* canvas) {
-  PaintCustomShapePath(canvas);
-
   gfx::ScopedCanvas scoped(canvas);
-  canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() * 2 / 3));
+  canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
   canvas->sk_canvas()->rotate(expanded_amount_ * 180.);
   gfx::ImageSkia image = GetImageToPaint();
   canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
+}
+
+std::unique_ptr<views::InkDrop> CollapseButton::CreateInkDrop() {
+  return TrayPopupUtils::CreateInkDrop(this);
+}
+
+std::unique_ptr<views::InkDropRipple> CollapseButton::CreateInkDropRipple()
+    const {
+  return TrayPopupUtils::CreateInkDropRipple(
+      TrayPopupInkDropStyle::FILL_BOUNDS, this,
+      GetInkDropCenterBasedOnLastEvent());
+}
+
+std::unique_ptr<views::InkDropHighlight>
+CollapseButton::CreateInkDropHighlight() const {
+  return TrayPopupUtils::CreateInkDropHighlight(this);
 }
 
 const char* CollapseButton::GetClassName() const {
@@ -57,9 +69,11 @@ const char* CollapseButton::GetClassName() const {
 }
 
 void CollapseButton::OnThemeChanged() {
-  CustomShapeButton::OnThemeChanged();
+  views::ImageButton::OnThemeChanged();
   AshColorProvider::Get()->DecorateFloatingIconButton(this,
                                                       kUnifiedMenuExpandIcon);
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 }  // namespace ash

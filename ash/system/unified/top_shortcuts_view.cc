@@ -224,10 +224,18 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   // container flex occupying all remaining space.
   layout->SetFlexForView(container_, 1);
 
-  collapse_button_ = new CollapseButton(
-      base::BindRepeating(&UnifiedSystemTrayController::ToggleExpanded,
-                          base::Unretained(controller)));
-  AddChildView(collapse_button_);
+  auto* collapse_button_container =
+      AddChildView(std::make_unique<views::View>());
+  collapse_button_ =
+      collapse_button_container->AddChildView(std::make_unique<CollapseButton>(
+          base::BindRepeating(&UnifiedSystemTrayController::ToggleExpanded,
+                              base::Unretained(controller))));
+  const gfx::Size collapse_button_size = collapse_button_->GetPreferredSize();
+  collapse_button_container->SetPreferredSize(
+      gfx::Size(collapse_button_size.width(),
+                collapse_button_size.height() + kUnifiedTopShortcutSpacing));
+  collapse_button_->SetBoundsRect(gfx::Rect(
+      gfx::Point(0, kUnifiedTopShortcutSpacing), collapse_button_size));
 }
 
 // static
