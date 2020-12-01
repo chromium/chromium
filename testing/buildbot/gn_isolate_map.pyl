@@ -822,7 +822,7 @@
     "type": "additional_compile_target",
   },
   "errorprone_plugin_tests": {
-    "label": "//tools/android/errorprone_plugin:errorprone_plugin_tests",
+    "label": "//tools/android/errorprone_plugin/test:errorprone_plugin_tests",
     "type": "additional_compile_target",
   },
   "events_unittests": {

@@ -1474,8 +1474,6 @@ if (enable_java_templates) {
   #
   #   javac_args: Additional arguments to pass to javac.
   #   errorprone_args: Additional arguments to pass to errorprone.
-  #   errorprone_expected_warning_regex: When set, throws an exception if the
-  #     errorprone compile does not log a warning which matches the regex.
   #
   #   data_deps, testonly
   #

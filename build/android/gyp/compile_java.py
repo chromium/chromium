@@ -245,16 +245,6 @@ def ProcessJavacOutput(output):
   return '\n'.join(lines)
 
 
-def CheckErrorproneStderrWarning(jar_path, expected_warning_regex,
-                                 javac_output):
-  if not re.search(expected_warning_regex, javac_output):
-    raise Exception('Expected `{}` warning when compiling `{}`'.format(
-        expected_warning_regex, os.path.basename(jar_path)))
-
-  # Do not print warning
-  return ''
-
-
 def _ParsePackageAndClassNames(java_file):
   package_name = ''
   class_names = []
@@ -502,22 +492,12 @@ def _RunCompiler(options, javac_cmd, java_files, classpath, jar_path,
         f.write(' '.join(java_files))
       cmd += ['@' + java_files_rsp_path]
 
-
-      # |errorprone_expected_warning_regex| is used in tests for errorprone
-      # warnings. Fail compile if expected warning is not present.
-      stderr_filter = ProcessJavacOutput
-      if (options.enable_errorprone
-          and options.errorprone_expected_warning_regex):
-        stderr_filter = functools.partial(
-            CheckErrorproneStderrWarning, options.jar_path,
-            options.errorprone_expected_warning_regex)
-
       logging.debug('Build command %s', cmd)
       start = time.time()
       build_utils.CheckOutput(cmd,
                               print_stdout=options.chromium_code,
                               stdout_filter=ProcessJavacOutput,
-                              stderr_filter=stderr_filter,
+                              stderr_filter=ProcessJavacOutput,
                               fail_on_output=options.warnings_as_errors)
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
@@ -601,10 +581,6 @@ def _ParseOptions(argv):
       '--enable-errorprone',
       action='store_true',
       help='Enable errorprone checks')
-  parser.add_option(
-      '--errorprone-expected-warning-regex',
-      help='When set, throws an exception if the errorprone compile does not '
-      'log a warning which matches the regex.')
   parser.add_option(
       '--warnings-as-errors',
       action='store_true',

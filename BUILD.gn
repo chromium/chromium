@@ -357,7 +357,7 @@ group("gn_all") {
       "//tools/android:push_apps_to_background",
       "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
       "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
-      "//tools/android/errorprone_plugin:errorprone_plugin_tests",
+      "//tools/android/errorprone_plugin/test:errorprone_plugin_tests",
       "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
       "//ui/android:ui_junit_tests",
       "//weblayer/public/java:client_aar",

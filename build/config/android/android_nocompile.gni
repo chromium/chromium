@@ -1,0 +1,87 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/python.gni")
+
+declare_args() {
+  # Used by tests to enable generating build files for GN targets which should
+  # not compile.
+  enable_android_nocompile_tests = false
+}
+
+# Defines a test suite which checks that the 'test targets' fail to compile. The
+# test suite runs 'gn gen' with a custom output directory and attempts to compile
+# each test target.
+#
+# All of the tests should be defined in the same dedicated BUILD.gn file in order
+# to minimize the number of targets that are processed by 'gn gen'.
+#
+# Variables
+#   tests: List of test configurations. A test configuration has the following
+#     keys:
+#     'target': The GN target which should not compile when
+#       enable_android_nocompile_tests=true The target should compile when
+#       enable_android_nocompile_tests=false.
+#     'expected_compile_output': Error message to test for when compile fails.
+#     'nocompile_sources': Source files which do not compile. This ensures that
+#       the test suite is re-run when one of these files change (as the test
+#       targets might not depend of the files when
+#       enable_android_nocompile_tests=false).
+template("android_nocompile_test_suite") {
+  assert(!enable_android_nocompile_tests)
+
+  python2_action(target_name) {
+    testonly = true
+    script = "//build/android/gyp/nocompile_test.py"
+
+    _tests = invoker.tests
+    _test0 = _tests[0]
+    _test0_dir = get_label_info(_test0["target"], "dir")
+    foreach(_test_config, _tests) {
+      assert(
+          _test0_dir == get_label_info(_test_config["target"], "dir"),
+          "To avoid running 'gn gen' for each test, all tests in an " +
+          "android_nocompile_test_suite() should be declared in same BUILD.gn file")
+    }
+
+    deps = []
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+
+    sources = []
+    _json_test_configs = []
+    foreach(_test_config, _tests) {
+      _test = _test_config["target"]
+      deps += [ _test ]
+      sources += _test_config["nocompile_sources"]
+      _dep_dir = get_label_info(_test, "dir")
+      _dep_name = get_label_info(_test, "name")
+      _json_test_configs += [
+        {
+          target = "${_dep_dir}:${_dep_name}"
+          expect = _test_config["expected_compile_output"]
+        },
+      ]
+    }
+
+    _config_path = "$target_gen_dir/${target_name}.nocompile_config"
+    write_file(_config_path, _json_test_configs, "json")
+
+    _stamp_path = "${target_gen_dir}/${target_name}.stamp"
+    args = [
+      "--gn-args-path",
+      "args.gn",
+      "--out-dir",
+      rebase_path("${target_out_dir}/${target_name}/nocompile_out",
+                  root_build_dir),
+      "--test-configs-path",
+      rebase_path(_config_path, root_build_dir),
+      "--stamp",
+      rebase_path(_stamp_path, root_build_dir),
+    ]
+    outputs = [ _stamp_path ]
+  }
+}
