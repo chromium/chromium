@@ -3151,12 +3151,6 @@ if (enable_java_templates) {
       } else {
         script = "//build/android/gyp/compile_java.py"
       }
-
-      if (target_name == "chrome_java__header") {
-        # Regression test for: https://crbug.com/1154302
-        assert_no_deps = [ "//base:base_java__impl" ]
-      }
-
       depfile = "$target_gen_dir/$target_name.d"
       deps = _srcjar_deps
       if (defined(invoker.deps)) {
@@ -3927,7 +3921,7 @@ if (enable_java_templates) {
     }  # _has_sources
 
     if (_is_prebuilt || _build_device_jar || _build_host_jar) {
-      _unprocessed_jar_deps = _non_java_deps
+      _unprocessed_jar_deps = _full_classpath_deps
       if (_has_sources) {
         _unprocessed_jar_deps += [ ":$_compile_java_target" ]
       }
@@ -3965,7 +3959,7 @@ if (enable_java_templates) {
           "--output-jar",
           rebase_path(_rewritten_jar, root_build_dir),
         ]
-        deps = _unprocessed_jar_deps + _full_classpath_deps + [
+        deps = _unprocessed_jar_deps + [
                  ":$_build_config_target_name",
                  invoker.bytecode_rewriter_target,
                ]
@@ -3984,9 +3978,11 @@ if (enable_java_templates) {
         input_jar = _unprocessed_jar_path
         output_jar = _final_ijar_path
 
-        # Normally ijar does not require any deps, but some prebuilts depend on
-        # an unzip target to extract the jar from aar files. Other prebuilts
-        # need bytecode rewriting before calling ijar.
+        # ijar does not require classpath, but must declare these as deps so
+        # that they are transitive deps for targets that depend on this
+        # target. If we can change compile & desugar steps to use direct
+        # interface classpath rather than full interface classpath, then this
+        # could just be _non_java_deps.
         deps = _unprocessed_jar_deps
       }
       _public_deps += [ ":$_header_target_name" ]
@@ -4003,7 +3999,7 @@ if (enable_java_templates) {
         build_config = _build_config
         build_config_dep = ":$_build_config_target_name"
         input_jar_path = _unprocessed_jar_path
-        jar_deps = _unprocessed_jar_deps + _full_classpath_deps
+        jar_deps = _unprocessed_jar_deps
         if (_build_host_jar) {
           host_jar_path = _host_processed_jar_path
         }
@@ -4049,8 +4045,7 @@ if (enable_java_templates) {
         _bytecode_checks_target = "${target_name}__validate_classpath"
         bytecode_processor(_bytecode_checks_target) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
-          deps = _unprocessed_jar_deps + _full_classpath_deps +
-                 [ ":$_build_config_target_name" ]
+          deps = _unprocessed_jar_deps + [ ":$_build_config_target_name" ]
           requires_android = _requires_android
           target_label =
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
