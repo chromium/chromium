@@ -743,18 +743,10 @@ public class PaymentRequestService
 
         mIsFinishedQueryingPaymentApps = true;
 
-        if (mIsShowCalled && disconnectIfNoPaymentMethodsSupported()) return;
-
         // Always return false when can make payment is disabled.
         mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
 
-        if (mIsCanMakePaymentResponsePending) {
-            respondCanMakePaymentQuery();
-        }
-
-        if (mIsHasEnrolledInstrumentResponsePending) {
-            respondHasEnrolledInstrumentQuery();
-        }
+        if (mIsShowCalled && disconnectIfNoPaymentMethodsSupported()) return;
 
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
@@ -771,6 +763,14 @@ public class PaymentRequestService
         if (error != null) {
             onShowFailed(error);
             return;
+        }
+
+        if (mIsCanMakePaymentResponsePending) {
+            respondCanMakePaymentQuery();
+        }
+
+        if (mIsHasEnrolledInstrumentResponsePending) {
+            respondHasEnrolledInstrumentQuery();
         }
     }
 
