@@ -472,9 +472,9 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
 
     // adjust table max width if needed
     if (cell_logical_width.IsPercentOrCalc()) {
-      if (total_percent > cell_logical_width.Percent() ||
+      if (total_percent >= cell_logical_width.Percent() ||
           all_cols_are_percent) {
-        // can't satify this condition, treat as variable
+        // can't satisfy this condition, treat as variable
         cell_logical_width = Length();
       } else {
         max_logical_width =
