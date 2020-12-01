@@ -8,12 +8,17 @@
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_ui.h"
 #include "google_apis/google_api_keys.h"
 
 namespace {
@@ -117,4 +122,26 @@ void KaleidoscopeIdentityManagerImpl::OnAccessTokenAvailable(
   }
 
   pending_callbacks_.clear();
+}
+
+void KaleidoscopeIdentityManagerImpl::SignIn() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED() << "SignIn() shouldn't be called on Chrome OS.";
+#else
+  // The identity manager may not be created in a context where it has access
+  // to the UI. The client should not request a sign-in in that case.
+  DCHECK(web_ui_);
+
+  content::WebContents* web_contents = web_ui_->GetWebContents();
+  DCHECK(web_contents);
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  DCHECK(browser);
+
+  chrome::ShowBrowserSignin(
+      browser, signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE,
+      signin::ConsentLevel::kNotRequired);
+  signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
+      signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE);
+#endif  // defined(OS_CHROMEOS)
 }

@@ -21899,6 +21899,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromKaleidoscope">
+  <owner>beccahughes@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>mlamouri@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <description>
+    Recorded when showing a sign-in page from Kaleidoscope.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromManageCardsBubble"
     not_user_triggered="true">
   <owner>manasverma@google.com</owner>

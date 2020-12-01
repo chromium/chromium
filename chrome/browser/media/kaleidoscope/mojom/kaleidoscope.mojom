@@ -117,6 +117,9 @@ interface KaleidoscopeDataProvider {
 interface KaleidoscopeIdentityManager {
   // Retrieves the current credentials.
   GetCredentials() => (Credentials? credentials, CredentialsResult result);
+
+  // Will trigger a browser signin.
+  SignIn();
 };
 
 enum GetCollectionsResult {

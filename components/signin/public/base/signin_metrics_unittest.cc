@@ -147,6 +147,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "WebSignIn";
       case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
         return "SafetyCheck";
+      case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+        return "Kaleidoscope";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

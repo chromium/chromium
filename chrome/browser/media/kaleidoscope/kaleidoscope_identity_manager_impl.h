@@ -42,6 +42,7 @@ class KaleidoscopeIdentityManagerImpl
 
   // media::mojom::KaleidoscopeIdentityManager implementation.
   void GetCredentials(GetCredentialsCallback cb) override;
+  void SignIn() override;
 
  private:
   // Called when an access token request completes (successfully or not).
