@@ -264,37 +264,6 @@ bool VisibleSelectionTemplate<Strategy>::IsValidFor(
   return base_.IsValidFor(document) && extent_.IsValidFor(document);
 }
 
-// TODO(yosin) This function breaks the invariant of this class.
-// But because we use VisibleSelection to store values in editing commands for
-// use when undoing the command, we need to be able to create a selection that
-// while currently invalid, will be valid once the changes are undone. This is a
-// design problem. To fix it we either need to change the invariants of
-// |VisibleSelection| or create a new class for editing to use that can
-// manipulate selections that are not currently valid.
-template <typename Strategy>
-VisibleSelectionTemplate<Strategy>
-VisibleSelectionTemplate<Strategy>::CreateWithoutValidationDeprecated(
-    const PositionTemplate<Strategy>& base,
-    const PositionTemplate<Strategy>& extent,
-    TextAffinity affinity) {
-  DCHECK(base.IsNotNull());
-  DCHECK(extent.IsNotNull());
-
-  VisibleSelectionTemplate<Strategy> visible_selection;
-  visible_selection.base_ = base;
-  visible_selection.extent_ = extent;
-  visible_selection.base_is_first_ = base.CompareTo(extent) <= 0;
-  if (base == extent) {
-    visible_selection.affinity_ = affinity;
-    return visible_selection;
-  }
-  // Since |affinity_| for non-|CaretSelection| is always |kDownstream|,
-  // we should keep this invariant. Note: This function can be called with
-  // |affinity_| is |kUpstream|.
-  visible_selection.affinity_ = TextAffinity::kDownstream;
-  return visible_selection;
-}
-
 template <typename Strategy>
 bool VisibleSelectionTemplate<Strategy>::IsContentEditable() const {
   return IsEditablePosition(Start());
