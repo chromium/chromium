@@ -56,7 +56,10 @@ void ReportGenerator::CreateBasicRequest(
     basic_request->set_allocated_os_report(GetOSReport().release());
     basic_request->set_allocated_browser_device_identifier(
         policy::GetBrowserDeviceIdentifier().release());
-#endif
+#if defined(OS_IOS)
+    basic_request->set_device_model(policy::GetDeviceModel());
+#endif  // defined(OS_IOS)
+#endif  // defined(OS_CHROMEOS)
   }
 
   browser_report_generator_.Generate(

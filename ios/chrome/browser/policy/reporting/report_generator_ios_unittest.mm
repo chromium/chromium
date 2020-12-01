@@ -141,6 +141,7 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   EXPECT_EQ(
       policy::GetBrowserDeviceIdentifier()->SerializePartialAsString(),
       basic_request->browser_device_identifier().SerializePartialAsString());
+  EXPECT_NE(std::string(), basic_request->device_model());
 
   // Verify the OS report
   EXPECT_TRUE(basic_request->has_os_report());

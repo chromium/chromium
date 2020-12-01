@@ -1924,6 +1924,8 @@ message ChromeDesktopReportRequest {
   repeated PartialReportType partial_report_types = 10;
   // Public key that can be used for attesting the machine.
   optional string machine_attestation_key = 11;
+  // A string that represents the device model.
+  optional string device_model = 12;
 }
 
 // Report user level status on Chrome OS platform. Chrome OS equivalent of
@@ -2717,6 +2719,8 @@ message RegisterBrowserRequest {
   // Device identifier for helping identify non-Chrome OS devices.
   // TODO(crbug.com/1105938): This will also replace the machine_name field.
   optional BrowserDeviceIdentifier browser_device_identifier = 4;
+  // The device model, e.g., iPad6,11
+  optional string device_model = 5;
 }
 
 // Gets an enrollment token to a managed Google Play account for using it with

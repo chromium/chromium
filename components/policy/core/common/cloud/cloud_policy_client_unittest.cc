@@ -232,6 +232,9 @@ class CloudPolicyClientTest : public testing::Test {
     enrollment_request->set_machine_name(policy::GetMachineName());
     enrollment_request->set_os_platform(policy::GetOSPlatform());
     enrollment_request->set_os_version(policy::GetOSVersion());
+#if defined(OS_IOS)
+    enrollment_request->set_device_model(policy::GetDeviceModel());
+#endif
 #endif
 
     unregistration_request_.mutable_unregister_request();

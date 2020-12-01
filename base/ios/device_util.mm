@@ -157,6 +157,11 @@ std::string GetDeviceIdentifier(const char* salt) {
                          salt ? salt : kDefaultSalt);
 }
 
+std::string GetVendorId() {
+  return base::SysNSStringToUTF8(
+      [[[UIDevice currentDevice] identifierForVendor] UUIDString]);
+}
+
 std::string GetSaltedString(const std::string& in_string,
                             const std::string& salt) {
   DCHECK(salt.length());

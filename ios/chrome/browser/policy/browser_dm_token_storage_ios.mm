@@ -75,7 +75,7 @@ BrowserDMTokenStorageIOS::BrowserDMTokenStorageIOS()
 BrowserDMTokenStorageIOS::~BrowserDMTokenStorageIOS() {}
 
 std::string BrowserDMTokenStorageIOS::InitClientId() {
-  return ios::device_util::GetDeviceIdentifier(nullptr);
+  return ios::device_util::GetVendorId();
 }
 
 std::string BrowserDMTokenStorageIOS::InitEnrollmentToken() {

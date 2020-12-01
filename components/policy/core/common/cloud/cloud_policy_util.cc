@@ -75,9 +75,22 @@
 #include "base/system/sys_info.h"
 #endif
 
+#if defined(OS_IOS)
+#include "base/ios/device_util.h"
+#endif
+
 namespace policy {
 
 namespace em = enterprise_management;
+
+std::string GetDeviceModel() {
+#if defined(OS_IOS)
+  // Obtains the Apple internal device name (e.g. "iPad6,11").
+  return base::SysInfo::HardwareModelName();
+#else
+  return std::string();
+#endif
+}
 
 std::string GetMachineName() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -87,17 +100,10 @@ std::string GetMachineName() {
   if (gethostname(hostname, HOST_NAME_MAX) == 0)  // Success.
     return hostname;
   return std::string();
+#elif defined(OS_IOS)
+  // Use the Vendor ID as the machine name.
+  return ios::device_util::GetVendorId();
 #elif defined(OS_APPLE)
-
-#if defined(OS_IOS)
-  // The user-entered device name (e.g. "Foo's iPhone") should not be used, as
-  // there are privacy considerations (crbug.com/1123949). The Apple internal
-  // device name (e.g. "iPad6,11") is used instead.
-  std::string ios_model_name = base::SysInfo::HardwareModelName();
-  if (!ios_model_name.empty()) {
-    return ios_model_name;
-  }
-#else
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
   SCDynamicStoreContext context = {0, NULL, NULL, NULL};
   base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
@@ -112,7 +118,6 @@ std::string GetMachineName() {
       SCDynamicStoreCopyComputerName(store.get(), NULL));
   if (computer_name.get())
     return base::SysCFStringRefToUTF8(computer_name.get());
-#endif  // defined(OS_IOS)
 
   // If all else fails, return to using a slightly nicer version of the
   // hardware model.
