@@ -546,6 +546,7 @@ static_library("test_support") {
     "//components/translate/core/browser:test_support",
     "//components/ukm",
     "//components/ukm:test_support",
+    "//components/version_info:version_info",
     "//google_apis:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

@@ -100,6 +100,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const std::vector<std::string>& selectors,
       GetElementFormAndFieldDataCallback callback) override;
   void SetAssistantActionState(bool running) override;
+  void EnableHeavyFormDataScraping() override;
 
   void FormControlElementClicked(const blink::WebFormControlElement& element,
                                  bool was_focused);
@@ -123,6 +124,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
   FormTracker* form_tracker_for_testing() { return &form_tracker_; }
+
+  bool is_heavy_form_data_scraping_enabled() {
+    return is_heavy_form_data_scraping_enabled_;
+  }
 
   void SelectWasUpdated(const blink::WebFormControlElement& element);
 
@@ -366,6 +371,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.
   bool is_screen_reader_enabled_ = false;
+
+  // Whether agents should enable heavy scraping of form data (e.g., button
+  // titles for unowned forms).
+  bool is_heavy_form_data_scraping_enabled_ = false;
 
   const scoped_refptr<FieldDataManager> field_data_manager_;
 

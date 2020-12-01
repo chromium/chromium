@@ -360,12 +360,6 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
 }
 
 TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless) {
-  // Button titles computation and crowdsourcing for <form>less forms are
-  // enabled only if |AutofillFieldMetadata| (Dev and Canary) is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.Init();
-  base::FieldTrialList::CreateFieldTrial("AutofillFieldMetadata", "Enabled");
-
   constexpr char kNoFormHtml[] =
       "<div class='reg-form'>"
       "  <input type='button' value='\n Show\t password '>"
@@ -400,13 +394,10 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless) {
   VerifyButtonTitleCache(form_target, expected, cache);
 }
 
-TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless_DisabledByDefault) {
-  // Button titles computation and crowdsourcing for <form>less forms should be
-  // disabled if |AutofillFieldMetadata| is disabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.Init();
-  base::FieldTrialList::CreateFieldTrial("AutofillFieldMetadata", "Disabled");
-
+TEST_F(FormAutofillUtilsTest, GetButtonTitles_DisabledIfNoCache) {
+  // Button titles scraping for unowned forms can be time-consuming and disabled
+  // in Beta and Stable. To disable button titles computation, |buttons_cache|
+  // should be null.
   constexpr char kNoFormHtml[] =
       "<div class='reg-form'>"
       "  <input type='button' value='\n Show\t password '>"
@@ -425,13 +416,11 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless_DisabledByDefault) {
   ASSERT_NE(nullptr, web_frame);
   WebFormElement form_target;
   ASSERT_FALSE(web_frame->GetDocument().Body().IsNull());
-  ButtonTitlesCache cache;
 
   autofill::ButtonTitleList actual =
-      GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
+      GetButtonTitles(form_target, web_frame->GetDocument(), nullptr);
 
   EXPECT_TRUE(actual.empty());
-  EXPECT_TRUE(cache.empty());
 }
 
 TEST_F(FormAutofillUtilsTest, IsEnabled) {

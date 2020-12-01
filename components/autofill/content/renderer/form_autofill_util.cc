@@ -99,15 +99,6 @@ enum FieldFilterMask {
                                      FILTER_NON_FOCUSABLE_ELEMENTS,
 };
 
-// Returns whether sending autofill field metadata to the server is enabled.
-// TODO(crbug.com/938804): Remove this when button titles are crowdsourced in
-// all channels.
-bool IsAutofillFieldMetadataEnabled() {
-  static base::NoDestructor<std::string> kGroupName(
-      base::FieldTrialList::FindFullName("AutofillFieldMetadata"));
-  return base::StartsWith(*kGroupName, "Enabled", base::CompareCase::SENSITIVE);
-}
-
 void TruncateString(base::string16* str, size_t max_length) {
   if (str->length() > max_length)
     str->resize(max_length);
@@ -2211,9 +2202,10 @@ base::string16 FindChildText(const WebNode& node) {
 ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
                                 const WebDocument& document,
                                 ButtonTitlesCache* button_titles_cache) {
-  DCHECK(button_titles_cache);
-  if (!IsAutofillFieldMetadataEnabled() && web_form.IsNull())
+  if (!button_titles_cache) {
+    // Button titles scraping is disabled for this form.
     return ButtonTitleList();
+  }
 
   // True if the cache has no entry for |web_form|.
   bool cache_miss = true;

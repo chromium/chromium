@@ -78,6 +78,10 @@ interface AutofillAgent {
 
   // Set whether or not an assistant action is currently running an action.
   SetAssistantActionState(bool running);
+
+  // Allows heavy scraping of form data (e.g., button titles for
+  // unowned forms).
+  EnableHeavyFormDataScraping();
 };
 
 // There is one instance of this interface per render frame in the render

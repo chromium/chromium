@@ -28,6 +28,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/version_info/channel.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 
 #if !defined(OS_IOS)
@@ -43,6 +44,7 @@ class TestAutofillClient : public AutofillClient {
   ~TestAutofillClient() override;
 
   // AutofillClient:
+  version_info::Channel GetChannel() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
@@ -230,6 +232,10 @@ class TestAutofillClient : public AutofillClient {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
   }
 
+  void set_channel_for_testing(const version_info::Channel channel) {
+    channel_for_testing_ = channel;
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder();
@@ -264,6 +270,8 @@ class TestAutofillClient : public AutofillClient {
   // Populated if name fix flow was offered. True if bubble was shown, false
   // otherwise.
   base::Optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
+
+  version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
   // Populated if local save or upload was offered.
   base::Optional<SaveCreditCardOptions> save_credit_card_options_;

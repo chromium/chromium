@@ -758,6 +758,10 @@ void AutofillAgent::SetAssistantActionState(bool running) {
   }
 }
 
+void AutofillAgent::EnableHeavyFormDataScraping() {
+  is_heavy_form_data_scraping_enabled_ = true;
+}
+
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
     bool autoselect_first_suggestion) {

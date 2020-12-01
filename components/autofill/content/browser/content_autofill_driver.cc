@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -35,6 +36,24 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
+
+namespace {
+
+bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
+  switch (channel) {
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      return true;
+    case version_info::Channel::STABLE:
+    case version_info::Channel::BETA:
+    case version_info::Channel::UNKNOWN:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+}  // namespace
 
 namespace autofill {
 
@@ -55,6 +74,9 @@ ContentAutofillDriver::ContentAutofillDriver(
   } else {
     SetAutofillManager(std::make_unique<AutofillManager>(
         this, client, app_locale, enable_download_manager));
+  }
+  if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel())) {
+    GetAutofillAgent()->EnableHeavyFormDataScraping();
   }
 }
 

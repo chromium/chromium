@@ -1370,7 +1370,9 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
     return nullptr;
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager_.get(), &username_detector_cache_,
-      &button_titles_cache_);
+      autofill_agent_ && autofill_agent_->is_heavy_form_data_scraping_enabled()
+          ? &button_titles_cache_
+          : nullptr);
 }
 
 void PasswordAutofillAgent::InformAboutFormClearing(

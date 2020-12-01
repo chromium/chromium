@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/version_info/channel.h"
 
 #if !defined(OS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
@@ -21,6 +22,10 @@ TestAutofillClient::TestAutofillClient()
       last_committed_url_(GURL("https://example.test")) {}
 
 TestAutofillClient::~TestAutofillClient() {}
+
+version_info::Channel TestAutofillClient::GetChannel() const {
+  return channel_for_testing_;
+}
 
 PersonalDataManager* TestAutofillClient::GetPersonalDataManager() {
   return &test_personal_data_manager_;
