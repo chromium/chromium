@@ -59,7 +59,13 @@ void LaunchMacTest(const FilePath& exe_path,
   EXPECT_EQ(output, expected_output);
 }
 
-TEST(Process, LaunchMac) {
+#if defined(ARCH_CPU_ARM64)
+// Bulk-disabled on arm64 for bot stabilization: https://crbug.com/1154345
+#define MAYBE_LaunchMac DISABLED_LaunchMac
+#else
+#define MAYBE_LaunchMac LaunchMac
+#endif
+TEST(Process, MAYBE_LaunchMac) {
   FilePath data_dir;
   ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &data_dir));
   data_dir = data_dir.AppendASCII("mac");
