@@ -28,6 +28,11 @@ const char kMojoUseExplicitLibraryPath[] = "mojo-use-explicit-library-path";
 
 namespace {
 
+// TODO(https://crbug.com/902135): Re-enable this on MSAN. Currently hangs
+// because of an apparent deadlock in MSAN's fork() in multithreaded
+// environments.
+#if !defined(MEMORY_SANITIZER)
+
 uint64_t kTestPipeName = 0;
 const char kTestMessage[] = "hai";
 const char kTestReply[] = "bai";
@@ -135,5 +140,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(InitializationMode::kCombinedLoadAndInit,
                           InitializationMode::kLoadBeforeInit),
         ::testing::Values(LoadPathSpec::kImplicit, LoadPathSpec::kExplicit)));
+
+#endif  // !defined(MEMORY_SANITIZER)
 
 }  // namespace
