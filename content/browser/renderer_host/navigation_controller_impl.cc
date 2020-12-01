@@ -2300,8 +2300,8 @@ bool NavigationControllerImpl::StartHistoryNavigationInNewSubframe(
 
   request->SetNavigationClient(std::move(*navigation_client));
 
-  render_frame_host->frame_tree_node()->navigator().Navigate(
-      std::move(request), ReloadType::NONE, RestoreType::NONE);
+  render_frame_host->frame_tree_node()->navigator().Navigate(std::move(request),
+                                                             ReloadType::NONE);
 
   return true;
 }
@@ -2321,8 +2321,7 @@ bool NavigationControllerImpl::ReloadFrame(FrameTreeNode* frame_tree_node) {
       false /* is_history_navigation_in_new_child */);
   if (!request)
     return false;
-  frame_tree_node->navigator().Navigate(std::move(request), reload_type,
-                                        RestoreType::NONE);
+  frame_tree_node->navigator().Navigate(std::move(request), reload_type);
   return true;
 }
 
@@ -2488,8 +2487,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   // remains of a cancelled browser initiated navigation to avoid URL spoofs.
   DiscardNonCommittedEntries();
 
-  node->navigator().Navigate(std::move(request), ReloadType::NONE,
-                             RestoreType::NONE);
+  node->navigator().Navigate(std::move(request), ReloadType::NONE);
 }
 
 void NavigationControllerImpl::SetSessionStorageNamespace(
@@ -2810,8 +2808,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
         root, pending_entry_, pending_entry_->GetFrameEntry(root),
         ReloadType::NONE, false /* is_same_document_history_load */,
         false /* is_history_navigation_in_new_child */);
-    root->navigator().Navigate(std::move(navigation_request), ReloadType::NONE,
-                               RestoreType::NONE);
+    root->navigator().Navigate(std::move(navigation_request), ReloadType::NONE);
 
     return;
   }
@@ -2854,13 +2851,11 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   // Send all the same document frame loads before the different document loads.
   for (auto& item : same_document_loads) {
     FrameTreeNode* frame = item->frame_tree_node();
-    frame->navigator().Navigate(std::move(item), reload_type,
-                                pending_entry_->restore_type());
+    frame->navigator().Navigate(std::move(item), reload_type);
   }
   for (auto& item : different_document_loads) {
     FrameTreeNode* frame = item->frame_tree_node();
-    frame->navigator().Navigate(std::move(item), reload_type,
-                                pending_entry_->restore_type());
+    frame->navigator().Navigate(std::move(item), reload_type);
   }
 
   in_navigate_to_pending_entry_ = false;
@@ -3180,8 +3175,7 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   // function.
   std::unique_ptr<PendingEntryRef> pending_entry_ref = ReferencePendingEntry();
 
-  node->navigator().Navigate(std::move(request), reload_type,
-                             RestoreType::NONE);
+  node->navigator().Navigate(std::move(request), reload_type);
 
   in_navigate_to_pending_entry_ = false;
 }

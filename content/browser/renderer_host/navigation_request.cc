@@ -2722,9 +2722,13 @@ NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
 }
 
 void NavigationRequest::OnRequestStarted(base::TimeTicks timestamp) {
-  frame_tree_node_->navigator().LogResourceRequestTime(timestamp,
-                                                       common_params_->url);
+  // Nothing to be done in production code.
+  //
+  // TODO(lukasza): Consider refactoring tests that depend on
+  // TestNavigationURLLoaderDelegate::OnRequestStarted and remove the
+  // OnRequestStarted method from NavigationURLLoaderDelegate.
 }
+
 namespace {
 
 void OnServiceWorkerAccessedThreadSafeWrapper(

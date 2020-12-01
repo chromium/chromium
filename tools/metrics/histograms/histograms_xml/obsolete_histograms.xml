@@ -35972,7 +35972,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.TimeToCommit" units="ms" expires_after="2018-03-30">
   <obsolete>
-    Removed March 2018 in favor of Navigation.StartToCommit variants.
+    Removed March 2018 in favor of Navigation.StartToCommit variants. Removed
+    from code in November 2020 (M89).
   </obsolete>
   <owner>carlosk@chromium.org</owner>
   <summary>

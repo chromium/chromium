@@ -60,23 +60,17 @@ struct Navigator::NavigationMetricsData {
   NavigationMetricsData(base::TimeTicks start_time,
                         GURL url,
                         ukm::SourceId ukm_source_id,
-                        bool is_browser_initiated_before_unload,
-                        RestoreType restore_type)
+                        bool is_browser_initiated_before_unload)
       : start_time_(start_time),
         url_(url),
         ukm_source_id_(ukm_source_id),
         is_browser_initiated_before_unload_(
-            is_browser_initiated_before_unload) {
-    is_restoring_from_last_session_ =
-        (restore_type == RestoreType::LAST_SESSION);
-  }
+            is_browser_initiated_before_unload) {}
 
   base::TimeTicks start_time_;
   GURL url_;
   ukm::SourceId ukm_source_id_;
   bool is_browser_initiated_before_unload_;
-  bool is_restoring_from_last_session_;
-  base::TimeTicks url_job_start_time_;
   base::TimeDelta before_unload_delay_;
 
   // Timestamps before_unload_(start|end)_ give the time it took to run
@@ -447,8 +441,7 @@ void Navigator::DidNavigate(
 }
 
 void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
-                         ReloadType reload_type,
-                         RestoreType restore_type) {
+                         ReloadType reload_type) {
   TRACE_EVENT0("browser,navigation", "Navigator::Navigate");
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
       "navigation,rail", "NavigationTiming navigationStart",
@@ -463,7 +456,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   navigation_data_ = std::make_unique<NavigationMetricsData>(
       request->common_params().navigation_start, request->common_params().url,
       frame_tree_node->current_frame_host()->GetPageUkmSourceId(),
-      true /* is_browser_initiated_before_unload */, restore_type);
+      true /* is_browser_initiated_before_unload */);
 
   // Check if the BeforeUnload event needs to execute before assigning the
   // NavigationRequest to the FrameTreeNode. Assigning it to the FrameTreeNode
@@ -761,7 +754,7 @@ void Navigator::OnBeginNavigation(
       navigation_request->common_params().navigation_start,
       navigation_request->common_params().url,
       frame_tree_node->current_frame_host()->GetPageUkmSourceId(),
-      false /* is_browser_initiated_before_unload */, RestoreType::NONE);
+      false /* is_browser_initiated_before_unload */);
 
   LogRendererInitiatedBeforeUnloadTime(
       navigation_request->begin_params()->before_unload_start,
@@ -816,16 +809,6 @@ void Navigator::CancelNavigation(FrameTreeNode* frame_tree_node) {
   frame_tree_node->ResetNavigationRequest(false);
   if (frame_tree_node->IsMainFrame())
     navigation_data_.reset();
-}
-
-void Navigator::LogResourceRequestTime(base::TimeTicks timestamp,
-                                       const GURL& url) {
-  if (navigation_data_ && navigation_data_->url_ == url) {
-    navigation_data_->url_job_start_time_ = timestamp;
-    UMA_HISTOGRAM_TIMES(
-        "Navigation.TimeToURLJobStart",
-        navigation_data_->url_job_start_time_ - navigation_data_->start_time_);
-  }
 }
 
 void Navigator::LogBeforeUnloadTime(
@@ -912,7 +895,6 @@ void Navigator::RecordNavigationMetrics(
   DCHECK(site_instance->HasProcess());
 
   if (!details.is_main_frame || !navigation_data_ ||
-      navigation_data_->url_job_start_time_.is_null() ||
       navigation_data_->url_ != params.original_request_url) {
     return;
   }
@@ -920,43 +902,6 @@ void Navigator::RecordNavigationMetrics(
   ukm::builders::Unload builder(navigation_data_->ukm_source_id_);
 
   if (navigation_data_->is_browser_initiated_before_unload_) {
-    base::TimeDelta time_to_commit =
-        base::TimeTicks::Now() - navigation_data_->start_time_;
-    UMA_HISTOGRAM_TIMES("Navigation.TimeToCommit", time_to_commit);
-
-    time_to_commit -= navigation_data_->before_unload_delay_;
-    base::TimeDelta time_to_network = navigation_data_->url_job_start_time_ -
-                                      navigation_data_->start_time_ -
-                                      navigation_data_->before_unload_delay_;
-    if (navigation_data_->is_restoring_from_last_session_) {
-      UMA_HISTOGRAM_TIMES(
-          "Navigation.TimeToCommit_SessionRestored_BeforeUnloadDiscounted",
-          time_to_commit);
-      UMA_HISTOGRAM_TIMES(
-          "Navigation.TimeToURLJobStart_SessionRestored_BeforeUnloadDiscounted",
-          time_to_network);
-      navigation_data_.reset();
-      return;
-    }
-    bool navigation_created_new_renderer_process =
-        site_instance->GetProcess()->GetInitTimeForNavigationMetrics() >
-        navigation_data_->start_time_;
-    if (navigation_created_new_renderer_process) {
-      UMA_HISTOGRAM_TIMES(
-          "Navigation.TimeToCommit_NewRenderer_BeforeUnloadDiscounted",
-          time_to_commit);
-      UMA_HISTOGRAM_TIMES(
-          "Navigation.TimeToURLJobStart_NewRenderer_BeforeUnloadDiscounted",
-          time_to_network);
-    } else {
-      UMA_HISTOGRAM_TIMES(
-          "Navigation.TimeToCommit_ExistingRenderer_BeforeUnloadDiscounted",
-          time_to_commit);
-      UMA_HISTOGRAM_TIMES(
-          "Navigation.TimeToURLJobStart_ExistingRenderer_"
-          "BeforeUnloadDiscounted",
-          time_to_network);
-    }
     if (navigation_data_->before_unload_start_ &&
         navigation_data_->before_unload_end_) {
       builder.SetBeforeUnloadDuration(

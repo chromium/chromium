@@ -9435,8 +9435,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              (whether from a crash or a continued session) either spawning or
              reusing a renderer. Time spent in beforeunload subtracted.">
     <obsolete>
-      Replaced by the likely named entry. It had a misleading name as it also
-      has the before-unload time discounted.
+      Replaced by SessionRestored_BeforeUnloadDiscounte. It had a misleading
+      name as it also has the before-unload time discounted.
     </obsolete>
   </suffix>
   <suffix name="SessionRestored_BeforeUnloadDiscounted"

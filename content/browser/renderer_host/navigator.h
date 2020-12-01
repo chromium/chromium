@@ -115,8 +115,7 @@ class CONTENT_EXPORT Navigator {
   // RendererDidNavigate on success or DiscardPendingEntry on failure. The
   // callbacks should be called in a future iteration of the message loop.
   void Navigate(std::unique_ptr<NavigationRequest> request,
-                ReloadType reload_type,
-                RestoreType restore_type);
+                ReloadType reload_type);
 
   // The RenderFrameHostImpl has received a request to open a URL with the
   // specified |disposition|.
@@ -185,13 +184,6 @@ class CONTENT_EXPORT Navigator {
 
   // Cancel a NavigationRequest for |frame_tree_node|.
   void CancelNavigation(FrameTreeNode* frame_tree_node);
-
-  // Called when the network stack started handling the navigation request
-  // so that the |timestamp| when it happened can be recorded into an histogram.
-  // The |url| is used to verify we're tracking the correct navigation.
-  // TODO(carlosk): Remove the URL parameter and rename this method to better
-  // suit naming conventions.
-  void LogResourceRequestTime(base::TimeTicks timestamp, const GURL& url);
 
   // Called to record the time it took to execute the beforeunload hook for the
   // current navigation.

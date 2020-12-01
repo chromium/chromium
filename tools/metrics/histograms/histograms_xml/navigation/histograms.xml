@@ -967,6 +967,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.TimeToURLJobStart" units="ms" expires_after="M85">
+  <obsolete>
+    Removed from code in M89 (Nov 2020), after expiring in M85.
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <summary>
     Time between the start of a browser-started navigation request and the

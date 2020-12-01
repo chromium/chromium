@@ -85,8 +85,10 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, NoPreviousCommittedUrl) {
       internal::kHistogramFromGWSFirstImagePaint, 0);
   size_t document_created_entries_count =
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size();
+  size_t unload_entries_count =
+      tester()->test_ukm_recorder().GetEntriesByName("Unload").size();
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count() -
-                     document_created_entries_count);
+                     document_created_entries_count - unload_entries_count);
 }
 
 TEST_F(FromGWSPageLoadMetricsObserverTest, NonSearchPreviousCommittedUrl) {
@@ -106,8 +108,10 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, NonSearchPreviousCommittedUrl) {
       internal::kHistogramFromGWSFirstImagePaint, 0);
   size_t document_created_entries_count =
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size();
+  size_t unload_entries_count =
+      tester()->test_ukm_recorder().GetEntriesByName("Unload").size();
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count() -
-                     document_created_entries_count);
+                     document_created_entries_count - unload_entries_count);
 }
 
 TEST_F(FromGWSPageLoadMetricsObserverTest,
@@ -128,8 +132,10 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
       internal::kHistogramFromGWSFirstImagePaint, 0);
   size_t document_created_entries_count =
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size();
+  size_t unload_entries_count =
+      tester()->test_ukm_recorder().GetEntriesByName("Unload").size();
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count() -
-                     document_created_entries_count);
+                     document_created_entries_count - unload_entries_count);
 }
 
 TEST_F(FromGWSPageLoadMetricsObserverTest,
@@ -152,8 +158,10 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
       internal::kHistogramFromGWSFirstImagePaint, 0);
   size_t document_created_entries_count =
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size();
+  size_t unload_entries_count =
+      tester()->test_ukm_recorder().GetEntriesByName("Unload").size();
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count() -
-                     document_created_entries_count);
+                     document_created_entries_count - unload_entries_count);
 }
 
 TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl1) {
@@ -587,8 +595,10 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
 
   size_t document_created_entries_count =
       tester()->test_ukm_recorder().GetEntriesByName("DocumentCreated").size();
+  size_t unload_entries_count =
+      tester()->test_ukm_recorder().GetEntriesByName("Unload").size();
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count() -
-                     document_created_entries_count);
+                     document_created_entries_count - unload_entries_count);
 }
 
 TEST_F(FromGWSPageLoadMetricsObserverTest,
