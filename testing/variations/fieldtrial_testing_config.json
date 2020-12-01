@@ -5708,10 +5708,16 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "selected_text_confidence_threshold": "0.7",
+                        "surrounding_text_confidence_threshold": "0.9"
+                    },
                     "enable_features": [
                         "QuickAnswers",
                         "QuickAnswersRichUi",
-                        "QuickAnswersTextAnnotator"
+                        "QuickAnswersTextAnnotator",
+                        "QuickAnswersTranslation",
+                        "QuickAnswersTranslationCloudAPI"
                     ]
                 }
             ]
