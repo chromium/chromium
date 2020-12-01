@@ -36,7 +36,6 @@
 #include "ui/views/views_export.h"
 #include "ui/views/win/pen_event_processor.h"
 #include "ui/views/win/scoped_enable_unadjusted_mouse_events_win.h"
-#include "ui/views/window/window_resize_utils.h"
 
 namespace gfx {
 class ImageSkia;

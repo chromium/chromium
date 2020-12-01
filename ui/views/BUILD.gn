@@ -274,7 +274,6 @@ component("views") {
     "window/native_frame_view.h",
     "window/non_client_view.h",
     "window/window_button_order_provider.h",
-    "window/window_resize_utils.h",
     "window/window_resources.h",
     "window/window_shape.h",
     "word_lookup_client.h",
@@ -460,7 +459,6 @@ component("views") {
     "window/native_frame_view.cc",
     "window/non_client_view.cc",
     "window/window_button_order_provider.cc",
-    "window/window_resize_utils.cc",
     "window/window_shape.cc",
   ]
 
@@ -1153,7 +1151,6 @@ test("views_unittests") {
     "window/frame_caption_button_unittest.cc",
     "window/hit_test_utils_unittest.cc",
     "window/non_client_view_unittest.cc",
-    "window/window_resize_utils_unittest.cc",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]

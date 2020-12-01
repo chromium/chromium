@@ -35,12 +35,12 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/non_client_view.h"
-#include "ui/views/window/window_resize_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_features.h"
@@ -290,30 +290,29 @@ gfx::Rect OverlayWindowViews::CalculateAndUpdateWindowBounds() {
 
     WindowQuadrant quadrant =
         GetCurrentWindowQuadrant(GetBounds(), controller_);
-    views::HitTest hit_test;
+    gfx::ResizeEdge resize_edge;
     switch (quadrant) {
       case OverlayWindowViews::WindowQuadrant::kBottomRight:
-        hit_test = views::HitTest::kTopLeft;
+        resize_edge = gfx::ResizeEdge::kTopLeft;
         break;
       case OverlayWindowViews::WindowQuadrant::kBottomLeft:
-        hit_test = views::HitTest::kTopRight;
+        resize_edge = gfx::ResizeEdge::kTopRight;
         break;
       case OverlayWindowViews::WindowQuadrant::kTopLeft:
-        hit_test = views::HitTest::kBottomRight;
+        resize_edge = gfx::ResizeEdge::kBottomRight;
         break;
       case OverlayWindowViews::WindowQuadrant::kTopRight:
-        hit_test = views::HitTest::kBottomLeft;
+        resize_edge = gfx::ResizeEdge::kBottomLeft;
         break;
     }
 
     // Update the window size to adhere to the aspect ratio.
     gfx::Size min_size = min_size_;
     gfx::Size max_size = max_size_;
-    views::WindowResizeUtils::SizeMinMaxToAspectRatio(aspect_ratio, &min_size,
-                                                      &max_size);
+    gfx::SizeMinMaxToAspectRatio(aspect_ratio, &min_size, &max_size);
     gfx::Rect window_rect(GetBounds().origin(), window_size);
-    views::WindowResizeUtils::SizeRectToAspectRatio(
-        hit_test, aspect_ratio, min_size, max_size, &window_rect);
+    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size, max_size,
+                               &window_rect);
     window_size.SetSize(window_rect.width(), window_rect.height());
 
     UpdateLayerBoundsWithLetterboxing(window_size);

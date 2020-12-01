@@ -22,9 +22,9 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/window_resize_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -39,28 +39,29 @@ bool IsRightEdge(int window_component) {
          window_component == HTBOTTOMRIGHT || window_component == HTGROWBOX;
 }
 
-// Convert |window_component| to the HitTest used in views::WindowResizeUtils.
-views::HitTest GetWindowResizeHitTest(int window_component) {
+// Convert |window_component| to the ResizeEdge used in
+// gfx::SizeRectToAspectRatio().
+gfx::ResizeEdge GetWindowResizeEdge(int window_component) {
   switch (window_component) {
     case HTBOTTOM:
-      return views::HitTest::kBottom;
+      return gfx::ResizeEdge::kBottom;
     case HTTOP:
-      return views::HitTest::kTop;
+      return gfx::ResizeEdge::kTop;
     case HTLEFT:
-      return views::HitTest::kLeft;
+      return gfx::ResizeEdge::kLeft;
     case HTRIGHT:
-      return views::HitTest::kRight;
+      return gfx::ResizeEdge::kRight;
     case HTTOPLEFT:
-      return views::HitTest::kTopLeft;
+      return gfx::ResizeEdge::kTopLeft;
     case HTTOPRIGHT:
-      return views::HitTest::kTopRight;
+      return gfx::ResizeEdge::kTopRight;
     case HTBOTTOMLEFT:
-      return views::HitTest::kBottomLeft;
+      return gfx::ResizeEdge::kBottomLeft;
     case HTBOTTOMRIGHT:
-      return views::HitTest::kBottomRight;
+      return gfx::ResizeEdge::kBottomRight;
     default:
       NOTREACHED();
-      return views::HitTest::kBottomRight;
+      return gfx::ResizeEdge::kBottomRight;
   }
 }
 
@@ -468,11 +469,9 @@ void WindowResizer::CalculateBoundsWithAspectRatio(float aspect_ratio,
   DCHECK(!min_size.IsEmpty());
   DCHECK(!max_size.IsEmpty());
 
-  views::WindowResizeUtils::SizeMinMaxToAspectRatio(aspect_ratio, &min_size,
-                                                    &max_size);
-  views::WindowResizeUtils::SizeRectToAspectRatio(
-      GetWindowResizeHitTest(details().window_component), aspect_ratio,
-      min_size, max_size, new_bounds);
+  gfx::SizeMinMaxToAspectRatio(aspect_ratio, &min_size, &max_size);
+  gfx::SizeRectToAspectRatio(GetWindowResizeEdge(details().window_component),
+                             aspect_ratio, min_size, max_size, new_bounds);
 }
 
 }  // namespace ash

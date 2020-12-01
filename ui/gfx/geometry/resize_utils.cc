@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/window/window_resize_utils.h"
+#include "ui/gfx/geometry/resize_utils.h"
 
 #include <algorithm>
 
@@ -10,12 +10,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace views {
+namespace gfx {
 
-// static
-void WindowResizeUtils::SizeMinMaxToAspectRatio(float aspect_ratio,
-                                                gfx::Size* min_window_size,
-                                                gfx::Size* max_window_size) {
+void SizeMinMaxToAspectRatio(float aspect_ratio,
+                             Size* min_window_size,
+                             Size* max_window_size) {
   DCHECK_GT(aspect_ratio, 0.0f);
 
   // Calculate the height using the min-width and aspect ratio.
@@ -42,21 +41,20 @@ void WindowResizeUtils::SizeMinMaxToAspectRatio(float aspect_ratio,
   DCHECK_GE(max_window_size->height(), min_window_size->height());
 }
 
-// static
-void WindowResizeUtils::SizeRectToAspectRatio(HitTest param,
-                                              float aspect_ratio,
-                                              const gfx::Size& min_window_size,
-                                              const gfx::Size& max_window_size,
-                                              gfx::Rect* rect) {
+void SizeRectToAspectRatio(ResizeEdge resize_edge,
+                           float aspect_ratio,
+                           const Size& min_window_size,
+                           const Size& max_window_size,
+                           Rect* rect) {
   DCHECK_GT(aspect_ratio, 0.0f);
   DCHECK_GE(max_window_size.width(), min_window_size.width());
   DCHECK_GE(max_window_size.height(), min_window_size.height());
 
   float rect_width = 0.0;
   float rect_height = 0.0;
-  if (param == HitTest::kLeft || param == HitTest::kRight ||
-      param == HitTest::kTopLeft ||
-      param == HitTest::kBottomLeft) { /* horizontal axis to pivot */
+  if (resize_edge == ResizeEdge::kLeft || resize_edge == ResizeEdge::kRight ||
+      resize_edge == ResizeEdge::kTopLeft ||
+      resize_edge == ResizeEdge::kBottomLeft) { /* horizontal axis to pivot */
     rect_width = std::min(max_window_size.width(),
                           std::max(rect->width(), min_window_size.width()));
     rect_height = rect_width / aspect_ratio;
@@ -72,30 +70,30 @@ void WindowResizeUtils::SizeRectToAspectRatio(HitTest param,
   int right = rect->right();
   int bottom = rect->bottom();
 
-  switch (param) {
-    case HitTest::kRight:
-    case HitTest::kBottom:
+  switch (resize_edge) {
+    case ResizeEdge::kRight:
+    case ResizeEdge::kBottom:
       right = rect_width + left;
       bottom = top + rect_height;
       break;
-    case HitTest::kTop:
+    case ResizeEdge::kTop:
       right = rect_width + left;
       top = bottom - rect_height;
       break;
-    case HitTest::kLeft:
-    case HitTest::kTopLeft:
+    case ResizeEdge::kLeft:
+    case ResizeEdge::kTopLeft:
       left = right - rect_width;
       top = bottom - rect_height;
       break;
-    case HitTest::kTopRight:
+    case ResizeEdge::kTopRight:
       right = left + rect_width;
       top = bottom - rect_height;
       break;
-    case HitTest::kBottomLeft:
+    case ResizeEdge::kBottomLeft:
       left = right - rect_width;
       bottom = top + rect_height;
       break;
-    case HitTest::kBottomRight:
+    case ResizeEdge::kBottomRight:
       right = left + rect_width;
       bottom = top + rect_height;
       break;
@@ -104,4 +102,4 @@ void WindowResizeUtils::SizeRectToAspectRatio(HitTest param,
   rect->SetByBounds(left, top, right, bottom);
 }
 
-}  // namespace views
+}  // namespace gfx

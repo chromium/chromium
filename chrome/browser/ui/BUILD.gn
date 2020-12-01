@@ -4164,6 +4164,7 @@ static_library("ui") {
       "//device/vr/buildflags:buildflags",
       "//services/media_session/public/mojom",
       "//ui/base/dragdrop/mojom:mojom_shared",
+      "//ui/gfx/geometry",
       "//ui/views:buildflags",
     ]
 
