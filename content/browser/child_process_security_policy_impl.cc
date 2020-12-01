@@ -2307,7 +2307,8 @@ void ChildProcessSecurityPolicyImpl::
 void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
     const IsolationContext& isolation_context,
     const url::Origin& origin) {
-  DCHECK(IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin));
+  DCHECK(IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
+      << "Attempting to opt-in invalid origin: " << origin;
 
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());

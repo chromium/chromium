@@ -60,12 +60,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -1818,6 +1820,145 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                             "window.open('', 'bg2').document.body.innerText"));
 }
 
+// Common app manifest for HostedAppOriginIsolationTest.
+constexpr const char kHostedAppOriginIsolationManifest[] =
+    R"( { "name": "Hosted App Origin Isolation Test",
+            "version": "1",
+            "manifest_version": 2,
+            "app": {
+              "launch": {
+                "web_url": "%s"
+              },
+              "urls": ["https://site.com", "https://sub.site.com/"]
+            }
+          } )";
+
+class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
+ public:
+  HostedAppOriginIsolationTest() = default;
+  ~HostedAppOriginIsolationTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HostedOrWebAppTest::SetUpCommandLine(command_line);
+
+    feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
+
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+  }
+
+  void SetUpOnMainThread() override {
+    HostedOrWebAppTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
+  void RunTest(const GURL& main_origin_url, const GURL& nested_origin_url) {
+    content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](content::URLLoaderInterceptor::RequestParams* params) {
+          bool isolate = params->url_request.url.path() == "/isolate";
+          const std::string headers = base::StringPrintf(
+              "HTTP/1.1 200 OK\n%s"
+              "Content-Type: text/html\n",
+              (isolate ? "Origin-Isolation: ?1\n" : ""));
+          if (params->url_request.url.host() == main_origin_url.host()) {
+            const std::string body = base::StringPrintf(
+                "<html><body>\n"
+                "This is '%s'</p>\n"
+                "<iframe src='%s'></iframe>\n"
+                "</body></html>",
+                main_origin_url.spec().c_str(),
+                nested_origin_url.spec().c_str());
+            content::URLLoaderInterceptor::WriteResponse(
+                headers, body, params->client.get(),
+                base::Optional<net::SSLInfo>());
+            return true;
+          } else if (params->url_request.url.host() ==
+                     nested_origin_url.host()) {
+            const std::string body = base::StringPrintf(
+                "<html><body>\n"
+                "This is '%s'\n"
+                "</body></html>",
+                nested_origin_url.spec().c_str());
+            content::URLLoaderInterceptor::WriteResponse(
+                headers, body, params->client.get(),
+                base::Optional<net::SSLInfo>());
+            return true;
+          }
+          // Not handled by us.
+          return false;
+        }));
+
+    extensions::TestExtensionDir test_app_dir;
+    test_app_dir.WriteManifest(base::StringPrintf(
+        kHostedAppOriginIsolationManifest, main_origin_url.spec().c_str()));
+    SetupApp(test_app_dir.UnpackedPath());
+
+    content::WebContents* web_contents =
+        app_browser_->tab_strip_model()->GetActiveWebContents();
+    // Now wait for that navigation triggered by the app's loading of the launch
+    // web_url from the manifest, which is |main_origin_url|.
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    // Verify we didn't get an error page.
+    EXPECT_EQ(main_origin_url,
+              web_contents->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(url::Origin::Create(main_origin_url),
+              web_contents->GetMainFrame()->GetLastCommittedOrigin());
+    // If we get here without a crash, the test has passed.
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(HostedAppOriginIsolationTest);
+};
+
+// This test case implements creis@'s repro case from
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1141721#c32.
+// Prior to the fix, we end up putting the app's extension url into the opt-in
+// list, then later the second navigation tries to compare an effective URL to
+// the actual (extension) url in the ProcessLocks in CanAccessDataForOrigin,
+// and gets a mismatch. Note that if DCHECKS are disabled, we would instead have
+// failed on the valid-origin check in AddOptInIsolatedOriginForBrowsingInstance
+// instead.
+// TODO(wjmaclean): when we stop exporting SiteURL() and instead export
+// SiteInfo, revisit these tests to verify that the SiteInstancesi for the main
+// and sub frames are the same/different as is appropriate for each test.
+IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
+                       IsolatedIframesInsideHostedApp_IsolateMainFrameOrigin) {
+  GURL main_origin_url("https://sub.site.com/isolate");
+  GURL nested_origin_url("https://sub.site.com");
+
+  RunTest(main_origin_url, nested_origin_url);
+}
+
+// In this test the nested frame's isolation request will fail.
+IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
+                       IsolatedIframesInsideHostedApp_IsolateSubFrameOrigin) {
+  GURL main_origin_url("https://sub.site.com");
+  GURL nested_origin_url("https://sub.site.com/isolate");
+
+  RunTest(main_origin_url, nested_origin_url);
+}
+
+// In this test both frames' isolation requests are honoured.
+IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
+                       IsolatedIframesInsideHostedApp_IsolateBaseOrigin) {
+  GURL main_origin_url("https://sub.site.com");
+  GURL nested_origin_url("https://site.com/isolate");
+
+  RunTest(main_origin_url, nested_origin_url);
+}
+
+// In this test both frames' isolation requests are honoured.
+IN_PROC_BROWSER_TEST_P(HostedAppOriginIsolationTest,
+                       IsolatedIframesInsideHostedApp_IsolateSubOrigin) {
+  GURL main_origin_url("https://site.com");
+  GURL nested_origin_url("https://sub.site.com/isolate");
+
+  RunTest(main_origin_url, nested_origin_url);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedOrWebAppTest,
                          ::testing::Values(AppType::HOSTED_APP,
@@ -1836,6 +1977,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HostedAppProcessModelTest,
     ::testing::Values(AppType::HOSTED_APP));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostedAppOriginIsolationTest,
+                         ::testing::Values(AppType::HOSTED_APP));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
