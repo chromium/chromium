@@ -272,6 +272,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 
   nearby_process_observer_.Add(process_manager_);
   power_client_->AddObserver(this);
+  certificate_manager_->AddObserver(this);
 
   settings_.AddSettingsObserver(settings_receiver_.BindNewPipeAndPassRemote());
 
@@ -318,6 +319,7 @@ void NearbySharingServiceImpl::Shutdown() {
     process_manager_->StopProcess(profile_);
 
   power_client_->RemoveObserver(this);
+  certificate_manager_->RemoveObserver(this);
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
@@ -361,6 +363,7 @@ void NearbySharingServiceImpl::Shutdown() {
   }
 
   process_shutdown_pending_timer_.Stop();
+  rotate_background_advertisement_timer_.Stop();
 
   // |profile_| has now been shut down so we shouldn't use it anymore.
   profile_ = nullptr;
@@ -958,6 +961,22 @@ void NearbySharingServiceImpl::OnAllowedContactsChanged(
   // TODO(vecore): handle visible contacts change
 }
 
+void NearbySharingServiceImpl::OnPublicCertificatesDownloaded() {
+  // TODO(https://crbug.com/1152158): Possibly restart scanning after public
+  // certificates are downloaded.
+}
+
+void NearbySharingServiceImpl::OnPrivateCertificatesChanged() {
+  // If we are currently advertising, restart advertising using the updated
+  // private certificates.
+  if (rotate_background_advertisement_timer_.IsRunning()) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Private certificates changed; rotating background advertisement.";
+    rotate_background_advertisement_timer_.FireNow();
+  }
+}
+
 void NearbySharingServiceImpl::OnEndpointDiscovered(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info) {
@@ -1054,6 +1073,10 @@ NearbySharingServiceImpl::CreateEndpointInfo(
     if (encrypted_metadata_key) {
       salt = encrypted_metadata_key->salt();
       encrypted_key = encrypted_metadata_key->encrypted_key();
+    } else {
+      NS_LOG(WARNING) << __func__
+                      << ": Failed to encrypt private certificate metadata key "
+                      << "for advertisement.";
     }
   }
 
@@ -1607,7 +1630,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
 
   nearby_connections_manager_->StartAdvertising(
       *endpoint_info,
-      /* listener= */ this, power_level, data_usage,
+      /*listener=*/this, power_level, data_usage,
       base::BindOnce(&NearbySharingServiceImpl::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr(), device_name.has_value()));
 
@@ -1664,7 +1687,7 @@ void NearbySharingServiceImpl::StartScanning() {
   ClearOutgoingShareTargetInfoMap();
 
   nearby_connections_manager_->StartDiscovery(
-      /* listener= */ this, settings_.GetDataUsage(),
+      /*listener=*/this, settings_.GetDataUsage(),
       base::BindOnce([](NearbyConnectionsManager::ConnectionsStatus status) {
         NS_LOG(VERBOSE) << __func__
                         << ": Scanning start attempted over Nearby Connections "

@@ -3569,8 +3569,7 @@ TEST_F(NearbySharingServiceImplTest, ShutdownCallsObservers) {
   service_.reset();
 }
 
-TEST_F(NearbySharingServiceImplTest,
-       PeriodicallyRotateBackgroundAdvertisement) {
+TEST_F(NearbySharingServiceImplTest, RotateBackgroundAdvertisement_Periodic) {
   certificate_manager()->set_next_salt({0x00, 0x01});
   SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
   NiceMock<MockTransferUpdateCallback> callback;
@@ -3583,6 +3582,26 @@ TEST_F(NearbySharingServiceImplTest,
 
   certificate_manager()->set_next_salt({0x00, 0x02});
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  auto endpoint_info_rotated =
+      fake_nearby_connections_manager_->advertising_endpoint_info();
+  EXPECT_NE(endpoint_info_initial, endpoint_info_rotated);
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       RotateBackgroundAdvertisement_PrivateCertificatesChange) {
+  certificate_manager()->set_next_salt({0x00, 0x01});
+  SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+  NiceMock<MockTransferUpdateCallback> callback;
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &callback, NearbySharingService::ReceiveSurfaceState::kBackground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  auto endpoint_info_initial =
+      fake_nearby_connections_manager_->advertising_endpoint_info();
+
+  certificate_manager()->set_next_salt({0x00, 0x02});
+  certificate_manager()->NotifyPrivateCertificatesChanged();
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   auto endpoint_info_rotated =
       fake_nearby_connections_manager_->advertising_endpoint_info();
