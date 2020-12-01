@@ -54,6 +54,17 @@ class PolymerModulizerTest(unittest.TestCase):
         'dom-module', 'dom_module.html', 'dom_module.js',
         'dom_module.m.js', 'dom_module_expected.js')
 
+  # Test case where a commented out HTML import exists in the original HTML
+  # file. It is purposefully picked up and converted to a JS module, to address
+  # a unique use case of the FilesApp where an HTML import does not actually
+  # exist in the Polymer2 code.
+  # TODO(crbug.com/1133186): Remove after FilesApp Polymer3 migration is
+  # completed.
+  def testDomModuleWithCommentedOutImport(self):
+    self._run_test('dom-module', 'dom_module_with_commented_out_import.html',
+                   'dom_module.js', 'dom_module.m.js',
+                   'dom_module_with_commented_out_import_expected.js')
+
   # Test case where HTML is extracted from a Polymer2 <dom-module> that is
   # wrapped in an IIFE function.
   def testDomModuleIife(self):
