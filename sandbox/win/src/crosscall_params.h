@@ -179,7 +179,7 @@ class CrossCallParams {
 // that NUMBER_PARAMS = 2 and a 32-bit build:
 //
 // [ tag                4 bytes]
-// [ IsOnOut            4 bytes]
+// [ IsInOut            4 bytes]
 // [ call return       52 bytes]
 // [ params count       4 bytes]
 // [ parameter 0 type   4 bytes]
