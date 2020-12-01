@@ -150,9 +150,6 @@ void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
     return;
   }
 
-  // TODO(https://crbug.com/994936) remove when origin trial is complete.
-  UseCounter::Count(GetExecutionContext(), WebFeature::kWebNfcAPI);
-
   GetNfcProxy()->StartReading(
       this,
       WTF::Bind(&NDEFReader::ReadOnRequestCompleted, WrapPersistent(this)));
@@ -278,9 +275,6 @@ void NDEFReader::WriteOnRequestPermission(
                                               WrapPersistent(this),
                                               WrapPersistent(resolver)));
   }
-
-  // TODO(https://crbug.com/994936) remove when origin trial is complete.
-  UseCounter::Count(GetExecutionContext(), WebFeature::kWebNfcAPI);
 
   auto callback = WTF::Bind(&NDEFReader::WriteOnRequestCompleted,
                             WrapPersistent(this), WrapPersistent(resolver));

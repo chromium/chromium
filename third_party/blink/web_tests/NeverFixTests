@@ -2038,11 +2038,6 @@ crbug.com/626703 [ Linux ] external/wpt/payment-method-basic-card/billing-addres
 crbug.com/626703 [ Mac ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]
 crbug.com/626703 [ Win ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]
 
-# Chrome Win/Linux/Mac don't support WebNFC origin trial
-[ Win ] virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/web-nfc-origin-trial-interfaces.html [ Skip ]
-[ Linux ] virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/web-nfc-origin-trial-interfaces.html [ Skip ]
-[ Mac ] virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/web-nfc-origin-trial-interfaces.html [ Skip ]
-
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_fractional_coordinates-manual.html [ Skip ]
 
 crbug.com/626703 [ Linux ] external/wpt/payment-request/dynamically-change-shipping-options-manual.https.html [ Skip ]

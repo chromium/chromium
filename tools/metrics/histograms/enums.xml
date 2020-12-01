@@ -29758,7 +29758,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3124" label="WebkitBoxPackCenterDoesSomething"/>
   <int value="3125" label="WebkitBoxPackEndDoesSomething"/>
   <int value="3126" label="V8KeyframeEffect_Constructor"/>
-  <int value="3127" label="WebNfcAPI"/>
+  <int value="3127" label="OBSOLETE_WebNfcAPI"/>
   <int value="3128" label="HostCandidateAttributeGetter"/>
   <int value="3129" label="CSPWithReasonableObjectRestrictions"/>
   <int value="3130" label="CSPWithReasonableBaseRestrictions"/>

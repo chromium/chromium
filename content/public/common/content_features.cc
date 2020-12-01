@@ -901,8 +901,8 @@ const base::Feature kWarmUpNetworkProcess{"WarmUpNetworkProcess",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Kill switch for the WebNFC feature. This feature can be enabled for all sites
-// using the kEnableExperimentalWebPlatformFeatures flag or by a particular site
-// if it includes an Origin Trial key.  https://w3c.github.io/web-nfc/
+// using the kEnableExperimentalWebPlatformFeatures flag.
+// https://w3c.github.io/web-nfc/
 const base::Feature kWebNfc{"WebNFC", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
