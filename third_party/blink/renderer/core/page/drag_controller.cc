@@ -906,21 +906,6 @@ Node* DragController::DraggableNode(const LocalFrame* src,
   return node;
 }
 
-static ImageResourceContent* GetImageResource(Element* element) {
-  DCHECK(element);
-  if (auto* layout_image = DynamicTo<LayoutImage>(element->GetLayoutObject()))
-    return layout_image->CachedImage();
-  return nullptr;
-}
-
-static Image* GetImage(Element* element) {
-  DCHECK(element);
-  ImageResourceContent* cached_image = GetImageResource(element);
-  return (cached_image && !cached_image->ErrorOccurred())
-             ? cached_image->GetImage()
-             : nullptr;
-}
-
 static void PrepareDataTransferForImageDrag(LocalFrame* source,
                                             DataTransfer* data_transfer,
                                             Element* node,
@@ -1063,70 +1048,74 @@ static const IntSize MaxDragImageSize(float device_scale_factor) {
   return max_size_in_pixels;
 }
 
+static bool CanDragImage(const Element& element) {
+  auto* layout_image = DynamicTo<LayoutImage>(element.GetLayoutObject());
+  if (!layout_image)
+    return false;
+  const ImageResourceContent* image_content = layout_image->CachedImage();
+  if (!image_content || image_content->ErrorOccurred() ||
+      image_content->GetImage()->IsNull())
+    return false;
+  scoped_refptr<const SharedBuffer> buffer = image_content->ResourceBuffer();
+  if (!buffer || !buffer->size())
+    return false;
+  // We shouldn't be starting a drag for an image that can't provide an
+  // extension.
+  // This is an early detection for problems encountered later upon drop.
+  DCHECK(!image_content->GetImage()->FilenameExtension().IsEmpty());
+  return true;
+}
+
 static std::unique_ptr<DragImage> DragImageForImage(
-    Element* element,
-    Image* image,
+    const Element& element,
     float device_scale_factor,
-    const IntPoint& drag_origin,
-    const IntPoint& image_element_location,
-    const IntSize& image_element_size_in_pixels,
-    IntPoint& drag_location) {
-  std::unique_ptr<DragImage> drag_image;
-  IntPoint origin;
-
-  // Substitute an appropriately-sized SVGImageForContainer, to ensure dragged
-  // SVG images scale seamlessly.
-  scoped_refptr<SVGImageForContainer> svg_image;
-  if (auto* svg_img = DynamicTo<SVGImage>(image)) {
-    KURL url = element->GetDocument().CompleteURL(element->ImageSourceURL());
-    svg_image = SVGImageForContainer::Create(
-        svg_img, FloatSize(image_element_size_in_pixels), 1, url);
-    image = svg_image.get();
-  }
-
-  InterpolationQuality interpolation_quality = kInterpolationDefault;
-  if (const ComputedStyle* style = element->GetComputedStyle()) {
-    if (style->ImageRendering() == EImageRendering::kPixelated)
-      interpolation_quality = kInterpolationNone;
-  }
+    const IntSize& image_element_size_in_pixels) {
+  auto* layout_image = To<LayoutImage>(element.GetLayoutObject());
+  const LayoutImageResource& image_resource = *layout_image->ImageResource();
+  scoped_refptr<Image> image =
+      image_resource.GetImage(image_element_size_in_pixels);
 
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
-  ImageResourceContent* image_content = GetImageResource(element);
+  const ImageResourceContent* image_content = image_resource.CachedImage();
   RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(element->GetLayoutObject());
-  if (image_content) {
-    respect_orientation =
-        image_content->ForceOrientationIfNecessary(respect_orientation);
-  }
+      LayoutObject::ShouldRespectImageOrientation(layout_image);
+  respect_orientation =
+      image_content->ForceOrientationIfNecessary(respect_orientation);
 
   IntSize image_size = image->Size(respect_orientation);
+  if (image_size.Area() > kMaxOriginalImageArea)
+    return nullptr;
+
+  InterpolationQuality interpolation_quality = kInterpolationDefault;
+  if (layout_image->StyleRef().ImageRendering() == EImageRendering::kPixelated)
+    interpolation_quality = kInterpolationNone;
+
   FloatSize image_scale =
       DragImage::ClampedImageScale(image_size, image_element_size_in_pixels,
                                    MaxDragImageSize(device_scale_factor));
 
-  if (image_size.Area() <= kMaxOriginalImageArea &&
-      (drag_image = DragImage::Create(
-           image, respect_orientation, device_scale_factor,
-           interpolation_quality, kDragImageAlpha, image_scale))) {
-    IntSize original_size = image_element_size_in_pixels;
-    origin = image_element_location;
+  return DragImage::Create(image.get(), respect_orientation,
+                           device_scale_factor, interpolation_quality,
+                           kDragImageAlpha, image_scale);
+}
 
-    IntSize new_size = drag_image->Size();
+static IntPoint DragLocationForImage(
+    const DragImage* drag_image,
+    const IntPoint& drag_origin,
+    const IntPoint& image_element_location,
+    const IntSize& image_element_size_in_pixels) {
+  if (!drag_image)
+    return drag_origin;
 
-    // Properly orient the drag image and orient it differently if it's smaller
-    // than the original
-    float scale = new_size.Width() / (float)original_size.Width();
-    float dx = origin.X() - drag_origin.X();
-    dx *= scale;
-    origin.SetX((int)(dx + 0.5));
-    float dy = origin.Y() - drag_origin.Y();
-    dy *= scale;
-    origin.SetY((int)(dy + 0.5));
-  }
+  IntSize original_size = image_element_size_in_pixels;
+  IntSize new_size = drag_image->Size();
 
-  drag_location = drag_origin + origin;
-  return drag_image;
+  // Properly orient the drag image and orient it differently if it's smaller
+  // than the original
+  float scale = new_size.Width() / static_cast<float>(original_size.Width());
+  FloatPoint offset(image_element_location - drag_origin);
+  return drag_origin + RoundedIntPoint(offset.ScaledBy(scale));
 }
 
 static std::unique_ptr<DragImage> DragImageForLink(const KURL& link_url,
@@ -1244,15 +1233,8 @@ bool DragController::StartDrag(LocalFrame* src,
                  src, false);
   } else if (state.drag_type_ == kDragSourceActionImage) {
     auto* element = DynamicTo<Element>(node);
-    if (image_url.IsEmpty() || !element)
+    if (image_url.IsEmpty() || !element || !CanDragImage(*element))
       return false;
-    Image* image = GetImage(element);
-    if (!image || image->IsNull() || !image->Data() || !image->Data()->size())
-      return false;
-    // We shouldn't be starting a drag for an image that can't provide an
-    // extension.
-    // This is an early detection for problems encountered later upon drop.
-    DCHECK(!image->FilenameExtension().IsEmpty());
     if (!drag_image) {
       const IntRect& image_rect = hit_test_result.ImageRect();
       IntSize image_size_in_pixels = image_rect.Size();
@@ -1269,9 +1251,11 @@ bool DragController::StartDrag(LocalFrame* src,
       // TODO(oshima): Currently, the dragged image on high DPI is scaled and
       // can be blurry because of this.  Consider to clip in the screen
       // coordinates to use high resolution image on high DPI screens.
-      drag_image = DragImageForImage(element, image, screen_device_scale_factor,
-                                     drag_origin, image_rect.Location(),
-                                     image_size_in_pixels, drag_location);
+      drag_image = DragImageForImage(*element, screen_device_scale_factor,
+                                     image_size_in_pixels);
+      drag_location =
+          DragLocationForImage(drag_image.get(), drag_origin,
+                               image_rect.Location(), image_size_in_pixels);
     }
     DoSystemDrag(drag_image.get(), drag_location, drag_origin, data_transfer,
                  src, false);
