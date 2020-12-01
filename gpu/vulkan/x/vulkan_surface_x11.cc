@@ -76,7 +76,7 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
   VkSurfaceKHR vk_surface;
   const VkXcbSurfaceCreateInfoKHR surface_create_info = {
       .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
-      .connection = connection->XcbConnection(),
+      .connection = connection->GetXlibDisplay().GetXcbConnection(),
       .window = static_cast<xcb_window_t>(window),
   };
   VkResult result = vkCreateXcbSurfaceKHR(vk_instance, &surface_create_info,

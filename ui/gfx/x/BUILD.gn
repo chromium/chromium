@@ -38,6 +38,15 @@ generate_library_loader("xlib_loader") {
   ]
 }
 
+generate_library_loader("xlib_xcb_loader") {
+  name = "XlibXcbLoader"
+  output_h = "xlib_xcb_loader.h"
+  output_cc = "xlib_xcb_loader.cc"
+  header = "\"ui/gfx/x/xlib_xcb.h\""
+
+  functions = [ "XGetXCBConnection" ]
+}
+
 action("gen_xprotos") {
   visibility = [ ":xprotos" ]
   script = "gen_xproto.py"
@@ -100,6 +109,7 @@ component("xprotos") {
   deps = [
     ":gen_xprotos",
     ":xlib_loader",
+    ":xlib_xcb_loader",
     "//base",
     "//base:i18n",
     "//ui/events/platform",

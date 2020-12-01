@@ -104,7 +104,8 @@ bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
     return true;
   auto* connection = x11::Connection::Get();
   return vkGetPhysicalDeviceXcbPresentationSupportKHR(
-      device, queue_family_index, connection->XcbConnection(),
+      device, queue_family_index,
+      connection->GetXlibDisplay().GetXcbConnection(),
       static_cast<xcb_visualid_t>(connection->default_root_visual().visual_id));
 }
 

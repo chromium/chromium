@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 
 struct _XDisplay;
+struct xcb_connection_t;
 
 namespace x11 {
 
@@ -59,6 +60,8 @@ class COMPONENT_EXPORT(X11) XlibDisplayWrapper {
     return display_;
   }
   operator struct _XDisplay *() { return display_; }
+
+  struct xcb_connection_t* GetXcbConnection();
 
   XlibDisplayWrapper(XlibDisplayWrapper&& other);
   XlibDisplayWrapper& operator=(XlibDisplayWrapper&& other);
