@@ -194,6 +194,19 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
           GetRole() == ax::mojom::Role::kTreeItem);
 }
 
+bool BrowserAccessibilityAndroid::IsCombobox() const {
+  return (GetRole() == ax::mojom::Role::kComboBoxGrouping ||
+          GetRole() == ax::mojom::Role::kTextFieldWithComboBox ||
+          GetRole() == ax::mojom::Role::kComboBoxMenuButton);
+}
+
+bool BrowserAccessibilityAndroid::IsComboboxControl() const {
+  return (GetRole() == ax::mojom::Role::kTree ||
+          GetRole() == ax::mojom::Role::kGrid ||
+          GetRole() == ax::mojom::Role::kDialog ||
+          GetRole() == ax::mojom::Role::kListBox);
+}
+
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {
   return HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
          GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse;
@@ -766,6 +779,109 @@ base::string16 BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
   }
 
   return content_client->GetLocalizedString(message_id);
+}
+
+base::string16 BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
+  content::ContentClient* content_client = content::GetContentClient();
+
+  // We consider comboboxes of the form:
+  //
+  // <div role="combobox">
+  //   <input type="text" aria-controls="options">
+  //   <ul role="listbox" id="options">...</ul> (Can be outside <div>)
+  // </div>
+  //
+  // Find child input node:
+  const BrowserAccessibilityAndroid* input_node = nullptr;
+  for (PlatformChildIterator it = PlatformChildrenBegin();
+       it != PlatformChildrenEnd(); ++it) {
+    const BrowserAccessibilityAndroid* child_node =
+        static_cast<BrowserAccessibilityAndroid*>(it.get());
+    if (child_node->IsTextField()) {
+      input_node = child_node;
+      break;
+    }
+  }
+
+  // If we have not found a child input element, consider aria 1.0 spec:
+  //
+  // <input type="text" role="combobox" aria-owns="options">
+  // <ul role="listbox" id="options">...</ul>
+  //
+  // Check if |this| is the input, otherwise try our fallbacks.
+  if (!input_node) {
+    if (IsTextField()) {
+      input_node = this;
+    } else {
+      return GetComboboxExpandedTextFallback();
+    }
+  }
+
+  // Get the aria-controls nodes of |input_node|.
+  std::vector<BrowserAccessibility*> controls =
+      manager()->GetAriaControls(input_node);
+
+  // |input_node| should control only one element, if it doesn't, try fallbacks.
+  if (controls.size() != 1)
+    return GetComboboxExpandedTextFallback();
+
+  // |controlled_node| needs to be a combobox control, if not, try fallbacks.
+  BrowserAccessibilityAndroid* controlled_node =
+      static_cast<BrowserAccessibilityAndroid*>(controls[0]);
+  if (!controlled_node->IsComboboxControl())
+    return GetComboboxExpandedTextFallback();
+
+  // For dialogs, return special case string.
+  if (controlled_node->GetRole() == ax::mojom::Role::kDialog)
+    return content_client->GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED_DIALOG);
+
+  // Find |controlled_node| set size, or return default string.
+  if (!controlled_node->GetSetSize())
+    return content_client->GetLocalizedString(
+        IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT);
+
+  // Replace placeholder with count and return string.
+  return base::ReplaceStringPlaceholders(
+      content_client->GetLocalizedString(
+          IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_X_OPTIONS_AVAILABLE),
+      base::NumberToString16(*controlled_node->GetSetSize()), nullptr);
+}
+
+base::string16 BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
+    const {
+  content::ContentClient* content_client = content::GetContentClient();
+
+  // If a combobox was of an indeterminate form, attempt any special cases here,
+  // or return "expanded" as a final option.
+
+  // Check for child nodes that are collections.
+  int child_collection_count = 0;
+  BrowserAccessibilityAndroid* collection_node = nullptr;
+  for (PlatformChildIterator it = PlatformChildrenBegin();
+       it != PlatformChildrenEnd(); ++it) {
+    BrowserAccessibilityAndroid* child =
+        static_cast<BrowserAccessibilityAndroid*>(it.get());
+    if (child->IsCollection()) {
+      child_collection_count++;
+      collection_node = child;
+    }
+  }
+
+  // If we find none, or more than one, we will not be able to determine the
+  // correct utterance, so return a default string instead.
+  if (child_collection_count != 1)
+    return content_client->GetLocalizedString(IDS_AX_COMBOBOX_EXPANDED);
+
+  // Find |collection_node| set size, or return defaul string.
+  if (!collection_node->GetSetSize())
+    return content_client->GetLocalizedString(
+        IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT);
+
+  // Replace placeholder with count and return string.
+  return base::ReplaceStringPlaceholders(
+      content_client->GetLocalizedString(
+          IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_X_OPTIONS_AVAILABLE),
+      base::NumberToString16(*collection_node->GetSetSize()), nullptr);
 }
 
 std::string BrowserAccessibilityAndroid::GetRoleString() const {

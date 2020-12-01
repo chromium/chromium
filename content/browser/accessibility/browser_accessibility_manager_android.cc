@@ -249,6 +249,13 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
       break;
     }
+    case ui::AXEventGenerator::Event::EXPANDED: {
+      if (android_node->IsCombobox() &&
+          GetFocus()->IsDescendantOf(android_node)) {
+        wcax->AnnounceLiveRegionText(android_node->GetComboboxExpandedText());
+      }
+      break;
+    }
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
       if (node->manager() == GetRootManager()) {
         auto* android_focused =
@@ -295,7 +302,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
     case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
-    case ui::AXEventGenerator::Event::EXPANDED:
     case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
     case ui::AXEventGenerator::Event::ENABLED_CHANGED:
     case ui::AXEventGenerator::Event::FOCUS_CHANGED:

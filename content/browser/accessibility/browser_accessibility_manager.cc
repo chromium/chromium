@@ -671,6 +671,21 @@ BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
   return node;
 }
 
+std::vector<BrowserAccessibility*> BrowserAccessibilityManager::GetAriaControls(
+    const BrowserAccessibility* focus) const {
+  if (!focus)
+    return {};
+
+  std::vector<BrowserAccessibility*> aria_control_nodes;
+  for (const auto& id :
+       focus->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds)) {
+    if (focus->manager()->GetFromID(id))
+      aria_control_nodes.push_back(focus->manager()->GetFromID(id));
+  }
+
+  return aria_control_nodes;
+}
+
 bool BrowserAccessibilityManager::NativeViewHasFocus() {
   BrowserAccessibilityDelegate* delegate = GetDelegateFromRootManager();
   return delegate && delegate->AccessibilityViewHasFocus();

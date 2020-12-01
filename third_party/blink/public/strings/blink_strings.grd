@@ -826,6 +826,18 @@ below:
         <message name="IDS_AX_ARIA_CURRENT_TRUE" desc="Accessibility state description for aria-current value of true.">
           current item
         </message>
+        <message name="IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_DEFAULT" desc="Accessibility utterance for when a combobox element is expanded with an unknown number of autocomplete options available to the user.">
+          expanded, autocomplete options available.
+        </message>
+        <message name="IDS_AX_COMBOBOX_EXPANDED_AUTOCOMPLETE_X_OPTIONS_AVAILABLE" desc="Accessibility utterance for when a combobox element is expanded with a known number of autocomplete options available to the user.">
+          expanded, <ph name="COUNT">$1<ex>4</ex></ph> autocomplete options available.
+        </message>
+        <message name="IDS_AX_COMBOBOX_EXPANDED_DIALOG" desc="Accessibility utterance for when a combobox element is expanded with a child dialog pop-up that appears.">
+          expanded, dialog opened.
+        </message>
+        <message name="IDS_AX_COMBOBOX_EXPANDED" desc="Accessibility utterance for when a combobox element is expanded, but due to authoring errors we cannot say any more information than that.">
+          expanded.
+        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->

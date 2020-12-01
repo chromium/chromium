@@ -35,6 +35,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsCollapsed() const;
   bool IsCollection() const;
   bool IsCollectionItem() const;
+  bool IsCombobox() const;
+  bool IsComboboxControl() const;
   bool IsContentInvalid() const;
   bool IsDismissable() const;
   bool IsEnabled() const;
@@ -100,6 +102,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   base::string16 GetListBoxStateDescription() const;
   base::string16 GetListBoxItemStateDescription() const;
   base::string16 GetAriaCurrentStateDescription() const;
+
+  base::string16 GetComboboxExpandedText() const;
+  base::string16 GetComboboxExpandedTextFallback() const;
 
   base::string16 GetRoleDescription() const;
 

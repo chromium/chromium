@@ -1355,7 +1355,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @CalledByNative
     private void announceLiveRegionText(String text) {
-        mView.announceForAccessibility(text);
+        AccessibilityEvent event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT);
+        if (event == null || mView.getParent() == null) return;
+
+        event.getText().add(text);
+        event.setContentDescription(null);
+        mView.getParent().requestSendAccessibilityEvent(mView, event);
     }
 
     @CalledByNative

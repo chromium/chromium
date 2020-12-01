@@ -49,6 +49,11 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class WebContentsAccessibilityTest {
+    // Test output error messages
+    private static final String TIMEOUT_ERROR =
+            "TYPE_ANNOUNCEMENT event not received before timeout.";
+    private static final String COMBOBOX_ERROR = "expanded combobox announcement was incorrect.";
+
     private interface AccessibilityNodeInfoMatcher {
         public boolean matches(AccessibilityNodeInfo node);
     }
@@ -59,6 +64,14 @@ public class WebContentsAccessibilityTest {
         }
 
         public int value;
+    }
+
+    private static class MutableString {
+        public MutableString(String initialValue) {
+            value = initialValue;
+        }
+
+        public String value;
     }
 
     // Constant from AccessibilityNodeInfo defined in the L SDK.
@@ -73,6 +86,9 @@ public class WebContentsAccessibilityTest {
     private MutableInt mTraverseToIndex = new MutableInt(-1);
     private MutableInt mSelectionFromIndex = new MutableInt(-1);
     private MutableInt mSelectionToIndex = new MutableInt(-1);
+
+    // Member variables used during unit tests involving comboboxes
+    private MutableString mComboboxText = new MutableString("");
 
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
@@ -278,6 +294,29 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Helper method to build a web page with a combobox and return virtualViewId
+     *
+     * @param fileLocation String           location of html file to open
+     * @return int                          virtualViewId of the combobox identified
+     */
+    private int buildWebPageWithComobobox(String fileLocation) {
+        // Load a simple page with a combobox
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(fileLocation));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mNodeProvider = enableAccessibilityAndWaitForNodeProvider();
+
+        // Find a node in the accessibility tree with input type TYPE_CLASS_TEXT.
+        int inputFieldVirtualViewId =
+                waitForNodeWithClassName(mNodeProvider, "android.widget.EditText");
+        mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputFieldVirtualViewId);
+
+        // Assert we have got the correct node.
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        return inputFieldVirtualViewId;
+    }
+
+    /**
      * Helper method to set up delegates on an edit text for testing. This is used in the tests
      * below that check our accessibility events are properly indexed. The editTextVirtualViewId
      * parameter should be the value returned from buildWebPageWithEditText
@@ -329,6 +368,47 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Helper method to set delegates on a combobox for testing. This is used in the tests below
+     * that check user actions trigger TYPE_ANNOUNCEMENT events. The comboboxVirtualViewId param
+     * should be the value returned from buildWebPageWithComobobox.
+     * @param comboboxVirtualViewId int     virtualViewId of the combobox to setup delegates on
+     * @throws Throwable Error
+     */
+    private void focusComboboxAndGetAnnouncement(int comboboxVirtualViewId) throws Throwable {
+        // Add an accessibility delegate to capture TYPE_ANNOUNCEMENT events and store their text.
+        // The delegate is set on the parent as WebContentsAccessibilityImpl sends events using the
+        // parent.
+        ((ViewGroup) mActivityTestRule.getContainerView().getParent())
+                .setAccessibilityDelegate(new View.AccessibilityDelegate() {
+                    @Override
+                    public boolean onRequestSendAccessibilityEvent(
+                            ViewGroup host, View child, AccessibilityEvent event) {
+                        if (event.getEventType() == AccessibilityEvent.TYPE_ANNOUNCEMENT) {
+                            mComboboxText.value = event.getText().get(0).toString();
+                        }
+                        // Return false so that an accessibility event is not actually sent.
+                        return false;
+                    }
+                });
+
+        // Focus our field
+        boolean result1 = performActionOnUiThread(
+                comboboxVirtualViewId, AccessibilityNodeInfo.ACTION_FOCUS, null);
+        boolean result2 = performActionOnUiThread(
+                comboboxVirtualViewId, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+
+        // Assert all actions are performed successfully.
+        Assert.assertTrue(result1);
+        Assert.assertTrue(result2);
+
+        while (!mNodeInfo.isFocused() || !mNodeInfo.isAccessibilityFocused()) {
+            Thread.sleep(100);
+            mNodeInfo.recycle();
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(comboboxVirtualViewId);
+        }
+    }
+
+    /**
      * Helper method to refresh the |mNodeInfo| object by recycling, waiting 1 sec, then refresh.
      */
     private void refreshMNodeInfo(int virtualViewId) throws InterruptedException {
@@ -348,6 +428,81 @@ public class WebContentsAccessibilityTest {
         mTraverseToIndex.value = -1;
         mSelectionFromIndex.value = -1;
         mSelectionToIndex.value = -1;
+
+        mComboboxText.value = "";
+    }
+
+    /**
+     * Helper method for executing a given JS method for the current web contents.
+     */
+    private void executeJS(String method) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getWebContents().evaluateJavaScriptForTests(method, null));
+    }
+
+    /**
+     * Ensure we send an announcement on combobox expansion.
+     */
+    @Test
+    @MediumTest
+    public void testEventText_Combobox() throws Throwable {
+        // Build a simple web page with a combobox, and focus the input field.
+        int comboboxVirtualViewId =
+                buildWebPageWithComobobox("content/test/data/android/input/input_combobox.html");
+        focusComboboxAndGetAnnouncement(comboboxVirtualViewId);
+
+        // Run JS code to expand the combobox
+        executeJS("expandCombobox()");
+
+        // We should receive a TYPE_ANNOUNCEMENT event, but it may take a moment.
+        CriteriaHelper.pollUiThread(() -> !mComboboxText.value.isEmpty(), TIMEOUT_ERROR);
+
+        // Check announcement text.
+        Assert.assertEquals(
+                COMBOBOX_ERROR, "expanded, 3 autocomplete options available.", mComboboxText.value);
+    }
+
+    /**
+     * Ensure we send an announcement on combobox expansion that opens a dialog.
+     */
+    @Test
+    @MediumTest
+    public void testEventText_Combobox_dialog() throws Throwable {
+        // Build a simple web page with a combobox, and focus the input field.
+        int comboboxVirtualViewId = buildWebPageWithComobobox(
+                "content/test/data/android/input/input_combobox_dialog.html");
+        focusComboboxAndGetAnnouncement(comboboxVirtualViewId);
+
+        // Run JS code to expand the combobox
+        executeJS("expandCombobox()");
+
+        // We should receive a TYPE_ANNOUNCEMENT event, but it may take a moment.
+        CriteriaHelper.pollUiThread(() -> !mComboboxText.value.isEmpty(), TIMEOUT_ERROR);
+
+        // Check announcement text.
+        Assert.assertEquals(COMBOBOX_ERROR, "expanded, dialog opened.", mComboboxText.value);
+    }
+
+    /**
+     * Ensure we send an announcement on combobox expansion with aria-1.0 spec.
+     */
+    @Test
+    @MediumTest
+    public void testEventText_Combobox_ariaOne() throws Throwable {
+        // Build a simple web page with a combobox, and focus the input field.
+        int comboboxVirtualViewId = buildWebPageWithComobobox(
+                "content/test/data/android/input/input_combobox_aria1.0.html");
+        focusComboboxAndGetAnnouncement(comboboxVirtualViewId);
+
+        // Run JS code to expand the combobox
+        executeJS("expandCombobox()");
+
+        // We should receive a TYPE_ANNOUNCEMENT event, but it may take a moment.
+        CriteriaHelper.pollUiThread(() -> !mComboboxText.value.isEmpty(), TIMEOUT_ERROR);
+
+        // Check announcement text.
+        Assert.assertEquals(
+                COMBOBOX_ERROR, "expanded, 3 autocomplete options available.", mComboboxText.value);
     }
 
     /**

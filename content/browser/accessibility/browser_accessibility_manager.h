@@ -373,6 +373,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   // focused.
   BrowserAccessibility* GetActiveDescendant(BrowserAccessibility* node) const;
 
+  // Given a focused node |focus|, returns a list of nodes that the focused
+  // node controls.
+  std::vector<BrowserAccessibility*> GetAriaControls(
+      const BrowserAccessibility* focus) const;
+
   // Returns true if native focus is anywhere in this WebContents or not.
   bool NativeViewHasFocus();
 
