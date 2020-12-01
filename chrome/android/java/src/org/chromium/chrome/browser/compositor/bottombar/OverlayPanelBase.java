@@ -59,16 +59,10 @@ abstract class OverlayPanelBase {
     private static final float BASE_PAGE_BRIGHTNESS_STATE_MAXIMIZED = .4f;
 
     // -------------------------------------------------------------------------
-    // TODO(donnd): crbug.com/1143472 - The arrow and close buttons from the
-    // legacy UI are no longer used. Remove code related to these buttons here
-    // and in the native interface.
+    // TODO(donnd): crbug.com/1143472 - The close button from the legacy UI is
+    // no longer used. Remove code related to the button here and in the native
+    // interface.
     //
-    /** The opacity of the arrow icon. */
-    private static final float ARROW_ICON_OPACITY_TRANSPARENT = 0.f;
-
-    /** The rotation of the arrow icon. */
-    private static final float ARROW_ICON_ROTATION = -90.f;
-
     /** The opacity of the Open-Tab icon when the Panel is peeking. */
     private static final float OPEN_TAB_ICON_OPACITY_STATE_PEEKED = 1.f;
 
@@ -478,20 +472,6 @@ abstract class OverlayPanelBase {
     public int getSeparatorLineColor() {
         return ApiCompatibilityUtils.getColor(
                 mContext.getResources(), R.color.overlay_panel_separator_line_color);
-    }
-
-    /**
-     * @return The opacity of the arrow icon.
-     */
-    public float getArrowIconOpacity() {
-        return ARROW_ICON_OPACITY_TRANSPARENT;
-    }
-
-    /**
-     * @return The rotation of the arrow icon, in degrees.
-     */
-    public float getArrowIconRotation() {
-        return ARROW_ICON_ROTATION;
     }
 
     /**

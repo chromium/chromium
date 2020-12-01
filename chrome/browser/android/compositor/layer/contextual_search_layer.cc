@@ -41,7 +41,6 @@ void ContextualSearchLayer::SetProperties(
     int search_bar_shadow_resource_id,
     int search_provider_icon_resource_id,
     int quick_action_icon_resource_id,
-    int arrow_up_resource_id,
     int drag_handlebar_resource_id,
     int open_tab_icon_resource_id,
     int close_icon_resource_id,
@@ -83,8 +82,6 @@ void ContextualSearchLayer::SetProperties(
     int bar_image_size,
     int icon_color,
     int drag_handlebar_color,
-    float arrow_icon_opacity,
-    float arrow_icon_rotation,
     float close_icon_opacity,
     bool progress_bar_visible,
     float progress_bar_height,
@@ -233,45 +230,6 @@ void ContextualSearchLayer::SetProperties(
                      search_caption_animation_percentage, search_term_opacity,
                      search_context_resource_id, search_context_opacity,
                      search_term_caption_spacing);
-
-  // ---------------------------------------------------------------------------
-  // Arrow Icon.  Deprecated -- old layout only.
-  // ---------------------------------------------------------------------------
-  // Grabs the arrow icon resource.
-  ui::Resource* arrow_icon_resource =
-      resource_manager_->GetStaticResourceWithTint(arrow_up_resource_id,
-                                                   icon_color);
-
-  // Positions the icon at the end of the bar.
-  float arrow_icon_left;
-  if (is_rtl) {
-    arrow_icon_left = search_bar_margin_side;
-  } else {
-    arrow_icon_left = search_panel_width - arrow_icon_resource->size().width() -
-                      search_bar_margin_side;
-  }
-
-  // Centers the Arrow Icon vertically in the bar.
-  float arrow_icon_top = search_bar_top + search_bar_height / 2 -
-                         arrow_icon_resource->size().height() / 2;
-
-  arrow_icon_->SetUIResourceId(arrow_icon_resource->ui_resource()->id());
-  arrow_icon_->SetBounds(arrow_icon_resource->size());
-  arrow_icon_->SetPosition(
-      gfx::PointF(arrow_icon_left, arrow_icon_top));
-  arrow_icon_->SetOpacity(arrow_icon_opacity);
-
-  gfx::Transform transform;
-  if (arrow_icon_rotation != 0.f) {
-    // Apply rotation about the center of the icon.
-    float pivot_x = floor(arrow_icon_resource->size().width() / 2);
-    float pivot_y = floor(arrow_icon_resource->size().height() / 2);
-    gfx::PointF pivot_origin(pivot_x, pivot_y);
-    transform.Translate(pivot_origin.x(), pivot_origin.y());
-    transform.RotateAboutZAxis(arrow_icon_rotation);
-    transform.Translate(-pivot_origin.x(), -pivot_origin.y());
-  }
-  arrow_icon_->SetTransform(transform);
 
   // ---------------------------------------------------------------------------
   // Search Promo
@@ -690,7 +648,6 @@ ContextualSearchLayer::ContextualSearchLayer(
       search_provider_icon_layer_(cc::UIResourceLayer::Create()),
       thumbnail_layer_(cc::UIResourceLayer::Create()),
       quick_action_icon_layer_(cc::UIResourceLayer::Create()),
-      arrow_icon_(cc::UIResourceLayer::Create()),
       search_promo_(cc::UIResourceLayer::Create()),
       search_promo_container_(cc::SolidColorLayer::Create()),
       bar_banner_container_(cc::SolidColorLayer::Create()),
@@ -714,10 +671,6 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Search Bar Caption
   search_caption_->SetIsDrawable(true);
-
-  // Arrow Icon
-  arrow_icon_->SetIsDrawable(true);
-  layer_->AddChild(arrow_icon_);
 
   // Search Opt Out Promo
   search_promo_container_->SetIsDrawable(true);
