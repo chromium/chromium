@@ -48,7 +48,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
-      'android', # https://crbug.com/1149237
       'win7'  # https://crbug.com/1084931
   )
   def testSymbolizeMinidump(self):
