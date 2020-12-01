@@ -398,9 +398,6 @@ bool DisplayLockUtilities::IsInUnlockedOrActivatableSubtree(
       node.GetDocument()
               .GetDisplayLockDocumentState()
               .LockedDisplayLockCount() == 0 ||
-      node.GetDocument()
-              .GetDisplayLockDocumentState()
-              .DisplayLockBlockingAllActivationCount() == 0 ||
       !node.CanParticipateInFlatTree()) {
     return true;
   }

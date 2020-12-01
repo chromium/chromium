@@ -37,6 +37,21 @@ class DisplayLockUtilitiesTest
   }
 };
 
+TEST_F(DisplayLockUtilitiesTest, ShouldIgnoreHiddenMatchableChildren) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .hidden { content-visibility: hidden-matchable }
+    </style>
+    <div class=hidden>
+      <div id=target></div>
+    </div>
+  )HTML");
+
+  Node* target = GetDocument().getElementById("target");
+  EXPECT_TRUE(DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+      *target, DisplayLockActivationReason::kAccessibility));
+}
+
 TEST_F(DisplayLockUtilitiesTest, DISABLED_ActivatableLockedInclusiveAncestors) {
   SetBodyInnerHTML(R"HTML(
     <style>
