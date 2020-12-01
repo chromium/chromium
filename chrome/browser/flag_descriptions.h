@@ -456,6 +456,9 @@ extern const char kEnableImplicitRootScrollerDescription[];
 extern const char kEnableLayoutNGName[];
 extern const char kEnableLayoutNGDescription[];
 
+extern const char kEnableLayoutNGTableName[];
+extern const char kEnableLayoutNGTableDescription[];
+
 extern const char kEnableLazyFrameLoadingName[];
 extern const char kEnableLazyFrameLoadingDescription[];
 

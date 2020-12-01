@@ -368,6 +368,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kIgnoreCrossOriginWindowWhenNamedAccessOnWindow},
           {"LangClientHintHeader", features::kLangClientHintHeader},
           {"LayoutNG", blink::features::kLayoutNG},
+          {"LayoutNGTable", blink::features::kLayoutNGTable},
           {"LayoutNGFieldset", blink::features::kLayoutNGFieldset},
           {"LayoutNGFragmentItem", blink::features::kFragmentItem},
           {"LayoutNGTextControl", blink::features::kLayoutNGTextControl},
