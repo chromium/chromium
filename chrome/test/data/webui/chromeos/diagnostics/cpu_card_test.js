@@ -103,8 +103,14 @@ export function cpuCardTestSuite() {
           loadTimeData.getStringF('cpuUsageTooltipText', 4));
       dx_utils.assertTextContains(
           dataPoints[1].value, `${fakeCpuUsage[0].averageCpuTempCelsius}`);
-      // TODO(michaelcheco): Replace with value for CPU speed.
-      assertEquals('', dataPoints[2].value);
+
+      const convertkhzToGhz = (num) => parseFloat(num / 1000000).toFixed(2);
+      dx_utils.assertTextContains(
+          dataPoints[2].value,
+          `${convertkhzToGhz(fakeCpuUsage[0].scalingCurrentFrequencyKhz)}`);
+      dx_utils.assertTextContains(
+          dataPoints[2].value,
+          `${convertkhzToGhz(cpuElement.cpuMaxClockSpeedKhz_)}`);
       dx_utils.assertElementContainsText(
           cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
       dx_utils.assertElementContainsText(

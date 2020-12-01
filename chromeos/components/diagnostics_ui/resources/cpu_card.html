@@ -21,10 +21,9 @@
     value="[[getCpuTemp_(cpuUsage_.averageCpuTempCelsius)]]">
   </data-point>
   <div slot="body" class="divider"></div>
-  <!-- TODO(michaelcheco): Add value for CPU speed. -->
-  <data-point slot="body" id="cpuTemp" header="[[i18n('cpuSpeedLabel')]]"
-    value="">
-</data-point>
+  <data-point slot="body" id="cpuSpeed" header="[[i18n('cpuSpeedLabel')]]"
+    value="[[getCpuSpeed_(cpuUsage_.scalingCurrentFrequencyKhz)]]">
+  </data-point>
   <routine-section slot="routines" routines="[[routines_]]"
     is-test-running="{{isTestRunning}}"
     run-tests-button-text="[[i18n('runCpuTestText')]]">

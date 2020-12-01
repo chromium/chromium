@@ -68,6 +68,11 @@ Polymer({
     isTestRunning: {
       type: Boolean,
       notify: true,
+    },
+
+    /** @type {number} */
+    cpuMaxClockSpeedKhz_: {
+      type: Number,
     }
   },
 
@@ -128,6 +133,7 @@ Polymer({
     // TODO(michaelcheco): Update when number of cores is added to the api.
     this.cpuChipInfo_ = loadTimeData.getStringF(
         'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount);
+    this.cpuMaxClockSpeedKhz_ = systemInfo.cpuMaxClockSpeedKhz;
   },
 
   /** @protected */
@@ -140,5 +146,24 @@ Polymer({
   getCpuUsageTooltipText_() {
     // TODO(michaelcheco): Update when number of cores is added to the api.
     return loadTimeData.getString('cpuUsageTooltipText');
+  },
+
+  /**
+   * @param {number} num
+   * @return {string}
+   * @private
+   */
+  convertKhzToGhz_(num) {
+    return parseFloat(num / 1000000).toFixed(2);
+  },
+
+  /** @protected */
+  getCpuSpeed_() {
+    if (this.cpuMaxClockSpeedKhz_) {
+      return loadTimeData.getStringF(
+          'cpuSpeedText',
+          this.convertKhzToGhz_(this.cpuUsage_.scalingCurrentFrequencyKhz),
+          this.convertKhzToGhz_(this.cpuMaxClockSpeedKhz_));
+    }
   },
 });

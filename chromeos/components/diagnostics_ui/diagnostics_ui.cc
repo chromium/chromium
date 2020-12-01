@@ -53,6 +53,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"cpuPrimeSearchRoutineText",
        IDS_DIAGNOSTICS_CPU_PRIME_SEARCH_ROUTINE_TEXT},
       {"cpuSpeedLabel", IDS_DIAGNOSTICS_CPU_SPEED_LABEL},
+      {"cpuSpeedText", IDS_DIAGNOSTICS_CPU_SPEED_TEXT},
       {"cpuStressRoutineText", IDS_DIAGNOSTICS_CPU_STRESS_ROUTINE_TEXT},
       {"cpuTempLabel", IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL},
       {"cpuTempText", IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT},

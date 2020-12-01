@@ -61,41 +61,49 @@ export const fakeCpuUsage = [
     averageCpuTempCelsius: 107,
     percentUsageSystem: 15,
     percentUsageUser: 20,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 106,
     percentUsageSystem: 30,
     percentUsageUser: 40,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 107,
     percentUsageSystem: 31,
     percentUsageUser: 45,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 109,
     percentUsageSystem: 55,
     percentUsageUser: 24,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 109,
     percentUsageSystem: 49,
     percentUsageUser: 10,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 161,
     percentUsageSystem: 1,
     percentUsageUser: 99,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 118,
     percentUsageSystem: 35,
     percentUsageUser: 37,
+    scalingCurrentFrequencyKhz: 900,
   },
   {
     averageCpuTempCelsius: 110,
     percentUsageSystem: 26,
     percentUsageUser: 30,
+    scalingCurrentFrequencyKhz: 900,
   },
 ];
 
