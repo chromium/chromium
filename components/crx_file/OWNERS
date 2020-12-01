@@ -3,5 +3,3 @@ sorin@chromium.org
 
 # if the above are unavailable
 file://extensions/OWNERS
-
-# COMPONENT: Platform>Extensions
