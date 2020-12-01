@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -58,6 +59,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     private static final int INVALID_ITEM_ID = -1;
 
     private WebContents mWebContents;
+    private WebContentsObserver mWebContentsObserver;
     private RevampedContextMenuChipController mChipController;
     private RevampedContextMenuHeaderCoordinator mHeaderCoordinator;
 
@@ -197,6 +199,13 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             clickItem((int) id, activity, onItemClicked);
         });
 
+        mWebContentsObserver = new WebContentsObserver(mWebContents) {
+            @Override
+            public void navigationEntryCommitted() {
+                dismissDialog();
+            }
+        };
+
         mDialog.show();
     }
 
@@ -268,6 +277,9 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     }
 
     private void dismissDialog() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.destroy();
+        }
         if (mChipController != null) {
             mChipController.dismissLensChipIfShowing();
         }
