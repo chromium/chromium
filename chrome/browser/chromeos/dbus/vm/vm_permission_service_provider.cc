@@ -21,6 +21,7 @@
 #include "chromeos/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/message.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace {
@@ -155,6 +156,9 @@ void VmPermissionServiceProvider::RegisterVm(
   UpdateVmPermissions(vm.get());
 
   const base::UnguessableToken token(base::UnguessableToken::Create());
+
+  media::CameraHalDispatcherImpl::GetInstance()->RegisterPluginVmToken(token);
+
   vms_[token] = std::move(vm);
 
   vm_permission_service::RegisterVmResponse payload;
@@ -192,6 +196,9 @@ void VmPermissionServiceProvider::UnregisterVm(
             method_call, DBUS_ERROR_INVALID_ARGS, "VM is not registered"));
     return;
   }
+
+  media::CameraHalDispatcherImpl::GetInstance()->UnregisterPluginVmToken(
+      iter->first);
 
   vms_.erase(iter);
 

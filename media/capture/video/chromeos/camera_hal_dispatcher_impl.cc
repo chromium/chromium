@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
-
 #include <fcntl.h>
 #include <grp.h>
 #include <poll.h>
@@ -193,6 +192,16 @@ void CameraHalDispatcherImpl::RemoveActiveClientObserver(
           base::Unretained(this), std::move(observer),
           &observer_removed_event));
   observer_removed_event.Wait();
+}
+
+void CameraHalDispatcherImpl::RegisterPluginVmToken(
+    const base::UnguessableToken& token) {
+  token_manager_.RegisterPluginVmToken(token);
+}
+
+void CameraHalDispatcherImpl::UnregisterPluginVmToken(
+    const base::UnguessableToken& token) {
+  token_manager_.UnregisterPluginVmToken(token);
 }
 
 CameraHalDispatcherImpl::CameraHalDispatcherImpl()

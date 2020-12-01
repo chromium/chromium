@@ -99,6 +99,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // being destroyed.
   void RemoveActiveClientObserver(CameraActiveClientObserver* observer);
 
+  // Called by vm_permission_service to register the token used for pluginvm.
+  void RegisterPluginVmToken(const base::UnguessableToken& token);
+  void UnregisterPluginVmToken(const base::UnguessableToken& token);
+
   // CameraHalDispatcher implementations.
   void RegisterServer(
       mojo::PendingRemote<cros::mojom::CameraHalServer> server) final;
