@@ -36,6 +36,14 @@ LayoutNGMixin<Base>::~LayoutNGMixin() = default;
 
 template <typename Base>
 void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
+  // When |this| is NG block fragmented, the painter should traverse fragments
+  // instead of |LayoutObject|, because this function cannot handle block
+  // fragmented objects. We can come here only when |this| cannot traverse
+  // fragments, or the parent is legacy.
+  DCHECK(!Base::CanTraversePhysicalFragments() ||
+         !Base::Parent()->CanTraversePhysicalFragments());
+  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(Base::NeedsLayout() &&
                !Base::ChildLayoutBlockedByDisplayLock())) {
@@ -43,8 +51,11 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  if (const NGPhysicalBoxFragment* fragment = CurrentFragment())
+  if (Base::PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+    DCHECK(fragment);
     NGBoxFragmentPainter(*fragment).Paint(paint_info);
+  }
 }
 
 template <typename Base>
@@ -52,8 +63,14 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
                                       const HitTestLocation& hit_test_location,
                                       const PhysicalOffset& accumulated_offset,
                                       HitTestAction action) {
-  if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
-    DCHECK_EQ(Base::PhysicalFragmentCount(), 1u);
+  // See |Paint()|.
+  DCHECK(!Base::CanTraversePhysicalFragments() ||
+         !Base::Parent()->CanTraversePhysicalFragments());
+  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+
+  if (Base::PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+    DCHECK(fragment);
     return NGBoxFragmentPainter(*fragment).NodeAtPoint(
         result, hit_test_location, accumulated_offset, action);
   }
