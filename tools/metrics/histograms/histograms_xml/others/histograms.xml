@@ -2848,7 +2848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.DelayedElementDetails"
-    enum="ContextMenuDelayedElementDetails" expires_after="2020-12-11">
+    enum="ContextMenuDelayedElementDetails" expires_after="2021-05-23">
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/web_state/ui/OWNERS</owner>
   <summary>
@@ -3044,7 +3044,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.WaitingForElementDetails" enum="BooleanHit"
-    expires_after="2020-12-11">
+    expires_after="2021-05-23">
   <owner>michaeldo@chromium.org</owner>
   <owner>src/ios/web/web_state/ui/OWNERS</owner>
   <summary>
