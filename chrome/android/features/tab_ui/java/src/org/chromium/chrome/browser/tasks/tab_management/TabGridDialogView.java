@@ -625,6 +625,8 @@ public class TabGridDialogView extends FrameLayout {
                     mContext.getResources().getDimensionPixelSize(R.dimen.tab_list_card_padding);
             animationCardFavicon.setPadding(padding, padding, padding, padding);
             animationCardFavicon.setImageDrawable(sourceCardFavicon.getDrawable());
+        } else {
+            animationCardFavicon.setImageDrawable(null);
         }
 
         ((TextView) (mAnimationCardView.findViewById(R.id.tab_title)))
