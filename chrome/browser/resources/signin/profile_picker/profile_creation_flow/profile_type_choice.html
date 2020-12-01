@@ -62,12 +62,12 @@
   <h3>$i18n{profileTypeChoiceSubtitle}</h3>
 </div>
 <div id="actionContainer">
-  <cr-button id="signInButton" class="action-button fade-in"
-      on-click="onSignInClick_" disabled="[[loadSigninInProgess_]]">
+  <cr-button id="signInButton" class="action-button" on-click="onSignInClick_"
+      disabled="[[loadSigninInProgess_]]">
     $i18n{signInButtonLabel}
   </cr-button>
-  <button id="notNowButton" class="action-link fade-in"
-      on-click="onNotNowClick_" disabled="[[loadSigninInProgess_]]">
+  <button id="notNowButton" on-click="onNotNowClick_"
+      disabled="[[loadSigninInProgess_]]">
     $i18n{notNowButtonLabel}
   </button>
 </div>
