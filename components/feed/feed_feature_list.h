@@ -28,11 +28,18 @@ extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 // for personalization. Also enables the feed header menu to manage the feed.
 extern const base::Feature kReportFeedUserActions;
 
+// Determines whether conditions should be reached before enabling the upload of
+// click and view actions in the feed (e.g., the user needs to view X cards).
+// For example, this is needed when the notice card is at the second position in
+// the feed.
 extern const base::Feature kInterestFeedV1ClicksAndViewsConditionalUpload;
 extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 
+// Feature that allows the client to automatically dismiss the notice card based
+// on the clicks and views on the notice card.
 extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 
+// Used for A:B testing of a bug fix (crbug.com/1151391).
 extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;
 
 // Feature that allows users to keep up with and consume web content.
