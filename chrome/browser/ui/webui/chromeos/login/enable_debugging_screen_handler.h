@@ -8,8 +8,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 class PrefRegistrySimple;
@@ -24,11 +22,20 @@ class EnableDebuggingScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"debugging"};
 
+  enum UIState {
+    UI_STATE_ERROR = -1,
+    UI_STATE_REMOVE_PROTECTION = 1,
+    UI_STATE_SETUP = 2,
+    UI_STATE_WAIT = 3,
+    UI_STATE_DONE = 4,
+  };
+
   virtual ~EnableDebuggingScreenView() {}
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
   virtual void SetDelegate(EnableDebuggingScreen* screen) = 0;
+  virtual void UpdateUIState(UIState state) = 0;
 };
 
 // WebUI implementation of EnableDebuggingScreenView.
@@ -44,6 +51,7 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   void Show() override;
   void Hide() override;
   void SetDelegate(EnableDebuggingScreen* screen) override;
+  void UpdateUIState(UIState state) override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
@@ -57,47 +65,13 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  enum UIState {
-    UI_STATE_ERROR = -1,
-    UI_STATE_REMOVE_PROTECTION = 1,
-    UI_STATE_SETUP = 2,
-    UI_STATE_WAIT = 3,
-    UI_STATE_DONE = 4,
-  };
-
   // JS messages handlers.
-  void HandleOnCancel();
-  void HandleOnDone();
-  void HandleOnLearnMore();
-  void HandleOnRemoveRootFSProtection();
   void HandleOnSetup(const std::string& password);
-
-  void ShowWithParams();
-
-  // Callback for CryptohomeClient::WaitForServiceToBeAvailable
-  void OnCryptohomeDaemonAvailabilityChecked(bool service_is_available);
-
-  // Callback for DebugDaemonClient::WaitForServiceToBeAvailable
-  void OnDebugDaemonServiceAvailabilityChecked(bool service_is_available);
-
-  // Callback for DebugDaemonClient::EnableDebuggingFeatures().
-  void OnEnableDebuggingFeatures(bool success);
-
-  // Callback for DebugDaemonClient::QueryDebuggingFeatures().
-  void OnQueryDebuggingFeatures(bool success, int features_flag);
-
-  // Callback for DebugDaemonClient::RemoveRootfsVerification().
-  void OnRemoveRootfsVerification(bool success);
-
-  // Updates UI state.
-  void UpdateUIState(UIState state);
 
   EnableDebuggingScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  base::WeakPtrFactory<EnableDebuggingScreenHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreenHandler);
 };

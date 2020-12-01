@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 
@@ -23,19 +24,46 @@ class EnableDebuggingScreen : public BaseScreen {
   ~EnableDebuggingScreen() override;
 
   // Called by EnableDebuggingScreenHandler.
-  void OnExit(bool success);
   void OnViewDestroyed(EnableDebuggingScreenView* view);
+  void HandleSetup(const std::string& password);
 
  protected:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const std::string& action_id) override;
 
   base::RepeatingClosure* exit_callback() { return &exit_callback_; }
 
  private:
+  // Handle user actions
+  void HandleLearnMore();
+  void HandleRemoveRootFSProtection();
+
+  // Wait for cryptohomed before checking debugd. See http://crbug.com/440506
+  void WaitForCryptohome();
+
+  // Callback for CryptohomeClient::WaitForServiceToBeAvailable
+  void OnCryptohomeDaemonAvailabilityChecked(bool service_is_available);
+
+  // Callback for DebugDaemonClient::WaitForServiceToBeAvailable
+  void OnDebugDaemonServiceAvailabilityChecked(bool service_is_available);
+
+  // Callback for DebugDaemonClient::EnableDebuggingFeatures().
+  void OnEnableDebuggingFeatures(bool success);
+
+  // Callback for DebugDaemonClient::QueryDebuggingFeatures().
+  void OnQueryDebuggingFeatures(bool success, int features_flag);
+
+  // Callback for DebugDaemonClient::RemoveRootfsVerification().
+  void OnRemoveRootfsVerification(bool success);
+
+  void UpdateUIState(EnableDebuggingScreenView::UIState state);
+
   EnableDebuggingScreenView* view_;
   base::RepeatingClosure exit_callback_;
+
+  base::WeakPtrFactory<EnableDebuggingScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreen);
 };

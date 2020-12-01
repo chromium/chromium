@@ -20,6 +20,7 @@ class MockEnableDebuggingScreen : public EnableDebuggingScreen {
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
+  MOCK_METHOD(void, OnUserAction, (const std::string& action_id));
 
   void ExitScreen();
 };
@@ -32,6 +33,7 @@ class MockEnableDebuggingScreenView : public EnableDebuggingScreenView {
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, MockSetDelegate, (EnableDebuggingScreen * screen));
+  MOCK_METHOD(void, UpdateUIState, (UIState state));
 
   void SetDelegate(EnableDebuggingScreen* screen) override;
 
