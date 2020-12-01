@@ -35,22 +35,6 @@ const char kSkipChildren[] = "@NO_CHILDREN_DUMP";
 
 }  // namespace
 
-// static
-std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
-    BrowserAccessibilityManager* ax_mgr,
-    bool internal,
-    std::vector<AXPropertyFilter> property_filters) {
-  std::unique_ptr<ui::AXTreeFormatter> formatter =
-      internal ? AXInspectFactory::CreateBlinkFormatter()
-               : AXInspectFactory::CreatePlatformFormatter();
-
-  formatter->SetPropertyFilters(property_filters);
-  base::Value dict =
-      static_cast<AccessibilityTreeFormatterBase*>(formatter.get())
-          ->BuildTree(ax_mgr->GetRoot());
-  return formatter->FormatTree(dict);
-}
-
 AccessibilityTreeFormatterBase::AccessibilityTreeFormatterBase() = default;
 
 AccessibilityTreeFormatterBase::~AccessibilityTreeFormatterBase() = default;

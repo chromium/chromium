@@ -50,7 +50,7 @@
 #include "components/rappor/public/rappor_utils.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/accessibility/accessibility_event_recorder.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
+#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
@@ -4018,8 +4018,13 @@ std::string WebContentsImpl::DumpAccessibilityTree(
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DumpAccessibilityTree");
   auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
   DCHECK(ax_mgr);
-  return AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
-      ax_mgr, internal, property_filters);
+
+  std::unique_ptr<ui::AXTreeFormatter> formatter =
+      internal ? AXInspectFactory::CreateBlinkFormatter()
+               : AXInspectFactory::CreatePlatformFormatter();
+
+  formatter->SetPropertyFilters(property_filters);
+  return formatter->Format(ax_mgr->GetRoot());
 }
 
 void WebContentsImpl::RecordAccessibilityEvents(

@@ -41,11 +41,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   AccessibilityTreeFormatterBase();
   ~AccessibilityTreeFormatterBase() override;
 
-  static std::string DumpAccessibilityTreeFromManager(
-      BrowserAccessibilityManager* ax_mgr,
-      bool internal,
-      std::vector<AXPropertyFilter> property_filters);
-
   std::string Format(ui::AXPlatformNodeDelegate* root) const override;
 
   // Populates the given DictionaryValue with the accessibility tree.
