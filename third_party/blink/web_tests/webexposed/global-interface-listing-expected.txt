@@ -1569,6 +1569,9 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
+interface DeviceService
+    attribute @@toStringTag
+    method constructor
 interface Document : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -5445,6 +5448,7 @@ interface Navigator
     getter contacts
     getter cookieEnabled
     getter credentials
+    getter device
     getter deviceMemory
     getter doNotTrack
     getter geolocation

@@ -4398,6 +4398,9 @@ test("unit_tests") {
       "../browser/badging/test_badge_manager_delegate.cc",
       "../browser/badging/test_badge_manager_delegate.h",
 
+      # Device API isn't supported on Android.
+      "../browser/device_api/device_service_unittest.cc",
+
       # Bookmark export/import are handled via the BookmarkColumns
       # ContentProvider.
       "../browser/bookmarks/bookmark_html_writer_unittest.cc",

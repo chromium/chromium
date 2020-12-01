@@ -175,6 +175,7 @@ struct TransferableMessage;
 
 namespace mojom {
 class CacheStorage;
+class DeviceAPIService;
 class GeolocationService;
 class WebUsbService;
 }  // namespace mojom
@@ -1331,6 +1332,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void GetGeolocationService(
       mojo::PendingReceiver<blink::mojom::GeolocationService> receiver);
+
+  void GetDeviceInfoService(
+      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
 
   void GetFontAccessManager(
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);

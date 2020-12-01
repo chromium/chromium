@@ -7991,6 +7991,12 @@ void RenderFrameHostImpl::GetGeolocationService(
   geolocation_service_->Bind(std::move(receiver));
 }
 
+void RenderFrameHostImpl::GetDeviceInfoService(
+    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {
+  GetContentClient()->browser()->CreateDeviceInfoService(this,
+                                                         std::move(receiver));
+}
+
 void RenderFrameHostImpl::GetFontAccessManager(
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())

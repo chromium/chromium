@@ -1375,6 +1375,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_deprecated_storage_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_deprecated_storage_quota.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_deprecated_storage_quota.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_device_service.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_device_service.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_dev_tools_host.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_dev_tools_host.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_device_motion_event.cc",

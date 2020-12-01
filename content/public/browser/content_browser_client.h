@@ -84,6 +84,7 @@ class SequencedTaskRunner;
 
 namespace blink {
 namespace mojom {
+class DeviceAPIService;
 class BadgeService;
 class RendererPreferenceWatcher;
 class WebUsbService;
@@ -1530,6 +1531,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void CreateWebUsbService(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
+
+  virtual void CreateDeviceInfoService(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
 
 #if !defined(OS_ANDROID)
   // Allows the embedder to provide an implementation of the Serial API.

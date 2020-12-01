@@ -86,6 +86,7 @@
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.h"
+#include "third_party/blink/public/mojom/device/device.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
@@ -613,6 +614,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::SpeechSynthesis>(base::BindRepeating(
       &RenderFrameHostImpl::GetSpeechSynthesis, base::Unretained(host)));
+
+#if !defined(OS_ANDROID)
+  map->Add<blink::mojom::DeviceAPIService>(base::BindRepeating(
+      &RenderFrameHostImpl::GetDeviceInfoService, base::Unretained(host)));
+#endif  // !defined(OS_ANDROID)
 
   map->Add<blink::mojom::ScreenEnumeration>(
       base::BindRepeating(&RenderFrameHostImpl::BindScreenEnumerationReceiver,

@@ -3451,6 +3451,8 @@ static_library("browser") {
       "content_settings/generated_notification_pref.h",
       "custom_handlers/register_protocol_handler_permission_request.cc",
       "custom_handlers/register_protocol_handler_permission_request.h",
+      "device_api/device_service_impl.cc",
+      "device_api/device_service_impl.h",
       "device_identity/device_identity_provider.cc",
       "device_identity/device_identity_provider.h",
       "device_identity/device_oauth2_token_service.cc",

@@ -70,6 +70,7 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/crypto/idls.gni",
   "//third_party/blink/renderer/modules/csspaint/idls.gni",
   "//third_party/blink/renderer/modules/delegated_ink/idls.gni",
+  "//third_party/blink/renderer/modules/device/idls.gni",
   "//third_party/blink/renderer/modules/device_orientation/idls.gni",
   "//third_party/blink/renderer/modules/donottrack/idls.gni",
   "//third_party/blink/renderer/modules/encoding/idls.gni",
