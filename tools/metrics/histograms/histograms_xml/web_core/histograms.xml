@@ -21,6 +21,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="FindInPageRequestEndState">
+  <variant name=".Aborted"
+      summary="The request got aborted before it went through every text in
+               the document."/>
+  <variant name=".Finished"
+      summary="The request finished going through every text in the document."/>
+</variants>
+
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
     expires_after="2021-04-04">
   <owner>wychen@chromium.org</owner>
@@ -58,27 +66,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="WebCore.FindInPage.NumberOfTasksPerRequest"
+<histogram
+    name="WebCore.FindInPage.NumberOfTasksPerRequest{FindInPageRequestEndState}"
     units="tasks" expires_after="2021-04-04">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
     Records the number of find-in-page tasks executed for a find-in-page
     request. Emitted when a find-in-page request is finished (it went through
-    the whole document) or when it got aborted.
+    the whole document) or when it got aborted. {FindInPageRequestEndState}
   </summary>
+  <token key="FindInPageRequestEndState" variants="FindInPageRequestEndState">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="WebCore.FindInPage.RequestDuration" units="ms"
-    expires_after="2021-04-04">
+<histogram name="WebCore.FindInPage.RequestDuration{FindInPageRequestEndState}"
+    units="ms" expires_after="2021-04-04">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
     Records how long one find-in-page request (consisting multiple tasks) took
     from the request start until the last find-in-page task for the request
     finished. Emitted when a find-in-page request is finished (it went through
-    the whole document) or when it got aborted.
+    the whole document) or when it got aborted. {FindInPageRequestEndState}
   </summary>
+  <token key="FindInPageRequestEndState" variants="FindInPageRequestEndState">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
@@ -91,8 +114,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="WebCore.FindInPage.TotalTaskDuration" units="ms"
-    expires_after="2021-04-04">
+<histogram
+    name="WebCore.FindInPage.TotalTaskDuration{FindInPageRequestEndState}"
+    units="ms" expires_after="2021-04-04">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
@@ -100,7 +124,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     find-in-page request. Nothe that this does not include the time spent in
     between tasks. Emitted when a find-in-page request is finished (it went
     through the whole document) or when it got aborted.
+    {FindInPageRequestEndState}
   </summary>
+  <token key="FindInPageRequestEndState" variants="FindInPageRequestEndState">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="WebCore.Framebust.ClickThroughPosition"
