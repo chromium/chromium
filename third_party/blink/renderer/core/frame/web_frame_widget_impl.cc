@@ -381,8 +381,7 @@ void WebFrameWidgetImpl::SetIsNestedMainFrameWidget(bool is_nested) {
   main_data().is_for_nested_main_frame = is_nested;
 }
 
-void WebFrameWidgetImpl::Close(
-    scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
+void WebFrameWidgetImpl::Close() {
   LocalFrameView* frame_view;
   if (is_for_child_local_root_) {
     frame_view = LocalRootImpl()->GetFrame()->View();
@@ -405,7 +404,7 @@ void WebFrameWidgetImpl::Close(
   local_root_->SetFrameWidget(nullptr);
   local_root_ = nullptr;
   client_ = nullptr;
-  widget_base_->Shutdown(std::move(cleanup_runner));
+  widget_base_->Shutdown();
   widget_base_.reset();
   receiver_.reset();
   input_target_receiver_.reset();

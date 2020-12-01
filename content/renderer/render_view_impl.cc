@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "cc/trees/ukm_manager.h"
 #include "content/child/webthemeengine_impl_default.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "ui/base/ui_base_features.h"
@@ -503,23 +505,21 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   RenderWidget* opener_render_widget =
       RenderFrameImpl::FromWebFrame(creator)->GetLocalRootRenderWidget();
 
-  RenderWidget* popup_widget =
-      RenderWidget::CreateForPopup(opener_render_widget->compositor_deps());
-
   // The returned WebPagePopup is self-referencing, so the pointer here is not
   // an owning pointer. It is de-referenced by calling Close().
-  blink::WebPagePopup* popup_web_widget = blink::WebPagePopup::Create(
-      popup_widget, std::move(blink_popup_widget_host),
-      std::move(blink_widget_host), std::move(blink_widget_receiver),
+  blink::WebPagePopup* popup = blink::WebPagePopup::Create(
+      std::move(blink_popup_widget_host), std::move(blink_widget_host),
+      std::move(blink_widget_receiver),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
-
-  // Adds a self-reference on the |popup_widget| so it will not be destroyed
-  // when leaving scope. The WebPagePopup takes responsibility for Close()ing
-  // and thus destroying the RenderWidget.
-  popup_widget->InitForPopup(
-      opener_render_widget, popup_web_widget,
-      opener_render_widget->GetWebWidget()->GetOriginalScreenInfo());
-  return popup_web_widget;
+  CompositorDependencies* compositor_deps =
+      opener_render_widget->compositor_deps();
+  popup->InitializeCompositing(
+      compositor_deps->GetWebMainThreadScheduler(),
+      compositor_deps->GetTaskGraphRunner(),
+      opener_render_widget->GetWebWidget()->GetOriginalScreenInfo(),
+      compositor_deps_->CreateUkmRecorderFactory(),
+      /*settings=*/nullptr);
+  return popup;
 }
 
 base::StringPiece RenderViewImpl::GetSessionStorageNamespaceId() {

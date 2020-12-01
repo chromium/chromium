@@ -369,8 +369,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       const ScreenInfo& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings) override;
-  void Close(
-      scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
+  void Close() override;
   void SetCompositorVisible(bool visible) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;

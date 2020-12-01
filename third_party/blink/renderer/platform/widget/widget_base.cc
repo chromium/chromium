@@ -161,6 +161,7 @@ WidgetBase::WidgetBase(
           scheduler::WebThreadScheduler::MainThreadScheduler()) {
     render_widget_scheduling_state_ =
         main_thread_scheduler->NewRenderWidgetSchedulingState();
+    render_widget_scheduling_state_->SetHidden(is_hidden_);
   }
 }
 
@@ -228,13 +229,19 @@ void WidgetBase::InitializeCompositing(
     widget_input_handler_manager_->AllowPreCommitInput();
 
   UpdateScreenInfo(screen_info);
+
+  // If the widget is hidden, delay starting the compositor until the user
+  // shows it. Otherwise start the compositor immediately. If the widget is
+  // for a provisional frame, this importantly starts the compositor before
+  // the frame is inserted into the frame tree, which impacts first paint
+  // metrics.
+  if (!is_hidden_)
+    SetCompositorVisible(true);
 }
 
-void WidgetBase::Shutdown(
-    scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
-  if (!cleanup_runner)
-    cleanup_runner = base::ThreadTaskRunnerHandle::Get();
-
+void WidgetBase::Shutdown() {
+  scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner =
+      base::ThreadTaskRunnerHandle::Get();
   // The |input_event_queue_| is refcounted and will live while an event is
   // being handled. This drops the connection back to this WidgetBase which
   // is being destroyed.

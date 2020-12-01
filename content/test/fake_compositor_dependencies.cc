@@ -39,11 +39,6 @@ bool FakeCompositorDependencies::IsSingleThreaded() {
   return true;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-FakeCompositorDependencies::GetCleanupTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
-}
-
 blink::scheduler::WebThreadScheduler*
 FakeCompositorDependencies::GetWebMainThreadScheduler() {
   return &main_thread_scheduler_;

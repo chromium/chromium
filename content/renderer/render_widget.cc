@@ -19,7 +19,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
-#include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -32,11 +31,6 @@ std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
   return std::make_unique<RenderWidget>(compositor_deps);
 }
 
-RenderWidget* RenderWidget::CreateForPopup(
-    CompositorDependencies* compositor_deps) {
-  return new RenderWidget(compositor_deps);
-}
-
 RenderWidget::RenderWidget(CompositorDependencies* compositor_deps)
     : compositor_deps_(compositor_deps) {
   DCHECK(RenderThread::IsMainThread());
@@ -47,13 +41,6 @@ RenderWidget::~RenderWidget() {
   DCHECK(!webwidget_) << "Leaking our WebWidget!";
   DCHECK(closing_)
       << " RenderWidget must be destroyed via RenderWidget::Close()";
-}
-
-void RenderWidget::InitForPopup(RenderWidget* opener_widget,
-                                blink::WebPagePopup* web_page_popup,
-                                const blink::ScreenInfo& screen_info) {
-  for_popup_ = true;
-  Initialize(web_page_popup, screen_info);
 }
 
 void RenderWidget::InitForMainFrame(blink::WebFrameWidget* web_frame_widget,
@@ -82,24 +69,7 @@ void RenderWidget::Initialize(blink::WebWidget* web_widget,
   DCHECK(web_widget);
 
   webwidget_ = web_widget;
-  if (auto* scheduler_state = GetWebWidget()->RendererWidgetSchedulingState())
-    scheduler_state->SetHidden(web_widget->IsHidden());
-
   InitCompositing(screen_info);
-
-  // If the widget is hidden, delay starting the compositor until the user
-  // shows it. Otherwise start the compositor immediately. If the widget is
-  // for a provisional frame, this importantly starts the compositor before
-  // the frame is inserted into the frame tree, which impacts first paint
-  // metrics.
-  if (!web_widget->IsHidden())
-    web_widget->SetCompositorVisible(true);
-}
-
-void RenderWidget::BrowserClosedIpcChannelForPopupWidget() {
-  DCHECK(for_popup_);
-
-  Close(base::WrapUnique(this));
 }
 
 void RenderWidget::UpdateTextInputState() {
@@ -132,7 +102,7 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
 
   closing_ = true;
 
-  webwidget_->Close(compositor_deps_->GetCleanupTaskRunner());
+  webwidget_->Close();
   webwidget_ = nullptr;
 
   // |layer_tree_host_| is valid only when |webwidget_| is valid. Close may

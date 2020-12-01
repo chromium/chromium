@@ -1309,13 +1309,6 @@ bool RenderThreadImpl::IsSingleThreaded() {
   return !compositor_task_runner_;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-RenderThreadImpl::GetCleanupTaskRunner() {
-  return current_blink_platform_impl()
-      ->main_thread_scheduler()
-      ->DefaultTaskRunner();
-}
-
 gpu::GpuMemoryBufferManager* RenderThreadImpl::GetGpuMemoryBufferManager() {
   return gpu_->gpu_memory_buffer_manager();
 }

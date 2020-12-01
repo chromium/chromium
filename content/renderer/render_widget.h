@@ -44,7 +44,6 @@
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
-#include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -60,7 +59,6 @@
 
 namespace blink {
 class WebFrameWidget;
-class WebPagePopup;
 }  // namespace blink
 
 namespace content {
@@ -75,7 +73,6 @@ class RenderWidgetDelegate;
 //
 // RenderWidget is used to implement:
 // - RenderViewImpl (deprecated)
-// - Popup "menus" (like the color chooser and date picker)
 // - Widgets for frames (the main frame, and subframes due to out-of-process
 //   iframe support)
 //
@@ -87,8 +84,7 @@ class RenderWidgetDelegate;
 // RenderFrameProxy. Each local root has a corresponding RenderWidget. This
 // RenderWidget is used to route input and graphical output between the browser
 // and the renderer.
-class CONTENT_EXPORT RenderWidget
-    : public blink::WebPagePopupClient {  // Is-a WebWidgetClient also
+class CONTENT_EXPORT RenderWidget : public blink::WebWidgetClient {
  public:
   explicit RenderWidget(CompositorDependencies* compositor_deps);
 
@@ -99,22 +95,6 @@ class CONTENT_EXPORT RenderWidget
   // by calling InstallCreateForFrameHook().
   static std::unique_ptr<RenderWidget> CreateForFrame(
       CompositorDependencies* compositor_deps);
-
-  // Creates a RenderWidget for a popup. This is separate from CreateForFrame()
-  // because popups do not not need to be faked out.
-  // A RenderWidget popup is owned by the browser process. The object will be
-  // destroyed when the blink::mojom::WidgetHost channel is disconnected. The
-  // object can request its own destruction via
-  // blink::mojom::PopupWidgetHost::RequestClose().
-  static RenderWidget* CreateForPopup(
-      CompositorDependencies* compositor_deps);
-
-  // Initialize a new RenderWidget for a popup. The |show_callback| is called
-  // when RenderWidget::Show() happens. The |opener_widget| is the local root
-  // of the frame that is opening the popup.
-  void InitForPopup(RenderWidget* opener_widget,
-                    blink::WebPagePopup* web_page_popup,
-                    const blink::ScreenInfo& screen_info);
 
   // Initialize a new RenderWidget that will be attached to a RenderFrame (via
   // the WebFrameWidget), for a frame that is a main frame.
@@ -139,9 +119,6 @@ class CONTENT_EXPORT RenderWidget
   // This can return nullptr while the RenderWidget is closing. When for_frame()
   // is true, the widget returned is a blink::WebFrameWidget.
   blink::WebWidget* GetWebWidget() const { return webwidget_; }
-
-  // blink::WebWidgetClient
-  void BrowserClosedIpcChannelForPopupWidget() override;
 
   void ConvertViewportToWindow(blink::WebRect* rect);
   void UpdateTextInputState();
@@ -214,12 +191,6 @@ class CONTENT_EXPORT RenderWidget
   // that are not for a frame (eg popups) and excludes the widget for the main
   // frame (which is attached to the RenderViewImpl).
   bool for_child_local_root_frame_ = false;
-  // RenderWidgets are created for frames and  popups. In the
-  // former case, the caller frame takes ownership and eventually passes the
-  // unique_ptr back in Close(). In the latter cases, the browser process takes
-  // ownership via IPC.  These booleans exist to allow us to confirm than an IPC
-  // message to kill the render widget is coming for a popup.
-  bool for_popup_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidget);
 };

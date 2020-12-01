@@ -94,6 +94,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
+#include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -736,10 +737,6 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
   {
     // Make a popup widget.
     blink::WebPagePopup* popup = view()->CreatePopup(frame()->GetWebFrame());
-    RenderWidget* popup_widget =
-        static_cast<RenderWidget*>(popup->GetClientForTesting());
-    ASSERT_TRUE(popup_widget);
-
     // Set its size.
     popup->SetScreenRects(widget_screen_rect, window_screen_rect);
 
@@ -749,7 +746,7 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     EXPECT_EQ(widget_screen_rect, gfx::Rect(popup->ViewRect()));
     EXPECT_EQ(screen_rect, gfx::Rect(popup->GetScreenInfo().rect));
 
-    popup->GetClientForTesting()->BrowserClosedIpcChannelForPopupWidget();
+    popup->Close();
   }
 
   // Enable device emulation on the parent widget.
@@ -766,9 +763,6 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     // Make a popup again. It should inherit device emulation params.
     blink::WebPagePopup* popup = view()->CreatePopup(frame()->GetWebFrame());
     popup->InitializeForTesting(view()->GetWebView());
-    RenderWidget* popup_widget =
-        static_cast<RenderWidget*>(popup->GetClientForTesting());
-    ASSERT_TRUE(popup_widget);
 
     // Set its size again.
     popup->SetScreenRects(widget_screen_rect, window_screen_rect);
@@ -803,12 +797,11 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     // TODO(danakj): Why isn't the ScreenRect visible to the popup an emulated
     // value? The ScreenRect has been changed by emulation as demonstrated
     // below.
-    EXPECT_EQ(gfx::Rect(800, 600),
-              gfx::Rect(popup_widget->GetWebWidget()->GetScreenInfo().rect));
+    EXPECT_EQ(gfx::Rect(800, 600), gfx::Rect(popup->GetScreenInfo().rect));
     EXPECT_EQ(emulated_widget_rect,
               gfx::Rect(main_widget()->GetWebWidget()->GetScreenInfo().rect));
 
-    popup->GetClientForTesting()->BrowserClosedIpcChannelForPopupWidget();
+    popup->Close();
   }
 }
 

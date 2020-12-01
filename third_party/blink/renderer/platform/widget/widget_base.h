@@ -84,7 +84,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       const cc::LayerTreeSettings* settings);
 
   // Shutdown the compositor.
-  void Shutdown(scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner);
+  void Shutdown();
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink, begin producing frames from the

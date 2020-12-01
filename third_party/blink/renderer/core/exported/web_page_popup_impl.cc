@@ -206,10 +206,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   IntSize MinimumWindowSize() const override { return IntSize(0, 0); }
 
-  void SetCursor(const ui::Cursor& cursor, LocalFrame* local_frame) override {
-    popup_->WidgetClient()->DidChangeCursor(cursor);
-  }
-
   void SetEventListenerProperties(
       LocalFrame* frame,
       cc::EventListenerClass event_class,
@@ -274,7 +270,6 @@ bool PagePopupFeaturesClient::IsEnabled(Document*,
 // WebPagePopupImpl ----------------------------------------------------------
 
 WebPagePopupImpl::WebPagePopupImpl(
-    WebPagePopupClient* client,
     CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
         popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
@@ -282,8 +277,7 @@ WebPagePopupImpl::WebPagePopupImpl(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : web_page_popup_client_(client),
-      popup_widget_host_(std::move(popup_widget_host)),
+    : popup_widget_host_(std::move(popup_widget_host)),
       widget_base_(
           std::make_unique<WidgetBase>(this,
                                        std::move(widget_host),
@@ -292,7 +286,6 @@ WebPagePopupImpl::WebPagePopupImpl(
                                        /*hidden=*/false,
                                        /*never_composited=*/false,
                                        /*is_for_child_local_root=*/false)) {
-  DCHECK(client);
   popup_widget_host_.set_disconnect_handler(WTF::Bind(
       &WebPagePopupImpl::WidgetHostDisconnected, WTF::Unretained(this)));
 }
@@ -899,13 +892,11 @@ KURL WebPagePopupImpl::GetURLForDebugTrace() {
 }
 
 void WebPagePopupImpl::WidgetHostDisconnected() {
-  DCHECK(web_page_popup_client_);
-  web_page_popup_client_->BrowserClosedIpcChannelForPopupWidget();
+  Close();
   // Careful, this is now destroyed.
 }
 
-void WebPagePopupImpl::Close(
-    scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
+void WebPagePopupImpl::Close() {
   // If the popup is closed from the renderer via Cancel(), then ClosePopup()
   // has already run on another stack, and destroyed |page_|. If the popup is
   // closed from the browser via IPC to RenderWidget, then we come here first
@@ -918,9 +909,8 @@ void WebPagePopupImpl::Close(
     Cancel();
   }
 
-  widget_base_->Shutdown(std::move(cleanup_runner));
+  widget_base_->Shutdown();
   widget_base_.reset();
-  web_page_popup_client_ = nullptr;
 
   // Self-delete on Close().
   Release();
@@ -986,10 +976,6 @@ WebDocument WebPagePopupImpl::GetDocument() {
   return WebDocument(MainFrame().GetDocument());
 }
 
-WebPagePopupClient* WebPagePopupImpl::GetClientForTesting() const {
-  return web_page_popup_client_;
-}
-
 void WebPagePopupImpl::Cancel() {
   if (popup_client_)
     popup_client_->CancelPopup();
@@ -1041,7 +1027,6 @@ WebPagePopupImpl::AllocateNewLayerTreeFrameSink() {
 // WebPagePopup ----------------------------------------------------------------
 
 WebPagePopup* WebPagePopup::Create(
-    WebPagePopupClient* client,
     CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
         popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
@@ -1049,16 +1034,15 @@ WebPagePopup* WebPagePopup::Create(
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  CHECK(client);
   // A WebPagePopupImpl instance usually has two references.
   //  - One owned by the instance itself. It represents the visible widget.
   //  - One owned by a WebViewImpl. It's released when the WebViewImpl ask the
   //    WebPagePopupImpl to close.
   // We need them because the closing operation is asynchronous and the widget
   // can be closed while the WebViewImpl is unaware of it.
-  auto popup = base::AdoptRef(new WebPagePopupImpl(
-      client, std::move(popup_widget_host), std::move(widget_host),
-      std::move(widget), task_runner));
+  auto popup = base::AdoptRef(
+      new WebPagePopupImpl(std::move(popup_widget_host), std::move(widget_host),
+                           std::move(widget), task_runner));
   popup->AddRef();
   return popup.get();
 }

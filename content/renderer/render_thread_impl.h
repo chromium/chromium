@@ -197,7 +197,6 @@ class CONTENT_EXPORT RenderThreadImpl
   bool IsElasticOverscrollEnabled() override;
   bool IsUseZoomForDSFEnabled() override;
   bool IsSingleThreaded() override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetCleanupTaskRunner() override;
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool IsScrollAnimatorEnabled() override;

@@ -100,13 +100,10 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
     return other && popup_client_ == other->popup_client_;
   }
 
-  WebWidgetClient* WidgetClient() const { return web_page_popup_client_; }
-
   LocalDOMWindow* Window();
 
   // WebPagePopup implementation.
   WebDocument GetDocument() override;
-  WebPagePopupClient* GetClientForTesting() const override;
   void InitializeForTesting(WebView* view) override;
 
   // PagePopup implementation.
@@ -154,8 +151,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void Resize(const gfx::Size&) override;
-  void Close(
-      scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
+  void Close() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void SetFocus(bool) override;
   bool HasFocus() override;
@@ -210,7 +206,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetWindowRect(const IntRect&) override;
 
   WebPagePopupImpl(
-      WebPagePopupClient*,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
@@ -234,7 +229,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void DidShowPopup();
   void DidSetBounds();
 
-  WebPagePopupClient* web_page_popup_client_;
   // This is the WebView that opened the popup.
   WebViewImpl* opener_web_view_ = nullptr;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.

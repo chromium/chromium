@@ -25,7 +25,6 @@ class FakeCompositorDependencies : public CompositorDependencies {
   bool IsElasticOverscrollEnabled() override;
   bool IsUseZoomForDSFEnabled() override;
   bool IsSingleThreaded() override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetCleanupTaskRunner() override;
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   bool IsScrollAnimatorEnabled() override;
