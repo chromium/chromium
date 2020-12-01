@@ -471,8 +471,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.PageLoad.FinalSourceLanguage" enum="LanguageCode"
-    expires_after="2021-04-04">
+<histogram name="Translate.PageLoad.FinalSourceLanguage"
+    enum="CLD3LanguageCode" expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -499,8 +499,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.PageLoad.FinalTargetLanguage" enum="LanguageCode"
-    expires_after="2021-04-04">
+<histogram name="Translate.PageLoad.FinalTargetLanguage"
+    enum="CLD3LanguageCode" expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -513,8 +513,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.PageLoad.InitialSourceLanguage" enum="LanguageCode"
-    expires_after="2021-04-04">
+<histogram name="Translate.PageLoad.InitialSourceLanguage"
+    enum="CLD3LanguageCode" expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -541,8 +541,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.PageLoad.InitialTargetLanguage" enum="LanguageCode"
-    expires_after="2021-04-04">
+<histogram name="Translate.PageLoad.InitialTargetLanguage"
+    enum="CLD3LanguageCode" expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
