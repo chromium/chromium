@@ -1225,6 +1225,11 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "tricium-oilpan-analysis",
+    executable = "recipe:tricium_oilpan",
+)
+
+try_.chromium_linux_builder(
     name = "tricium-simple",
     executable = "recipe:tricium_simple",
 )

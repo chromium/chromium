@@ -134,6 +134,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:tricium_oilpan",
+)
+
+build_recipe(
     name = "recipe:tricium_simple",
 )
 
