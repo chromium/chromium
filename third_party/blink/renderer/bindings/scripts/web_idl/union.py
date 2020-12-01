@@ -140,7 +140,7 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             idl_type.type_name_with_extended_attribute_key_values)
         sort_key_identifier = lambda x: x.identifier
 
-        self._union_types = tuple(ir.union_types)
+        self._idl_types = tuple(ir.union_types)
         self._flattened_member_types = tuple(
             sorted(flattened_member_types, key=sort_key_typename))
         self._does_include_nullable_type = does_include_nullable_type
@@ -153,9 +153,14 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             sorted(ir.typedefs, key=sort_key_identifier))
 
         ir.public_object = self
-        # TODO(yukishiino): Replace BackwardCompatibleUnion with NewUnion
-        # for union_type in self._union_types:
-        #     union_type.set_union_definition_object(self)
+
+        for idl_type in self._idl_types:
+            idl_type.set_new_union_definition_object(self)
+
+    @property
+    def idl_types(self):
+        """Returns a list of IdlTypes which this object represents."""
+        return self._idl_types
 
     @property
     def flattened_member_types(self):
