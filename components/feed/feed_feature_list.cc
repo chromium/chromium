@@ -53,6 +53,8 @@ const base::Feature kInterestFeedNoticeCardAutoDismiss{
 const base::Feature kInterestFeedSpinnerAlwaysAnimate{
     "InterestFeedSpinnerAlwaysAnimate", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebFeed{"WebFeed", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kDefaultReferrerUrl[] =
     "https://www.googleapis.com/auth/chrome-content-suggestions";
 

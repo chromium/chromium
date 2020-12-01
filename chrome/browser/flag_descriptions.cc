@@ -3263,6 +3263,10 @@ const char kWalletRequiresFirstSyncSetupCompleteDescription[] =
     "first-sync-setup to be complete. Only has an effect if "
     "enable-autofill-account-wallet-storage is also enabled.";
 
+const char kWebFeedName[] = "Web Feed";
+const char kWebFeedDescription[] =
+    "Allows users to keep up with and consume web content.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

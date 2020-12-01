@@ -35,6 +35,9 @@ extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 
 extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;
 
+// Feature that allows users to keep up with and consume web content.
+extern const base::Feature kWebFeed;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed
