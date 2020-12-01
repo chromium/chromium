@@ -1514,6 +1514,9 @@ source_set("address_sorting") {
   public_configs = [
     ":grpc_config",
   ]
+  configs += [
+    ":grpc_config_private",
+  ]
   include_dirs = [
     "src/third_party/address_sorting/include",
   ]
@@ -1562,6 +1565,9 @@ if (current_toolchain == host_toolchain) {
     ]
     public_configs = [
       ":grpc_config",
+    ]
+    configs += [
+      ":grpc_config_private",
     ]
   }
 
@@ -1620,6 +1626,9 @@ source_set("upb") {
   ]
   public_configs = [
     ":grpc_config",
+  ]
+  configs += [
+    ":grpc_config_private",
   ]
   visibility = [ "./*" ]
   if (!is_win) {

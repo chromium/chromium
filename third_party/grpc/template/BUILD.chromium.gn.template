@@ -374,12 +374,12 @@
       if repeated:
         deps.append(":{}".format(repeated_lib_name))
     %>\
-  ${cc_library_internal(lib.name, indent, sources, deps, extra_stuff, [])}
+  ${cc_library_internal(lib.name, indent, sources, deps, extra_stuff, extra_configs)}
     % if repeated:
 
   # There are some .cc files that are in multiple places. GN doesn't like
   # that. Moving them to another target.
-  ${cc_library_internal(repeated_lib_name, indent, repeated, repeated_deps, extra_stuff, [])}
+  ${cc_library_internal(repeated_lib_name, indent, repeated, repeated_deps, extra_stuff, extra_configs)}
     % endif
   </%def>\
   <%def name="cc_library_internal(name, indent, sources, lib_deps, extra_stuff, extra_configs)">\
