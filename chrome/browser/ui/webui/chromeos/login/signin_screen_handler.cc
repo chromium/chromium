@@ -862,9 +862,6 @@ void SigninScreenHandler::OnPreferencesChanged() {
   }
 }
 
-void SigninScreenHandler::ResetSigninScreenHandlerDelegate() {
-  SetDelegate(nullptr);
-}
 
 void SigninScreenHandler::ShowError(int login_attempts,
                                     const std::string& error_text,

@@ -199,6 +199,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Plays startup sound if needed and audio device is ready.
   void PlayStartupSoundIfPossible();
 
+  // Resets login view and unbinds login display from the signin screen handler.
+  void ResetLoginView();
+
   // Sign in screen controller.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 

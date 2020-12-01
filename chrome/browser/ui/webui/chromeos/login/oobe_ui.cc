@@ -806,10 +806,6 @@ void OobeUI::ForwardAccelerator(std::string accelerator_name) {
   core_handler_->ForwardAccelerator(accelerator_name);
 }
 
-void OobeUI::ResetSigninScreenHandlerDelegate() {
-  signin_screen_handler_->SetDelegate(nullptr);
-}
-
 gfx::NativeView OobeUI::GetNativeView() {
   return web_ui()->GetWebContents()->GetNativeView();
 }

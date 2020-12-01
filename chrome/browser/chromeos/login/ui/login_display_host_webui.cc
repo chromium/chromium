@@ -460,6 +460,9 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
+  if (GetOobeUI())
+    GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
+
   SessionManagerClient::Get()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
@@ -818,7 +821,7 @@ void LoginDisplayHostWebUI::OnWillRemoveView(views::Widget* widget,
                                              views::View* view) {
   if (view != static_cast<views::View*>(login_view_))
     return;
-  login_view_ = nullptr;
+  ResetLoginView();
   widget->RemoveRemovalsObserver(this);
 }
 
@@ -830,7 +833,7 @@ void LoginDisplayHostWebUI::OnWidgetDestroying(views::Widget* widget) {
   login_window_->RemoveObserver(this);
 
   login_window_ = nullptr;
-  login_view_ = nullptr;
+  ResetLoginView();
 }
 
 void LoginDisplayHostWebUI::OnWidgetBoundsChanged(views::Widget* widget,
@@ -949,7 +952,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   // `login_view_` pointer.
   if (login_view_) {
     login_view_->SetUIEnabled(true);
-    login_view_ = nullptr;
+    ResetLoginView();
   }
 
   if (login_window_) {
@@ -974,6 +977,17 @@ void LoginDisplayHostWebUI::SetOobeProgressBarVisible(bool visible) {
 void LoginDisplayHostWebUI::TryToPlayOobeStartupSound() {
   need_to_play_startup_sound_ = true;
   PlayStartupSoundIfPossible();
+}
+
+void LoginDisplayHostWebUI::ResetLoginView() {
+  if (!login_view_)
+    return;
+
+  OobeUI* oobe_ui = login_view_->GetOobeUI();
+  if (oobe_ui)
+    oobe_ui->signin_screen_handler()->SetDelegate(nullptr);
+
+  login_view_ = nullptr;
 }
 
 void LoginDisplayHostWebUI::OnLoginPromptVisible() {

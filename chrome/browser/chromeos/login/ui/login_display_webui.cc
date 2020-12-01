@@ -34,8 +34,6 @@ namespace chromeos {
 // LoginDisplayWebUI, public: --------------------------------------------------
 
 LoginDisplayWebUI::~LoginDisplayWebUI() {
-  if (webui_handler_)
-    webui_handler_->ResetSigninScreenHandlerDelegate();
   ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
   if (activity_detector && activity_detector->HasObserver(this))
     activity_detector->RemoveObserver(this);

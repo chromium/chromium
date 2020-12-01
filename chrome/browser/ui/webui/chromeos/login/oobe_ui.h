@@ -94,9 +94,6 @@ class OobeUI : public ui::MojoWebUIController {
   // Forwards an accelerator to the webui to be handled.
   void ForwardAccelerator(std::string accelerator_name);
 
-  // Resets the delegate set in ShowSigninScreen.
-  void ResetSigninScreenHandlerDelegate();
-
   gfx::NativeView GetNativeView();
 
   gfx::NativeWindow GetTopLevelNativeWindow();

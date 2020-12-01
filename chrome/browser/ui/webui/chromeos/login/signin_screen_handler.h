@@ -65,7 +65,6 @@ class LoginDisplayWebUIHandler {
   virtual void ClearUserPodPassword() = 0;
   virtual void OnUserImageChanged(const user_manager::User& user) = 0;
   virtual void OnPreferencesChanged() = 0;
-  virtual void ResetSigninScreenHandlerDelegate() = 0;
   virtual void ShowError(int login_attempts,
                          const std::string& error_text,
                          const std::string& help_link_text,
@@ -227,7 +226,6 @@ class SigninScreenHandler
   void ClearUserPodPassword() override;
   void OnUserImageChanged(const user_manager::User& user) override;
   void OnPreferencesChanged() override;
-  void ResetSigninScreenHandlerDelegate() override;
   void ShowError(int login_attempts,
                  const std::string& error_text,
                  const std::string& help_link_text,
