@@ -6,7 +6,8 @@
 
 [
     Exposed=(Window,DedicatedWorker),
-    RuntimeEnabled=WebCodecs
+    RuntimeEnabled=WebCodecs,
+    ActiveScriptWrappable
 ] interface AudioDecoder {
   // |init| includes an |output| callback for emitting AudioBuffers and an
   // |error| callback for emitting decode errors. All errors are permanent;
