@@ -7,6 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabStripCell;
+
+// Informs the receiver of actions on the cell.
+@protocol TabStripCellDelegate
+// Informs the receiver that the close button on the cell was tapped.
+- (void)closeButtonTappedForCell:(TabStripCell*)cell;
+@end
+
 // UICollectionViewCell that contains a Tab title with a leading imageView
 // and a close tab button.
 @interface TabStripCell : UICollectionViewCell
@@ -17,6 +25,8 @@
 // Unique identifier for the cell's contents. This is used to ensure that
 // updates in an asynchronous callback are only made if the item is the same.
 @property(nonatomic, copy) NSString* itemIdentifier;
+// Delegate to inform the TabStrip on the cell.
+@property(nonatomic, weak) id<TabStripCellDelegate> delegate;
 
 @end
 

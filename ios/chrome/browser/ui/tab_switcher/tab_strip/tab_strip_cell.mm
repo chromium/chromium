@@ -57,6 +57,9 @@ const CGFloat kTitleInset = 10.0;
       [closeButton.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
+    [closeButton addTarget:self
+                    action:@selector(closeButtonTapped:)
+          forControlEvents:UIControlEventTouchUpInside];
 
     UILabel* titleLabel = [[UILabel alloc] init];
     [self.contentView addSubview:titleLabel];
@@ -80,6 +83,11 @@ const CGFloat kTitleInset = 10.0;
   [super prepareForReuse];
   self.titleLabel.text = nil;
   self.itemIdentifier = nil;
+}
+
+// Selector registered to the close button.
+- (void)closeButtonTapped:(id)sender {
+  [self.delegate closeButtonTappedForCell:self];
 }
 
 @end

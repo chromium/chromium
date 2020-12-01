@@ -30,7 +30,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
 }  // namespace
 
-@interface TabStripViewController ()
+@interface TabStripViewController () <TabStripCellDelegate>
 
 @property(nonatomic, strong) UIButton* buttonNewTab;
 // The local model backing the collection view.
@@ -150,6 +150,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 // theme.
 - (void)configureCell:(TabStripCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
+    cell.delegate = self;
     cell.itemIdentifier = item.identifier;
     cell.titleLabel.text = item.title;
     NSString* itemIdentifier = item.identifier;
@@ -184,6 +185,12 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   int index = indexPath.item;
   [self.delegate selectTab:index];
+}
+
+#pragma mark - TabStripCellDelegate
+
+- (void)closeButtonTappedForCell:(TabStripCell*)cell {
+  [self.delegate closeItemWithID:cell.itemIdentifier];
 }
 
 @end

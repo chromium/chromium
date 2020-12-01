@@ -74,6 +74,18 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   return nullptr;
 }
 
+// Returns the index of the tab with |identifier| in |web_state_list|. Returns
+// -1 if not found.
+int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
+    if ([identifier isEqualToString:tab_helper->tab_id()])
+      return i;
+  }
+  return -1;
+}
+
 }  // namespace
 
 @interface TabStripMediator () <CRWWebStateObserver, WebStateListObserving> {
@@ -202,6 +214,12 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     return;
 
   _webStateList->ActivateWebStateAt(index);
+}
+
+- (void)closeItemWithID:(NSString*)itemID {
+  int index = GetIndexOfTabWithId(self.webStateList, itemID);
+  if (index >= 0)
+    self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
 #pragma mark - Private
