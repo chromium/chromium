@@ -158,6 +158,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.TRANSLATE_LANGUAGE";
 
     /**
+     * Extra that, if set, results in blocking new notification requests while in CCT.
+     */
+    public static final String EXTRA_BLOCK_NEW_NOTIFICATION_REQUESTS_IN_CCT =
+            "androidx.browser.customtabs.extra.BLOCK_NEW_NOTIFICATION_REQUESTS_IN_CCT";
+
+    /**
      * Extra that, if set, results in hiding omnibox suggestions for visits from cct. The value is
      * a boolean, and is only considered if the feature kSuggestVisitsWithPageTransitionFromApi2 is
      * enabled.
@@ -937,5 +943,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(getSession());
         if (!GSAState.isGsaPackageName(clientPackageName)) return false;
         return IntentUtils.safeGetBooleanExtra(mIntent, EXTRA_HIDE_VISITS_FROM_CCT, false);
+    }
+
+    @Override
+    public boolean shouldBlockNewNotificationRequests() {
+        // Only 1p apps are allowed to hide visits.
+        String clientPackageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(getSession());
+        if (!GSAState.isGsaPackageName(clientPackageName)) return false;
+        return IntentUtils.safeGetBooleanExtra(
+                mIntent, EXTRA_BLOCK_NEW_NOTIFICATION_REQUESTS_IN_CCT, false);
     }
 }

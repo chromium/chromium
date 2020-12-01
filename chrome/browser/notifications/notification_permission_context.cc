@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -32,6 +33,35 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+namespace {
+
+class NotificationTabHelper
+    : public content::WebContentsUserData<NotificationTabHelper> {
+ public:
+  ~NotificationTabHelper() override = default;
+
+  void set_should_block_new_notification_requests(bool value) {
+    should_block_new_notification_requests_ = value;
+  }
+
+  bool should_block_new_notification_requests() {
+    return should_block_new_notification_requests_;
+  }
+
+ private:
+  explicit NotificationTabHelper(content::WebContents* contents) {}
+
+  friend class content::WebContentsUserData<NotificationTabHelper>;
+
+  bool should_block_new_notification_requests_ = false;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NotificationTabHelper)
+
+}  // namespace
 
 // static
 void NotificationPermissionContext::UpdatePermission(
@@ -59,6 +89,15 @@ NotificationPermissionContext::NotificationPermissionContext(
                             blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 NotificationPermissionContext::~NotificationPermissionContext() {}
+
+// static
+void NotificationPermissionContext::SetBlockNewNotificationRequests(
+    content::WebContents* web_contents,
+    bool value) {
+  NotificationTabHelper::CreateForWebContents(web_contents);
+  NotificationTabHelper::FromWebContents(web_contents)
+      ->set_should_block_new_notification_requests(value);
+}
 
 ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
@@ -155,6 +194,12 @@ void NotificationPermissionContext::DecidePermission(
                            std::move(callback), /*persist=*/true,
                            CONTENT_SETTING_BLOCK, /*is_one_time=*/false),
             base::TimeDelta::FromSecondsD(delay_seconds));
+    return;
+  }
+
+  auto* tab_helper = NotificationTabHelper::FromWebContents(web_contents);
+  if (tab_helper && tab_helper->should_block_new_notification_requests()) {
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 

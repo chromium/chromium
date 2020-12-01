@@ -1141,6 +1141,19 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         return mPendingLoadParams;
     }
 
+    @Override
+    public void setShouldBlockNewNotificationRequests(boolean value) {
+        if (mNativeTabAndroid != 0) {
+            TabImplJni.get().setShouldBlockNewNotificationRequests(mNativeTabAndroid, value);
+        }
+    }
+
+    @Override
+    public boolean getShouldBlockNewNotificationRequests() {
+        return mNativeTabAndroid != 0
+                && TabImplJni.get().getShouldBlockNewNotificationRequests(mNativeTabAndroid);
+    }
+
     /**
      * Performs any subclass-specific tasks when the Tab crashes.
      */
@@ -1548,5 +1561,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         boolean getAddApi2TransitionToFutureNavigations(long nativeTabAndroid);
         void setHideFutureNavigations(long nativeTabAndroid, boolean hide);
         boolean getHideFutureNavigations(long nativeTabAndroid);
+        void setShouldBlockNewNotificationRequests(long nativeTabAndroid, boolean value);
+        boolean getShouldBlockNewNotificationRequests(long nativeTabAndroid);
     }
 }

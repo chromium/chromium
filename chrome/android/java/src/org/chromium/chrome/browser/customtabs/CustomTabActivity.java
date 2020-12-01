@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
@@ -98,12 +99,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         getStartupTabPreloader().setTabCreatedCallback(new Callback<Tab>() {
             @Override
             public void onResult(Tab tab) {
-                if (mIntentDataProvider.shouldHideOmniboxSuggestionsForCctVisits()) {
-                    tab.setAddApi2TransitionToFutureNavigations(true);
-                }
-                if (mIntentDataProvider.shouldHideCctVisits()) {
-                    tab.setHideFutureNavigations(true);
-                }
+                CustomTabActivityNavigationController.applyExperimentsToNewTab(
+                        tab, mIntentDataProvider);
             }
         });
 
@@ -195,6 +192,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 if (tab != null) {
                     tab.setAddApi2TransitionToFutureNavigations(false);
                     tab.setHideFutureNavigations(false);
+                    tab.setShouldBlockNewNotificationRequests(false);
                 }
                 mConnection.notifyOpenInBrowser(mSession, webContents);
             }

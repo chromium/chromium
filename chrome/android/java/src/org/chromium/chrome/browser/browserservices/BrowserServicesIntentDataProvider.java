@@ -519,4 +519,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean shouldHideCctVisits() {
         return false;
     }
+
+    /**
+     * Returns true if new notification requests from cct should be blocked.
+     */
+    public boolean shouldBlockNewNotificationRequests() {
+        return false;
+    }
 }
