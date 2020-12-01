@@ -4,13 +4,6 @@
 
 /* Google Drive welcome banners.*/
 
-body:not(.files-ng) .drive-welcome-icon {
-  background-image: -webkit-image-set(
-    url(../images/files/ui/drive_logo.png) 1x,
-    url(../images/files/ui/2x/drive_logo.png) 2x);
-  background-repeat: no-repeat;
-}
-
 body.files-ng .drive-welcome-icon {
   background-image: url(../images/files/ui/drive_logo.svg);
   background-repeat: no-repeat;
@@ -157,31 +150,12 @@ body:not(.files-ng) .drive-welcome.header .banner-close {
   top: 0;
 }
 
-.drive-welcome.header .banner-people {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/drive_banner_people.png) 1x,
-      url(../images/files/ui/2x/drive_banner_people.png) 2x);
-  height: 128px;
-  position: absolute;
-  top: 0;
-  width: 106px;
-}
-
 html[dir='ltr'] .drive-welcome.header .banner-people {
   right: 38px;
 }
 
 html[dir='rtl'] .drive-welcome.header .banner-people {
   left: 38px;
-}
-
-.drive-welcome.header .banner-cloud-bg {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transform: scaleY(-1);
 }
 
 body:not(.files-ng) .drive-welcome.header .plain-link {
@@ -215,10 +189,6 @@ body.files-ng .drive-welcome.header .plain-link {
 .drive-welcome.page .drive-welcome-wrapper {
   align-items: center;
   background-color: white;
-  /* This image looks good in high DPI as is. */
-  background-image: url(../images/files/ui/clouds.png);
-  background-repeat: repeat-x;
-  background-size: 520px 173px;
   bottom: 0;
   color: #333;
   display: flex;

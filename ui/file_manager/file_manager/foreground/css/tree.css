@@ -17,25 +17,6 @@ tree {
   white-space: nowrap;
 }
 
-.tree-row > .expand-icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/expand_more.png) 1x,
-      url(../images/files/ui/2x/expand_more.png) 2x);
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
-  position: relative;
-  transform: rotate(-90deg);
-  transition: all 150ms;
-  vertical-align: top;
-}
-
-.tree-row[selected] > .expand-icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/expand_more_active.png) 1x,
-      url(../images/files/ui/2x/expand_more_active.png) 2x);
-}
-
 /* All .tree-row > .file-row > ... rules are files-ng specific. */
 .tree-row > .file-row > .expand-icon {
   -webkit-mask-image: url(../images/files/ui/sort_desc.svg);

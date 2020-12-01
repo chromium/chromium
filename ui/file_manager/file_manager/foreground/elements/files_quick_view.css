@@ -86,14 +86,6 @@ dialog#delete-confirm-dialog::backdrop {
   margin-right: auto;
 }
 
-#metadata-button {
-  background-image: -webkit-image-set(
-    url(../images/files/ui/quick_view/info_outline.png) 1x,
-    url(../images/files/ui/quick_view/2x/info_outline.png) 2x);
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 #innerContentPanel {
   background-color: transparent;
   color: white;

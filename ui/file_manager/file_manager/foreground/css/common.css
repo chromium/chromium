@@ -475,19 +475,6 @@ html[dir='rtl'] .entry-name {
   padding-top: 32px;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-close {
-  background: -webkit-image-set(
-      url(../images/files/ui/close_button.png) 1x,
-      url(../images/files/ui/2x/close_button.png) 2x) center no-repeat;
-  display: inline-block;
-  height: 40px;
-  opacity: 0.7;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 40px;
-}
-
 .cr-dialog-container.files-ng .cr-dialog-close {
   display: none;
 }

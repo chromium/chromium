@@ -758,26 +758,8 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
   width: 0;
 }
 
-.dialog-header:not(.files-ng) #search-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/search_white.png) 1x,
-      url(../images/files/ui/2x/search_white.png) 2x);
-}
-
 .dialog-header.files-ng #search-button > .icon {
   -webkit-mask-image: url(../images/files/ui/search.svg);
-}
-
-body.check-select .dialog-header #search-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/search.png) 1x,
-      url(../images/files/ui/2x/search.png) 2x);
-}
-
-.dialog-header:not(.files-ng) #share-menu-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/share_white.png) 1x,
-      url(../images/files/ui/2x/share_white.png) 2x);
 }
 
 .dialog-header.files-ng #share-menu-button > .icon {
@@ -790,28 +772,8 @@ body.check-select .dialog-header #search-button > .icon {
   width: 48px;
 }
 
-body.check-select .dialog-header #share-menu-button > .icon {
-  background-image: url(../images/files/ui/share.svg);
-}
-
-.dialog-header:not(.files-ng) #sharesheet-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/share_white.png) 1x,
-      url(../images/files/ui/2x/share_white.png) 2x);
-}
-
 .dialog-header.files-ng #sharesheet-button > .icon {
   -webkit-mask-image: url(../images/files/ui/share_ng.svg);
-}
-
-body.check-select .dialog-header #sharesheet-button > .icon {
-  background-image: url(../images/files/ui/share.svg);
-}
-
-.dialog-header:not(.files-ng) #delete-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/delete_white.png) 1x,
-      url(../images/files/ui/2x/delete_white.png) 2x);
 }
 
 .dialog-header.files-ng #delete-button > .icon {
@@ -822,20 +784,8 @@ body.check-select .dialog-header #delete-button > .icon {
   background-image: url(../images/files/ui/delete.svg);
 }
 
-.dialog-header:not(.files-ng) #refresh-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/refresh_white.png) 1x,
-      url(../images/files/ui/2x/refresh_white.png) 2x);
-}
-
 .dialog-header.files-ng #refresh-button > .icon {
   -webkit-mask-image: url(../images/files/ui/refresh.svg);
-}
-
-.dialog-header:not(.files-ng) #view-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/view_list_white.png) 1x,
-      url(../images/files/ui/2x/view_list_white.png) 2x);
 }
 
 .dialog-header.files-ng #view-button > .icon {
@@ -846,22 +796,12 @@ body.check-select #view-button {
   display: none;
 }
 
-.dialog-header:not(.files-ng) #view-button.thumbnail > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/view_thumbnail_white.png) 1x,
-      url(../images/files/ui/2x/view_thumbnail_white.png) 2x);
-}
-
 .dialog-header.files-ng #view-button.thumbnail > .icon {
   -webkit-mask-image: url(../images/files/ui/view_thumbnail.svg);
 }
 
 body.check-select #view-button.thumbnail {
   display: none;
-}
-
-.dialog-header:not(.files-ng) #sort-button > .icon {
-  background-image: url(../images/files/ui/sorting_white.svg);
 }
 
 .dialog-header.files-ng #sort-button > .icon {
@@ -878,12 +818,6 @@ body.check-select #sort-button {
   display: none;
 }
 
-.dialog-header:not(.files-ng) #gear-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/menu_white.png) 1x,
-      url(../images/files/ui/2x/menu_white.png) 2x);
-}
-
 .dialog-header.files-ng #gear-button > .icon {
   -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
   height: 48px;
@@ -893,13 +827,8 @@ body.check-select #sort-button {
   position: absolute;
   width: 48px;
 }
-
 body.check-select #gear-button {
   display: none;
-}
-
-.dialog-header:not(.files-ng) #selection-menu-button > .icon {
-  background-image: url(../images/files/ui/menu.svg);
 }
 
 .dialog-header.files-ng #selection-menu-button > .icon {
@@ -1110,18 +1039,6 @@ body.files-ng #cancel-selection-button > span#cancel-selection-label {
   display: none;
 }
 
-body:not(.files-ng) #cancel-selection-button .icon-arrow-back {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/back.png) 1x,
-      url(../images/files/ui/2x/back.png) 2x);
-  background-position: center;
-  background-repeat: no-repeat;
-  flex: none;
-  height: 16px;
-  margin-inline-end: 8px;
-  width: 16px;
-}
-
 body.files-ng #cancel-selection-button .icon-arrow-back {
   -webkit-mask-image: url(../images/files/ui/list_check.svg);
   -webkit-mask-position: center;
@@ -1224,16 +1141,6 @@ body.check-select #search-box {
   position: absolute;
   right: 0;
   visibility: hidden;
-}
-
-.dialog-header:not(.files-ng) #search-box .clear {
-  background: -webkit-image-set(
-      url(../images/files/ui/search_clear.png) 1x,
-      url(../images/files/ui/2x/search_clear.png) 2x)
-      no-repeat center;
-  border: 0;
-  height: 16px;
-  width: 16px;
 }
 
 .dialog-header.files-ng #search-box .clear {
@@ -1688,21 +1595,10 @@ body.check-select #read-only-indicator {
   display: none;
 }
 
-#read-only-icon {
-  background-image: url(../images/files/ui/visibility_white.svg);
-  flex: none;
-  margin-inline-end: 8px;
-}
-
-.dialog-header:not(.files-ng) #read-only-icon {
-  background-image: url(../images/files/ui/visibility_white.svg);
-  height: 16px;
-  width: 16px;
-}
-
 .dialog-header.files-ng #read-only-icon {
   -webkit-mask-image: url(../images/files/ui/visibility_ng.svg);
   height: 20px;
+  margin-inline-end: 8px;
   width: 20px;
 }
 
@@ -1822,17 +1718,6 @@ body.files-ng .volume-warning a:link {
   color: var(--google-blue-600);
 }
 
-body:not(.files-ng) .downloads-warning .warning-icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/warning_white.png) 1x,
-      url(../images/files/ui/2x/warning_white.png) 2x);
-  background-size: 16px 16px;
-  flex: none;
-  height: 16px;
-  margin: 0 14px;
-  width: 16px;
-}
-
 body.files-ng .downloads-warning .warning-icon {
   -webkit-mask-image: url(../images/files/ui/warning.svg);
   background-color: var(--google-grey-700);
@@ -1923,18 +1808,6 @@ body.files-ng .volume-warning[hidden] {
   visibility: hidden;
 }
 
-body:not(.files-ng) .volume-warning .drive-icon {
-  background: white -webkit-image-set(
-      url(../images/files/ui/drive_logo.png) 1x,
-      url(../images/files/ui/2x/drive_logo.png) 2x) no-repeat center;
-  background-size: 29px 29px;
-  border-radius: 2px;
-  flex: none;
-  height: 36px;
-  margin: 0 14px;
-  width: 36px;
-}
-
 body.files-ng .volume-warning .drive-icon {
   background: white url(../images/files/ui/drive_logo.svg) no-repeat center;
   background-size: 20px 20px;
@@ -1991,19 +1864,6 @@ body.files-ng .volume-warning .info-icon {
   width: 20px;
 }
 
-body:not(.files-ng) .banner-close {
-  background: -webkit-image-set(
-      url(../images/files/ui/close_button_white.png) 1x,
-      url(../images/files/ui/2x/close_button_white.png) 2x) no-repeat center;
-  border: 0;
-  cursor: pointer;
-  display: inline-block;
-  height: 40px;
-  position: absolute;
-  top: 12px;
-  width: 40px;
-}
-
 body.files-ng .banner-close {
   border: 0;
   height: 32px;
@@ -2019,14 +1879,6 @@ html[dir='ltr'] body:not(.files-ng) .banner-close {
 
 html[dir='rtl'] body:not(.files-ng) .banner-close {
   left: 0;
-}
-
-body:not(.files-ng) .banner-cloud-bg {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/drive_banner_clouds.png) 1x,
-      url(../images/files/ui/2x/drive_banner_clouds.png) 2x);
-  background-position: bottom left;
-  background-repeat: repeat-x;
 }
 
 /* The cr.ui.Grid representing the detailed file list. */
@@ -2180,18 +2032,6 @@ body.files-ng grid .thumbnail-bottom .detail-icon:active {
   top: 2px;
   transition: opacity 220ms ease;
   width: 36px;
-}
-
-.thumbnail-grid .checkmark.inactive {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/grid_image_check.png) 1x,
-      url(../images/files/ui/2x/grid_image_check.png) 2x);
-}
-
-.thumbnail-grid .checkmark.active {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/grid_image_check_active.png) 1x,
-      url(../images/files/ui/2x/grid_image_check_active.png) 2x);
 }
 
 body.selecting .thumbnail-grid .checkmark.inactive,
@@ -2620,17 +2460,6 @@ li[renaming=''] .badge {
 }
 
 /* Table splitter element */
-.table-header-splitter {
-  background-image: -webkit-image-set(
-    url(../images/files/ui/vertical_separator.png) 1x,
-    url(../images/files/ui/2x/vertical_separator.png) 2x);
-  background-position: center;
-  background-repeat: repeat-y;
-  height: 40px;
-  top: 0;
-  width: 5px;
-}
-
 .table-header-splitter:last-child {
   display: none;
 }
@@ -2641,32 +2470,6 @@ li[renaming=''] .badge {
   box-sizing: border-box;
   flex: none;
   height: 40px;
-}
-
-.table-header-sort-image-desc::after {
-  background-image: -webkit-image-set(
-    url(../images/files/ui/sort_desc.png) 1x,
-    url(../images/files/ui/2x/sort_desc.png) 2x);
-  background-position: center center;
-  background-repeat: no-repeat;
-  color: #888;
-  content: ' ';
-  padding-inline-start: 13px;
-  position: relative;
-  top: 1px;
-}
-
-.table-header-sort-image-asc::after {
-  background-image: -webkit-image-set(
-    url(../images/files/ui/sort_asc.png) 1x,
-    url(../images/files/ui/2x/sort_asc.png) 2x);
-  background-position: center center;
-  background-repeat: no-repeat;
-  color: #888;
-  content: ' ';
-  padding-inline-start: 13px;
-  position: relative;
-  top: -1px;
 }
 
 /* Text label in a table header. */
@@ -2741,18 +2544,6 @@ body.files-ng #list-container list li .detail-icon {
   position: absolute;
   transition: opacity 220ms ease;
   width: 28px;
-}
-
-#list-container list li .detail-checkmark {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/list_check.png) 1x,
-      url(../images/files/ui/2x/list_check.png) 2x);
-}
-
-#list-container grid li .detail-checkmark {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/grid_folder_check.png) 1x,
-      url(../images/files/ui/2x/grid_folder_check.png) 2x);
 }
 
 body.check-select #list-container li[selected] .detail-checkmark {
@@ -3078,35 +2869,8 @@ body[drive='error'] #unmounted-panel > .error,
   position: relative;
 }
 
-#empty-folder {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: center;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-
-#empty-folder > .image {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/empty_folder.png) 1x,
-      url(../images/files/ui/2x/empty_folder.png) 2x);
-  height: 145px;
-  margin: 50px auto 32px auto;
-  width: 120px;
-}
-
 body.files-ng #empty-folder {
   display: none;
-}
-
-#empty-folder > .label {
-  color: rgb(180, 180, 180);
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
 }
 
 #volume-space-info-contents {

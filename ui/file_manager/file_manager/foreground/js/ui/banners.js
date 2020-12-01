@@ -266,11 +266,6 @@ class Banners extends cr.EventTarget {
     const wrapper = util.createChild(container, 'drive-welcome-wrapper');
     util.createChild(wrapper, 'drive-welcome-icon');
 
-    if (type === 'header' && !util.isFilesNg()) {
-      util.createChild(wrapper, 'banner-cloud-bg');
-      util.createChild(wrapper, 'banner-people');
-    }
-
     let close, links;
     if (util.isFilesNg()) {
       const message = util.createChild(wrapper, 'drive-welcome-message');
