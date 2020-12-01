@@ -64,6 +64,8 @@ crbug.com/700522 [ win ] GpuProcess_one_extra_workaround [ RetryOnFailure ]
 # Recently flaking badly on Android and macOS.
 crbug.com/1154088 [ mac ] GpuProcess_one_extra_workaround [ Skip ]
 crbug.com/1154088 [ android ] GpuProcess_one_extra_workaround [ Skip ]
+crbug.com/1154088 [ mac ] GpuProcess_disabling_workarounds_works [ Skip ]
+crbug.com/1154088 [ android ] GpuProcess_disabling_workarounds_works [ Skip ]
 
 crbug.com/1028974 [ linux ] GpuProcess_feature_status_under_swiftshader [ RetryOnFailure ]
 
