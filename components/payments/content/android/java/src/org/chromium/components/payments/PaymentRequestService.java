@@ -749,23 +749,11 @@ public class PaymentRequestService
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
         if (mIsShowCalled) {
-            PaymentNotShownError notShownError = ensureHasSupportedPaymentMethods();
+            PaymentNotShownError notShownError = onShowCalledAndAppsQueried();
             if (notShownError != null) {
                 onShowFailed(notShownError);
                 return;
             }
-            String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
-                    mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
-            if (error != null) {
-                onShowFailed(error);
-                return;
-            }
-        }
-
-        String error = triggerPaymentAppUiSkipIfApplicable();
-        if (error != null) {
-            onShowFailed(error);
-            return;
         }
 
         if (mIsCanMakePaymentResponsePending) {
@@ -775,6 +763,33 @@ public class PaymentRequestService
         if (mIsHasEnrolledInstrumentResponsePending) {
             respondHasEnrolledInstrumentQuery();
         }
+    }
+
+    @Nullable
+    private PaymentNotShownError onShowCalledAndAppsQueried() {
+        assert mIsShowCalled;
+        assert mIsFinishedQueryingPaymentApps;
+        assert mBrowserPaymentRequest != null;
+
+        PaymentNotShownError ensureError = ensureHasSupportedPaymentMethods();
+        if (ensureError != null) return ensureError;
+
+        String showError = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
+                mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
+        if (showError != null) {
+            return new PaymentNotShownError(
+                    NotShownReason.OTHER, showError, PaymentErrorReason.NOT_SUPPORTED);
+        }
+
+        if (mIsShowWaitingForUpdatedDetails) return null;
+        String error = mBrowserPaymentRequest.onShowCalledAndAppsQueriedAndDetailsFinalized(
+                mIsUserGestureShow);
+        if (error != null) {
+            return new PaymentNotShownError(
+                    NotShownReason.OTHER, error, PaymentErrorReason.NOT_SUPPORTED);
+        }
+
+        return null;
     }
 
     private void onShowFailed(String error) {
@@ -1035,34 +1050,12 @@ public class PaymentRequestService
         mJourneyLogger.setTriggerTime();
 
         if (mIsFinishedQueryingPaymentApps) {
-            PaymentNotShownError notShownError = ensureHasSupportedPaymentMethods();
+            PaymentNotShownError notShownError = onShowCalledAndAppsQueried();
             if (notShownError != null) {
                 onShowFailed(notShownError);
                 return;
             }
-            String error = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
-                    mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
-            if (error != null) {
-                onShowFailed(error);
-                return;
-            }
         }
-
-        String error = triggerPaymentAppUiSkipIfApplicable();
-        if (error != null) {
-            onShowFailed(error);
-            return;
-        }
-    }
-
-    // Return the error if failed, null if success.
-    @Nullable
-    private String triggerPaymentAppUiSkipIfApplicable() {
-        if (mHasClosed || !mIsFinishedQueryingPaymentApps || !mIsShowCalled
-                || mIsShowWaitingForUpdatedDetails) {
-            return null;
-        }
-        return mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable(mIsUserGestureShow);
     }
 
     /**
@@ -1158,6 +1151,7 @@ public class PaymentRequestService
 
     private String continueShow(@Nullable PaymentDetails details) {
         assert mIsShowWaitingForUpdatedDetails;
+        assert mBrowserPaymentRequest != null;
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
@@ -1173,7 +1167,10 @@ public class PaymentRequestService
         mIsShowWaitingForUpdatedDetails = false;
         String error = mBrowserPaymentRequest.continueShow(mIsFinishedQueryingPaymentApps);
         if (error != null) return error;
-        return triggerPaymentAppUiSkipIfApplicable();
+
+        if (!mIsFinishedQueryingPaymentApps) return null;
+        return mBrowserPaymentRequest.onShowCalledAndAppsQueriedAndDetailsFinalized(
+                mIsUserGestureShow);
     }
 
     /**

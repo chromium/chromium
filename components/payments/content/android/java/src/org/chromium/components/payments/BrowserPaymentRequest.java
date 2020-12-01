@@ -143,13 +143,13 @@ public interface BrowserPaymentRequest {
     void notifyPaymentUiOfPendingApps(List<PaymentApp> pendingApps);
 
     /**
-     * Skips the app selector UI whether it is currently opened or not, and if applicable, invokes a
-     * payment app.
+     * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps
+     * are all queried, and (3) PaymentDetails is finalized.
      * @return The error if it fails; null otherwise.
      * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      */
     @Nullable
-    default String triggerPaymentAppUiSkipIfApplicable(boolean isUserGestureShow) {
+    default String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
         return null;
     }
 

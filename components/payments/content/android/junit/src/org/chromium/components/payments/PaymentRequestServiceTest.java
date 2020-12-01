@@ -540,10 +540,10 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service = defaultBuilder().build();
         show(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
     }
 
     @Test
@@ -552,13 +552,28 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service = defaultBuilder().build();
         service.show(mIsUserGestureDefaultValue, true);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
-        service.updateWith(getDefaultPaymentDetailsUpdate());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+        updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .triggerPaymentAppUiSkipIfApplicable(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testQueryFinishCanTriggerUiSkipped() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.show(mIsUserGestureDefaultValue, true);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+        updateWith(service);
+        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+        queryPaymentApps();
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
+                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
     }
 
     @Test
