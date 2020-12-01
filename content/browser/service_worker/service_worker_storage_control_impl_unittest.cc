@@ -1447,7 +1447,14 @@ TEST_F(ServiceWorkerStorageControlImplTest, ApplyPolicyUpdates) {
   std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> updates;
   updates.push_back(storage::mojom::LocalStoragePolicyUpdate::New(
       url::Origin::Create(kScope2.GetOrigin()), /*purge_on_shutdown=*/true));
-  storage()->ApplyPolicyUpdates(std::move(updates));
+  base::RunLoop loop;
+  storage()->ApplyPolicyUpdates(
+      std::move(updates),
+      base::BindLambdaForTesting([&](DatabaseStatus status) {
+        EXPECT_EQ(status, DatabaseStatus::kOk);
+        loop.Quit();
+      }));
+  loop.Run();
 
   // Restart the storage and check the registration for |kScope1| exists
   // but not for |kScope2|.

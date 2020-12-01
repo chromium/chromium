@@ -253,6 +253,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
  private:
   friend class ServiceWorkerRegistryTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, StoragePolicyChange);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest,
+                           RetryInflightCalls_ApplyPolicyUpdates);
 
   void Start();
 
@@ -385,6 +387,9 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
                                const std::vector<url::Origin>& origins);
   void DidPerformStorageCleanup(base::OnceClosure callback, uint64_t call_id);
   void DidDisable(uint64_t call_id);
+  void DidApplyPolicyUpdates(
+      uint64_t call_id,
+      storage::mojom::ServiceWorkerDatabaseStatus status);
 
   // TODO(bashi): Consider introducing a helper class that handles the below.
   // These are almost the same as DOMStorageContextWrapper.
@@ -410,9 +415,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // represent a mojo remote call of which parameters are copyable.
   class InflightCallWithInvoker;
 
-  // An InflightCall implementation for StoreRegistration(). This specialization
-  // is needed to hold move-only parameters and clone them for retry.
+  // InflightCall implementations that need to clone move-only parameters before
+  // invoking mojo method calls.
+  //
+  // For StoreRegistration():
   class InflightCallStoreRegistration;
+  // For ApplyPolicyUpdates():
+  class InflightCallApplyPolicyUpdates;
 
   uint64_t GetNextCallId();
   void StartRemoteCall(uint64_t call_id, std::unique_ptr<InflightCall> call);

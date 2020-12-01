@@ -288,7 +288,8 @@ interface ServiceWorkerStorageControl {
 
   // Applies changes to data retention policy which are relevant at shutdown.
   // This is analogous to LocalStorageControl::ApplyPolicyUpdates.
-  ApplyPolicyUpdates(array<LocalStoragePolicyUpdate> policy_updates);
+  ApplyPolicyUpdates(array<LocalStoragePolicyUpdate> policy_updates) =>
+      (ServiceWorkerDatabaseStatus status);
 
   // Get resource ids which are scheduled to purge.
   GetPurgingResourceIdsForTest() => (ServiceWorkerDatabaseStatus status,

@@ -369,8 +369,9 @@ void ServiceWorkerStorageControlImpl::PerformStorageCleanup(
 
 void ServiceWorkerStorageControlImpl::ApplyPolicyUpdates(
     const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
-        policy_updates) {
-  storage_->ApplyPolicyUpdates(std::move(policy_updates));
+        policy_updates,
+    ApplyPolicyUpdatesCallback callback) {
+  storage_->ApplyPolicyUpdates(std::move(policy_updates), std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::GetPurgingResourceIdsForTest(

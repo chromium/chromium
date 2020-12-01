@@ -1189,7 +1189,29 @@ void ServiceWorkerStorage::PurgeResources(
 
 void ServiceWorkerStorage::ApplyPolicyUpdates(
     const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>&
-        policy_updates) {
+        policy_updates,
+    DatabaseStatusCallback callback) {
+  switch (state_) {
+    case STORAGE_STATE_DISABLED:
+      std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorDisabled);
+      return;
+    case STORAGE_STATE_INITIALIZING:
+    case STORAGE_STATE_UNINITIALIZED: {
+      // An explicit clone is needed to pass `policy_updates` to LazyInitialize.
+      std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
+          cloned_policy_updates;
+      for (const auto& entry : policy_updates)
+        cloned_policy_updates.push_back(entry.Clone());
+
+      LazyInitialize(base::BindOnce(
+          &ServiceWorkerStorage::ApplyPolicyUpdates, weak_factory_.GetWeakPtr(),
+          std::move(cloned_policy_updates), std::move(callback)));
+      return;
+    }
+    case STORAGE_STATE_INITIALIZED:
+      break;
+  }
+
   for (const auto& update : policy_updates) {
     GURL url = update->origin.GetURL();
     if (!update->purge_on_shutdown)
@@ -1197,6 +1219,8 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
     else
       origins_to_purge_on_shutdown_.insert(std::move(url));
   }
+
+  std::move(callback).Run(ServiceWorkerDatabase::Status::kOk);
 }
 
 ServiceWorkerStorage::ServiceWorkerStorage(

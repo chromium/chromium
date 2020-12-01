@@ -128,6 +128,36 @@ class ServiceWorkerRegistry::InflightCallStoreRegistration
       callback_;
 };
 
+class ServiceWorkerRegistry::InflightCallApplyPolicyUpdates
+    : public ServiceWorkerRegistry::InflightCall {
+ public:
+  InflightCallApplyPolicyUpdates(
+      std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> policy_updates,
+      base::RepeatingCallback<
+          void(storage::mojom::ServiceWorkerDatabaseStatus status)> callback)
+      : policy_updates_(std::move(policy_updates)),
+        callback_(std::move(callback)) {}
+  ~InflightCallApplyPolicyUpdates() override = default;
+
+  void Run(ServiceWorkerRegistry* registry) override {
+    DCHECK(registry);
+    DCHECK(registry->GetRemoteStorageControl().is_connected());
+    std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
+        passed_policy_updates;
+    for (const auto& entry : policy_updates_)
+      passed_policy_updates.push_back(entry.Clone());
+
+    registry->GetRemoteStorageControl()->ApplyPolicyUpdates(
+        std::move(passed_policy_updates), callback_);
+  }
+
+ private:
+  std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> policy_updates_;
+  base::RepeatingCallback<void(
+      storage::mojom::ServiceWorkerDatabaseStatus status)>
+      callback_;
+};
+
 // A helper class that runs on the IO thread to observe storage policy updates.
 class ServiceWorkerRegistry::StoragePolicyObserver
     : public storage::SpecialStoragePolicy::Observer {
@@ -1407,6 +1437,13 @@ void ServiceWorkerRegistry::DidDisable(uint64_t call_id) {
   FinishRemoteCall(call_id);
 }
 
+void ServiceWorkerRegistry::DidApplyPolicyUpdates(
+    uint64_t call_id,
+    storage::mojom::ServiceWorkerDatabaseStatus status) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  FinishRemoteCall(call_id);
+}
+
 void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(
     const std::vector<url::Origin>& origins) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
@@ -1440,8 +1477,14 @@ void ServiceWorkerRegistry::OnStoragePolicyChanged() {
     }
   }
 
-  if (!policy_updates.empty())
-    GetRemoteStorageControl()->ApplyPolicyUpdates(std::move(policy_updates));
+  if (!policy_updates.empty()) {
+    uint64_t call_id = GetNextCallId();
+    auto call = std::make_unique<InflightCallApplyPolicyUpdates>(
+        std::move(policy_updates),
+        base::BindRepeating(&ServiceWorkerRegistry::DidApplyPolicyUpdates,
+                            weak_factory_.GetWeakPtr(), call_id));
+    StartRemoteCall(call_id, std::move(call));
+  }
 }
 
 bool ServiceWorkerRegistry::ShouldPurgeOnShutdown(const url::Origin& origin) {

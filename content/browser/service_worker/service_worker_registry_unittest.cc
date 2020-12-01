@@ -1642,6 +1642,37 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_Disable) {
       kExpectedRetryCountForRecovery, kExpectedSampleCount);
 }
 
+// Similar to `StoragePolicyChange` test but restart the remote storage to make
+// sure ApplyPolicyUpdates() is retried.
+TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
+  EnsureRemoteCallsAreExecuted();
+
+  const GURL kScope("http://www.example.com/scope/");
+  const GURL kScriptUrl("http://www.example.com/script.js");
+  const auto kOrigin(url::Origin::Create(kScope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScriptUrl,
+                                                /*resource_id=*/1);
+
+  ASSERT_EQ(StoreRegistration(registration, registration->waiting_version()),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_FALSE(registry()->ShouldPurgeOnShutdown(kOrigin));
+
+  // Update storage policy to mark the origin should be purged on shutdown.
+  EXPECT_EQ(inflight_call_count(), 0U);
+  special_storage_policy()->AddSessionOnly(kOrigin.GetURL());
+  special_storage_policy()->NotifyPolicyChanged();
+  EXPECT_EQ(inflight_call_count(), 1U);
+
+  registry()->SimulateStorageRestartForTesting();
+
+  EnsureRemoteCallsAreExecuted();
+  EXPECT_EQ(inflight_call_count(), 0U);
+
+  EXPECT_TRUE(registry()->ShouldPurgeOnShutdown(kOrigin));
+}
+
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
  public:
   ServiceWorkerRegistryOriginTrialsTest() {

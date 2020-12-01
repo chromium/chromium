@@ -284,7 +284,8 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   // Applies |policy_updates|.
   void ApplyPolicyUpdates(
       const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>&
-          policy_updates);
+          policy_updates,
+      DatabaseStatusCallback callback);
 
   void LazyInitializeForTest();
 
