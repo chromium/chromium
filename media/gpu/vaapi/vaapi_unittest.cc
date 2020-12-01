@@ -306,7 +306,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       // number (it could ignore it), so instead just make sure there's a
       // |pending_va_buffers_| that, when mapped, looks correct. That buffer
       // should be created by CreateContext().
-      ASSERT_TRUE(wrapper->CreateContext(gfx::Size(64, 64)));
+      ASSERT_TRUE(wrapper->CreateContext(gfx::Size(128, 128)));
       ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
       {
         base::AutoLock auto_lock(*wrapper->va_lock_);
