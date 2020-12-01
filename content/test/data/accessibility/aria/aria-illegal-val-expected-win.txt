@@ -8,7 +8,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION name='Dropeffect illegal' dropeffect:none
 ++ROLE_SYSTEM_OUTLINEITEM name='Expanded illegal' EXPANDED
 ++IA2_ROLE_SECTION name='Grabbed illegal'
-++ROLE_SYSTEM_BUTTONMENU name='Haspopup illegal' HASPOPUP haspopup:menu
+++ROLE_SYSTEM_PUSHBUTTON name='Haspopup illegal'
 ++IA2_ROLE_SECTION name='Invalid illegal' IA2_STATE_INVALID_ENTRY
 ++ROLE_SYSTEM_GROUPING name='Live illegal' live:X-ILLEGAL relevant:additions text atomic:false
 ++ROLE_SYSTEM_DIALOG name='Modal illegal' IA2_STATE_MODAL

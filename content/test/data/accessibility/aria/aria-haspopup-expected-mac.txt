@@ -5,6 +5,6 @@ AXWebArea
 ++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'
 ++AXPopUpButton AXHasPopup=1 AXPopupValue='grid'
 ++AXPopUpButton AXHasPopup=1 AXPopupValue='dialog'
-++AXPopUpButton AXHasPopup=1 AXPopupValue='menu'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'
 ++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'
 ++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'

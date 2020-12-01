@@ -13,3 +13,11 @@
 ++[push button] name='Complex pop up button ' haspopup:menu xml-roles:button
 ++++[static] name='Complex pop up button '
 ++++[entry] selectable-text
+++[push button] name='Example haspopup' haspopup:menu xml-roles:button
+++[push button] name='Example haspopup' haspopup:menu xml-roles:button
+++[push button] name='Example haspopup' haspopup:listbox xml-roles:button
+++[push button] name='Example haspopup' haspopup:tree xml-roles:button
+++[push button] name='Example haspopup' haspopup:grid xml-roles:button
+++[push button] name='Example haspopup' haspopup:dialog xml-roles:button
+++[push button] name='Example haspopup' xml-roles:button
+++[push button] name='Example haspopup' xml-roles:button

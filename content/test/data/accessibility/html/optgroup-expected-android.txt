@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.widget.Spinner role_description='pop up button' clickable focusable
+++++android.view.View role_description='menu pop up button' clickable focusable
 ++++++android.view.View invisible
 ++++++++android.view.View clickable focusable invisible name='One'
 ++++++++android.view.View clickable focusable invisible name='Two' item_index=1 row_index=1

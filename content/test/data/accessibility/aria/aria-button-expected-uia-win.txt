@@ -13,3 +13,11 @@ Document
 ++Button Name='Complex pop up button ' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++++Text Name='Complex pop up button '
 ++++Edit
+++Button Name='Example haspopup' ExpandCollapse.ExpandCollapseState='Collapsed'
+++Button Name='Example haspopup' ExpandCollapse.ExpandCollapseState='Collapsed'
+++Button Name='Example haspopup' ExpandCollapse.ExpandCollapseState='LeafNode'
+++Button Name='Example haspopup' ExpandCollapse.ExpandCollapseState='LeafNode'
+++Button Name='Example haspopup' ExpandCollapse.ExpandCollapseState='LeafNode'
+++Button Name='Example haspopup' ExpandCollapse.ExpandCollapseState='LeafNode'
+++Button Name='Example haspopup'
+++Button Name='Example haspopup'

@@ -5,6 +5,6 @@
 ++[combo box] haspopup:listbox
 ++[combo box] haspopup:grid
 ++[combo box] haspopup:dialog
-++[combo box] haspopup:menu
+++[combo box] haspopup:listbox
 ++[combo box] haspopup:listbox
 ++[combo box] haspopup:listbox

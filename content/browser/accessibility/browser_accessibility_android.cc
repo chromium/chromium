@@ -943,6 +943,26 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
       break;
   }
 
+  // For pop up buttons, we want to return property value specific roles.
+  if (GetRole() == ax::mojom::Role::kPopUpButton) {
+    switch (static_cast<ax::mojom::HasPopup>(
+        GetIntAttribute(ax::mojom::IntAttribute::kHasPopup))) {
+      case ax::mojom::HasPopup::kTrue:
+      case ax::mojom::HasPopup::kMenu:
+        return content_client->GetLocalizedString(
+            IDS_AX_ROLE_POP_UP_BUTTON_MENU);
+      case ax::mojom::HasPopup::kDialog:
+        return content_client->GetLocalizedString(
+            IDS_AX_ROLE_POP_UP_BUTTON_DIALOG);
+      case ax::mojom::HasPopup::kListbox:
+      case ax::mojom::HasPopup::kTree:
+      case ax::mojom::HasPopup::kGrid:
+        return content_client->GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
+      case ax::mojom::HasPopup::kFalse:
+        break;
+    }
+  }
+
   int message_id = -1;
   switch (GetRole()) {
     case ax::mojom::Role::kAbbr:
@@ -1358,7 +1378,8 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
       message_id = IDS_AX_ROLE_EMBEDDED_OBJECT;
       break;
     case ax::mojom::Role::kPopUpButton:
-      message_id = IDS_AX_ROLE_POP_UP_BUTTON;
+      // Note that pop up buttons are handled before this switch
+      NOTREACHED();
       break;
     case ax::mojom::Role::kPortal:
       message_id = IDS_AX_ROLE_BUTTON;

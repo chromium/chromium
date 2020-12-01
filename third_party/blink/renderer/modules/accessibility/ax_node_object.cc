@@ -2514,9 +2514,8 @@ ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
     // To provide backward compatibility with ARIA 1.0 content,
     // user agents MUST treat an aria-haspopup value of true
     // as equivalent to a value of menu.
-    // And unknown value also return menu too.
     if (EqualIgnoringASCIICase(has_popup, "true") ||
-        EqualIgnoringASCIICase(has_popup, "menu") || !has_popup.IsEmpty())
+        EqualIgnoringASCIICase(has_popup, "menu"))
       return ax::mojom::blink::HasPopup::kMenu;
   }
 

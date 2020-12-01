@@ -10,7 +10,7 @@ rootWebArea
 ++++++genericContainer name='Dropeffect illegal' dropeffect=none
 ++++++treeItem expanded name='Expanded illegal'
 ++++++genericContainer name='Grabbed illegal'
-++++++popUpButton name='Haspopup illegal' haspopup=menu
+++++++button name='Haspopup illegal'
 ++++++genericContainer ariaInvalidValue='X-ILLEGAL' name='Invalid illegal' invalidState=other
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='X-ILLEGAL' name='Live illegal' liveRelevant='additions text' liveStatus='X-ILLEGAL' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
 ++++++dialog name='Modal illegal' modal=true

@@ -8,7 +8,7 @@
 ++[section] name='Dropeffect illegal' dropeffect:none
 ++[tree item] name='Expanded illegal' expanded
 ++[section] name='Grabbed illegal'
-++[push button] name='Haspopup illegal' haspopup:menu
+++[push button] name='Haspopup illegal'
 ++[section] name='Invalid illegal' invalid-entry
 ++[log] name='Live illegal' atomic:false live:X-ILLEGAL relevant:additions text
 ++[dialog] name='Modal illegal' modal

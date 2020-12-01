@@ -25,3 +25,15 @@ rootWebArea
 ++++++++++inlineTextBox name='Complex pop up button '
 ++++++++textField
 ++++++++++genericContainer
+++++++popUpButton name='Example haspopup' haspopup=menu
+++++++popUpButton name='Example haspopup' haspopup=menu
+++++++popUpButton name='Example haspopup' haspopup=listbox
+++++++popUpButton name='Example haspopup' haspopup=tree
+++++++popUpButton name='Example haspopup' haspopup=grid
+++++++popUpButton name='Example haspopup' haspopup=dialog
+++++++button name='Example haspopup'
+++++++++staticText name='Example haspopup'
+++++++++++inlineTextBox name='Example haspopup'
+++++++button name='Example haspopup'
+++++++++staticText name='Example haspopup'
+++++++++++inlineTextBox name='Example haspopup'
