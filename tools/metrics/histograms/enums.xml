@@ -42090,6 +42090,7 @@ from previous Chrome versions.
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
   <int value="-1743079191" label="SyncPseudoUSSPriorityPreferences:enabled"/>
   <int value="-1742376665" label="SyncPseudoUSSPasswords:disabled"/>
+  <int value="-1741061558" label="AndroidLayoutChangeTabReparenting:enabled"/>
   <int value="-1740519217" label="disable-software-rasterizer"/>
   <int value="-1740093155" label="UnifiedMediaView:disabled"/>
   <int value="-1738416948" label="OptimizationHints:enabled"/>
@@ -44549,6 +44550,7 @@ from previous Chrome versions.
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>
   <int value="623772100" label="EnableIncognitoWindowCounter:disabled"/>
+  <int value="623796513" label="AndroidLayoutChangeTabReparenting:disabled"/>
   <int value="624317932" label="print-pdf-as-image"/>
   <int value="624368375" label="OmniboxEntitySuggestions:enabled"/>
   <int value="625273056" label="disable-boot-animation"/>

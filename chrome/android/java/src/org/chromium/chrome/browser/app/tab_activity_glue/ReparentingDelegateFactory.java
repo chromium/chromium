@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.night_mode.NightModeReparentingController;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -40,18 +38,12 @@ public class ReparentingDelegateFactory {
     }
 
     /**
-     * @return Creates an implementation of {@link NightModeReparentingController.Delegate} that
-     *         supplies dependencies to {@link NightModeReparentingController}.
+     * @return Creates an implementation of {@link TabReparentingController.Delegate} that
+     *         supplies dependencies to {@link TabReparentingController}.
      */
-    public static NightModeReparentingController.Delegate
-    createNightModeReparentingControllerDelegate(final ActivityTabProvider activityTabProvider,
+    public static TabReparentingController.Delegate createReparentingControllerDelegate(
             final TabModelSelector tabModelSelector) {
-        return new NightModeReparentingController.Delegate() {
-            @Override
-            public ActivityTabProvider getActivityTabProvider() {
-                return activityTabProvider;
-            }
-
+        return new TabReparentingController.Delegate() {
             @Override
             public TabModelSelector getTabModelSelector() {
                 return tabModelSelector;

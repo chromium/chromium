@@ -634,18 +634,6 @@ public class LocationBarLayoutTest {
         });
     }
 
-    /** Test NPE when focus callback triggers after LocationBarLayout is destroyed. */
-    @Test
-    @MediumTest
-    @Feature("Omnibox")
-    public void testAutocompleteCoordinatorNpeWhenFocusedAfterDestroy() {
-        LocationBarLayout locationBar = getLocationBar();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            locationBar.destroy();
-            locationBar.onUrlFocusChange(false);
-        });
-    }
-
     @Test
     @MediumTest
     public void testUpdateLayoutParams() {

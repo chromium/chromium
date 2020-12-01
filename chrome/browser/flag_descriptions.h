@@ -1507,6 +1507,9 @@ extern const char kAndroidDefaultBrowserPromoDescription[];
 extern const char kAndroidDetailedLanguageSettingsName[];
 extern const char kAndroidDetailedLanguageSettingsDescription[];
 
+extern const char kAndroidLayoutChangeTabReparentingName[];
+extern const char kAndroidLayoutChangeTabReparentingDescription[];
+
 extern const char kAndroidManagedByMenuItemName[];
 extern const char kAndroidManagedByMenuItemDescription[];
 

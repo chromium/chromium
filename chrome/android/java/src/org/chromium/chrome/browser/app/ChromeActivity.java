@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
+import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -114,7 +115,6 @@ import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.NightModeReparentingController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorController;
@@ -286,9 +286,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // Timestamp in ms when initial layout inflation ends
     private long mInflateInitialLayoutEndMs;
 
-    private int mUiMode;
-    private int mDensityDpi;
-
     private final ManualFillingComponent mManualFillingComponent =
             ManualFillingComponentFactory.createComponent();
 
@@ -311,6 +308,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private Bundle mMenuItemData;
 
     /**
+     * The current configuration, used to for diffing when the configuration is changed.
+     */
+    private Configuration mConfig;
+
+    /**
+     * Control the tab-reparenting tasks.
+     */
+    private TabReparentingController mTabReparentingController;
+
+    /**
      * The RootUiCoordinator associated with the activity. This variable is held to facilitate
      * testing.
      * TODO(pnoland, https://crbug.com/865801): make this private again.
@@ -323,9 +330,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // TODO(972867): Pull MenuOrKeyboardActionController out of ChromeActivity.
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
             new ArrayList<>();
-
-    /** Controls tab reparenting for night mode. */
-    NightModeReparentingController mNightModeReparentingController;
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
@@ -1150,9 +1154,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
         if (mCompositorViewHolder != null) mCompositorViewHolder.onStart();
 
-        Configuration config = getResources().getConfiguration();
-        mUiMode = config.uiMode;
-        mDensityDpi = config.densityDpi;
+        mConfig = getResources().getConfiguration();
         mStarted = true;
     }
 
@@ -1393,10 +1395,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 findViewById(R.id.keyboard_accessory_stub),
                 findViewById(R.id.keyboard_accessory_sheet_stub));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NIGHT_MODE_TAB_REPARENTING)) {
-            mNightModeReparentingController = new NightModeReparentingController(
-                    ReparentingDelegateFactory.createNightModeReparentingControllerDelegate(
-                            getActivityTabProvider(), getTabModelSelector()),
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NIGHT_MODE_TAB_REPARENTING)
+                || ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)) {
+            mTabReparentingController = new TabReparentingController(
+                    ReparentingDelegateFactory.createReparentingControllerDelegate(
+                            getTabModelSelector()),
                     AsyncTabParamsManagerSingleton.getInstance());
         }
     }
@@ -1786,27 +1790,31 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)
+                && didChangeTabletMode()) {
+            onScreenLayoutSizeChange();
+            return;
+        }
 
         // We only handle VR UI mode and UI mode night changes. Any other changes should follow the
         // default behavior of recreating the activity. Note that if UI mode night changes, with or
         // without other changes, we will still recreate() until we get a callback from the
         // ChromeBaseAppCompatActivity#onNightModeStateChanged or the overridden method in
         // sub-classes if necessary.
-        if (didChangeNonVrUiMode(mUiMode, newConfig.uiMode)
-                && !didChangeUiModeNight(mUiMode, newConfig.uiMode)) {
+        if (didChangeNonVrUiMode(mConfig.uiMode, newConfig.uiMode)
+                && !didChangeUiModeNight(mConfig.uiMode, newConfig.uiMode)) {
             recreate();
             return;
         }
-        mUiMode = newConfig.uiMode;
 
-        if (newConfig.densityDpi != mDensityDpi) {
+        if (newConfig.densityDpi != mConfig.densityDpi) {
             if (!VrModuleProvider.getDelegate().onDensityChanged(
-                        mDensityDpi, newConfig.densityDpi)) {
+                        mConfig.densityDpi, newConfig.densityDpi)) {
                 recreate();
                 return;
             }
-            mDensityDpi = newConfig.densityDpi;
         }
+        mConfig = newConfig;
     }
 
     private static boolean didChangeNonVrUiMode(int oldMode, int newMode) {
@@ -2314,7 +2322,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      *         the resumed state).
      */
     public float getLastActiveDensity() {
-        return mDensityDpi;
+        return mConfig.densityDpi;
     }
 
     /**
@@ -2346,15 +2354,41 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Note: order matters here because the call to super will recreate the activity.
         // Note: it's possible for this method to be called before mNightModeReparentingController
         // is constructed.
-        if (mNightModeReparentingController != null) {
-            mNightModeReparentingController.onNightModeStateChanged();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NIGHT_MODE_TAB_REPARENTING)
+                && mTabReparentingController != null) {
+            mTabReparentingController.prepareTabsForReparenting();
         }
         super.onNightModeStateChanged();
+    }
+
+    @VisibleForTesting
+    public boolean didChangeTabletMode() {
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(this);
+        boolean isTablet = DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display))
+                >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        boolean wasTablet =
+                mConfig.smallestScreenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        return wasTablet != isTablet;
+    }
+
+    /**
+     * Switch between phone and tablet mode and do the tab re-parenting in the meantime.
+     */
+    private void onScreenLayoutSizeChange() {
+        if (mTabReparentingController != null) {
+            mTabReparentingController.prepareTabsForReparenting();
+            if (!isFinishing()) recreate();
+        }
     }
 
     @VisibleForTesting
     @Nullable
     public BookmarkBridge getBookmarkBridgeForTesting() {
         return mBookmarkBridgeSupplier.get();
+    }
+
+    @VisibleForTesting
+    public Configuration getSavedConfigurationForTesting() {
+        return mConfig;
     }
 }

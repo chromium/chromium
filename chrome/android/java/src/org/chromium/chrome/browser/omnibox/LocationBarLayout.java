@@ -214,6 +214,8 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
             TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
             mTemplateUrlObserver = null;
         }
+
+        mUrlCoordinator = null;
     }
 
     @Override

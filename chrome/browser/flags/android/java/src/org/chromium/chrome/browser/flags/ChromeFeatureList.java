@@ -207,6 +207,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSaveCardInfoBarAccountIndicationFooter";
     public static final String ADJUST_WEBAPK_INSTALLATION_SPACE = "AdjustWebApkInstallationSpace";
     public static final String ANDROID_DEFAULT_BROWSER_PROMO = "AndroidDefaultBrowserPromo";
+    public static final String ANDROID_LAYOUT_CHANGE_TAB_REPARENT =
+            "AndroidLayoutChangeTabReparenting";
     public static final String ANDROID_MANAGED_BY_MENU_ITEM = "AndroidManagedByMenuItem";
     public static final String ANDROID_MULTIPLE_DISPLAY = "AndroidMultipleDisplay";
     public static final String ANDROID_NIGHT_MODE_TAB_REPARENTING =

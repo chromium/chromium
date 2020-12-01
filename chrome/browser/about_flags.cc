@@ -3673,6 +3673,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidNightModeTabReparentingName,
      flag_descriptions::kAndroidNightModeTabReparentingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidNightModeTabReparenting)},
+
+    {"enable-android-layout-change-tab-reparenting",
+     flag_descriptions::kAndroidLayoutChangeTabReparentingName,
+     flag_descriptions::kAndroidLayoutChangeTabReparentingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidLayoutChangeTabReparenting)},
 #endif  // OS_ANDROID
     {"enable-experimental-accessibility-language-detection",
      flag_descriptions::kExperimentalAccessibilityLanguageDetectionName,

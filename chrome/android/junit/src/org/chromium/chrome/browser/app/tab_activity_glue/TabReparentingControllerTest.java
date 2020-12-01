@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.night_mode;
+package org.chromium.chrome.browser.app.tab_activity_glue;
 
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,8 +20,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController.Delegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -38,24 +36,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Unit tests for {@link NightModeReparentingControllerTest}.
+ * Unit tests for {@link TabReparentingControllerTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class NightModeReparentingControllerTest {
-    class FakeNightModeReparentingDelegate implements NightModeReparentingController.Delegate {
-        ActivityTabProvider mActivityTabProvider;
+public class TabReparentingControllerTest {
+    class FakeNightModeReparentingDelegate implements Delegate {
         TabModelSelector mTabModelSelector;
-
-        @Override
-        public ActivityTabProvider getActivityTabProvider() {
-            if (mActivityTabProvider == null) {
-                // setup
-                mActivityTabProvider = Mockito.mock(ActivityTabProvider.class);
-                doAnswer(invocation -> getForegroundTab()).when(mActivityTabProvider).get();
-            }
-            return mActivityTabProvider;
-        }
 
         @Override
         public TabModelSelector getTabModelSelector() {
@@ -84,7 +71,7 @@ public class NightModeReparentingControllerTest {
     Map<Tab, Integer> mTabIndexMapping = new HashMap<>();
     Tab mForegroundTab;
 
-    NightModeReparentingController mController;
+    TabReparentingController mController;
     FakeNightModeReparentingDelegate mFakeDelegate;
     AsyncTabParamsManager mRealAsyncTabParamsManager;
 
@@ -97,7 +84,7 @@ public class NightModeReparentingControllerTest {
 
         mFakeDelegate = new FakeNightModeReparentingDelegate();
         mRealAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-        mController = new NightModeReparentingController(mFakeDelegate, mRealAsyncTabParamsManager);
+        mController = new TabReparentingController(mFakeDelegate, mRealAsyncTabParamsManager);
     }
 
     @After
@@ -110,7 +97,7 @@ public class NightModeReparentingControllerTest {
     @Test
     public void testReparenting_singleTab() {
         mForegroundTab = createAndAddMockTab(1, false);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         AsyncTabParams params = mRealAsyncTabParamsManager.getAsyncTabParams().get(1);
         Assert.assertNotNull(params);
@@ -126,7 +113,7 @@ public class NightModeReparentingControllerTest {
     public void testReparenting_singleTab_NTP() {
         // New tab pages aren't reparented intentionally.
         mForegroundTab = createAndAddMockTab(1, false, UrlConstants.NTP_URL);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         Assert.assertFalse(mRealAsyncTabParamsManager.hasParamsWithTabToReparent());
     }
@@ -134,9 +121,9 @@ public class NightModeReparentingControllerTest {
     @Test
     public void testReparenting_singleTab_reparentingAttemptedTwice() {
         mForegroundTab = createAndAddMockTab(1, false);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
         // Simulate the theme being changed twice before the application is recreated.
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         AsyncTabParams params = mRealAsyncTabParamsManager.getAsyncTabParams().get(1);
         Assert.assertNotNull(params);
@@ -152,7 +139,7 @@ public class NightModeReparentingControllerTest {
     public void testReparenting_multipleTabs() {
         mForegroundTab = createAndAddMockTab(1, false);
         createAndAddMockTab(2, false);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         TabReparentingParams trp =
                 (TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(1);
@@ -170,7 +157,7 @@ public class NightModeReparentingControllerTest {
     public void testReparenting_twoTabsOutOfOrder() {
         createAndAddMockTab(1, false);
         mForegroundTab = createAndAddMockTab(2, false);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         AsyncTabParams params = mRealAsyncTabParamsManager.getAsyncTabParams().get(2);
         Assert.assertNotNull(params);
@@ -187,7 +174,7 @@ public class NightModeReparentingControllerTest {
     public void testReparenting_twoTabsOneIncognito() {
         createAndAddMockTab(1, false);
         mForegroundTab = createAndAddMockTab(2, true);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         AsyncTabParams params = mRealAsyncTabParamsManager.getAsyncTabParams().get(2);
         Assert.assertNotNull(params);
@@ -206,7 +193,7 @@ public class NightModeReparentingControllerTest {
         createAndAddMockTab(3, false);
         mForegroundTab = createAndAddMockTab(2, false);
         createAndAddMockTab(1, false);
-        mController.onNightModeStateChanged();
+        mController.prepareTabsForReparenting();
 
         // Check the foreground tab.
         TabReparentingParams trp =
@@ -255,9 +242,5 @@ public class NightModeReparentingControllerTest {
 
     private Tab createAndAddMockTab(int id, boolean incognito) {
         return createAndAddMockTab(id, incognito, "https://google.com");
-    }
-
-    private Tab getForegroundTab() {
-        return mForegroundTab;
     }
 }

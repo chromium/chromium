@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.night_mode;
+package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -18,13 +16,16 @@ import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Controls the reparenting of tabs when the theme is swapped. */
-public class NightModeReparentingController implements NightModeStateProvider.Observer {
-    /** Provides data to {@link NightModeReparentingController} facilitate reparenting tabs. */
+/**
+ * Controls the reparenting of tabs when an app restart is required due to configuration changes.
+ * Tabs are preserved when the app is restarted under the following conditions:
+ * - The current app theme changes.
+ * - The layout switches between tablet/phone.
+ * - (Keep this list up to date by adding future conditions here)
+ */
+public class TabReparentingController {
+    /** Provides data to {@link TabReparentingController} facilitate reparenting tabs. */
     public interface Delegate {
-        /** The current ActivityTabProvider which is used to get the current Tab. */
-        ActivityTabProvider getActivityTabProvider();
-
         /** Gets a {@link TabModelSelector} which is used to add the tab. */
         TabModelSelector getTabModelSelector();
 
@@ -35,15 +36,25 @@ public class NightModeReparentingController implements NightModeStateProvider.Ob
     private final Delegate mDelegate;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
 
-    /** Constructs a {@link NightModeReparentingController} with the given delegate. */
-    public NightModeReparentingController(
-            @NonNull Delegate delegate, AsyncTabParamsManager asyncTabParamsManager) {
+    /** Constructs a {@link TabReparentingController} with the given delegate. */
+    public TabReparentingController(
+            @NonNull Delegate delegate, @NonNull AsyncTabParamsManager asyncTabParamsManager) {
         mDelegate = delegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
     }
 
-    @Override
-    public void onNightModeStateChanged() {
+    /**
+
+     * Prepares the tabs for reparenting by,
+     * 1. Informing the {@link TabModelSelector} that reparenting is in progress.
+     * 2. Detaching each tab from the models.
+     * 3. For each tab that's detached, it's added to {@link AsyncTabParamsManager}.
+     *    These tabs are held in memory until an application restart.
+     *
+     * On app restart, the tabs from AsyncTabParamsManager are reattached/enabled in
+     * {@link ChromeTabCreator}.
+     */
+    public void prepareTabsForReparenting() {
         // TODO(crbug.com/1065201): Make tab models detachable.
         TabModelSelector selector = mDelegate.getTabModelSelector();
 
@@ -74,7 +85,7 @@ public class NightModeReparentingController implements NightModeStateProvider.Ob
         }
     }
 
-    static void populateComprehensiveTabsFromModel(TabModel model, List<Tab> outputTabs) {
+    protected static void populateComprehensiveTabsFromModel(TabModel model, List<Tab> outputTabs) {
         TabList tabList = model.getComprehensiveModel();
         for (int i = 0; i < tabList.getCount(); i++) {
             outputTabs.add(tabList.getTabAt(i));

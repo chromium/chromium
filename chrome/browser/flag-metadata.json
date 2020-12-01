@@ -1123,6 +1123,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-android-layout-change-tab-reparenting",
+    "owners": [ "lazzzis@google.com", "twellington" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-android-night-mode-tab-reparenting",
     "owners": [ "wylieb", "twellington", "tedchoc" ],
     "expiry_milestone": 88

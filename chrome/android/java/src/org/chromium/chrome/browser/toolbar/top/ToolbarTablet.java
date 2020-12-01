@@ -483,6 +483,16 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
+    void destroy() {
+        super.destroy();
+        if (mButtonVisibilityAnimators != null) {
+            mButtonVisibilityAnimators.removeAllListeners();
+            mButtonVisibilityAnimators.cancel();
+            mButtonVisibilityAnimators = null;
+        }
+    }
+
+    @Override
     public void onTabCountChanged(int numberOfTabs, boolean isIncognito) {
         mAccessibilitySwitcherButton.setContentDescription(getResources().getQuantityString(
                 R.plurals.accessibility_toolbar_btn_tabswitcher_toggle, numberOfTabs,
