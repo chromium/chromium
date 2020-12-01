@@ -141,3 +141,90 @@ INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingQueryManagerTest,
     testing::Values(safe_browsing::ResourceType::kMainFrame,
                     safe_browsing::ResourceType::kSubFrame));
+
+namespace {
+// An observer that owns a WebState and destroys it when it gets a
+// |SafeBrowsingQueryFinished| callback.
+class WebStateDestroyingQueryManagerObserver
+    : public SafeBrowsingQueryManager::Observer {
+ public:
+  WebStateDestroyingQueryManagerObserver()
+      : web_state_(std::make_unique<web::TestWebState>()) {}
+  ~WebStateDestroyingQueryManagerObserver() override {}
+
+  void SafeBrowsingQueryFinished(
+      SafeBrowsingQueryManager* query_manager,
+      const SafeBrowsingQueryManager::Query& query,
+      const SafeBrowsingQueryManager::Result& result) override {
+    web_state_.reset();
+  }
+
+  void SafeBrowsingQueryManagerDestroyed(
+      SafeBrowsingQueryManager* manager) override {
+    manager->RemoveObserver(this);
+  }
+
+  web::WebState* web_state() { return web_state_.get(); }
+
+ private:
+  std::unique_ptr<web::WebState> web_state_;
+};
+}  // namespace
+
+// Test fixture for testing WebState destruction during a
+// SafeBrowsingQueryManager::Observer callback.
+class SafeBrowsingQueryManagerWebStateDestructionTest
+    : public testing::TestWithParam<safe_browsing::ResourceType> {
+ protected:
+  SafeBrowsingQueryManagerWebStateDestructionTest()
+      : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
+        http_method_("GET"),
+        navigation_item_id_(
+            GetParam() == safe_browsing::ResourceType::kMainFrame ? -1 : 0) {
+    SafeBrowsingQueryManager::CreateForWebState(observer_.web_state());
+    manager()->AddObserver(&observer_);
+  }
+
+  SafeBrowsingQueryManager* manager() {
+    return SafeBrowsingQueryManager::FromWebState(observer_.web_state());
+  }
+
+  web::WebTaskEnvironment task_environment_;
+  WebStateDestroyingQueryManagerObserver observer_;
+  std::string http_method_;
+  int navigation_item_id_ = 0;
+};
+
+// Tests that a query for a safe URL doesn't cause a crash.
+TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, SafeURLQuery) {
+  GURL url("http://chromium.test");
+  // Start a URL check query for the safe URL and run the runloop until the
+  // result is received.
+  manager()->StartQuery(
+      SafeBrowsingQueryManager::Query(url, http_method_, navigation_item_id_));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Tests that a query for an unsafe URL doesn't cause a crash.
+TEST_P(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
+  GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+
+  // Start a URL check query for the unsafe URL and run the runloop until the
+  // result is received. An UnsafeResource is stored before the query finishes
+  // to simulate the production behavior that adds a resource that will be used
+  // to populate the error page.
+  manager()->StartQuery(
+      SafeBrowsingQueryManager::Query(url, http_method_, navigation_item_id_));
+  UnsafeResource resource;
+  resource.url = url;
+  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.resource_type = GetParam();
+  manager()->StoreUnsafeResource(resource);
+  base::RunLoop().RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    SafeBrowsingQueryManagerWebStateDestructionTest,
+    testing::Values(safe_browsing::ResourceType::kMainFrame,
+                    safe_browsing::ResourceType::kSubFrame));

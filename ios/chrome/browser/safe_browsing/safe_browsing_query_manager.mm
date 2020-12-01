@@ -107,9 +107,13 @@ void SafeBrowsingQueryManager::UrlCheckFinished(const Query query,
   // execution of its completion block.
   DCHECK(!show_error_page || result.resource);
 
-  // Notify observers of the completed URL check.
+  // Notify observers of the completed URL check. |this| might get destroyed
+  // when an observer is notified.
+  auto weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_) {
     observer.SafeBrowsingQueryFinished(this, query, result);
+    if (!weak_this)
+      return;
   }
 
   // Clear out the state since the query is finished.
