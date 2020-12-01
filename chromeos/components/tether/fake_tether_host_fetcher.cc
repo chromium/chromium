@@ -28,14 +28,15 @@ bool FakeTetherHostFetcher::HasSyncedTetherHosts() {
 }
 
 void FakeTetherHostFetcher::FetchAllTetherHosts(
-    const TetherHostFetcher::TetherHostListCallback& callback) {
-  ProcessFetchAllTetherHostsRequest(tether_hosts_, callback);
+    TetherHostFetcher::TetherHostListCallback callback) {
+  ProcessFetchAllTetherHostsRequest(tether_hosts_, std::move(callback));
 }
 
 void FakeTetherHostFetcher::FetchTetherHost(
     const std::string& device_id,
-    const TetherHostFetcher::TetherHostCallback& callback) {
-  ProcessFetchSingleTetherHostRequest(device_id, tether_hosts_, callback);
+    TetherHostFetcher::TetherHostCallback callback) {
+  ProcessFetchSingleTetherHostRequest(device_id, tether_hosts_,
+                                      std::move(callback));
 }
 
 }  // namespace tether

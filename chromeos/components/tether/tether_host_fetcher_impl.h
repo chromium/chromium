@@ -55,9 +55,9 @@ class TetherHostFetcherImpl
 
   // TetherHostFetcher:
   bool HasSyncedTetherHosts() override;
-  void FetchAllTetherHosts(const TetherHostListCallback& callback) override;
+  void FetchAllTetherHosts(TetherHostListCallback callback) override;
   void FetchTetherHost(const std::string& device_id,
-                       const TetherHostCallback& callback) override;
+                       TetherHostCallback callback) override;
 
   // device_sync::DeviceSyncClient::Observer:
   void OnNewDevicesSynced() override;

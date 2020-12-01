@@ -58,15 +58,15 @@ bool TetherHostFetcherImpl::HasSyncedTetherHosts() {
 }
 
 void TetherHostFetcherImpl::FetchAllTetherHosts(
-    const TetherHostListCallback& callback) {
-  ProcessFetchAllTetherHostsRequest(current_remote_device_list_, callback);
+    TetherHostListCallback callback) {
+  ProcessFetchAllTetherHostsRequest(current_remote_device_list_,
+                                    std::move(callback));
 }
 
-void TetherHostFetcherImpl::FetchTetherHost(
-    const std::string& device_id,
-    const TetherHostCallback& callback) {
+void TetherHostFetcherImpl::FetchTetherHost(const std::string& device_id,
+                                            TetherHostCallback callback) {
   ProcessFetchSingleTetherHostRequest(device_id, current_remote_device_list_,
-                                      callback);
+                                      std::move(callback));
 }
 
 void TetherHostFetcherImpl::OnNewDevicesSynced() {

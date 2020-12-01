@@ -31,7 +31,7 @@ class FakeActiveHost : public ActiveHost {
                               const std::string& tether_network_guid,
                               const std::string& wifi_network_guid) override;
   void GetActiveHost(
-      const ActiveHost::ActiveHostCallback& active_host_callback) override;
+      ActiveHost::ActiveHostCallback active_host_callback) override;
   ActiveHostStatus GetActiveHostStatus() const override;
   std::string GetActiveHostDeviceId() const override;
   std::string GetTetherNetworkGuid() const override;

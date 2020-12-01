@@ -111,12 +111,12 @@ class ActiveHost {
   //                   parameters will be "".
   //     CONNECTING: The callback's |wifi_network_guid| parameter will be "".
   //     CONNECTED: All four parameters  will be present.
-  using ActiveHostCallback = base::Callback<void(
+  using ActiveHostCallback = base::OnceCallback<void(
       ActiveHostStatus active_host_status,
       base::Optional<multidevice::RemoteDeviceRef> active_host,
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid)>;
-  virtual void GetActiveHost(const ActiveHostCallback& active_host_callback);
+  virtual void GetActiveHost(ActiveHostCallback active_host_callback);
 
   // Synchronous getter methods which do not return a full RemoteDevice object.
   virtual ActiveHostStatus GetActiveHostStatus() const;
@@ -147,7 +147,7 @@ class ActiveHost {
                      const std::string& wifi_network_guid);
 
   void OnTetherHostFetched(
-      const ActiveHostCallback& active_host_callback,
+      ActiveHostCallback active_host_callback,
       base::Optional<multidevice::RemoteDeviceRef> active_host);
 
   TetherHostFetcher* tether_host_fetcher_;

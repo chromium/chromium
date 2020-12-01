@@ -32,10 +32,9 @@ class FakeTetherHostFetcher : public TetherHostFetcher {
   // TetherHostFetcher:
   bool HasSyncedTetherHosts() override;
   void FetchAllTetherHosts(
-      const TetherHostFetcher::TetherHostListCallback& callback) override;
-  void FetchTetherHost(
-      const std::string& device_id,
-      const TetherHostFetcher::TetherHostCallback& callback) override;
+      TetherHostFetcher::TetherHostListCallback callback) override;
+  void FetchTetherHost(const std::string& device_id,
+                       TetherHostFetcher::TetherHostCallback callback) override;
 
  private:
   multidevice::RemoteDeviceRefList tether_hosts_;

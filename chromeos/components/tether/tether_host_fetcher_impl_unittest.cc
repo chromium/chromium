@@ -90,8 +90,8 @@ class TetherHostFetcherImplTest : public testing::Test {
   void VerifyAllTetherHosts(
       const multidevice::RemoteDeviceRefList expected_list) {
     tether_host_fetcher_->FetchAllTetherHosts(
-        base::Bind(&TetherHostFetcherImplTest::OnTetherHostListFetched,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherHostFetcherImplTest::OnTetherHostListFetched,
+                       base::Unretained(this)));
     EXPECT_EQ(expected_list, last_fetched_list_);
   }
 
@@ -100,8 +100,8 @@ class TetherHostFetcherImplTest : public testing::Test {
       base::Optional<multidevice::RemoteDeviceRef> expected_device) {
     tether_host_fetcher_->FetchTetherHost(
         device_id,
-        base::Bind(&TetherHostFetcherImplTest::OnSingleTetherHostFetched,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherHostFetcherImplTest::OnSingleTetherHostFetched,
+                       base::Unretained(this)));
     if (expected_device)
       EXPECT_EQ(expected_device, last_fetched_single_host_);
     else

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -40,23 +40,23 @@ class TetherHostFetcher {
 
   // Fetches all tether hosts.
   using TetherHostListCallback =
-      base::Callback<void(const multidevice::RemoteDeviceRefList&)>;
-  virtual void FetchAllTetherHosts(const TetherHostListCallback& callback) = 0;
+      base::OnceCallback<void(const multidevice::RemoteDeviceRefList&)>;
+  virtual void FetchAllTetherHosts(TetherHostListCallback callback) = 0;
 
   // Fetches the tether host with the ID |device_id|.
   using TetherHostCallback =
-      base::Callback<void(base::Optional<multidevice::RemoteDeviceRef>)>;
+      base::OnceCallback<void(base::Optional<multidevice::RemoteDeviceRef>)>;
   virtual void FetchTetherHost(const std::string& device_id,
-                               const TetherHostCallback& callback) = 0;
+                               TetherHostCallback callback) = 0;
 
  protected:
   void ProcessFetchAllTetherHostsRequest(
       const multidevice::RemoteDeviceRefList& remote_device_list,
-      const TetherHostListCallback& callback);
+      TetherHostListCallback callback);
   void ProcessFetchSingleTetherHostRequest(
       const std::string& device_id,
       const multidevice::RemoteDeviceRefList& remote_device_list,
-      const TetherHostCallback& callback);
+      TetherHostCallback callback);
 
   void NotifyTetherHostsUpdated();
 

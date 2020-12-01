@@ -27,23 +27,23 @@ void TetherHostFetcher::RemoveObserver(Observer* observer) {
 
 void TetherHostFetcher::ProcessFetchAllTetherHostsRequest(
     const multidevice::RemoteDeviceRefList& remote_device_list,
-    const TetherHostListCallback& callback) {
-  callback.Run(remote_device_list);
+    TetherHostListCallback callback) {
+  std::move(callback).Run(remote_device_list);
 }
 
 void TetherHostFetcher::ProcessFetchSingleTetherHostRequest(
     const std::string& device_id,
     const multidevice::RemoteDeviceRefList& remote_device_list,
-    const TetherHostCallback& callback) {
+    TetherHostCallback callback) {
   for (auto remote_device : remote_device_list) {
     if (remote_device.GetDeviceId() == device_id) {
-      callback.Run(
+      std::move(callback).Run(
           base::make_optional<multidevice::RemoteDeviceRef>(remote_device));
       return;
     }
   }
 
-  callback.Run(base::nullopt);
+  std::move(callback).Run(base::nullopt);
 }
 
 void TetherHostFetcher::NotifyTetherHostsUpdated() {
