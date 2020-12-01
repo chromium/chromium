@@ -41,7 +41,8 @@ constexpr base::FeatureParam<int> kUIThreadLogLevel{
 constexpr base::FeatureParam<int> kThreadPoolLogLevel{
     &HangWatcher::kEnableHangWatcher, "threadpool_log_level", 0};
 
-constexpr auto HangWatchScopeEnabled::kDefaultHangWatchTime =
+// static
+const base::TimeDelta HangWatchScopeEnabled::kDefaultHangWatchTime =
     base::TimeDelta::FromSeconds(10);
 
 namespace {
