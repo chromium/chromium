@@ -100,10 +100,9 @@ namespace {
 
 CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
   DCHECK(document.GetFrame());
-  if (UNLIKELY(document.GetFrame()->PagePopupOwner())) {
+  if (UNLIKELY(document.GetFrame()->PagePopupOwner()))
     return PagePopupController::CreateCSSFontSelector(document);
-  }
-  return MakeGarbageCollected<CSSFontSelector>(&document);
+  return MakeGarbageCollected<CSSFontSelector>(document);
 }
 
 }  // namespace

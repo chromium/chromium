@@ -166,7 +166,7 @@ void PagePopupClient::AddLocalizedProperty(const char* name,
 
 CSSFontSelector* PagePopupClient::CreateCSSFontSelector(
     Document& popup_document) {
-  return MakeGarbageCollected<CSSFontSelector>(&popup_document);
+  return MakeGarbageCollected<CSSFontSelector>(popup_document);
 }
 
 PagePopupController* PagePopupClient::CreatePagePopupController(

@@ -42,7 +42,7 @@ class FontDescription;
 
 class CORE_EXPORT CSSFontSelector : public FontSelector {
  public:
-  explicit CSSFontSelector(Document*);
+  explicit CSSFontSelector(const TreeScope&);
   ~CSSFontSelector() override;
 
   unsigned Version() const override { return font_face_cache_.Version(); }
@@ -100,7 +100,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   void UnregisterForInvalidationCallbacks(FontSelectorClient*) override;
 
   ExecutionContext* GetExecutionContext() const override {
-    return document_ ? document_->GetExecutionContext() : nullptr;
+    return tree_scope_ ? GetDocument().GetExecutionContext() : nullptr;
   }
   FontFaceCache* GetFontFaceCache() override { return &font_face_cache_; }
 
@@ -109,7 +109,11 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   }
   void UpdateGenericFontFamilySettings(Document&);
 
-  const TreeScope* GetTreeScope() const { return document_; }
+  const TreeScope* GetTreeScope() const { return tree_scope_; }
+  Document& GetDocument() const {
+    DCHECK(tree_scope_);
+    return tree_scope_->GetDocument();
+  }
 
   void Trace(Visitor*) const override;
 
@@ -120,7 +124,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   // TODO(Oilpan): Ideally this should just be a traced Member but that will
   // currently leak because ComputedStyle and its data are not on the heap.
   // See crbug.com/383860 for details.
-  WeakMember<Document> document_;
+  WeakMember<const TreeScope> tree_scope_;
   // TODO(futhark): Make this a Member which can be shared between scopes
   // sharing the same set of @font-faces.
   FontFaceCache font_face_cache_;
