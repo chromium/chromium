@@ -16,6 +16,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/display/display_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/button/button.h"
@@ -44,7 +45,8 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                                       public ui::LayerDelegate,
                                       public ui::EventHandler,
                                       public TabletModeObserver,
-                                      public aura::WindowObserver {
+                                      public aura::WindowObserver,
+                                      public display::DisplayObserver {
  public:
   // Creates the bar widget on a calculated root window.
   explicit CaptureModeSession(CaptureModeController* controller);
@@ -94,6 +96,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
 
  private:
   friend class CaptureModeSessionTestApi;

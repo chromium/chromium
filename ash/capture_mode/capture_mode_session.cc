@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/display/mouse_cursor_event_filter.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -257,7 +258,8 @@ class CaptureModeSession::CursorSetter {
       : cursor_manager_(Shell::Get()->cursor_manager()),
         original_cursor_(cursor_manager_->GetCursor()),
         original_cursor_visible_(cursor_manager_->IsCursorVisible()),
-        original_cursor_locked_(cursor_manager_->IsCursorLocked()) {}
+        original_cursor_locked_(cursor_manager_->IsCursorLocked()),
+        current_orientation_(GetCurrentScreenOrientation()) {}
 
   CursorSetter(const CursorSetter&) = delete;
   CursorSetter& operator=(const CursorSetter&) = delete;
@@ -275,16 +277,19 @@ class CaptureModeSession::CursorSetter {
     const CaptureModeType capture_type = CaptureModeController::Get()->type();
 
     // For custom cursor, update the cursor if we need to change between image
-    // capture and video capture.
+    // capture and video capture or the screen orientation changes.
+    const OrientationLockType orientation = GetCurrentScreenOrientation();
     const bool is_cursor_changed =
         current_cursor_type != new_cursor_type ||
         (current_cursor_type == ui::mojom::CursorType::kCustom &&
-         custom_cursor_capture_type_ != capture_type);
+         (custom_cursor_capture_type_ != capture_type ||
+          current_orientation_ != orientation));
     const bool is_cursor_visibility_changed =
         cursor_manager_->IsCursorVisible() !=
         (new_cursor_type != ui::mojom::CursorType::kNone);
     if (new_cursor_type == ui::mojom::CursorType::kCustom)
       custom_cursor_capture_type_ = capture_type;
+    current_orientation_ = orientation;
 
     if (!is_cursor_changed && !is_cursor_visibility_changed)
       return;
@@ -353,6 +358,10 @@ class CaptureModeSession::CursorSetter {
   // cursor.
   CaptureModeType custom_cursor_capture_type_ = CaptureModeType::kImage;
 
+  // Records the current screen orientation. If screen orientation changes, we
+  // will need to update the cursor if we're using custom cursor.
+  OrientationLockType current_orientation_;
+
   // True if the cursor has reset back to its original cursor. It's to prevent
   // Reset() from setting the cursor to |original_cursor_| more than once.
   bool was_cursor_reset_to_original_ = true;
@@ -391,9 +400,11 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
 
   TabletModeController::Get()->AddObserver(this);
   current_root_->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 CaptureModeSession::~CaptureModeSession() {
+  display::Screen::GetScreen()->RemoveObserver(this);
   current_root_->RemoveObserver(this);
   TabletModeController::Get()->RemoveObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
@@ -559,6 +570,15 @@ void CaptureModeSession::OnTabletModeEnded() {
 void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(current_root_, window);
   MaybeChangeRoot(Shell::GetPrimaryRootWindow());
+}
+
+void CaptureModeSession::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  if (metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) {
+    UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+                 /*is_touch=*/false);
+  }
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {

@@ -16,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
@@ -1200,6 +1201,37 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
   EXPECT_FALSE(controller->IsActive());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
   EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+}
+
+TEST_F(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
+  using ui::mojom::CursorType;
+
+  UpdateDisplay("600x400");
+  const int64_t display_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::Display::SetInternalDisplayId(display_id);
+  ScreenOrientationControllerTestApi orientation_test_api(
+      Shell::Get()->screen_orientation_controller());
+
+  auto* event_generator = GetEventGenerator();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  event_generator->MoveMouseTo(gfx::Point(175, 175));
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  // Use image capture icon as the mouse cursor icon in image capture mode.
+  const ui::Cursor landscape_cursor = cursor_manager->GetCursor();
+  EXPECT_EQ(CursorType::kCustom, landscape_cursor.type());
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+
+  // Rotate the screen.
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_270, display::Display::RotationSource::ACTIVE);
+  const ui::Cursor portrait_cursor = cursor_manager->GetCursor();
+  EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
+  EXPECT_NE(landscape_cursor, portrait_cursor);
 }
 
 // Tests that in Region mode, cursor compositing is used instead of the system
