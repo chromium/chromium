@@ -101,6 +101,7 @@ blink_platform_sources("heap") {
       "v8_wrapper/member.h",
       "v8_wrapper/persistent.h",
       "v8_wrapper/process_heap.h",
+      "v8_wrapper/thread_state.cc",
       "v8_wrapper/thread_state.h",
       "v8_wrapper/thread_state_scopes.h",
       "v8_wrapper/unified_heap_controller.h",
@@ -108,7 +109,8 @@ blink_platform_sources("heap") {
       "v8_wrapper/visitor.h",
     ]
 
-    deps += [ "//v8:cppgc" ]
+    # Dependency on V8 which transitively depends on cppgc but exposes JS-related C++ heap through V8's Isolate.
+    deps += [ "//v8" ]
   } else {
     sources += [
       "impl/atomic_entry_flag.h",
