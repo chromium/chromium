@@ -15,6 +15,7 @@
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -148,7 +149,7 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
     return;
   bounds_px_ = bounds_px;
 
-  root_surface_->SetOpaqueRegion(bounds_px);
+  root_surface_->SetOpaqueRegion(gfx::Rect(bounds_px_.size()));
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
@@ -403,7 +404,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   // Will do nothing for menus because they have got their scale above.
   UpdateBufferScale(false);
-  root_surface_->SetOpaqueRegion(bounds_px_);
+  root_surface_->SetOpaqueRegion(gfx::Rect(bounds_px_.size()));
 
   return true;
 }

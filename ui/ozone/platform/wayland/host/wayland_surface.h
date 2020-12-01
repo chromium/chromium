@@ -75,8 +75,9 @@ class WaylandSurface {
 
   // Sets the region that is opaque on this surface in physical pixels. This is
   // expected to be called whenever the region that the surface span changes or
-  // the opacity changes.
-  void SetOpaqueRegion(const gfx::Rect& bounds_px);
+  // the opacity changes. |region_px| is specified surface-local, in physical
+  // pixels.
+  void SetOpaqueRegion(const gfx::Rect& region_px);
 
   // Set the source rectangle of the associated wl_surface.
   // See:

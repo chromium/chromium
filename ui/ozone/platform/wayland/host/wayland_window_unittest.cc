@@ -1593,6 +1593,7 @@ TEST_P(WaylandWindowTest, SetOpaqueRegion) {
   Sync();
 
   VerifyAndClearExpectations();
+  EXPECT_EQ(mock_surface->opaque_region(), new_bounds);
 
   new_bounds.set_size(gfx::Size(1000, 534));
   SendConfigureEvent(xdg_surface_, new_bounds.width(), new_bounds.height(), 2,
@@ -1604,6 +1605,7 @@ TEST_P(WaylandWindowTest, SetOpaqueRegion) {
   Sync();
 
   VerifyAndClearExpectations();
+  EXPECT_EQ(mock_surface->opaque_region(), new_bounds);
 }
 
 TEST_P(WaylandWindowTest, OnCloseRequest) {
@@ -1647,6 +1649,8 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowSimpleParent) {
 
   EXPECT_EQ(test_subsurface->position(), subsurface_bounds.origin());
   EXPECT_FALSE(test_subsurface->sync());
+  EXPECT_EQ(mock_surface_subsurface->opaque_region(),
+            gfx::Rect(subsurface_bounds.size()));
 
   auto* parent_resource =
       server_
@@ -1876,6 +1880,8 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowNestedParent) {
   auto new_origin = subsurface_bounds.origin() -
                     menu_window_bounds.origin().OffsetFromOrigin();
   EXPECT_EQ(test_subsurface->position(), new_origin);
+  EXPECT_EQ(mock_surface_subsurface->opaque_region(),
+            gfx::Rect(subsurface_bounds.size()));
 
   menu_window->SetPointerFocus(false);
 }

@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 
+#include "ui/ozone/platform/wayland/test/test_region.h"
+
 namespace wl {
 
 namespace {
@@ -20,7 +22,7 @@ void Attach(wl_client* client,
 void SetOpaqueRegion(wl_client* client,
                      wl_resource* resource,
                      wl_resource* region) {
-  GetUserDataAs<MockSurface>(resource)->SetOpaqueRegion(region);
+  GetUserDataAs<MockSurface>(resource)->SetOpaqueRegionImpl(region);
 }
 
 void SetInputRegion(wl_client* client,
@@ -98,6 +100,15 @@ MockSurface* MockSurface::FromResource(wl_resource* resource) {
                                  &kMockSurfaceImpl))
     return nullptr;
   return GetUserDataAs<MockSurface>(resource);
+}
+
+void MockSurface::SetOpaqueRegionImpl(wl_resource* region) {
+  auto bounds = GetUserDataAs<TestRegion>(region)->getBounds();
+  opaque_region_ =
+      gfx::Rect(bounds.fLeft, bounds.fTop, bounds.fRight - bounds.fLeft,
+                bounds.fBottom - bounds.fTop);
+
+  SetOpaqueRegion(region);
 }
 
 void MockSurface::AttachNewBuffer(wl_resource* buffer_resource,
