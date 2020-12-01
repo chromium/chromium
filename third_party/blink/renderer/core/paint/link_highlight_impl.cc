@@ -154,7 +154,7 @@ LinkHighlightImpl::LinkHighlightFragment::~LinkHighlightFragment() {
   layer_->ClearClient();
 }
 
-gfx::Rect LinkHighlightImpl::LinkHighlightFragment::PaintableRegion() {
+gfx::Rect LinkHighlightImpl::LinkHighlightFragment::PaintableRegion() const {
   return gfx::Rect(layer_->bounds());
 }
 

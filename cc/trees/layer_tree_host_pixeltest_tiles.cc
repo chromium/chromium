@@ -71,7 +71,7 @@ class BlueYellowClient : public ContentLayerClient {
   explicit BlueYellowClient(const gfx::Size& size)
       : size_(size), blue_top_(true) {}
 
-  gfx::Rect PaintableRegion() override { return gfx::Rect(size_); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(size_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
 
@@ -151,7 +151,7 @@ class PrimaryColorClient : public ContentLayerClient {
  public:
   explicit PrimaryColorClient(const gfx::Size& size) : size_(size) {}
 
-  gfx::Rect PaintableRegion() override { return gfx::Rect(size_); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(size_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     // When painted, the DisplayItemList should produce blocks of red, green,
     // and blue to test primary color reproduction.

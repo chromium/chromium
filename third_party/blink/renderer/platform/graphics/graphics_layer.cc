@@ -264,10 +264,6 @@ void GraphicsLayer::SetOffsetFromLayoutObject(const IntSize& offset) {
   Invalidate(PaintInvalidationReason::kFullLayer);  // As DisplayItemClient.
 }
 
-IntRect GraphicsLayer::InterestRect() {
-  return previous_interest_rect_;
-}
-
 void GraphicsLayer::ClearPaintStateRecursively() {
   ForAllGraphicsLayers(
       *this,
@@ -374,7 +370,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     // when unifying PaintController.
     Validate();
     DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
-             << " interest_rect=" << InterestRect().ToString();
+             << " paintable region: " << PaintableRegion().ToString();
   }
 
   PaintChunkSubset chunks(paint_controller.GetPaintArtifactShared());
@@ -399,8 +395,8 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
         PaintsContentOrHitTest()) {
       raster_under_invalidation_params.emplace(
-          EnsureRasterInvalidator().EnsureTracking(), InterestRect(),
-          DebugName());
+          EnsureRasterInvalidator().EnsureTracking(),
+          IntRect(PaintableRegion()), DebugName());
     }
 
     // If nothing changed in the layer, keep the original display item list.

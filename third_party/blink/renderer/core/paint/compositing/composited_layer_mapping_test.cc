@@ -52,8 +52,8 @@ class CompositedLayerMappingTest : public RenderingTest {
         previous_interest_rect, new_interest_rect, layer_size);
   }
 
-  IntRect PreviousInterestRect(const GraphicsLayer* graphics_layer) {
-    return graphics_layer->previous_interest_rect_;
+  gfx::Rect PaintableRegion(const GraphicsLayer* graphics_layer) {
+    return graphics_layer->PaintableRegion();
   }
 
   static const GraphicsLayerPaintInfo* GetSquashedLayer(
@@ -620,8 +620,7 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnViewportScroll) {
   UpdateAllLifecyclePhasesForTest();
   GraphicsLayer* root_scrolling_layer =
       GetDocument().GetLayoutView()->Layer()->GraphicsLayerBacking();
-  EXPECT_EQ(IntRect(0, 0, 800, 4600),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), PaintableRegion(root_scrolling_layer));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic);
@@ -630,8 +629,7 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnViewportScroll) {
   // changed enough.
   EXPECT_EQ(IntRect(0, 0, 800, 4900),
             RecomputeInterestRect(root_scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 800, 4600),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), PaintableRegion(root_scrolling_layer));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic);
@@ -639,16 +637,15 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnViewportScroll) {
   // Use recomputed interest rect because it changed enough.
   EXPECT_EQ(IntRect(0, 0, 800, 5200),
             RecomputeInterestRect(root_scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 800, 5200),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 5200), PaintableRegion(root_scrolling_layer));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 5400), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(IntRect(0, 1400, 800, 8600),
             RecomputeInterestRect(root_scrolling_layer));
-  EXPECT_EQ(IntRect(0, 1400, 800, 8600),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 1400, 800, 8600),
+            PaintableRegion(root_scrolling_layer));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 9000), mojom::blink::ScrollType::kProgrammatic);
@@ -657,8 +654,8 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnViewportScroll) {
   // interest rect.
   EXPECT_EQ(IntRect(0, 5000, 800, 5000),
             RecomputeInterestRect(root_scrolling_layer));
-  EXPECT_EQ(IntRect(0, 1400, 800, 8600),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 1400, 800, 8600),
+            PaintableRegion(root_scrolling_layer));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2000), mojom::blink::ScrollType::kProgrammatic);
@@ -666,8 +663,7 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnViewportScroll) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(IntRect(0, 0, 800, 6600),
             RecomputeInterestRect(root_scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 800, 6600),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 6600), PaintableRegion(root_scrolling_layer));
 }
 
 TEST_F(CompositedLayerMappingTest, InterestRectChangeOnShrunkenViewport) {
@@ -682,16 +678,14 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnShrunkenViewport) {
   UpdateAllLifecyclePhasesForTest();
   GraphicsLayer* root_scrolling_layer =
       GetDocument().GetLayoutView()->Layer()->GraphicsLayerBacking();
-  EXPECT_EQ(IntRect(0, 0, 800, 4600),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), PaintableRegion(root_scrolling_layer));
 
   GetDocument().View()->SetFrameRect(IntRect(0, 0, 800, 60));
   UpdateAllLifecyclePhasesForTest();
   // Repaint required, so interest rect should be updated to shrunken size.
   EXPECT_EQ(IntRect(0, 0, 800, 4060),
             RecomputeInterestRect(root_scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 800, 4060),
-            PreviousInterestRect(root_scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 4060), PaintableRegion(root_scrolling_layer));
 }
 
 TEST_F(CompositedLayerMappingTest, InterestRectChangeOnScroll) {
@@ -713,26 +707,26 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnScroll) {
   Element* scroller = GetDocument().getElementById("scroller");
   GraphicsLayer* scrolling_layer =
       scroller->GetLayoutBox()->Layer()->GraphicsLayerBacking();
-  EXPECT_EQ(IntRect(0, 0, 400, 4400), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(IntRect(0, 0, 400, 4400), PaintableRegion(scrolling_layer));
 
   scroller->setScrollTop(300);
   UpdateAllLifecyclePhasesForTest();
   // Still use the previous interest rect because the recomputed rect hasn't
   // changed enough.
   EXPECT_EQ(IntRect(0, 0, 400, 4700), RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 400, 4400), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 400, 4400), PaintableRegion(scrolling_layer));
 
   scroller->setScrollTop(600);
   UpdateAllLifecyclePhasesForTest();
   // Use recomputed interest rect because it changed enough.
   EXPECT_EQ(IntRect(0, 0, 400, 5000), RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 400, 5000), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 400, 5000), PaintableRegion(scrolling_layer));
 
   scroller->setScrollTop(5600);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(IntRect(0, 1600, 400, 8400),
             RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 1600, 400, 8400), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 1600, 400, 8400), PaintableRegion(scrolling_layer));
 
   scroller->setScrollTop(9000);
   UpdateAllLifecyclePhasesForTest();
@@ -740,13 +734,13 @@ TEST_F(CompositedLayerMappingTest, InterestRectChangeOnScroll) {
   // interest rect.
   EXPECT_EQ(IntRect(0, 5000, 400, 5000),
             RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 1600, 400, 8400), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 1600, 400, 8400), PaintableRegion(scrolling_layer));
 
   scroller->setScrollTop(2000);
   // Use recomputed interest rect because it changed enough.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(IntRect(0, 0, 400, 6400), RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 0, 400, 6400), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 0, 400, 6400), PaintableRegion(scrolling_layer));
 }
 
 TEST_F(CompositedLayerMappingTest,
@@ -776,14 +770,14 @@ TEST_F(CompositedLayerMappingTest,
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(IntRect(0, 5400, 400, 4600),
             RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 5400, 400, 4600), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 5400, 400, 4600), PaintableRegion(scrolling_layer));
 
   // Paint invalidation and repaint should change previous paint interest rect.
   GetDocument().getElementById("content")->setTextContent("Change");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(IntRect(0, 5400, 400, 4600),
             RecomputeInterestRect(scrolling_layer));
-  EXPECT_EQ(IntRect(0, 5400, 400, 4600), PreviousInterestRect(scrolling_layer));
+  EXPECT_EQ(gfx::Rect(0, 5400, 400, 4600), PaintableRegion(scrolling_layer));
 }
 
 TEST_F(CompositedLayerMappingTest,
@@ -1426,8 +1420,8 @@ TEST_F(CompositedLayerMappingTest, SquashingScrollInterestRect) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(
-      IntRect(0, 1000, 200, 5000),
-      squashed->GroupedMapping()->SquashingLayer(*squashed)->InterestRect());
+      gfx::Rect(0, 1000, 200, 5000),
+      PaintableRegion(squashed->GroupedMapping()->SquashingLayer(*squashed)));
 }
 
 TEST_F(CompositedLayerMappingTest,

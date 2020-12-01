@@ -31,7 +31,7 @@ FakeContentLayerClient::FakeContentLayerClient() = default;
 
 FakeContentLayerClient::~FakeContentLayerClient() = default;
 
-gfx::Rect FakeContentLayerClient::PaintableRegion() {
+gfx::Rect FakeContentLayerClient::PaintableRegion() const {
   CHECK(bounds_set_);
   return gfx::Rect(bounds_);
 }

@@ -59,7 +59,7 @@ class MaskContentLayerClient : public ContentLayerClient {
 
   bool FillsBoundsCompletely() const override { return false; }
 
-  gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
 
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
@@ -192,7 +192,7 @@ class SolidColorEmptyMaskContentLayerClient : public ContentLayerClient {
 
   bool FillsBoundsCompletely() const override { return false; }
 
-  gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
 
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     // Intentionally return a solid color, empty mask display list. This
@@ -441,7 +441,7 @@ class CheckerContentLayerClient : public ContentLayerClient {
       : bounds_(bounds), color_(color), vertical_(vertical) {}
   ~CheckerContentLayerClient() override = default;
   bool FillsBoundsCompletely() const override { return false; }
-  gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
@@ -488,7 +488,7 @@ class CircleContentLayerClient : public ContentLayerClient {
       : bounds_(bounds) {}
   ~CircleContentLayerClient() override = default;
   bool FillsBoundsCompletely() const override { return false; }
-  gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
@@ -713,7 +713,7 @@ class StaticPictureLayer : private ContentLayerClient, public PictureLayer {
         new StaticPictureLayer(std::move(display_list)));
   }
 
-  gfx::Rect PaintableRegion() override { return gfx::Rect(bounds()); }
+  gfx::Rect PaintableRegion() const override { return gfx::Rect(bounds()); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     return display_list_;
   }

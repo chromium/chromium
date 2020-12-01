@@ -14,7 +14,7 @@
 
 namespace cc {
 
-gfx::Rect SolidColorContentLayerClient::PaintableRegion() {
+gfx::Rect SolidColorContentLayerClient::PaintableRegion() const {
   return gfx::Rect(size_);
 }
 

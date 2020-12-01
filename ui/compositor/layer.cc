@@ -1299,7 +1299,7 @@ void Layer::RequestCopyOfOutput(
   cc_layer_->RequestCopyOfOutput(std::move(request));
 }
 
-gfx::Rect Layer::PaintableRegion() {
+gfx::Rect Layer::PaintableRegion() const {
   return gfx::Rect(size());
 }
 

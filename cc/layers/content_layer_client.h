@@ -22,7 +22,7 @@ class CC_EXPORT ContentLayerClient {
   // layer this client paints, that the client is capable of painting via
   // paintContents(). Calling paintContents() will return a DisplayItemList
   // that is guaranteed valid only within this region.
-  virtual gfx::Rect PaintableRegion() = 0;
+  virtual gfx::Rect PaintableRegion() const = 0;
 
   // Paints the content area for the layer, typically dirty rects submitted
   // to the layer itself, into a DisplayItemList that it returns. The

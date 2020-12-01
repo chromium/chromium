@@ -30,13 +30,13 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   ~ContentLayerClientImpl() override;
 
   // cc::ContentLayerClient
-  gfx::Rect PaintableRegion() override {
+  gfx::Rect PaintableRegion() const final {
     return gfx::Rect(raster_invalidator_.LayerBounds().size());
   }
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override {
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final {
     return cc_display_item_list_;
   }
-  bool FillsBoundsCompletely() const override { return false; }
+  bool FillsBoundsCompletely() const final { return false; }
 
   // LayerAsJSONClient implementation
   void AppendAdditionalInfoAsJSON(LayerTreeFlags,

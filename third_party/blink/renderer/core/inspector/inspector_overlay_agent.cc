@@ -295,7 +295,9 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
 
  private:
   // cc::ContentLayerClient implementation
-  gfx::Rect PaintableRegion() override { return gfx::Rect(layer_->bounds()); }
+  gfx::Rect PaintableRegion() const override {
+    return gfx::Rect(layer_->bounds());
+  }
   bool FillsBoundsCompletely() const override { return false; }
 
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override {

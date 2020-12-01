@@ -180,8 +180,6 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
                                const IntRect&,
                                PaintInvalidationReason);
 
-  IntRect InterestRect();
-
   // Returns true if any layer is repainted.
   bool PaintRecursively(GraphicsContext&,
                         Vector<PreCompositedLayerInfo>&,
@@ -244,9 +242,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   friend class GraphicsLayerTest;
 
   // cc::ContentLayerClient implementation.
-  gfx::Rect PaintableRegion() final { return InterestRect(); }
+  gfx::Rect PaintableRegion() const final { return previous_interest_rect_; }
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
-  bool FillsBoundsCompletely() const override { return false; }
+  bool FillsBoundsCompletely() const final { return false; }
 
   void ClearPaintStateRecursively();
   void Paint(Vector<PreCompositedLayerInfo>&,
