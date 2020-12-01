@@ -386,7 +386,7 @@ public class TabsOpenedFromExternalAppTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
-    public void testNoNewTabForSameApp() throws Exception {
+    public void testNoNewTabForSameApp() {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
@@ -418,7 +418,6 @@ public class TabsOpenedFromExternalAppTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onBackPressed());
         CriteriaHelper.pollUiThread(() -> !mActivityTestRule.getActivity().hasWindowFocus());
-        mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
     /**
@@ -428,7 +427,7 @@ public class TabsOpenedFromExternalAppTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
-    public void testNewTabForUnknownApp() throws Exception {
+    public void testNewTabForUnknownApp() {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
@@ -466,7 +465,6 @@ public class TabsOpenedFromExternalAppTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onBackPressed());
         CriteriaHelper.pollUiThread(() -> !mActivityTestRule.getActivity().hasWindowFocus());
-        mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
     /**
@@ -476,7 +474,7 @@ public class TabsOpenedFromExternalAppTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
-    public void testNewTabWithNewTabExtra() throws Exception {
+    public void testNewTabWithNewTabExtra() {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
@@ -508,7 +506,6 @@ public class TabsOpenedFromExternalAppTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onBackPressed());
         CriteriaHelper.pollUiThread(() -> !mActivityTestRule.getActivity().hasWindowFocus());
-        mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
     /**
@@ -518,7 +515,7 @@ public class TabsOpenedFromExternalAppTest {
     @Test
     @LargeTest
     @Feature({"Navigation", "Main"})
-    public void testNoNewTabForSameAppOnStart() throws Exception {
+    public void testNoNewTabForSameAppOnStart() {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
@@ -543,7 +540,6 @@ public class TabsOpenedFromExternalAppTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onBackPressed());
         CriteriaHelper.pollUiThread(() -> !mActivityTestRule.getActivity().hasWindowFocus());
-        mActivityTestRule.resumeMainActivityFromLauncher();
     }
 
     /**
