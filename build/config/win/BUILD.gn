@@ -414,6 +414,7 @@ config("delayloads") {
     "/DELAYLOAD:cryptui.dll",
     "/DELAYLOAD:d3d11.dll",
     "/DELAYLOAD:d3d9.dll",
+    "/DELAYLOAD:dbghelp.dll",
     "/DELAYLOAD:dwmapi.dll",
     "/DELAYLOAD:dxgi.dll",
     "/DELAYLOAD:dxva2.dll",
@@ -451,7 +452,6 @@ config("delayloads_not_for_child_dll") {
   ldflags = [
     "/DELAYLOAD:advapi32.dll",
     "/DELAYLOAD:crypt32.dll",
-    "/DELAYLOAD:dbghelp.dll",
     "/DELAYLOAD:dhcpcsvc.dll",
     "/DELAYLOAD:dwrite.dll",
     "/DELAYLOAD:iphlpapi.dll",
