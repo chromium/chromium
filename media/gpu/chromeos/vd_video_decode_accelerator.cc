@@ -291,6 +291,12 @@ void VdVideoDecodeAccelerator::RequestFrames(
   notify_layout_changed_cb_ = std::move(notify_layout_changed_cb);
   import_frame_cb_ = std::move(import_frame_cb);
 
+  // Stop tracking currently-allocated pictures, otherwise the count will be
+  // corrupted as we import new frames with the same IDs as the old ones.
+  // The client should still have its own reference to the frame data, which
+  // will keep it valid for as long as it needs it.
+  picture_at_client_.clear();
+
   // After calling ProvidePictureBuffersWithVisibleRect(), the client might
   // still send buffers with old coded size. We temporarily store at
   // |pending_coded_size_|.
@@ -374,6 +380,14 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&VdVideoDecodeAccelerator::OnFrameReleasedThunk,
                      weak_this_, client_task_runner_, std::move(origin_frame)));
+
+  // This should not happen - picture_at_client_ should either be initially
+  // empty, or be cleared as RequestFrames() is called. However for extra safety
+  // let's make sure the slot for the picture buffer ID is free, otherwise we
+  // might lose track of the reference count and keep frames out of the pool
+  // forever.
+  DCHECK(picture_at_client_.find(picture_buffer_id) ==
+         picture_at_client_.end());
 
   DCHECK(import_frame_cb_);
   import_frame_cb_.Run(std::move(wrapped_frame));
