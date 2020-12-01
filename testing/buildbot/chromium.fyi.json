@@ -10363,6 +10363,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10381,6 +10384,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10398,6 +10404,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10459,6 +10468,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10511,6 +10523,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10529,6 +10544,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10553,6 +10571,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_validating",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10570,6 +10591,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10589,6 +10613,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10606,6 +10633,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10667,6 +10697,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -10685,6 +10718,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11086,6 +11122,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11104,6 +11143,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11121,6 +11163,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11182,6 +11227,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11234,6 +11282,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11252,6 +11303,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11276,6 +11330,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_validating",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11293,6 +11350,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11312,6 +11372,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11329,6 +11392,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11390,6 +11456,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11408,6 +11477,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11455,6 +11527,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11473,6 +11548,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11490,6 +11568,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11551,6 +11632,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11603,6 +11687,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11621,6 +11708,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11645,6 +11735,9 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "gl_tests_validating",
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11662,6 +11755,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11681,6 +11777,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11698,6 +11797,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11759,6 +11861,9 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "resultdb": {
+          "enable": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -11777,6 +11882,9 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
