@@ -15,7 +15,7 @@ This file contains all strings for front door. These strings will only be transl
       
       <!-- Onboarding Categories -->
       <message name="IDS_CATEGORY_ELECTRONICS" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Electoronics category refers to consumer and home electoronics. Example: computers/phones/tablets/cameras/TVs ">
-        Electoronics
+        Electronics
       </message>
 
       <message name="IDS_CATEGORY_HEALTH_AND_BEAUTY" desc="This is a category of products that the user can select. The user will see 9 different categories during the onboarding to curate the shopping feed. The Health and Beauty category refers to hair and skin care, oral care, vitamins, makeup, and more.">
