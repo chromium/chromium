@@ -4,9 +4,7 @@
 
 package org.chromium.android_webview;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.DisplayCutout;
@@ -36,10 +34,6 @@ public class AwDisplayCutoutController {
     public interface Delegate {
         /** @return The DIP scale. */
         float getDipScale();
-        /** @return The display width. */
-        int getDisplayWidth();
-        /** @return The display height. */
-        int getDisplayHeight();
         /**
          * Set display cutout safe area such that webpage can read safe-area-insets CSS properties.
          * Note that this can be called with the same parameter repeatedly, and the embedder needs
@@ -108,14 +102,6 @@ public class AwDisplayCutoutController {
 
     private Delegate mDelegate;
     private View mContainerView;
-
-    // Reuse these structures to minimize memory impact.
-    private static int[] sCachedLocationOnScreen = {0, 0};
-    private Insets mCachedViewInsets = new Insets();
-    private Rect mCachedViewRect = new Rect();
-    private Rect mCachedWindowRect = new Rect();
-    private Rect mCachedDisplayRect = new Rect();
-    private Matrix mCachedMatrix = new Matrix();
 
     /**
      * Constructor for AwDisplayCutoutController.
@@ -204,78 +190,18 @@ public class AwDisplayCutoutController {
      */
     @VisibleForTesting
     public void onApplyWindowInsetsInternal(final Insets displayCutoutInsets) {
-        // Copy such that we can log the original value.
-        mCachedViewInsets.set(displayCutoutInsets);
-
-        getViewRectOnScreen(mContainerView, mCachedViewRect);
-        getViewRectOnScreen(mContainerView.getRootView(), mCachedWindowRect);
-
-        // Get display coordinates.
-        int displayWidth = mDelegate.getDisplayWidth();
-        int displayHeight = mDelegate.getDisplayHeight();
-        mCachedDisplayRect.set(0, 0, displayWidth, displayHeight);
-
         float dipScale = mDelegate.getDipScale();
-
-        if (!mCachedViewRect.equals(mCachedDisplayRect)) {
-            // We apply window insets only when webview is occupying the entire window and display.
-            // Checking the window rect is more complicated and therefore not doing it for now, but
-            // there can still be cases where the window is a bit off.
-            if (DEBUG) {
-                Log.i(TAG, "WebView is not occupying the entire screen, so no insets applied.");
-            }
-            mCachedViewInsets.set(0, 0, 0, 0);
-        } else if (!mCachedViewRect.equals(mCachedWindowRect)) {
-            if (DEBUG) {
-                Log.i(TAG, "WebView is not occupying the entire window, so no insets applied.");
-            }
-            mCachedViewInsets.set(0, 0, 0, 0);
-        } else if (hasTransform()) {
-            if (DEBUG) {
-                Log.i(TAG, "WebView is rotated or scaled, so no insets applied.");
-            }
-            mCachedViewInsets.set(0, 0, 0, 0);
-        } else {
-            // We only apply this logic when webview is occupying the entire screen.
-            adjustInsetsForScale(mCachedViewInsets, dipScale);
-        }
+        // We only apply this logic when webview is occupying the entire screen.
+        adjustInsetsForScale(displayCutoutInsets, dipScale);
 
         if (DEBUG) {
             Log.i(TAG,
-                    "onApplyWindowInsetsInternal. displayCutoutInsets: " + displayCutoutInsets
-                            + ", view rect: " + mCachedViewRect + ", display rect: "
-                            + mCachedDisplayRect + ", window rect: " + mCachedWindowRect
-                            + ", dip scale: " + dipScale + ", viewInsets: " + mCachedViewInsets);
+                    "onApplyWindowInsetsInternal. insets: " + displayCutoutInsets
+                            + ", dip scale: " + dipScale);
         }
-        mDelegate.setDisplayCutoutSafeArea(mCachedViewInsets);
-    }
-
-    private static void getViewRectOnScreen(View view, Rect rect) {
-        if (view == null) {
-            rect.set(0, 0, 0, 0);
-            return;
-        }
-        view.getLocationOnScreen(sCachedLocationOnScreen);
-        int width = view.getMeasuredWidth();
-        int height = view.getMeasuredHeight();
-
-        rect.set(sCachedLocationOnScreen[0], sCachedLocationOnScreen[1],
-                sCachedLocationOnScreen[0] + width, sCachedLocationOnScreen[1] + height);
-    }
-
-    @SuppressLint("NewApi") // need this exception since we will try using Q API in P
-    private boolean hasTransform() {
-        mCachedMatrix.reset(); // set to identity
-        // Check if a view coordinates transforms to screen coordinates that is not an identity
-        // matrix, which means that view is rotated or scaled in regards to the screen.
-        // This API got hidden from L, and readded in API 29 (Q). It seems that we can call this
-        // on P most of the time, but adding try-catch just in case.
-        try {
-            mContainerView.transformMatrixToGlobal(mCachedMatrix);
-        } catch (Throwable e) {
-            return true;
-        }
-        return !mCachedMatrix.isIdentity();
+        // Note that internally we apply this logic only when the display is in fullscreen mode.
+        // See AwDisplayModeController for more details on how we check the fullscreen mode.
+        mDelegate.setDisplayCutoutSafeArea(displayCutoutInsets);
     }
 
     private void onUpdateWindowInsets() {

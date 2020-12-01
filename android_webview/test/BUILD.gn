@@ -251,6 +251,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwContentsRenderTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwContentsStaticsTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwContentsTest.java",
+    "../javatests/src/org/chromium/android_webview/test/AwDisplayCutoutTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwFormDatabaseTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwImeTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwJavaBridgeTest.java",

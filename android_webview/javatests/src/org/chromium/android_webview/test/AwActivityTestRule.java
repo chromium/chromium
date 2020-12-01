@@ -7,6 +7,7 @@ package org.chromium.android_webview.test;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.util.AndroidRuntimeException;
@@ -120,9 +121,22 @@ public class AwActivityTestRule extends ActivityTestRule<AwTestRunnerActivity> {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mAwContentsDestroyedInTearDown.clear(); });
     }
 
+    public boolean needsHideActionBar() {
+        return false;
+    }
+
+    private Intent getLaunchIntent() {
+        if (needsHideActionBar()) {
+            Intent intent = getActivityIntent();
+            intent.putExtra(AwTestRunnerActivity.FLAG_HIDE_ACTION_BAR, true);
+            return intent;
+        }
+        return null;
+    }
+
     public AwTestRunnerActivity launchActivity() {
         if (getActivity() == null) {
-            return launchActivity(null);
+            return launchActivity(getLaunchIntent());
         }
         return getActivity();
     }

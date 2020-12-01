@@ -496,7 +496,9 @@ public class AwContents implements SmartClipProvider {
 
     private ContentCaptureConsumer mContentCaptureConsumer;
 
+    private AwDisplayCutoutController mDisplayCutoutController;
     private final AwDisplayModeController mDisplayModeController;
+    private final Rect mCachedSafeAreaRect = new Rect();
 
     private static class WebContentsInternalsHolder implements WebContents.InternalsHolder {
         private final WeakReference<AwContents> mAwContentsRef;
@@ -960,6 +962,25 @@ public class AwContents implements SmartClipProvider {
                             return windowAndroid.getDisplay().getDisplayHeight();
                         }
                     }, containerView);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                    && AwFeatureList.isEnabled(AwFeatures.WEBVIEW_DISPLAY_CUTOUT)) {
+                mDisplayCutoutController =
+                        new AwDisplayCutoutController(new AwDisplayCutoutController.Delegate() {
+                            @Override
+                            public float getDipScale() {
+                                WindowAndroid windowAndroid = mWindowAndroid.getWindowAndroid();
+                                return windowAndroid.getDisplay().getDipScale();
+                            }
+
+                            @Override
+                            public void setDisplayCutoutSafeArea(
+                                    AwDisplayCutoutController.Insets insets) {
+                                if (mWebContents == null) return;
+                                mWebContents.setDisplayCutoutSafeArea(
+                                        insets.toRect(mCachedSafeAreaRect));
+                            }
+                        }, containerView);
+            }
             mRendererPriority = RendererPriority.HIGH;
             mSettings = settings;
             updateDefaultLocale();
@@ -1205,6 +1226,9 @@ public class AwContents implements SmartClipProvider {
         mContainerView.requestLayout();
         if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
         mDisplayModeController.setCurrentContainerView(mContainerView);
+        if (mDisplayCutoutController != null) {
+            mDisplayCutoutController.setCurrentContainerView(mContainerView);
+        }
     }
 
     // This class destroys the WindowAndroid when after it is gc-ed.
@@ -3004,6 +3028,8 @@ public class AwContents implements SmartClipProvider {
             AwOnPreDrawListener listener = getOrCreateOnPreDrawListener(mContainerView);
             listener.trackContents(this);
         }
+
+        if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
     }
 
     private AwOnPreDrawListener getOrCreateOnPreDrawListener(ViewGroup viewGroup) {
@@ -3085,6 +3111,7 @@ public class AwContents implements SmartClipProvider {
      */
     public void onSizeChanged(int w, int h, int ow, int oh) {
         mAwViewMethods.onSizeChanged(w, h, ow, oh);
+        if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
     }
 
     /**
@@ -3376,6 +3403,11 @@ public class AwContents implements SmartClipProvider {
             return null;
         }
         return AwContentsJni.get().getRenderProcess(mNativeAwContents, AwContents.this);
+    }
+
+    @VisibleForTesting
+    public AwDisplayCutoutController getDisplayCutoutController() {
+        return mDisplayCutoutController;
     }
 
     public int getDisplayMode() {
