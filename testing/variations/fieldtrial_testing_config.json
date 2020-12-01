@@ -4840,6 +4840,9 @@
             "experiments": [
                 {
                     "name": "Enabled ",
+                    "params": {
+                        "DisplayOwner": "true"
+                    },
                     "enable_features": [
                         "OmniboxDocumentProvider"
                     ]
