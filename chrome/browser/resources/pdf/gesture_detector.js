@@ -164,6 +164,11 @@ export class GestureDetector {
 
     event.preventDefault();
 
+    // Disable wheel gestures in Presentation mode.
+    if (document.fullscreenElement !== null) {
+      return;
+    }
+
     const wheelScale = Math.exp(-event.deltaY / 100);
     // Clamp scale changes from the wheel event as they can be
     // quite dramatic for non-synthetic ctrl-wheels.

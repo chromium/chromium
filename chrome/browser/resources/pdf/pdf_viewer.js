@@ -683,7 +683,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /** @private */
   onFullscreenClick_() {
     assert(this.presentationModeEnabled_);
-    this.shadowRoot.querySelector('#main').requestFullscreen();
+    this.shadowRoot.querySelector('#scroller').requestFullscreen().then(() => {
+      this.forceFit(FittingType.FIT_TO_HEIGHT);
+      // Nothing else to do here. The viewport will be updated as a result of a
+      // 'resize' event callback.
+    });
   }
 
   /**

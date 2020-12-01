@@ -454,12 +454,20 @@ export class Viewport {
    * @private
    */
   resize_() {
+    // Force fit-to-height when resizing happens as a result of entering full
+    // screen mode.
+    if (document.fullscreenElement !== null) {
+      this.fittingType_ = FittingType.FIT_TO_HEIGHT;
+      this.window_.dispatchEvent(
+          new CustomEvent('fitting-type-changed-for-testing'));
+    }
+
     if (this.fittingType_ === FittingType.FIT_TO_PAGE) {
       this.fitToPageInternal_(false);
     } else if (this.fittingType_ === FittingType.FIT_TO_WIDTH) {
       this.fitToWidth();
     } else if (this.fittingType_ === FittingType.FIT_TO_HEIGHT) {
-      this.fitToHeightInternal_(false);
+      this.fitToHeightInternal_(document.fullscreenElement !== null);
     } else if (this.internalZoom_ === 0) {
       this.fitToNone();
     } else {
@@ -1502,6 +1510,11 @@ export class Viewport {
    * @private
    */
   onPinchStart_(e) {
+    // Disable pinch gestures in Presentation  mode.
+    if (document.fullscreenElement !== null) {
+      return;
+    }
+
     // We also use rAF for pinch start, so that if there is a pinch end event
     // scheduled by rAF, this pinch start will be sent after.
     window.requestAnimationFrame(() => {

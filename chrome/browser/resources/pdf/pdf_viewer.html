@@ -121,6 +121,11 @@
     overflow: auto;
     position: relative;
   }
+
+  /* Hide scrollbars when in Presentation mode. */
+  #scroller:fullscreen {
+    overflow: hidden;
+  }
 </style>
 
 <template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
