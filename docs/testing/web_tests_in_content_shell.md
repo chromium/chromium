@@ -1,5 +1,7 @@
 # Running web tests using the content shell
 
+[TOC]
+
 ## Compiling
 
 If you want to run web tests,
