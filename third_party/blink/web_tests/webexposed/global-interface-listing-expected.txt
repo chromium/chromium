@@ -5382,6 +5382,7 @@ interface NDEFReader : EventTarget
     getter onreadingerror
     method constructor
     method scan
+    method write
     setter onreading
     setter onreadingerror
 interface NDEFReadingEvent : Event
@@ -5399,10 +5400,6 @@ interface NDEFRecord
     getter recordType
     method constructor
     method toRecords
-interface NDEFWriter
-    attribute @@toStringTag
-    method constructor
-    method write
 interface NamedNodeMap
     attribute @@toStringTag
     getter length

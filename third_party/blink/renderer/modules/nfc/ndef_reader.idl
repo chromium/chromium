@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://w3c.github.io/web-nfc/#dom-ndefmessagesource
+typedef (DOMString or BufferSource or NDEFMessageInit) NDEFMessageSource;
+
 // http://w3c.github.io/web-nfc/#dom-ndefreader
 
 [
@@ -14,6 +17,10 @@
     attribute EventHandler onreading;
     attribute EventHandler onreadingerror;
 
-    [CallWith=ScriptState, RaisesException] Promise<void> scan(
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebNfcNdefReaderScan] Promise<void> scan(
         optional NDEFScanOptions options={});
+
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebNfcNdefWriterWrite] Promise<void> write(
+        NDEFMessageSource message,
+        optional NDEFWriteOptions options={});
 };

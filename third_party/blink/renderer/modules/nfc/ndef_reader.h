@@ -18,10 +18,13 @@
 
 namespace blink {
 
-class ExecutionContext;
-class NFCProxy;
 class NDEFScanOptions;
+class NDEFWriteOptions;
+class NFCProxy;
 class ScriptPromiseResolver;
+class StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
+
+using NDEFMessageSource = StringOrArrayBufferOrArrayBufferViewOrNDEFMessageInit;
 
 class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
                                   public ActiveScriptWrappable<NDEFReader>,
@@ -43,7 +46,17 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reading, kReading)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(readingerror, kReadingerror)
-  ScriptPromise scan(ScriptState*, const NDEFScanOptions*, ExceptionState&);
+
+  // Scan from an NFC tag.
+  ScriptPromise scan(ScriptState* script_state,
+                     const NDEFScanOptions* options,
+                     ExceptionState& exception_state);
+
+  // Write NDEFMessageSource asynchronously to NFC tag.
+  ScriptPromise write(ScriptState* script_state,
+                      const NDEFMessageSource& write_message,
+                      const NDEFWriteOptions* options,
+                      ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
@@ -53,32 +66,50 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   virtual void OnReadingError(const String& message);
 
   // Called by NFCProxy for notification about connection error.
-  void OnMojoConnectionError();
+  void ReadOnMojoConnectionError();
+  void WriteOnMojoConnectionError();
 
  private:
   // ExecutionContextLifecycleObserver overrides.
   void ContextDestroyed() override;
 
-  void Abort();
-
   NFCProxy* GetNfcProxy() const;
 
-  void OnScanRequestCompleted(device::mojom::blink::NDEFErrorPtr error);
+  void ReadAbort();
+  void ReadOnRequestCompleted(device::mojom::blink::NDEFErrorPtr error);
 
-  // Permission handling
-  void OnRequestPermission(const NDEFScanOptions* options,
-                           mojom::blink::PermissionStatus status);
-  mojom::blink::PermissionService* GetPermissionService();
+  void WriteAbort(ScriptPromiseResolver* resolver);
+  void WriteOnRequestCompleted(ScriptPromiseResolver* resolver,
+                               device::mojom::blink::NDEFErrorPtr error);
+
+  // Read Permission handling
+  void ReadOnRequestPermission(const NDEFScanOptions* options,
+                               mojom::blink::PermissionStatus status);
+
+  // Write Permission handling
+  void WriteOnRequestPermission(
+      ScriptPromiseResolver* resolver,
+      const NDEFWriteOptions* options,
+      device::mojom::blink::NDEFMessagePtr ndef_message,
+      mojom::blink::PermissionStatus status);
+
+  // |scan_resolver_| is kept here to handle Mojo connection failures because in
+  // that case the callback passed to Watch() won't be called and
+  // mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
+  Member<ScriptPromiseResolver> scan_resolver_;
+  // To reject if there is already an ongoing scan.
+  bool has_pending_scan_request_ = false;
+
   HeapMojoRemote<mojom::blink::PermissionService,
                  HeapMojoWrapperMode::kWithoutContextObserver>
       permission_service_;
+  mojom::blink::PermissionService* GetPermissionService();
 
-  // |resolver_| is kept here to handle Mojo connection failures because in that
-  // case the callback passed to Watch() won't be called and
+  // |write_requests_| are kept here to handle Mojo connection failures because
+  // in that case the callback passed to Push() won't be called and
   // mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
-  Member<ScriptPromiseResolver> resolver_;
-  // To reject if there is already an ongoing scan.
-  bool has_pending_scan_request_ = false;
+  // This list will also be used by AbortSignal.
+  HeapHashSet<Member<ScriptPromiseResolver>> write_requests_;
 };
 
 }  // namespace blink

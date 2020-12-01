@@ -10,15 +10,16 @@ communicates with the browser adaptation through NFC Mojo interface defined in
 the `services/device/public/mojom/nfc.mojom` file and implemented by the
 `services/device/nfc` module.
 
-NDEFWriter and NDEFReader are the two primary interfaces of the Web NFC APIs.
+NDEFReader is the primary interface of the Web NFC APIs.
+The NDEFReader interface has both, write and scan methods.
 
-The NDEFWriter interface has the write method for writing data to NFC tags.
+The write method is for writing data to the NFC tag.
 This method will return a promise, which will be resolved when the
 message is successfully written to a NFC tag or be rejected when errors
 happened or the process is aborted by setting the AbortSignal in the
 NDEFWriteOptions.
 
-The NDEFReader interface has the scan method to try to read data from any NFC tag
+The scan method tries to read data from any NFC tag
 that comes within proximity. Once there is some data found an
 NDEFReadingEvent carrying the data will be dispatched to the NDEFReader.
 

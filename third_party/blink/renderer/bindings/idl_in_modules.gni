@@ -415,7 +415,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/nfc/ndef_record_init.idl",
           "//third_party/blink/renderer/modules/nfc/ndef_scan_options.idl",
           "//third_party/blink/renderer/modules/nfc/ndef_write_options.idl",
-          "//third_party/blink/renderer/modules/nfc/ndef_writer.idl",
           "//third_party/blink/renderer/modules/notifications/get_notification_options.idl",
           "//third_party/blink/renderer/modules/notifications/notification.idl",
           "//third_party/blink/renderer/modules/notifications/notification_action.idl",

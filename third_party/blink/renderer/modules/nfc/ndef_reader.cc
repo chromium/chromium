@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/device/public/mojom/nfc.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_array_buffer_or_array_buffer_view_or_ndef_message_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -18,6 +21,7 @@
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_reading_event.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_proxy.h"
+#include "third_party/blink/renderer/modules/nfc/nfc_type_converters.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_utils.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -80,7 +84,7 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
   // WebNFC API must be only accessible from top level browsing context.
   if (!frame || !frame->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      "NFC interfaces are only avaliable "
+                                      "NFC interfaces are only available "
                                       "in a top-level browsing context");
     return ScriptPromise();
   }
@@ -89,7 +93,7 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
   // "AbortError" DOMException and return p.
   if (options->hasSignal() && options->signal()->aborted()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      "The NFC operation was cancelled.");
+                                      "The NFC scan operation was cancelled.");
     return ScriptPromise();
   }
 
@@ -108,85 +112,67 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  // 8. If reader.[[Signal]] is not null, then add the following abort steps
-  // to reader.[[Signal]]:
+  scan_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  // 8. If |signal| is not null, then add the following abort steps
+  // to |signal|:
   if (options->hasSignal()) {
     options->signal()->AddAlgorithm(
-        WTF::Bind(&NDEFReader::Abort, WrapPersistent(this)));
+        WTF::Bind(&NDEFReader::ReadAbort, WrapPersistent(this)));
   }
 
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(frame),
-      WTF::Bind(&NDEFReader::OnRequestPermission, WrapPersistent(this),
+      WTF::Bind(&NDEFReader::ReadOnRequestPermission, WrapPersistent(this),
                 WrapPersistent(options)));
-  return resolver_->Promise();
+  return scan_resolver_->Promise();
 }
 
-PermissionService* NDEFReader::GetPermissionService() {
-  if (!permission_service_.is_bound()) {
-    ConnectToPermissionService(
-        GetExecutionContext(),
-        permission_service_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-  return permission_service_.get();
-}
-
-void NDEFReader::OnRequestPermission(const NDEFScanOptions* options,
-                                     PermissionStatus status) {
-  if (!resolver_) {
+void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
+                                         PermissionStatus status) {
+  if (!scan_resolver_) {
     has_pending_scan_request_ = false;
     return;
   }
 
   if (status != PermissionStatus::GRANTED) {
     has_pending_scan_request_ = false;
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
+    scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "NFC permission request denied."));
-    resolver_.Clear();
+    scan_resolver_.Clear();
     return;
   }
   if (options->hasSignal() && options->signal()->aborted()) {
     has_pending_scan_request_ = false;
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "The NFC operation was cancelled."));
-    resolver_.Clear();
+    scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError,
+        "The NFC scan operation was cancelled."));
+    scan_resolver_.Clear();
     return;
   }
 
-  UseCounter::Count(GetExecutionContext(), WebFeature::kWebNfcNdefReaderScan);
   // TODO(https://crbug.com/994936) remove when origin trial is complete.
   UseCounter::Count(GetExecutionContext(), WebFeature::kWebNfcAPI);
 
   GetNfcProxy()->StartReading(
       this,
-      WTF::Bind(&NDEFReader::OnScanRequestCompleted, WrapPersistent(this)));
+      WTF::Bind(&NDEFReader::ReadOnRequestCompleted, WrapPersistent(this)));
 }
 
-void NDEFReader::OnScanRequestCompleted(
+void NDEFReader::ReadOnRequestCompleted(
     device::mojom::blink::NDEFErrorPtr error) {
   has_pending_scan_request_ = false;
-  if (!resolver_)
+  if (!scan_resolver_)
     return;
 
   if (error) {
-    resolver_->Reject(
+    scan_resolver_->Reject(
         NDEFErrorTypeToDOMException(error->error_type, error->error_message));
   } else {
-    resolver_->Resolve();
+    scan_resolver_->Resolve();
   }
 
-  resolver_.Clear();
-}
-
-void NDEFReader::Trace(Visitor* visitor) const {
-  visitor->Trace(permission_service_);
-  visitor->Trace(resolver_);
-  EventTargetWithInlineData::Trace(visitor);
-  ActiveScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
+  scan_resolver_.Clear();
 }
 
 void NDEFReader::OnReading(const String& serial_number,
@@ -204,40 +190,181 @@ void NDEFReader::OnReadingError(const String& message) {
       mojom::blink::ConsoleMessageLevel::kInfo, message));
 }
 
-void NDEFReader::OnMojoConnectionError() {
-  // If |resolver_| has already settled this rejection is silently ignored.
-  if (resolver_) {
-    resolver_->Reject(NDEFErrorTypeToDOMException(
-        device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
-        kNotSupportedOrPermissionDenied));
-    resolver_.Clear();
-  }
-}
-
 void NDEFReader::ContextDestroyed() {
-  // If |resolver_| has already settled this rejection is silently ignored.
-  if (resolver_) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError,
-        "The execution context is going to be gone."));
-    resolver_.Clear();
-  }
   GetNfcProxy()->StopReading(this);
 }
 
-void NDEFReader::Abort() {
-  if (resolver_) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "The NFC operation was cancelled."));
-    resolver_.Clear();
+void NDEFReader::ReadAbort() {
+  if (scan_resolver_) {
+    scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError,
+        "The NFC scan operation was cancelled."));
+    scan_resolver_.Clear();
   }
 
   GetNfcProxy()->StopReading(this);
+}
+
+// https://w3c.github.io/web-nfc/#writing-content
+// https://w3c.github.io/web-nfc/#the-write-method
+ScriptPromise NDEFReader::write(ScriptState* script_state,
+                                const NDEFMessageSource& write_message,
+                                const NDEFWriteOptions* options,
+                                ExceptionState& exception_state) {
+  LocalDOMWindow* window = script_state->ContextIsValid()
+                               ? LocalDOMWindow::From(script_state)
+                               : nullptr;
+  // https://w3c.github.io/web-nfc/#security-policies
+  // WebNFC API must be only accessible from top level browsing context.
+  if (!window || !window->GetFrame()->IsMainFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "NFC interfaces are only available "
+                                      "in a top-level browsing context");
+    return ScriptPromise();
+  }
+
+  if (options->hasSignal() && options->signal()->aborted()) {
+    // If signal’s aborted flag is set, then reject p with an "AbortError"
+    // DOMException and return p.
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      "The NFC write operation was cancelled.");
+    return ScriptPromise();
+  }
+
+  // Step 11.2: Run "create NDEF message", if this throws an exception,
+  // reject p with that exception and abort these steps.
+  NDEFMessage* ndef_message =
+      NDEFMessage::Create(window, write_message, exception_state);
+  if (exception_state.HadException()) {
+    return ScriptPromise();
+  }
+
+  auto message = device::mojom::blink::NDEFMessage::From(ndef_message);
+  DCHECK(message);
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  write_requests_.insert(resolver);
+
+  // Add the writer to proxy's writer list for Mojo connection error
+  // notification.
+  GetNfcProxy()->AddWriter(this);
+
+  GetPermissionService()->RequestPermission(
+      CreatePermissionDescriptor(PermissionName::NFC),
+      LocalFrame::HasTransientUserActivation(window->GetFrame()),
+      WTF::Bind(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
+                WrapPersistent(resolver), WrapPersistent(options),
+                std::move(message)));
+
+  return resolver->Promise();
+}
+
+void NDEFReader::WriteOnRequestPermission(
+    ScriptPromiseResolver* resolver,
+    const NDEFWriteOptions* options,
+    device::mojom::blink::NDEFMessagePtr message,
+    PermissionStatus status) {
+  if (status != PermissionStatus::GRANTED) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError, "NFC permission request denied."));
+    return;
+  }
+
+  if (options->hasSignal() && options->signal()->aborted()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError,
+        "The NFC write operation was cancelled."));
+    return;
+  }
+
+  // If signal is not null, then add the abort steps to signal.
+  if (options->hasSignal() && !options->signal()->aborted()) {
+    options->signal()->AddAlgorithm(WTF::Bind(&NDEFReader::WriteAbort,
+                                              WrapPersistent(this),
+                                              WrapPersistent(resolver)));
+  }
+
+  // TODO(https://crbug.com/994936) remove when origin trial is complete.
+  UseCounter::Count(GetExecutionContext(), WebFeature::kWebNfcAPI);
+
+  auto callback = WTF::Bind(&NDEFReader::WriteOnRequestCompleted,
+                            WrapPersistent(this), WrapPersistent(resolver));
+  GetNfcProxy()->Push(std::move(message),
+                      device::mojom::blink::NDEFWriteOptions::From(options),
+                      std::move(callback));
+}
+
+void NDEFReader::WriteOnRequestCompleted(
+    ScriptPromiseResolver* resolver,
+    device::mojom::blink::NDEFErrorPtr error) {
+  DCHECK(write_requests_.Contains(resolver));
+
+  write_requests_.erase(resolver);
+
+  if (error.is_null()) {
+    resolver->Resolve();
+  } else {
+    resolver->Reject(
+        NDEFErrorTypeToDOMException(error->error_type, error->error_message));
+  }
+}
+
+void NDEFReader::WriteAbort(ScriptPromiseResolver* resolver) {
+  // WriteOnRequestCompleted() should always be called whether the push
+  // operation is cancelled successfully or not. So do nothing for the cancelled
+  // callback.
+  // TODO(https://crbug.com/1151857) Remove the callback since it is unused.
+  GetNfcProxy()->CancelPush(device::mojom::blink::NFC::CancelPushCallback());
 }
 
 NFCProxy* NDEFReader::GetNfcProxy() const {
   DCHECK(GetExecutionContext());
   return NFCProxy::From(*To<LocalDOMWindow>(GetExecutionContext()));
+}
+
+void NDEFReader::Trace(Visitor* visitor) const {
+  visitor->Trace(permission_service_);
+  visitor->Trace(scan_resolver_);
+  visitor->Trace(write_requests_);
+  EventTargetWithInlineData::Trace(visitor);
+  ActiveScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+PermissionService* NDEFReader::GetPermissionService() {
+  if (!permission_service_.is_bound()) {
+    ConnectToPermissionService(
+        GetExecutionContext(),
+        permission_service_.BindNewPipeAndPassReceiver(
+            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  }
+  return permission_service_.get();
+}
+
+void NDEFReader::ReadOnMojoConnectionError() {
+  // If |scan_resolver_| has already settled this rejection is silently ignored.
+  if (scan_resolver_) {
+    scan_resolver_->Reject(NDEFErrorTypeToDOMException(
+        device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
+        kNotSupportedOrPermissionDenied));
+    scan_resolver_.Clear();
+  }
+}
+
+void NDEFReader::WriteOnMojoConnectionError() {
+  // If the mojo connection breaks, All push requests will be rejected with a
+  // default error.
+
+  // Script may execute during a call to Resolve(). Swap these sets to prevent
+  // concurrent modification.
+  HeapHashSet<Member<ScriptPromiseResolver>> write_requests;
+  write_requests_.swap(write_requests);
+  write_requests_.clear();
+  for (ScriptPromiseResolver* resolver : write_requests) {
+    resolver->Reject(NDEFErrorTypeToDOMException(
+        device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
+        kNotSupportedOrPermissionDenied));
+  }
 }
 
 }  // namespace blink

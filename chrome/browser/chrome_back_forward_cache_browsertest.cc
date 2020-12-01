@@ -348,10 +348,10 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // Use the WebNfc feature on the empty page.
   EXPECT_EQ("success", content::EvalJs(current_frame_host(), R"(
-    const writer = new NDEFWriter();
+    const ndef = new NDEFReader();
     new Promise(async resolve => {
       try {
-        await writer.write("Hello");
+        await ndef.write("Hello");
         resolve('success');
       } catch (error) {
         resolve(error.message);

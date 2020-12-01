@@ -1741,8 +1741,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_reading_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_record.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_record.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_writer.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ndef_writer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_network_information.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_network_information.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification.cc",

@@ -7,7 +7,6 @@ modules_idl_files = [
   "ndef_record.idl",
   "ndef_reader.idl",
   "ndef_reading_event.idl",
-  "ndef_writer.idl",
 ]
 
 modules_dictionary_idl_files = [
