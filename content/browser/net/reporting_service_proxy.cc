@@ -10,12 +10,17 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "content/browser/service_worker/service_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -28,8 +33,15 @@ namespace {
 
 class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
  public:
-  explicit ReportingServiceProxyImpl(int render_process_id)
-      : render_process_id_(render_process_id) {}
+  ReportingServiceProxyImpl(
+      int render_process_id,
+      const net::NetworkIsolationKey& network_isolation_key)
+      : render_process_id_(render_process_id),
+        network_isolation_key_(network_isolation_key) {}
+
+  ReportingServiceProxyImpl(const ReportingServiceProxyImpl&) = delete;
+  ReportingServiceProxyImpl& operator=(const ReportingServiceProxyImpl&) =
+      delete;
 
   // blink::mojom::ReportingServiceProxy:
 
@@ -152,6 +164,8 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     QueueReport(url, group, "document-policy-violation", std::move(body));
   }
 
+  int render_process_id() const { return render_process_id_; }
+
  private:
   void QueueReport(const GURL& url,
                    const std::string& group,
@@ -161,27 +175,57 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     if (!rph)
       return;
 
-    // TODO(https://crbug.com/993805): Pass in the appropriate
-    // NetworkIsolationKey.
     rph->GetStoragePartition()->GetNetworkContext()->QueueReport(
-        type, group, url, net::NetworkIsolationKey::Todo(),
+        type, group, url, network_isolation_key_,
         /*user_agent=*/base::nullopt,
         base::Value::FromUniquePtrValue(std::move(body)));
   }
 
-  int render_process_id_;
+  const int render_process_id_;
+  const net::NetworkIsolationKey network_isolation_key_;
 };
 
 }  // namespace
 
-// static
-void CreateReportingServiceProxy(
-    int render_process_id,
+void CreateReportingServiceProxyForFrame(
+    RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ReportingServiceProxyImpl>(
+                                  render_frame_host->GetProcess()->GetID(),
+                                  render_frame_host->GetNetworkIsolationKey()),
+                              std::move(receiver));
+}
 
+void CreateReportingServiceProxyForServiceWorker(
+    ServiceWorkerHost* service_worker_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ReportingServiceProxyImpl>(render_process_id),
+      std::make_unique<ReportingServiceProxyImpl>(
+          service_worker_host->worker_process_id(),
+          service_worker_host->GetNetworkIsolationKey()),
+      std::move(receiver));
+}
+
+void CreateReportingServiceProxyForSharedWorker(
+    SharedWorkerHost* shared_worker_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ReportingServiceProxyImpl>(
+                                  shared_worker_host->GetProcessHost()->GetID(),
+                                  shared_worker_host->GetNetworkIsolationKey()),
+                              std::move(receiver));
+}
+
+void CreateReportingServiceProxyForDedicatedWorker(
+    DedicatedWorkerHost* dedicated_worker_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ReportingServiceProxyImpl>(
+          dedicated_worker_host->GetProcessHost()->GetID(),
+          dedicated_worker_host->GetNetworkIsolationKey()),
       std::move(receiver));
 }
 

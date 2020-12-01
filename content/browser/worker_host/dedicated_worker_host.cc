@@ -46,6 +46,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
+    const net::NetworkIsolationKey& network_isolation_key,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter)
@@ -58,6 +59,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       // TODO(https://crbug.com/1058759): Calculate the worker origin based on
       // the worker script URL.
       worker_origin_(creator_origin),
+      network_isolation_key_(network_isolation_key),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -391,18 +393,10 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
 void DedicatedWorkerHost::CreateQuicTransportConnector(
     mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHostImpl* ancestor_render_frame_host =
-      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
-  if (!ancestor_render_frame_host) {
-    // The ancestor frame may have already been closed. In that case, the worker
-    // will soon be terminated too, so abort the connection.
-    return;
-  }
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<QuicTransportConnectorImpl>(
           worker_process_host_->GetID(), /*frame=*/nullptr, worker_origin_,
-          ancestor_render_frame_host->GetIsolationInfoForSubresources()
-              .network_isolation_key()),
+          network_isolation_key_),
       std::move(receiver));
 }
 
@@ -440,7 +434,8 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/base::nullopt,
           ancestor_render_frame_host_id_, worker_origin_,
-          cross_origin_embedder_policy_, std::move(coep_reporter)),
+          network_isolation_key_, cross_origin_embedder_policy_,
+          std::move(coep_reporter)),
       std::move(receiver));
 }
 

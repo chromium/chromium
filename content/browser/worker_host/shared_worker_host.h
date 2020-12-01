@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_isolation_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -155,6 +156,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   mojo::Remote<blink::mojom::SharedWorker> TerminateRemoteWorkerForTesting();
 
   base::WeakPtr<SharedWorkerHost> AsWeakPtr();
+
+  net::NetworkIsolationKey GetNetworkIsolationKey() const;
 
   void ReportNoBinderForInterface(const std::string& error);
 

@@ -267,10 +267,6 @@
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_REPORTING)
-#include "content/browser/net/reporting_service_proxy.h"
-#endif
-
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION)
 #include "content/browser/hyphenation/hyphenation_impl.h"
 #endif
@@ -2376,12 +2372,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::CreateCodeCacheHost,
                           weak_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(ENABLE_REPORTING)
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&CreateReportingServiceProxy, GetID()));
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 
   AddUIThreadInterface(
       registry.get(),

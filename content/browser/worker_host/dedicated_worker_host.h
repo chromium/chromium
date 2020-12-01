@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
@@ -55,6 +56,7 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
       base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
       GlobalFrameRoutingId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
+      const net::NetworkIsolationKey& network_isolation_key,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter);
@@ -107,6 +109,10 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
       mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> client);
 
   void ReportNoBinderForInterface(const std::string& error);
+
+  const net::NetworkIsolationKey& GetNetworkIsolationKey() const {
+    return network_isolation_key_;
+  }
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
@@ -191,6 +197,10 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   // The origin of this worker.
   // https://html.spec.whatwg.org/C/#concept-settings-object-origin
   const url::Origin worker_origin_;
+
+  // The NetworkIsolationKey associated with this worker. Same as that of the
+  // frame or the worker that created this worker.
+  const net::NetworkIsolationKey network_isolation_key_;
 
   // The DedicatedWorker's Cross-Origin-Embedder-Policy(COEP). It is equals to
   // the nearest ancestor frame host's COEP:

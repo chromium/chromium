@@ -10,6 +10,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
@@ -27,6 +28,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
       GlobalFrameRoutingId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
+      const net::NetworkIsolationKey& network_isolation_key,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter);
@@ -60,6 +62,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   const GlobalFrameRoutingId ancestor_render_frame_host_id_;
 
   const url::Origin creator_origin_;
+  const net::NetworkIsolationKey network_isolation_key_;
   const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;

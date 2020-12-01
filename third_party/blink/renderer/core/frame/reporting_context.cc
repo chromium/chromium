@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -143,7 +144,7 @@ void ReportingContext::CountReport(Report* report) {
 const HeapMojoRemote<mojom::blink::ReportingServiceProxy>&
 ReportingContext::GetReportingService() const {
   if (!reporting_service_.is_bound()) {
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+    execution_context_->GetBrowserInterfaceBroker().GetInterface(
         reporting_service_.BindNewPipeAndPassReceiver(
             execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }

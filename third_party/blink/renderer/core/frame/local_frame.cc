@@ -2209,7 +2209,7 @@ const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
 
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
   if (!reporting_service_.is_bound()) {
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+    GetBrowserInterfaceBroker().GetInterface(
         reporting_service_.BindNewPipeAndPassReceiver(
             GetTaskRunner(blink::TaskType::kInternalDefault)));
   }

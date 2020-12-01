@@ -19,6 +19,7 @@
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/network_isolation_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
@@ -42,7 +43,8 @@ class MockDedicatedWorker
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
             worker_process_id, render_frame_host_id, render_frame_host_id,
-            url::Origin(), network::CrossOriginEmbedderPolicy(),
+            url::Origin(), net::NetworkIsolationKey::CreateTransient(),
+            network::CrossOriginEmbedderPolicy(),
             std::move(coep_reporter_remote)),
         factory_.BindNewPipeAndPassReceiver());
 

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/deprecation_report_body.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/report.h"
@@ -28,7 +28,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
   using ReportingServiceProxy = mojom::blink::ReportingServiceProxy;
 
  public:
-  MockReportingServiceProxy(ThreadSafeBrowserInterfaceBrokerProxy& broker,
+  MockReportingServiceProxy(BrowserInterfaceBrokerProxy& broker,
                             base::OnceClosure reached_callback)
       : broker_(broker), reached_callback_(std::move(reached_callback)) {
     broker.SetBinderForTesting(
@@ -114,7 +114,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       std::move(reached_callback_).Run();
   }
 
-  ThreadSafeBrowserInterfaceBrokerProxy& broker_;
+  BrowserInterfaceBrokerProxy& broker_;
   mojo::ReceiverSet<ReportingServiceProxy> receivers_;
   base::OnceClosure reached_callback_;
 
@@ -146,9 +146,8 @@ TEST_F(ReportingContextTest, DeprecationReportContent) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>();
   auto* win = dummy_page_holder->GetFrame().DomWindow();
   base::RunLoop run_loop;
-  MockReportingServiceProxy reporting_service(
-      *Platform::Current()->GetBrowserInterfaceBroker(),
-      run_loop.QuitClosure());
+  MockReportingServiceProxy reporting_service(win->GetBrowserInterfaceBroker(),
+                                              run_loop.QuitClosure());
 
   auto* body = MakeGarbageCollected<DeprecationReportBody>(
       "FeatureId", base::Time::FromJsTime(1000), "Test report");

@@ -42,7 +42,7 @@ class MockReportingServiceProxy {
 
 // Make an instance and have it receive the request.
 var proxy = new MockReportingServiceProxy();
-var interceptor = new MojoInterfaceInterceptor(blink.mojom.ReportingServiceProxy.name, "process");
+var interceptor = new MojoInterfaceInterceptor(blink.mojom.ReportingServiceProxy.name);
 interceptor.oninterfacerequest = e => proxy.bind(e.handle);
 interceptor.start();
 

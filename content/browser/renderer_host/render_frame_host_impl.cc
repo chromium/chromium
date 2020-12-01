@@ -7754,8 +7754,8 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           worker_process_id,
           /*creator_render_frame_host_id=*/GetGlobalFrameRoutingId(),
           /*ancestor_render_frame_host_id=*/GetGlobalFrameRoutingId(),
-          last_committed_origin_, cross_origin_embedder_policy_,
-          std::move(coep_reporter)),
+          last_committed_origin_, GetNetworkIsolationKey(),
+          cross_origin_embedder_policy_, std::move(coep_reporter)),
       std::move(receiver));
 }
 
