@@ -1215,7 +1215,7 @@ void CrostiniManager::StartLxd(std::string vm_name,
     std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
     return;
   }
-  if (!GetCiceroneClient()->IsLxdContainerStartingSignalConnected()) {
+  if (!GetCiceroneClient()->IsStartLxdProgressSignalConnected()) {
     LOG(ERROR) << "Async call to StartLxd can't complete when signals "
                   "are not connected.";
     std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
