@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -26,8 +28,11 @@ class ReadableStreamBytesConsumer;
 class ScriptPromiseResolver;
 class SegmentReader;
 
-class MODULES_EXPORT ImageDecoderExternal final : public ScriptWrappable,
-                                                  public BytesConsumer::Client {
+class MODULES_EXPORT ImageDecoderExternal final
+    : public ScriptWrappable,
+      public ActiveScriptWrappable<ImageDecoderExternal>,
+      public BytesConsumer::Client,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -58,6 +63,12 @@ class MODULES_EXPORT ImageDecoderExternal final : public ScriptWrappable,
 
   // GarbageCollected override.
   void Trace(Visitor*) const override;
+
+  // ExecutionContextLifecycleObserver override.
+  void ContextDestroyed() override;
+
+  // ScriptWrappable override.
+  bool HasPendingActivity() const override;
 
  private:
   void CreateImageDecoder();

@@ -60,7 +60,8 @@ bool ImageDecoderExternal::canDecodeType(String type) {
 ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
                                            const ImageDecoderInit* init,
                                            ExceptionState& exception_state)
-    : script_state_(script_state) {
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      script_state_(script_state) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 
@@ -261,6 +262,13 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
   visitor->Trace(init_data_);
   visitor->Trace(options_);
   ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+void ImageDecoderExternal::ContextDestroyed() {}
+
+bool ImageDecoderExternal::HasPendingActivity() const {
+  return !pending_metadata_decodes_.IsEmpty() || !pending_decodes_.IsEmpty();
 }
 
 void ImageDecoderExternal::CreateImageDecoder() {
