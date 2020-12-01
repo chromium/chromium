@@ -16,6 +16,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "printing.mojom.PrinterBasicInfo"
+          cpp = "::printing::PrinterBasicInfo"
+        },
+        {
           mojom = "printing.mojom.Paper"
           cpp = "::printing::PrinterSemanticCapsAndDefaults::Paper"
         },

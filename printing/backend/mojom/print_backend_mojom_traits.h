@@ -16,6 +16,34 @@
 namespace mojo {
 
 template <>
+struct StructTraits<printing::mojom::PrinterBasicInfoDataView,
+                    printing::PrinterBasicInfo> {
+  static const std::string& printer_name(const printing::PrinterBasicInfo& i) {
+    return i.printer_name;
+  }
+  static const std::string& display_name(const printing::PrinterBasicInfo& i) {
+    return i.display_name;
+  }
+  static const std::string& printer_description(
+      const printing::PrinterBasicInfo& i) {
+    return i.printer_description;
+  }
+  static int printer_status(const printing::PrinterBasicInfo& i) {
+    return i.printer_status;
+  }
+  static bool is_default(const printing::PrinterBasicInfo& i) {
+    return i.is_default;
+  }
+  static const printing::PrinterBasicInfoOptions& options(
+      const printing::PrinterBasicInfo& i) {
+    return i.options;
+  }
+
+  static bool Read(printing::mojom::PrinterBasicInfoDataView data,
+                   printing::PrinterBasicInfo* out);
+};
+
+template <>
 struct StructTraits<printing::mojom::PaperDataView,
                     printing::PrinterSemanticCapsAndDefaults::Paper> {
   static const std::string& display_name(

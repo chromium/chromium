@@ -7,6 +7,16 @@ module printing.mojom;
 import "printing/mojom/print.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Basic information for a specific printer.
+struct PrinterBasicInfo {
+  string printer_name;
+  string display_name;
+  string printer_description;
+  int32 printer_status;
+  bool is_default;
+  map<string, string> options;
+};
+
 // Paper used by printer semantic capabilities and defaults.
 struct Paper {
   string display_name;
