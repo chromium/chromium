@@ -750,10 +750,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
 
   // For downscaling, use the GOOD quality setting (appropriate for
   // thumbnailing); and, for upscaling, use the BEST quality.
-  bool is_downscale_in_both_dimensions =
-      request->scale_to().x() < request->scale_from().x() &&
-      request->scale_to().y() < request->scale_from().y();
-  SkFilterQuality filter_quality = is_downscale_in_both_dimensions
+  bool is_downscale_or_identity_in_both_dimensions =
+      request->scale_to().x() <= request->scale_from().x() &&
+      request->scale_to().y() <= request->scale_from().y();
+  SkFilterQuality filter_quality = is_downscale_or_identity_in_both_dimensions
                                        ? kMedium_SkFilterQuality
                                        : kHigh_SkFilterQuality;
 
