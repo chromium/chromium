@@ -5935,6 +5935,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     <message name="IDS_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup.">
       Restore apps &amp; pages?
     </message>
+    <message name="IDS_RESTORE_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup if the 'restore_apps_and_pages' setting is 'Ask every time', and the system is not crashed before reboot.">
+      Continue where you left off.
+    </message>
   </if>
 
 </grit-part>
