@@ -38,7 +38,7 @@ Polymer({
 
     if (this.open && this.duration !== 0) {
       this.hideTimeoutId_ = window.setTimeout(() => {
-        this._setOpen(false);
+        this.hide();
       }, this.duration);
     }
   },
@@ -59,6 +59,10 @@ Polymer({
     // the same as a previous toast.
     this.removeAttribute('role');
 
+    // Reset the aria-hidden attribute as screen readers need to access the
+    // contents of an opened toast.
+    this.removeAttribute('aria-hidden');
+
     this._setOpen(true);
     this.setAttribute('role', 'alert');
 
@@ -67,8 +71,12 @@ Polymer({
     }
   },
 
-  /** Hides the toast. */
+  /**
+   * Hides the toast and ensures that screen readers cannot its contents while
+   * hidden.
+   */
   hide() {
+    this.setAttribute('aria-hidden', 'true');
     this._setOpen(false);
   },
 });
