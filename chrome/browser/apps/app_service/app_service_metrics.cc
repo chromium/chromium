@@ -269,8 +269,6 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
     RecordBuiltInAppLaunch(BuiltInAppName::kPluginVm, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == ash::kReleaseNotesAppId) {
-    RecordBuiltInAppLaunch(BuiltInAppName::kReleaseNotes, launch_source);
   } else if (app_id == web_app::kMockSystemAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMockSystemApp, launch_source);
   }
@@ -291,9 +289,6 @@ void RecordBuiltInAppSearchResult(const std::string& app_id) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
                                   BuiltInAppName::kPluginVm);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == ash::kReleaseNotesAppId) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
-                                  BuiltInAppName::kReleaseNotes);
   }
 }
 

@@ -60,9 +60,6 @@ extern const char kChromeBetaForumURL[];
 // The URL for the help center article to fix Chrome update problems.
 extern const char kChromeFixUpdateProblems[];
 
-// Link to the release notes page managed by marketing.
-extern const char kChromeReleaseNotesURL[];
-
 // General help links for Chrome, opened using various actions.
 extern const char kChromeHelpViaKeyboardURL[];
 extern const char kChromeHelpViaMenuURL[];

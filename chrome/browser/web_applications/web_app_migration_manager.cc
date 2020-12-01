@@ -266,15 +266,6 @@ std::unique_ptr<WebApp> WebAppMigrationManager::MigrateBookmarkApp(
   web_app->SetUserLaunchOrdinal(
       bookmark_app_registrar_->GetUserLaunchOrdinal(app_id));
 
-  if (IsChromeOs()) {
-    auto chromeos_data = base::make_optional<WebAppChromeOsData>();
-    const bool should_show = !WebAppUiManager::ShouldHideAppFromUser(app_id);
-    chromeos_data->show_in_launcher = should_show;
-    chromeos_data->show_in_search = should_show;
-    chromeos_data->show_in_management = should_show;
-    web_app->SetWebAppChromeOsData(std::move(chromeos_data));
-  }
-
   WebApp::SyncFallbackData sync_fallback_data;
   sync_fallback_data.name = bookmark_app_registrar_->GetAppShortName(app_id);
   sync_fallback_data.theme_color =

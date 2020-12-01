@@ -21,26 +21,10 @@
 
 namespace app_list {
 
-namespace {
-
-constexpr char const* kAppIdsHiddenInLauncher[] = {web_app::kReleaseNotesAppId};
-
-}  // namespace
-
 bool ShouldShowInLauncher(const extensions::Extension* extension,
                           content::BrowserContext* context) {
-  return !HideInLauncherById(extension->id()) &&
-         chromeos::DemoSession::ShouldDisplayInAppLauncher(extension->id()) &&
+  return chromeos::DemoSession::ShouldDisplayInAppLauncher(extension->id()) &&
          extensions::ui_util::ShouldDisplayInAppLauncher(extension, context);
-}
-
-bool HideInLauncherById(std::string extension_id) {
-  for (auto* const id : kAppIdsHiddenInLauncher) {
-    if (id == extension_id) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void AddMenuItemIconsForSystemApps(const std::string& app_id,

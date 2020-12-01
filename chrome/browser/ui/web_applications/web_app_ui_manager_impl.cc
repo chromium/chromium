@@ -92,15 +92,6 @@ std::unique_ptr<WebAppUiManager> WebAppUiManager::Create(Profile* profile) {
 }
 
 // static
-bool WebAppUiManager::ShouldHideAppFromUser(const AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return app_list::HideInLauncherById(app_id);
-#else
-  return false;
-#endif
-}
-
-// static
 WebAppUiManagerImpl* WebAppUiManagerImpl::Get(Profile* profile) {
   auto* provider = WebAppProvider::Get(profile);
   return provider ? provider->ui_manager().AsImpl() : nullptr;

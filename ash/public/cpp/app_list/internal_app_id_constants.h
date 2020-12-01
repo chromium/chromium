@@ -22,11 +22,6 @@ constexpr char kInternalAppIdSettings[] = "dhnmfjegnohoakobpikffnelcemaplkm";
 constexpr char kInternalAppIdContinueReading[] =
     "fbokpncipdhffndmljhhidahghagaonp";
 
-// Generated as
-// web_app::GenerateAppIdFromURL(GURL(
-// "https://google.com/chromebook/whatsnew/embedded/")).
-constexpr char kReleaseNotesAppId[] = "kddjchdmnnpakappplfnloipgcbioilo";
-
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_APP_LIST_INTERNAL_APP_ID_CONSTANTS_H_

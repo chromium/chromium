@@ -17,7 +17,6 @@
       <!-- CrOS internal apps images -->
       <include name="IDR_SHORTCUT_VIEWER_LOGO_192" file="unscaled_resources/shortcut_viewer_logo_192.png" type="BINDATA" />
       <include name="IDR_SETTINGS_LOGO_192" file="unscaled_resources/settings_logo_192.png" type="BINDATA" />
-      <include name="IDR_RELEASE_NOTES_APP_192" file="unscaled_resources/release_notes_logo_192.png" type="BINDATA" />
       <include name="IDR_PHONE_HUB_ONBOARDING_IMAGE" file="unscaled_resources/phone_hub_onboarding_image.png" type="BINDATA" />
       <include name="IDR_PHONE_HUB_CONNECTING_IMAGE" file="unscaled_resources/phone_hub_connecting_image.png" type="BINDATA" />
       <include name="IDR_PHONE_HUB_ERROR_STATE_IMAGE" file="unscaled_resources/phone_hub_error_state_image.png" type="BINDATA" />

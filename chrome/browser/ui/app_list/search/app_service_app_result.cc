@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -247,16 +246,6 @@ void AppServiceAppResult::HandleSuggestionChip(Profile* profile) {
   // in the proper position.
   SetDisplayIndex(ash::SearchResultDisplayIndex::kFirstIndex);
   SetDisplayType(ash::SearchResultDisplayType::kChip);
-
-  if (id() == ash::kReleaseNotesAppId) {
-    // TODO(b/169711884): Decrease times left only when the chip becomes
-    // visible.
-    chromeos::ReleaseNotesStorage(profile)
-        .DecreaseTimesLeftToShowSuggestionChip();
-    // Make sure that if both Continue Reading and Release Notes are available,
-    // Release Notes shows up first in the suggestion chip container.
-    SetPositionPriority(1.0f);
-  }
 }
 
 void AppServiceAppResult::UpdateContinueReadingFavicon(

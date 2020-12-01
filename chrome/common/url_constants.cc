@@ -41,10 +41,6 @@ const char kChromeBetaForumURL[] =
 const char kChromeFixUpdateProblems[] =
     "https://support.google.com/chrome?p=fix_chrome_updates";
 
-// TODO: replace w/link after marketing provides it.
-const char kChromeReleaseNotesURL[] =
-    "https://www.google.com/chromebook/whatsnew/embedded/";
-
 const char kChromeHelpViaKeyboardURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
