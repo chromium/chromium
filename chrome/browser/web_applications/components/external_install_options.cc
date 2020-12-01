@@ -35,39 +35,45 @@ ExternalInstallOptions& ExternalInstallOptions::operator=(
 
 bool ExternalInstallOptions::operator==(
     const ExternalInstallOptions& other) const {
-  return std::tie(install_url, user_display_mode, install_source,
-                  add_to_applications_menu, add_to_desktop,
-                  add_to_quick_launch_bar, add_to_search, add_to_management,
-                  run_on_os_login, is_disabled,
-                  override_previous_user_uninstall, only_for_new_users,
-                  user_type_allowlist, gate_on_feature,
+  auto AsTuple = [](const ExternalInstallOptions& options) {
+    // Keep in order declared in external_install_options.h.
+    return std::tie(
+        // clang-format off
+        options.install_url,
+        options.user_display_mode,
+        options.install_source,
+        options.add_to_applications_menu,
+        options.add_to_desktop,
+        options.add_to_quick_launch_bar,
+        options.add_to_search,
+        options.add_to_management,
+        options.run_on_os_login,
+        options.is_disabled,
+        options.override_previous_user_uninstall,
+        options.only_for_new_users,
+        options.user_type_allowlist,
+        options.gate_on_feature,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                  disable_if_arc_supported, disable_if_tablet_form_factor,
+        options.disable_if_arc_supported,
+        options.disable_if_tablet_form_factor,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-                  bypass_service_worker_check, require_manifest,
-                  force_reinstall, wait_for_windows_closed, install_placeholder,
-                  reinstall_placeholder, launch_query_params,
-                  load_and_await_service_worker_registration,
-                  service_worker_registration_url, uninstall_and_replace,
-                  additional_search_terms, only_use_app_info_factory) ==
-         std::tie(
-             other.install_url, other.user_display_mode, other.install_source,
-             other.add_to_applications_menu, other.add_to_desktop,
-             other.add_to_quick_launch_bar, other.add_to_search,
-             other.add_to_management, other.run_on_os_login, other.is_disabled,
-             other.override_previous_user_uninstall, other.only_for_new_users,
-             other.user_type_allowlist, other.gate_on_feature,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             other.disable_if_arc_supported,
-             other.disable_if_tablet_form_factor,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-             other.bypass_service_worker_check, other.require_manifest,
-             other.force_reinstall, other.wait_for_windows_closed,
-             other.install_placeholder, other.reinstall_placeholder,
-             other.launch_query_params,
-             other.load_and_await_service_worker_registration,
-             other.service_worker_registration_url, other.uninstall_and_replace,
-             other.additional_search_terms, other.only_use_app_info_factory);
+        options.bypass_service_worker_check,
+        options.require_manifest,
+        options.force_reinstall,
+        options.wait_for_windows_closed,
+        options.install_placeholder,
+        options.reinstall_placeholder,
+        options.launch_query_params,
+        options.load_and_await_service_worker_registration,
+        options.service_worker_registration_url,
+        options.uninstall_and_replace,
+        options.additional_search_terms,
+        options.only_use_app_info_factory,
+        options.app_info_factory
+        // clang-format on
+    );
+  };
+  return AsTuple(*this) == AsTuple(other);
 }
 
 namespace {

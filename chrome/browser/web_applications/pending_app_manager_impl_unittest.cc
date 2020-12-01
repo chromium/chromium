@@ -105,7 +105,11 @@ ExternalInstallOptions GetFooInstallOptionsWithWebAppInfo(
   ExternalInstallOptions options(FooWebAppUrl(), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.only_use_app_info_factory = true;
-  options.app_info_factory = base::BindRepeating(&GetFooWebApplicationInfo);
+  // Static to ensure re-use across multiple function calls for
+  // ExternalInstallOptions equality checking.
+  static WebApplicationInfoFactory app_info_factory =
+      base::BindRepeating(&GetFooWebApplicationInfo);
+  options.app_info_factory = app_info_factory;
 
   if (override_previous_user_uninstall.has_value())
     options.override_previous_user_uninstall =
