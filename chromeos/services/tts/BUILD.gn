@@ -62,3 +62,16 @@ generate_library_loader("libchrometts") {
     "GoogleTtsGetFramesInAudioBuffer",
   ]
 }
+
+source_set("services_unittests") {
+  testonly = true
+  deps = [
+    ":tts",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/services/tts/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+  sources = [ "tts_service_unittest.cc" ]
+}

@@ -55,6 +55,15 @@ class TtsService : public mojom::TtsService,
   // Maybe exit this process.
   void MaybeExit();
 
+  mojo::Receiver<mojom::TtsStreamFactory>* tts_stream_factory_for_testing() {
+    return &tts_stream_factory_;
+  }
+
+  std::deque<mojo::PendingReceiver<mojom::TtsStreamFactory>>&
+  pending_tts_stream_factory_receivers_for_testing() {
+    return pending_tts_stream_factory_receivers_;
+  }
+
  private:
   // mojom::TtsService:
   void BindTtsStreamFactory(
@@ -77,11 +86,18 @@ class TtsService : public mojom::TtsService,
   void StopLocked(bool clear_buffers = true)
       EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
 
+  // Satisfies any pending tts stream factory receivers.
+  void ProcessPendingTtsStreamFactories();
+
   // Connection to tts in the browser.
   mojo::Receiver<mojom::TtsService> service_receiver_;
 
   // Factory creating various types of streams.
   mojo::Receiver<mojom::TtsStreamFactory> tts_stream_factory_;
+
+  // A list of pending component extension requesting a tts stream factory.
+  std::deque<mojo::PendingReceiver<mojom::TtsStreamFactory>>
+      pending_tts_stream_factory_receivers_;
 
   std::unique_ptr<GoogleTtsStream> google_tts_stream_;
 

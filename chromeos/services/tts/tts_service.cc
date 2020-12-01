@@ -34,9 +34,12 @@ TtsService::~TtsService() = default;
 void TtsService::BindTtsStreamFactory(
     mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
     mojo::PendingRemote<audio::mojom::StreamFactory> factory) {
-  tts_stream_factory_.Bind(std::move(receiver));
+  pending_tts_stream_factory_receivers_.push_back(std::move(receiver));
+  ProcessPendingTtsStreamFactories();
 
-  // TODO(accessibility): make it possible to change this dynamically.
+  // TODO(accessibility): make it possible to change this dynamically. Also,
+  // decouple TtsStreamFactory from AudioStreamFactory above into different
+  // calls.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_MONO, kDefaultSampleRate,
                                 kDefaultBufferSize);
@@ -51,6 +54,9 @@ void TtsService::CreateGoogleTtsStream(CreateGoogleTtsStreamCallback callback) {
   google_tts_stream_ =
       std::make_unique<GoogleTtsStream>(this, std::move(receiver));
   std::move(callback).Run(std::move(remote));
+
+  tts_stream_factory_.reset();
+  ProcessPendingTtsStreamFactories();
 }
 
 void TtsService::CreatePlaybackTtsStream(
@@ -61,6 +67,9 @@ void TtsService::CreatePlaybackTtsStream(
       std::make_unique<PlaybackTtsStream>(this, std::move(receiver));
   std::move(callback).Run(std::move(remote), kDefaultSampleRate,
                           kDefaultBufferSize);
+
+  tts_stream_factory_.reset();
+  ProcessPendingTtsStreamFactories();
 }
 
 void TtsService::Play(
@@ -158,6 +167,16 @@ void TtsService::StopLocked(bool clear_buffers) {
   output_device_->Pause();
   if (clear_buffers)
     buffers_.clear();
+}
+
+void TtsService::ProcessPendingTtsStreamFactories() {
+  if (tts_stream_factory_.is_bound() ||
+      pending_tts_stream_factory_receivers_.empty())
+    return;
+
+  auto factory = std::move(pending_tts_stream_factory_receivers_.front());
+  pending_tts_stream_factory_receivers_.pop_front();
+  tts_stream_factory_.Bind(std::move(factory));
 }
 
 TtsService::AudioBuffer::AudioBuffer() = default;
