@@ -33,22 +33,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Store a reference to the current first responder.
-UIResponder* g_first_responder = nil;
-
-}  // namespace
-
-// Category used to get the first responder.
-@implementation UIResponder (FirstResponder)
-
-- (void)cr_markSelfCurrentFirstResponder {
-  g_first_responder = self;
-}
-
-@end
-
 void SetA11yLabelAndUiAutomationName(
     NSObject<UIAccessibilityIdentification>* element,
     int idsAccessibilityLabel,
@@ -315,18 +299,6 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 UIResponder* GetFirstResponder() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  if (base::FeatureList::IsEnabled(kFirstResponderSendAction)) {
-    DCHECK_CURRENTLY_ON(web::WebThread::UI);
-    DCHECK(!g_first_responder);
-    [[UIApplication sharedApplication]
-        sendAction:@selector(cr_markSelfCurrentFirstResponder)
-                to:nil
-              from:nil
-          forEvent:nil];
-    UIResponder* firstResponder = g_first_responder;
-    g_first_responder = nil;
-    return firstResponder;
-  }
   return GetFirstResponderSubview([UIApplication sharedApplication].keyWindow);
 }
 

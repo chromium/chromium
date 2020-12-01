@@ -34,9 +34,6 @@ extern const base::Feature kForceUnstackedTabstrip;
 // features in tests works.
 extern const base::Feature kTestFeature;
 
-// Verify if the crash in https://crbug.com/816427 is fixed on iOS 12.
-extern const base::Feature kFirstResponderSendAction;
-
 // Feature flag that enables the native UI Context Menus (not for Web content).
 extern const base::Feature kEnableNativeContextMenus;
 
