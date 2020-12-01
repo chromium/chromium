@@ -237,6 +237,7 @@
   },
   "ios-simulator": {
     "gn_args": {
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "enable_run_ios_unittests_with_xctest": true,
       "ios_use_goma_rbe": true,
       "is_component_build": false,
@@ -245,6 +246,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
+      "use_clang_coverage": true,
       "use_goma": true
     }
   },
@@ -257,6 +259,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
       "use_goma": true
@@ -271,6 +274,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
       "use_goma": true
@@ -316,6 +320,7 @@
   },
   "ios-simulator-full-configs": {
     "gn_args": {
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "enable_run_ios_unittests_with_xctest": true,
       "is_component_build": false,
       "is_debug": true,
@@ -323,6 +328,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
+      "use_clang_coverage": true,
       "use_goma": true
     }
   },
@@ -335,6 +341,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "target_environment": "simulator",
       "target_os": "ios",
       "use_clang_coverage": true,
       "use_goma": true

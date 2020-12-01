@@ -1028,12 +1028,12 @@
       'ios13-sdk-simulator': 'ios_simulator_debug_static_rbe_bot_xctest',
       'ios14-beta-simulator': 'ios_simulator_debug_static_rbe_bot_xctest',
       'ios14-sdk-simulator': 'ios_simulator_debug_static_rbe_bot_xctest',
-      'ios-simulator': 'ios_simulator_debug_static_rbe_bot_xctest',
-      'ios-simulator-coverage-exp': 'clang_code_coverage_ios_partial_instrumentation_xctest',
-      'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-full-configs-coverage-exp': 'clang_code_coverage_ios_partial_instrumentation_xctest',
+      'ios-simulator': 'ios_simulator_rbe_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator-coverage-exp': 'ios_simulator_rbe_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator-full-configs-coverage-exp': 'ios_simulator_rbe_code_coverage_partial_instrumentation_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest',
-      'ios-simulator-code-coverage': 'clang_code_coverage_ios_partial_instrumentation_xctest',
+      'ios-simulator-code-coverage': 'ios_simulator_rbe_code_coverage_partial_instrumentation_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_rbe_bot_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_multi_window_xctest',
@@ -1694,8 +1694,12 @@
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_use_goma_rbe', 'xctest',
     ],
 
-    'clang_code_coverage_ios_partial_instrumentation_xctest': [
-      'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_use_goma_rbe', 'partial_code_coverage_instrumentation', 'xctest',
+    'ios_simulator_code_coverage_partial_instrumentation_xctest': [
+      'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
+    ],
+
+    'ios_simulator_rbe_code_coverage_partial_instrumentation_xctest': [
+      'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'ios_use_goma_rbe', 'partial_code_coverage_instrumentation', 'xctest',
     ],
 
     'clang_tot_asan_lsan_static_release': [
