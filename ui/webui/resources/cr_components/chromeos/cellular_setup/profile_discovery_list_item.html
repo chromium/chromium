@@ -3,6 +3,8 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="cellular_setup_icons.html">
 
 <dom-module id="profile-discovery-list-item">
   <template>
@@ -23,13 +25,9 @@
       }
 
       #checkmark {
-        -webkit-mask: url(activation_code_page_checked.svg) no-repeat center;
-        background-color: var(--google-blue-600);
-        height: 20px;
+        --iron-icon-fill-color: var(--google-blue-600);
         margin-inline-end: 8px;
-        mask: url(activation_code_page_checked.svg) no-repeat center;
         padding-inline-end: var(--cr-section-padding);
-        width: 20px;
       }
     </style>
     <div class="two-line no-padding" selectable>
@@ -47,8 +45,11 @@
             </div>
           </div>
         </div>
-        <span id="checkmark" hidden$="[[!selected]]"
+        <iron-icon id="checkmark"
+            icon="cellular-setup:checked"
+            hidden$="[[!selected]]"
             tabindex="-1">
+        </iron-icon>
       </div>
     </div>
   </template>

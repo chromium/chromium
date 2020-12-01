@@ -27,22 +27,6 @@
              compress="gzip" />
 
     <!-- CellularSetup Images -->
-    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ACTIVATION_CODE_PAGE_CAMERA_SVG"
-             file="cr_components/chromeos/cellular_setup/activation_code_page_camera.svg"
-             type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ACTIVATION_CODE_PAGE_CHECKED_SVG"
-             file="cr_components/chromeos/cellular_setup/activation_code_page_checked.svg"
-             type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ACTIVATION_CODE_PAGE_SWITCH_CAMERA_SVG"
-             file="cr_components/chromeos/cellular_setup/activation_code_page_switch_camera.svg"
-             type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ACTIVATION_CODE_PAGE_ERROR_SVG"
-             file="cr_components/chromeos/cellular_setup/activation_code_page_error.svg"
-             type="BINDATA"
-             compress="gzip" />
     <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ERROR_1X_PNG"
              file="cr_components/chromeos/cellular_setup/error_1x.png"
              type="BINDATA"

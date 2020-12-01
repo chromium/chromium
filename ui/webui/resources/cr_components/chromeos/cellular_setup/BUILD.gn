@@ -366,6 +366,7 @@ group("polymer3_elements") {
     ":activation_code_page_module",
     ":base_page_module",
     ":button_bar_module",
+    ":cellular_setup_icons_module",
     ":cellular_setup_module",
     ":esim_flow_ui_module",
     ":final_page_module",
@@ -473,6 +474,12 @@ polymer_modulizer("cellular_setup") {
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("cellular_setup_icons") {
+  js_file = "cellular_setup_icons.m.js"
+  html_file = "cellular_setup_icons.html"
+  html_type = "iron-iconset"
 }
 
 js_modulizer("modulize") {
