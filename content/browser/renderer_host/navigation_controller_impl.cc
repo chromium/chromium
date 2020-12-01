@@ -1560,6 +1560,13 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
   new_entry->set_site_instance(
       static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance()));
   new_entry->SetOriginalRequestURL(params.original_request_url);
+
+  if (!is_same_document) {
+    DCHECK_EQ(request->IsOverridingUserAgent() && !rfh->GetParent(),
+              params.is_overriding_user_agent);
+  } else {
+    DCHECK_EQ(rfh->is_overriding_user_agent(), params.is_overriding_user_agent);
+  }
   new_entry->SetIsOverridingUserAgent(params.is_overriding_user_agent);
 
   // Update the FrameNavigationEntry for new main frame commits.

@@ -1124,6 +1124,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool is_mhtml_document() { return is_mhtml_document_; }
 
+  bool is_overriding_user_agent() { return is_overriding_user_agent_; }
+
   // Notifies the render frame that |frame_tree_node_| has had the sticky
   // user activation bit set for the first time.
   void DidReceiveFirstUserActivation();
@@ -3101,6 +3103,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in the navigation commit. Setting the value should be based only on
   // browser side state as this value is used in security checks.
   bool is_mhtml_document_ = false;
+
+  // Whether the currently committed document is overriding the user agent or
+  // not.
+  bool is_overriding_user_agent_ = false;
 
   // The last reported character encoding, not canonicalized.
   std::string last_reported_encoding_;

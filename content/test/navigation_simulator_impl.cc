@@ -1358,6 +1358,11 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
           navigation_url_, params->item_sequence_number,
           params->document_sequence_number));
 
+  params->is_overriding_user_agent =
+      request_ ? (request_->commit_params().is_overriding_user_agent &&
+                  frame_tree_node_->IsMainFrame())
+               : false;
+
   return params;
 }
 

@@ -728,6 +728,10 @@ class CONTENT_EXPORT NavigationRequest
   // properly determine SiteInstances and process allocation.
   UrlInfo GetUrlInfo();
 
+  bool IsOverridingUserAgent() const {
+    return commit_params_->is_overriding_user_agent || entry_overrides_ua_;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -1081,10 +1085,6 @@ class CONTENT_EXPORT NavigationRequest
   void CreateCoepReporter(StoragePartition* storage_partition);
 
   base::Optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
-
-  bool IsOverridingUserAgent() const {
-    return commit_params_->is_overriding_user_agent || entry_overrides_ua_;
-  }
 
   // Returns the user-agent override, or an empty string if one isn't set.
   std::string GetUserAgentOverride();
