@@ -880,7 +880,8 @@ bool IsHorizontalFlex(LayoutObject* layout_flex) {
 }
 
 Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
-                                                  bool is_horizontal) {
+                                                  bool is_horizontal,
+                                                  bool is_reverse) {
   Vector<Vector<PhysicalRect>> flex_lines;
 
   // Flex containers can't get fragmented yet, but this may change in the
@@ -907,13 +908,14 @@ Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
       LayoutUnit item_end = is_horizontal ? item_rect.X() + item_rect.Width()
                                           : item_rect.Y() + item_rect.Height();
 
-      if (flex_lines.IsEmpty() || item_start < progression) {
+      if (flex_lines.IsEmpty() ||
+          (is_reverse ? item_end > progression : item_start < progression)) {
         flex_lines.emplace_back();
       }
 
       flex_lines.back().push_back(item_rect);
 
-      progression = item_end;
+      progression = is_reverse ? item_start : item_end;
     }
   }
 
@@ -932,6 +934,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
   auto* layout_box = To<LayoutBox>(layout_object);
   DCHECK(layout_object);
   bool is_horizontal = IsHorizontalFlex(layout_object);
+  bool is_reverse =
+      layout_object->StyleRef().ResolvedIsRowReverseFlexDirection() ||
+      layout_object->StyleRef().ResolvedIsColumnReverseFlexDirection();
 
   std::unique_ptr<protocol::DictionaryValue> flex_info =
       protocol::DictionaryValue::create();
@@ -945,7 +950,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
 
   // Gather all flex items, sorted by flex line.
   Vector<Vector<PhysicalRect>> flex_lines =
-      GetFlexLinesAndItems(layout_box, is_horizontal);
+      GetFlexLinesAndItems(layout_box, is_horizontal, is_reverse);
 
   // Send the offset information for each item to the frontend.
   std::unique_ptr<protocol::ListValue> lines_info =
