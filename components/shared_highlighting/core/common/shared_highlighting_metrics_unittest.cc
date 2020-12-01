@@ -200,6 +200,25 @@ TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_InvalidSourceId) {
   EXPECT_EQ(0u, entries.size());
 }
 
+// Tests that using the endpoints with a custom recorder won't use the static
+// UKM recorder.
+TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkm_CustomRecorder) {
+  ukm::TestAutoSetUkmRecorder static_ukm_recorder;
+  ukm::TestUkmRecorder custom_ukm_recorder;
+  ukm::SourceId source_id = 1;
+
+  LogLinkOpenedUkmEvent(&custom_ukm_recorder, source_id, GURL(),
+                        /*success=*/true);
+
+  auto static_entries = static_ukm_recorder.GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkOpened::kEntryName);
+  EXPECT_EQ(0U, static_entries.size());
+
+  auto custom_entries = custom_ukm_recorder.GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkOpened::kEntryName);
+  EXPECT_EQ(1U, custom_entries.size());
+}
+
 TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_Success) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ukm::SourceId source_id = 1;
@@ -241,6 +260,26 @@ TEST_F(SharedHighlightingMetricsTest,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
   EXPECT_EQ(0u, entries.size());
+}
+
+// Tests that using the endpoints with a custom recorder won't use the static
+// UKM recorder.
+TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkm_CustomRecorder) {
+  ukm::TestAutoSetUkmRecorder static_ukm_recorder;
+  ukm::TestUkmRecorder custom_ukm_recorder;
+  ukm::SourceId source_id = 1;
+
+  LogLinkGeneratedSuccessUkmEvent(&custom_ukm_recorder, source_id);
+  LogLinkGeneratedErrorUkmEvent(&custom_ukm_recorder, source_id,
+                                LinkGenerationError::kEmptySelection);
+
+  auto static_entries = static_ukm_recorder.GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
+  EXPECT_EQ(0U, static_entries.size());
+
+  auto custom_entries = custom_ukm_recorder.GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
+  EXPECT_EQ(2U, custom_entries.size());
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_METRICS_H_
 #define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -84,19 +85,52 @@ void LogGenerateErrorIFrame();
 // Records a UKM event for opening a link with text fragments. |source_id|
 // refers to the navigation action's ID, |referrer| will be used to record the
 // source and |success| should be true only if fragments highlighting was a
-// complete success. This event can only be recorded once per navigation.
+// complete success. This event can only be recorded once per navigation, and
+// this function will record using the static Recorder instance. This API can
+// only be used when calling from the browser process, otherwise no event will
+// be recorded.
 void LogLinkOpenedUkmEvent(ukm::SourceId source_id,
                            const GURL& referrer,
                            bool success);
 
+// Records a UKM event for opening a link with text fragments. |source_id|
+// refers to the navigation action's ID, |referrer| will be used to record the
+// source and |success| should be true only if fragments highlighting was a
+// complete success. This event can only be recorded once per navigation, and
+// will record using the given custom |recorder|. Prefer this API when calling
+// from a process other than the browser process.
+void LogLinkOpenedUkmEvent(ukm::UkmRecorder* recorder,
+                           ukm::SourceId source_id,
+                           const GURL& referrer,
+                           bool success);
+
 // Records a UKM event for successfully generating a link with text fragments.
-// |source_id| refers to the current frame.
+// |source_id| refers to the current frame, and this function will record using
+// the static Recorder. This API can only be used when calling from the browser
+// process, otherwise no event will be recorded.
 void LogLinkGeneratedSuccessUkmEvent(ukm::SourceId source_id);
+
+// Records a UKM event for successfully generating a link with text fragments.
+// |source_id| refers to the current frame. This function will record using the
+// given custom |recorder|. Prefer this API when calling from a process other
+// than the browser process.
+void LogLinkGeneratedSuccessUkmEvent(ukm::UkmRecorder* recorder,
+                                     ukm::SourceId source_id);
 
 // Records a UKM event for failing to generate a link with text fragments.
 // |source_id| refers to the current frame and |reason| highlights the cause of
-// the failure.
+// the failure. This function will record using the static Recorder. This API
+// can only be used when calling from the browser process, otherwise no event
+// will be recorded.
 void LogLinkGeneratedErrorUkmEvent(ukm::SourceId source_id,
+                                   LinkGenerationError reason);
+
+// Records a UKM event for failing to generate a link with text fragments.
+// |source_id| refers to the current frame and |reason| highlights the cause of
+// the failure. This function will record using the given custom |recorder|.
+// Prefer this API when calling from a process other than the browser process.
+void LogLinkGeneratedErrorUkmEvent(ukm::UkmRecorder* recorder,
+                                   ukm::SourceId source_id,
                                    LinkGenerationError reason);
 
 }  // namespace shared_highlighting

@@ -1694,6 +1694,7 @@ class CORE_EXPORT Document : public ContainerNode,
  private:
   friend class DocumentTest;
   friend class IgnoreDestructiveWriteCountIncrementer;
+  friend class TextFragmentSelectorGeneratorTest;
   friend class ThrowOnDynamicMarkupInsertionCountIncrementer;
   friend class IgnoreOpensDuringUnloadCountIncrementer;
   friend class NthIndexCache;
@@ -1705,6 +1706,8 @@ class CORE_EXPORT Document : public ContainerNode,
                            BeforeMatchExpandedHiddenMatchableUkm);
   FRIEND_TEST_ALL_PREFIXES(TextFinderSimTest,
                            BeforeMatchExpandedHiddenMatchableUkmNoHandler);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentAnchorMetricsTest, LinkOpenedSuccessUKM);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentAnchorMetricsTest, LinkOpenedFailedUKM);
   class NetworkStateObserver;
 
   friend class AXContext;

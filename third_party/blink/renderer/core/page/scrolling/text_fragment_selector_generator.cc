@@ -363,6 +363,9 @@ void TextFragmentSelectorGenerator::NotifySelectorReady(
       "SharedHighlights.LinkGenerated",
       selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
 
+  ukm::UkmRecorder* recorder = selection_frame_->GetDocument()->UkmRecorder();
+  ukm::SourceId source_id = selection_frame_->GetDocument()->UkmSourceID();
+
   if (selector.Type() != TextFragmentSelector::SelectorType::kInvalid) {
     UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.ParamLength",
                               selector.ToString().length());
@@ -375,6 +378,8 @@ void TextFragmentSelectorGenerator::NotifySelectorReady(
     UMA_HISTOGRAM_ENUMERATION(
         "SharedHighlights.LinkGenerated.SelectorParameters",
         TextFragmentAnchorMetrics::GetParametersForSelector(selector));
+
+    shared_highlighting::LogLinkGeneratedSuccessUkmEvent(recorder, source_id);
   } else {
     UMA_HISTOGRAM_EXACT_LINEAR(
         "SharedHighlights.LinkGenerated.Error.Iterations", iteration_,
@@ -383,8 +388,11 @@ void TextFragmentSelectorGenerator::NotifySelectorReady(
                         base::DefaultTickClock::GetInstance()->NowTicks() -
                             generation_start_time_);
 
-    shared_highlighting::LogLinkGenerationErrorReason(
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown);
+    LinkGenerationError error =
+        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
+    shared_highlighting::LogLinkGenerationErrorReason(error);
+    shared_highlighting::LogLinkGeneratedErrorUkmEvent(recorder, source_id,
+                                                       error);
   }
 
   std::move(pending_generate_selector_callback_).Run(selector.ToString());

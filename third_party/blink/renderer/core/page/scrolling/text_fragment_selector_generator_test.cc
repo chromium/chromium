@@ -10,7 +10,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -22,6 +24,11 @@
 using LinkGenerationError = shared_highlighting::LinkGenerationError;
 
 namespace blink {
+
+namespace {
+const char kSuccessUkmMetric[] = "Success";
+const char kErrorUkmMetric[] = "Error";
+}  // namespace
 
 class TextFragmentSelectorGeneratorTest : public SimTest {
  public:
@@ -39,6 +46,16 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     // Should not have logged errors in a success case.
     histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error",
                                        0);
+
+    auto* recorder =
+        static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+    auto entries = recorder->GetEntriesByName(
+        ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
+    ASSERT_EQ(1u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[0];
+    EXPECT_EQ(GetDocument().UkmSourceID(), entry->source_id);
+    recorder->ExpectEntryMetric(entry, kSuccessUkmMetric, true);
+    EXPECT_FALSE(recorder->GetEntryMetric(entry, kErrorUkmMetric));
   }
 
   void VerifySelectorFails(Position selected_start,
@@ -49,9 +66,22 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
 
     histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                         error, 1);
+
+    auto* recorder =
+        static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+    auto entries = recorder->GetEntriesByName(
+        ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
+    ASSERT_EQ(1u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[0];
+    EXPECT_EQ(GetDocument().UkmSourceID(), entry->source_id);
+    recorder->ExpectEntryMetric(entry, kSuccessUkmMetric, false);
+    recorder->ExpectEntryMetric(entry, kErrorUkmMetric,
+                                static_cast<int64_t>(error));
   }
 
   String GenerateSelector(Position selected_start, Position selected_end) {
+    StubUkmRecorder();
+
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
@@ -78,8 +108,19 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     return selector;
   }
 
- private:
+ protected:
+  void StubUkmRecorder() {
+    // Needed to keep old recorders alive, as other instances might depend on
+    // one of them, causing tests to crash during teardown.
+    old_ukm_recorders_.push_back(std::move(GetDocument().ukm_recorder_));
+    GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
+  }
+
   base::HistogramTester histogram_tester_;
+
+  // TODO(crbug.com/1153990): Find a better mocking solution and clean up this
+  // variable.
+  std::vector<std::unique_ptr<ukm::UkmRecorder>> old_ukm_recorders_;
 };
 
 // Basic exact selector case.

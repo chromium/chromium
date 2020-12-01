@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
 
 #include "base/test/simple_test_tick_clock.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -20,9 +22,10 @@
 
 namespace blink {
 
-namespace {
-
 using test::RunPendingTasks;
+
+const char kSuccessUkmMetric[] = "Success";
+const char kSourceUkmMetric[] = "Source";
 
 class TextFragmentAnchorMetricsTest : public SimTest {
  public:
@@ -59,7 +62,12 @@ class TextFragmentAnchorMetricsTest : public SimTest {
     Compositor().BeginFrame();
   }
 
+ protected:
   HistogramTester histogram_tester_;
+
+  // TODO(crbug.com/1153990): Find a better mocking solution and clean up this
+  // variable.
+  std::unique_ptr<ukm::UkmRecorder> old_ukm_recorder_;
 };
 
 // Test UMA metrics collection
@@ -1533,6 +1541,91 @@ TEST_F(TextFragmentAnchorMetricsTest, SpansMultipleBlocksSingleBlock) {
       "TextFragmentAnchor.Unknown.SpansMultipleBlocks", 0, 1);
 }
 
-}  // namespace
+// Tests that a LinkOpened UKM Event is recorded upon a successful fragment
+// highlight.
+TEST_F(TextFragmentAnchorMetricsTest, LinkOpenedSuccessUKM) {
+  SimRequest request("https://example.com/test.html#:~:text=test%20page",
+                     "text/html");
+  LoadURL("https://example.com/test.html#:~:text=test%20page");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 2200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Stub UKM Recorder. Set the older recorder as member variable as other
+  // instances might depend on it. Its destruction would cause the test to crash
+  // during teardown.
+  old_ukm_recorder_ = std::move(GetDocument().ukm_recorder_);
+  GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  auto* recorder =
+      static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+
+  auto entries = recorder->GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkOpened::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  EXPECT_EQ(GetDocument().UkmSourceID(), entry->source_id);
+  recorder->ExpectEntryMetric(entry, kSuccessUkmMetric, /*success=*/true);
+  EXPECT_TRUE(recorder->GetEntryMetric(entry, kSourceUkmMetric));
+}
+
+// Tests that a LinkOpened UKM Event is recorded upon a failed fragment
+// highlight.
+TEST_F(TextFragmentAnchorMetricsTest, LinkOpenedFailedUKM) {
+  SimRequest request(
+      "https://example.com/test.html#:~:text=not%20on%20the%20page",
+      "text/html");
+  LoadURL("https://example.com/test.html#:~:text=not%20on%20the%20page");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 2200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Stub UKM Recorder. Set the older recorder as member variable as other
+  // instances might depend on it. Its destruction would cause the test to crash
+  // during teardown.
+  old_ukm_recorder_ = std::move(GetDocument().ukm_recorder_);
+  GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  auto* recorder =
+      static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+
+  auto entries = recorder->GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkOpened::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  EXPECT_EQ(GetDocument().UkmSourceID(), entry->source_id);
+  recorder->ExpectEntryMetric(entry, kSuccessUkmMetric, /*success=*/false);
+  EXPECT_TRUE(recorder->GetEntryMetric(entry, kSourceUkmMetric));
+}
 
 }  // namespace blink
