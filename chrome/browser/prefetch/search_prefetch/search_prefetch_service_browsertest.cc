@@ -8,7 +8,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
@@ -34,6 +37,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -44,6 +48,7 @@
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
 namespace {
@@ -250,6 +255,14 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     model->Add(std::make_unique<TemplateURL>(data));
   }
 
+  void OpenDevToolsWindow(content::WebContents* tab) {
+    window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(tab, true);
+  }
+
+  void CloseDevToolsWindow() {
+    DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
@@ -400,6 +413,8 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   // When set to true, serves a response that hangs after the start of the body.
   bool hang_requests_after_start_ = false;
+
+  DevToolsWindow* window_ = nullptr;
 };
 
 class SearchPrefetchServiceDisabledBrowserTest
@@ -528,6 +543,120 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+}
+
+class HeaderObserverContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  HeaderObserverContentBrowserClient() = default;
+  ~HeaderObserverContentBrowserClient() override = default;
+
+  // ContentBrowserClient overrides:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override;
+
+  bool had_raw_request_info() { return had_raw_request_info_; }
+
+  void set_had_raw_request_info(bool had_raw_request_info) {
+    had_raw_request_info_ = had_raw_request_info;
+  }
+
+ private:
+  bool had_raw_request_info_ = false;
+};
+
+// A delegate to cancel prefetch requests by setting |defer| to true.
+class HeaderObserverThrottle : public blink::URLLoaderThrottle {
+ public:
+  explicit HeaderObserverThrottle(HeaderObserverContentBrowserClient* client)
+      : client_(client) {}
+  ~HeaderObserverThrottle() override = default;
+
+  void WillProcessResponse(const GURL& response_url,
+                           network::mojom::URLResponseHead* response_head,
+                           bool* defer) override {
+    client_->set_had_raw_request_info(
+        !!response_head->raw_request_response_info);
+  }
+
+ private:
+  HeaderObserverContentBrowserClient* client_;
+};
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+HeaderObserverContentBrowserClient::CreateURLLoaderThrottles(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    content::NavigationUIData* navigation_ui_data,
+    int frame_tree_node_id) {
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
+      ChromeContentBrowserClient::CreateURLLoaderThrottles(
+          request, browser_context, wc_getter, navigation_ui_data,
+          frame_tree_node_id);
+  throttles.push_back(std::make_unique<HeaderObserverThrottle>(this));
+  return throttles;
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       HeadersNotReportedFromNetwork) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  HeaderObserverContentBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+
+  EXPECT_FALSE(browser_client.had_raw_request_info());
+  content::SetBrowserClientForTesting(old_client);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       HeadersReportedFromNetworkWithDevTools) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  OpenDevToolsWindow(browser()->tab_strip_model()->GetActiveWebContents());
+
+  HeaderObserverContentBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+
+  EXPECT_TRUE(browser_client.had_raw_request_info());
+  CloseDevToolsWindow();
+  content::SetBrowserClientForTesting(old_client);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,

@@ -64,6 +64,10 @@ void BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->load_flags |= net::LOAD_PREFETCH;
   resource_request->url = prefetch_url_;
+  // Search prefetch URL Loaders should check |report_raw_headers| on the
+  // intercepted request to clear out the raw headers when |report_raw_headers|
+  // is false.
+  resource_request->report_raw_headers = true;
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   variations::AppendVariationsHeaderUnknownSignedIn(

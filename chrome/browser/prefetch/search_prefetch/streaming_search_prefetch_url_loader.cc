@@ -58,7 +58,7 @@ StreamingSearchPrefetchURLLoader::ServingResponseHandler() {
 }
 
 void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
-    const network::ResourceRequest& /* resource_request */,
+    const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
   DCHECK(!streaming_prefetch_request_);
@@ -69,6 +69,10 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
       base::BindOnce(&StreamingSearchPrefetchURLLoader::OnMojoDisconnect,
                      weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
+
+  if (!resource_request.report_raw_headers) {
+    resource_response_->raw_request_response_info = nullptr;
+  }
 
   forwarding_client_->OnReceiveResponse(std::move(resource_response_));
 
