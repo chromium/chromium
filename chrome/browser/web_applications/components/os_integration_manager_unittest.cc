@@ -7,29 +7,23 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/common/chrome_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace web_app {
-namespace {
-
 class MockOsIntegrationManager : public OsIntegrationManager {
  public:
   MockOsIntegrationManager()
       : OsIntegrationManager(nullptr, nullptr, nullptr, nullptr) {}
   ~MockOsIntegrationManager() override = default;
 
-  // Installation:
   MOCK_METHOD(void,
               CreateShortcuts,
               (const AppId& app_id,
@@ -74,65 +68,12 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               RegisterWebAppOsUninstallation,
               (const AppId& app_id, const std::string& name),
               (override));
-
-  // Uninstallation:
-  MOCK_METHOD(bool, UnregisterShortcutsMenu, (const AppId& app_id), (override));
-  MOCK_METHOD(void,
-              UnregisterRunOnOsLogin,
-              (const base::FilePath& profile_path,
-               const base::string16& shortcut_title,
-               UnregisterRunOnOsLoginCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              DeleteShortcuts,
-              (const AppId& app_id,
-               const base::FilePath& shortcuts_data_dir,
-               std::unique_ptr<ShortcutInfo> shortcut_info,
-               DeleteShortcutsCallback callback),
-              (override));
-  MOCK_METHOD(void, UnregisterFileHandlers, (const AppId& app_id), (override));
-  MOCK_METHOD(void,
-              UnregisterWebAppOsUninstallation,
-              (const AppId& app_id),
-              (override));
-
-  // Utility methods:
-  MOCK_METHOD(std::unique_ptr<ShortcutInfo>,
-              BuildShortcutInfo,
-              (const AppId& app_id),
-              (override));
 };
 
-#if defined(OS_WIN)
-const base::FilePath::CharType kFakeProfilePath[] =
-    FILE_PATH_LITERAL("\\profile\\path");
-#else
-const base::FilePath::CharType kFakeProfilePath[] =
-    FILE_PATH_LITERAL("/profile/path");
-#endif  // defined(OS_WIN)
-
-const char kFakeAppUrl[] = "https://fake.com";
-
-std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(
-    const web_app::AppId& app_id) {
-  auto shortcut_info = std::make_unique<ShortcutInfo>();
-  shortcut_info->profile_path = base::FilePath(kFakeProfilePath);
-  shortcut_info->extension_id = app_id;
-  shortcut_info->url = GURL(kFakeAppUrl);
-  return shortcut_info;
-}
-
-class OsIntegrationManagerTest : public testing::Test {
- public:
-  OsIntegrationManagerTest() = default;
-  ~OsIntegrationManagerTest() override = default;
-
- private:
+TEST(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-};
 
-TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
   base::RunLoop run_loop;
 
   OsHooksResults install_results;
@@ -157,7 +98,10 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
   EXPECT_TRUE(install_results[OsHookType::kShortcuts]);
 }
 
-TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
+TEST(OsIntegrationManagerTest, InstallOsHooksEverything) {
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+
   base::RunLoop run_loop;
 
   OsHooksResults install_results;
@@ -179,7 +123,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   EXPECT_CALL(manager, AddAppToQuickLaunchBar(app_id)).Times(1);
   EXPECT_CALL(manager, ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
                            app_id, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
+      .Times(1);
 
   InstallOsHooksOptions options;
   options.add_to_desktop = true;
@@ -197,44 +141,4 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   EXPECT_TRUE(install_results[OsHookType::kShortcutsMenu]);
   EXPECT_TRUE(install_results[OsHookType::kUninstallationViaOsSettings]);
 }
-
-TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
-  base::RunLoop run_loop;
-
-  OsHooksResults uninstall_results;
-  UninstallOsHooksCallback callback =
-      base::BindLambdaForTesting([&](OsHooksResults results) {
-        uninstall_results = results;
-        run_loop.Quit();
-      });
-
-  const AppId app_id = "test";
-
-  const base::FilePath kExpectedShortcutPath =
-      base::FilePath(kFakeProfilePath)
-          .Append(chrome::kWebAppDirname)
-          .AppendASCII("_crx_test");
-
-  testing::StrictMock<MockOsIntegrationManager> manager;
-  EXPECT_CALL(manager, BuildShortcutInfo(app_id))
-      .WillOnce(
-          testing::Return(testing::ByMove(CreateTestShorcutInfo(app_id))));
-  EXPECT_CALL(manager, DeleteShortcuts(app_id, kExpectedShortcutPath,
-                                       testing::_, testing::_))
-      .WillOnce(base::test::RunOnceCallback<3>(true));
-  EXPECT_CALL(manager, UnregisterFileHandlers(app_id)).Times(1);
-  EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
-  EXPECT_CALL(manager, UnregisterShortcutsMenu(app_id))
-      .WillOnce(testing::Return(true));
-
-  manager.UninstallAllOsHooks(app_id, std::move(callback));
-  run_loop.Run();
-  EXPECT_TRUE(uninstall_results[OsHookType::kShortcuts]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kFileHandlers]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kRunOnOsLogin]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kShortcutsMenu]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kUninstallationViaOsSettings]);
-}
-
-}  // namespace
 }  // namespace web_app
