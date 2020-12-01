@@ -295,8 +295,15 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
   }
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_ActivatePortal DISABLED_ActivatePortal
+#else
+#define MAYBE_ActivatePortal ActivatePortal
+#endif
+
 // Tests that a portal can be activated.
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivatePortal) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_ActivatePortal) {
   StartTracing();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
