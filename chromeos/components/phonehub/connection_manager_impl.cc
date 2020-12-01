@@ -20,7 +20,7 @@ constexpr base::TimeDelta kConnectionTimeoutSeconds(
     base::TimeDelta::FromSeconds(15u));
 
 void RecordConnectionSuccessMetric(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("PhoneHub.Connectivity.Success", success);
+  UMA_HISTOGRAM_BOOLEAN("PhoneHub.Connection.Result", success);
 }
 
 }  // namespace

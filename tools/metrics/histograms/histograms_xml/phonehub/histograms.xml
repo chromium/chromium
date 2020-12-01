@@ -39,6 +39,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
+    expires_after="2021-11-30">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures PhoneHub connection success rate, considering attempts where the
+    phone is not nearby as failures.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.Connectivity.Duration" units="ms" expires_after="M98">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
@@ -59,6 +69,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PhoneHub.Connectivity.Success" enum="BooleanSuccess"
     expires_after="M98">
+  <obsolete>
+    Renamed to PhoneHub.Connection.Result on 11/2020 in M89.
+  </obsolete>
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>The success rate of connecting to the Phone.</summary>

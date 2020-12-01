@@ -139,6 +139,13 @@ class ConnectionManagerImplTest : public testing::Test {
     mock_timer_->Fire();
   }
 
+  void VerifyConnectionResultHistogram(
+      base::HistogramBase::Sample sample,
+      base::HistogramBase::Count expected_count) {
+    histogram_tester_.ExpectBucketCount("PhoneHub.Connection.Result", sample,
+                                        expected_count);
+  }
+
   base::MockOneShotTimer* mock_timer_;
   chromeos::multidevice::RemoteDeviceRef test_remote_device_;
   chromeos::multidevice::RemoteDeviceRef test_local_device_;
@@ -175,7 +182,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnection) {
 
   histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
                                           kFakeConnectionLatencyTime, 1);
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", true, 1);
+  VerifyConnectionResultHistogram(true, 1);
 }
 
 TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
@@ -196,8 +203,7 @@ TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
   EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", false,
-                                      1);
+  VerifyConnectionResultHistogram(false, 1);
 }
 
 TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
@@ -224,7 +230,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
 
   histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
                                           kFakeConnectionLatencyTime, 1);
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", true, 1);
+  VerifyConnectionResultHistogram(true, 1);
 
   // Simulate a disconnected channel.
   test_clock_->Advance(kFakeConnectionDurationTime);
@@ -257,7 +263,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
 
   histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
                                           kFakeConnectionLatencyTime, 1);
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", true, 1);
+  VerifyConnectionResultHistogram(true, 1);
 
   // Status has been updated to connected, verify that the status observer has
   // been called.
@@ -318,7 +324,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnectionWithBle) {
 
   histogram_tester_.ExpectTimeBucketCount("PhoneHub.Connectivity.Latency",
                                           kFakeConnectionLatencyTime, 1);
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", true, 1);
+  VerifyConnectionResultHistogram(true, 1);
 
   // Status has been updated to connected, verify that the status observer has
   // been called.
@@ -342,8 +348,7 @@ TEST_F(ConnectionManagerImplTest, ConnectionTimeout) {
   VerifyTimerStopped();
   EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", false,
-                                      1);
+  VerifyConnectionResultHistogram(false, 1);
 }
 
 TEST_F(ConnectionManagerImplTest, DisconnectConnection) {
@@ -361,8 +366,7 @@ TEST_F(ConnectionManagerImplTest, DisconnectConnection) {
   EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
   VerifyTimerStopped();
-  histogram_tester_.ExpectBucketCount("PhoneHub.Connectivity.Success", false,
-                                      1);
+  VerifyConnectionResultHistogram(false, 1);
 }
 
 }  // namespace phonehub
