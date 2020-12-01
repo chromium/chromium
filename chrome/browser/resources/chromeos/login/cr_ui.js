@@ -267,6 +267,7 @@ cr.define('cr.ui', function() {
       chrome.send('completeLogin', [gaia_id, username, password, false]);
     } else {
       waitForOobeScreen('gaia-signin', function() {
+        // TODO(crbug.com/1100910): migrate logic to dedicated test api.
         chrome.send('toggleEnrollmentScreen');
         chrome.send('toggleFakeEnrollment');
       });
@@ -321,6 +322,7 @@ cr.define('cr.ui', function() {
    * Begin enterprise enrollment for telemetry.
    */
   Oobe.switchToEnterpriseEnrollmentForTesting = function() {
+    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
     chrome.send('toggleEnrollmentScreen');
   };
 

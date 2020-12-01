@@ -25,6 +25,7 @@ class AccountId;
 namespace chromeos {
 
 class DemoAppLauncher;
+class LoginFeedback;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
 // implementation - the goal is to reduce code duplication between
@@ -47,6 +48,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void PrewarmAuthentication() final;
   void StartDemoAppLaunch() final;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) final;
+  void AttemptShowEnableConsumerKioskScreen() final;
   void CompleteLogin(const UserContext& user_context) final;
   void OnGaiaScreenReady() final;
   void SetDisplayEmail(const std::string& email) final;
@@ -87,6 +89,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   virtual void OnStartUserAdding() = 0;
   virtual void OnFinalize() = 0;
   virtual void OnCancelPasswordChangedFlow() = 0;
+  virtual void ShowEnableConsumerKioskScreen() = 0;
 
   // Deletes `auth_prewarmer_`.
   void OnAuthPrewarmDone();
@@ -113,6 +116,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
  private:
   void Cleanup();
+  // Callback invoked after the feedback is finished.
+  void OnFeedbackFinished();
 
   // True if session start is in progress.
   bool session_starting_ = false;
@@ -132,6 +137,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   std::vector<base::OnceClosure> completion_callbacks_;
 
   KioskAppMenuController kiosk_app_menu_controller_;
+
+  std::unique_ptr<LoginFeedback> login_feedback_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 

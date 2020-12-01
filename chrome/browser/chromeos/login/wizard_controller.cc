@@ -924,7 +924,7 @@ void WizardController::OnUserCreationScreenExit(
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::ENTERPRISE_ENROLL:
-      AdvanceToScreen(EnrollmentScreenView::kScreenId);
+      ShowEnrollmentScreenIfEligible();
       break;
     case UserCreationScreen::Result::CANCEL:
       LoginDisplayHost::default_host()->HideOobeDialog();
@@ -940,6 +940,12 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       break;
     case GaiaScreen::Result::CLOSE_DIALOG:
       LoginDisplayHost::default_host()->HideOobeDialog();
+      break;
+    case GaiaScreen::Result::ENTERPRISE_ENROLL:
+      ShowEnrollmentScreenIfEligible();
+      break;
+    case GaiaScreen::Result::START_CONSUMER_KIOSK:
+      LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
   }
 }
@@ -2150,6 +2156,16 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
   screen->SetEnrollmentConfig(effective_config);
   UpdateStatusAreaVisibilityForScreen(EnrollmentScreenView::kScreenId);
   SetCurrentScreen(screen);
+}
+
+void WizardController::ShowEnrollmentScreenIfEligible() {
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const bool enterprise_managed = connector->IsEnterpriseManaged();
+  const bool has_users = !user_manager::UserManager::Get()->GetUsers().empty();
+  if (!has_users && !enterprise_managed) {
+    AdvanceToScreen(EnrollmentScreenView::kScreenId);
+  }
 }
 
 void WizardController::NotifyScreenChanged() {

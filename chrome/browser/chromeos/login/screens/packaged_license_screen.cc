@@ -80,4 +80,13 @@ void PackagedLicenseScreen::OnUserAction(const std::string& action_id) {
     BaseScreen::OnUserAction(action_id);
 }
 
+bool PackagedLicenseScreen::HandleAccelerator(
+    ash::LoginAcceleratorAction action) {
+  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+    exit_callback_.Run(Result::ENROLL);
+    return true;
+  }
+  return false;
+}
+
 }  // namespace chromeos

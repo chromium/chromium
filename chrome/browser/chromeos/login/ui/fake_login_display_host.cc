@@ -92,6 +92,8 @@ void FakeLoginDisplayHost::StartDemoAppLaunch() {}
 void FakeLoginDisplayHost::StartKiosk(const KioskAppId& kiosk_app_id,
                                       bool is_auto_launch) {}
 
+void FakeLoginDisplayHost::AttemptShowEnableConsumerKioskScreen() {}
+
 void FakeLoginDisplayHost::CompleteLogin(const UserContext& user_context) {}
 
 void FakeLoginDisplayHost::OnGaiaScreenReady() {}

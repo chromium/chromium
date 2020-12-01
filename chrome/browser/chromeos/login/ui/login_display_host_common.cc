@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/login/screens/gaia_screen.h"
 #include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/chromeos/login/ui/login_feedback.h"
 #include "chrome/browser/chromeos/login/ui/webui_accelerator_mapping.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -255,6 +256,15 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
   kiosk_launch_controller_->Start(kiosk_app_id, is_auto_launch);
 }
 
+void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  if (!connector->IsEnterpriseManaged() &&
+      KioskAppManager::IsConsumerKioskEnabled()) {
+    ShowEnableConsumerKioskScreen();
+  }
+}
+
 void LoginDisplayHostCommon::CompleteLogin(const UserContext& user_context) {
   if (GetExistingUserController()) {
     GetExistingUserController()->CompleteLogin(user_context);
@@ -322,6 +332,15 @@ void LoginDisplayHostCommon::ResyncUserData() {
 bool LoginDisplayHostCommon::HandleAccelerator(
     ash::LoginAcceleratorAction action) {
   DCHECK(GetOobeUI());
+  if (action == ash::LoginAcceleratorAction::kShowFeedback) {
+    login_feedback_ = std::make_unique<LoginFeedback>(
+        ProfileHelper::Get()->GetSigninProfile());
+    login_feedback_->Request(
+        std::string(),
+        base::BindOnce(&LoginDisplayHostCommon::OnFeedbackFinished,
+                       weak_factory_.GetWeakPtr()));
+    return true;
+  }
   if (WizardController::default_controller() &&
       WizardController::default_controller()->is_initialized()) {
     if (WizardController::default_controller()->HandleAccelerator(action))
@@ -442,6 +461,10 @@ void LoginDisplayHostCommon::Cleanup() {
   ProfileHelper::Get()->ClearSigninProfile(base::DoNothing());
   registrar_.RemoveAll();
   BrowserList::RemoveObserver(this);
+}
+
+void LoginDisplayHostCommon::OnFeedbackFinished() {
+  login_feedback_.reset();
 }
 
 }  // namespace chromeos

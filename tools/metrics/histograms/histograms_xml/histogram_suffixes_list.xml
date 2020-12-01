@@ -11995,6 +11995,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Fingerprint-setup.Next" label=""/>
   <suffix name="Gaia-signin.Back" label=""/>
   <suffix name="Gaia-signin.CloseDialog" label=""/>
+  <suffix name="Gaia-signin.EnterpriseEnroll" label=""/>
+  <suffix name="Gaia-signin.StartConsumerKiosk" label=""/>
   <suffix name="Gesture-navigation.Next" label=""/>
   <suffix name="Hid-detection.Next" label=""/>
   <suffix name="Hid-detection.StartDemo" label=""/>

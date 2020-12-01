@@ -55,7 +55,6 @@ namespace chromeos {
 class CoreOobeView;
 class ErrorScreensHistogramHelper;
 class GaiaScreenHandler;
-class LoginFeedback;
 class User;
 class UserContext;
 
@@ -97,9 +96,6 @@ class SigninScreenHandlerDelegate {
 
   // Shows Enterprise Enrollment screen.
   virtual void ShowEnterpriseEnrollmentScreen() = 0;
-
-  // Shows Kiosk Enable screen.
-  virtual void ShowKioskEnableScreen() = 0;
 
   // Shows Reset screen.
   virtual void ShowKioskAutolaunchScreen() = 0;
@@ -274,7 +270,6 @@ class SigninScreenHandler
   void HandleLaunchSAMLPublicSession(const std::string& email);
   void HandleOfflineLogin(const base::ListValue* args);
   void HandleToggleEnrollmentScreen();
-  void HandleToggleKioskEnableScreen();
   void HandleToggleResetScreen();
   void HandleToggleKioskAutolaunchScreen();
 
@@ -303,7 +298,6 @@ class SigninScreenHandler
   void HandleLogRemoveUserWarningShown();
   void HandleFirstIncorrectPasswordAttempt(const AccountId& account_id);
   void HandleMaxIncorrectPasswordAttempts(const AccountId& account_id);
-  void HandleSendFeedback();
 
   // Implements user sign-in.
   void AuthenticateExistingUser(const AccountId& account_id,
@@ -338,9 +332,6 @@ class SigninScreenHandler
   // input_method::ImeKeyboard::Observer implementation:
   void OnCapsLockChanged(bool enabled) override;
   void OnLayoutChanging(const std::string& layout_name) override {}
-
-  // Callback invoked after the feedback is finished.
-  void OnFeedbackFinished();
 
   // After proxy auth information has been supplied, this function re-enables
   // responding to network state notifications.
@@ -409,8 +400,6 @@ class SigninScreenHandler
   base::TimeDelta offline_timeout_for_test_;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
-
-  std::unique_ptr<LoginFeedback> login_feedback_;
 
   std::unique_ptr<AccountId> focused_pod_account_id_;
   base::Optional<system::SystemClock::ScopedHourClockType>

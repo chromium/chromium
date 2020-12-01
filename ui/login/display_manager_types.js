@@ -10,8 +10,6 @@
 /**
  * @typedef {{
  *   resetAllowed: (boolean|undefined),
- *   startEnrollmentAllowed: (boolean|undefined),
- *   toggleKioskAllowed: (boolean|undefined),
  * }}
  */
 var DisplayManagerScreenAttributes = {};
@@ -21,18 +19,6 @@ var DisplayManagerScreenAttributes = {};
  * @type {boolean|undefined}
  */
 DisplayManagerScreenAttributes.resetAllowed;
-
-/**
- * True if enrollment accelerator should start enrollment.
- * @type {boolean|undefined}
- */
-DisplayManagerScreenAttributes.startEnrollmentAllowed;
-
-/**
- * True if "enable kiosk" accelerator is allowed.
- * @type {boolean|undefined}
- */
-DisplayManagerScreenAttributes.toggleKioskAllowed;
 
 /**
  * Possible types of UI.

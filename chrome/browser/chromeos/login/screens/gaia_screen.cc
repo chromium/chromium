@@ -11,6 +11,7 @@
 
 namespace {
 constexpr char kUserActionCancel[] = "cancel";
+constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 }  // namespace
 
 namespace chromeos {
@@ -22,6 +23,10 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "Back";
     case Result::CLOSE_DIALOG:
       return "CloseDialog";
+    case Result::ENTERPRISE_ENROLL:
+      return "EnterpriseEnroll";
+    case Result::START_CONSUMER_KIOSK:
+      return "StartConsumerKiosk";
   }
 }
 
@@ -79,9 +84,25 @@ void GaiaScreen::OnUserAction(const std::string& action_id) {
     } else {
       LoadOnline(EmptyAccountId());
     }
-  } else {
-    BaseScreen::OnUserAction(action_id);
+    return;
   }
+  if (action_id == kUserActionStartEnrollment) {
+    exit_callback_.Run(Result::ENTERPRISE_ENROLL);
+    return;
+  }
+  BaseScreen::OnUserAction(action_id);
+}
+
+bool GaiaScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
+  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+    exit_callback_.Run(Result::ENTERPRISE_ENROLL);
+    return true;
+  }
+  if (action == ash::LoginAcceleratorAction::kEnableConsumerKiosk) {
+    exit_callback_.Run(Result::START_CONSUMER_KIOSK);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace chromeos

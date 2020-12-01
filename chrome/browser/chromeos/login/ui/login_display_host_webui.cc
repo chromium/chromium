@@ -1023,6 +1023,11 @@ void LoginDisplayHostWebUI::HandleDisplayCaptivePortal() {
 
 void LoginDisplayHostWebUI::OnCancelPasswordChangedFlow() {}
 
+void LoginDisplayHostWebUI::ShowEnableConsumerKioskScreen() {
+  if (GetExistingUserController())
+    GetExistingUserController()->OnStartKioskEnableScreen();
+}
+
 void LoginDisplayHostWebUI::UpdateAddUserButtonStatus() {
   NOTREACHED();
 }

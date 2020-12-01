@@ -51,7 +51,6 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_webui.h"
 #include "chrome/browser/chromeos/login/ui/login_display_webui.h"
-#include "chrome/browser/chromeos/login/ui/login_feedback.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
@@ -102,7 +101,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
@@ -410,10 +408,9 @@ void SigninScreenHandler::RegisterMessages() {
   AddCallback("launchSAMLPublicSession",
               &SigninScreenHandler::HandleLaunchSAMLPublicSession);
   AddRawCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
+  // TODO(crbug.com/1100910): migrate logic to dedicated test api.
   AddCallback("toggleEnrollmentScreen",
               &SigninScreenHandler::HandleToggleEnrollmentScreen);
-  AddCallback("toggleKioskEnableScreen",
-              &SigninScreenHandler::HandleToggleKioskEnableScreen);
   AddCallback("accountPickerReady",
               &SigninScreenHandler::HandleAccountPickerReady);
   AddCallback("openInternetDetailDialog",
@@ -437,7 +434,6 @@ void SigninScreenHandler::RegisterMessages() {
               &SigninScreenHandler::HandleFirstIncorrectPasswordAttempt);
   AddCallback("maxIncorrectPasswordAttempts",
               &SigninScreenHandler::HandleMaxIncorrectPasswordAttempts);
-  AddCallback("sendFeedback", &SigninScreenHandler::HandleSendFeedback);
 }
 
 void SigninScreenHandler::Show(bool oobe_ui) {
@@ -1053,14 +1049,6 @@ void SigninScreenHandler::HandleToggleEnrollmentScreen() {
     delegate_->ShowEnterpriseEnrollmentScreen();
 }
 
-void SigninScreenHandler::HandleToggleKioskEnableScreen() {
-  if (delegate_ && !webui::IsEnterpriseManaged() &&
-      KioskAppManager::IsConsumerKioskEnabled() &&
-      LoginDisplayHost::default_host()) {
-    delegate_->ShowKioskEnableScreen();
-  }
-}
-
 void SigninScreenHandler::HandleToggleKioskAutolaunchScreen() {
   if (delegate_ && !webui::IsEnterpriseManaged())
     delegate_->ShowKioskAutolaunchScreen();
@@ -1268,14 +1256,6 @@ void SigninScreenHandler::HandleMaxIncorrectPasswordAttempts(
   RecordReauthReason(account_id, ReauthReason::INCORRECT_PASSWORD_ENTERED);
 }
 
-void SigninScreenHandler::HandleSendFeedback() {
-  login_feedback_ =
-      std::make_unique<LoginFeedback>(Profile::FromWebUI(web_ui()));
-  login_feedback_->Request(
-      std::string(), base::BindOnce(&SigninScreenHandler::OnFeedbackFinished,
-                                    weak_factory_.GetWeakPtr()));
-}
-
 bool SigninScreenHandler::AllAllowlistedUsersPresent() {
   CrosSettings* cros_settings = CrosSettings::Get();
   bool allow_new_user = false;
@@ -1331,10 +1311,6 @@ net::Error SigninScreenHandler::FrameError() const {
 void SigninScreenHandler::OnCapsLockChanged(bool enabled) {
   if (page_is_ready())
     CallJS("login.AccountPickerScreen.setCapsLockState", enabled);
-}
-
-void SigninScreenHandler::OnFeedbackFinished() {
-  login_feedback_.reset();
 }
 
 }  // namespace chromeos

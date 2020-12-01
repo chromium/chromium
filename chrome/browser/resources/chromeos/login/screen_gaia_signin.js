@@ -960,7 +960,7 @@ Polymer({
    */
   onMenuItemClicked_(e) {
     if (e.detail == 'ee') {
-      cr.ui.Oobe.handleAccelerator(ACCELERATOR_ENROLLMENT);
+      this.userActed('startEnrollment');
     }
   },
 

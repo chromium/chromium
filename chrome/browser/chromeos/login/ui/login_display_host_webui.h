@@ -89,6 +89,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   void OnCancelPasswordChangedFlow() override;
+  void ShowEnableConsumerKioskScreen() override;
   bool HasUserPods() override;
   void VerifyOwnerForKiosk(base::OnceClosure) override;
   void ShowPasswordChangedDialog(const AccountId& account_id,

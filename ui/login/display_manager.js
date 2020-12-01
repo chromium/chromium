@@ -45,14 +45,11 @@
  * Must be kept in sync with webui_accelerator_mapping.cc.
  */
 /** @const */ var ACCELERATOR_CANCEL = 'cancel';
-/** @const */ var ACCELERATOR_ENROLLMENT = 'enrollment';
-/** @const */ var ACCELERATOR_KIOSK_ENABLE = 'kiosk_enable';
 /** @const */ var ACCELERATOR_VERSION = 'version';
 /** @const */ var ACCELERATOR_RESET = 'reset';
 /** @const */ var ACCELERATOR_APP_LAUNCH_BAILOUT = 'app_launch_bailout';
 /** @const */ var ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG =
     'app_launch_network_config';
-/** @const */ var ACCELERATOR_SEND_FEEDBACK = "send_feedback";
 
 /* Possible UI states of the error screen. */
 /** @const */ var ERROR_SCREEN_UI_STATE = {
@@ -380,21 +377,6 @@ cr.define('cr.ui.login', function() {
         if (this.currentScreen && this.currentScreen.cancel) {
           this.currentScreen.cancel();
         }
-      } else if (name == ACCELERATOR_ENROLLMENT) {
-        if (attributes.startEnrollmentAllowed ||
-            currentStepId == SCREEN_GAIA_SIGNIN ||
-            currentStepId == SCREEN_PACKAGED_LICENSE ||
-            currentStepId == SCREEN_ACCOUNT_PICKER) {
-          chrome.send('toggleEnrollmentScreen');
-        } else {
-          console.warn('No action for current step ID: ' + currentStepId);
-        }
-      } else if (name == ACCELERATOR_KIOSK_ENABLE) {
-        if (attributes.toggleKioskAllowed ||
-            currentStepId == SCREEN_GAIA_SIGNIN ||
-            currentStepId == SCREEN_ACCOUNT_PICKER) {
-          chrome.send('toggleKioskEnableScreen');
-        }
       } else if (name == ACCELERATOR_VERSION) {
         if (this.allowToggleVersion_)
           $('version-labels').hidden = !$('version-labels').hidden;
@@ -411,8 +393,6 @@ cr.define('cr.ui.login', function() {
       } else if (name == ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG) {
         if (currentStepId == SCREEN_APP_LAUNCH_SPLASH)
           chrome.send('networkConfigRequest');
-      } else if (name == ACCELERATOR_SEND_FEEDBACK) {
-        chrome.send('sendFeedback');
       }
     },
 

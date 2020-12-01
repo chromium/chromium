@@ -404,6 +404,7 @@ class WizardController {
   // Gaia credentials. If it is false, the screen may return after trying
   // attestation-based enrollment if appropriate.
   void StartEnrollmentScreen(bool force_interactive);
+  void ShowEnrollmentScreenIfEligible();
 
   void NotifyScreenChanged();
 

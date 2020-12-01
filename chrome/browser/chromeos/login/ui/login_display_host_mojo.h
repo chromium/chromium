@@ -86,6 +86,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(ash::OobeDialogState state) override;
   void OnCancelPasswordChangedFlow() override;
+  void ShowEnableConsumerKioskScreen() override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;

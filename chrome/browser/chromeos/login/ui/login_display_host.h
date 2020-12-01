@@ -146,6 +146,9 @@ class LoginDisplayHost {
   virtual void StartKiosk(const KioskAppId& kiosk_app_id,
                           bool is_auto_launch) = 0;
 
+  // Performs necessary check and shows consumer kiosk UI if eligible.
+  virtual void AttemptShowEnableConsumerKioskScreen() = 0;
+
   // Show the gaia dialog. If available, `account` is preloaded in the gaia
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;

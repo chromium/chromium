@@ -201,11 +201,6 @@ void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
     delegate_->OnStartEnterpriseEnrollment();
 }
 
-void LoginDisplayWebUI::ShowKioskEnableScreen() {
-  if (delegate_)
-    delegate_->OnStartKioskEnableScreen();
-}
-
 void LoginDisplayWebUI::ShowKioskAutolaunchScreen() {
   if (delegate_)
     delegate_->OnStartKioskAutolaunchScreen();

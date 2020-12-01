@@ -389,6 +389,10 @@ void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
   HideOobeDialog();
 }
 
+void LoginDisplayHostMojo::ShowEnableConsumerKioskScreen() {
+  NOTREACHED();
+}
+
 void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,
     const std::string& password,

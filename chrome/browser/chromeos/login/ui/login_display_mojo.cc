@@ -221,10 +221,6 @@ void LoginDisplayMojo::ShowEnterpriseEnrollmentScreen() {
   NOTIMPLEMENTED();
 }
 
-void LoginDisplayMojo::ShowKioskEnableScreen() {
-  NOTIMPLEMENTED();
-}
-
 void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
   NOTIMPLEMENTED();
 }
