@@ -5189,6 +5189,27 @@
             ]
         }
     ],
+    "PartitionAllocGigaCage32bit": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocGigaCage32bit"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionConnectionsByNetworkIsolationKey": [
         {
             "platforms": [
