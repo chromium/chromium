@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   // errors (cryptohomed startup is slow).
   void TriggerConsistencyCheck(int dbus_retries);
 
-  // Callback for `GetTpmNonsensitiveStatus()` DBUS call.  Generates UMA or
+  // Callback for `GetTpmNonsensitiveStatus()` D-Bus call. Generates UMA or
   // schedules retry in case of DBUS error.
   void OnTpmStatusComplete(
       int dbus_retries_remaining,
