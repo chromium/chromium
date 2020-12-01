@@ -22,7 +22,8 @@ def get_replacements(nm_file, max_allowed_glibc_version):
     # Some versions of nm have a bug where the version gets printed twice.
     # Since the symbol may either be formatted like "name@@VERSION" or
     # "name@@VERSION@@VERSION", handle both cases.
-    symver = line.split('@@')
+    line = line.replace('@@', '@')
+    symver = line.split('@')
     symbol = symver[0].split(' ')[-1]
     version = symver[-1]
     if not re.match(version_format, version):
