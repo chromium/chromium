@@ -51,7 +51,8 @@ interface SynchronousCompositor {
   // the associated SynchronousCompositorControlHost.
   DemandDrawHwAsync(SyncCompositorDemandDrawHwParams draw_params);
 
-  // Synchronously hardware draws.
+  // Same as |DemandDrawHwAsync| except it's synchronous and blocks the caller
+  // thread.
   [Sync]
   DemandDrawHw(SyncCompositorDemandDrawHwParams draw_params) =>
       (SyncCompositorCommonRendererParams result,
@@ -142,7 +143,7 @@ interface SynchronousCompositorHost {
 // execution flow (from java) returns the responses from BeginFrames must be
 // received.
 interface SynchronousCompositorControlHost {
-  // Response from DrawHwAsync.
+  // Response from DemandDrawHwAsync.
   ReturnFrame(uint32 layer_tree_frame_sink_id,
               uint32 metadata_version,
               viz.mojom.LocalSurfaceId? local_surface_id,
