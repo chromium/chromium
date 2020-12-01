@@ -1,0 +1,12 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/window-controls-overlay/blob/master/explainer.md
+
+[
+    ImplementedAs=WindowControlsOverlay,
+    RuntimeEnabled=WebAppWindowControlsOverlay
+] partial interface Navigator {
+    [SameObject] readonly attribute WindowControlsOverlay windowControlsOverlay;
+};

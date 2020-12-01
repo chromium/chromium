@@ -217,6 +217,8 @@ blink_core_sources_frame = [
   "web_local_frame_client.cc",
   "web_remote_frame_impl.h",
   "window_event_handlers.h",
+  "window_controls_overlay.cc",
+  "window_controls_overlay.h",
   "window_or_worker_global_scope.cc",
   "window_or_worker_global_scope.h",
 ]
