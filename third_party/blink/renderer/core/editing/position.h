@@ -40,7 +40,6 @@ enum class PositionAnchorType : unsigned {
   kOffsetInAnchor,
   kBeforeAnchor,
   kAfterAnchor,
-  kBeforeChildren,
   kAfterChildren,
 };
 
@@ -98,9 +97,7 @@ class PositionTemplate {
   bool IsBeforeAnchor() const {
     return anchor_type_ == PositionAnchorType::kBeforeAnchor;
   }
-  bool IsBeforeChildren() const {
-    return anchor_type_ == PositionAnchorType::kBeforeChildren;
-  }
+  bool IsBeforeChildren() const;
   bool IsOffsetInAnchor() const {
     return anchor_type_ == PositionAnchorType::kOffsetInAnchor;
   }
@@ -135,7 +132,6 @@ class PositionTemplate {
   // Returns an offset for editing based on anchor type for using with
   // |AnchorNode()| function:
   //   - kOffsetInAnchor  offset_
-  //   - kBeforeChildren  0
   //   - kBeforeAnchor    0
   //   - kAfterChildren   last editing offset in anchor node
   //   - kAfterAnchor     last editing offset in anchor node

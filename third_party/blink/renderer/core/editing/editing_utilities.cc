@@ -1403,13 +1403,6 @@ Position ComputePositionForNodeRemoval(const Position& position,
   Node* container_node;
   Node* anchor_node;
   switch (position.AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
-      container_node = position.ComputeContainerNode();
-      if (!container_node ||
-          !node.IsShadowIncludingInclusiveAncestorOf(*container_node)) {
-        return position;
-      }
-      return Position::InParentBeforeNode(node);
     case PositionAnchorType::kAfterChildren:
       container_node = position.ComputeContainerNode();
       if (!container_node ||

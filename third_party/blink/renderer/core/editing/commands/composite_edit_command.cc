@@ -606,7 +606,6 @@ Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
     return pos;
 
   switch (pos.AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
     case PositionAnchorType::kAfterChildren:
       NOTREACHED();
       return pos;

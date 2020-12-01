@@ -180,7 +180,6 @@ Node* PositionTemplate<Strategy>::ComputeContainerNode() const {
     return nullptr;
 
   switch (AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
     case PositionAnchorType::kAfterChildren:
     case PositionAnchorType::kOffsetInAnchor:
       return anchor_node_.Get();
@@ -215,8 +214,6 @@ int PositionTemplate<Strategy>::ComputeOffsetInContainerNode() const {
     return 0;
 
   switch (AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
-      return 0;
     case PositionAnchorType::kAfterChildren:
       return LastOffsetInNode(*anchor_node_);
     case PositionAnchorType::kOffsetInAnchor:
@@ -282,8 +279,6 @@ Node* PositionTemplate<Strategy>::ComputeNodeBeforePosition() const {
   if (!anchor_node_)
     return nullptr;
   switch (AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
-      return nullptr;
     case PositionAnchorType::kAfterChildren:
       return Strategy::LastChild(*anchor_node_);
     case PositionAnchorType::kOffsetInAnchor:
@@ -303,8 +298,6 @@ Node* PositionTemplate<Strategy>::ComputeNodeAfterPosition() const {
     return nullptr;
 
   switch (AnchorType()) {
-    case PositionAnchorType::kBeforeChildren:
-      return Strategy::FirstChild(*anchor_node_);
     case PositionAnchorType::kAfterChildren:
       return nullptr;
     case PositionAnchorType::kOffsetInAnchor:
@@ -373,6 +366,13 @@ static bool IsPositionConnected(const PositionInFlatTree& position) {
     return false;
   return FlatTreeTraversal::Contains(*position.GetDocument(),
                                      *position.AnchorNode());
+}
+
+template <typename Strategy>
+bool PositionTemplate<Strategy>::IsBeforeChildren() const {
+  if (IsBeforeAnchor())
+    return !Strategy::PreviousSibling(*anchor_node_);
+  return IsOffsetInAnchor() && !offset_;
 }
 
 template <typename Strategy>
@@ -456,7 +456,6 @@ bool PositionTemplate<Strategy>::AtFirstEditingPositionForNode() const {
   switch (anchor_type_) {
     case PositionAnchorType::kOffsetInAnchor:
       return offset_ == 0;
-    case PositionAnchorType::kBeforeChildren:
     case PositionAnchorType::kBeforeAnchor:
       return true;
     case PositionAnchorType::kAfterChildren:
@@ -550,10 +549,7 @@ int PositionTemplate<Strategy>::LastOffsetInNode(const Node& node) {
 template <typename Strategy>
 PositionTemplate<Strategy> PositionTemplate<Strategy>::FirstPositionInNode(
     const Node& anchor_node) {
-  if (anchor_node.IsTextNode())
-    return PositionTemplate<Strategy>(anchor_node, 0);
-  return PositionTemplate<Strategy>(&anchor_node,
-                                    PositionAnchorType::kBeforeChildren);
+  return PositionTemplate<Strategy>(anchor_node, 0);
 }
 
 // static
@@ -660,8 +656,6 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
       return Position::LastPositionInNode(*anchor_node);
     case PositionAnchorType::kAfterAnchor:
       return Position::AfterNode(*anchor_node);
-    case PositionAnchorType::kBeforeChildren:
-      return Position::FirstPositionInNode(*anchor_node);
     case PositionAnchorType::kBeforeAnchor:
       return Position::BeforeNode(*anchor_node);
     case PositionAnchorType::kOffsetInAnchor: {
@@ -694,8 +688,6 @@ String PositionTemplate<Strategy>::ToAnchorTypeAndOffsetString() const {
       builder.Append("]");
       return builder.ToString();
     }
-    case PositionAnchorType::kBeforeChildren:
-      return "beforeChildren";
     case PositionAnchorType::kAfterChildren:
       return "afterChildren";
     case PositionAnchorType::kBeforeAnchor:
@@ -751,8 +743,6 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "afterChildren";
     case PositionAnchorType::kBeforeAnchor:
       return ostream << "beforeAnchor";
-    case PositionAnchorType::kBeforeChildren:
-      return ostream << "beforeChildren";
     case PositionAnchorType::kOffsetInAnchor:
       return ostream << "offsetInAnchor";
   }
