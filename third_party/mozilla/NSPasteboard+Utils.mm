@@ -44,7 +44,6 @@ NSString* const kCorePasteboardFlavorType_url  = @"CorePasteboardFlavorType 0x75
 NSString* const kCorePasteboardFlavorType_urln = @"CorePasteboardFlavorType 0x75726C6E"; // 'urln'  title
 NSString* const kCorePasteboardFlavorType_urld = @"CorePasteboardFlavorType 0x75726C64"; // 'urld' URL description
 
-NSString* const kCaminoBookmarkListPBoardType = @"MozBookmarkType"; // list of Camino bookmark UIDs
 NSString* const kWebURLsWithTitlesPboardType  = @"WebURLsWithTitlesPboardType"; // Safari-compatible URL + title arrays
 
 @interface NSPasteboard(ChimeraPasteboardURLUtilsPrivate)
@@ -69,19 +68,6 @@ NSString* const kWebURLsWithTitlesPboardType  = @"WebURLsWithTitlesPboardType"; 
 @end
 
 @implementation NSPasteboard(ChimeraPasteboardURLUtils)
-
-- (int)declareURLPasteboardWithAdditionalTypes:(NSArray*)additionalTypes owner:(id)newOwner
-{
-  NSArray* allTypes = [additionalTypes arrayByAddingObjectsFromArray:
-                            [NSArray arrayWithObjects:
-                                        kWebURLsWithTitlesPboardType,
-                                        NSURLPboardType,
-                                        NSStringPboardType,
-                                        kCorePasteboardFlavorType_url,
-                                        kCorePasteboardFlavorType_urln,
-                                        nil]];
-       return [self declareTypes:allTypes owner:newOwner];
-}
 
 //
 // Copy a single URL (with an optional title) to the clipboard in all relevant

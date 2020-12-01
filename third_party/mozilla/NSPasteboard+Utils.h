@@ -44,12 +44,10 @@ MOZILLA_EXPORT extern NSString* const kCorePasteboardFlavorType_url;
 MOZILLA_EXPORT extern NSString* const kCorePasteboardFlavorType_urln;
 MOZILLA_EXPORT extern NSString* const kCorePasteboardFlavorType_urld;
 
-MOZILLA_EXPORT extern NSString* const kCaminoBookmarkListPBoardType;
 MOZILLA_EXPORT extern NSString* const kWebURLsWithTitlesPboardType;
 
 @interface NSPasteboard(ChimeraPasteboardURLUtils)
 
-- (int) declareURLPasteboardWithAdditionalTypes:(NSArray*)additionalTypes owner:(id)newOwner;
 - (void) setDataForURL:(NSString*)url title:(NSString*)title;
 
 - (void) setURLs:(NSArray*)inUrls withTitles:(NSArray*)inTitles;

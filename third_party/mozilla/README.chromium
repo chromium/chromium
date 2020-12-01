@@ -16,6 +16,7 @@ Description:
     NSWorkspace+Utils.h/m
 
 Local modifications:
+- All methods that are not used in Chromium have been removed.
 - NSURL+Utils.m was modified to use non-deprecated Cocoa APIs to allow
   compilation on modern versions of Mac OS X.
 - NSString+Utils.m was renamed to NSString+Utils.mm and modified to use GURL
@@ -32,13 +33,3 @@ Local modifications:
   interpreted as a URL if possible.
 - NSWorkspace+Utils.m was modified to compile on the x86_64 architecture.
 - MOZILLA_EXPORT was added to some constants in NSPasteboard+Utils.h.
-- +[NSWorkspace(CaminoDefaultBrowserAdditions) isLeopardOrHigher] hidden since
-  it relies on methods deprecated in 10.8 (and is unused in Chrome).
-- NSWorkspace(CaminoDefaultBrowserAdditions) methods defaultBrowserURL,
-  defaultFeedViewerURL, and urlOfApplicationWithIdentifier: removed since they
-  are unused in Chrome and rely on deprecated APIs as of 10.10.
-- -[NSWorkspace(CaminoDefaultBrowserAdditions) displayNameForFile] was modified
-  to use the NSURLLocalizedNameKey rather than LSCopyDisplayNameForURL(), which
-  is deprecated as of 10.11.
-- -[NString(CaminoURLStringUtils) unescapedURI] was removed because it used
-  a deprecated CFString function.

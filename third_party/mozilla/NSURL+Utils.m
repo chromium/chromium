@@ -40,24 +40,6 @@
 
 @implementation NSURL (CaminoExtensions)
 
-+ (NSURL*)decodeLocalFileURL:(NSURL*)url
-{
-  NSString* urlPathString = [url path];
-  NSString* ext = [[urlPathString pathExtension] lowercaseString];
-  OSType fileType = NSHFSTypeCodeFromFileType(NSHFSTypeOfFile(urlPathString));
-
-  if ([ext isEqualToString:@"url"] || fileType == 'LINK') {
-    url = [NSURL URLFromIEURLFile:urlPathString];
-  }
-  else if ([ext isEqualToString:@"webloc"] || [ext isEqualToString:@"ftploc"] ||
-           fileType == 'ilht' || fileType == 'ilft')
-  {
-    url = [NSURL URLFromInetloc:urlPathString];
-  }
-
-  return url;
-}
-
 //
 // Reads the URL from a .webloc/.ftploc file.
 // Returns the URL, or nil on failure.

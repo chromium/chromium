@@ -41,23 +41,7 @@
 
 @interface NSWorkspace(CaminoDefaultBrowserAdditions)
 
-- (NSArray*)installedBrowserIdentifiers;    // sort order not specified
-- (NSString*)defaultBrowserIdentifier;
-
-- (NSArray*)installedFeedViewerIdentifiers;
-- (NSString*)defaultFeedViewerIdentifier;
-
 - (void)setDefaultBrowserWithIdentifier:(NSString*)bundleID;
-- (void)setDefaultFeedViewerWithIdentifier:(NSString*)bundleID;
-
-- (NSString*)identifierForBundle:(NSURL*)inBundleURL;
-- (NSString*)displayNameForFile:(NSURL*)inFileURL;
-
-// OS feature checks
-+ (NSString*)osVersionString;
-// Begin Google Modified
-//+ (BOOL)isLeopardOrHigher;
-// End Google Modified
 
 @end
 
