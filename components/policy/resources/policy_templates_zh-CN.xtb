@@ -495,16 +495,16 @@
 <translation id="1690383938831887552">阻止加载通过 Signed HTTP Exchange (SXG) 提供的内容</translation>
 <translation id="1700811900332333712">允许设备请求 Powerwash</translation>
 <translation id="1708496595873025510">对变体种子的提取设置限制条件</translation>
-<translation id="1713829924716792485">如果此政策已启用或未设置，用户便能连接到可接受远程访问的主机以在客户端和主机之间传输文件。此政策不适用于远程协助连接，因为这类连接不支持文件传输。
+<translation id="1713829924716792485">如果此政策已启用或未设置，用户便能连接到远程访问主机以在客户端和主机之间传输文件。此政策不适用于远程协助连接，因为这类连接不支持文件传输。
 
       如果此政策已停用，系统将禁止传输文件。</translation>
 <translation id="171511968762040550">如果此政策设为 True 或未设置，用户可以添加、移除或修改书签。
 
       如果此政策设为 False，用户无法添加、移除或修改书签，但仍能使用现有书签。</translation>
 <translation id="1715151459541210849">启用“语音输入”无障碍功能</translation>
-<translation id="1721158690981421598">通过设置此政策，您可指定主机域名以限制可接受远程访问的主机，而且用户无法更改相关设置。仅当使用在这些指定域名注册的帐号时，主机才会接受远程访问。
+<translation id="1721158690981421598">通过设置此政策，您可指定主机域名以限制远程访问主机，而且用户无法更改相关设置。仅当使用在这些指定域名注册的帐号时，主机才会接受远程访问。
 
-      如果您将此政策设为一个空列表或未设置此政策，无论使用什么帐号，主机都会接受远程访问。
+      如果您将此政策设为一个空列表或未设置此政策，则无论使用什么帐号，主机都会接受远程访问。
 
       另请参阅 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。
 
@@ -558,9 +558,9 @@
       此政策已被弃用，请改用 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />。
       </translation>
 <translation id="1827523283178827583">使用固定的代理服务器</translation>
-<translation id="1829839214911753838">如果此政策已启用，可接受远程协助的主机会在具有 <ph name="UIACCESS_PERMISSION_NAME" /> 权限的进程中运行。这样，远程用户就能与本地用户的桌面设备上需有较高权限才能使用的窗口交互。
+<translation id="1829839214911753838">如果此政策已启用，远程协助主机会在具有 <ph name="UIACCESS_PERMISSION_NAME" /> 权限的进程中运行。这样，远程用户就能与本地用户的桌面设备上需有较高权限才能使用的窗口交互。
 
-      如果此政策已停用或未设置，可接受远程协助的主机会在用户的环境中运行，而且远程用户将无法与本地用户的桌面设备上需有较高权限才能使用的窗口交互。</translation>
+      如果此政策已停用或未设置，远程协助主机会在用户的环境中运行，而且远程用户将无法与本地用户的桌面设备上需有较高权限才能使用的窗口交互。</translation>
 <translation id="1839278886947586809">
       此政策已从 M80 中移除，因为 WebDriver 现已与所有现有政策兼容，因而不再需要此政策。
 
@@ -639,7 +639,7 @@
 <translation id="1971991630422430420">如果此政策已启用，系统会使用快速切换功能（如果无线接入点支持该功能的话）。此设置适用于相应设备上的所有用户和所有界面。
 
       如果此政策已停用或未设置，系统便不会使用快速切换功能。</translation>
-<translation id="1977581177449752640">如果您设置了此政策，可接受远程访问的主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
+<translation id="1977581177449752640">如果您设置了此政策，远程访问主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
 
       此政策让您能够以 JSON 文件的形式向 <ph name="PRODUCT_OS_NAME" />设备提供外部打印服务器的配置。
@@ -1151,7 +1151,7 @@
 <translation id="2707873794476722903">“安全浏览”功能会处于开启状态且会在标准模式下运行。</translation>
 <translation id="2714359695399346815">如果此政策已启用或未设置，系统会允许使用 STUN 服务器，以便远程客户端（即使受到防火墙阻隔）能够发现和连接到这台计算机。
 
-      如果此政策已停用，而且防火墙会阻止出站 UDP 连接，这台计算机将只接受由本地网络内的客户端计算机发起的连接。</translation>
+      如果此政策已停用，而且防火墙会阻止出站 UDP 连接，则这台计算机将只接受由本地网络内的客户端计算机发起的连接。</translation>
 <translation id="2716623398185506073">如果此政策已启用，已注册的设备将会报告与电源相关的硬件统计信息和标识符。
 
       如果此政策已停用或未设置，已注册的设备将不会报告电源统计信息。</translation>
@@ -1265,9 +1265,9 @@
 
       如果此政策未设置，系统便不会执行过滤，所有打印服务器都会被纳入考虑范围内。</translation>
 <translation id="2877225735001246144">在协商 Kerberos 身份验证时停用 CNAME 查找</translation>
-<translation id="288448261660192095">如果此政策已启用，在远程连接期间，系统会关闭可接受远程访问的主机的物理输入和输出设备。
+<translation id="288448261660192095">如果此政策已启用，在远程连接期间，系统会关闭远程访问主机的物理输入和输出设备。
 
-      如果此政策已停用或未设置，本地用户和远程用户都能与可接受远程访问的主机交互。</translation>
+      如果此政策已停用或未设置，本地用户和远程用户都能在访问期间与远程访问主机交互。</translation>
 <translation id="2886215882246310669">控制 <ph name="PRODUCT_OS_NAME" />是否允许在设备上添加新的 Family Link 用户帐号。
       此政策只能与 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 结合使用。除了许可名单中所指定的帐号外，该政策允许添加 Family Link 帐号。
       此政策不会影响其他登录政策的行为。具体而言，此政策不会对以下情况产生任何影响：
@@ -2015,7 +2015,7 @@
 
       若要使 <ph name="CLOUD_PRINT_NAME" />目的地能被用户发现，则必须确保此政策设为 true 且 <ph name="POLICY_PRINTERTYPEDENYLIST" /> 政策中不含“<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />”。</translation>
 <translation id="3915395663995367577">代理 .pac 文件的网址</translation>
-<translation id="3915587396318773837">如果您设置了此政策，可接受远程访问的主机会要求身份验证客户端从该网址获取身份验证令牌，以便建立连接。
+<translation id="3915587396318773837">如果您设置了此政策，远程访问主机会在建立连接前要求身份验证客户端从该网址获取身份验证令牌。
 
       如果您未设置此政策或将它留空，系统会停用此功能。
 
@@ -2458,7 +2458,7 @@
 <translation id="4653465451589191309">如果此政策已启用或未设置，用户便可管理（断开或修改）VPN 连接。如果 VPN 连接是通过 VPN 应用创建的，相应应用内的界面不会受到影响。因此，用户或许仍能使用相应应用修改 VPN 连接。请将此政策与“始终开启的 VPN”功能结合使用，以便管理员决定是否要在启动设备时建立 VPN 连接。
 
       如果此政策已停用，系统会关闭供用户断开或修改 VPN 连接的 <ph name="PRODUCT_OS_NAME" />界面。</translation>
-<translation id="4654729794394330974">通过设置此政策，您可指定客户端域名以限制可进行远程访问的客户端，而且用户无法更改相关设置。只有来自这些指定域名的客户端才能连接到主机。
+<translation id="4654729794394330974">通过设置此政策，您可指定客户端域名以限制远程访问客户端，而且用户无法更改相关设置。只有来自这些指定域名的客户端才能连接到主机。
 
       如果您将此政策设为一个空列表或未设置此政策，系统会采用相应连接类型的默认政策。对于远程协助，来自任何域名的客户端都可连接到主机；对于无时间限制的远程访问，只有主机所有者可以连接到主机。
 
@@ -3807,7 +3807,7 @@
 
       如果此政策未设置，在 macOS、Android（当专用 DNS 和 VPN 均未启用时）和 ChromeOS 中，内置 DNS 客户端将会默认处于启用状态，而且用户将能够通过修改 chrome://flags 或指定命令行标记来更改是否使用内置 DNS 客户端。</translation>
 <translation id="6614557704487944013">允许用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
-<translation id="6621830999036927230">如果您设置了此政策，可接受远程访问的主机会使用该网址来验证可进行远程访问的客户端的身份验证令牌，以便确定是否接受连接。如果您未设置此政策或将它留空，系统会停用此功能。
+<translation id="6621830999036927230">如果您设置了此政策，远程访问主机会使用该网址来验证远程访问客户端的身份验证令牌，以便确定是否接受连接。如果您未设置此政策或将它留空，系统会停用此功能。
 
       注意：请将此政策与 <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="6621839881150363218">如果此政策已启用，系统会隔离所有网站（每个网站都在自己的进程内运行）。如果此政策已停用，则意味着不会发生明确的网站隔离，IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验也将关闭。不过，用户仍可以手动开启此政策。
@@ -4172,11 +4172,11 @@
       网址格式不能与 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任一项政策。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
-<translation id="7091220433954923921">通过设置此政策，您可以限制可接受远程访问的主机在这台计算机上使用的 UDP 端口范围。
+<translation id="7091220433954923921">通过设置此政策，您可以限制远程访问主机在这台计算机上使用的 UDP 端口范围。
 
-      如果此政策未设置或设为空字符串，可接受远程访问的主机便能使用任意可用端口。
+      如果此政策未设置或设为空字符串，远程访问主机便能使用任意可用端口。
 
-      注意：如果 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 已停用，可接受远程访问的主机将使用 12400-12409 范围内的 UDP 端口。</translation>
+      注意：如果 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 已停用，远程访问主机将使用 12400-12409 范围内的 UDP 端口。</translation>
 <translation id="7091842872805965910">在锁定屏幕和登录屏幕上启用 PIN 码自动提交功能。</translation>
 <translation id="7093294902558672021">报告设备的风扇信息。
 
@@ -5291,9 +5291,9 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="8672321184841719703">目标自动更新版本</translation>
 <translation id="867410340948518937">U2F（通用第二重因素）</translation>
-<translation id="8676959842615154675">如果此政策已启用，可接受远程访问的主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。
+<translation id="8676959842615154675">如果此政策已启用，远程访问主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。
 
-      如果此政策已停用或未设置，可接受远程访问的主机便能与任何本地用户关联。</translation>
+      如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
 <translation id="8680488165461049026">此政策旨在授权“快速解答”功能访问所选内容并将相关信息发送给服务器。
 
       如果您启用了此政策，“快速解答”功能将能够访问所选内容。

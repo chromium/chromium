@@ -128,7 +128,7 @@
 <translation id="2377319039870049694">切换到列表视图</translation>
 <translation id="2377590462528165447">与 Linux 共享了 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="2378075407703503998">已选择 <ph name="SELCTED_FILE_COUNT" /> 个文件</translation>
-<translation id="2389832672041313158">缅甸语/缅甸</translation>
+<translation id="2389832672041313158">缅甸语</translation>
 <translation id="240770291734945588">可用存储空间：<ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">文件总大小</translation>
 <translation id="2428749644083375155">正在将 <ph name="NUMBER_OF_ITEMS" /> 项内容复制到“<ph name="FOLDER_NAME" />”</translation>
@@ -153,7 +153,7 @@
 <translation id="2638942478653899953">无法访问 Google 云端硬盘。请先<ph name="BEGIN_LINK" />退出<ph name="END_LINK" />，然后再重新登录。</translation>
 <translation id="2649120831653069427">彩虹鱼</translation>
 <translation id="2661146741306740526">16x9</translation>
-<translation id="2663066752008346276">缅甸语/缅甸 Myansan 键盘</translation>
+<translation id="2663066752008346276">缅甸语 Myansan 键盘</translation>
 <translation id="2664412712123763093">文件位置</translation>
 <translation id="2672394958563893062">出现错误。点击可从头开始重新播放。</translation>
 <translation id="2676946222714718093">当前播放设备：</translation>

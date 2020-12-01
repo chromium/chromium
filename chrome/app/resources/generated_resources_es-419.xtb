@@ -4965,7 +4965,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6785518634832172390">El PIN debe tener 12 dígitos o menos</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787839852456839824">Combinaciones de teclas para acceso directo</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# contacto no está disponible. Para usar Compartir con Nearby con esa persona, agrega a tus contactos las direcciones de correo electrónico asociadas a su Cuenta de Google.}other{# contactos no están disponibles. Para usar Compartir con Nearby con esa persona, agrega a tus contactos las direcciones de correo electrónico asociadas a su Cuenta de Google.}}</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# contacto no está disponible. Para usar Compartir con Nearby con esa persona, agrega a tus contactos las direcciones de correo electrónico asociadas a su Cuenta de Google.}other{# contactos no están disponibles. Para usar Compartir con Nearby con esas personas, agrega a tus contactos las direcciones de correo electrónico asociadas a sus Cuentas de Google.}}</translation>
 <translation id="6788210894632713004">Extensión sin empaquetar</translation>
 <translation id="6789592661892473991">División horizontal</translation>
 <translation id="6790428901817661496">Reproducir</translation>

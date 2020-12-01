@@ -122,7 +122,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">En savoir plus dans le centre d'aide</translation>
-<translation id="5719918614880940190">Mesurer l'utilisation du processeur, tous cœurs confondus</translation>
+<translation id="5719918614880940190">Mesure de l'utilisation du processeur, tous cœurs confondus</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
@@ -179,7 +179,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajoutez un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Serveurs de noms vides</translation>
-<translation id="8395584934117017006">Votre <ph name="DEVICE_TYPE" /> géré par une entreprise</translation>
+<translation id="8395584934117017006">Votre <ph name="DEVICE_TYPE" /> est géré par une entreprise</translation>
 <translation id="8398927464629426868">Taux auquel l'appareil se recharge ou se décharge actuellement</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP PSK</translation>
 <translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>

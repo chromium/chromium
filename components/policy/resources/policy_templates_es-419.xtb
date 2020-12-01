@@ -129,7 +129,7 @@
 <translation id="1198183996903759302">Si estableces la política como verdadera (o estableces <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> como falsa), las páginas web no podrán acceder a la API de WebGL, y los complementos no podrán usar la API de Pepper 3D.
 
       Si la estableces como falsa o no la estableces, los sitios web podrán usar la API de WebGL y los complementos podrán usar la API de Pepper 3D, pero es posible que la configuración predeterminada del navegador aún requiera que los argumentos de línea de comandos utilicen estas API.</translation>
-<translation id="1199366379198964260">Si habilitas la política, permitirás el uso de PIN poco seguros. Algunas características de los PIN poco seguros: usan un solo dígito (1111), los dígitos están ordenados de forma ascendente (1234), los dígitos están ordenados de forma descendente (4321) y otros PIN comunes. Si inhabilitas esta política, los usuarios no podrás establecer PIN poco seguros y fáciles de adivinar.
+<translation id="1199366379198964260">Si habilitas la política, permitirás el uso de PIN poco seguros. Algunas características de los PIN poco seguros: usan un solo dígito (1111), los dígitos están ordenados de forma ascendente (1234), los dígitos están ordenados de forma descendente (4321) o son PIN comunes. Si inhabilitas esta política, los usuarios no podrás establecer PIN poco seguros y fáciles de adivinar.
 
       De forma predeterminada, los usuarios reciben una advertencia (no un mensaje de error) cuando usan un PIN poco seguro.</translation>
 <translation id="1202216683470826356">Muestra tarjetas en la página Nueva pestaña</translation>
@@ -407,11 +407,11 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Hay 4 acciones:
 
-      * La pantalla se atenúa si el usuario está inactivo durante el tiempo indicado en <ph name="SCREEN_DIM_FIELD_NAME" />.
+      * El brillo de la pantalla se atenúa si el usuario está inactivo durante el tiempo indicado en <ph name="SCREEN_DIM_FIELD_NAME" />.
 
       * La pantalla se apaga si el usuario está inactivo durante el tiempo indicado en <ph name="SCREEN_OFF_FIELD_NAME" />.
 
-      * Se muestra un diálogo de advertencia si el usuario permanece inactivo durante el tiempo indicado en <ph name="IDLE_WARNING_FIELD_NAME" />. Advierte al usuario que se ejecutará la acción de inactividad y que solo se mostrará si la acción de inactividad es cerrar la sesión o apagar el dispositivo.
+      * Se muestra un diálogo de advertencia si el usuario permanece inactivo durante el tiempo indicado en <ph name="IDLE_WARNING_FIELD_NAME" />. Advierte al usuario que se ejecutará la acción de inactividad y solo se muestra si la acción de inactividad es cerrar la sesión o apagar el dispositivo.
 
       * Se implementa la acción especificada en <ph name="IDLE_ACTION_FIELD_NAME" /> si el usuario permanece inactivo durante el tiempo indicado en <ph name="IDLE_FIELD_NAME" />.
 
@@ -421,7 +421,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Los valores de <ph name="SCREEN_DIM_FIELD_NAME" /> deben ser menores o iguales que <ph name="SCREEN_OFF_FIELD_NAME" />. Los valores de <ph name="SCREEN_OFF_FIELD_NAME" /> y <ph name="IDLE_WARNING_FIELD_NAME" /> deben ser menores o iguales que el valor indicado en <ph name="IDLE_FIELD_NAME" />.
 
-      <ph name="IDLE_ACTION_FIELD_NAME" /> puede ser una de 4 acciones:
+      <ph name="IDLE_ACTION_FIELD_NAME" /> puede ser una de 4 acciones:
 
       * <ph name="IDLE_ACTION_ENUM_SUSPEND" />
 
@@ -433,7 +433,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces <ph name="IDLE_ACTION_FIELD_NAME" />, se utilizará <ph name="IDLE_ACTION_ENUM_SUSPEND" />.
 
-      Nota: Existen opciones de configuración para la alimentación de CA y la batería.</translation>
+      Nota: Existen opciones de configuración diferentes para la alimentación de CA y de batería.</translation>
 <translation id="1606917441621112087">Si estableces la política como verdadera, se desactivará el visor de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la app predeterminada.
 
       Si estableces la política como falsa o no la estableces, podrán abrirse los archivos PDF a menos que los usuarios desactiven el complemento de PDF.</translation>
@@ -723,7 +723,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces la política o estableces una lista vacía, no habrá modos de desbloqueo rápido disponibles para los dispositivos administrados.
 
-      Esta política dejó de estar disponible; usa <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> en su lugar</translation>
+      Esta política dejó de estar disponible; usa <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2036522553891755455">Si habilitas la política, la detección de elementos compartidos (la función Network File Shares para <ph name="PRODUCT_NAME" />) usará el protocolo <ph name="NETBIOS_PROTOCOL" /> para detectar archivos compartidos en la red. Si la inhabilitas, la detección de elementos compartidos no utilizará este protocolo para detectar archivos compartidos.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>
@@ -1221,7 +1221,7 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
 <translation id="2761483219396643566">Demora para la advertencia de inactividad cuando el dispositivo está funcionando a batería</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
-<translation id="2772955711376920612">Si habilitas la política y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantendrá activada la carga fuera del horario pico (cuando lo admita el dispositivo). La política para la administración de carga fuera del horario pico es una política destinada a ahorrar energía que minimiza el uso de corriente alterna en horas pico. Puedes establecer una hora de inicio y finalización para ejecutar el modo de carga fuera del horario pico en cada día de la semana. Siempre que la batería esté por encima del umbral especificado, el dispositivo se ejecutará mediante la batería en los horarios establecidos (incluso si está conectado a la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará mediante corriente alterna (en caso de estar conectado), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad a través de corriente alterna y cargará la batería después de la hora de inicio de carga especificada.
+<translation id="2772955711376920612">Si habilitas la política y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantendrá activada la carga fuera del horario pico (cuando lo admita el dispositivo). La política para la administración de carga fuera del horario pico es una política destinada a ahorrar energía que minimiza el uso de corriente alterna en horas pico. Puedes establecer una hora de inicio y finalización para ejecutar el modo de carga fuera del horario pico en cada día de la semana. Mientras la batería esté por encima del umbral especificado, el dispositivo funcionará con la batería en los horarios establecidos (incluso si está conectado a la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (en caso de estar conectado), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando corriente alterna y cargará la batería después de la hora de inicio de carga especificada.
 
       Si inhabilitas la política, la carga fuera del horario pico se mantendrá desactivada.
 
@@ -2536,11 +2536,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4700190441681139987">No permite que ningún sitio acceda a los sensores</translation>
 <translation id="4703402283970867140">Habilitar un modelo de atenuación inteligente para extender el tiempo de atenuación de la pantalla</translation>
 <translation id="4722122254122249791">Permite el aislamiento de sitios específicos</translation>
-<translation id="4723122879352880315">Esta configuración les permite a los usuarios utilizar las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para autenticar un proxy administrado y protegido con la autenticación NTLM.
+<translation id="4723122879352880315">Esta configuración les permite a los usuarios utilizar las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para autenticarse en un proxy administrado y protegido con la autenticación NTLM.
 
-      Si estableces esta política como falsa o no la estableces, no se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red.
+      Si estableces esta política como False o no la estableces, no se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red.
 
-      Si estableces esta política como verdadera, se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red de un proxy administrado. Si falla la autenticación de red con las credenciales de acceso de <ph name="PRODUCT_OS_NAME" />, se le pedirá al usuario que ingrese las credenciales.</translation>
+      Si estableces esta política como True, se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red de un proxy administrado. Si falla la autenticación de red con las credenciales de acceso de <ph name="PRODUCT_OS_NAME" />, se le pedirá al usuario que ingrese las credenciales.</translation>
 <translation id="4723829699367336876">Habilitar el cruce seguro de firewall desde clientes de acceso remoto</translation>
 <translation id="4725528134735324213">Habilitar Android Backup Service</translation>
 <translation id="4725801978265372736">Solicitar que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
@@ -2928,7 +2928,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="529457411593078576">Habilita las Condiciones del Servicio en la primera ejecución para CCT</translation>
 <translation id="5303080953475303561">Si estableces la política, se controlará la frecuencia con la que la pantalla de bloqueo solicita la contraseña para un desbloqueo rápido. Cada vez que aparezca la pantalla de bloqueo, si se ingresó la contraseña por última vez antes del período que especifica el valor elegido, el desbloqueo rápido no estará disponible. Si el usuario permanece en la pantalla de bloqueo por más tiempo que el especificado, la próxima vez que ingrese el código incorrecto o reingrese la pantalla de bloqueo (lo que ocurra primero), se le solicitará una contraseña.
 
-      Si no estableces la política, los usuarios que utilizan el desbloqueo rápido ingresarán sus contraseñas en la pantalla de bloqueo cada día.</translation>
+      Si no estableces la política, los usuarios que utilizan el desbloqueo rápido ingresarán sus contraseñas en la pantalla de bloqueo una vez al día.</translation>
 <translation id="5306186200045823863">Habilitar la confianza en la infraestructura de PKI heredada de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo incógnito</translation>
 <translation id="5311275381462687162">Configuración predeterminada del atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /> para el comportamiento de las cookies</translation>
@@ -3757,7 +3757,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6536600139108165863">Reinicio automático cuando se apaga el dispositivo</translation>
 <translation id="6539246272469751178">Esta política no tiene efecto en las apps de Android. Estas apps siempre usan el directorio de descargas predeterminado y no pueden acceder a ningún archivo que haya descargado <ph name="PRODUCT_OS_NAME" /> en un directorio de descargas no predeterminado.</translation>
 <translation id="654303922206238013">Estrategia de migración para eCryptfs</translation>
-<translation id="654546276700640113">Si estableces la política, se aplicará de forma forzosa la longitud máxima de PIN que se configuró. El valor "0" o inferior significa que el usuario puede establecer un PIN con cualquier extensión. Si el valor es inferior a <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, pero mayor a 0, la longitud máxima será igual a la longitud mínima.
+<translation id="654546276700640113">Si estableces la política, se aplicará de forma forzosa la longitud máxima de PIN que se configuró. El valor "0" o inferior significa que el usuario puede establecer un PIN de cualquier extensión. Si el valor es inferior a <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, pero mayor que 0, la longitud máxima será igual a la longitud mínima.
 
       Si no estableces la política, no se aplicará de forma forzosa ninguna longitud máxima.</translation>
 <translation id="6553143066970470539">Porcentaje del brillo de pantalla</translation>
@@ -4915,7 +4915,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8050080920415773384">Impresión nativa</translation>
 <translation id="8053580360728293758">Anula el modo predeterminado de impresión a color. Si el modo no está disponible, se ignorará esta política.</translation>
 <translation id="8056237304861875584">Permite habilitar la continuación de tareas en Phone Hub</translation>
-<translation id="8056273037819805106">Se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red de un proxy administrado.</translation>
+<translation id="8056273037819805106">Se usarán las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red en un proxy administrado.</translation>
 <translation id="8059164285174960932">URL donde los clientes de acceso remoto deben obtener el token de autenticación</translation>
 <translation id="8062485064082966327">Usa un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="8076521374016204899">Si habilitas la política o no la estableces, los usuarios que se autentiquen con una contraseña podrán bloquear la pantalla.
@@ -5257,7 +5257,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Esta política permite que las empresas migren servidores existentes fuera de HTTP/0.9, y se eliminará en el futuro.
 
       Si no se establece, se inhabilitará HTTP/0.9 en los puertos no predeterminados.</translation>
-<translation id="8504243661032323176">Si estableces la política, se aplicará de forma forzosa la longitud mínima de PIN que hayas elegido. (Los valores menores a 1 se redondearán para arriba al valor mínimo de 1).
+<translation id="8504243661032323176">Si estableces la política, se aplicará de forma forzosa la longitud mínima de PIN que hayas elegido. (Los valores menores que 1 se redondearán para arriba al valor mínimo de 1).
 
       Si no estableces la política, se aplicará de forma forzosa una longitud mínima de PIN de 6 dígitos, el valor mínimo recomendado.</translation>
 <translation id="8504725006737796967">Especifica las impresoras que puede utilizar el usuario.
@@ -5338,7 +5338,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si se establece la política como falsa, no se inmovilizará ninguna pestaña.</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Lista de apps para tomar notas permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8643838501942693770">Permite las cookies de terceros, pero permite que el usuario cambie esta configuración</translation>
+<translation id="8643838501942693770">Permite las cookies de terceros, pero también que el usuario cambie esta configuración</translation>
 <translation id="8649763579836720255">Los dispositivos con Sistema operativo Chrome pueden utilizar la confirmación remota (acceso verificado) para obtener un certificado emitido por la entidad de certificación del Sistema operativo Chrome que afirme que el dispositivo es apto para reproducir contenido protegido. Este proceso implica el envío de información de aprobación del hardware a la entidad de certificación del Sistema operativo Chrome, la cual identifica el dispositivo de forma única.
 
           Si esta opción está establecida en False, el dispositivo no utilizará la confirmación remota para la protección del contenido y es posible que el dispositivo no pueda reproducir contenido protegido.

@@ -68,7 +68,7 @@
 <translation id="169515659049020177">Maius</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elementu konpimatzen…</translation>
 <translation id="1729953886957086472">Alemana (Alemania)</translation>
-<translation id="1730235522912993863">Txinatarra (cangjie idazketa-metodoa)</translation>
+<translation id="1730235522912993863">Txinatarra (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatu dira.</translation>
 <translation id="174173592514158117">Erakutsi Play karpeta guztiak</translation>
 <translation id="1742316578210444689">Hebreeraren transliterazioa</translation>
@@ -98,7 +98,7 @@
 <translation id="1995337122023280937">Joan fitxategiaren kokapenera</translation>
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
-<translation id="2025955442973426285">Tigriñarra</translation>
+<translation id="2025955442973426285">Tigrinyarra</translation>
 <translation id="2028997212275086731">RAR fitxategia</translation>
 <translation id="2037845485764049925">Errusiarra</translation>
 <translation id="2046702855113914483">Ramena</translation>
@@ -107,10 +107,10 @@
 <translation id="2084108471225856927">Gailuaren ezarpenak</translation>
 <translation id="2085470240340828803">Badago "<ph name="FILENAME" />" izeneko fitxategi bat. Zer egin nahi duzu?</translation>
 <translation id="2121825465123208577">Aldatu tamaina</translation>
-<translation id="2125607626296734455">Khemerarra</translation>
+<translation id="2125607626296734455">Khmertarra</translation>
 <translation id="2142680004883808240">Errusiarra, YaZHert teklatu fonetikoarekin</translation>
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2184934335987813305">Portugaldarra, AEBko nazioarteko teklatuarekin (ordenagailurako)</translation>
+<translation id="2184934335987813305">Portugaldarra, AEBko nazioarteko teklatuarekin (ordenagailuetarako)</translation>
 <translation id="2198315389084035571">Txinera (sinplifikatua)</translation>
 <translation id="2208158072373999562">ZIP artxiboa</translation>
 <translation id="22085916256174561">Korearra</translation>
@@ -235,7 +235,7 @@
 <translation id="3527085408025491307">Karpeta</translation>
 <translation id="3549797760399244642">Joan drive.google.com webgunera…</translation>
 <translation id="3553048479571901246">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik kopia itzazu Windows-eko fitxategien karpetan.</translation>
-<translation id="3556731189587832921">Ingelesa (AEB), ordenagailuetarako nazioarteko teklatuarekin</translation>
+<translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailuetarako)</translation>
 <translation id="357479282490346887">Lituaniarra</translation>
 <translation id="3603385196401704894">Frantsesa (Kanada)</translation>
 <translation id="3606220979431771195">Turkierako F teklatua</translation>
@@ -320,13 +320,13 @@
 <translation id="4594543368593301662">"<ph name="SEARCH_TERM" />" bilaketaren emaitzak daude ikusgai.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetan kopiatzen</translation>
 <translation id="4631887759990505102">Artista</translation>
-<translation id="4646813851450205600">Txekiarra, qwerty teklatuarekin</translation>
+<translation id="4646813851450205600">Txekiarra, QWERTY teklatuarekin</translation>
 <translation id="4656293982926141856">Ordenagailu hau</translation>
 <translation id="4669606053856530811">Haiekin partekatu ezean, fitxategietarako sarbidea galduko dute "<ph name="SOURCE_NAME" />" unitateko kideek.</translation>
 <translation id="4690246192099372265">Suediarra</translation>
 <translation id="4693155481716051732">Sushia</translation>
 <translation id="4694604912444486114">Tximinoa</translation>
-<translation id="469612310041132144">Txinatarra (cangjie idazketa-metodoa)</translation>
+<translation id="469612310041132144">Txinatarra (cangjie sinplifikatua)</translation>
 <translation id="4697043402264950621">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, gorantz ordenatuta.</translation>
 <translation id="4706042980341760088">Tamildarra, idazmakinaren teklatuarekin</translation>
 <translation id="4711094779914110278">Turkiarra</translation>
@@ -470,7 +470,7 @@
 <translation id="5911887972742538906">Errore bat gertatu da Linux aplikazioa instalatzean.</translation>
 <translation id="5912396950572065471">Formatua</translation>
 <translation id="5913638992615760742">Ezin izan da kopiatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5926082595146149752">Nederlandarra (Herbehereak), AEBko nazioarteko teklatuarekin (ordenagailurako)</translation>
+<translation id="5926082595146149752">Nederlandarra (Herbehereak), AEBko nazioarteko teklatuarekin (ordenagailuetarako)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="5957366693331451795">Chromebox-ak</translation>
@@ -481,12 +481,12 @@
 <translation id="604001903249547235">Hodeiko babeskopia</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6074825444536523002">Google inprimakia</translation>
-<translation id="6079871810119356840">Hungariarra, qwerty teklatuarekin</translation>
+<translation id="6079871810119356840">Hungariarra, QWERTY teklatuarekin</translation>
 <translation id="6096979789310008754">Garbitu da bilaketa-testua. Fitxategi eta karpeta guztiak daude ikusgai.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara eramaten</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> mugitzen…</translation>
-<translation id="613750717151263950">Japoniarra, teklatu estatubatuarrarekin</translation>
+<translation id="613750717151263950">Japoniarra, AEBko teklatuarekin</translation>
 <translation id="6146563240635539929">Bideoak</translation>
 <translation id="6150853954427645995">Fitxategia gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategiaren gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="6164412158936057769">Tximeletak</translation>
@@ -680,7 +680,7 @@
 <translation id="8079530767338315840">Errepikatu</translation>
 <translation id="8106045200081704138">Nirekin partekatutakoak</translation>
 <translation id="8116072619078571545">Ura izotzarekin</translation>
-<translation id="8128733386027980860">Ingelesa (EB), Dvorak teklatuarekin</translation>
+<translation id="8128733386027980860">Ingelesa (Erresuma Batua), Dvorak teklatuarekin</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" partekatu dute zurekin. Ezin duzu ezabatu ez delako zurea.</translation>
 <translation id="8151638057146502721">Konfiguratu</translation>
 <translation id="8153607920959057464">Ezin izan da bistaratu fitxategia.</translation>

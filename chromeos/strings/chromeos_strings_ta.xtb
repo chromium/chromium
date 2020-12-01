@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
+<translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
 <translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
 <translation id="1075811647922107217">பக்க அளவு</translation>
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Files ஆப்ஸில் கோப்புறையைத் தேர்ந்தெடு...</translation>
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
 <translation id="4932733599132424254">தேதி</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="5168185087976003268">பேட்டரி நிலை</translation>
@@ -164,6 +166,7 @@
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7855434858642800953">ஸ்கேன் செய்யப்பட்ட கோப்பு சேமிக்கப்பட்டது!</translation>
+<translation id="7928373994957558460">கோப்பின் இடத்தைக் காட்டு</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>

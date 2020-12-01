@@ -147,7 +147,7 @@
 <translation id="2563185590376525700">Rana</translation>
 <translation id="2572501073504669105">Puoi rendere disponibili i file per l'accesso offline quando non hai una connessione a Internet.</translation>
 <translation id="2578394532502990878">Tamil fonetica</translation>
-<translation id="2579959351793446050">Oriya</translation>
+<translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Al momento non è possibile raggiungere Google Drive.</translation>
 <translation id="2638942478653899953">Impossibile raggiungere Google Drive. <ph name="BEGIN_LINK" />Esci<ph name="END_LINK" /> e accedi di nuovo.</translation>
@@ -447,7 +447,7 @@
    Chiudi tutti i file nell'archivio o sul disco virtuale e riprova.</translation>
 <translation id="5691596662111998220">Spiacenti. <ph name="FILE_NAME" /> non esiste più.</translation>
 <translation id="5700087501958648444">Info audio</translation>
-<translation id="5724172041621205163">Thailandese con tastiera Pattachote</translation>
+<translation id="5724172041621205163">Thai con tastiera Pattachote</translation>
 <translation id="5731409020711461763">1 nuova foto</translation>
 <translation id="5752453871435543420">Backup nella cloud Chrome OS</translation>
 <translation id="5756666464756035725">Ungherese QWERTY</translation>
@@ -574,7 +574,7 @@
 <translation id="7031639531908619281">Turco</translation>
 <translation id="7037472120706603960">Traslitterazione tamil</translation>
 <translation id="7040138676081995583">Apri con...</translation>
-<translation id="7075931588889865715">Thailandese con tastiera TIS 820-2531</translation>
+<translation id="7075931588889865715">Thai con tastiera TIS 820-2531</translation>
 <translation id="7086590977277044826">Tamil con tastiera InScript</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> elementi selezionati</translation>
 <translation id="7103992300314999525">Macedone</translation>
@@ -644,7 +644,7 @@
 <translation id="7801354353640549019">I Chromebook</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7806708061868529807">Ebraico</translation>
-<translation id="78104721049218340">Thailandese con tastiera Kedmanee</translation>
+<translation id="78104721049218340">Thai con tastiera Kedmanee</translation>
 <translation id="7821462174190887129">Elementi trovati: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Lo spazio di archiviazione di Google Drive non è sufficiente. Sono necessari altri <ph name="FILE_SIZE" />.
