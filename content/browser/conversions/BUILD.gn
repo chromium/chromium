@@ -7,4 +7,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "conversion_internals.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_origin" ]
+  webui_module_path = "/"
 }

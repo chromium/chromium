@@ -546,6 +546,8 @@ mojom("vulkan_interface") {
       traits_public_deps = [ ":vulkan_types_mojom_traits" ]
     },
   ]
+
+  webui_module_path = "/"
 }
 
 mojom("test_interfaces") {

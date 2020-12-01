@@ -39,6 +39,14 @@ test_harness_script = r"""
 """
 
 
+def _GetBrowserBridgeProperty(tab, path):
+  """The GPU WebUI uses JS modules and may not have initialized the global
+    browserBridge object by the time we can start injecting JavaScript. This
+    ensures we don't have that problem."""
+  tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+  return tab.EvaluateJavaScript('browserBridge.' + path)
+
+
 class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def Name(cls):
@@ -211,7 +219,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                 'workarounds are not equal: %s != %s, diff: %s' %
                 (browser_list, gpu_list, list(diff)))
 
-    basic_infos = tab.EvaluateJavaScript('browserBridge.gpuInfo.basicInfo')
+    basic_infos = _GetBrowserBridgeProperty(tab, 'gpuInfo.basicInfo')
     disabled_gl_extensions = None
     for info in basic_infos:
       if info['description'].startswith('Disabled Extensions'):
@@ -276,8 +284,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         cba.DISABLE_GPU_COMPOSITING,
     ])
     self._Navigate(test_path)
-    feature_status_list = self.tab.EvaluateJavaScript(
-        'browserBridge.gpuInfo.featureStatus.featureStatus')
+    feature_status_list = _GetBrowserBridgeProperty(
+        self.tab, 'gpuInfo.featureStatus.featureStatus')
     result = True
     for name, status in feature_status_list.items():
       if name == 'webgl':
@@ -293,8 +301,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Hit test group 2 with entry 153 from kSoftwareRenderingListEntries.
     self.RestartBrowserIfNecessaryWithArgs(['--gpu-blocklist-test-group=2'])
     self._Navigate(test_path)
-    feature_status_list = self.tab.EvaluateJavaScript(
-        'browserBridge.gpuInfo.featureStatus.featureStatus')
+    feature_status_list = _GetBrowserBridgeProperty(
+        self.tab, 'gpuInfo.featureStatus.featureStatus')
     for name, status in feature_status_list.items():
       if name == 'webgl' and status != 'unavailable_software':
         self.fail('WebGL status for SwiftShader failed: %s' % status)
@@ -307,8 +315,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if sys.platform.startswith('linux'):
       return
 
-    feature_status_for_hardware_gpu_list = self.tab.EvaluateJavaScript(
-        'browserBridge.gpuInfo.featureStatusForHardwareGpu.featureStatus')
+    feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(
+        self.tab, 'gpuInfo.featureStatusForHardwareGpu.featureStatus')
     for name, status in feature_status_for_hardware_gpu_list.items():
       if name == 'webgl' and status != 'unavailable_off':
         self.fail('WebGL status for hardware GPU failed: %s' % status)

@@ -98,9 +98,14 @@ WebUIDataSource* CreateGpuHTMLSource() {
       "trusted-types jstemplate;");
 
   source->UseStringsJs();
+  source->AddResourcePath("browser_bridge.js", IDR_GPU_BROWSER_BRIDGE_JS);
   source->AddResourcePath("gpu_internals.js", IDR_GPU_INTERNALS_JS);
-  source->AddResourcePath("vulkan_info.mojom.js", IDR_VULKAN_INFO_MOJO_JS);
-  source->AddResourcePath("vulkan_types.mojom.js", IDR_VULKAN_TYPES_MOJO_JS);
+  source->AddResourcePath("info_view.js", IDR_GPU_INFO_VIEW_JS);
+  source->AddResourcePath("vulkan_info.js", IDR_GPU_VULKAN_INFO_JS);
+  source->AddResourcePath("vulkan_info.mojom-webui.js",
+                          IDR_VULKAN_INFO_MOJO_JS);
+  source->AddResourcePath("vulkan_types.mojom-webui.js",
+                          IDR_VULKAN_TYPES_MOJO_JS);
   source->SetDefaultResource(IDR_GPU_INTERNALS_HTML);
   return source;
 }

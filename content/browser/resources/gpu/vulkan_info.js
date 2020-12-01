@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('gpu', function() {
-  class VulkanInfo {
-    constructor(base64Data) {
-      const array = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      const dataView = new DataView(array.buffer);
-      this.vulkanInfo_ = gpu.mojom.VulkanInfo_Deserialize(dataView);
-    }
+import {VulkanInfo_Deserialize} from './vulkan_info.mojom-webui.js';
 
-    toString() {
-      return JSON.stringify(this.vulkanInfo_, null, 2);
-    }
+export class VulkanInfo {
+  constructor(base64Data) {
+    const array = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    const dataView = new DataView(array.buffer);
+    this.vulkanInfo_ = VulkanInfo_Deserialize(dataView);
   }
 
-  return {VulkanInfo: VulkanInfo};
-});
+  toString() {
+    return JSON.stringify(this.vulkanInfo_, null, 2);
+  }
+}

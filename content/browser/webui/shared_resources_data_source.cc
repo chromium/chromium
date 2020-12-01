@@ -81,6 +81,7 @@ const std::map<int, std::string> CreateContentResourceIdToAliasMap() {
   return std::map<int, std::string>{
       {IDR_ORIGIN_MOJO_HTML, "mojo/url/mojom/origin.mojom.html"},
       {IDR_ORIGIN_MOJO_JS, "mojo/url/mojom/origin.mojom-lite.js"},
+      {IDR_ORIGIN_MOJO_WEBUI_JS, "mojo/url/mojom/origin.mojom-webui.js"},
       {IDR_UNGUESSABLE_TOKEN_MOJO_HTML,
        "mojo/mojo/public/mojom/base/unguessable_token.mojom.html"},
       {IDR_UNGUESSABLE_TOKEN_MOJO_JS,
@@ -88,8 +89,8 @@ const std::map<int, std::string> CreateContentResourceIdToAliasMap() {
       {IDR_URL_MOJO_HTML, "mojo/url/mojom/url.mojom.html"},
       {IDR_URL_MOJO_JS, "mojo/url/mojom/url.mojom-lite.js"},
       {IDR_URL_MOJOM_WEBUI_JS, "mojo/url/mojom/url.mojom-webui.js"},
-      {IDR_VULKAN_INFO_MOJO_JS, "gpu/ipc/common/vulkan_info.mojom-lite.js"},
-      {IDR_VULKAN_TYPES_MOJO_JS, "gpu/ipc/common/vulkan_types.mojom-lite.js"},
+      {IDR_VULKAN_INFO_MOJO_JS, "gpu/ipc/common/vulkan_info.mojom-webui.js"},
+      {IDR_VULKAN_TYPES_MOJO_JS, "gpu/ipc/common/vulkan_types.mojom-webui.js"},
   };
 }
 

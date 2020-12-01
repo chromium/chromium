@@ -25,7 +25,7 @@ ConversionInternalsUI::ConversionInternalsUI(WebUI* web_ui)
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIConversionInternalsHost);
 
-  source->AddResourcePath("conversion_internals.mojom-lite.js",
+  source->AddResourcePath("conversion_internals.mojom-webui.js",
                           IDR_CONVERSION_INTERNALS_MOJOM_JS);
   source->AddResourcePath("conversion_internals.js",
                           IDR_CONVERSION_INTERNALS_JS);

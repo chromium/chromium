@@ -118,8 +118,9 @@ grit("content_resources") {
     "content_resources.pak",
   ]
   deps = [
-    "//gpu/ipc/common:vulkan_interface_js",
+    "//gpu/ipc/common:vulkan_interface_webui_js",
     "//url/mojom:url_mojom_origin_js",
+    "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
 
@@ -131,8 +132,8 @@ grit("dev_ui_content_resources") {
     "dev_ui_content_resources.pak",
   ]
   deps = [
-    "//content/browser/conversions:mojo_bindings_js",
-    "//content/browser/process_internals:mojo_bindings_js",
+    "//content/browser/conversions:mojo_bindings_webui_js",
+    "//content/browser/process_internals:mojo_bindings_webui_js",
   ]
 }
 

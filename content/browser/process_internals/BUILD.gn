@@ -8,4 +8,5 @@ mojom("mojo_bindings") {
   sources = [ "process_internals.mojom" ]
 
   deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/"
 }
