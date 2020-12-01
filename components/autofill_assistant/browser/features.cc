@@ -19,6 +19,11 @@ const base::Feature kAutofillAssistantChromeEntry{
 const base::Feature kAutofillAssistantDirectActions{
     "AutofillAssistantDirectActions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to disable onboarding flow for Autofill Assistant
+const base::Feature kAutofillAssistantDisableOnboardingFlow{
+    "AutofillAssistantDisableOnboardingFlow",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAutofillAssistantProactiveHelp{
     "AutofillAssistantProactiveHelp", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -79,6 +79,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &autofill_assistant::features::kAutofillAssistant,
     &autofill_assistant::features::kAutofillAssistantChromeEntry,
     &autofill_assistant::features::kAutofillAssistantDirectActions,
+    &autofill_assistant::features::kAutofillAssistantDisableOnboardingFlow,
     &autofill_assistant::features::kAutofillAssistantProactiveHelp,
     &autofill_assistant::features::
         kAutofillAssistantDisableProactiveHelpTiedToMSBB,

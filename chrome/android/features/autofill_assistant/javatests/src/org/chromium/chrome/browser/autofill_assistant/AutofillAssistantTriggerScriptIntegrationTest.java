@@ -358,6 +358,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW)
     public void transitionToRegularScriptWithoutOnboarding() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -461,6 +462,53 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         // Simulate the user accepting the onboarding in a different tab.
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, true);
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Done"))))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath(TEST_PAGE)
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                list);
+        setupRegularScripts(script);
+
+        onView(withText("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
+        onView(withText("Loading regular script")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    public void
+    transitionToRegularScriptWithoutOnboardingWithDisableOnboardingFlowFeatureOn()
+            throws Exception {
+        TriggerScriptProto.Builder triggerScript =
+                TriggerScriptProto
+                        .newBuilder()
+                        /* no trigger condition */
+                        .setUserInterface(createDefaultUI("Trigger script",
+                                /* bubbleMessage = */ "",
+                                /* withProgressBar = */ false)
+                                                  .setRegularScriptLoadingStatusMessage(
+                                                          "Loading regular script"));
+        GetTriggerScriptsResponseProto triggerScripts =
+                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
+                        .addTriggerScripts(triggerScript)
+                        .build();
+
+        setupTriggerScripts(triggerScripts);
+        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        startAutofillAssistantOnTab(TEST_PAGE);
+
+        waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()

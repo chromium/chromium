@@ -100,6 +100,10 @@ public class AutofillAssistantPreferencesUtil {
 
     /** Checks whether the Autofill Assistant onboarding screen should be shown. */
     static boolean getShowOnboarding() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW)) {
+            return false;
+        }
         return !isAutofillAssistantSwitchOn() || !isAutofillOnboardingAccepted();
     }
 
