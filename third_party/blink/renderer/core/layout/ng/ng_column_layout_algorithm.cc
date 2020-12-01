@@ -490,22 +490,11 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
-  // We balance if block-size is unconstrained, or when we're explicitly told
-  // to. Note that the block-size may be constrained by outer fragmentation
-  // contexts, not just by a block-size specified on this multicol container.
-  bool balance_columns = Style().GetColumnFill() == EColumnFill::kBalance ||
-                         (column_size.block_size == kIndefiniteSize &&
-                          !is_constrained_by_outer_fragmentation_context_);
-
-  if (balance_columns) {
-    column_size.block_size =
-        CalculateBalancedColumnBlockSize(column_size, next_column_token);
-  }
-
-  bool needs_more_fragments_in_outer = false;
+  bool may_resume_in_next_outer_fragmentainer = false;
   bool zero_outer_space_left = false;
+  LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
-    LayoutUnit available_outer_space =
+    available_outer_space =
         FragmentainerSpaceAtBfcStart(ConstraintSpace()) - intrinsic_block_size_;
 
     if (available_outer_space <= LayoutUnit()) {
@@ -521,17 +510,34 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       zero_outer_space_left = true;
     }
 
-    // Check if we can fit everything (that's remaining), block-wise, within the
-    // current outer fragmentainer. If we can't, we need to adjust the block
-    // size, and allow the multicol container to continue in a subsequent outer
-    // fragmentainer. Note that we also need to handle indefinite block-size,
-    // because that may happen in a nested multicol container with auto
-    // block-size and column balancing disabled.
+    // Determine if we should resume layout in the next outer fragmentation
+    // context if we run out of space in the current one. This is always the
+    // thing to do except when block-size is non-auto and short enough to fit in
+    // the current outer fragmentainer. In such cases we'll allow inner columns
+    // to overflow its outer fragmentainer (since the inner multicol is too
+    // short to reach the outer fragmentation line).
+    if (column_size.block_size == kIndefiniteSize ||
+        column_size.block_size > available_outer_space)
+      may_resume_in_next_outer_fragmentainer = true;
+  }
+
+  // We balance if block-size is unconstrained, or when we're explicitly told
+  // to. Note that the block-size may be constrained by outer fragmentation
+  // contexts, not just by a block-size specified on this multicol container.
+  bool balance_columns = Style().GetColumnFill() == EColumnFill::kBalance ||
+                         (column_size.block_size == kIndefiniteSize &&
+                          !is_constrained_by_outer_fragmentation_context_);
+
+  if (balance_columns) {
+    column_size.block_size =
+        CalculateBalancedColumnBlockSize(column_size, next_column_token);
+  } else if (available_outer_space != kIndefiniteSize) {
+    // Finally, resolve any remaining auto block-size, and make sure that we
+    // don't take up more space than there's room for in the outer fragmentation
+    // context.
     if (column_size.block_size > available_outer_space ||
-        column_size.block_size == kIndefiniteSize) {
+        column_size.block_size == kIndefiniteSize)
       column_size.block_size = available_outer_space;
-      needs_more_fragments_in_outer = true;
-    }
   }
 
   DCHECK_GE(column_size.block_size, LayoutUnit());
@@ -621,7 +627,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       // multicol container fits block-wise in the current outer fragmentainer.
       if (ConstraintSpace().HasBlockFragmentation() && column_break_token &&
           actual_column_count >= used_column_count_ &&
-          needs_more_fragments_in_outer) {
+          may_resume_in_next_outer_fragmentainer) {
         // We cannot keep any of this if we have zero space left. Then we need
         // to resume in the next outer fragmentainer.
         if (zero_outer_space_left)
@@ -657,12 +663,15 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     // We're balancing columns. Check if the column block-size that we laid out
     // with was satisfactory. If not, stretch and retry, if possible.
     //
-    // If we overflowed (actual column count larger than what we have room for),
-    // see if we're able to stretch them. We can only stretch the columns if we
-    // have at least one column that could take more content.
-    //
-    // If we didn't exceed used column-count, we're done.
-    if (actual_column_count <= used_column_count_)
+    // If we didn't overflow (actual column count wasn't larger than what we
+    // have room for), we're done IF we're also out of content (no break token;
+    // in nested multicol situations there are cases where we only allow as many
+    // columns as we have room for, as additional columns normally need to
+    // continue in the next outer fragmentainer). If we have made the columns
+    // tall enough to bump into a spanner, it also means we need to stop to lay
+    // out the spanner(s), and resume column layout afterwards.
+    if (actual_column_count <= used_column_count_ &&
+        (!column_break_token || result->ColumnSpanner()))
       break;
 
     // We're in a situation where we'd like to stretch the columns, but then we
@@ -988,6 +997,14 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   // the perfect balanced block size. Making it taller would only disrupt the
   // balanced output, for no reason. The only thing we need to worry about here
   // is to not overflow the multicol container.
+
+  if (is_constrained_by_outer_fragmentation_context_) {
+    // Don't become too tall to fit in the outer fragmentation context.
+    LayoutUnit available_outer_space =
+        FragmentainerSpaceAtBfcStart(ConstraintSpace()) - intrinsic_block_size_;
+    DCHECK_GE(available_outer_space, LayoutUnit());
+    size = std::min(size, available_outer_space);
+  }
 
   // First of all we need to convert the size to a value that can be compared
   // against the resolved properties on the multicol container. That means that
