@@ -83,7 +83,8 @@
   template("grpc_so") {
     # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
     # Keep using static linking for now.
-    if (is_android) {
+    # In windows use static linking.
+    if (is_android || is_win) {
       source_set(target_name) {
         forward_variables_from(invoker, "*")
       }
