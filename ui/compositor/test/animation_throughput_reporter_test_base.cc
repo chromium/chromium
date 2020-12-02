@@ -22,7 +22,7 @@ AnimationThroughputReporterTestBase::~AnimationThroughputReporterTestBase() =
 void AnimationThroughputReporterTestBase::SetUp() {
   context_factories_ = std::make_unique<TestContextFactories>(false);
 
-  const gfx::Rect bounds(300, 300);
+  const gfx::Rect bounds(100, 100);
   host_.reset(TestCompositorHost::Create(
       bounds, context_factories_->GetContextFactory()));
   host_->Show();
@@ -30,7 +30,7 @@ void AnimationThroughputReporterTestBase::SetUp() {
   compositor()->SetRootLayer(&root_);
 
   frame_generation_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
+      FROM_HERE, base::TimeDelta::FromMilliseconds(50), this,
       &AnimationThroughputReporterTestBase::GenerateOneFrame);
 }
 
