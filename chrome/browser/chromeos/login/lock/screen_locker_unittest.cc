@@ -36,6 +36,7 @@
 #include "chromeos/dbus/biod/biod_client.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -73,6 +74,7 @@ class ScreenLockerUnitTest : public testing::Test {
     DBusThreadManager::Initialize();
     BiodClient::InitializeFake();
     CrasAudioClient::InitializeFake();
+    TpmManagerClient::InitializeFake();
     CryptohomeClient::InitializeFake();
 
     // MojoSystemInfoDispatcher dependency:
@@ -137,6 +139,7 @@ class ScreenLockerUnitTest : public testing::Test {
     LoginState::Shutdown();
     bluez::BluezDBusManager::Shutdown();
     CryptohomeClient::Shutdown();
+    TpmManagerClient::Shutdown();
     CrasAudioClient::Shutdown();
     BiodClient::Shutdown();
     DBusThreadManager::Shutdown();
