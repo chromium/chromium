@@ -101,6 +101,14 @@ def wait_for_results(uuids, config):
                     plist = plistlib.loads(e.output)
                     if plist['product-errors'][0]['code'] == 1519:
                         continue
+                # Sometimes there are network hiccups when fetching notarization
+                # info, but that often fixes itself and shouldn't derail the
+                # entire signing operation. More serious extended connectivity
+                # problems will eventually fall through to the "no results"
+                # timeout.
+                if e.returncode == 13:
+                    logger.warning(e.output)
+                    continue
                 raise e
 
             plist = plistlib.loads(output)
