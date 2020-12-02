@@ -235,7 +235,8 @@
           value="{{dialogTileTitle_}}" spellcheck="false" autofocus></cr-input>
       <cr-input id="dialogInputUrl" label="$i18n{urlField}"
           value="{{dialogTileUrl_}}" invalid="[[dialogTileUrlInvalid_]]"
-          error-message="$i18n{invalidUrl}" spellcheck="false" type="url">
+          error-message="$i18n{invalidUrl}" spellcheck="false" type="url"
+          on-blur="onDialogTileUrlBlur_">
       </cr-input>
     </div>
     <div slot="button-container">
@@ -243,7 +244,7 @@
         $i18n{linkCancel}
       </cr-button>
       <cr-button class="action-button" on-click="onSave_"
-          disabled$="[[!dialogTileUrl_]]">
+          disabled$="[[dialogSaveDisabled_]]">
         $i18n{linkDone}
       </cr-button>
     </div>

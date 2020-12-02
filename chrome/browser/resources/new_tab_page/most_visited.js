@@ -66,6 +66,25 @@ function getHitIndex(rects, x, y) {
       r => x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
 }
 
+
+/**
+ * Returns null if URL is not valid.
+ * @param {string} urlString
+ * @return {URL}
+ * @private
+ */
+function normalizeUrl(urlString) {
+  try {
+    const url = new URL(
+        urlString.includes('://') ? urlString : `https://${urlString}/`);
+    if (['http:', 'https:'].includes(url.protocol)) {
+      return url;
+    }
+  } catch (e) {
+  }
+  return null;
+}
+
 class MostVisitedElement extends PolymerElement {
   static get is() {
     return 'ntp-most-visited';
@@ -125,6 +144,12 @@ class MostVisitedElement extends PolymerElement {
 
       /** @private */
       dialogTitle_: String,
+
+      /** @private */
+      dialogSaveDisabled_: {
+        type: Boolean,
+        computed: 'computeDialogSaveDisabled_(dialogTitle_, dialogTileUrl_)',
+      },
 
       /**
        * Used to hide hover style and cr-icon-button of tiles while the tiles
@@ -338,6 +363,14 @@ class MostVisitedElement extends PolymerElement {
   computeShowAdd_() {
     return this.customLinksEnabled_ && this.tiles_ &&
         this.tiles_.length < this.maxVisibleTiles_;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeDialogSaveDisabled_() {
+    return !this.dialogTileUrl_ || normalizeUrl(this.dialogTileUrl_) === null;
   }
 
   /**
@@ -558,6 +591,14 @@ class MostVisitedElement extends PolymerElement {
   }
 
   /** @private */
+  onDialogTileUrlBlur_() {
+    if (this.dialogTileUrl_.length > 0 &&
+        normalizeUrl(this.dialogTileUrl_) === null) {
+      this.dialogTileUrlInvalid_ = true;
+    }
+  }
+
+  /** @private */
   onDialogTileUrlChange_() {
     this.dialogTileUrlInvalid_ = false;
   }
@@ -642,36 +683,21 @@ class MostVisitedElement extends PolymerElement {
 
   /** @private */
   async onSave_() {
-    let newUrl;
-    try {
-      newUrl = new URL(
-          this.dialogTileUrl_.includes('://') ?
-              this.dialogTileUrl_ :
-              `https://${this.dialogTileUrl_}/`);
-      if (!['http:', 'https:'].includes(newUrl.protocol)) {
-        throw new Error();
-      }
-    } catch (e) {
-      this.dialogTileUrlInvalid_ = true;
-      return;
-    }
-
-    this.dialogTileUrlInvalid_ = false;
-
+    const newUrl = {url: normalizeUrl(this.dialogTileUrl_).href};
     this.$.dialog.close();
     let newTitle = this.dialogTileTitle_.trim();
     if (newTitle.length === 0) {
       newTitle = this.dialogTileUrl_;
     }
     if (this.adding_) {
-      const {success} = await this.pageHandler_.addMostVisitedTile(
-          {url: newUrl.href}, newTitle);
+      const {success} =
+          await this.pageHandler_.addMostVisitedTile(newUrl, newTitle);
       this.toast_(success ? 'linkAddedMsg' : 'linkCantCreate', success);
     } else {
       const {url, title} = this.tiles_[this.actionMenuTargetIndex_];
-      if (url.url !== newUrl.href || title !== newTitle) {
+      if (url.url !== newUrl.url || title !== newTitle) {
         const {success} = await this.pageHandler_.updateMostVisitedTile(
-            url, {url: newUrl.href}, newTitle);
+            url, newUrl, newTitle);
         this.toast_(success ? 'linkEditedMsg' : 'linkCantEdit', success);
       }
       this.actionMenuTargetIndex_ = -1;
