@@ -25,7 +25,7 @@ namespace payments {
 PaymentResponseHelper::PaymentResponseHelper(
     const std::string& app_locale,
     base::WeakPtr<PaymentRequestSpec> spec,
-    PaymentApp* selected_app,
+    base::WeakPtr<PaymentApp> selected_app,
     PaymentRequestDelegate* payment_request_delegate,
     autofill::AutofillProfile* selected_shipping_profile,
     autofill::AutofillProfile* selected_contact_profile,
@@ -112,7 +112,7 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
     const autofill::AutofillProfile* selected_contact_profile) const {
   mojom::PayerDetailPtr payer = mojom::PayerDetail::New();
 
-  if (!spec_)
+  if (!spec_ || !selected_app_)
     return payer;
 
   if (spec_->request_payer_name()) {
@@ -161,7 +161,7 @@ void PaymentResponseHelper::GeneratePaymentResponse() {
   DCHECK(!is_waiting_for_instrument_details_);
   DCHECK(!is_waiting_for_shipping_address_normalization_);
 
-  if (!spec_)
+  if (!spec_ || !selected_app_)
     return;
 
   mojom::PaymentResponsePtr payment_response = mojom::PaymentResponse::New();

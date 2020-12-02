@@ -28,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,16 +54,17 @@ CvcUnmaskViewController::CvcUnmaskViewController(
     : PaymentRequestSheetController(spec, state, dialog),
       year_combobox_model_(credit_card.expiration_year()),
       credit_card_(credit_card),
-      web_contents_(web_contents),
+      frame_routing_id_(
+          web_contents->GetMainFrame()->GetGlobalFrameRoutingId()),
       payments_client_(
           content::BrowserContext::GetDefaultStoragePartition(
-              web_contents_->GetBrowserContext())
+              web_contents->GetBrowserContext())
               ->GetURLLoaderFactoryForBrowserProcess(),
           IdentityManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())
                   ->GetOriginalProfile()),
           state->GetPersonalDataManager(),
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->IsOffTheRecord()),
       full_card_request_(this,
                          &payments_client_,
@@ -77,7 +79,15 @@ CvcUnmaskViewController::~CvcUnmaskViewController() {}
 
 void CvcUnmaskViewController::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
-  autofill::risk_util::LoadRiskData(0, web_contents_, std::move(callback));
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!rfh)
+    return;
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+
+  autofill::risk_util::LoadRiskData(0, web_contents, std::move(callback));
 }
 
 void CvcUnmaskViewController::ShowUnmaskPrompt(
@@ -366,7 +376,7 @@ views::View* CvcUnmaskViewController::GetFirstFocusedView() {
 }
 
 void CvcUnmaskViewController::BackButtonPressed() {
-  if (dialog()->IsInteractive()) {
+  if (dialog()->IsInteractive() && unmask_delegate_) {
     unmask_delegate_->OnUnmaskPromptClosed();
     dialog()->GoBack();
   }
