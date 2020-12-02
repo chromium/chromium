@@ -9,6 +9,7 @@ import './shared-css.js';
 import './viewer-toolbar-dropdown.js';
 import './viewer-pen-options.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,12 +29,6 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       annotationMode: {
         type: Boolean,
         observer: 'onAnnotationModeChanged_',
-      },
-
-      /** @type {?InkController} */
-      inkController: {
-        type: Object,
-        observer: 'onInkControllerSet_',
       },
 
       /** @private {?AnnotationTool} */
@@ -56,25 +51,23 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   constructor() {
     super();
 
+    /** @private {!InkController} */
+    this.inkController_ = InkController.getInstance();
+
     /** @private {!EventTracker} */
     this.tracker_ = new EventTracker();
-  }
-
-  /** @private */
-  onInkControllerSet_() {
-    if (!this.inkController) {
-      return;
-    }
 
     this.tracker_.add(
-        this.inkController.getEventTarget(),
+        this.inkController_.getEventTarget(),
         InkControllerEventType.SET_ANNOTATION_UNDO_STATE,
         e => this.setAnnotationUndoState_(e));
+
     this.tracker_.add(
-        this.inkController.getEventTarget(), InkControllerEventType.LOADED,
+        this.inkController_.getEventTarget(), InkControllerEventType.LOADED,
         () => {
           if (this.annotationTool_) {
-            this.inkController.setAnnotationTool(this.annotationTool_);
+            assert(this.inkController_.isActive);
+            this.inkController_.setAnnotationTool(this.annotationTool_);
           }
         });
   }
@@ -90,12 +83,12 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
 
   /** @private */
   onUndoClick_() {
-    this.inkController.undo();
+    this.inkController_.undo();
   }
 
   /** @private */
   onRedoClick_() {
-    this.inkController.redo();
+    this.inkController_.redo();
   }
 
   /** @private */
@@ -148,7 +141,7 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       size: options.selectedSize,
       color: options.selectedColor,
     };
-    this.inkController.setAnnotationTool(this.annotationTool_);
+    this.inkController_.setAnnotationTool(this.annotationTool_);
   }
 
   /**

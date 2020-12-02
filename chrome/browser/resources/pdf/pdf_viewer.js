@@ -277,14 +277,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         type: Object,
         value: () => ({min: 0, max: 0}),
       },
-
-      // <if expr="chromeos">
-      /** @private {?InkController} */
-      inkController_: {
-        type: Object,
-        value: null,
-      },
-      // </if>
     };
   }
 
@@ -323,6 +315,14 @@ export class PDFViewerElement extends PDFViewerBaseElement {
      * @private {boolean}
      */
     this.sidenavRestoreState_ = false;
+
+    /** @private {?PluginController} */
+    this.pluginController_ = null;
+
+    // <if expr="chromeos">
+    /** @private {?InkController} */
+    this.inkController_ = null;
+    // </if>
 
     FocusOutlineManager.forDocument(document);
   }
@@ -391,11 +391,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   init(browserApi) {
     super.init(browserApi);
 
-    /** @private {?PluginController} */
     this.pluginController_ = PluginController.getInstance();
 
     // <if expr="chromeos">
-    this.inkController_ = new InkController(
+    this.inkController_ = InkController.getInstance();
+    this.inkController_.init(
         this.viewport, /** @type {!HTMLDivElement} */ (this.getContent()));
     this.tracker.add(
         this.inkController_.getEventTarget(),
@@ -577,6 +577,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     if (annotationMode) {
       // Enter annotation mode.
       assert(this.pluginController_.isActive);
+      assert(!this.inkController_.isActive);
       // TODO(dstockwell): set plugin read-only, begin transition
       this.updateProgress(0);
 
@@ -618,6 +619,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       // Exit annotation mode.
       PDFMetrics.record(UserAction.EXIT_ANNOTATION_MODE);
       assert(!this.pluginController_.isActive);
+      assert(this.inkController_.isActive);
       assert(this.currentController === this.inkController_);
       // TODO(dstockwell): set ink read-only, begin transition
       this.updateProgress(0);

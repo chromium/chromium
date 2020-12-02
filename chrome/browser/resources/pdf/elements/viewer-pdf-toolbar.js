@@ -20,7 +20,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {Bookmark} from '../bookmark_type.js';
 // <if expr="chromeos">
-import {InkController} from '../ink_controller.js';
 import {ViewerAnnotationsBarElement} from './viewer-annotations-bar.js';
 // </if>
 
@@ -62,11 +61,6 @@ Polymer({
     hasEdits: Boolean,
 
     hasEnteredAnnotationMode: Boolean,
-
-    // <if expr="chromeos">
-    /** @type {?InkController} */
-    inkController: Object,
-    // </if>
 
     isFormFieldFocused: Boolean,
 

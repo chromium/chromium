@@ -110,6 +110,7 @@ js_library("ink_controller") {
     ":annotation_tool",
     ":controller",
     ":viewport",
+    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }

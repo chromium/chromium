@@ -21,9 +21,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
-// <if expr="chromeos">
-import {InkController} from '../ink_controller.js';
-// </if>
 import {PDFMetrics, UserAction} from '../metrics.js';
 // <if expr="chromeos">
 import {ViewerAnnotationsModeDialogElement} from './viewer-annotations-mode-dialog.js';
@@ -52,10 +49,6 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       docLength: Number,
       hasEdits: Boolean,
       hasEnteredAnnotationMode: Boolean,
-      // <if expr="chromeos">
-      /** @type {?InkController} */
-      inkController: Object,
-      // </if>
       isFormFieldFocused: Boolean,
 
       loadProgress: {

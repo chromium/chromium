@@ -70,6 +70,7 @@ js_library("viewer-annotations-bar") {
     "..:annotation_tool",
     "..:ink_controller",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
   ]
 }
@@ -133,7 +134,6 @@ js_library("viewer-pdf-toolbar") {
     ":viewer-page-selector",
     ":viewer-toolbar-dropdown",
     "..:constants",
-    "..:ink_controller",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {ContentController} from './controller.js';
@@ -44,25 +45,33 @@ export const InkControllerEventType = {
  *  @implements {ContentController}
  */
 export class InkController {
-  /**
-   * @param {!Viewport} viewport
-   * @param {!HTMLDivElement} contentElement
-   */
-  constructor(viewport, contentElement) {
+  constructor() {
+    /** @private {!EventTarget} */
+    this.eventTarget_ = new EventTarget();
+
+    /** @private {boolean} */
+    this.isActive_ = false;
+
     /** @private {!Viewport} */
-    this.viewport_ = viewport;
+    this.viewport_;
 
     /** @private {!HTMLDivElement} */
-    this.contentElement_ = contentElement;
+    this.contentElement_;
 
     /** @private {?ViewerInkHostElement} */
     this.inkHost_ = null;
 
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
-
-    /** @type {?AnnotationTool} */
+    /** @private {?AnnotationTool} */
     this.tool_ = null;
+  }
+
+  /**
+   * @param {!Viewport} viewport
+   * @param {!HTMLDivElement} contentElement
+   */
+  init(viewport, contentElement) {
+    this.viewport_ = viewport;
+    this.contentElement_ = contentElement;
   }
 
   /**
@@ -70,8 +79,9 @@ export class InkController {
    * @override
    */
   get isActive() {
-    // TODO(crbug.com/1134208): Implement when InkController is a singleton.
-    return false;
+    // Check whether `contentElement_` is defined as a signal that `init()` was
+    // called.
+    return !!this.contentElement_ && this.isActive_;
   }
 
   /**
@@ -79,7 +89,7 @@ export class InkController {
    * @override
    */
   set isActive(isActive) {
-    // TODO(crbug.com/1134208): Implement when InkController is a singleton.
+    this.isActive_ = isActive;
   }
 
   /**
@@ -161,6 +171,7 @@ export class InkController {
             InkControllerEventType.SET_ANNOTATION_UNDO_STATE,
             {detail: e.detail}));
       });
+      this.isActive = true;
     }
     return this.inkHost_.load(filename, data).then(() => {
       this.eventTarget_.dispatchEvent(
@@ -172,5 +183,8 @@ export class InkController {
   unload() {
     this.inkHost_.remove();
     this.inkHost_ = null;
+    this.isActive = false;
   }
 }
+
+addSingletonGetter(InkController);
