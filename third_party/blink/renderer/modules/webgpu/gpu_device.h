@@ -92,6 +92,9 @@ class GPUDevice final : public EventTargetWithInlineData,
       const GPURenderPipelineDescriptor* descriptor);
   GPUComputePipeline* createComputePipeline(
       const GPUComputePipelineDescriptor* descriptor);
+  ScriptPromise createReadyComputePipeline(
+      ScriptState* script_state,
+      const GPUComputePipelineDescriptor* descriptor);
 
   GPUCommandEncoder* createCommandEncoder(
       const GPUCommandEncoderDescriptor* descriptor);
@@ -122,6 +125,12 @@ class GPUDevice final : public EventTargetWithInlineData,
   void OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
                                WGPUErrorType type,
                                const char* message);
+
+  void OnCreateReadyComputePipelineCallback(
+      ScriptPromiseResolver* resolver,
+      WGPUCreateReadyPipelineStatus status,
+      WGPUComputePipeline compute_pipeline,
+      const char* message);
 
   Member<GPUAdapter> adapter_;
   Vector<String> extension_name_list_;
