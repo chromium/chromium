@@ -53,7 +53,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnUnauthenticatedHeader: " << header;
     return true;
   }
-  void OnDecryptedPacket(EncryptionLevel level) override {
+  void OnDecryptedPacket(size_t length, EncryptionLevel level) override {
     *output_ << "OnDecryptedPacket\n";
   }
   bool OnPacketHeader(const QuicPacketHeader& header) override {

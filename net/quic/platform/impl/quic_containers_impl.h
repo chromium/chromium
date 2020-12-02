@@ -13,6 +13,7 @@
 #include "base/containers/small_map.h"
 #include "net/third_party/quiche/src/common/simple_linked_hash_map.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "third_party/abseil-cpp/absl/container/btree_set.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -57,6 +58,9 @@ using QuicQueueImpl = base::queue<T>;
 // TODO(wub): Switch to absl::InlinedVector once it is allowed.
 template <typename T, size_t N, typename A = std::allocator<T>>
 using QuicInlinedVectorImpl = std::vector<T, A>;
+
+template <typename Key, typename Compare, typename Rep>
+using QuicOrderedSetImpl = absl::btree_set<Key, Compare>;
 
 }  // namespace quic
 

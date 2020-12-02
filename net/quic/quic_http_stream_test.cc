@@ -1745,10 +1745,8 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
         kIncludeVersion, !kFin, DEFAULT_PRIORITY, 0,
         &spdy_request_headers_frame_length, {header, kUploadData}));
     AddWrite(ConstructClientAckPacket(packet_number++, 3, 1));
-    AddWrite(client_maker_.MakeAckAndRstPacket(
-        packet_number++,
-        /* include_version = */ true, stream_id_, quic::QUIC_STREAM_NO_ERROR, 4,
-        1,
+    AddWrite(client_maker_.MakeRstPacket(
+        packet_number++, true, stream_id_, quic::QUIC_STREAM_NO_ERROR,
         /* include_stop_sending_if_v99 = */ false));
   } else {
     AddWrite(ConstructRequestHeadersAndDataFramesPacket(

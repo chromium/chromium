@@ -296,6 +296,11 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprintMismatch) {
 }
 
 TEST_F(QuicTransportEndToEndTest, OldVersion) {
+  if (QuicTransportClient::QuicVersionsForWebTransportOriginTrial().size() ==
+      1) {
+    // This test shouldn't be run when there's only one supported version.
+    return;
+  }
   // Ensure all WebTransport versions are enabled except the first one.
   quic::QuicDisableVersion(
       QuicTransportClient::QuicVersionsForWebTransportOriginTrial().front());

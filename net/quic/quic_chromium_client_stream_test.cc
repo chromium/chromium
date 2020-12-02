@@ -24,6 +24,7 @@
 #include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
 #include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_config_peer.h"
+#include "net/third_party/quiche/src/quic/test_tools/quic_connection_peer.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -364,11 +365,8 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
 }
 
 TEST_P(QuicChromiumClientStreamTest, HandleAfterConnectionClose) {
-  EXPECT_CALL(
-      session_,
-      SendRstStream(quic::test::GetNthClientInitiatedBidirectionalStreamId(
-                        version_.transport_version, 0),
-                    quic::QUIC_RST_ACKNOWLEDGEMENT, 0, _));
+  quic::test::QuicConnectionPeer::TearDownLocalConnectionState(
+      session_.connection());
   stream_->OnConnectionClosed(quic::QUIC_INVALID_FRAME_DATA,
                               quic::ConnectionCloseSource::FROM_PEER);
 
@@ -377,24 +375,6 @@ TEST_P(QuicChromiumClientStreamTest, HandleAfterConnectionClose) {
 }
 
 TEST_P(QuicChromiumClientStreamTest, HandleAfterStreamReset) {
-  // Verify that the Handle still behaves correctly after the stream is reset.
-  quic::QuicRstStreamFrame rst(
-      quic::kInvalidControlFrameId,
-      quic::test::GetNthClientInitiatedBidirectionalStreamId(
-          version_.transport_version, 0),
-      quic::QUIC_STREAM_CANCELLED, 0);
-
-  quic::QuicRstStreamErrorCode error_code = quic::QUIC_RST_ACKNOWLEDGEMENT;
-  if (version_.HasIetfQuicFrames()) {
-    error_code = quic::QUIC_STREAM_CANCELLED;
-  }
-  EXPECT_CALL(
-      session_,
-      SendRstStream(quic::test::GetNthClientInitiatedBidirectionalStreamId(
-                        version_.transport_version, 0),
-                    error_code, 0, _));
-
-  stream_->OnStreamReset(rst);
   if (version_.HasIetfQuicFrames()) {
     // Make a STOP_SENDING frame and pass it to QUIC. For V99/IETF QUIC,
     // we need both a REST_STREAM and a STOP_SENDING to effect a closed
@@ -406,6 +386,15 @@ TEST_P(QuicChromiumClientStreamTest, HandleAfterStreamReset) {
         quic::QUIC_STREAM_CANCELLED);
     session_.OnStopSendingFrame(stop_sending_frame);
   }
+
+  // Verify that the Handle still behaves correctly after the stream is reset.
+  quic::QuicRstStreamFrame rst(
+      quic::kInvalidControlFrameId,
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      quic::QUIC_STREAM_CANCELLED, 0);
+
+  stream_->OnStreamReset(rst);
   EXPECT_FALSE(handle_->IsOpen());
   EXPECT_EQ(quic::QUIC_STREAM_CANCELLED, handle_->stream_error());
 }
@@ -491,11 +480,12 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
 TEST_P(QuicChromiumClientStreamTest, ProcessHeadersWithError) {
   spdy::Http2HeaderBlock bad_headers;
   bad_headers["NAME"] = "...";
+
   EXPECT_CALL(
-      session_,
-      SendRstStream(quic::test::GetNthClientInitiatedBidirectionalStreamId(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      OnStreamReset(quic::test::GetNthClientInitiatedBidirectionalStreamId(
                         version_.transport_version, 0),
-                    quic::QUIC_BAD_APPLICATION_PAYLOAD, 0, _));
+                    quic::QUIC_BAD_APPLICATION_PAYLOAD));
 
   auto headers = quic::test::AsHeaderList(bad_headers);
   stream_->OnStreamHeaderList(false, headers.uncompressed_header_bytes(),
@@ -508,11 +498,6 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableWithError) {
   InitializeHeaders();
   auto headers = quic::test::AsHeaderList(headers_);
   ProcessHeadersFull(headers_);
-  EXPECT_CALL(
-      session_,
-      SendRstStream(quic::test::GetNthClientInitiatedBidirectionalStreamId(
-                        version_.transport_version, 0),
-                    quic::QUIC_STREAM_CANCELLED, 0, _));
 
   const char data[] = "hello world!";
   int data_len = strlen(data);
@@ -526,6 +511,12 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableWithError) {
           buffer.get(), 2 * data_len,
           base::BindOnce(&QuicChromiumClientStreamTest::ResetStreamCallback,
                          base::Unretained(this), stream_)));
+
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      OnStreamReset(quic::test::GetNthClientInitiatedBidirectionalStreamId(
+                        version_.transport_version, 0),
+                    quic::QUIC_STREAM_CANCELLED));
 
   // Receive the data and close the stream during the callback.
   size_t offset = 0;
@@ -948,8 +939,9 @@ TEST_P(QuicChromiumClientStreamTest, ResetOnEmptyResponseHeaders) {
   if (!VersionUsesHttp3(version_.transport_version)) {
     // QuicSpdyStream resets itself on empty headers,
     // because it is used to signal that headers were too large.
-    EXPECT_CALL(session_, SendRstStream(stream_->id(),
-                                        quic::QUIC_HEADERS_TOO_LARGE, 0, _));
+    EXPECT_CALL(
+        *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+        OnStreamReset(stream_->id(), quic::QUIC_HEADERS_TOO_LARGE));
   }
 
   const spdy::Http2HeaderBlock empty_response_headers;

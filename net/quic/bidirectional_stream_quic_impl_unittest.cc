@@ -1838,8 +1838,12 @@ TEST_P(BidirectionalStreamQuicImplTest, ServerSendsRstAfterHeaders) {
   delegate->WaitUntilNextCallback(kOnStreamReady);
   ConfirmHandshake();
 
-  // Server sends a Rst.
-  ProcessPacket(ConstructServerRstStreamPacket(1));
+  // Server sends a Rst. Since the stream has sent fin, the rst is one way in
+  // IETF QUIC.
+  ProcessPacket(server_maker_.MakeRstPacket(
+      1, !kIncludeVersion, GetNthClientInitiatedBidirectionalStreamId(0),
+      quic::QUIC_STREAM_CANCELLED,
+      /*include_stop_sending_if_v99=*/false));
 
   delegate->WaitUntilNextCallback(kOnFailed);
 
@@ -1905,8 +1909,12 @@ TEST_P(BidirectionalStreamQuicImplTest, ServerSendsRstAfterReadData) {
   int rv = delegate->ReadData(cb.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  // Server sends a Rst.
-  ProcessPacket(ConstructServerRstStreamPacket(3));
+  // Server sends a Rst. Since the stream has sent fin, the rst is one way in
+  // IETF QUIC.
+  ProcessPacket(server_maker_.MakeRstPacket(
+      3, !kIncludeVersion, GetNthClientInitiatedBidirectionalStreamId(0),
+      quic::QUIC_STREAM_CANCELLED,
+      /*include_stop_sending_if_v99=*/false));
 
   delegate->WaitUntilNextCallback(kOnFailed);
 

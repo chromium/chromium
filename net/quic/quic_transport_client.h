@@ -102,8 +102,7 @@ class NET_EXPORT QuicTransportClient
   static quic::ParsedQuicVersionVector
   QuicVersionsForWebTransportOriginTrial() {
     return quic::ParsedQuicVersionVector{
-        quic::ParsedQuicVersion::Draft29(),  // Enabled in M85.
-        quic::ParsedQuicVersion::Draft27()   // Enabled in M84.
+        quic::ParsedQuicVersion::Draft29(),  // Enabled in M85
     };
   }
 

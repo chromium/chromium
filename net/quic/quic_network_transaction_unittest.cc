@@ -3288,7 +3288,9 @@ TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterHandshakeConfirmed) {
           packet_num++, 1, 1,
           version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
                                        : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details, quic::IETF_RST_STREAM));
+          quic_error_details,
+          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
+                                       : quic::IETF_RST_STREAM));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // In order for a new QUIC session to be established via alternate-protocol
@@ -3531,7 +3533,9 @@ TEST_P(QuicNetworkTransactionTest,
           packet_num++, 1, 1,
           version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
                                        : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details, quic::IETF_RST_STREAM));
+          quic_error_details,
+          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
+                                       : quic::IETF_RST_STREAM));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // After that fails, it will be resent via TCP.
@@ -3641,10 +3645,12 @@ TEST_P(QuicNetworkTransactionTest,
   if (version_.HasIetfQuicFrames()) {
     quic_error_code = quic::QUIC_HTTP_STREAM_WRONG_DIRECTION;
   }
-  quic_data.AddWrite(SYNCHRONOUS,
-                     ConstructClientAckAndConnectionClosePacket(
-                         packet_number++, 1, 1, quic_error_code,
-                         quic_error_details, quic::IETF_RST_STREAM));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckAndConnectionClosePacket(
+          packet_number++, 1, 1, quic_error_code, quic_error_details,
+          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
+                                       : quic::IETF_RST_STREAM));
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // After that fails, it will be resent via TCP.
@@ -3753,9 +3759,11 @@ TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
 
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientAckAndDataPacket(
-                         packet_num++, true, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_->MakeRstAckAndDataPacket(
+            packet_num++, true, GetNthClientInitiatedBidirectionalStreamId(0),
+            quic::QUIC_HEADERS_TOO_LARGE, 1, 1, GetQpackDecoderStreamId(),
+            false, StreamCancellationQpackDecoderInstruction(0)));
   }
 
   quic_data.AddRead(ASYNC, OK);
@@ -4021,9 +4029,10 @@ TEST_P(QuicNetworkTransactionTest,
   if (VersionUsesHttp3(version_.transport_version)) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientAckAndDataPacket(
-            packet_num++, /*include_version=*/true, GetQpackDecoderStreamId(),
-            3, 2,
+        client_maker_->MakeRstAckAndDataPacket(
+            packet_num++, /*include_version=*/true,
+            GetNthClientInitiatedBidirectionalStreamId(1),
+            quic::QUIC_HEADERS_TOO_LARGE, 3, 2, GetQpackDecoderStreamId(),
             /*fin=*/false, StreamCancellationQpackDecoderInstruction(1)));
   }
 
@@ -5237,7 +5246,9 @@ TEST_P(QuicNetworkTransactionTest,
           packet_num++, 1, 1,
           version_.HasIetfQuicFrames() ? quic::QUIC_HTTP_STREAM_WRONG_DIRECTION
                                        : quic::QUIC_INVALID_STREAM_ID,
-          quic_error_details, quic::IETF_RST_STREAM));
+          quic_error_details,
+          version_.HasIetfQuicFrames() ? quic::IETF_STOP_SENDING
+                                       : quic::IETF_RST_STREAM));
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -5302,9 +5313,11 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
 
   if (VersionUsesHttp3(version_.transport_version)) {
     mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 2, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_->MakeAckRstAndDataPacket(
+            packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
+            quic::QUIC_STREAM_CANCELLED, 2, 1, GetQpackDecoderStreamId(), false,
+            StreamCancellationQpackDecoderInstruction(0)));
   } else {
     mock_quic_data.AddWrite(SYNCHRONOUS,
                             ConstructClientAckPacket(packet_num++, 2, 1));
@@ -5375,9 +5388,11 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
 
   if (VersionUsesHttp3(version_.transport_version)) {
     mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientAckAndDataPacket(
-                         packet_num++, false, GetQpackDecoderStreamId(), 1, 1,
-                         false, StreamCancellationQpackDecoderInstruction(0)));
+        SYNCHRONOUS,
+        client_maker_->MakeRstAckAndDataPacket(
+            packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
+            quic::QUIC_STREAM_CANCELLED, 1, 1, GetQpackDecoderStreamId(), false,
+            StreamCancellationQpackDecoderInstruction(0)));
   }
 
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
