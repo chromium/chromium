@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <include name="IDR_VERSION_UI_CSS" file="../version_ui/resources/about_version.css" type="BINDATA" />
-  <include name="IDR_VERSION_UI_HTML" file="../version_ui/resources/about_version.html" preprocess="true" type="BINDATA" />
+  <include name="IDR_VERSION_UI_HTML" file="../version_ui/resources/about_version.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
   <include name="IDR_VERSION_UI_JS" file="../version_ui/resources/about_version.js" type="BINDATA" />
 </grit-part>
