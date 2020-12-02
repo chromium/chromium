@@ -529,14 +529,14 @@
         'ci/linux-chromeos-code-coverage': 200,
         'ci/linux-chromeos-js-code-coverage': 200,
       },
+      'with 2m interval': {
+        '*total*': 80,
+        'ci/try-warmer': 80,
+      },
       'with 3h interval': {
         '*total*': 160,
         'ci/mac-upload-perfetto': 80,
         'ci/win-upload-perfetto': 80,
-      },
-      'with 5m interval': {
-        '*total*': 80,
-        'ci/try-warmer': 80,
       },
     },
   },

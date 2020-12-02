@@ -2478,7 +2478,7 @@ ci.fyi_builder(
     properties = {
         "builder_to_warm": "linux-warmed",
     },
-    schedule = "with 5m interval",
+    schedule = "with 2m interval",
     service_account = "chromium-led-tot-warmer@chops-service-accounts.iam.gserviceaccount.com",
     triggered_by = [],
 )
