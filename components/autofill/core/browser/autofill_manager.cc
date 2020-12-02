@@ -867,8 +867,8 @@ void AutofillManager::OnTextFieldDidChangeImpl(const FormData& form,
 
   uint32_t profile_form_bitmask = 0;
   if (!user_did_type_ || autofill_field->is_autofilled) {
-    form_interactions_ukm_logger_->LogTextFieldDidChange(*form_structure,
-                                                         *autofill_field);
+    form_interactions_ukm_logger()->LogTextFieldDidChange(*form_structure,
+                                                          *autofill_field);
     profile_form_bitmask = data_util::DetermineGroups(*form_structure);
   }
 
@@ -1388,6 +1388,12 @@ void AutofillManager::SetDataList(const std::vector<base::string16>& values,
   external_delegate_->SetCurrentDataListValues(values, labels);
 }
 
+std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+AutofillManager::CreateFormInteractionsUkmLogger() {
+  return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
+      client_->GetUkmRecorder(), client_->GetUkmSourceId());
+}
+
 void AutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
   // Look for a cached version of the form. It will be a null pointer if none is
   // found, which is fine.
@@ -1431,13 +1437,13 @@ void AutofillManager::OnLoadedServerPredictions(
   // Parse and store the server predictions.
   FormStructure::ParseApiQueryResponse(std::move(response), queried_forms,
                                        queried_form_signatures,
-                                       form_interactions_ukm_logger_.get());
+                                       form_interactions_ukm_logger());
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
   for (FormStructure* cur_form : queried_forms) {
     cur_form->LogQualityMetricsBasedOnAutocomplete(
-        form_interactions_ukm_logger_.get());
+        form_interactions_ukm_logger());
   }
 
   // Send field type predictions to the renderer so that it can possibly
@@ -1536,8 +1542,8 @@ void AutofillManager::UploadFormDataAsyncCallback(
       submitted_form->ShouldBeQueried()) {
     submitted_form->LogQualityMetrics(
         submitted_form->form_parsed_timestamp(), interaction_time,
-        submission_time, form_interactions_ukm_logger_.get(),
-        did_show_suggestions_, observed_submission);
+        submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
+        observed_submission);
   }
   if (submitted_form->ShouldBeUploaded())
     UploadFormData(*submitted_form, observed_submission);
@@ -1578,16 +1584,13 @@ void AutofillManager::Reset() {
   ProcessPendingFormForUpload();
   DCHECK(!pending_form_data_);
   AutofillHandler::Reset();
-  form_interactions_ukm_logger_.reset(
-      new AutofillMetrics::FormInteractionsUkmLogger(
-          client_->GetUkmRecorder(), client_->GetUkmSourceId()));
-  address_form_event_logger_.reset(new AddressFormEventLogger(
-      driver()->IsInMainFrame(), form_interactions_ukm_logger_.get(), client_));
-  credit_card_form_event_logger_.reset(new CreditCardFormEventLogger(
-      driver()->IsInMainFrame(), form_interactions_ukm_logger_.get(),
-      personal_data_, client_));
-  credit_card_access_manager_.reset(new CreditCardAccessManager(
-      driver(), client_, personal_data_, credit_card_form_event_logger_.get()));
+  address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
+      driver()->IsInMainFrame(), form_interactions_ukm_logger(), client_);
+  credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
+      driver()->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
+      client_);
+  credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
+      driver(), client_, personal_data_, credit_card_form_event_logger_.get());
 
   has_logged_autofill_enabled_ = false;
   has_logged_address_suggestions_count_ = false;
@@ -1626,23 +1629,22 @@ AutofillManager::AutofillManager(
       personal_data_(personal_data),
       field_filler_(app_locale, client->GetAddressNormalizer()),
       autocomplete_history_manager_(autocomplete_history_manager->GetWeakPtr()),
-      form_interactions_ukm_logger_(
-          std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
-              client->GetUkmRecorder(),
-              client->GetUkmSourceId())),
-      address_form_event_logger_(std::make_unique<AddressFormEventLogger>(
-          driver->IsInMainFrame(),
-          form_interactions_ukm_logger_.get(),
-          client_)),
-      credit_card_form_event_logger_(
-          std::make_unique<CreditCardFormEventLogger>(
-              driver->IsInMainFrame(),
-              form_interactions_ukm_logger_.get(),
-              personal_data_,
-              client_)),
       is_rich_query_enabled_(IsRichQueryEnabled(client->GetChannel())) {
   DCHECK(driver);
   DCHECK(client_);
+  // The factory callback must be set first because the logger is used to create
+  // |address_form_event_logger_| and |credit_card_form_event_logger_|; and the
+  // callback can't be set in constructor of AutofillHandler because |client_|
+  // is used in callback function.
+  InitFormInteractionsUkmLogger(
+      base::BindRepeating(&AutofillManager::CreateFormInteractionsUkmLogger,
+                          base::Unretained(this)));
+  address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
+      driver->IsInMainFrame(), form_interactions_ukm_logger(), client_);
+  credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
+      driver->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
+      client_);
+
   credit_card_access_manager_ = cc_access_manager
                                     ? std::move(cc_access_manager)
                                     : std::make_unique<CreditCardAccessManager>(
@@ -1782,8 +1784,9 @@ void AutofillManager::FillOrPreviewDataModelForm(
     // the sake of filling the synthetic fields.
     if (!cached_field->IsVisible()) {
       bool skip = result.fields[i].form_control_type != "select-one";
-      form_interactions_ukm_logger_->LogHiddenRepresentationalFieldSkipDecision(
-          *form_structure, *cached_field, skip);
+      form_interactions_ukm_logger()
+          ->LogHiddenRepresentationalFieldSkipDecision(*form_structure,
+                                                       *cached_field, skip);
       if (skip) {
         buffer << Tr{} << field_number << "Skipped: invisible field";
         continue;
@@ -2023,7 +2026,7 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
   sync_state_ = personal_data_->GetSyncSigninState();
 
   // Setup the url for metrics that we will collect for this form.
-  form_interactions_ukm_logger_->OnFormsParsed(client_->GetUkmSourceId());
+  form_interactions_ukm_logger()->OnFormsParsed(client_->GetUkmSourceId());
 
   driver()->HandleParsedForms(forms);
 

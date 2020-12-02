@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_handler.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/address_form_event_logger.h"
@@ -289,13 +288,6 @@ class AutofillManager : public AutofillHandler,
     return MakeFrontendID(cc_backend_id, profile_backend_id);
   }
 
-  // A public wrapper that calls |form_interactions_ukm_logger| for testing
-  // purposes only.
-  AutofillMetrics::FormInteractionsUkmLogger*
-  form_interactions_ukm_logger_for_test() {
-    return form_interactions_ukm_logger();
-  }
-
   // A public wrapper that calls |ShouldTriggerRefill| for testing purposes
   // only.
   bool ShouldTriggerRefillForTest(const FormStructure& form_structure) {
@@ -367,10 +359,6 @@ class AutofillManager : public AutofillHandler,
                                     const gfx::RectF& bounding_box) override;
   bool ShouldParseForms(const std::vector<FormData>& forms) override;
   void OnFormsParsed(const std::vector<const FormData*>& forms) override;
-
-  AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
-    return form_interactions_ukm_logger_.get();
-  }
 
   // Exposed for testing.
   bool is_rich_query_enabled() const { return is_rich_query_enabled_; }
@@ -622,6 +610,9 @@ class AutofillManager : public AutofillHandler,
   void SetDataList(const std::vector<base::string16>& values,
                    const std::vector<base::string16>& labels);
 
+  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+  CreateFormInteractionsUkmLogger();
+
   AutofillClient* const client_;
 
   LogManager* log_manager_;
@@ -642,10 +633,6 @@ class AutofillManager : public AutofillHandler,
   // Handles single-field autocomplete form data.
   // May be NULL.  NULL indicates OTR.
   base::WeakPtr<AutocompleteHistoryManager> autocomplete_history_manager_;
-
-  // Utility for logging URL keyed metrics.
-  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
-      form_interactions_ukm_logger_;
 
   // Utilities for logging form events.
   std::unique_ptr<AddressFormEventLogger> address_form_event_logger_;

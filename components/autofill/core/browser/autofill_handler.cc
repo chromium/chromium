@@ -264,6 +264,14 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
   return *autofill_field != nullptr;
 }
 
+void AutofillHandler::InitFormInteractionsUkmLogger(
+    FormInteractionsUkmLoggerFactoryCallback callback) {
+  DCHECK(callback);
+  form_interactions_ukm_logger_factory_callback_ = std::move(callback);
+  form_interactions_ukm_logger_ =
+      form_interactions_ukm_logger_factory_callback_.Run();
+}
+
 size_t AutofillHandler::FindCachedFormsBySignature(
     FormSignature form_signature,
     std::vector<FormStructure*>* form_structures) const {
@@ -337,6 +345,10 @@ LanguageCode AutofillHandler::GetPageLanguage() const {
 
 void AutofillHandler::Reset() {
   form_structures_.clear();
+  if (form_interactions_ukm_logger_factory_callback_) {
+    form_interactions_ukm_logger_ =
+        form_interactions_ukm_logger_factory_callback_.Run();
+  }
 }
 
 void AutofillHandler::OnLoadedServerPredictions(

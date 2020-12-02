@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -148,6 +149,11 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
     return download_manager_.get();
   }
 
+  // The return value shouldn't be cached, retrieve it as needed.
+  AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
+    return form_interactions_ukm_logger_.get();
+  }
+
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.
@@ -163,10 +169,20 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 #endif
 
  protected:
+  using FormInteractionsUkmLoggerFactoryCallback = base::RepeatingCallback<
+      std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>()>;
+
   AutofillHandler(AutofillDriver* driver,
                   LogManager* log_manager,
                   AutofillDownloadManagerState enable_download_manager,
                   version_info::Channel channel);
+
+  // For subclass to set the |callback| to create the FormInteractionsUkmLogger
+  // as necessary. The |form_interactions_ukm_logger_| is instantiated
+  // immediately, the |callback| will be invoked later on to create a new
+  // |form_interactions_ukm_logger_| for each navigation.
+  void InitFormInteractionsUkmLogger(
+      FormInteractionsUkmLoggerFactoryCallback callback);
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -255,6 +271,14 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // Handles queries and uploads to Autofill servers. Will be nullptr if
   // the download manager functionality is disabled.
   std::unique_ptr<AutofillDownloadManager> download_manager_;
+
+  // The callback used to create |form_interactions_ukm_logger_|.
+  FormInteractionsUkmLoggerFactoryCallback
+      form_interactions_ukm_logger_factory_callback_;
+
+  // Utility for logging URL keyed metrics.
+  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+      form_interactions_ukm_logger_;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;

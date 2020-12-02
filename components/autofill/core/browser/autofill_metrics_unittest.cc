@@ -1909,7 +1909,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms),
-      autofill_manager_->form_interactions_ukm_logger_for_test());
+      autofill_manager_->form_interactions_ukm_logger());
 
   ASSERT_EQ(test_ukm_recorder_
                 ->GetEntriesByName(
@@ -2027,7 +2027,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms),
-      autofill_manager_->form_interactions_ukm_logger_for_test());
+      autofill_manager_->form_interactions_ukm_logger());
 
   ASSERT_EQ(test_ukm_recorder_
                 ->GetEntriesByName(
