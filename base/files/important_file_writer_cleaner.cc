@@ -176,8 +176,9 @@ bool ImportantFileWriterCleaner::CleanInBackground(
     const auto& directory = *scan;
     ClampedNumeric<int> successes;
     ClampedNumeric<int> fails;
-    FileEnumerator file_enum(directory, /*recursive=*/false,
-                             FileEnumerator::FILES, FILE_PATH_LITERAL("*.tmp"));
+    FileEnumerator file_enum(
+        directory, /*recursive=*/false, FileEnumerator::FILES,
+        FormatTemporaryFileName(FILE_PATH_LITERAL("*")).value());
     for (FilePath path = file_enum.Next(); !path.empty();
          path = file_enum.Next()) {
       const FileEnumerator::FileInfo info = file_enum.GetInfo();

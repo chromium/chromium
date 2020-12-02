@@ -330,6 +330,11 @@ BASE_EXPORT bool CreateTemporaryFile(FilePath* path);
 BASE_EXPORT bool CreateTemporaryFileInDir(const FilePath& dir,
                                           FilePath* temp_file);
 
+// Returns the file name for a temporary file by using a platform-specific
+// naming scheme that incorporates |identifier|.
+BASE_EXPORT FilePath
+FormatTemporaryFileName(FilePath::StringPieceType identifier);
+
 // Create and open a temporary file stream for exclusive read, write, and delete
 // access (note: exclusivity is unique to Windows). The full path is placed in
 // |path|. Returns the opened file stream, or null in case of error.
