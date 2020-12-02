@@ -18,7 +18,9 @@ function addPrivacyChildRoutes(r) {
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
 
-  // <if expr="use_nss_certs">
+  // TODO(crbug.com/1147032): The certificates settings page is temporarily
+  // disabled for Lacros-Chrome until a better solution is found.
+  // <if expr="use_nss_certs and not lacros">
   r.CERTIFICATES = r.SECURITY.createChild('/certificates');
   // </if>
 

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
@@ -162,6 +163,12 @@ class LacrosChromeServiceNeverBlockingState
       mojo::PendingReceiver<crosapi::mojom::Feedback> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ash_chrome_service_->BindFeedback(std::move(pending_receiver));
+  }
+
+  void BindCertDbReceiver(
+      mojo::PendingReceiver<crosapi::mojom::CertDatabase> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindCertDatabase(std::move(pending_receiver));
   }
 
   void OnLacrosStartup(crosapi::mojom::LacrosInfoPtr lacros_info) {
@@ -355,6 +362,15 @@ void LacrosChromeServiceImpl::BindReceiver(
             feedback_remote_.BindNewPipeAndPassReceiver()));
   }
 
+  if (IsCertDbAvailable()) {
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindCertDbReceiver,
+            weak_sequenced_state_,
+            cert_database_remote_.BindNewPipeAndPassReceiver()));
+  }
+
   if (IsOnLacrosStartupAvailable()) {
     never_blocking_sequence_->PostTask(
         FROM_HERE,
@@ -498,6 +514,13 @@ void LacrosChromeServiceImpl::BindMediaControllerManager(
       FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
                                     BindMediaSessionControllerReceiver,
                                 weak_sequenced_state_, std::move(remote)));
+}
+
+bool LacrosChromeServiceImpl::IsCertDbAvailable() {
+  base::Optional<uint32_t> version = AshChromeServiceVersion();
+  return version &&
+         version.value() >=
+             AshChromeService::MethodMinVersions::kBindCertDatabaseMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {

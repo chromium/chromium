@@ -4,7 +4,6 @@
 
 #include "crypto/nss_util.h"
 
-#include <dlfcn.h>
 #include <nss.h>
 #include <pk11pub.h>
 #include <plarena.h>
@@ -35,6 +34,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "crypto/chaps_support.h"
 #include "crypto/nss_util_internal.h"
 
 namespace crypto {
@@ -42,10 +42,6 @@ namespace crypto {
 namespace {
 
 const char kUserNSSDatabaseName[] = "UserNSSDB";
-
-// Constants for loading the Chrome OS TPM-backed PKCS #11 library.
-const char kChapsModuleName[] = "Chaps";
-const char kChapsPath[] = "libchaps.so";
 
 class ChromeOSUserData {
  public:
@@ -110,38 +106,6 @@ class ChromeOSUserData {
   SlotReadyCallbackList tpm_ready_callback_list_;
 };
 
-class ScopedChapsLoadFixup {
- public:
-  ScopedChapsLoadFixup();
-  ~ScopedChapsLoadFixup();
-
- private:
-#if defined(COMPONENT_BUILD)
-  void* chaps_handle_;
-#endif
-};
-
-#if defined(COMPONENT_BUILD)
-
-ScopedChapsLoadFixup::ScopedChapsLoadFixup() {
-  // HACK: libchaps links the system protobuf and there are symbol conflicts
-  // with the bundled copy. Load chaps with RTLD_DEEPBIND to workaround.
-  chaps_handle_ = dlopen(kChapsPath, RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND);
-}
-
-ScopedChapsLoadFixup::~ScopedChapsLoadFixup() {
-  // LoadNSSModule() will have taken a 2nd reference.
-  if (chaps_handle_)
-    dlclose(chaps_handle_);
-}
-
-#else
-
-ScopedChapsLoadFixup::ScopedChapsLoadFixup() {}
-ScopedChapsLoadFixup::~ScopedChapsLoadFixup() {}
-
-#endif  // defined(COMPONENT_BUILD)
-
 class ChromeOSTokenManager {
  public:
   // Used with PostTaskAndReply to pass handles to worker thread and back.
@@ -160,7 +124,7 @@ class ChromeOSTokenManager {
     // the current thread, due to NSS's internal locking requirements
     base::ThreadRestrictions::ScopedAllowIO allow_io;
 
-    base::FilePath nssdb_path = path.AppendASCII(".pki").AppendASCII("nssdb");
+    base::FilePath nssdb_path = GetSoftwareNSSDBPath(path);
     if (!base::CreateDirectory(nssdb_path)) {
       LOG(ERROR) << "Failed to create " << nssdb_path.value() << " directory.";
       return ScopedPK11Slot();
@@ -235,17 +199,7 @@ class ChromeOSTokenManager {
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
     if (!tpm_args->chaps_module) {
-      ScopedChapsLoadFixup chaps_loader;
-
-      DVLOG(3) << "Loading chaps...";
-      tpm_args->chaps_module = LoadNSSModule(
-          kChapsModuleName, kChapsPath,
-          // For more details on these parameters, see:
-          // https://developer.mozilla.org/en/PKCS11_Module_Specs
-          // slotFlags=[PublicCerts] -- Certificates and public keys can be
-          //   read from this slot without requiring a call to C_Login.
-          // askpw=only -- Only authenticate to the token when necessary.
-          "NSS=\"slotParams=(0={slotFlags=[PublicCerts] askpw=only})\"");
+      tpm_args->chaps_module = LoadChaps();
     }
     if (tpm_args->chaps_module) {
       tpm_args->tpm_slot =
@@ -527,6 +481,11 @@ base::LazyInstance<ChromeOSTokenManager>::Leaky g_token_manager =
     LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
+base::FilePath GetSoftwareNSSDBPath(
+    const base::FilePath& profile_directory_path) {
+  return profile_directory_path.AppendASCII(".pki").AppendASCII("nssdb");
+}
+
 ScopedPK11Slot GetSystemNSSKeySlot(
     base::OnceCallback<void(ScopedPK11Slot)> callback) {
   return g_token_manager.Get().GetSystemNSSKeySlot(std::move(callback));
@@ -603,15 +562,6 @@ void CloseChromeOSUserForTesting(const std::string& username_hash) {
 void SetPrivateSoftwareSlotForChromeOSUserForTesting(ScopedPK11Slot slot) {
   g_token_manager.Get().SetPrivateSoftwareSlotForChromeOSUserForTesting(
       std::move(slot));
-}
-
-bool IsSlotProvidedByChaps(PK11SlotInfo* slot) {
-  if (!slot)
-    return false;
-
-  SECMODModule* pk11_module = PK11_GetModule(slot);
-  return pk11_module && base::StringPiece(pk11_module->commonName) ==
-                            base::StringPiece(kChapsModuleName);
 }
 
 }  // namespace crypto

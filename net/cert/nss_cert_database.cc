@@ -32,6 +32,10 @@
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
 #include "net/third_party/mozilla_security_manager/nsPKCS12Blob.h"
 
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#include "crypto/chaps_support.h"
+#endif
+
 // PSM = Mozilla's Personal Security Manager.
 namespace psm = mozilla_security_manager;
 
@@ -436,7 +440,7 @@ bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
   if (!slot || !PK11_IsHW(slot))
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LACROS)
   // Chaps announces PK11_IsHW(slot) for all slots. However, it is possible for
   // a key in chaps to be not truly hardware-backed, either because it has been
   // requested to be software-backed, or because the TPM does not support the

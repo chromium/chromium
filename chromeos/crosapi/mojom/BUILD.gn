@@ -8,6 +8,7 @@ mojom("mojom") {
   sources = [
     "account_manager.mojom",
     "bitmap.mojom",
+    "cert_database.mojom",
     "crosapi.mojom",
     "feedback.mojom",
     "file_manager.mojom",

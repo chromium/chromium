@@ -14,6 +14,7 @@
 namespace crosapi {
 
 class AccountManagerAsh;
+class CertDatabaseAsh;
 class FeedbackAsh;
 class FileManagerAsh;
 class KeystoreServiceAsh;
@@ -45,6 +46,8 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
+  void BindCertDatabase(
+      mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) override;
   void BindMediaSessionController(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
@@ -66,6 +69,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
+  std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
 };
 
 }  // namespace crosapi

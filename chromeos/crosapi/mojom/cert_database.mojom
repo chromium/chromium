@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+[Stable, Extensible]
+struct GetCertDatabaseInfoResult {
+  string software_nss_db_path@0;
+  bool should_load_chaps@1;
+};
+
+// This interface is implemented by Ash-Chrome.
+[Stable, Uuid="e7f924bf-0e10-4aef-98d3-6e2f216dc914"]
+interface CertDatabase {
+  // Waits until Ash-Chrome finishes certificate database initialization and
+  // returns necessary data for Lacros-Chrome to connect to it.
+  GetCertDatabaseInfo@0() => (GetCertDatabaseInfoResult? result);
+};

@@ -189,6 +189,10 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
 
+#if BUILDFLAG(IS_LACROS)
+#include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -432,6 +436,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();
+
+#if BUILDFLAG(IS_LACROS)
+  CertDbInitializerFactory::GetInstance();
+#endif
 }
 
 void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {

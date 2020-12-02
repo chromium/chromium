@@ -23,6 +23,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -156,11 +157,12 @@ bool IsLacrosWindow(const aura::Window* window) {
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   static_assert(
-      crosapi::mojom::AshChromeService::Version_ == 6,
+      crosapi::mojom::AshChromeService::Version_ == 7,
       "if you add a new crosapi, please add it to the version map here");
   InterfaceVersions versions;
   AddVersion<crosapi::mojom::AccountManager>(&versions);
   AddVersion<crosapi::mojom::AshChromeService>(&versions);
+  AddVersion<crosapi::mojom::CertDatabase>(&versions);
   AddVersion<crosapi::mojom::Feedback>(&versions);
   AddVersion<crosapi::mojom::FileManager>(&versions);
   AddVersion<crosapi::mojom::KeystoreService>(&versions);

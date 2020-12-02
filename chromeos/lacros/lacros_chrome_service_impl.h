@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -161,6 +162,15 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void BindMediaControllerManager(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           remote);
+  // cert_database_remote() can only be used when this method returns true;
+  bool IsCertDbAvailable();
+
+  // This must be called on the affine sequence.
+  mojo::Remote<crosapi::mojom::CertDatabase>& cert_database_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsCertDbAvailable());
+    return cert_database_remote_;
+  }
 
   // file_manager_remote() can only be used if this method returns true.
   bool IsFileManagerAvailable();
@@ -251,6 +261,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::SelectFile> select_file_remote_;
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
+  mojo::Remote<crosapi::mojom::CertDatabase> cert_database_remote_;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
 

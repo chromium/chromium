@@ -1041,6 +1041,8 @@ source_set("chromeos") {
     "crosapi/browser_manager_observer.h",
     "crosapi/browser_util.cc",
     "crosapi/browser_util.h",
+    "crosapi/cert_database_ash.cc",
+    "crosapi/cert_database_ash.h",
     "crosapi/environment_provider.cc",
     "crosapi/environment_provider.h",
     "crosapi/fake_browser_manager.cc",

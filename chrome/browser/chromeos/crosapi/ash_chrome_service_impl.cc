@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/crosapi/account_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/chromeos/crosapi/cert_database_ash.h"
 #include "chrome/browser/chromeos/crosapi/feedback_ash.h"
 #include "chrome/browser/chromeos/crosapi/file_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
@@ -39,7 +40,8 @@ namespace crosapi {
 AshChromeServiceImpl::AshChromeServiceImpl(
     mojo::PendingReceiver<mojom::AshChromeService> pending_receiver)
     : receiver_(this, std::move(pending_receiver)),
-      screen_manager_ash_(std::make_unique<ScreenManagerAsh>()) {
+      screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
+      cert_database_ash_(std::make_unique<CertDatabaseAsh>()) {
   // TODO(hidehiko): Remove non-critical log from here.
   // Currently this is the signal that the connection is established.
   LOG(WARNING) << "AshChromeService connected.";
@@ -144,6 +146,11 @@ void AshChromeServiceImpl::BindMediaSessionAudioFocusDebug(
         receiver) {
   content::GetMediaSessionService().BindAudioFocusManagerDebug(
       std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindCertDatabase(
+    mojo::PendingReceiver<mojom::CertDatabase> receiver) {
+  cert_database_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {

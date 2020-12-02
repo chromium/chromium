@@ -44,6 +44,11 @@ class CRYPTO_EXPORT AutoSECMODListReadLock {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns path to the NSS database file in the provided profile
+// directory.
+CRYPTO_EXPORT base::FilePath GetSoftwareNSSDBPath(
+    const base::FilePath& profile_directory_path);
+
 // Returns a reference to the system-wide TPM slot if it is loaded. If it is not
 // loaded and |callback| is non-null, the |callback| will be run once the slot
 // is loaded.
@@ -121,9 +126,6 @@ CRYPTO_EXPORT void CloseChromeOSUserForTesting(
 // is initialized next.
 CRYPTO_EXPORT void SetPrivateSoftwareSlotForChromeOSUserForTesting(
     ScopedPK11Slot slot);
-
-// Returns true if chaps is the module to which |slot| is attached.
-CRYPTO_EXPORT bool IsSlotProvidedByChaps(PK11SlotInfo* slot);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

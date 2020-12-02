@@ -123,6 +123,13 @@ component("crypto") {
     sources += [ "nss_util_chromeos.cc" ]
   }
 
+  if (is_chromeos || is_lacros) {
+    sources += [
+      "chaps_support.cc",
+      "chaps_support.h",
+    ]
+  }
+
   defines = [ "CRYPTO_IMPLEMENTATION" ]
 
   if (is_nacl) {

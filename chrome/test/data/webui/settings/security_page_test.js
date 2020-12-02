@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+import {isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
@@ -87,12 +87,18 @@ suite('CrSettingsSecurityPageTest', function() {
     assertTrue(page.$$('#safeBrowsingStandard').expanded);
   });
 
-  test('LogManageCerfificatesClick', async function() {
-    page.$$('#manageCertificates').click();
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
-  });
+  // TODO(crbug.com/1148302): This class directly calls
+  // `GetNSSCertDatabaseForProfile()` that causes crash at the moment and is
+  // never called from Lacros-Chrome. This should be revisited when there is a
+  // solution for the client certificates settings page on Lacros-Chrome.
+  if (!isLacros) {
+    test('LogManageCerfificatesClick', async function() {
+      page.$$('#manageCertificates').click();
+      const result = await testMetricsBrowserProxy.whenCalled(
+          'recordSettingsPageHistogram');
+      assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
+    });
+  }
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));

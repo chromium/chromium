@@ -1,0 +1,88 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "crypto/chaps_support.h"
+
+#include <dlfcn.h>
+#include <secmodt.h>
+
+#include "base/logging.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "nss_util_internal.h"
+
+namespace crypto {
+
+namespace {
+
+// Constants for loading the Chrome OS TPM-backed PKCS #11 library.
+const char kChapsModuleName[] = "Chaps";
+const char kChapsPath[] = "libchaps.so";
+
+class ScopedChapsLoadFixup {
+ public:
+  ScopedChapsLoadFixup();
+  ~ScopedChapsLoadFixup();
+
+ private:
+#if defined(COMPONENT_BUILD)
+  void* chaps_handle_;
+#endif
+};
+
+#if defined(COMPONENT_BUILD)
+
+ScopedChapsLoadFixup::ScopedChapsLoadFixup() {
+  // HACK: libchaps links the system protobuf and there are symbol conflicts
+  // with the bundled copy. Load chaps with RTLD_DEEPBIND to workaround.
+  chaps_handle_ = dlopen(kChapsPath, RTLD_LOCAL | RTLD_NOW | RTLD_DEEPBIND);
+}
+
+ScopedChapsLoadFixup::~ScopedChapsLoadFixup() {
+  // LoadNSSModule() will have taken a 2nd reference.
+  if (chaps_handle_)
+    dlclose(chaps_handle_);
+}
+
+#else
+
+ScopedChapsLoadFixup::ScopedChapsLoadFixup() = default;
+ScopedChapsLoadFixup::~ScopedChapsLoadFixup() = default;
+
+#endif  // defined(COMPONENT_BUILD)
+
+}  // namespace
+
+SECMODModule* LoadChaps() {
+  // NSS functions may reenter //net via extension hooks. If the reentered
+  // code needs to synchronously wait for a task to run but the thread pool in
+  // which that task must run doesn't have enough threads to schedule it, a
+  // deadlock occurs. To prevent that, the base::ScopedBlockingCall below
+  // increments the thread pool capacity for the duration of the TPM
+  // initialization.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  ScopedChapsLoadFixup chaps_loader;
+
+  DVLOG(3) << "Loading chaps...";
+  return LoadNSSModule(
+      kChapsModuleName, kChapsPath,
+      // For more details on these parameters, see:
+      // https://developer.mozilla.org/en/PKCS11_Module_Specs
+      // slotFlags=[PublicCerts] -- Certificates and public keys can be
+      //   read from this slot without requiring a call to C_Login.
+      // askpw=only -- Only authenticate to the token when necessary.
+      "NSS=\"slotParams=(0={slotFlags=[PublicCerts] askpw=only})\"");
+}
+
+bool IsSlotProvidedByChaps(PK11SlotInfo* slot) {
+  if (!slot)
+    return false;
+
+  SECMODModule* pk11_module = PK11_GetModule(slot);
+  return pk11_module && base::StringPiece(pk11_module->commonName) ==
+                            base::StringPiece(kChapsModuleName);
+}
+
+}  // namespace crypto

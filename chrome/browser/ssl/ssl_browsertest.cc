@@ -1994,6 +1994,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithHttpDangerous, MarkBlobAsNonSecure) {
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
+// TODO(crbug.com/1148302): This class directly calls
+// `GetNSSCertDatabaseForProfile()` that causes crash at the moment and is never
+// called from Lacros-Chrome. This should be revisited when there is a solution
+// for the client certificates settings page on Lacros-Chrome.
+#if !BUILDFLAG(IS_LACROS)
 #if defined(USE_NSS_CERTS)
 class SSLUITestWithClientCert : public SSLUITestBase {
  public:
@@ -2084,6 +2089,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, TestWSSClientCert) {
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 }
 #endif  // defined(USE_NSS_CERTS)
+#endif  // !BUILDFLAG(IS_LACROS)
 
 // A stub ClientCertStore that returns a FakeClientCertIdentity.
 class ClientCertStoreStub : public net::ClientCertStore {
