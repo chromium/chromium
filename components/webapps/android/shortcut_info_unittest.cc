@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/shortcut_info.h"
+#include "components/webapps/android/shortcut_info.h"
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/android/shortcut_helper.h"
+#include "components/webapps/android/webapps_icon_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
+
+namespace webapps {
 
 blink::Manifest::ImageResource CreateImage(const std::string& url,
                                            const gfx::Size& size) {
@@ -137,7 +139,7 @@ TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
   manifest_.shortcuts.push_back(
       CreateShortcut("shortcut_3", {CreateImage("/i3_1", {16, 16})}));
 
-  ShortcutHelper::SetIdealShortcutSizeForTesting(192);
+  WebappsIconUtils::SetIdealShortcutSizeForTesting(192);
   info_.UpdateFromManifest(manifest_);
 
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
@@ -158,3 +160,5 @@ TEST_F(ShortcutInfoTest, ShortcutShortNameBackfilled) {
   ASSERT_EQ(info_.shortcut_items.size(), 1u);
   EXPECT_EQ(info_.shortcut_items[0].short_name, base::ASCIIToUTF16("name"));
 }
+
+}  // namespace webapps

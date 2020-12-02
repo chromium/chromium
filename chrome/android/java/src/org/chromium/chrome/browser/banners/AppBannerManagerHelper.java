@@ -8,13 +8,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.components.webapps.WebappsUtils;
 
 /**
  * This class is a helper class for the C++ layer. It responds whether the
  * feature is supported (and facilitates testing). It was split out of
  * AppBannerManager during a modularization effort because ShortcutHelper hadn't
- * been modularized. Once that is done, this functionality can move back into
+ * been modularized. TODO(estade): That's now done, so this functionality can move back into
  * AppBannerManager.
  */
 @JNINamespace("banners")
@@ -28,7 +28,7 @@ public class AppBannerManagerHelper {
      */
     public static boolean isSupported() {
         if (sIsSupported == null) {
-            sIsSupported = ShortcutHelper.isAddToHomeIntentSupported();
+            sIsSupported = WebappsUtils.isAddToHomeIntentSupported();
         }
         return sIsSupported;
     }

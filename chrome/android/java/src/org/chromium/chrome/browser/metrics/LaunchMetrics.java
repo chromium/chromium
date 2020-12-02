@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.metrics;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ShortcutSource;
 import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;

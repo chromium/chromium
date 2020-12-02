@@ -171,13 +171,14 @@ void AddToHomescreenMediator::OnUserTitleAvailable(
   SetWebAppInfo(user_title, url, is_webapk_compatible);
 }
 
-void AddToHomescreenMediator::OnDataAvailable(const ShortcutInfo& info,
+void AddToHomescreenMediator::OnDataAvailable(const webapps::ShortcutInfo& info,
                                               const SkBitmap& display_icon) {
   params_ = std::make_unique<AddToHomescreenParams>();
-  params_->app_type = info.source == ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA
-                          ? AddToHomescreenParams::AppType::WEBAPK
-                          : AddToHomescreenParams::AppType::SHORTCUT;
-  params_->shortcut_info = std::make_unique<ShortcutInfo>(info);
+  params_->app_type =
+      info.source == webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA
+          ? AddToHomescreenParams::AppType::WEBAPK
+          : AddToHomescreenParams::AppType::SHORTCUT;
+  params_->shortcut_info = std::make_unique<webapps::ShortcutInfo>(info);
   params_->primary_icon = data_fetcher_->primary_icon();
   params_->has_maskable_primary_icon =
       data_fetcher_->has_maskable_primary_icon();

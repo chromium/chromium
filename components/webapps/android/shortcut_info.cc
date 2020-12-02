@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/shortcut_info.h"
+#include "components/webapps/android/shortcut_info.h"
 
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/android/shortcut_helper.h"
+#include "components/webapps/android/webapps_icon_utils.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+
+namespace webapps {
 
 namespace {
 
@@ -36,17 +38,35 @@ ShareTarget::ShareTarget() {}
 
 ShareTarget::~ShareTarget() {}
 
-ShortcutInfo::ShortcutInfo(const GURL& shortcut_url)
-    : url(shortcut_url),
-      display(blink::mojom::DisplayMode::kBrowser),
-      orientation(device::mojom::ScreenOrientationLockType::DEFAULT),
-      source(SOURCE_ADD_TO_HOMESCREEN_SHORTCUT),
-      ideal_splash_image_size_in_px(0),
-      minimum_splash_image_size_in_px(0) {}
+ShortcutInfo::ShortcutInfo(const GURL& shortcut_url) : url(shortcut_url) {}
 
 ShortcutInfo::ShortcutInfo(const ShortcutInfo& other) = default;
 
-ShortcutInfo::~ShortcutInfo() {
+ShortcutInfo::~ShortcutInfo() = default;
+
+// static
+std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
+    const GURL& manifest_url,
+    const blink::Manifest& manifest,
+    const GURL& primary_icon_url) {
+  auto shortcut_info = std::make_unique<ShortcutInfo>(GURL());
+  if (!manifest.IsEmpty()) {
+    shortcut_info->UpdateFromManifest(manifest);
+    shortcut_info->manifest_url = manifest_url;
+    shortcut_info->best_primary_icon_url = primary_icon_url;
+  }
+
+  shortcut_info->ideal_splash_image_size_in_px =
+      WebappsIconUtils::GetIdealSplashImageSizeInPx();
+  shortcut_info->minimum_splash_image_size_in_px =
+      WebappsIconUtils::GetMinimumSplashImageSizeInPx();
+  shortcut_info->splash_image_url =
+      blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+          manifest.icons, shortcut_info->ideal_splash_image_size_in_px,
+          shortcut_info->minimum_splash_image_size_in_px,
+          blink::mojom::ManifestImageResource_Purpose::ANY);
+
+  return shortcut_info;
 }
 
 void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
@@ -130,7 +150,7 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
   }
 
   int ideal_shortcut_icons_size_px =
-      ShortcutHelper::GetIdealShortcutIconSizeInPx();
+      WebappsIconUtils::GetIdealShortcutIconSizeInPx();
   for (const auto& manifest_shortcut : shortcut_items) {
     GURL best_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
         manifest_shortcut.icons, ideal_shortcut_icons_size_px,
@@ -143,3 +163,5 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
 void ShortcutInfo::UpdateSource(const Source new_source) {
   source = new_source;
 }
+
+}  // namespace webapps

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.ShortcutSource;
+import org.chromium.components.webapps.ShortcutSource;
 
 /**
  * Stores webapp specific information on behalf of {@link BrowserServicesIntentDataProvider}.

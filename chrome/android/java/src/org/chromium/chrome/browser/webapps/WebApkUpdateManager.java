@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -31,6 +30,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.webapk.lib.client.WebApkVersion;
 
 import java.util.List;
@@ -384,7 +384,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             return WebApkUpdateReason.WEB_SHARE_TARGET_DIFFERS;
         } else if (oldInfo.isIconAdaptive() != fetchedInfo.isIconAdaptive()
                 && (!fetchedInfo.isIconAdaptive()
-                        || ShortcutHelper.doesAndroidSupportMaskableIcons())) {
+                        || WebappsIconUtils.doesAndroidSupportMaskableIcons())) {
             return WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS;
         } else if (shortcutsDiffer(oldInfo.shortcutItems(), fetchedInfo.shortcutItems())) {
             return WebApkUpdateReason.SHORTCUTS_DIFFER;

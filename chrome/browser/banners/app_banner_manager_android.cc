@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AppBannerManagerHelper_jni.h"
-#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
@@ -36,6 +35,9 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/version_info/channel.h"
+#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/android/webapps_icon_utils.h"
+#include "components/webapps/android/webapps_utils.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -128,8 +130,8 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
 
   return content::ManifestIconDownloader::Download(
       web_contents(), primary_icon_url_,
-      ShortcutHelper::GetIdealHomescreenIconSizeInPx(),
-      ShortcutHelper::GetMinimumHomescreenIconSizeInPx(),
+      webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx(),
+      webapps::WebappsIconUtils::GetMinimumHomescreenIconSizeInPx(),
       base::BindOnce(&AppBannerManagerAndroid::OnNativeAppIconFetched,
                      weak_factory_.GetWeakPtr()));
 }
@@ -179,7 +181,7 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params =
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
-      ShortcutHelper::DoesAndroidSupportMaskableIcons();
+      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
 
   return params;
 }
@@ -221,7 +223,7 @@ void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source) {
   a2hs_params->primary_icon = primary_icon_;
   if (native_app_data_.is_null()) {
     a2hs_params->app_type = AddToHomescreenParams::AppType::WEBAPK;
-    a2hs_params->shortcut_info = ShortcutHelper::CreateShortcutInfo(
+    a2hs_params->shortcut_info = webapps::ShortcutInfo::CreateShortcutInfo(
         manifest_url_, manifest_, primary_icon_url_);
     a2hs_params->install_source = install_source;
     a2hs_params->has_maskable_primary_icon = has_maskable_primary_icon_;
@@ -425,7 +427,7 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
   UpdateState(State::FETCHING_NATIVE_DATA);
   Java_AppBannerManager_fetchAppDetails(
       env, java_banner_manager_, jurl, jpackage, jreferrer,
-      ShortcutHelper::GetIdealHomescreenIconSizeInPx());
+      webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx());
   return NO_ERROR_DETECTED;
 }
 
@@ -551,8 +553,8 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   // Also check if a WebAPK is currently being installed. Installation may take
   // some time, so ensure we don't accidentally allow a new installation whilst
   // one is in flight for the current site.
-  return ShortcutHelper::IsWebApkInstalled(web_contents()->GetBrowserContext(),
-                                           manifest_.start_url) ||
+  return webapps::WebappsUtils::IsWebApkInstalled(
+             web_contents()->GetBrowserContext(), manifest_.start_url) ||
          WebApkInstallService::Get(web_contents()->GetBrowserContext())
              ->IsInstallInProgress(manifest_url_);
 }

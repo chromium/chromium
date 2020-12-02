@@ -30,7 +30,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/android/chrome_jni_headers/WebApkInstaller_jni.h"
-#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk.pb.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
+#include "components/webapps/android/shortcut_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -171,7 +171,7 @@ void SetImageData(webapk::Image* image, const SkBitmap& icon) {
 // |splash_icon| parameter. |splash_icon| parameter is only used when the
 // splash icon URL is unknown.
 std::unique_ptr<std::string> BuildProtoInBackground(
-    const ShortcutInfo& shortcut_info,
+    const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     const SkBitmap& splash_icon,
@@ -229,7 +229,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     share_target_params->set_text(
         base::UTF16ToUTF8(shortcut_info.share_target->params.text));
 
-    for (const ShareTargetParamsFile& share_target_params_file :
+    for (const webapps::ShareTargetParamsFile& share_target_params_file :
          shortcut_info.share_target->params.files) {
       webapk::ShareTargetParamsFile* share_files =
           share_target_params->add_files();
@@ -322,7 +322,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
 // disk.
 bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
-    const ShortcutInfo& shortcut_info,
+    const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     const SkBitmap& splash_icon,
@@ -373,7 +373,7 @@ WebApkInstaller::~WebApkInstaller() {
 
 // static
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
-                                   const ShortcutInfo& shortcut_info,
+                                   const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
                                    bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
@@ -393,11 +393,12 @@ void WebApkInstaller::UpdateAsync(content::BrowserContext* context,
 }
 
 // static
-void WebApkInstaller::InstallAsyncForTesting(WebApkInstaller* installer,
-                                             const ShortcutInfo& shortcut_info,
-                                             const SkBitmap& primary_icon,
-                                             bool is_primary_icon_maskable,
-                                             FinishCallback callback) {
+void WebApkInstaller::InstallAsyncForTesting(
+    WebApkInstaller* installer,
+    const webapps::ShortcutInfo& shortcut_info,
+    const SkBitmap& primary_icon,
+    bool is_primary_icon_maskable,
+    FinishCallback callback) {
   installer->InstallAsync(shortcut_info, primary_icon, is_primary_icon_maskable,
                           std::move(callback));
 }
@@ -423,7 +424,7 @@ void WebApkInstaller::OnInstallFinished(
 
 // static
 void WebApkInstaller::BuildProto(
-    const ShortcutInfo& shortcut_info,
+    const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     const SkBitmap& splash_icon,
@@ -444,7 +445,7 @@ void WebApkInstaller::BuildProto(
 // static
 void WebApkInstaller::StoreUpdateRequestToFile(
     const base::FilePath& update_request_path,
-    const ShortcutInfo& shortcut_info,
+    const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     const SkBitmap& splash_icon,
@@ -525,13 +526,13 @@ void WebApkInstaller::CreateJavaRef() {
       Java_WebApkInstaller_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
-void WebApkInstaller::InstallAsync(const ShortcutInfo& shortcut_info,
+void WebApkInstaller::InstallAsync(const webapps::ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
                                    bool is_primary_icon_maskable,
                                    FinishCallback finish_callback) {
   install_duration_timer_.reset(new base::ElapsedTimer());
 
-  install_shortcut_info_.reset(new ShortcutInfo(shortcut_info));
+  install_shortcut_info_.reset(new webapps::ShortcutInfo(shortcut_info));
   install_primary_icon_ = primary_icon;
   is_primary_icon_maskable_ = is_primary_icon_maskable;
   short_name_ = shortcut_info.short_name;

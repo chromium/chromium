@@ -3868,7 +3868,6 @@ test("unit_tests") {
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",
       "../browser/android/password_edit_delegate_settings_impl_unittest.cc",
       "../browser/android/password_ui_view_android_unittest.cc",
-      "../browser/android/shortcut_info_unittest.cc",
       "../browser/android/signin/signin_manager_android_unittest.cc",
       "../browser/android/signin/web_signin_bridge_unittest.cc",
       "../browser/android/tab_web_contents_delegate_android_unittest.cc",

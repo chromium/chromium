@@ -76,7 +76,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
     is_webapk_compatible_ = is_webapk_compatible;
   }
 
-  void OnDataAvailable(const ShortcutInfo& info,
+  void OnDataAvailable(const webapps::ShortcutInfo& info,
                        const SkBitmap& primary_icon) override {
     // This should only be called once.
     EXPECT_FALSE(data_available_);

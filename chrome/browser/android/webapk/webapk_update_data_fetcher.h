@@ -10,8 +10,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/android/shortcut_info.h"
 #include "chrome/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/android/shortcut_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -79,7 +79,7 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   GURL last_fetched_url_;
 
   // Downloaded data for |web_manifest_url_|.
-  ShortcutInfo info_;
+  webapps::ShortcutInfo info_;
   SkBitmap primary_icon_;
   bool is_primary_icon_maskable_;
 

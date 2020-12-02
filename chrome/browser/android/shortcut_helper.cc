@@ -7,27 +7,18 @@
 #include <jni.h>
 #include <utility>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
-#include "content/public/browser/browser_thread.h"
+#include "components/webapps/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_helpers.h"
 #include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/color_analysis.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -35,45 +26,9 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-int g_ideal_homescreen_icon_size = -1;
-int g_minimum_homescreen_icon_size = -1;
-int g_ideal_splash_image_size = -1;
-int g_minimum_splash_image_size = -1;
-int g_ideal_monochrome_icon_size = -1;
-int g_ideal_adaptive_launcher_icon_size = -1;
-int g_ideal_shortcut_icon_size = -1;
-
-int g_default_rgb_icon_value = 145;
-
-// Retrieves and caches the ideal and minimum sizes of the Home screen icon,
-// the splash screen image, and the shortcut icons.
-void GetIconSizes() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jintArray> java_size_array =
-      Java_ShortcutHelper_getIconSizes(env);
-  std::vector<int> sizes;
-  base::android::JavaIntArrayToIntVector(env, java_size_array, &sizes);
-
-  // Check that the size returned is what is expected.
-  DCHECK_EQ(7u, sizes.size());
-
-  // This ordering must be kept up to date with the Java ShortcutHelper.
-  g_ideal_homescreen_icon_size = sizes[0];
-  g_minimum_homescreen_icon_size = sizes[1];
-  g_ideal_splash_image_size = sizes[2];
-  g_minimum_splash_image_size = sizes[3];
-  g_ideal_monochrome_icon_size = sizes[4];
-  g_ideal_adaptive_launcher_icon_size = sizes[5];
-  g_ideal_shortcut_icon_size = sizes[6];
-
-  // Try to ensure that the data returned is sane.
-  DCHECK(g_minimum_homescreen_icon_size <= g_ideal_homescreen_icon_size);
-  DCHECK(g_minimum_splash_image_size <= g_ideal_splash_image_size);
-}
-
 // Adds a shortcut which opens in a fullscreen window to the launcher.
 void AddWebappWithSkBitmap(content::WebContents* web_contents,
-                           const ShortcutInfo& info,
+                           const webapps::ShortcutInfo& info,
                            const std::string& webapp_id,
                            const SkBitmap& icon_bitmap,
                            bool is_icon_maskable) {
@@ -114,7 +69,7 @@ void AddWebappWithSkBitmap(content::WebContents* web_contents,
 }
 
 // Adds a shortcut which opens in a browser tab to the launcher.
-void AddShortcutWithSkBitmap(const ShortcutInfo& info,
+void AddShortcutWithSkBitmap(const webapps::ShortcutInfo& info,
                              const std::string& id,
                              const SkBitmap& icon_bitmap,
                              bool is_icon_maskable) {
@@ -139,33 +94,9 @@ void AddShortcutWithSkBitmap(const ShortcutInfo& info,
 }  // anonymous namespace
 
 // static
-std::unique_ptr<ShortcutInfo> ShortcutHelper::CreateShortcutInfo(
-    const GURL& manifest_url,
-    const blink::Manifest& manifest,
-    const GURL& primary_icon_url) {
-  auto shortcut_info = std::make_unique<ShortcutInfo>(GURL());
-  if (!manifest.IsEmpty()) {
-    shortcut_info->UpdateFromManifest(manifest);
-    shortcut_info->manifest_url = manifest_url;
-    shortcut_info->best_primary_icon_url = primary_icon_url;
-  }
-
-  shortcut_info->ideal_splash_image_size_in_px = GetIdealSplashImageSizeInPx();
-  shortcut_info->minimum_splash_image_size_in_px =
-      GetMinimumSplashImageSizeInPx();
-  shortcut_info->splash_image_url =
-      blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-          manifest.icons, shortcut_info->ideal_splash_image_size_in_px,
-          shortcut_info->minimum_splash_image_size_in_px,
-          blink::mojom::ManifestImageResource_Purpose::ANY);
-
-  return shortcut_info;
-}
-
-// static
 void ShortcutHelper::AddToLauncherWithSkBitmap(
     content::WebContents* web_contents,
-    const ShortcutInfo& info,
+    const webapps::ShortcutInfo& info,
     const SkBitmap& icon_bitmap,
     bool is_icon_maskable) {
   std::string webapp_id = base::GenerateGUID();
@@ -184,42 +115,6 @@ void ShortcutHelper::ShowWebApkInstallInProgressToast() {
       base::android::AttachCurrentThread());
 }
 
-int ShortcutHelper::GetIdealHomescreenIconSizeInPx() {
-  if (g_ideal_homescreen_icon_size == -1)
-    GetIconSizes();
-  return g_ideal_homescreen_icon_size;
-}
-
-int ShortcutHelper::GetMinimumHomescreenIconSizeInPx() {
-  if (g_minimum_homescreen_icon_size == -1)
-    GetIconSizes();
-  return g_minimum_homescreen_icon_size;
-}
-
-int ShortcutHelper::GetIdealSplashImageSizeInPx() {
-  if (g_ideal_splash_image_size == -1)
-    GetIconSizes();
-  return g_ideal_splash_image_size;
-}
-
-int ShortcutHelper::GetMinimumSplashImageSizeInPx() {
-  if (g_minimum_splash_image_size == -1)
-    GetIconSizes();
-  return g_minimum_splash_image_size;
-}
-
-int ShortcutHelper::GetIdealAdaptiveLauncherIconSizeInPx() {
-  if (g_ideal_adaptive_launcher_icon_size == -1)
-    GetIconSizes();
-  return g_ideal_adaptive_launcher_icon_size;
-}
-
-int ShortcutHelper::GetIdealShortcutIconSizeInPx() {
-  if (g_ideal_shortcut_icon_size == -1)
-    GetIconSizes();
-  return g_ideal_shortcut_icon_size;
-}
-
 // static
 void ShortcutHelper::StoreWebappSplashImage(const std::string& webapp_id,
                                             const SkBitmap& splash_image) {
@@ -234,71 +129,6 @@ void ShortcutHelper::StoreWebappSplashImage(const std::string& webapp_id,
 
   Java_ShortcutHelper_storeWebappSplashImage(env, java_webapp_id,
                                              java_splash_image);
-}
-
-// static
-SkBitmap ShortcutHelper::FinalizeLauncherIconInBackground(
-    const SkBitmap& bitmap,
-    bool is_icon_maskable,
-    const GURL& url,
-    bool* is_generated) {
-  base::AssertLongCPUWorkAllowed();
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> result;
-  *is_generated = false;
-
-  if (!bitmap.isNull()) {
-    if (Java_ShortcutHelper_isIconLargeEnoughForLauncher(env, bitmap.width(),
-                                                         bitmap.height())) {
-      ScopedJavaLocalRef<jobject> java_bitmap =
-          gfx::ConvertToJavaBitmap(bitmap);
-      result = Java_ShortcutHelper_createHomeScreenIconFromWebIcon(
-          env, java_bitmap, is_icon_maskable);
-    }
-  }
-
-  if (result.is_null()) {
-    ScopedJavaLocalRef<jstring> java_url =
-        base::android::ConvertUTF8ToJavaString(env, url.spec());
-    SkColor mean_color =
-        SkColorSetRGB(g_default_rgb_icon_value, g_default_rgb_icon_value,
-                      g_default_rgb_icon_value);
-
-    if (!bitmap.isNull())
-      mean_color = color_utils::CalculateKMeanColorOfBitmap(bitmap);
-
-    *is_generated = true;
-    result = Java_ShortcutHelper_generateHomeScreenIcon(
-        env, java_url, SkColorGetR(mean_color), SkColorGetG(mean_color),
-        SkColorGetB(mean_color));
-  }
-
-  return result.obj()
-             ? gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(result))
-             : SkBitmap();
-}
-
-// static
-std::string ShortcutHelper::QueryFirstWebApkPackage(const GURL& url) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_url =
-      base::android::ConvertUTF8ToJavaString(env, url.spec());
-  ScopedJavaLocalRef<jstring> java_webapk_package_name =
-      Java_ShortcutHelper_queryFirstWebApkPackage(env, java_url);
-
-  std::string webapk_package_name;
-  if (java_webapk_package_name.obj()) {
-    webapk_package_name =
-        base::android::ConvertJavaStringToUTF8(env, java_webapk_package_name);
-  }
-  return webapk_package_name;
-}
-
-// static
-bool ShortcutHelper::IsWebApkInstalled(content::BrowserContext* browser_context,
-                                       const GURL& url) {
-  return !QueryFirstWebApkPackage(url).empty();
 }
 
 // static
@@ -341,15 +171,4 @@ void ShortcutHelper::SetForceWebApkUpdate(const std::string& id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ShortcutHelper_setForceWebApkUpdate(
       env, base::android::ConvertUTF8ToJavaString(env, id));
-}
-
-// static
-bool ShortcutHelper::DoesAndroidSupportMaskableIcons() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_OREO;
-}
-
-// static
-void ShortcutHelper::SetIdealShortcutSizeForTesting(int size) {
-  g_ideal_shortcut_icon_size = size;
 }

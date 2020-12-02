@@ -21,6 +21,11 @@
 namespace content {
 class WebContents;
 }
+
+namespace webapps {
+struct ShortcutInfo;
+}
+
 class AddToHomescreenInstaller;
 
 // AddToHomescreenMediator is the C++ counterpart of
@@ -79,7 +84,7 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
                             const GURL& url,
                             bool is_webapk_compatible) override;
 
-  void OnDataAvailable(const ShortcutInfo& info,
+  void OnDataAvailable(const webapps::ShortcutInfo& info,
                        const SkBitmap& display_icon) override;
 
   void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,

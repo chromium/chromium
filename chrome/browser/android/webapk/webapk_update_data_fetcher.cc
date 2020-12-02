@@ -17,10 +17,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
-#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/webapps/android/webapps_icon_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -115,7 +115,7 @@ void WebApkUpdateDataFetcher::FetchInstallableData() {
   InstallableParams params;
   params.valid_manifest = true;
   params.prefer_maskable_icon =
-      ShortcutHelper::DoesAndroidSupportMaskableIcons();
+      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
   params.has_worker = true;
   params.valid_primary_icon = true;
   params.valid_splash_icon = true;

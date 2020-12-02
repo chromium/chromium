@@ -33,7 +33,7 @@
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/shortcut_helper.h"
+#include "components/webapps/android/webapps_icon_utils.h"
 #endif
 
 namespace {
@@ -60,7 +60,7 @@ const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 int GetIdealPrimaryIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return ShortcutHelper::GetIdealHomescreenIconSizeInPx();
+  return webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -68,7 +68,7 @@ int GetIdealPrimaryIconSizeInPx() {
 
 int GetMinimumPrimaryIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return ShortcutHelper::GetMinimumHomescreenIconSizeInPx();
+  return webapps::WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -76,7 +76,7 @@ int GetMinimumPrimaryIconSizeInPx() {
 
 int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return ShortcutHelper::GetIdealAdaptiveLauncherIconSizeInPx();
+  return webapps::WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
 #else
   return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
 #endif
@@ -84,7 +84,7 @@ int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
 
 int GetIdealSplashIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return ShortcutHelper::GetIdealSplashImageSizeInPx();
+  return webapps::WebappsIconUtils::GetIdealSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif
@@ -92,7 +92,7 @@ int GetIdealSplashIconSizeInPx() {
 
 int GetMinimumSplashIconSizeInPx() {
 #if defined(OS_ANDROID)
-  return ShortcutHelper::GetMinimumSplashImageSizeInPx();
+  return webapps::WebappsIconUtils::GetMinimumSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
 #endif

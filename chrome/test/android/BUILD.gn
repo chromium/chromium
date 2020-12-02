@@ -298,6 +298,7 @@ android_library("chrome_java_test_support") {
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//components/translate/content/android:java",
+    "//components/webapps/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",

@@ -35,7 +35,7 @@ public final class WebApkConstants {
     public static final String EXTRA_RELAUNCH = "org.chromium.webapk.relaunch";
     public static final String EXTRA_IS_WEBAPK = "org.chromium.webapk.is_webapk";
 
-    // Must be kept in sync with chrome/browser/android/shortcut_info.h.
+    // Must be kept in sync with components/webapps/android/shortcut_info.h.
     public static final int SHORTCUT_SOURCE_UNKNOWN = 0;
     public static final int SHORTCUT_SOURCE_EXTERNAL_INTENT = 9;
     public static final int SHORTCUT_SOURCE_SHARE = 13;

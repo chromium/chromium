@@ -10,8 +10,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/android/shortcut_info.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/webapps/android/shortcut_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -37,7 +37,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
     // Called when all the data needed to prompt the user to add to home screen
     // is available.
-    virtual void OnDataAvailable(const ShortcutInfo& info,
+    virtual void OnDataAvailable(const webapps::ShortcutInfo& info,
                                  const SkBitmap& primary_icon) = 0;
 
    protected:
@@ -62,7 +62,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
   // Accessors, etc.
   const SkBitmap& primary_icon() const { return primary_icon_; }
-  ShortcutInfo& shortcut_info() { return shortcut_info_; }
+  webapps::ShortcutInfo& shortcut_info() { return shortcut_info_; }
   bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
 
  private:
@@ -99,7 +99,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
   // The icons must only be set on the UI thread for thread safety.
   SkBitmap raw_primary_icon_;
   SkBitmap primary_icon_;
-  ShortcutInfo shortcut_info_;
+  webapps::ShortcutInfo shortcut_info_;
   bool has_maskable_primary_icon_;
 
   base::CancelableTaskTracker favicon_task_tracker_;

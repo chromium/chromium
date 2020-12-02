@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.ShortcutSource;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.webapps.WebApkExtras.ShortcutItem;
+import org.chromium.components.webapps.ShortcutSource;
 
 import java.util.List;
 import java.util.Map;

@@ -10,3 +10,10 @@ android_library("java") {
     "src/org/chromium/components/webapk/lib/common/WebApkMetaDataKeys.java",
   ]
 }
+
+android_resources("splash_resources") {
+  sources = [
+    "res_splash/values-sw600dp/common_dimens.xml",
+    "res_splash/values/common_dimens.xml",
+  ]
+}

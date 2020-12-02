@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.util.Log;
 
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.ShortcutSource;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.components.webapps.ShortcutSource;
 
 /**
  * Proxy that responds to tapping on the Bookmarks widget.

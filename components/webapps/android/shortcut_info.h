@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_SHORTCUT_INFO_H_
-#define CHROME_BROWSER_ANDROID_SHORTCUT_INFO_H_
+#ifndef COMPONENTS_WEBAPPS_ANDROID_SHORTCUT_INFO_H_
+#define COMPONENTS_WEBAPPS_ANDROID_SHORTCUT_INFO_H_
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/optional.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
+
+namespace webapps {
 
 // https://wicg.github.io/web-share-target/level-2/#sharetargetfiles-and-its-members
 struct ShareTargetParamsFile {
@@ -48,11 +51,17 @@ struct ShareTarget {
 
 // Information needed to create a shortcut via ShortcutHelper.
 struct ShortcutInfo {
+  // Creates a ShortcutInfo struct suitable for adding a shortcut to the home
+  // screen.
+  static std::unique_ptr<ShortcutInfo> CreateShortcutInfo(
+      const GURL& manifest_url,
+      const blink::Manifest& manifest,
+      const GURL& primary_icon_url);
 
   // This enum is used to back a UMA histogram, and must be treated as
   // append-only.
   // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ShortcutSource
   enum Source {
     SOURCE_UNKNOWN = 0,
@@ -118,13 +127,14 @@ struct ShortcutInfo {
   base::string16 user_title;
   base::string16 name;
   base::string16 short_name;
-  blink::mojom::DisplayMode display;
-  device::mojom::ScreenOrientationLockType orientation;
-  Source source;
+  blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kBrowser;
+  device::mojom::ScreenOrientationLockType orientation =
+      device::mojom::ScreenOrientationLockType::DEFAULT;
+  Source source = SOURCE_ADD_TO_HOMESCREEN_SHORTCUT;
   base::Optional<SkColor> theme_color;
   base::Optional<SkColor> background_color;
-  int ideal_splash_image_size_in_px;
-  int minimum_splash_image_size_in_px;
+  int ideal_splash_image_size_in_px = 0;
+  int minimum_splash_image_size_in_px = 0;
   GURL splash_image_url;
   GURL best_primary_icon_url;
   std::vector<std::string> icon_urls;
@@ -135,4 +145,6 @@ struct ShortcutInfo {
   std::vector<GURL> best_shortcut_icon_urls;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_SHORTCUT_INFO_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_ANDROID_SHORTCUT_INFO_H_

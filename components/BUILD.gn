@@ -370,6 +370,8 @@ test("components_unittests") {
       "//components/signin/public/android:java",
       "//components/spellcheck/browser/android:java",
       "//components/variations/android:variations_java",
+      "//components/webapps/android:java",
+      "//components/webapps/android:unit_tests",
       "//content/public/android:content_java",
       "//content/public/browser",
       "//net",

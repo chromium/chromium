@@ -16,11 +16,11 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/android/shortcut_info.h"
 #include "chrome/browser/android/webapk/webapk.pb.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/android/shortcut_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -109,7 +109,7 @@ class WebApkInstallerRunner {
   ~WebApkInstallerRunner() {}
 
   void RunInstallWebApk(std::unique_ptr<WebApkInstaller> installer,
-                        const ShortcutInfo& info) {
+                        const webapps::ShortcutInfo& info) {
     base::RunLoop run_loop;
     on_completed_callback_ = run_loop.QuitClosure();
 
@@ -165,7 +165,7 @@ class UpdateRequestStorer {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     WebApkInstaller::StoreUpdateRequestToFile(
-        update_request_path, ShortcutInfo((GURL())), SkBitmap(), false,
+        update_request_path, webapps::ShortcutInfo((GURL())), SkBitmap(), false,
         SkBitmap(), "", "", std::map<std::string, WebApkIconHasher::Icon>(),
         false, WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS,
         base::BindOnce(&UpdateRequestStorer::OnComplete,
@@ -211,7 +211,7 @@ class BuildProtoRunner {
       std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
       bool is_manifest_stale,
       const std::vector<GURL>& best_shortcut_icon_urls) {
-    ShortcutInfo info(GURL::EmptyGURL());
+    webapps::ShortcutInfo info(GURL::EmptyGURL());
     info.best_primary_icon_url = best_primary_icon_url;
     info.splash_image_url = splash_image_url;
     info.icon_urls = {best_primary_icon_url.spec(), splash_image_url.spec(),
@@ -306,8 +306,8 @@ class WebApkInstallerTest : public ::testing::Test {
     return installer;
   }
 
-  ShortcutInfo DefaultShortcutInfo() {
-    ShortcutInfo info(test_server_.GetURL(kStartUrl));
+  webapps::ShortcutInfo DefaultShortcutInfo() {
+    webapps::ShortcutInfo info(test_server_.GetURL(kStartUrl));
     info.best_primary_icon_url = test_server_.GetURL(kBestPrimaryIconUrl);
     info.splash_image_url = test_server_.GetURL(kBestSplashIconUrl);
     info.best_shortcut_icon_urls.push_back(
@@ -382,7 +382,7 @@ TEST_F(WebApkInstallerTest, FailOnLowSpace) {
 // a Cross-Origin-Resource-Policy: same-origin header and the icon is
 // same-origin with the start URL.
 TEST_F(WebApkInstallerTest, CrossOriginResourcePolicySameOriginIconSuccess) {
-  ShortcutInfo shortcut_info = DefaultShortcutInfo();
+  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
   shortcut_info.best_primary_icon_url =
       test_server()->GetURL(kBestPrimaryIconCorpUrl);
 
@@ -395,7 +395,7 @@ TEST_F(WebApkInstallerTest, CrossOriginResourcePolicySameOriginIconSuccess) {
 // URL returns no content. In a perfect world the fetch would always succeed
 // because the fetch for the same icon succeeded recently.
 TEST_F(WebApkInstallerTest, BestPrimaryIconUrlDownloadTimesOut) {
-  ShortcutInfo shortcut_info = DefaultShortcutInfo();
+  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
   shortcut_info.best_primary_icon_url = test_server()->GetURL("/nocontent");
 
   WebApkInstallerRunner runner;
@@ -407,7 +407,7 @@ TEST_F(WebApkInstallerTest, BestPrimaryIconUrlDownloadTimesOut) {
 // URL returns no content. In a perfect world the fetch would always succeed
 // because the fetch for the same icon succeeded recently.
 TEST_F(WebApkInstallerTest, BestSplashIconUrlDownloadTimesOut) {
-  ShortcutInfo shortcut_info = DefaultShortcutInfo();
+  webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
   shortcut_info.splash_image_url = test_server()->GetURL("/nocontent");
 
   WebApkInstallerRunner runner;

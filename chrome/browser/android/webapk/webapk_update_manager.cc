@@ -18,11 +18,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateManager_jni.h"
-#include "chrome/browser/android/shortcut_info.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/webapps/android/shortcut_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -86,7 +86,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   std::string update_request_path =
       ConvertJavaStringToUTF8(env, java_update_request_path);
 
-  ShortcutInfo info(GURL(ConvertJavaStringToUTF8(env, java_start_url)));
+  webapps::ShortcutInfo info(
+      GURL(ConvertJavaStringToUTF8(env, java_start_url)));
   info.scope = GURL(ConvertJavaStringToUTF8(env, java_scope));
   info.name = ConvertJavaStringToUTF16(env, java_name);
   info.short_name = ConvertJavaStringToUTF16(env, java_short_name);
@@ -105,7 +106,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   GURL share_target_action =
       GURL(ConvertJavaStringToUTF8(env, java_share_target_action));
   if (!share_target_action.is_empty()) {
-    info.share_target = ShareTarget();
+    info.share_target = webapps::ShareTarget();
     info.share_target->action = share_target_action;
     info.share_target->params.title =
         ConvertJavaStringToUTF16(java_share_target_param_title);
@@ -132,7 +133,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     // The length of fileNames and accepts should always be the same, but here
     // we just want to be safe.
     for (size_t i = 0; i < std::min(fileNames.size(), accepts.size()); ++i) {
-      ShareTargetParamsFile file;
+      webapps::ShareTargetParamsFile file;
       file.name = fileNames[i];
       file.accept.swap(accepts[i]);
       info.share_target->params.files.push_back(file);
