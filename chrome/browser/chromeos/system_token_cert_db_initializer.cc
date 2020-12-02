@@ -112,8 +112,8 @@ void SystemTokenCertDBInitializer::ShutDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Note that the observer could potentially not be added yet, but
-  // RemoveObserver() is a no-op in that case.
-  CryptohomeClient::Get()->RemoveObserver(this);
+  // the operation is a no-op in that case.
+  TpmManagerClient::Get()->RemoveObserver(this);
 
   // Cancel any in-progress initialization sequence.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -127,16 +127,10 @@ void SystemTokenCertDBInitializer::ShutDown() {
   system_token_cert_database_.reset();
 }
 
-void SystemTokenCertDBInitializer::TpmInitStatusUpdated(
-    bool ready,
-    bool owned,
-    bool was_owned_this_boot) {
+void SystemTokenCertDBInitializer::OnOwnershipTaken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ready) {
-    // The TPM "ready" means that it's available && owned && not being owned.
-    MaybeStartInitializingDatabase();
-  }
+  MaybeStartInitializingDatabase();
 }
 
 void SystemTokenCertDBInitializer::GetSystemTokenCertDb(
@@ -182,7 +176,7 @@ void SystemTokenCertDBInitializer::OnCryptohomeAvailable(bool available) {
   }
 
   VLOG(1) << "SystemTokenCertDBInitializer: Cryptohome available.";
-  CryptohomeClient::Get()->AddObserver(this);
+  TpmManagerClient::Get()->AddObserver(this);
   CryptohomeClient::Get()->TpmIsReady(
       base::BindOnce(&SystemTokenCertDBInitializer::OnGotTpmIsReady,
                      weak_ptr_factory_.GetWeakPtr()));

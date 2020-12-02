@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,6 +71,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
     TPMTokenLoader::InitializeForTest();
     CryptohomeClient::InitializeFake();
     NetworkCertLoader::Initialize();
+    TpmManagerClient::InitializeFake();
 
     system_token_cert_db_initializer_ =
         std::make_unique<SystemTokenCertDBInitializer>();
@@ -81,6 +83,7 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
       const SystemTokenCertDbInitializerTest& other) = delete;
 
   ~SystemTokenCertDbInitializerTest() override {
+    TpmManagerClient::Shutdown();
     NetworkCertLoader::Shutdown();
     CryptohomeClient::Shutdown();
     TPMTokenLoader::Shutdown();

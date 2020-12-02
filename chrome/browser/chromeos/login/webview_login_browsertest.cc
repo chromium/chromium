@@ -62,6 +62,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -1217,9 +1218,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
   // Report the TPM as ready, triggering the system token initialization by
   // SystemTokenCertDBInitializer.
   cryptohome_client()->set_tpm_is_ready(true);
-  cryptohome_client()->NotifyTpmInitStatusUpdated(
-      /*ready=*/true, /*owned=*/true,
-      /*was_owned_this_boot=*/false);
+  TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
 
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});

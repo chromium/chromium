@@ -8,6 +8,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 
 namespace chromeos {
@@ -49,11 +50,15 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   mutable_nonsensitive_status_reply() override;
   ::tpm_manager::GetVersionInfoReply* mutable_version_info_reply() override;
   int clear_stored_owner_password_count() const override;
+  void EmitOwnershipTakenSignal() override;
 
  private:
   ::tpm_manager::GetTpmNonsensitiveStatusReply nonsensitive_status_reply_;
   ::tpm_manager::GetVersionInfoReply version_info_reply_;
   int clear_stored_owner_password_count_ = 0;
+
+  // The observer list of ownership taken signal.
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace chromeos

@@ -67,11 +67,11 @@ void FakeTpmManagerClient::ClearStoredOwnerPassword(
 }
 
 void FakeTpmManagerClient::AddObserver(Observer* observer) {
-  NOTIMPLEMENTED();
+  observer_list_.AddObserver(observer);
 }
 
 void FakeTpmManagerClient::RemoveObserver(Observer* observer) {
-  NOTIMPLEMENTED();
+  observer_list_.RemoveObserver(observer);
 }
 
 TpmManagerClient::TestInterface* FakeTpmManagerClient::GetTestInterface() {
@@ -90,6 +90,12 @@ FakeTpmManagerClient::mutable_version_info_reply() {
 
 int FakeTpmManagerClient::clear_stored_owner_password_count() const {
   return clear_stored_owner_password_count_;
+}
+
+void FakeTpmManagerClient::EmitOwnershipTakenSignal() {
+  for (auto& observer : observer_list_) {
+    observer.OnOwnershipTaken();
+  }
 }
 
 }  // namespace chromeos

@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     mutable_version_info_reply() = 0;
     // Gets the count of `ClearStoredOwnerPassword()` being called.
     virtual int clear_stored_owner_password_count() const = 0;
+    // Emits ownership taken signal.
+    virtual void EmitOwnershipTakenSignal() = 0;
   };
 
   // Not copyable or movable.
