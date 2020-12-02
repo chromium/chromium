@@ -3017,7 +3017,7 @@
   {
     "name": "intensive-wake-up-throttling",
     "owners": [ "fdoray" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 89
   },
   {
     "name": "intent-handling-sharing",
