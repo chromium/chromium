@@ -111,6 +111,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }  // namespace
 
 @interface TabGridViewController () <GridViewControllerDelegate,
+                                     LayoutSwitcher,
                                      UIScrollViewAccessibilityDelegate>
 // Whether the view is visible. Bookkeeping is based on |-viewWillAppear:| and
 // |-viewWillDisappear methods. Note that the |Did| methods are not reliably
@@ -453,8 +454,39 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - LayoutSwitcherProvider
 
 - (id<LayoutSwitcher>)layoutSwitcher {
-  DCHECK_NE(TabGridPageRemoteTabs, self.activePage);
-  return [self gridViewControllerForPage:self.activePage];
+  return self;
+}
+
+#pragma mark - LayoutSwitcher
+- (void)willTransitionToLayout:(LayoutSwitcherState)nextState
+                    completion:
+                        (void (^)(BOOL completed, BOOL finished))completion {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+  [regularViewController willTransitionToLayout:nextState
+                                     completion:completion];
+  GridViewController* incognitoViewController =
+      [self gridViewControllerForPage:TabGridPageIncognitoTabs];
+  [incognitoViewController willTransitionToLayout:nextState
+                                       completion:completion];
+}
+
+- (void)didUpdateTransitionLayoutProgress:(CGFloat)progress {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+  [regularViewController didUpdateTransitionLayoutProgress:progress];
+  GridViewController* incognitoViewController =
+      [self gridViewControllerForPage:TabGridPageIncognitoTabs];
+  [incognitoViewController didUpdateTransitionLayoutProgress:progress];
+}
+
+- (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+  [regularViewController didTransitionToLayoutSuccessfully:success];
+  GridViewController* incognitoViewController =
+      [self gridViewControllerForPage:TabGridPageIncognitoTabs];
+  [incognitoViewController didTransitionToLayoutSuccessfully:success];
 }
 
 #pragma mark - ViewRevealingAnimatee
@@ -463,13 +495,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   DCHECK_NE(TabGridPageRemoteTabs, self.currentPage);
   self.scrollView.scrollEnabled = NO;
   switch (currentViewRevealState) {
-    case ViewRevealState::Hidden:
+    case ViewRevealState::Hidden: {
       self.topToolbar.transform = CGAffineTransformMakeTranslation(
           0, [self hiddenTopToolbarYTranslation]);
-      [self gridViewControllerForPage:self.currentPage].gridView.transform =
+      GridViewController* regularViewController =
+          [self gridViewControllerForPage:TabGridPageRegularTabs];
+      regularViewController.gridView.transform =
+          CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
+      GridViewController* incognitoViewController =
+          [self gridViewControllerForPage:TabGridPageIncognitoTabs];
+      incognitoViewController.gridView.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       [self contentWillAppearAnimated:YES];
       break;
+    }
     case ViewRevealState::Peeked:
       break;
     case ViewRevealState::Revealed:
@@ -479,40 +518,55 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
-  GridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  DCHECK(gridViewController);
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+  GridViewController* incognitoViewController =
+      [self gridViewControllerForPage:TabGridPageIncognitoTabs];
   switch (nextViewRevealState) {
-    case ViewRevealState::Hidden:
+    case ViewRevealState::Hidden: {
       self.foregroundView.alpha = 1;
       self.topToolbar.transform = CGAffineTransformMakeTranslation(
           0, [self hiddenTopToolbarYTranslation]);
-      gridViewController.gridView.transform =
+      regularViewController.gridView.transform =
+          CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
+      incognitoViewController.gridView.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       self.topToolbar.alpha = 0;
-      [self showPlusSignButtonWithAlpha:1 - gridViewController
+      GridViewController* currentGridViewController =
+          [self gridViewControllerForPage:self.currentPage];
+      [self showPlusSignButtonWithAlpha:1 - currentGridViewController
                                                 .fractionVisibleOfLastItem];
       [self contentWillDisappearAnimated:YES];
       self.plusSignButton.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       break;
-    case ViewRevealState::Peeked:
+    }
+    case ViewRevealState::Peeked: {
       self.foregroundView.alpha = 0;
       self.topToolbar.transform = CGAffineTransformMakeTranslation(
           0, [self hiddenTopToolbarYTranslation]);
-      gridViewController.gridView.transform = CGAffineTransformIdentity;
+      regularViewController.gridView.transform = CGAffineTransformIdentity;
+      incognitoViewController.gridView.transform = CGAffineTransformIdentity;
       self.topToolbar.alpha = 0;
-      [self showPlusSignButtonWithAlpha:1 - gridViewController
+      GridViewController* currentGridViewController =
+          [self gridViewControllerForPage:self.currentPage];
+      [self showPlusSignButtonWithAlpha:1 - currentGridViewController
                                                 .fractionVisibleOfLastItem];
       break;
-    case ViewRevealState::Revealed:
+    }
+    case ViewRevealState::Revealed: {
       self.foregroundView.alpha = 0;
       self.topToolbar.transform = CGAffineTransformIdentity;
-      gridViewController.gridView.transform = CGAffineTransformMakeTranslation(
-          0, self.topToolbar.intrinsicContentSize.height);
+      regularViewController.gridView.transform =
+          CGAffineTransformMakeTranslation(
+              0, self.topToolbar.intrinsicContentSize.height);
+      incognitoViewController.gridView.transform =
+          CGAffineTransformMakeTranslation(
+              0, self.topToolbar.intrinsicContentSize.height);
       self.topToolbar.alpha = 1;
       [self hidePlusSignButton];
       break;
+    }
   }
 }
 
