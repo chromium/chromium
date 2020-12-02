@@ -117,7 +117,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
     // The required package ID for WebLayer when loaded as a shared library, hardcoded in the
     // resources. If this value changes make sure to change _SHARED_LIBRARY_HARDCODED_ID in
-    // //build/android/gyp/util/protoresources.py.
+    // //build/android/gyp/util/protoresources.py and WebViewChromiumFactoryProvider.java.
     private static final int REQUIRED_PACKAGE_IDENTIFIER = 36;
 
     private final ProfileManager mProfileManager = new ProfileManager();
@@ -658,8 +658,8 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         if (packageId > REQUIRED_PACKAGE_IDENTIFIER) {
             throw new AndroidRuntimeException(
-                    "WebLayer can't be used with other shared libraries. Loaded packages: "
-                    + getLoadedPackageNames(remoteContext));
+                    "WebLayer can't be used with other shared libraries. Package ID: " + packageId
+                    + ", Loaded packages: " + getLoadedPackageNames(remoteContext));
         }
 
         forceAddAssetPaths(remoteContext, packageId);
@@ -669,10 +669,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
     /** Forces adding entries to the package identifiers array until we hit the required ID. */
     private static void forceAddAssetPaths(Context remoteContext, int packageId) {
-        if (packageId > REQUIRED_PACKAGE_IDENTIFIER) {
-            throw new AndroidRuntimeException(
-                    "WebLayer package ID too large, aborting: " + packageId);
-        }
         try {
             Method addAssetPath = AssetManager.class.getMethod("addAssetPath", String.class);
             String path = remoteContext.getApplicationInfo().sourceDir;

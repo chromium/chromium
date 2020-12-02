@@ -80,6 +80,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final String SUPPORT_LIB_GLUE_AND_BOUNDARY_INTERFACE_PREFIX =
             "org.chromium.support_lib_";
 
+    // This is an ID hardcoded by WebLayer for resources stored in locale splits. See
+    // WebLayerImpl.java for more info.
+    private static final int SHARED_LIBRARY_MAX_ID = 36;
+
     /**
      * This holds objects of classes that are defined in N and above to ensure that run-time class
      * verification does not occur until it is actually used for N and above.
@@ -283,6 +287,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         "com.android.webview.WebViewDonorPackage", resourcePackage);
             }
             int packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    && !isTrichrome(packageInfo.applicationInfo)
+                    && packageId > SHARED_LIBRARY_MAX_ID) {
+                throw new RuntimeException("Package ID too high for WebView: " + packageId);
+            }
 
             mAwInit.setUpResourcesOnBackgroundThread(packageId, ctx);
 
@@ -396,6 +405,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             throw new IllegalArgumentException(
                     "WebView cannot be used with device protected storage");
         }
+    }
+
+    /**
+     * Determines whether this is Trichrome WebView by checking if any shared library files exist.
+     */
+    private static boolean isTrichrome(ApplicationInfo info) {
+        return info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0;
     }
 
     /**
