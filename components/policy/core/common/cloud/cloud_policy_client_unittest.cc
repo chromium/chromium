@@ -330,13 +330,15 @@ class CloudPolicyClientTest : public testing::Test {
     client_->RemoveObserver(&observer_);
   }
 
-  void RegisterClient() {
+  void RegisterClient(const std::string& device_dm_token) {
     EXPECT_CALL(observer_, OnRegistrationStateChanged(_));
     EXPECT_CALL(device_dmtoken_callback_observer_, OnDeviceDMTokenRequested(_))
-        .WillOnce(Return(kDeviceDMToken));
+        .WillOnce(Return(device_dm_token));
     client_->SetupRegistration(kDMToken, client_id_,
                                std::vector<std::string>());
   }
+
+  void RegisterClient() { RegisterClient(kDeviceDMToken); }
 
   void CreateClient() {
     service_.ScheduleInitialization(0);
@@ -2289,11 +2291,16 @@ class MockClientCertProvisioningStartCsrCallbackObserver {
 };
 
 class CloudPolicyClientCertProvisioningStartCsrTest
-    : public CloudPolicyClientTest {
+    : public CloudPolicyClientTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void RunTest(const em::DeviceManagementResponse& fake_response,
                const MockClientCertProvisioningStartCsrCallbackObserver&
                    callback_observer);
+
+  // Wraps the test parameter - returns true if in this test run
+  // CloudPolicyClient has knowledge of the device DMToken.
+  bool HasDeviceDMToken() { return GetParam(); }
 };
 
 void CloudPolicyClientCertProvisioningStartCsrTest::RunTest(
@@ -2313,11 +2320,18 @@ void CloudPolicyClientCertProvisioningStartCsrTest::RunTest(
     inner_request->set_cert_profile_id(cert_profile_id);
     inner_request->set_policy_version(cert_profile_version);
     inner_request->set_public_key(public_key);
+    if (HasDeviceDMToken()) {
+      inner_request->set_device_dm_token(kDeviceDMToken);
+    }
     // Sets the request type, no actual data is required.
     inner_request->mutable_start_csr_request();
   }
 
-  RegisterClient();
+  if (HasDeviceDMToken()) {
+    RegisterClient(kDeviceDMToken);
+  } else {
+    RegisterClient(/*device_dm_token=*/std::string());
+  }
 
   EXPECT_CALL(service_, StartJob(_))
       .WillOnce(DoAll(service_.CaptureJobType(&job_type_),
@@ -2342,7 +2356,7 @@ void CloudPolicyClientCertProvisioningStartCsrTest::RunTest(
 // 1. Checks that |ClientCertProvisioningStartCsr| generates a correct request.
 // 2. Checks that |OnClientCertProvisioningStartCsrResponse| correctly extracts
 // data from a response that contains data.
-TEST_F(CloudPolicyClientCertProvisioningStartCsrTest,
+TEST_P(CloudPolicyClientCertProvisioningStartCsrTest,
        RequestClientCertProvisioningStartCsrSuccess) {
   const std::string invalidation_topic = "fake_invalidation_topic_1";
   const std::string va_challenge = "fake_va_challenge_1";
@@ -2377,7 +2391,7 @@ TEST_F(CloudPolicyClientCertProvisioningStartCsrTest,
 // 1. Checks that |ClientCertProvisioningStartCsr| generates a correct request.
 // 2. Checks that |OnClientCertProvisioningStartCsrResponse| correctly extracts
 // data from a response that contains the try_later field.
-TEST_F(CloudPolicyClientCertProvisioningStartCsrTest,
+TEST_P(CloudPolicyClientCertProvisioningStartCsrTest,
        RequestClientCertProvisioningStartCsrTryLater) {
   const int64_t try_later = 60000;
   em::DeviceManagementResponse fake_response;
@@ -2402,7 +2416,7 @@ TEST_F(CloudPolicyClientCertProvisioningStartCsrTest,
 // 1. Checks that |ClientCertProvisioningStartCsr| generates a correct request.
 // 2. Checks that |OnClientCertProvisioningStartCsrResponse| correctly extracts
 // data from a response that contains the error field.
-TEST_F(CloudPolicyClientCertProvisioningStartCsrTest,
+TEST_P(CloudPolicyClientCertProvisioningStartCsrTest,
        RequestClientCertProvisioningStartCsrError) {
   const CertProvisioningResponseErrorType error =
       CertProvisioningResponseError::CA_ERROR;
@@ -2425,6 +2439,10 @@ TEST_F(CloudPolicyClientCertProvisioningStartCsrTest,
   RunTest(fake_response, callback_observer);
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         CloudPolicyClientCertProvisioningStartCsrTest,
+                         ::testing::Values(false, true));
+
 class MockClientCertProvisioningFinishCsrCallbackObserver {
  public:
   MockClientCertProvisioningFinishCsrCallbackObserver() = default;
@@ -2438,11 +2456,16 @@ class MockClientCertProvisioningFinishCsrCallbackObserver {
 };
 
 class CloudPolicyClientCertProvisioningFinishCsrTest
-    : public CloudPolicyClientTest {
+    : public CloudPolicyClientTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void RunTest(const em::DeviceManagementResponse& fake_response,
                const MockClientCertProvisioningFinishCsrCallbackObserver&
                    callback_observer);
+
+  // Wraps the test parameter - returns true if in this test run
+  // CloudPolicyClient has knowledge of the device DMToken.
+  bool HasDeviceDMToken() { return GetParam(); }
 };
 
 void CloudPolicyClientCertProvisioningFinishCsrTest::RunTest(
@@ -2464,6 +2487,9 @@ void CloudPolicyClientCertProvisioningFinishCsrTest::RunTest(
     inner_request->set_cert_profile_id(cert_profile_id);
     inner_request->set_policy_version(cert_profile_version);
     inner_request->set_public_key(public_key);
+    if (HasDeviceDMToken()) {
+      inner_request->set_device_dm_token(kDeviceDMToken);
+    }
 
     em::FinishCsrRequest* finish_csr_request =
         inner_request->mutable_finish_csr_request();
@@ -2471,7 +2497,11 @@ void CloudPolicyClientCertProvisioningFinishCsrTest::RunTest(
     finish_csr_request->set_signature(signature);
   }
 
-  RegisterClient();
+  if (HasDeviceDMToken()) {
+    RegisterClient(kDeviceDMToken);
+  } else {
+    RegisterClient(/*device_dm_token=*/std::string());
+  }
 
   EXPECT_CALL(service_, StartJob(_))
       .WillOnce(DoAll(service_.CaptureJobType(&job_type_),
@@ -2497,7 +2527,7 @@ void CloudPolicyClientCertProvisioningFinishCsrTest::RunTest(
 // 1. Checks that |ClientCertProvisioningFinishCsr| generates a correct request.
 // 2. Checks that |OnClientCertProvisioningFinishCsrResponse| correctly extracts
 // data from a response that contains success status code.
-TEST_F(CloudPolicyClientCertProvisioningFinishCsrTest,
+TEST_P(CloudPolicyClientCertProvisioningFinishCsrTest,
        RequestClientCertProvisioningFinishCsrSuccess) {
   em::DeviceManagementResponse fake_response;
   {
@@ -2519,7 +2549,7 @@ TEST_F(CloudPolicyClientCertProvisioningFinishCsrTest,
 // 1. Checks that |ClientCertProvisioningFinishCsr| generates a correct request.
 // 2. Checks that |OnClientCertProvisioningFinishCsrResponse| correctly extracts
 // data from a response that contains the error field.
-TEST_F(CloudPolicyClientCertProvisioningFinishCsrTest,
+TEST_P(CloudPolicyClientCertProvisioningFinishCsrTest,
        RequestClientCertProvisioningFinishCsrError) {
   const CertProvisioningResponseErrorType error =
       CertProvisioningResponseError::CA_ERROR;
@@ -2539,6 +2569,10 @@ TEST_F(CloudPolicyClientCertProvisioningFinishCsrTest,
   RunTest(fake_response, callback_observer);
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         CloudPolicyClientCertProvisioningFinishCsrTest,
+                         ::testing::Values(false, true));
+
 class MockClientCertProvisioningDownloadCertCallbackObserver {
  public:
   MockClientCertProvisioningDownloadCertCallbackObserver() = default;
@@ -2553,11 +2587,16 @@ class MockClientCertProvisioningDownloadCertCallbackObserver {
 };
 
 class CloudPolicyClientCertProvisioningDownloadCertTest
-    : public CloudPolicyClientTest {
+    : public CloudPolicyClientTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void RunTest(const em::DeviceManagementResponse& fake_response,
                const MockClientCertProvisioningDownloadCertCallbackObserver&
                    callback_observer);
+
+  // Wraps the test parameter - returns true if in this test run
+  // CloudPolicyClient has knowledge of the device DMToken.
+  bool HasDeviceDMToken() { return GetParam(); }
 };
 
 void CloudPolicyClientCertProvisioningDownloadCertTest::RunTest(
@@ -2577,11 +2616,18 @@ void CloudPolicyClientCertProvisioningDownloadCertTest::RunTest(
     inner_request->set_cert_profile_id(cert_profile_id);
     inner_request->set_policy_version(cert_profile_version);
     inner_request->set_public_key(public_key);
+    if (HasDeviceDMToken()) {
+      inner_request->set_device_dm_token(kDeviceDMToken);
+    }
     // Sets the request type, no actual data is required.
     inner_request->mutable_download_cert_request();
   }
 
-  RegisterClient();
+  if (HasDeviceDMToken()) {
+    RegisterClient(kDeviceDMToken);
+  } else {
+    RegisterClient(/*device_dm_token=*/std::string());
+  }
 
   EXPECT_CALL(service_, StartJob(_))
       .WillOnce(DoAll(service_.CaptureJobType(&job_type_),
@@ -2607,7 +2653,7 @@ void CloudPolicyClientCertProvisioningDownloadCertTest::RunTest(
 // request.
 // 2. Checks that |OnClientCertProvisioningDownloadCertResponse| correctly
 // extracts data from a response that contains success status code.
-TEST_F(CloudPolicyClientCertProvisioningDownloadCertTest,
+TEST_P(CloudPolicyClientCertProvisioningDownloadCertTest,
        RequestClientCertProvisioningDownloadCertSuccess) {
   const std::string pem_encoded_cert = "fake_pem_encoded_cert_1";
   em::DeviceManagementResponse fake_response;
@@ -2634,7 +2680,7 @@ TEST_F(CloudPolicyClientCertProvisioningDownloadCertTest,
 // request.
 // 2. Checks that |OnClientCertProvisioningDownloadCertResponse| correctly
 // extracts data from a response that contains the error field.
-TEST_F(CloudPolicyClientCertProvisioningDownloadCertTest,
+TEST_P(CloudPolicyClientCertProvisioningDownloadCertTest,
        RequestClientCertProvisioningDownloadCertError) {
   const CertProvisioningResponseErrorType error =
       CertProvisioningResponseError::CA_ERROR;
@@ -2654,5 +2700,9 @@ TEST_F(CloudPolicyClientCertProvisioningDownloadCertTest,
 
   RunTest(fake_response, callback_observer);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CloudPolicyClientCertProvisioningDownloadCertTest,
+                         ::testing::Values(false, true));
 
 }  // namespace policy

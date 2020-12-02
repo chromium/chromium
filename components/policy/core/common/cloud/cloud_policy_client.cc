@@ -821,6 +821,9 @@ void CloudPolicyClient::ClientCertProvisioningStartCsr(
   request->set_cert_profile_id(cert_profile_id);
   request->set_policy_version(cert_profile_version);
   request->set_public_key(public_key);
+  if (!device_dm_token_.empty()) {
+    request->set_device_dm_token(device_dm_token_);
+  }
   // Sets the request type, no actual data is required.
   request->mutable_start_csr_request();
 
@@ -855,6 +858,9 @@ void CloudPolicyClient::ClientCertProvisioningFinishCsr(
   request->set_cert_profile_id(cert_profile_id);
   request->set_policy_version(cert_profile_version);
   request->set_public_key(public_key);
+  if (!device_dm_token_.empty()) {
+    request->set_device_dm_token(device_dm_token_);
+  }
 
   em::FinishCsrRequest* finish_csr_request =
       request->mutable_finish_csr_request();
@@ -892,6 +898,9 @@ void CloudPolicyClient::ClientCertProvisioningDownloadCert(
   request->set_cert_profile_id(cert_profile_id);
   request->set_policy_version(cert_profile_version);
   request->set_public_key(public_key);
+  if (!device_dm_token_.empty()) {
+    request->set_device_dm_token(device_dm_token_);
+  }
   // Sets the request type, no actual data is required.
   request->mutable_download_cert_request();
 
