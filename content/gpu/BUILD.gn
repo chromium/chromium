@@ -48,7 +48,6 @@ target(link_target_type, "gpu_sources") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//build:branding_buildflags",
     "//components/viz/service",
     "//content:export",
     "//content/child",
@@ -73,6 +72,8 @@ target(link_target_type, "gpu_sources") {
     "//sandbox/policy:chromecast_sandbox_allowlist_buildflags",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
+    "//services/shape_detection:lib",
+    "//services/shape_detection/public/mojom",
     "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//skia",
@@ -82,13 +83,6 @@ target(link_target_type, "gpu_sources") {
     "//ui/gl/init",
     "//ui/latency/ipc",
   ]
-
-  if (!is_chromeos || !is_chrome_branded) {
-    deps += [
-      "//services/shape_detection:lib",
-      "//services/shape_detection/public/mojom",
-    ]
-  }
 
   if (is_linux || is_chromeos) {
     sources += [

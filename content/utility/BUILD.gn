@@ -34,7 +34,6 @@ source_set("utility") {
 
   deps = [
     "//base",
-    "//build:branding_buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",
     "//content:export",
@@ -76,13 +75,6 @@ source_set("utility") {
     deps += [
       "//chromeos/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
-    ]
-  }
-
-  if (is_chromeos && is_chrome_branded) {
-    deps += [
-      "//services/shape_detection:lib",
-      "//services/shape_detection/public/mojom",
     ]
   }
 
