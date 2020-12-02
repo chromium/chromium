@@ -662,6 +662,11 @@ class BASE_EXPORT FieldTrialList {
   GetAllFieldTrialsFromPersistentAllocator(
       PersistentMemoryAllocator const& allocator);
 
+  // If one-time randomization is enabled, returns a weak pointer to the
+  // corresponding EntropyProvider. Otherwise, returns nullptr.
+  static const FieldTrial::EntropyProvider*
+  GetEntropyProviderForOneTimeRandomization();
+
   // Returns a pointer to the global instance. This is exposed so that it can
   // be used in a DCHECK in FeatureList and ScopedFeatureList test-only logic
   // and is not intended to be used widely beyond those cases.
@@ -745,11 +750,6 @@ class BASE_EXPORT FieldTrialList {
 
   // A map from FieldTrial names to the actual instances.
   typedef std::map<std::string, FieldTrial*> RegistrationMap;
-
-  // If one-time randomization is enabled, returns a weak pointer to the
-  // corresponding EntropyProvider. Otherwise, returns NULL.
-  static const FieldTrial::EntropyProvider*
-      GetEntropyProviderForOneTimeRandomization();
 
   // Helper function should be called only while holding lock_.
   FieldTrial* PreLockedFind(const std::string& name);

@@ -163,6 +163,24 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     return false;
   }
 
+  void CreateTrialsFromSeed(const VariationsSeed& seed,
+                            double low_entropy = 0.9) {
+    ClientFilterableState client_state({});
+    client_state.locale = "en-CA";
+    client_state.reference_date = base::Time::Now();
+    client_state.version = base::Version("20.0.0.0");
+    client_state.channel = Study::STABLE;
+    client_state.form_factor = Study::DESKTOP;
+    client_state.platform = Study::PLATFORM_ANDROID;
+
+    base::FeatureList feature_list;
+    base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
+    VariationsSeedProcessor seed_processor;
+    seed_processor.CreateTrialsFromSeed(
+        seed, client_state, override_callback_.callback(),
+        mock_low_entropy_provider, &feature_list);
+  }
+
  protected:
   TestOverrideStringCallback override_callback_;
 
@@ -972,7 +990,7 @@ TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   AddExperiment(kDefaultName, 50, study2);
   study2->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
-  // An entorpy value of 0.1 will cause the AA group to be chosen, since AA is
+  // An entropy value of 0.1 will cause the AA group to be chosen, since AA is
   // the only non-default group, and has a probability percent above 0.1.
   base::test::ScopedFieldTrialListResetter resetter;
   base::FieldTrialList field_trial_list(
@@ -995,6 +1013,413 @@ TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   // Since an experiment in study2 has google_web_experiment_id set, it will use
   // the low entropy provider, which selects the default group.
   EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial2Name));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
+  VariationsSeed seed;
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer = study->mutable_layer();
+  layer->set_layer_id(42);
+  layer->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // Since the studies references a layer which doesn't exist, it should
+  // select the default group.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(2);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(88);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // Since the studies references a layer member which doesn't exist, it should
+  // not be active.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerSelected) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // The layer only has the single member, which is what should be chosen.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  // Add one SlotRange, with no slots actually defined.
+  member->add_slots();
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // The layer member referenced by the study is missing slots, and should
+  // never be chosen.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* first_slot = member->add_slots();
+  first_slot->set_start(0);
+  first_slot->set_end(0);
+
+  // A second overlapping slot.
+  Layer::LayerMember::SlotRange* second_slot = member->add_slots();
+  second_slot->set_start(0);
+  second_slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // The layer only has the single member, which is what should be chosen.
+  // Having two duplicate slot ranges within that member should not crash.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithOutOfRangeSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* overshooting_slot = member->add_slots();
+  overshooting_slot->set_start(20);
+  overshooting_slot->set_end(50);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // The layer member referenced by the study is missing slots, and should
+  // never be chosen.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(10);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* overshooting_slot = member->add_slots();
+  overshooting_slot->set_start(8);
+  overshooting_slot->set_end(2);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // The layer member referenced by the study is has its slots in the wrong
+  // order (end < start) which should cause the slot to never be chosen
+  // (and not crash).
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(8000);
+  // Setting this forces the provided entropy provider to be used when
+  // calling CreateTrialsFromSeed.
+  layer->set_entropy_mode(Layer::LOW);
+
+  // Member with most slots, but won't be chosen due to the entropy provided.
+  {
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(0xDEAD);
+    Layer::LayerMember::SlotRange* slot = member->add_slots();
+    slot->set_start(0);
+    slot->set_end(7900);
+  }
+
+  // Member with few slots, but will be chosen.
+  {
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(0xBEEF);
+    Layer::LayerMember::SlotRange* slot = member->add_slots();
+    slot->set_start(7901);
+    slot->set_end(7999);
+  }
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(0xDEAD);
+  AddExperiment("A", 1, study);
+
+  // Entropy 0.99 Should cause slot 7920 to be chosen.
+  CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
+
+  // The study is a member of the 0xDEAD layer member and should be inactive.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(8000);
+
+  // Member which should get chosen by the default high entropy source
+  // (which defaults to half of the num_slots in tests).
+  {
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(0xDEAD);
+    Layer::LayerMember::SlotRange* slot = member->add_slots();
+    slot->set_start(0);
+    slot->set_end(7900);
+  }
+
+  // Member with few slots,
+  {
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(0xBEEF);
+    Layer::LayerMember::SlotRange* slot = member->add_slots();
+    slot->set_start(7901);
+    slot->set_end(7999);
+  }
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(0xDEAD);
+  AddExperiment("A", 1, study);
+
+  // Since we're *not* setting the entropy_mode to LOW, |low_entropy| should
+  // be ignored and the default high entropy should be used, which in
+  // this case is slot 4000 and hence the first layer member is chosen.
+  CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
+
+  // The study is a member of the 0xDEAD layer member and should be active.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, LayerWithNoMembers) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(1);
+  layer->set_num_slots(1);
+  layer->set_salt(0xBEEF);
+
+  // Layer should be rejected and not crash.
+  CreateTrialsFromSeed(seed);
+}
+
+TEST_F(VariationsSeedProcessorTest, LayerWithNoSlots) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(1);
+  layer->set_salt(0xBEEF);
+
+  // Layer should be rejected and not crash.
+  CreateTrialsFromSeed(seed);
+}
+
+TEST_F(VariationsSeedProcessorTest, LayerWithNoID) {
+  VariationsSeed seed;
+  Layer* layer = seed.add_layers();
+  layer->set_salt(0xBEEF);
+
+  // Layer should be rejected and not crash.
+  CreateTrialsFromSeed(seed);
+}
+
+TEST_F(VariationsSeedProcessorTest, EmptyLayer) {
+  VariationsSeed seed;
+  seed.add_layers();
+
+  // Layer should be rejected and not crash.
+  CreateTrialsFromSeed(seed);
+}
+
+TEST_F(VariationsSeedProcessorTest, LayersWithDuplicateID) {
+  VariationsSeed seed;
+
+  {
+    Layer* layer = seed.add_layers();
+    layer->set_id(1);
+    layer->set_salt(0xBEEF);
+    layer->set_num_slots(1);
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(82);
+    Layer::LayerMember::SlotRange* slot = member->add_slots();
+    slot->set_start(0);
+    slot->set_end(0);
+  }
+
+  {
+    Layer* layer = seed.add_layers();
+    layer->set_id(1);
+    layer->set_salt(0xBEEF);
+    layer->set_num_slots(1);
+    Layer::LayerMember* member = layer->add_members();
+    member->set_id(82);
+    Layer::LayerMember::SlotRange* slot = member->add_slots();
+    slot->set_start(0);
+    slot->set_end(0);
+  }
+
+  // The duplicate layer should be rejected and not crash.
+  CreateTrialsFromSeed(seed);
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithoutID) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  AddExperiment("A", 1, study);
+
+  CreateTrialsFromSeed(seed);
+
+  // The layer only has the single member but that member has no
+  // ID set. The LayerMembership also has no member_id set. The study
+  // should then *not* be chosen (i.e. a default initialized ID of 0
+  // should not be seen as valid.)
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+}
+
+TEST_F(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
+  VariationsSeed seed;
+
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(1);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0);
+
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+  study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
+
+  CreateTrialsFromSeed(seed);
+
+  // Since the study will use the low entropy source and the layer the default
+  // one, the study should be rejected.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
 }  // namespace variations

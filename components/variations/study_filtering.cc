@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "components/variations/variations_seed_processor.h"
 
 namespace variations {
 namespace {
@@ -246,7 +247,25 @@ bool IsStudyExpired(const Study& study, const base::Time& date_time) {
 }
 
 bool ShouldAddStudy(const Study& study,
-                    const ClientFilterableState& client_state) {
+                    const ClientFilterableState& client_state,
+                    const VariationsLayers& layers) {
+  if (study.has_layer()) {
+    if (!layers.IsLayerMemberActive(study.layer().layer_id(),
+                                    study.layer().layer_member_id())) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to layer member not being active.";
+      return false;
+    }
+
+    if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(study) &&
+        layers.IsLayerUsingDefaultEntropy(study.layer().layer_id())) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to requiring a low entropy source yet being a member "
+                  "of a layer using the default entropy source.";
+      return false;
+    }
+  }
+
   if (study.has_filter()) {
     if (!CheckStudyChannel(study.filter(), client_state.channel)) {
       DVLOG(1) << "Filtered out study " << study.name() << " due to channel.";
@@ -332,6 +351,7 @@ bool ShouldAddStudy(const Study& study,
 
 void FilterAndValidateStudies(const VariationsSeed& seed,
                               const ClientFilterableState& client_state,
+                              const VariationsLayers& layers,
                               std::vector<ProcessedStudy>* filtered_studies) {
   DCHECK(client_state.version.IsValid());
 
@@ -344,7 +364,7 @@ void FilterAndValidateStudies(const VariationsSeed& seed,
 
   for (int i = 0; i < seed.study_size(); ++i) {
     const Study& study = seed.study(i);
-    if (!internal::ShouldAddStudy(study, client_state))
+    if (!internal::ShouldAddStudy(study, client_state, layers))
       continue;
 
     if (internal::IsStudyExpired(study, client_state.reference_date)) {

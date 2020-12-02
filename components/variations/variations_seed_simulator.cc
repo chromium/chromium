@@ -14,6 +14,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 
 namespace variations {
@@ -117,7 +118,8 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::SimulateSeedStudies(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state) {
   std::vector<ProcessedStudy> filtered_studies;
-  FilterAndValidateStudies(seed, client_state, &filtered_studies);
+  VariationsLayers layers(seed, low_entropy_provider_);
+  FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
 
   return ComputeDifferences(filtered_studies);
 }

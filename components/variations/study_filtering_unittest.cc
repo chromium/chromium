@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
+#include "components/variations/variations_layers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -698,7 +699,8 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
   client_state.platform = Study::PLATFORM_ANDROID;
 
   std::vector<ProcessedStudy> processed_studies;
-  FilterAndValidateStudies(seed, client_state, &processed_studies);
+  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
+                           &processed_studies);
 
   // Check that only the first kTrial1Name study was kept.
   ASSERT_EQ(2U, processed_studies.size());
@@ -759,7 +761,8 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
     client_state.permanent_consistency_country = kPermanentCountry;
 
     std::vector<ProcessedStudy> processed_studies;
-    FilterAndValidateStudies(seed, client_state, &processed_studies);
+    FilterAndValidateStudies(seed, client_state, VariationsLayers(),
+                             &processed_studies);
 
     EXPECT_EQ(test.expect_study_kept, !processed_studies.empty());
   }

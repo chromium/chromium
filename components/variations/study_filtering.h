@@ -15,6 +15,7 @@
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_layers.h"
 
 namespace variations {
 
@@ -85,7 +86,8 @@ bool IsStudyExpired(const Study& study, const base::Time& date_time);
 // Returns whether |study| should be disabled according to the restriction
 // parameters in the |config|.
 bool ShouldAddStudy(const Study& study,
-                    const ClientFilterableState& client_state);
+                    const ClientFilterableState& client_state,
+                    const VariationsLayers& layers);
 
 }  // namespace internal
 
@@ -95,6 +97,7 @@ bool ShouldAddStudy(const Study& study,
 // than one study with the same name.
 void FilterAndValidateStudies(const VariationsSeed& seed,
                               const ClientFilterableState& client_state,
+                              const VariationsLayers& layers,
                               std::vector<ProcessedStudy>* filtered_studies);
 
 }  // namespace variations

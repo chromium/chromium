@@ -1,0 +1,93 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.variations";
+
+package variations;
+
+// A Layer divides Variations clients into disjoint LayerMembers based on client
+// entropy values, allowing potentially conflicting studies to be performed on
+// separate client subsets.
+
+// Each layer consists of N slots, and each Chrome client instance will randomly
+// select a specific slot to be "active" within that layer based on the layer's
+// salt and the client's entropy source value. That slot will be part of a range
+// within a specific LayerMember. Each study that participates in a layer points
+// to a particular LayerMember within that layer. Only the studies pointing to
+// the active LayerMember will be active for a given client.
+// Example:
+//    LayerFoo:
+//        num_slots=10: |0, 1, 2, 3, 4, 5, 6, 7, 8, 9|
+//        LayerMembers: <0   -   3>, <4     -       9>
+//                        ^Member1^    ^Member2^.
+//
+//    In this example, the Member1 LayerMember has four slots and
+//    Member2 has six out of ten total. This means studies pointing to
+//    Member1 will receive ~40% of the population and Member2 ~60%.
+
+// Next tag: 6
+message Layer {
+  message LayerMember {
+    message SlotRange {
+      // First slot in the range (inclusive). This range has to be
+      // in the [0..`num_slots`) range of the layer.
+      optional uint32 start = 1;
+      // Last slot in the range (inclusive).
+      optional uint32 end = 2;
+    }
+
+    // An id (unique within the Layer) that studies will use to refer to this
+    // particular member.
+    optional uint32 id = 1;
+    // Ranges of slots that belong to this member. These slot ranges must not
+    // overlap with the slot ranges of other members within the layer, so
+    // that at most one member within the layer will be active.
+    repeated SlotRange slots = 2;
+  }
+
+  // ID for the layer, must be unique across all layers. Studies will specify
+  // a <layer_id, layer_member_id> pair to become part of a layer.
+  optional uint32 id = 1;
+
+  // Total number of slots within the layer. There are constraints on the number
+  // of slots when a low entropy source is used (100, initially) to alleviate
+  // skew in the bucket populations.
+  optional uint32 num_slots = 2;
+
+  // Layer members, which occupy disjoint subsets of the [0, `num_slots`) range.
+  // Not all slots have to be used, and normally won't in order to reserve space
+  // within the layer. Each study that participates in a layer is associated
+  // with a single layer member.
+  repeated LayerMember members = 3;
+
+  // A salt which is used as an input to a hash function together with the
+  // output of the chosen entropy source, to choose an active slot within the
+  // layer.
+  optional uint32 salt = 4;
+
+  enum EntropyMode {
+    // Use the default entropy source when selecting slots. This will use the
+    // high entropy source for the clients that have it, and falls back to the
+    // low entropy source for other clients.
+    DEFAULT = 0;
+
+    // Use the low entropy source.
+    LOW = 1;
+  }
+
+  // Which of the above entropy modes should be used to select a slot.
+  optional EntropyMode entropy_mode = 5;
+}
+
+// A Study can optionally specify a LayerMemberReference which will configure it
+// as a member of the layer with the given ID.
+message LayerMemberReference {
+  // Reference to the Layer with this specific ID.
+  optional uint32 layer_id = 1;
+  // Reference to the member within the above layer, with this specific ID.
+  optional uint32 layer_member_id = 2;
+}

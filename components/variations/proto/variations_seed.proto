@@ -10,6 +10,7 @@ option java_package = "org.chromium.components.variations";
 package variations;
 
 import "study.proto";
+import "layer.proto";
 
 // The VariationsSeed is a protobuf response from the server that contains the
 // list of studies and a serial number to uniquely identify its contents. The
@@ -28,4 +29,8 @@ message VariationsSeed {
   // A version string which identifies the version of the configuration files
   // that this seed was generated from.
   optional string version = 4;
+
+  // A list of layers where each study can optionally be part of one, with
+  // clients ensuring that only one study per layer is enabled.
+  repeated Layer layers = 5;
 }

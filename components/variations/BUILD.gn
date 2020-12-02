@@ -73,6 +73,8 @@ static_library("variations") {
     "variations_id_collection.h",
     "variations_ids_provider.cc",
     "variations_ids_provider.h",
+    "variations_layers.cc",
+    "variations_layers.h",
     "variations_murmur_hash.cc",
     "variations_murmur_hash.h",
     "variations_request_scheduler.cc",

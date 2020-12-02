@@ -12,6 +12,7 @@ if (is_android) {
     proto_path = "."
     sources = [
       "client_variations.proto",
+      "layer.proto",
       "study.proto",
       "variations_seed.proto",
     ]
@@ -21,6 +22,7 @@ if (is_android) {
 proto_library("proto") {
   sources = [
     "client_variations.proto",
+    "layer.proto",
     "study.proto",
     "variations_seed.proto",
   ]

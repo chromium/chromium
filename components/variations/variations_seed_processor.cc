@@ -19,6 +19,7 @@
 #include "components/variations/processed_study.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_layers.h"
 
 namespace variations {
 
@@ -200,7 +201,8 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
   std::vector<ProcessedStudy> filtered_studies;
-  FilterAndValidateStudies(seed, client_state, &filtered_studies);
+  VariationsLayers layers(seed, low_entropy_provider);
+  FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
   SetSeedVersion(seed.version());
 
   for (const ProcessedStudy& study : filtered_studies) {
@@ -211,6 +213,8 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
 
 // static
 bool VariationsSeedProcessor::ShouldStudyUseLowEntropy(const Study& study) {
+  // This should be kept in sync with the server-side layer validation
+  // code: https://go/chrome-variations-layer-validation
   for (int i = 0; i < study.experiment_size(); ++i) {
     const Study_Experiment& experiment = study.experiment(i);
     if (experiment.has_google_web_experiment_id() ||

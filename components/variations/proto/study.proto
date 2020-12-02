@@ -9,6 +9,8 @@ option java_package = "org.chromium.components.variations";
 
 package variations;
 
+import "layer.proto";
+
 // This defines the Protocol Buffer representation of a Chrome Variations study
 // as sent to clients of the Variations server.
 //
@@ -38,6 +40,12 @@ message Study {
   // Consistency setting for this study. Optional - defaults to SESSION.
   // Ex: PERMANENT
   optional Consistency consistency = 7 [default = SESSION];
+
+  // Optionally specifies which layer the study is a part of, which will
+  // ensure only one study per layer is enabled for a client. A study must
+  // specify both the ID of the layer and the ID of the LayerMember within
+  // that layer that the study should be associated with.
+  optional LayerMemberReference layer = 16;
 
   // Name of the experiment that gets the default experience. This experiment
   // must be included in the list below. If not specified, a generic default

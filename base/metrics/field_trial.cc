@@ -1120,6 +1120,17 @@ FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(
 }
 
 // static
+const FieldTrial::EntropyProvider*
+FieldTrialList::GetEntropyProviderForOneTimeRandomization() {
+  if (!global_) {
+    used_without_global_ = true;
+    return nullptr;
+  }
+
+  return global_->entropy_provider_.get();
+}
+
+// static
 FieldTrialList* FieldTrialList::GetInstance() {
   return global_;
 }
@@ -1432,17 +1443,6 @@ void FieldTrialList::ActivateFieldTrialEntryWhileLocked(
         allocator->GetAsObject<FieldTrial::FieldTrialEntry>(ref);
     subtle::NoBarrier_Store(&entry->activated, 1);
   }
-}
-
-// static
-const FieldTrial::EntropyProvider*
-    FieldTrialList::GetEntropyProviderForOneTimeRandomization() {
-  if (!global_) {
-    used_without_global_ = true;
-    return nullptr;
-  }
-
-  return global_->entropy_provider_.get();
 }
 
 FieldTrial* FieldTrialList::PreLockedFind(const std::string& name) {
