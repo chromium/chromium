@@ -59,8 +59,7 @@ public class MultiInstanceMigrationTest {
             MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
             TabbedModeTabPersistencePolicy persistencePolicy =
                     new TabbedModeTabPersistencePolicy(0, false);
-            TabPersistentStore store =
-                    new TabPersistentStore(persistencePolicy, selector, null, null);
+            TabPersistentStore store = new TabPersistentStore(persistencePolicy, selector, null);
             store.waitForMigrationToFinish();
         });
     }

@@ -88,8 +88,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         };
         mIsUndoSupported = supportUndo;
         mIsTabbedActivityForSync = isTabbedActivity;
-        mTabSaver = new TabPersistentStore(
-                persistencePolicy, this, tabCreatorManager, persistentStoreObserver);
+        mTabSaver = new TabPersistentStore(persistencePolicy, this, tabCreatorManager);
+        mTabSaver.addObserver(persistentStoreObserver);
         mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;

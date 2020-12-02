@@ -197,10 +197,9 @@ public class TabPersistentStore extends TabPersister {
      * Creates an instance of a TabPersistentStore.
      * @param modelSelector The {@link TabModelSelector} to restore to and save from.
      * @param tabCreatorManager The {@link TabCreatorManager} to use.
-     * @param observer      Notified when the TabPersistentStore has completed tasks.
      */
     public TabPersistentStore(TabPersistencePolicy policy, TabModelSelector modelSelector,
-            TabCreatorManager tabCreatorManager, TabPersistentStoreObserver observer) {
+            TabCreatorManager tabCreatorManager) {
         mPersistencePolicy = policy;
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
@@ -208,7 +207,6 @@ public class TabPersistentStore extends TabPersister {
         mTabsToRestore = new ArrayDeque<>();
         mTabIdsToRestore = new HashSet<>();
         mObservers = new ObserverList<>();
-        mObservers.addObserver(observer);
         TaskTraits taskTraits = TaskTraits.USER_BLOCKING_MAY_BLOCK;
         mSequencedTaskRunner = PostTask.createSequencedTaskRunner(taskTraits);
         mPrefetchTabListToMergeTasks = new ArrayList<>();

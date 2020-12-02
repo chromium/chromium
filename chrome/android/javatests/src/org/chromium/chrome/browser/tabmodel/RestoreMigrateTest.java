@@ -86,8 +86,8 @@ public class RestoreMigrateTest {
             public TabPersistentStore call() {
                 TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(
                         selectorIndex, false);
-                TabPersistentStore store = new TabPersistentStore(
-                        persistencePolicy, selector, null, null);
+                TabPersistentStore store =
+                        new TabPersistentStore(persistencePolicy, selector, null);
                 return store;
             }
         });

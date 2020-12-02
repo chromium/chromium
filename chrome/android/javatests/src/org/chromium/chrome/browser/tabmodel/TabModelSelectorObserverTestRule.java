@@ -75,7 +75,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         tabContentManager.initWithNative();
         TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
         TabPersistentStore tabPersistentStore =
-                new TabPersistentStore(persistencePolicy, mSelector, null, null);
+                new TabPersistentStore(persistencePolicy, mSelector, null);
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 

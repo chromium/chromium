@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -86,9 +85,6 @@ public class TabPersistentStoreUnitTest {
     @Mock
     private TabCreator mIncognitoTabCreator;
 
-    @Mock
-    private TabPersistentStoreObserver mObserver;
-
     private TabPersistentStore mPersistentStore;
 
     @Before
@@ -128,7 +124,7 @@ public class TabPersistentStoreUnitTest {
         when(mIncognitoTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
 
         mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver) {
+                mPersistencePolicy, mTabModelSelector, mTabCreatorManager) {
             @Override
             protected void saveNextTab() {
                 // Intentionally ignore to avoid triggering async task creation.
@@ -176,8 +172,8 @@ public class TabPersistentStoreUnitTest {
     @SmallTest
     @Feature("TabPersistentStore")
     public void testNotActiveEmptyNtpIgnoredDuringRestore() {
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails emptyNtpDetails =
@@ -194,8 +190,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -220,8 +216,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -250,8 +246,8 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     // TODO(crbug.com/1119583) Add similar test for CriticalPersistedTabData
     public void testNtpWithStateNotIgnoredDuringRestore() {
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails ntpDetails =
@@ -269,8 +265,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
 
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -292,8 +288,8 @@ public class TabPersistentStoreUnitTest {
     @SmallTest
     @Feature("TabPersistentStore")
     public void testNotActiveIncognitoNtpIgnoredDuringRestore() {
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails emptyNtpDetails =
@@ -307,8 +303,8 @@ public class TabPersistentStoreUnitTest {
     @SmallTest
     @Feature("TabPersistentStore")
     public void testActiveEmptyIncognitoNtpIgnoredDuringRestoreIfIncognitoLoadingIsDisabled() {
-        mPersistentStore = new TabPersistentStore(
-                mPersistencePolicy, mTabModelSelector, mTabCreatorManager, mObserver);
+        mPersistentStore =
+                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
         mPersistentStore.initializeRestoreVars(true);
 
         TabRestoreDetails emptyNtpDetails =
