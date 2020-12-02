@@ -45,8 +45,13 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
   protocol::Response getFullAXTree(
+      protocol::Maybe<int> max_depth,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
+  protocol::Response getChildAXNodes(
+      const String& in_id,
+      std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
+          out_nodes) override;
   protocol::Response queryAXTree(
       protocol::Maybe<int> dom_node_id,
       protocol::Maybe<int> backend_node_id,
@@ -60,6 +65,10 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().
   void EnableAndReset();
+  std::unique_ptr<protocol::Array<AXNode>> WalkAllAXNodes(Document* document);
+  std::unique_ptr<protocol::Array<AXNode>> WalkAXNodesToDepth(
+      Document* document,
+      int max_depth);
   std::unique_ptr<AXNode> BuildObjectForIgnoredNode(
       Node* dom_node,
       AXObject*,

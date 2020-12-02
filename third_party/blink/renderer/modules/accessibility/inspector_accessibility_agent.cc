@@ -719,34 +719,98 @@ std::unique_ptr<AXNode> InspectorAccessibilityAgent::BuildProtocolAXObject(
 }
 
 Response InspectorAccessibilityAgent::getFullAXTree(
+    protocol::Maybe<int> max_depth,
     std::unique_ptr<protocol::Array<AXNode>>* nodes) {
   Document* document = inspected_frames_->Root()->GetDocument();
   if (!document)
     return Response::ServerError("No document.");
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
-  *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+
+  *nodes = WalkAXNodesToDepth(document, max_depth.fromMaybe(-1));
+
+  return Response::Success();
+}
+
+std::unique_ptr<protocol::Array<AXNode>>
+InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
+                                                int max_depth) {
+  std::unique_ptr<protocol::Array<AXNode>> nodes =
+      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+
   AXContext ax_context(*document);
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
-  Deque<AXID> ids;
-  ids.emplace_back(cache.Root()->AXObjectID());
-  while (!ids.empty()) {
-    AXID ax_id = ids.front();
-    ids.pop_front();
-    AXObject* ax_object = cache.ObjectFromAXID(ax_id);
+
+  Deque<std::pair<AXID, int>> id_depths;
+  id_depths.emplace_back(cache.Root()->AXObjectID(), 0);
+
+  while (!id_depths.empty()) {
+    std::pair<AXID, int> id_depth = id_depths.front();
+    id_depths.pop_front();
+    AXObject* ax_object = cache.ObjectFromAXID(id_depth.first);
     std::unique_ptr<AXNode> node =
-        BuildProtocolAXObject(*ax_object, nullptr, false, *nodes, cache);
+        BuildProtocolAXObject(*ax_object, nullptr, false, nodes, cache);
 
     auto child_ids = std::make_unique<protocol::Array<AXNodeId>>();
     const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
-    for (unsigned i = 0; i < children.size(); i++) {
-      AXObject& child_ax_object = *children[i].Get();
-      child_ids->emplace_back(String::Number(child_ax_object.AXObjectID()));
-      ids.emplace_back(child_ax_object.AXObjectID());
+
+    for (auto& child_ax_object : children) {
+      child_ids->emplace_back(String::Number(child_ax_object->AXObjectID()));
+
+      int depth = id_depth.second;
+      if (max_depth == -1 || depth < max_depth)
+        id_depths.emplace_back(child_ax_object->AXObjectID(), depth + 1);
     }
     node->setChildIds(std::move(child_ids));
-    (*nodes)->emplace_back(std::move(node));
+    nodes->emplace_back(std::move(node));
   }
+
+  return nodes;
+}
+
+protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
+    const String& in_id,
+    std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
+        out_nodes) {
+  if (!enabled_.Get())
+    return Response::ServerError("Accessibility has not been enabled.");
+
+  // FIXME(aboxhall): specify a document to this and getRootAXNode()
+  Document* document = inspected_frames_->Root()->GetDocument();
+  if (!document)
+    return Response::ServerError("No document.");
+
+  if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
+
+  // Since we called enable(), this should exist.
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  if (!cache)
+    return Response::ServerError("No AXObjectCache.");
+
+  AXID ax_id = in_id.ToUInt();
+  AXObject* ax_object = cache->ObjectFromAXID(ax_id);
+
+  if (!ax_object)
+    return Response::InvalidParams("Invalid ID");
+
+  *out_nodes =
+      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+
+  const AXObject::AXObjectVector& children = ax_object->UnignoredChildren();
+  for (auto& child_ax_object : children) {
+    std::unique_ptr<AXNode> child_node = BuildProtocolAXObject(
+        *child_ax_object, nullptr, false, *out_nodes, *cache);
+    auto grandchild_ids = std::make_unique<protocol::Array<AXNodeId>>();
+    const AXObject::AXObjectVector& grandchildren =
+        child_ax_object->UnignoredChildren();
+    for (AXObject* grandchild : grandchildren)
+      grandchild_ids->emplace_back(String::Number(grandchild->AXObjectID()));
+    child_node->setChildIds(std::move(grandchild_ids));
+    (*out_nodes)->emplace_back(std::move(child_node));
+  }
+
   return Response::Success();
 }
 

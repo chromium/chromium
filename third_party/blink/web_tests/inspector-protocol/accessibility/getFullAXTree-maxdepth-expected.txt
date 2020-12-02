@@ -1,0 +1,9 @@
+Tests Accessibility.getRootAXNode
+
+WebArea
+  generic
+    text "Some text in a div, also a"
+    link "link"
+  button "Hello Button"
+    text "Hello Button"
+

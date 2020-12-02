@@ -203,8 +203,20 @@ experimental domain Accessibility
       # children, if requested.
       array of AXNode nodes
 
-  # Fetches the entire accessibility tree
+  # Fetches the entire accessibility tree for the root Document
   experimental command getFullAXTree
+    parameters
+      # The maximum depth at which descendants of the root node should be retrieved.
+      # If omitted, the full tree is returned.
+      optional integer max_depth
+    returns
+      array of AXNode nodes
+
+  # Fetches a particular accessibility node by AXNodeId.
+  # Requires `enable()` to have been called previously.
+  experimental command getChildAXNodes
+    parameters
+      AXNodeId id
     returns
       array of AXNode nodes
 

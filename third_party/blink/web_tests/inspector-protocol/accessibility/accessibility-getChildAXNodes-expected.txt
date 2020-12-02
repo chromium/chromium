@@ -1,0 +1,14 @@
+Tests Accessibility.getChildAXNodes
+
+After getFullAXTree:
+WebArea
+  main
+    article
+
+After getChildAXNodes:
+WebArea
+  main
+    article
+      heading "Article"
+      paragraph
+
