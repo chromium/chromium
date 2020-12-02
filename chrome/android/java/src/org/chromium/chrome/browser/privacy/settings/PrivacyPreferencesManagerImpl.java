@@ -19,14 +19,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.survey.SurveyController;
-import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 /**
- * Reads, writes, and migrates preferences related to network usage and privacy.
+ * Manages preferences related to privacy, metrics reporting, prerendering, and network prediction.
  */
-public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionManager {
+public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager {
     @SuppressLint("StaticFieldLeak")
     private static PrivacyPreferencesManagerImpl sInstance;
 
@@ -46,14 +45,7 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         return sInstance;
     }
 
-    /**
-     * Migrate and delete old preferences.  Note that migration has to happen in Android-specific
-     * code because we need to access ALLOW_PRERENDER sharedPreference.
-     * TODO(bnc) https://crbug.com/394845. This change is planned for M38. After a year or so, it
-     * would be worth considering removing this migration code and reverting to default for users
-     * who had set preferences but have not used Chrome for a year. This change would be subject to
-     * privacy review.
-     */
+    @Override
     public void migrateNetworkPredictionPreferences() {
         // See if PREF_NETWORK_PREDICTIONS is an old boolean value.
         boolean predictionOptionIsBoolean = false;
@@ -157,21 +149,14 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         return networkInfo != null;
     }
 
-    /**
-     * Checks whether prerender should be allowed and updates the preference if it is not set yet.
-     * @return Whether prerendering should be allowed.
-     */
+    @Override
     public boolean shouldPrerender() {
         if (!DeviceClassManager.enablePrerendering()) return false;
         migrateNetworkPredictionPreferences();
         return canPrefetchAndPrerender();
     }
 
-    /**
-     * Sets the usage and crash reporting preference ON or OFF.
-     *
-     * @param enabled A boolean corresponding whether usage and crash reports uploads are allowed.
-     */
+    @Override
     public void setUsageAndCrashReporting(boolean enabled) {
         mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, enabled);
         syncUsageAndCrashReportingPrefs();
@@ -180,10 +165,7 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         }
     }
 
-    /**
-     * Update usage and crash preferences based on Android preferences if possible in case they are
-     * out of sync.
-     */
+    @Override
     public void syncUsageAndCrashReportingPrefs() {
         // Skip if native browser process is not yet fully initialized.
         if (!BrowserStartupController.getInstance().isNativeStarted()) return;
@@ -191,20 +173,11 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         setMetricsReportingEnabled(isUsageAndCrashReportingPermittedByUser());
     }
 
-    /**
-     * Sets whether this client is in-sample for usage metrics and crash reporting. See
-     * {@link org.chromium.chrome.browser.metrics.UmaUtils#isClientInMetricsSample} for details.
-     */
+    @Override
     public void setClientInMetricsSample(boolean inSample) {
         mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE, inSample);
     }
 
-    /**
-     * Checks whether this client is in-sample for usage metrics and crash reporting. See
-     * {@link org.chromium.chrome.browser.metrics.UmaUtils#isClientInMetricsSample} for details.
-     *
-     * @returns boolean Whether client is in-sample.
-     */
     @Override
     public boolean isClientInMetricsSample() {
         // The default value is true to avoid sampling out crashes that occur before native code has
@@ -213,11 +186,6 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE, true);
     }
 
-    /**
-     * Checks whether uploading of crash dumps is permitted for the available network(s).
-     *
-     * @return whether uploading crash dumps is permitted.
-     */
     @Override
     public boolean isNetworkAvailableForCrashUploads() {
         ConnectivityManager connectivityManager =
@@ -225,65 +193,20 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         return NetworkPermissionUtil.isNetworkUnmetered(connectivityManager);
     }
 
-    /**
-     * Checks whether uploading of usage metrics and crash dumps is currently permitted, based on
-     * user consent only. This doesn't take network condition or experimental state (i.e. disabling
-     * upload) into consideration. A crash dump may be retried if this check passes.
-     *
-     * @return whether the user has consented to reporting usage metrics and crash dumps.
-     */
     @Override
     public boolean isUsageAndCrashReportingPermittedByUser() {
         return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
     }
 
-    /**
-     * Check whether the command line switch is used to force uploading if at all possible. Used by
-     * test devices to avoid UI manipulation.
-     *
-     * @return whether uploading should be enabled if at all possible.
-     */
     @Override
     public boolean isUploadEnabledForTests() {
         return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_CRASH_DUMP_UPLOAD);
     }
 
-    /**
-     * @return Whether uploading usage metrics is currently permitted.
-     */
+    @Override
     public boolean isMetricsUploadPermitted() {
         return isNetworkAvailable()
                 && (isUsageAndCrashReportingPermittedByUser() || isUploadEnabledForTests());
-    }
-
-    /**
-     * @return Whether there is a user set value for kNetworkPredictionOptions.  This should only be
-     * used for preference migration. See http://crbug.com/334602
-     */
-    private boolean obsoleteNetworkPredictionOptionsHasUserSetting() {
-        return PrivacyPreferencesManagerImplJni.get()
-                .obsoleteNetworkPredictionOptionsHasUserSetting();
-    }
-
-    /**
-     * @return Network predictions preference.
-     */
-    public boolean getNetworkPredictionEnabled() {
-        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionEnabled();
-    }
-
-    /**
-     * Sets network predictions preference.
-     */
-    public void setNetworkPredictionEnabled(boolean enabled) {
-        PrivacyPreferencesManagerImplJni.get().setNetworkPredictionEnabled(enabled);
-    }
-
-    /**
-     * @return Whether Network Predictions is configured by policy.
-     */
-    public boolean isNetworkPredictionManaged() {
-        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionManaged();
     }
 
     /**
@@ -295,25 +218,43 @@ public class PrivacyPreferencesManagerImpl implements CrashReportingPermissionMa
         return PrivacyPreferencesManagerImplJni.get().canPrefetchAndPrerender();
     }
 
-    /**
-     * @return Whether usage and crash reporting pref is enabled.
-     */
+    @Override
     public boolean isMetricsReportingEnabled() {
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingEnabled();
     }
 
-    /**
-     * Sets whether the usage and crash reporting pref should be enabled.
-     */
+    @Override
     public void setMetricsReportingEnabled(boolean enabled) {
         PrivacyPreferencesManagerImplJni.get().setMetricsReportingEnabled(enabled);
     }
 
-    /**
-     * @return Whether usage and crash report pref is managed.
-     */
+    @Override
     public boolean isMetricsReportingManaged() {
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingManaged();
+    }
+
+    /**
+     * @return Whether there is a user set value for kNetworkPredictionOptions.  This should only be
+     * used for preference migration. See http://crbug.com/334602
+     */
+    private boolean obsoleteNetworkPredictionOptionsHasUserSetting() {
+        return PrivacyPreferencesManagerImplJni.get()
+                .obsoleteNetworkPredictionOptionsHasUserSetting();
+    }
+
+    @Override
+    public boolean getNetworkPredictionEnabled() {
+        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionEnabled();
+    }
+
+    @Override
+    public void setNetworkPredictionEnabled(boolean enabled) {
+        PrivacyPreferencesManagerImplJni.get().setNetworkPredictionEnabled(enabled);
+    }
+
+    @Override
+    public boolean isNetworkPredictionManaged() {
+        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionManaged();
     }
 
     @NativeMethods

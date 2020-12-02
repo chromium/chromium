@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsBridge.java",
     "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsProviderPreference.java",
     "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsSettings.java",
+    "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManager.java",
   ]
   deps = [
     ":java_resources",
@@ -27,6 +28,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/minidump_uploader:minidump_uploader_java",
     "//net/dns/public:secure_dns_mode_generated_enum",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
