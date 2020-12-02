@@ -67,12 +67,6 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
   void SetCdm(const base::Optional<base::UnguessableToken>& cdm_id,
               SetCdmCallback callback) final;
 
-  // TODO(tguilbert): Get rid of |bad_message_cb_|, now that it's no longer
-  // needed.
-  void set_bad_message_cb(base::Closure bad_message_cb) {
-    bad_message_cb_ = bad_message_cb;
-  }
-
  private:
   enum State {
     STATE_UNINITIALIZED,
@@ -137,11 +131,6 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
   // members, e.g. |media_resource_| and |cdm_|.
   // Must use "media::" because "Renderer" is ambiguous.
   std::unique_ptr<media::Renderer> renderer_;
-
-  // Callback to be called when an invalid or unexpected message is received.
-  // TODO(tguilbert): Revisit how to do InitiateScopedSurfaceRequest() so that
-  // we can eliminate this callback. See http://crbug.com/669606
-  base::Closure bad_message_cb_;
 
   base::WeakPtr<MojoRendererService> weak_this_;
   base::WeakPtrFactory<MojoRendererService> weak_factory_{this};

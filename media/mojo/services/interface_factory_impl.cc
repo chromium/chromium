@@ -101,16 +101,8 @@ void InterfaceFactoryImpl::CreateDefaultRenderer(
       std::make_unique<MojoRendererService>(&cdm_service_context_,
                                             std::move(renderer));
 
-  MojoRendererService* mojo_renderer_service_ptr = mojo_renderer_service.get();
-
-  mojo::ReceiverId receiver_id = renderer_receivers_.Add(
-      std::move(mojo_renderer_service), std::move(receiver));
-
-  // base::Unretained() is safe because the callback will be fired by
-  // |mojo_renderer_service|, which is owned by |renderer_receivers_|.
-  mojo_renderer_service_ptr->set_bad_message_cb(base::BindRepeating(
-      base::IgnoreResult(&mojo::UniqueReceiverSet<mojom::Renderer>::Remove),
-      base::Unretained(&renderer_receivers_), receiver_id));
+  renderer_receivers_.Add(std::move(mojo_renderer_service),
+                          std::move(receiver));
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 }
 
@@ -131,16 +123,8 @@ void InterfaceFactoryImpl::CreateCastRenderer(
       std::make_unique<MojoRendererService>(&cdm_service_context_,
                                             std::move(renderer));
 
-  MojoRendererService* mojo_renderer_service_ptr = mojo_renderer_service.get();
-
-  mojo::ReceiverId receiver_id = renderer_receivers_.Add(
-      std::move(mojo_renderer_service), std::move(receiver));
-
-  // base::Unretained() is safe because the callback will be fired by
-  // |mojo_renderer_service|, which is owned by |renderer_receivers_|.
-  mojo_renderer_service_ptr->set_bad_message_cb(base::BindRepeating(
-      base::IgnoreResult(&mojo::UniqueReceiverSet<mojom::Renderer>::Remove),
-      base::Unretained(&renderer_receivers_), receiver_id));
+  renderer_receivers_.Add(std::move(mojo_renderer_service),
+                          std::move(receiver));
 }
 #endif
 

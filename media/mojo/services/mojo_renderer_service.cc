@@ -18,17 +18,6 @@
 
 namespace media {
 
-namespace {
-
-void CloseReceiverOnBadMessage(
-    mojo::SelfOwnedReceiverRef<mojom::Renderer> receiver) {
-  LOG(ERROR) << __func__;
-  DCHECK(receiver);
-  receiver->Close();
-}
-
-}  // namespace
-
 // Time interval to update media time.
 const int kTimeUpdateIntervalMs = 50;
 
@@ -43,9 +32,6 @@ mojo::SelfOwnedReceiverRef<mojom::Renderer> MojoRendererService::Create(
   mojo::SelfOwnedReceiverRef<mojom::Renderer> self_owned_receiver =
       mojo::MakeSelfOwnedReceiver<mojom::Renderer>(base::WrapUnique(service),
                                                    std::move(receiver));
-
-  service->set_bad_message_cb(
-      base::BindRepeating(&CloseReceiverOnBadMessage, self_owned_receiver));
 
   return self_owned_receiver;
 }
@@ -79,9 +65,10 @@ void MojoRendererService::Initialize(
 
   if (!media_url_params) {
     DCHECK(streams.has_value());
-    media_resource_.reset(new MediaResourceShim(
-        std::move(*streams), base::Bind(&MojoRendererService::OnStreamReady,
-                                        weak_this_, base::Passed(&callback))));
+    media_resource_ = std::make_unique<MediaResourceShim>(
+        std::move(*streams),
+        base::BindOnce(&MojoRendererService::OnStreamReady, weak_this_,
+                       base::Passed(&callback)));
     return;
   }
 
@@ -272,7 +259,8 @@ void MojoRendererService::SchedulePeriodicMediaTimeUpdates() {
   UpdateMediaTime(true);
   time_update_timer_.Start(
       FROM_HERE, base::TimeDelta::FromMilliseconds(kTimeUpdateIntervalMs),
-      base::Bind(&MojoRendererService::UpdateMediaTime, weak_this_, false));
+      base::BindRepeating(&MojoRendererService::UpdateMediaTime, weak_this_,
+                          false));
 }
 
 void MojoRendererService::OnFlushCompleted(FlushCallback callback) {

@@ -74,8 +74,9 @@ void MojoAudioDecoderService::Initialize(
       config, cdm_context,
       base::BindOnce(&MojoAudioDecoderService::OnInitialized, weak_this_,
                      std::move(callback)),
-      base::Bind(&MojoAudioDecoderService::OnAudioBufferReady, weak_this_),
-      base::Bind(&MojoAudioDecoderService::OnWaiting, weak_this_));
+      base::BindRepeating(&MojoAudioDecoderService::OnAudioBufferReady,
+                          weak_this_),
+      base::BindRepeating(&MojoAudioDecoderService::OnWaiting, weak_this_));
 }
 
 void MojoAudioDecoderService::SetDataSource(
@@ -130,8 +131,9 @@ void MojoAudioDecoderService::OnReadDone(DecodeCallback callback,
     return;
   }
 
-  decoder_->Decode(buffer, base::Bind(&MojoAudioDecoderService::OnDecodeStatus,
-                                      weak_this_, base::Passed(&callback)));
+  decoder_->Decode(buffer,
+                   base::BindOnce(&MojoAudioDecoderService::OnDecodeStatus,
+                                  weak_this_, base::Passed(&callback)));
 }
 
 void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {

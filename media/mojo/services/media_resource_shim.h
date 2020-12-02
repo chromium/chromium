@@ -24,7 +24,7 @@ class MediaResourceShim : public MediaResource {
   // initialized.  Calling any method before then is an error.
   MediaResourceShim(
       std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams,
-      const base::Closure& demuxer_ready_cb);
+      base::OnceClosure demuxer_ready_cb);
   ~MediaResourceShim() override;
 
   // MediaResource interface.
@@ -38,7 +38,7 @@ class MediaResourceShim : public MediaResource {
 
   // Stored copy the ready callback provided during construction; cleared once
   // all streams are ready.
-  base::Closure demuxer_ready_cb_;
+  base::OnceClosure demuxer_ready_cb_;
 
   // Container for demuxer stream adapters which interface with the mojo level
   // demuxer streams.  |streams_ready_| tracks how many streams are ready and is

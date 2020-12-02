@@ -291,11 +291,11 @@ MojoDecoderBufferWriter::MojoDecoderBufferWriter(
       bytes_written_(0) {
   DVLOG(1) << __func__;
 
-  MojoResult result =
-      pipe_watcher_.Watch(producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-                          MOJO_WATCH_CONDITION_SATISFIED,
-                          base::Bind(&MojoDecoderBufferWriter::OnPipeWritable,
-                                     base::Unretained(this)));
+  MojoResult result = pipe_watcher_.Watch(
+      producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      MOJO_WATCH_CONDITION_SATISFIED,
+      base::BindRepeating(&MojoDecoderBufferWriter::OnPipeWritable,
+                          base::Unretained(this)));
   if (result != MOJO_RESULT_OK) {
     DVLOG(1) << __func__
              << ": Failed to start watching the pipe. result=" << result;

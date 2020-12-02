@@ -258,7 +258,7 @@ class ExternalVideoEncoder::VEAClientImpl final
     for (size_t j = 0; j < kOutputBufferCount; ++j) {
       create_video_encode_memory_cb_.Run(
           output_buffer_size,
-          base::Bind(&VEAClientImpl::OnCreateSharedMemory, this));
+          base::BindOnce(&VEAClientImpl::OnCreateSharedMemory, this));
     }
   }
 

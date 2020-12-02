@@ -13,8 +13,8 @@ namespace media {
 
 MediaResourceShim::MediaResourceShim(
     std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams,
-    const base::Closure& demuxer_ready_cb)
-    : demuxer_ready_cb_(demuxer_ready_cb), streams_ready_(0) {
+    base::OnceClosure demuxer_ready_cb)
+    : demuxer_ready_cb_(std::move(demuxer_ready_cb)), streams_ready_(0) {
   DCHECK(!streams.empty());
   DCHECK(demuxer_ready_cb_);
 
