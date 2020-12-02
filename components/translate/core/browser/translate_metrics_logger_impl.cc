@@ -23,6 +23,8 @@ const char kTranslatePageLoadInitialSourceLanguage[] =
 const char kTranslatePageLoadInitialState[] = "Translate.PageLoad.InitialState";
 const char kTranslatePageLoadInitialTargetLanguage[] =
     "Translate.PageLoad.InitialTargetLanguage";
+const char kTranslatePageLoadIsInitialSourceLanguageInUsersContentLanguages[] =
+    "Translate.PageLoad.IsInitialSourceLanguageInUsersContentLanguages";
 const char kTranslatePageLoadNumTargetLanguageChanges[] =
     "Translate.PageLoad.NumTargetLanguageChanges";
 const char kTranslatePageLoadNumTranslations[] =
@@ -111,6 +113,9 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics() {
                            base::HashMetricName(initial_source_language_));
   base::UmaHistogramSparse(kTranslatePageLoadFinalSourceLanguage,
                            base::HashMetricName(current_source_language_));
+  base::UmaHistogramBoolean(
+      kTranslatePageLoadIsInitialSourceLanguageInUsersContentLanguages,
+      is_initial_source_language_in_users_content_languages_);
   base::UmaHistogramSparse(kTranslatePageLoadInitialTargetLanguage,
                            base::HashMetricName(initial_target_language_));
   base::UmaHistogramSparse(kTranslatePageLoadFinalTargetLanguage,
@@ -201,11 +206,18 @@ void TranslateMetricsLoggerImpl::LogOmniboxIconChange(
   current_state_is_omnibox_icon_shown_ = is_omnibox_icon_shown;
 }
 
+void TranslateMetricsLoggerImpl::LogInitialSourceLanguage(
+    const std::string& source_language_code,
+    bool is_in_users_content_languages) {
+  initial_source_language_ = source_language_code;
+  is_initial_source_language_in_users_content_languages_ =
+      is_in_users_content_languages;
+
+  current_source_language_ = source_language_code;
+}
+
 void TranslateMetricsLoggerImpl::LogSourceLanguage(
     const std::string& source_language_code) {
-  if (initial_source_language_ == "")
-    initial_source_language_ = source_language_code;
-
   current_source_language_ = source_language_code;
 }
 

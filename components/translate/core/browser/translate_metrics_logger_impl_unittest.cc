@@ -413,9 +413,14 @@ TEST_F(TranslateMetricsLoggerImplTest,
 
 TEST_F(TranslateMetricsLoggerImplTest, LogSourceLanguage) {
   // Set constants for the test.
+  std::string initial_source_language = "ru";
+  bool is_initial_source_language_in_users_content_languages = true;
   std::vector<std::string> source_languages = {"en", "es", "fr", "it", "de"};
 
   // Log the source languages.
+  translate_metrics_logger()->LogInitialSourceLanguage(
+      initial_source_language,
+      is_initial_source_language_in_users_content_languages);
   for (auto source_language : source_languages)
     translate_metrics_logger()->LogSourceLanguage(source_language);
 
@@ -425,7 +430,10 @@ TEST_F(TranslateMetricsLoggerImplTest, LogSourceLanguage) {
   // Check that the histograms match expectations.
   histogram_tester()->ExpectUniqueSample(
       kTranslatePageLoadInitialSourceLanguage,
-      base::HashMetricName(source_languages[0]), 1);
+      base::HashMetricName(initial_source_language), 1);
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadIsInitialSourceLanguageInUsersContentLanguages,
+      is_initial_source_language_in_users_content_languages, 1);
   histogram_tester()->ExpectUniqueSample(
       kTranslatePageLoadFinalSourceLanguage,
       base::HashMetricName(source_languages[source_languages.size() - 1]), 1);

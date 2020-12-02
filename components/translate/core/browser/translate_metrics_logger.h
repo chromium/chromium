@@ -94,6 +94,8 @@ class TranslateMetricsLogger {
 
   // Used to record the source language and target language both initially and
   // if the user changes these values.
+  virtual void LogInitialSourceLanguage(const std::string& source_language_code,
+                                        bool is_in_users_content_language) = 0;
   virtual void LogSourceLanguage(const std::string& source_language_code) = 0;
   virtual void LogTargetLanguage(const std::string& target_language_code) = 0;
 };

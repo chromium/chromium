@@ -161,7 +161,12 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   // TODO(crbug.com/924980): The ranker event shouldn't be a global on this
   // object. It should instead be passed around to code that uses it.
   InitTranslateEvent(page_language_code, target_lang, *translate_prefs);
-  GetActiveTranslateMetricsLogger()->LogSourceLanguage(page_language_code);
+
+  // Logs the initial source and target langauges, as well as whether the
+  // initial source language is in the user's content language.
+  GetActiveTranslateMetricsLogger()->LogInitialSourceLanguage(
+      page_language_code,
+      translate_prefs->IsBlockedLanguage(page_language_code));
   GetActiveTranslateMetricsLogger()->LogTargetLanguage(target_lang);
 
   const TranslateTriggerDecision& decision = ComputePossibleOutcomes(
