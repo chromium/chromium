@@ -309,7 +309,12 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
                        SetupShouldLaunchIfImageAlreadyImported) {
   AllowPluginVm();
 
-  // Setup dispatcher client for VM already imported.
+  // Setup concierge and the dispatcher for VM already imported.
+  vm_tools::concierge::ListVmDisksResponse list_vm_disks_response;
+  list_vm_disks_response.set_success(true);
+  list_vm_disks_response.add_images();
+  fake_concierge_client_->set_list_vm_disks_response(list_vm_disks_response);
+
   vm_tools::plugin_dispatcher::ListVmResponse list_vms_response;
   list_vms_response.add_vm_info()->set_state(
       vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);

@@ -33,18 +33,8 @@ class PluginVmManager : public KeyedService {
   // Seneschal server handle to use for path sharing.
   virtual uint64_t seneschal_server_handle() const = 0;
 
-  // Starts the dispatcher, then queries it for the default Vm's state, which is
-  // then used to update |vm_state_|.
-  // This is used as the first step of both LaunchPluginVm and UninstallPluginVm
-  // to ensure that the dispatcher is running and |vm_state_| is up to date.
-  //
-  // Invokes |success_callback| if the state was updated, or if there is no Vm,
-  // therefore no state to updated.
-  // Invokes |error_callback| if the dispatcher couldn't be started, or the
-  // query was unsuccessful.
-  virtual void UpdateVmState(
-      base::OnceCallback<void(bool default_vm_exists)> success_callback,
-      base::OnceClosure error_callback) = 0;
+  virtual void StartDispatcher(
+      base::OnceCallback<void(bool success)> callback) const = 0;
 
   // Add/remove vm starting observers.
   virtual void AddVmStartingObserver(

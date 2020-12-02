@@ -70,16 +70,18 @@ class PluginVmInstaller : public KeyedService,
     INSUFFICIENT_DISK_SPACE = 23,
     INVALID_LICENSE = 24,
     OFFLINE = 25,
+    LIST_VM_DISKS_FAILED = 26,
 
-    kMaxValue = OFFLINE,
+    kMaxValue = LIST_VM_DISKS_FAILED,
   };
 
   enum class InstallingState {
     kInactive,
     kCheckingLicense,
+    kCheckingForExistingVm,
     kCheckingDiskSpace,
     kDownloadingDlc,
-    kCheckingForExistingVm,
+    kStartingDispatcher,
     kDownloadingImage,
     kImporting,
   };
@@ -159,12 +161,15 @@ class PluginVmInstaller : public KeyedService,
  private:
   void CheckLicense();
   void OnLicenseChecked(bool license_is_valid);
+  void CheckForExistingVm();
+  void OnConciergeAvailable(bool success);
+  void OnListVmDisks(
+      base::Optional<vm_tools::concierge::ListVmDisksResponse> response);
   void CheckDiskSpace();
   void OnAvailableDiskSpace(int64_t bytes);
   void StartDlcDownload();
-  void CheckForExistingVm();
-  void OnUpdateVmState(bool default_vm_exists);
-  void OnUpdateVmStateFailed();
+  void StartDispatcher();
+  void OnDispatcherStarted(bool success);
   void StartDownload();
   void DetectImageType();
   void StartImport();
@@ -227,9 +232,6 @@ class PluginVmInstaller : public KeyedService,
   // Callback when image type has been detected. This will make call to
   // concierge's ImportDiskImage.
   void OnImageTypeDetected();
-
-  // Callback which is called once we know if concierge is available.
-  void OnConciergeAvailable(bool success);
 
   // Ran as a blocking task preparing the FD for the ImportDiskImage call.
   base::Optional<base::ScopedFD> PrepareFD();

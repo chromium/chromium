@@ -95,6 +95,8 @@ PluginVmSetupResult BucketForCancelledInstall(
       return PluginVmSetupResult::kUserCancelledCheckingDiskSpace;
     case PluginVmInstaller::InstallingState::kDownloadingDlc:
       return PluginVmSetupResult::kUserCancelledDownloadingPluginVmDlc;
+    case PluginVmInstaller::InstallingState::kStartingDispatcher:
+      return PluginVmSetupResult::kUserCancelledStartingDispatcher;
     case PluginVmInstaller::InstallingState::kCheckingForExistingVm:
       return PluginVmSetupResult::kUserCancelledCheckingForExistingVm;
     case PluginVmInstaller::InstallingState::kDownloadingImage:
@@ -165,6 +167,7 @@ void PluginVmInstaller::Cancel() {
     case InstallingState::kCheckingDiskSpace:
     case InstallingState::kCheckingForExistingVm:
     case InstallingState::kDownloadingDlc:
+    case InstallingState::kStartingDispatcher:
       // These can't be cancelled, so we wait for completion. For DLC, we also
       // block progress callbacks.
       return;
@@ -206,11 +209,65 @@ void PluginVmInstaller::OnLicenseChecked(bool license_is_valid) {
     return;
   }
 
+  CheckForExistingVm();
+}
+
+void PluginVmInstaller::CheckForExistingVm() {
+  DCHECK_EQ(installing_state_, InstallingState::kCheckingLicense);
+  UpdateInstallingState(InstallingState::kCheckingForExistingVm);
+
+  GetConciergeClient()->WaitForServiceToBeAvailable(
+      base::BindOnce(&PluginVmInstaller::OnConciergeAvailable,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PluginVmInstaller::OnConciergeAvailable(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Concierge did not become available";
+    OnImported(FailureReason::CONCIERGE_NOT_AVAILABLE);
+    return;
+  }
+
+  vm_tools::concierge::ListVmDisksRequest request;
+  request.set_cryptohome_id(
+      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_storage_location(
+      vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
+  request.set_vm_name(kPluginVmName);
+
+  GetConciergeClient()->ListVmDisks(
+      std::move(request), base::BindOnce(&PluginVmInstaller::OnListVmDisks,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PluginVmInstaller::OnListVmDisks(
+    base::Optional<vm_tools::concierge::ListVmDisksResponse> response) {
+  if (state_ == State::kCancelling) {
+    CancelFinished();
+    return;
+  }
+
+  if (!response || !response->success()) {
+    LOG(ERROR) << "Failed to list VM disks: "
+               << (response ? response->failure_reason() : "[Empty response]");
+    InstallFailed(FailureReason::LIST_VM_DISKS_FAILED);
+    return;
+  }
+
+  if (response->images_size() == 1) {
+    RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kVmAlreadyExists);
+    if (observer_)
+      observer_->OnVmExists();
+    profile_->GetPrefs()->SetBoolean(prefs::kPluginVmImageExists, true);
+    InstallFinished();
+    return;
+  }
+
   CheckDiskSpace();
 }
 
 void PluginVmInstaller::CheckDiskSpace() {
-  DCHECK_EQ(installing_state_, InstallingState::kCheckingLicense);
+  DCHECK_EQ(installing_state_, InstallingState::kCheckingForExistingVm);
   UpdateInstallingState(InstallingState::kCheckingDiskSpace);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -230,51 +287,12 @@ void PluginVmInstaller::OnAvailableDiskSpace(int64_t bytes) {
   if (free_disk_space_for_testing_ != -1)
     bytes = free_disk_space_for_testing_;
 
-  // We allow the installer to fail for users who already set up a VM via vmc
-  // and have low disk space as it's simpler to check for existing VMs after
-  // installing DLC and this case should be very rare.
-
   if (bytes < RequiredFreeDiskSpace()) {
     InstallFailed(FailureReason::INSUFFICIENT_DISK_SPACE);
     return;
   }
 
   StartDlcDownload();
-}
-
-void PluginVmInstaller::CheckForExistingVm() {
-  DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
-  UpdateInstallingState(InstallingState::kCheckingForExistingVm);
-
-  PluginVmManagerFactory::GetForProfile(profile_)->UpdateVmState(
-      base::BindOnce(&PluginVmInstaller::OnUpdateVmState,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&PluginVmInstaller::OnUpdateVmStateFailed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PluginVmInstaller::OnUpdateVmState(bool default_vm_exists) {
-  if (state_ == State::kCancelling) {
-    CancelFinished();
-    return;
-  }
-
-  if (default_vm_exists) {
-    RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kVmAlreadyExists);
-    if (observer_)
-      observer_->OnVmExists();
-    profile_->GetPrefs()->SetBoolean(prefs::kPluginVmImageExists, true);
-    InstallFinished();
-    return;
-  }
-
-  StartDownload();
-}
-
-void PluginVmInstaller::OnUpdateVmStateFailed() {
-  // Either the dispatcher failed to start or ListVms didn't work.
-  // PluginVmManager logs the details.
-  InstallFailed(FailureReason::DISPATCHER_NOT_AVAILABLE);
 }
 
 void PluginVmInstaller::StartDlcDownload() {
@@ -294,8 +312,31 @@ void PluginVmInstaller::StartDlcDownload() {
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void PluginVmInstaller::StartDispatcher() {
+  DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
+  UpdateInstallingState(InstallingState::kStartingDispatcher);
+
+  PluginVmManagerFactory::GetForProfile(profile_)->StartDispatcher(
+      base::BindOnce(&PluginVmInstaller::OnDispatcherStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PluginVmInstaller::OnDispatcherStarted(bool success) {
+  if (state_ == State::kCancelling) {
+    CancelFinished();
+    return;
+  }
+
+  if (!success) {
+    InstallFailed(FailureReason::DISPATCHER_NOT_AVAILABLE);
+    return;
+  }
+
+  StartDownload();
+}
+
 void PluginVmInstaller::StartDownload() {
-  DCHECK_EQ(installing_state_, InstallingState::kCheckingForExistingVm);
+  DCHECK_EQ(installing_state_, InstallingState::kStartingDispatcher);
   UpdateInstallingState(InstallingState::kDownloadingImage);
   UpdateProgress(/*state_progress=*/0);
 
@@ -353,7 +394,7 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
   // If success, continue to the next state.
   if (install_result.error == dlcservice::kErrorNone) {
     RecordPluginVmDlcUseResultHistogram(PluginVmDlcUseResult::kDlcSuccess);
-    CheckForExistingVm();
+    StartDispatcher();
     return;
   }
 
@@ -500,25 +541,12 @@ void PluginVmInstaller::DetectImageType() {
 }
 
 void PluginVmInstaller::OnImageTypeDetected() {
-  VLOG(1) << "Waiting for Concierge to be available";
-  GetConciergeClient()->WaitForServiceToBeAvailable(
-      base::BindOnce(&PluginVmInstaller::OnConciergeAvailable,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PluginVmInstaller::OnConciergeAvailable(bool success) {
-  if (!success) {
-    LOG(ERROR) << "Concierge did not become available";
-    OnImported(FailureReason::CONCIERGE_NOT_AVAILABLE);
-    return;
-  }
   if (!GetConciergeClient()->IsDiskImageProgressSignalConnected()) {
     LOG(ERROR) << "Disk image progress signal is not connected";
     OnImported(FailureReason::SIGNAL_NOT_CONNECTED);
     return;
   }
-  VLOG(1) << "Plugin VM dispatcher service has been started and disk image "
-             "signals are connected";
+
   GetConciergeClient()->AddDiskImageObserver(this);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -812,6 +840,8 @@ std::string PluginVmInstaller::GetInstallingStateName(InstallingState state) {
       return "kCheckingForExistingVm";
     case InstallingState::kDownloadingDlc:
       return "kDownloadingDlc";
+    case InstallingState::kStartingDispatcher:
+      return "kStartingDispatcher";
     case InstallingState::kDownloadingImage:
       return "kDownloadingImage";
     case InstallingState::kImporting:

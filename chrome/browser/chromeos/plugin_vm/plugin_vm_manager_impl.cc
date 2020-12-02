@@ -347,17 +347,13 @@ void PluginVmManagerImpl::OnVmStateChanged(
   }
 }
 
-void PluginVmManagerImpl::UpdateVmState(
-    base::OnceCallback<void(bool)> success_callback,
-    base::OnceClosure error_callback) {
+void PluginVmManagerImpl::StartDispatcher(
+    base::OnceCallback<void(bool)> callback) const {
   chromeos::DBusThreadManager::Get()
       ->GetDebugDaemonClient()
-      ->StartPluginVmDispatcher(
-          owner_id_, g_browser_process->GetApplicationLocale(),
-          base::BindOnce(&PluginVmManagerImpl::OnStartDispatcher,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(success_callback),
-                         std::move(error_callback)));
+      ->StartPluginVmDispatcher(owner_id_,
+                                g_browser_process->GetApplicationLocale(),
+                                std::move(callback));
 }
 
 vm_tools::plugin_dispatcher::VmState PluginVmManagerImpl::vm_state() const {
@@ -385,7 +381,9 @@ void PluginVmManagerImpl::OnInstallPluginVmDlc(
     base::OnceClosure error_callback,
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
-    UpdateVmState(std::move(success_callback), std::move(error_callback));
+    StartDispatcher(base::BindOnce(
+        &PluginVmManagerImpl::OnStartDispatcher, weak_ptr_factory_.GetWeakPtr(),
+        std::move(success_callback), std::move(error_callback)));
   } else {
     // TODO(kimjae): Unify the dlcservice error handler with
     // PluginVmInstaller.

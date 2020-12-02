@@ -46,8 +46,9 @@ enum class PluginVmSetupResult {
   kError = 13,
   kUserCancelledWithoutStarting = 14,
   kUserCancelledValidatingLicense = 15,
+  kUserCancelledStartingDispatcher = 16,
 
-  kMaxValue = kUserCancelledValidatingLicense,
+  kMaxValue = kUserCancelledStartingDispatcher,
 };
 
 enum class PluginVmDlcUseResult {

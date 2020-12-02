@@ -339,9 +339,10 @@ base::string16 PluginVmInstallerView::GetMessage() const {
           NOTREACHED();
           FALLTHROUGH;
         case InstallingState::kCheckingLicense:
+        case InstallingState::kCheckingForExistingVm:
         case InstallingState::kCheckingDiskSpace:
         case InstallingState::kDownloadingDlc:
-        case InstallingState::kCheckingForExistingVm:
+        case InstallingState::kStartingDispatcher:
           return l10n_util::GetStringUTF16(
               IDS_PLUGIN_VM_INSTALLER_START_DOWNLOADING_MESSAGE);
         case InstallingState::kDownloadingImage:

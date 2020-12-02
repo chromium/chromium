@@ -31,7 +31,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
-#include "chromeos/dbus/fake_vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/test/test_download_service.h"
 #include "components/drive/service/dummy_drive_service.h"
@@ -220,9 +219,10 @@ class PluginVmInstallerTestBase : public testing::Test {
   void ExpectObserverEventsUntil(InstallingState end_state) {
     InstallingState states[] = {
         InstallingState::kCheckingLicense,
+        InstallingState::kCheckingForExistingVm,
         InstallingState::kCheckingDiskSpace,
         InstallingState::kDownloadingDlc,
-        InstallingState::kCheckingForExistingVm,
+        InstallingState::kStartingDispatcher,
         InstallingState::kDownloadingImage,
         InstallingState::kImporting,
     };
@@ -431,12 +431,13 @@ TEST_F(PluginVmInstallerDownloadServiceTest, InsufficientDiskWhenSetInPolicy) {
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, VmExists) {
-  vm_tools::plugin_dispatcher::ListVmResponse list_vms_response;
-  list_vms_response.add_vm_info()->set_state(
-      vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
-  static_cast<chromeos::FakeVmPluginDispatcherClient*>(
-      chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient())
-      ->set_list_vms_response(list_vms_response);
+  // This flow works even if the image url is not set.
+  SetPluginVmImagePref("", kHash);
+
+  vm_tools::concierge::ListVmDisksResponse list_vm_disks_response;
+  list_vm_disks_response.set_success(true);
+  list_vm_disks_response.add_images();
+  fake_concierge_client_->set_list_vm_disks_response(list_vm_disks_response);
 
   ExpectObserverEventsUntil(InstallingState::kCheckingForExistingVm);
   EXPECT_CALL(*observer_, OnVmExists());

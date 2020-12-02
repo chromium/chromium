@@ -66,9 +66,8 @@ class PluginVmManagerImpl
   void OnVmStateChanged(
       const vm_tools::plugin_dispatcher::VmStateChangedSignal& signal) override;
 
-  void UpdateVmState(
-      base::OnceCallback<void(bool default_vm_exists)> success_callback,
-      base::OnceClosure error_callback) override;
+  void StartDispatcher(
+      base::OnceCallback<void(bool success)> callback) const override;
 
   vm_tools::plugin_dispatcher::VmState vm_state() const override;
 
