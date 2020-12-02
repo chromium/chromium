@@ -53,6 +53,7 @@ void AutocorrectManager::HandleAutocorrect(gfx::Range autocorrect_range,
   ClearUnderline();
 
   input_context->SetAutocorrectRange(autocorrect_range);
+  autocorrect_time_ = base::TimeTicks::Now();
 }
 
 bool AutocorrectManager::OnKeyEvent(
@@ -177,6 +178,8 @@ void AutocorrectManager::UndoAutocorrect() {
            surrounding_text.surrounding_text.substr(0, range.start())) +
        original_text_));
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
+  base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
+                                (base::TimeTicks::Now() - autocorrect_time_));
 }
 
 }  // namespace chromeos
