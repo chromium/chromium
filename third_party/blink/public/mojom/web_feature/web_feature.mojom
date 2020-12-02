@@ -620,7 +620,6 @@ enum WebFeature {
   kV8Window_RequestIdleCallback_Method = 954,
   kFlexboxPercentagePaddingVertical = 955,
   kFlexboxPercentageMarginVertical = 956,
-  kCSPSourceWildcardWouldMatchExactHost = 959,
   kCredentialManagerGet = 960,
   kCredentialManagerGetMediationOptional = 961,
   kCredentialManagerGetMediationSilent = 962,

@@ -129,13 +129,6 @@ bool CSPSource::HostMatches(const String& host) const {
       // host-part = "*." 1*host-char *( "." 1*host-char )
       match = host.EndsWithIgnoringCase(String("." + host_));
     }
-
-    // Chrome used to, incorrectly, match *.x.y to x.y. This was fixed, but
-    // the following count measures when a match fails that would have
-    // passed the old, incorrect style, in case a lot of sites were
-    // relying on that behavior.
-    if (equal_hosts)
-      policy_->Count(WebFeature::kCSPSourceWildcardWouldMatchExactHost);
   } else {
     // host-part = 1*host-char *( "." 1*host-char )
     match = equal_hosts;
