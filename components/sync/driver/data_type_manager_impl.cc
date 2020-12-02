@@ -331,8 +331,8 @@ void DataTypeManagerImpl::Restart() {
 }
 
 void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
-  // TODO(crbug.com/1102837): Handle |needs_reconfigure_| here, then we don't
-  // need to handle it in StartNextAssociation.
+  // TODO(crbug.com/1102837): Should we handle |needs_reconfigure_| here,
+  // before even starting the downloads?
   DCHECK(!download_started_);
   download_started_ = true;
   // TODO(pavely): By now some of datatypes in |download_types_queue_| could
@@ -650,11 +650,6 @@ void DataTypeManagerImpl::StartNextAssociation(
     if (ProtocolTypes().Has(type)) {
       RecordConfigurationStats(type);
     }
-  }
-
-  if (needs_reconfigure_) {
-    ProcessReconfigure();
-    return;
   }
 
   // If any pending types weren't covered here, then we're not done yet.
