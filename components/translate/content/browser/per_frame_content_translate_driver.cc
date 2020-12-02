@@ -250,7 +250,9 @@ void PerFrameContentTranslateDriver::NavigationEntryCommitted(
     return;
   }
 
-  if (!translate_manager()->GetLanguageState()->page_needs_translation())
+  if (!translate_manager()
+           ->GetLanguageState()
+           ->page_level_translation_critiera_met())
     return;
 
   // Note that we delay it as the ordering of the processing of this callback
@@ -345,7 +347,7 @@ void PerFrameContentTranslateDriver::StartLanguageDetection() {
 
 void PerFrameContentTranslateDriver::OnPageLanguageDetermined(
     const LanguageDetectionDetails& details,
-    bool page_needs_translation) {
+    bool page_level_translation_critiera_met) {
   language_determined_time_ = base::TimeTicks::Now();
   ReportLanguageDeterminedDuration(finish_navigation_time_,
                                    language_determined_time_);
@@ -357,7 +359,7 @@ void PerFrameContentTranslateDriver::OnPageLanguageDetermined(
 
   if (translate_manager() && web_contents()) {
     translate_manager()->GetLanguageState()->LanguageDetermined(
-        details.adopted_language, page_needs_translation);
+        details.adopted_language, page_level_translation_critiera_met);
     translate_manager()->InitiateTranslation(details.adopted_language);
   }
 

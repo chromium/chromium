@@ -1005,7 +1005,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PageNeedsTranslation) {
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", false);
   // Users should be able to manually translate the page, even when
-  // |page_needs_translation| is false.
+  // |page_level_translation_critiera_met| is false.
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 

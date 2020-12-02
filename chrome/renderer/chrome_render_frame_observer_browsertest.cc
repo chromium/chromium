@@ -27,9 +27,8 @@ namespace {
 class FakeContentTranslateDriver
     : public translate::mojom::ContentTranslateDriver {
  public:
-  FakeContentTranslateDriver()
-      : called_new_page_(false), page_needs_translation_(false) {}
-  ~FakeContentTranslateDriver() override {}
+  FakeContentTranslateDriver() = default;
+  ~FakeContentTranslateDriver() override = default;
 
   void BindHandle(mojo::ScopedMessagePipeHandle handle) {
     receivers_.Add(
@@ -41,13 +40,13 @@ class FakeContentTranslateDriver
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
-      bool page_needs_translation) override {
+      bool page_level_translation_critiera_met) override {
     called_new_page_ = true;
-    page_needs_translation_ = page_needs_translation;
+    page_level_translation_critiera_met_ = page_level_translation_critiera_met;
   }
 
-  bool called_new_page_;
-  bool page_needs_translation_;
+  bool called_new_page_ = false;
+  bool page_level_translation_critiera_met_ = false;
 
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
@@ -95,7 +94,7 @@ TEST_F(ChromeRenderFrameObserverTest, SkipCapturingSubFrames) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
-  EXPECT_TRUE(fake_translate_driver_.page_needs_translation_)
+  EXPECT_TRUE(fake_translate_driver_.page_level_translation_critiera_met_)
       << "Page should be translatable.";
   // Should have 2 samples: one for preliminary capture, one for final capture.
   // If there are more, then subframes are being captured more than once.

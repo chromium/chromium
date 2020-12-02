@@ -60,7 +60,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
   void DocumentOnLoadCompletedInMainFrame() override;
 
   void OnPageLanguageDetermined(const LanguageDetectionDetails& details,
-                                bool page_needs_translation);
+                                bool page_level_translation_critiera_met);
 
  private:
   friend class PerFrameContentTranslateDriverTest;

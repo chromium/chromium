@@ -24,7 +24,7 @@
 namespace content {
 class NavigationController;
 class WebContents;
-}
+}  // namespace content
 
 namespace language {
 class UrlLanguageHistogram;
@@ -120,7 +120,7 @@ class ContentTranslateDriver : public TranslateDriver,
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
-      bool page_needs_translation) override;
+      bool page_level_translation_critiera_met) override;
 
  protected:
   const base::ObserverList<Observer, true>::Unchecked& observer_list() const {

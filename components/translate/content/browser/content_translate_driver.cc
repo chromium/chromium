@@ -227,7 +227,8 @@ void ContentTranslateDriver::NavigationEntryCommitted(
     return;
   }
 
-  if (!translate_manager_->GetLanguageState()->page_needs_translation())
+  if (!translate_manager_->GetLanguageState()
+           ->page_level_translation_critiera_met())
     return;
 
   // Note that we delay it as the ordering of the processing of this callback
@@ -286,7 +287,7 @@ void ContentTranslateDriver::AddReceiver(
 void ContentTranslateDriver::RegisterPage(
     mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
     const translate::LanguageDetectionDetails& details,
-    const bool page_needs_translation) {
+    const bool page_level_translation_critiera_met) {
   base::TimeTicks language_determined_time = base::TimeTicks::Now();
   ReportLanguageDeterminedDuration(finish_navigation_time_,
                                    language_determined_time);
@@ -303,7 +304,7 @@ void ContentTranslateDriver::RegisterPage(
   translate_manager_->set_current_seq_no(next_page_seq_no_);
 
   translate_manager_->GetLanguageState()->LanguageDetermined(
-      details.adopted_language, page_needs_translation);
+      details.adopted_language, page_level_translation_critiera_met);
 
   if (web_contents()) {
     translate_manager_->InitiateTranslation(details.adopted_language);

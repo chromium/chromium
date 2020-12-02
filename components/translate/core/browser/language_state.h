@@ -35,10 +35,10 @@ class LanguageState {
                    bool navigation_from_google);
 
   // Should be called when the language of the page has been determined.
-  // |page_needs_translation| when false indicates that the browser should not
-  // offer to translate the page.
+  // |page_level_translation_critiera_met| when false indicates that the browser
+  // should not offer to translate the page.
   void LanguageDetermined(const std::string& page_language,
-                          bool page_needs_translation);
+                          bool page_level_translation_critiera_met);
 
   // Returns the language the current page should be translated to, based on the
   // previous page languages and the transition.  This should be called after
@@ -62,7 +62,9 @@ class LanguageState {
   const std::string& current_language() const { return current_lang_; }
   void SetCurrentLanguage(const std::string& language);
 
-  bool page_needs_translation() const { return page_needs_translation_; }
+  bool page_level_translation_critiera_met() const {
+    return page_level_translation_critiera_met_;
+  }
 
   // Whether the page is currently in the process of being translated.
   bool translation_pending() const { return translation_pending_; }
@@ -115,10 +117,12 @@ class LanguageState {
   // outlive this object.
   TranslateDriver* translate_driver_;
 
-  // Whether it is OK to offer to translate the page.  Some pages explictly
-  // specify that they should not be translated by the browser (this is the case
-  // for GMail for example, which provides its own translation features).
-  bool page_needs_translation_;
+  // Whether it is OK to offer to translate the page. Translation is not offered
+  // if we cannot determine the source language. In addition, some pages
+  // explicitly specify that they should not be translated by the browser (this
+  // is the case for GMail for example, which provides its own translation
+  // features).
+  bool page_level_translation_critiera_met_;
 
   // Whether a translation is currently pending.
   // This is needed to avoid sending duplicate translate requests to a page.
