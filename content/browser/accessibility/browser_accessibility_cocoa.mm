@@ -247,9 +247,6 @@ extern "C" {
 
 // The following are private accessibility APIs required for cursor navigation
 // and text selection. VoiceOver started relying on them in Mac OS X 10.11.
-#if !defined(MAC_OS_X_VERSION_10_11) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_11
-
 CFTypeID AXTextMarkerGetTypeID();
 
 AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef allocator,
@@ -271,8 +268,6 @@ AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(
 
 AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(
     AXTextMarkerRangeRef text_marker_range);
-
-#endif  // MAC_OS_X_VERSION_10_11
 
 }  // extern "C"
 
