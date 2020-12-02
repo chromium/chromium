@@ -1,4 +1,185 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1002108253973310084">ଏକ ଅସଙ୍ଗତ ପ୍ରୋଟୋକଲ୍ ସଂସ୍କରଣ ଚିହ୍ନଟ କରଯାଇଥିଲା। ଦୟାକରି ଆପଣ ସଫ୍ଟୱେର୍‌ର ନବୀନତମ ସଂସ୍କରଣ ଉଭୟ କମ୍ପ୍ୟୁଟର୍‌ରେ ଅପ୍‌ଡେଟ୍ କରିଥିବା ସୁନିଶ୍ଚିତ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="1008557486741366299">ଏବେ ନୁହେଁ</translation>
+<translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
+<translation id="1297009705180977556"><ph name="HOSTNAME" />କୁ ସଂଯୋଗ କରିବାରେ ତ୍ରୁଟି</translation>
+<translation id="1450760146488584666">ଅନୁରୋଧ କରାଯାଇଥିବା ଅବ୍‌ଜେକ୍ଟଟି ବିଦ୍ୟମାନ ନାହିଁ।</translation>
+<translation id="1480046233931937785">କ୍ରେଡିଟ୍</translation>
+<translation id="1520828917794284345">ଫିଟ୍ ହେବା ପାଇଁ ଡେସ୍କଟପ୍ ଆକାର ବଦଳାନ୍ତୁ</translation>
+<translation id="1546934824884762070">ଏକ ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି ଘଟିଲା। ଦୟାକରି, ଏହି ସମସ୍ୟା ବିଷୟରେ ଡେଭଲପର୍‌ଙ୍କୁ ରିପୋର୍ଟ କରନ୍ତୁ।</translation>
+<translation id="1697532407822776718">ଆପଣ ପୂରା ପ୍ରସ୍ତୁତ ଅଛନ୍ତି!</translation>
+<translation id="1742469581923031760">ସଂଯୋଗ କରୁଛି…</translation>
+<translation id="177096447311351977">କ୍ଲାଏଣ୍ଟଙ୍କ ପାଇଁ ଚ୍ୟାନେଲ୍‌ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'।</translation>
+<translation id="1897488610212723051">ଡିଲିଟ୍ କରନ୍ତୁ</translation>
+<translation id="2009755455353575666">ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ</translation>
+<translation id="2038229918502634450">ଏକ ନୀତି ପରିବର୍ତ୍ତନକୁ ଧ୍ୟାନରେ ରଖି ହୋଷ୍ଟ ରିଷ୍ଟାର୍ଟ ହେଉଛି।</translation>
+<translation id="2078880767960296260">ହୋଷ୍ଟ ପ୍ରକ୍ରିୟା</translation>
+<translation id="20876857123010370">ଟ୍ରାକ୍‌ପ୍ୟାଡ୍ ମୋଡ୍</translation>
+<translation id="2198363917176605566"><ph name="PRODUCT_NAME" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ, ଆପଣଙ୍କୁ ’ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ’ ଅନୁମତି ଦେବା ଦରକାର ଯାହା ଦ୍ୱାରା ଏହି Macରେ ଥିବା ସ୍କ୍ରିନ୍‍ର ବିଷୟବସ୍ତୁ ରିମୋଟ୍ ମେସିନ୍‍କୁ ପଠାଯାଇ ପାରିବ।
+
+ଏହି ଅନୁମତି ଦେବାକୁ, ’ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ’ ପସନ୍ଦ ପେନ୍ ଖୋଲିବା ପାଇଁ ନିମ୍ନରେ ଥିବା '<ph name="BUTTON_NAME" />'ରେ କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ ଏହା ପରେ '<ph name="SERVICE_SCRIPT_NAME" />’ର ପାଖରେ ଥିବା ବକ୍ସକୁ ଚେକ୍ କରନ୍ତୁ।
+ଯଦି '<ph name="SERVICE_SCRIPT_NAME" />'କୁ ପୂର୍ବରୁ ଚେକ୍ କରାଯାଇଛି, ତେବେ ଏହାକୁ ଅନ୍‌ଚେକ୍ କରନ୍ତୁ ଏବଂ ଏହା ପରେ ପୁଣି ଚେକ୍ କରନ୍ତୁ।</translation>
+<translation id="225614027745146050">ସ୍ଵାଗତ</translation>
+<translation id="2320166752086256636">କୀବୋର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
+<translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="2366718077645204424">ହୋଷ୍ଟ ପାଖରେ ପହଞ୍ଚି ପାରିଲା ନାହିଁ। ଏହା ସମ୍ଭବତଃ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ନେଟ୍‍ୱାର୍କର କନଫିଗ୍‌ରେସନ୍ କାରଣରୁ ହୋଇଛି।</translation>
+<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ଶେଷଥର<ph name="RELATIVE_TIMESTAMP" /> ଅନ୍‌ଲାଇନ୍‌ରେ ଦେଖାଯାଇଥିଲେ।</translation>
+<translation id="2504109125669302160"><ph name="PRODUCT_NAME" />କୁ ’ଆକ୍ସେସିବିଲିଟୀ’ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="2509394361235492552"><ph name="HOSTNAME" /> ସହ ସଂଯୁକ୍ତ ଅଛି</translation>
+<translation id="2540992418118313681">ଆପଣ କ’ଣ ଦେଖିବାକୁ ଏବଂ ନିୟନ୍ତ୍ରଣ କରିବାକୁ ଏହି କମ୍ପ୍ୟୁଟର୍‌କୁ ଅନ୍ୟଏକ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ ସେୟାର୍‌ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="2579271889603567289">ହୋଷ୍ଟ କ୍ରାସ୍ ହୋଇଛି କିମ୍ୱା ଆରମ୍ଭ ହୋଇପାରିଲା ନାହିଁ।</translation>
+<translation id="2599300881200251572">ଏହି ସେବା Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ କ୍ଲାଏଣ୍ଟମାନଙ୍କ ଠାରୁ ଇନ୍‍କମିଂ ସଂଯୋଗକୁ ସକ୍ଷମ କରେ।</translation>
+<translation id="2647232381348739934">Chromoting ସେବା</translation>
+<translation id="2676780859508944670">କାର୍ଯ୍ୟରତ…</translation>
+<translation id="2699970397166997657">Chromoting</translation>
+<translation id="2758123043070977469">ପ୍ରମାଣିକରଣ ସମୟରେ ଏକ ସମସ୍ୟା ହୋଇଛି, ଦୟାକରି ପୁଣି ଲଗ୍‍ଇନ୍‍ କରନ୍ତୁ।</translation>
+<translation id="2803375539583399270">PIN ଲେଖନ୍ତୁ</translation>
+<translation id="2919669478609886916">ଆପଣ ବର୍ତ୍ତମାନ ଏହି ମେସିନ୍‌କୁ ଅନ୍ୟ ଜଣେ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ସହିତ ସେୟାର୍‌ କରୁଛନ୍ତି ଆପଣ କ’ଣ ସେୟାରିଂ ଜାରି ରଖିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="2939145106548231838">ହୋଷ୍ଟ କରିବାକୁ ପ୍ରମାଣିକୃତ କରନ୍ତୁ</translation>
+<translation id="3027681561976217984">ଟଚ୍ ମୋଡ୍</translation>
+<translation id="3106379468611574572">ରିମୋଟ୍ କମ୍ପ୍ୟୁଟର୍ ସଂଯୋଗ ଅନୁରୋଧଗୁଡ଼ିକୁ କୌଣସି ପ୍ରତିକ୍ରିୟା ଜଣାଉନାହିଁ। ଦୟାକରି ଏହା ଅନ୍‌ଲାଇନ୍ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="3150823315463303127">ନୀତି ପଢ଼ିବାରେ ହୋଷ୍ଟ ବିଫଳ ହେଲା।</translation>
+<translation id="3171922709365450819">ଏହି ଡିଭାଇସ୍ ଏହି କ୍ଲାଏଣ୍ଟ ଦ୍ୱାରା ସମର୍ଥିତ ନୁହେଁ କାରଣ ଏଥିପାଇଁ ତୃତୀୟ ପକ୍ଷ ପ୍ରାମାଣିକତାର ଆବଶ୍ୟକତା ରହିଛି।</translation>
+<translation id="3197730452537982411">ରିମୋଟ୍ ଡେସ୍କଟପ୍</translation>
+<translation id="324272851072175193">ଏହି ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଇମେଲ୍ କରନ୍ତୁ</translation>
+<translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହୁଁଛି।</translation>
+<translation id="3339299787263251426">ଇଣ୍ଟର୍ନେ‍ଟ୍ ବ୍ୟବହାର କରିବା ସମୟରେ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ସୁରକ୍ଷିତ ଭାବେ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
+<translation id="3385242214819933234">ଅବୈଧ ହୋଷ୍ଟ ମାଲିକ।</translation>
+<translation id="3423542133075182604">ସୁରକ୍ଷା କୀ ରିମୋଟିଂ ପ୍ରକ୍ରିୟା</translation>
+<translation id="3581045510967524389">ନେଟ୍‌ୱର୍କ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କର ଡିଭାଇସ୍ ଅନ୍‌ଲାଇନ୍ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="3596628256176442606">ଏହି ସେବା Chromoting କ୍ଲାଏଣ୍ଟମାନଙ୍କ ଠାରୁ ଇନ୍‌କମିଂ ସଂଯୋଗ ସକ୍ଷମ କରେ।</translation>
+<translation id="369442766917958684">ଅଫ୍‍ଲାଇନ୍ ଅଛି।</translation>
+<translation id="3695446226812920698">କିପରି ହେବ ତାହା ଜାଣନ୍ତୁ</translation>
+<translation id="3776024066357219166">ଆପଣଙ୍କର Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍‌ର ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଛି।</translation>
+<translation id="3870154837782082782">Google Inc.</translation>
+<translation id="3897092660631435901">ମେନୁ</translation>
+<translation id="3905196214175737742">ଅବୈଧ ହୋଷ୍ଟ ମାଲିକ ଡୋମେନ୍।</translation>
+<translation id="3931191050278863510">ହୋଷ୍ଟ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
+<translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
+<translation id="405887016757208221">ରିମୋଟ୍ କମ୍ପ୍ୟୁଟର୍‌ ଅବଧି ଆରମ୍ଭ କରିବାରେ ବିଫଳ ହେଲା ଯଦି ସମସ୍ୟା ଲାଗିରହେ, ତେବେ ଦୟାକରି ହୋଷ୍ଟକୁ ପୁଣି କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4060747889721220580">ଫାଇଲ୍ ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
+<translation id="4126409073460786861">ସେଟ୍‌ଅପ୍‌ ସମ୍ପୂର୍ଣ୍ଣ ହୋ‍ଇଗଲା ପରେ, ଏହି ପୃଷ୍ଠାକୁ ରିଫ୍ରେଶ୍‌ କରନ୍ତୁ, ଏହାପରେ ଆପଣ ନିଜର ଡିଭାଇସ୍‌ ବାଛି ଏବଂ ପିନ୍‌ ଲେଖି କମ୍ପ୍ୟୁଟର୍‌ ଆକ୍ସେସ୍‌ କରିପାରିବେ</translation>
+<translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" />ଭାବରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
+<translation id="4155497795971509630">କିଛି ଆବଶ୍ୟକୀୟ କମ୍ପୋନେଣ୍ଟ ମିଳୁନାହିଁ। ଦୟାକରି ସୁନିଶ୍ଚିତ କରନ୍ତୁ କି ଆପଣ ସଫ୍ଟୱେର୍‌ର ନବୀନତମ ସଂସ୍କରଣ ଅପ୍‌ଡେଟ୍ କରିଛନ୍ତି ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4176825807642096119">ଆକ୍ସେସ୍ କୋଡ୍</translation>
+<translation id="4227991223508142681">ହୋଷ୍ଟ ପ୍ରାବଧାନ ଉପଯୋଗୀତା</translation>
+<translation id="4240294130679914010">Chromoting ହୋଷ୍ଟ ଅନ୍‌ଇନ୍‌ଷ୍ଟଲର୍</translation>
+<translation id="4277736576214464567">ଆକ୍ସେସ୍ କୋଡ୍ ଅବୈଧ ଅଟେ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4281844954008187215">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
+<translation id="4405930547258349619">କୋର୍ ଲାଇବ୍ରେରୀ</translation>
+<translation id="443560535555262820">ଆକ୍ସେସିବିଲିଟୀ ପସନ୍ଦଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
+<translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
+<translation id="4513946894732546136">ମତାମତ</translation>
+<translation id="4563926062592110512">କ୍ଲାଏଣ୍ଟ ବିଚ୍ଛିନ୍ନ ହୋଇଛନ୍ତି: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4635770493235256822">ରିମୋଟ୍‌ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="4660011489602794167">କୀବୋର୍ଡ ଦେଖାନ୍ତୁ</translation>
+<translation id="4703799847237267011">ଆପଣଙ୍କର Chromoting ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଯାଇଛି।</translation>
+<translation id="4741792197137897469">ପ୍ରମାଣିକରଣ ବିଫଳ ହୋ‍ଇଛି। ଦୟାକରି, ପୁଣି Chromeରେ ସାଇନ୍‌ ଇନ୍‍ କରନ୍ତୁ।</translation>
+<translation id="4784508858340177375">X ସର୍ଭର୍ କ୍ରାସ୍ ହୋଇଛି କିମ୍ବା ଆରମ୍ଭ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
+<translation id="4798680868612952294">ମାଉସ୍ ବିକଳ୍ପ</translation>
+<translation id="4804818685124855865">ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
+<translation id="4808503597364150972"><ph name="HOSTNAME" /> ନିମନ୍ତେ ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ।</translation>
+<translation id="4812684235631257312">ହୋଷ୍ଟ</translation>
+<translation id="4867841927763172006">ପ୍ରିଣ୍ଟସ୍କ୍ରିନ୍‌ ପଠାନ୍ତୁ</translation>
+<translation id="4974476491460646149"><ph name="HOSTNAME" /> ପାଇଁ ସଂଯୋଗ ବନ୍ଦ ଅଛି</translation>
+<translation id="4985296110227979402">ରିମୋଟ୍‍ ଆକ୍ସେସ୍‌ ପାଇଁ ଆପଣ ପ୍ରଥମେ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ ସେଟ୍‍ ଅପ୍‍ କରିବା ଦରକାର</translation>
+<translation id="5064360042339518108"><ph name="HOSTNAME" /> (ଅଫ୍‌ଲାଇନ୍)</translation>
+<translation id="507204348399810022">ଆପଣ ନିଶ୍ଚିତ ରୂପେ<ph name="HOSTNAME" /> ପାଇଁ ଥିବା ରିମୋଟ୍ ସଂଯୋଗକୁ ଅକ୍ଷମ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
+<translation id="5170982930780719864">ଅବୈଧ ହୋଷ୍ଟ id।</translation>
+<translation id="5204575267916639804">FAQ</translation>
+<translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
+<translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
+<translation id="5308380583665731573">ସଂଯୋଗ କରନ୍ତୁ</translation>
+<translation id="5327248766486351172">ନାମ</translation>
+<translation id="533625276787323658">ଏହା ସହ ସଂଯୋଗ କରିବା ପାଇଁ କିଛି ନାହିଁ</translation>
+<translation id="5397086374758643919">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ ହୋଷ୍ଟ ଅନ୍‌ଇନ୍‌ଷ୍ଟଲର୍</translation>
+<translation id="5419418238395129586">ଗତଥର ଅନଲାଇନ୍ ଥିଲେ: <ph name="DATE" /></translation>
+<translation id="544077782045763683">ହୋଷ୍ଟ ବନ୍ଦ ହୋ‍ଇଯାଇଛି।</translation>
+<translation id="5601503069213153581">PIN</translation>
+<translation id="5708869785009007625">ଆପଣଙ୍କର ଡେସ୍କଟପ୍ ବର୍ତ୍ତମାନ <ph name="USER" />ଙ୍କ.ସହିତ ସେୟାର୍ କରାଯାଇଛି।</translation>
+<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
+<translation id="579702532610384533">ପୁନଃସଂଯୋଗ କରନ୍ତୁ</translation>
+<translation id="5810269635982033450">ଏକ ଟ୍ରାକ୍‌ପ୍ୟାଡ୍ ଭଳି ସ୍କ୍ରିନ୍ କାର୍ଯ୍ୟ କରେ</translation>
+<translation id="5823658491130719298">କମ୍ପ୍ୟୁଟର୍‌ରେ ଆପଣ ରିମୋଟ୍ ଭାବରେ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି, Chrome ଖୋଲନ୍ତୁ ଏବଂ <ph name="INSTALLATION_LINK" />କୁ ଯାଆନ୍ତୁ</translation>
+<translation id="5841343754884244200">ପ୍ରଦର୍ଶନ ବିକଳ୍ପ</translation>
+<translation id="6033507038939587647">କୀ-ବୋର୍ଡ୍ ବିକଳ୍ପସମୂହ</translation>
+<translation id="6040143037577758943">ବନ୍ଦ</translation>
+<translation id="6062854958530969723">ହୋଷ୍ଟ ପ୍ରାରମ୍ଭିକରଣ ବିଫଳ ହେଲା।</translation>
+<translation id="6099500228377758828">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ ସେବା</translation>
+<translation id="6122191549521593678">ଅନ୍‌ଲାଇନ୍</translation>
+<translation id="6178645564515549384">ରିମୋଟ୍ ଆସିଷ୍ଟାଣ୍ଟ ପାଇଁ ସ୍ଥାନୀୟ ମେସେଜିଂ ହୋଷ୍ଟ</translation>
+<translation id="618120821413932081">ୱିଣ୍ଡୋ ସହିତ ମେଳ କରିବାକୁ ରିମୋଟ୍ ରିଜୋଲ୍ୟୁସନ୍ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
+<translation id="6223301979382383752">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ପସନ୍ଦଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
+<translation id="6284412385303060032">କନ୍‌ସୋଲ୍ ଲଜିକ୍ ସ୍କ୍ରିନ୍‌ରେ ଚାଲୁଥିବା ହୋଷ୍ଟ୍, ଉପଯୋଗକର୍ତ୍ତା-ନିର୍ଦ୍ଦିଷ୍ଟ ସମୟ ଅବଧିରେ ଚାଲୁଥିବା ହୋଷ୍ଟ୍‌କୁ ସ୍ୱିଚ୍ କରି କର୍ଟନ୍ ମୋଡ୍‌କୁ ସମର୍ଥନ କରିବା ପାଇଁ ବନ୍ଦ କରିଛି।</translation>
+<translation id="6542902059648396432">ଏକ ସମସ୍ୟା ରିପୋର୍ଟ କରନ୍ତୁ…</translation>
+<translation id="6583902294974160967">ସମର୍ଥନ</translation>
+<translation id="6612717000975622067">Ctrl-Alt-Del ପଠାନ୍ତୁ</translation>
+<translation id="6654753848497929428">ସେୟାର୍‍ କରନ୍ତୁ</translation>
+<translation id="6681800064886881394">କପିରାଇଟ୍ 2013 Google Inc। ସର୍ବସତ୍ତ୍ଵ ସଂରକ୍ଷିତ।</translation>
+<translation id="677755392401385740">ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ ହୋଷ୍ଟ ଷ୍ଟାର୍ଟ ହେଲା: <ph name="HOST_USERNAME" />।</translation>
+<translation id="6939719207673461467">କୀ’ବୋର୍ଡ ଦେଖାନ୍ତୁ/ଲୁଚାନ୍ତୁ।</translation>
+<translation id="6963936880795878952">ରିମୋଟ୍‍ କମ୍ପ୍ୟୁଟର୍‌କୁ ସଂଯୋଗ ଅସ୍ଥାୟୀରୂପେ ଅବରୋଧ କରାଯାଇଛି କାରଣ କେହିଜଣେ ଏକ ଅବୈଧ ପିନ୍‌ରେ ଏହାକୁ ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିଲେ। ଦୟାକରି, ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
+<translation id="6985691951107243942">ଆପଣ କ"ଣ ନିଶ୍ଚିତ ଭାବରେ <ph name="HOSTNAME" />ରେ ରିମୋଟ୍ ସଂଯୋଗ ଅକ୍ଷମ କରିବାକୁ ଚାହୁଁଛନ୍ତି? ଯଦି ଆପଣ ଆପଣଙ୍କର ମନ ପରିବର୍ତ୍ତନ କରନ୍ତି, ତେବେ ସଂଯୋଗକୁ ପୁନଃସକ୍ଷମ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ସେହି କମ୍ପ୍ୟୁଟର୍‍କୁ ଯିବାକୁ ହେବ।</translation>
+<translation id="7019153418965365059">ଚିହ୍ନଟ ହୋଇନଥିବା ହୋଷ୍ଟ ତ୍ରୁଟି: <ph name="HOST_OFFLINE_REASON" />।</translation>
+<translation id="701976023053394610">ରିମୋଟ୍ ସହାୟତା</translation>
+<translation id="7026930240735156896">ରିମୋଟ୍‌ ଆକ୍ସେସ୍‌ ପାଇଁ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ ସେଟ୍‌ ଅପ୍‌ କରିବାକୁ ନିର୍ଦ୍ଦେଶାବଳୀ ଅନୁସରଣ କରନ୍ତୁ</translation>
+<translation id="7067321367069083429">ଏହି ସ୍କ୍ରିନ୍‌ ଏକ ସ୍ପର୍ଶ ସ୍କ୍ରିନ୍‍ ପରି କାର୍ଯ୍ୟ କରେ</translation>
+<translation id="7116737094673640201">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍‌କୁ ସ୍ଵାଗତ</translation>
+<translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="7312846573060934304">ହୋଷ୍ଟ ଅଫ୍‌ଲାଇନ୍‌ ଅଛି</translation>
+<translation id="7319983568955948908">ସେୟାର୍‍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7401733114166276557">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍</translation>
+<translation id="7434397035092923453">କ୍ଲାଏଣ୍ଟଙ୍କ ପାଇଁ ଆକ୍ସେସ୍ ଅଗ୍ରାହ୍ୟ ହୋଇଛି: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="7444276978508498879">କ୍ଲାଏଣ୍ଟ ସଂଯୁକ୍ତ କରାଗଲା: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="7526139040829362392">ଆକାଉଣ୍ଟ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
+<translation id="7628469622942688817">ଏହି ଡିଭାଇସ୍‌ରେ ମୋ ପିନ୍‌ ମନେରଖନ୍ତୁ</translation>
+<translation id="7649070708921625228">ସହାୟତା</translation>
+<translation id="7658239707568436148">ବାତିଲ୍</translation>
+<translation id="7665369617277396874">ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="7678209621226490279">ବାମ ପଟେ ଡକ୍ କରନ୍ତୁ</translation>
+<translation id="7693372326588366043">ହୋଷ୍ଟଗୁଡ଼ିକର ତାଲିକା ରିଫ୍ରେଶ୍‌ କରନ୍ତୁ</translation>
+<translation id="7714222945760997814">ଏହା ରିପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="7868137160098754906">ରିମୋଟ୍‍ କମ୍ପ୍ୟୁଟର୍‌ ପାଇଁ ଦୟାକରି ଆପଣଙ୍କର ପିନ୍‌ ଲେଖନ୍ତୁ.</translation>
+<translation id="7895403300744144251">ରିମୋଟ୍ କମ୍ପ୍ୟୁଟର୍‌ର ସୁରକ୍ଷା ନୀତି ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ରୁ ସଂଯୋଗଗୁଡ଼ିକ ପାଇଁ ଅନୁମତି ଦିଏ ନାହିଁ।</translation>
+<translation id="7936528439960309876">ଡାହାଣପଟକୁ ନିଅନ୍ତୁ</translation>
+<translation id="7970576581263377361">ପ୍ରାମାଣିକରଣ ବିଫଳ ହୋଇଛି। ଦୟାକରି Chromiumରେ ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
+<translation id="7981525049612125370">ରିମୋଟ୍ ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଯାଇଛି।</translation>
+<translation id="8038111231936746805">(ଡିଫଲ୍ଟ)</translation>
+<translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="8060029310790625334">ସହାୟତା କେନ୍ଦ୍ର</translation>
+<translation id="806699900641041263"><ph name="HOSTNAME" />କୁ ସଂଯୋଗ କରାଯାଉଛି</translation>
+<translation id="8073845705237259513">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କୁ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏକ Google ଆକାଉଣ୍ଟ ଯୋଗକରିବା ଆବଶ୍ୟକ ହେବ।</translation>
+<translation id="809687642899217504">ମୋର କମ୍ପ୍ୟୁଟର୍‌ଗୁଡ଼ିକ</translation>
+<translation id="8116630183974937060">ନେଟ୍‍ୱର୍କରେ ଏକ ତ୍ରୁଟି ଦେଖାଗଲା। ଦୟାକରି ଆପଣଙ୍କର ଡିଭାଇସ୍ ଅନ୍‌ଲାଇନ୍ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="8187079423890319756">କପିରାଇଟ୍ 2013 Chromium ପ୍ରବନ୍ଧକ। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ।</translation>
+<translation id="8295077433896346116"><ph name="PRODUCT_NAME" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କୁ ’ଆକ୍ସେସିବିଲିଟୀ’ ଅନୁମତି ଦେବା ଦରକାର ଯାହା ଦ୍ୱାରା ଏହି Macରେ ରିମୋଟ୍ ମେସିନରୁ ଇନପୁଟ୍ ଦିଆଯାଇ ପାରିବ।
+
+ଏହି ଅନୁମତିକୁ ମଞ୍ଜୁର କରିବା ପାଇଁ, ନିମ୍ନରେ ଥିବା <ph name="BUTTON_NAME" />ରେ କ୍ଲିକ୍ କରନ୍ତୁ। 'ଆକ୍ସେସିବିଲିଟୀ' ପସନ୍ଦ ପେନ୍ ଖୋଲିବା ପରେ <ph name="SERVICE_SCRIPT_NAME" /> ପାଖରେ ଥିବା ବାକ୍ସରେ ଚେକ୍ କରନ୍ତୁ।
+
+ଯଦି '<ph name="SERVICE_SCRIPT_NAME" />'କୁ ପୂର୍ବରୁ ଚେକ୍ କରାଯାଇଛି, ତେବେ ଏହାକୁ ଅନଚେକ୍ କରି ପୁଣି ଚେକ୍ କରନ୍ତୁ।</translation>
+<translation id="8383794970363966105">Chromoting ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଆପଣ ଗୋଟିଏ Google ଆକାଉଣ୍ଟ ଯୋଗକରିବାକୁ ଆବଶ୍ୟକ ପଡ଼ିବ।</translation>
+<translation id="8386846956409881180">ଅବୈଧ OAuth କ୍ରେଡେନ୍‌ସିଆଲ୍ ସହିତ ହୋଷ୍ଟ କନ୍‌ଫିଗର୍ ହୋଇଛି।</translation>
+<translation id="8397385476380433240"><ph name="PRODUCT_NAME" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="8406498562923498210">ଆପଣଙ୍କର Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ ବାତାବରଣରେ ଲଞ୍ଚ କରିବାକୁ ଏକ ସମୟ ଅବଧି ଚୟନ କରନ୍ତୁ। (ଧ୍ୟାନ ଦିଅନ୍ତୁ ଯେ କିଛି ସମୟ ଅବଧି ପ୍ରକାର, Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ ଏବଂ ସ୍ଥାନୀୟ କନ୍‌ସୋଲ୍‌ରେ ଏକା ସଙ୍ଗରେ ଚାଲିବା ସୁବିଧାକୁ ହୁଏତ ସମର୍ଥନ କରିନପାରେ।)</translation>
+<translation id="8428213095426709021">ସେଟିଂସ୍</translation>
+<translation id="8445362773033888690">Google Play ଷ୍ଟୋର୍‌ରେ ଦେଖନ୍ତୁ</translation>
+<translation id="8509907436388546015">ଡେସ୍କଟପ୍‌ ଏକତ୍ରିକରଣ ପ୍ରକ୍ରିୟା</translation>
+<translation id="8513093439376855948">ରିମୋଟ୍‍ ହୋଷ୍ଟ ପରିଚାଳନା କରିବା ପାଇଁ ମୂଳ ମେସେଜିଂ ହୋଷ୍ଟ</translation>
+<translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
+<translation id="858006550102277544">ମନ୍ତବ୍ୟ</translation>
+<translation id="8743328882720071828">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‍କୁ ଦେଖିବା ଏବଂ ନିୟନ୍ତ୍ରଣ କରିବାକୁ ଆପଣ କ’ଣ
+<ph name="CLIENT_USERNAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
+<translation id="8747048596626351634">ସମୟ ଅବଧି କ୍ରାସ୍ ହୋଇଗଲା କିମ୍ବା ଆରମ୍ଭ ହେଲା ନାହିଁ। ଯଦି ~/.chrome-ରିମୋଟ୍-ଡେସ୍କଟପ୍-ସମୟ ଅବଧି ରିମୋଟ୍ କମ୍ପ୍ୟୁଟର୍‌ରେ ବିଦ୍ୟମାନ ଥାଏ, ତେବେ ଏହା ଡେସ୍କଟପ୍ ବାତାବରଣ କିମ୍ବା ୱିଣ୍ଡୋ ପରିଚାଳକ ପରି ଲମ୍ବା-ସମୟ ଚାଲୁଥିବା ଅଗ୍ରଭୂମି ପ୍ରକ୍ରିୟା ଆରମ୍ଭ କରୁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
+<translation id="8804164990146287819">ଗୋପନୀୟତା ନୀତି</translation>
+<translation id="9111855907838866522">ଆପଣଙ୍କର ରିମୋଟ୍‍ ଡିଭାଇସ୍‌ ସହିତ ଆପଣ ସଂଯୋଜିତ ଅଛନ୍ତି। ମେନୁ ଖୋଲିବାକୁ ଦୟାକରି ଚାରଟି ଆଙ୍ଗୁଠିରେ ସ୍କ୍ରିନ୍‌କୁ ଟାପ୍‌ କରନ୍ତୁ।</translation>
+<translation id="9126115402994542723">ଏହି ଡିଭାଇସ୍‍ରୁ ଏହି ହୋଷ୍ଟ ସହ ସଂଯୋଗ କରିବା ସମୟରେ ପୁଣି PIN ପଚାରନ୍ତୁ ନାହିଁ।</translation>
+<translation id="916856682307586697">ଡିଫଲ୍ଟ XSession ଲଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="9187628920394877737"><ph name="PRODUCT_NAME" />କୁ ’ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ’ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="9213184081240281106">ଅବୈଧ ହୋଷ୍ଟ କନ୍‌ଫିଗ୍‌ରେସନ୍।</translation>
+<translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
+<translation id="985602178874221306">Chromium ଲେଖକ</translation>
+<translation id="992215271654996353"><ph name="HOSTNAME" /> (<ph name="DATE_OR_TIME" />ରେ ଗତଥର ଅନ୍‌ଲାଇନ୍ ଥିଲେ)</translation>
 </translationbundle>

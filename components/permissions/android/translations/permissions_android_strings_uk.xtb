@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="2077832278056815832">Закрийте спливаючі чати або накладання з інших додатків. Потім повторіть спробу.</translation>
+<translation id="2359808026110333948">Продовжити</translation>
+<translation id="2416359993254398973">Chrome потрібні дозволи, щоб використовувати камеру на цьому сайті.</translation>
+<translation id="2987449669841041897">Цей сайт не може запитувати у вас дозвіл</translation>
+<translation id="557283862590186398">Chrome потрібні дозволи, щоб використовувати мікрофон на цьому сайті.</translation>
+<translation id="5860491529813859533">Увімкнути</translation>
+<translation id="6092062101542170135">Щоб продовжити, увімкніть NFC в налаштуваннях Android</translation>
+<translation id="6393863479814692971">Chrome потрібні дозволи, щоб використовувати камеру та мікрофон на цьому сайті.</translation>
+<translation id="6697947395630195233">Chrome потрібен доступ до місцезнаходження, щоб повідомляти ваші геодані цьому сайту.</translation>
+<translation id="7134415045456331657">Chrome потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення.</translation>
 </translationbundle>

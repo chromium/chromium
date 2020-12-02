@@ -1,4 +1,66 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1135328998467923690">Paketeak ez du balio: "<ph name="ERROR_CODE" />".</translation>
+<translation id="1140871961407805696">Atzeko kamera</translation>
+<translation id="1196338895211115272">Ezin izan da gako pribatua esportatu.</translation>
+<translation id="1420684932347524586">Ezin izan da sortu ausazko RSA gako pribatua.</translation>
+<translation id="1445572445564823378">Luzapen hau <ph name="PRODUCT_NAME" /> moteltzen ari da. Hori desgaitzea gomendatzen dizugu <ph name="PRODUCT_NAME" />-ren errendimendua leheneratzeko..</translation>
+<translation id="1468038450257740950">WebGL ez da bateragarria.</translation>
+<translation id="1803557475693955505">Ezin izan da atzeko planoko orria ("<ph name="BACKGROUND_PAGE" />") kargatu.</translation>
+<translation id="2159915644201199628">Ezin izan da deskodetu irudia: "<ph name="IMAGE_NAME" />"</translation>
+<translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
+<translation id="2576842806987913196">Badago izen hori duen CRX fitxategi bat.</translation>
+<translation id="2785530881066938471">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia edukiaren scripta dela-eta. Ez du erabiltzen UTF-8 kodeketa.</translation>
+<translation id="2903070246402204397">Administratzaileak <ph name="EXTENSION_NAME" /> blokeatu du (luzapenaren IDa: "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
+<translation id="2988488679308982380">Ezin izan da paketea instalatu: "<ph name="ERROR_CODE" />"</translation>
+<translation id="3115238746683532089"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
+<translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>
+<translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
+<translation id="3302709122321372472">Ezin izan da kargatu script-edukien "<ph name="RELATIVE_PATH" />" css txantiloia.</translation>
+<translation id="3369521687965833290">Ezin da despaketatu luzapena. Luzapena segurtasunez despaketatzeko, zure profilaren direktoriorako bide bat egon behar du, bideak unitate baten letrarekin hasi behar du eta ezin du elkargunerik, muntatze-punturik edo esteka sinbolikorik eduki. Ez duzu halako biderik profilean.</translation>
+<translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
+<translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
+<translation id="3561217442734750519">Gako pribatuak baliozko bide-izena izan behar du.</translation>
+<translation id="388442998277590542">Ezin izan da "<ph name="OPTIONS_PAGE" />" aukera-orria kargatu.</translation>
+<translation id="3984413272403535372">Errore bat gertatu da luzapena sinatzean.</translation>
+<translation id="39964277676607559">Ezin izan da kargatu edukiaren scriptaren "<ph name="RELATIVE_PATH" />" javascript bidea.</translation>
+<translation id="4115165561519362854"><ph name="EXTENSION_NAME" /> luzapenaren bertsioak gutxienez <ph name="EXTENSION_VERSION" /> izatea behar du makinaren administratzaileak. Ezin da gaitu eguneratzen ez den arte (bertsio horretara edo berriago batera).</translation>
+<translation id="4233778200880751280">Ezin izan da "<ph name="ABOUT_PAGE" />" orria kargatu.</translation>
+<translation id="471800408830181311">Ezin izan da gako pribatua eman.</translation>
+<translation id="4811956658694082538">Ezin izan da paketea instalatu utilitate-prozesuak huts egin duelako. Berrabiarazi Chrome eta saiatu berriro.</translation>
+<translation id="4988792151665380515">Ezin izan da gako publikoa esportatu.</translation>
+<translation id="5026754133087629784">Web-ikuspegia: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5098647635849512368">Ezin da aurkitu bide absolutu bat paketatu nahi den direktoriorako.</translation>
+<translation id="5356315618422219272">Aplikazio-ikuspegia: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5436430103864390185">Ez dira onartzen formadun leihoak.</translation>
+<translation id="5456409301717116725">Luzapen honek "<ph name="KEY_PATH" />" karaktere-fitxategia du. Ziur aski ez duzu hori egin nahi.</translation>
+<translation id="5486326529110362464">Gako pribatua idatzi behar da.</translation>
+<translation id="5972529113578162692">Gailuaren administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin da desinstalatu.</translation>
+<translation id="6027032947578871493"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
+<translation id="6068932090455285721"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /></translation>
+<translation id="6143635259298204954">Ezin da luzapenaren paketea ireki. Luzapenen paketeak segurtasunez irekitzeko, esteka sinbolikorik ez duen profil-direktorio baterako bide-izena egon behar da. Profilak ez du horrelako bide-izenik.</translation>
+<translation id="6322279351188361895">Ezin izan da irakurri gako pribatua.</translation>
+<translation id="6391538222494443604">Sarrerako direktorioa falta da.</translation>
+<translation id="641087317769093025">Ezin izan da luzapena deskonprimatu</translation>
+<translation id="6542618148162044354">Gailu baterako edo gehiagotarako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
+<translation id="657064425229075395">Ezin izan da kargatu atzeko planoko "<ph name="BACKGROUND_SCRIPT" />" scripta.</translation>
+<translation id="6580950983454333167"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_NAME" /> produktua (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
+<translation id="677806580227005219">MIME kudeatzailea: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
+<translation id="6840444547062817500">Luzapenak gehiegitan kargatu du berriro bere burua.</translation>
+<translation id="7003844668372540529"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
+<translation id="7068383018033524534">Manifestu-fitxategiak ez du balio</translation>
+<translation id="7217838517480956708">Gailu honen administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin izango da kendu edo aldatu.</translation>
+<translation id="7612608473764576263">Gako pribatuak balio duen formatu bat eduki behar du (PKCS#8 formatua eta PEM kodetzea dituen RSA gakoa).</translation>
+<translation id="7939686037314084444">Ez da kargatu luzapena. Baliteke sare-eskaerak atzemateko gai ez izatea.</translation>
+<translation id="7972881773422714442">Aukerak: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8035920974645200807">Aurreko kamera</translation>
+<translation id="8047248493720652249">Luzapenak ezin izan dio izena jarri "<ph name="ATTEMPTED_FILENAME" />" deskargari, beste luzapen batek (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" fitxategi-izena jarri diolako.</translation>
+<translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (<ph name="VENDOR_NAME" />)</translation>
+<translation id="8517576857589387417">Manifestu-fitxategia falta da edo ezin da irakurri</translation>
+<translation id="8636666366616799973">Paketeak ez du balio. Xehetasunak: "<ph name="ERROR_MESSAGE" />".</translation>
+<translation id="8761756413268424715">Gailuetako baterako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
+<translation id="8885905466771744233">Adierazitako luzapenak gako pribatua zuen lehendik ere. Jarraitzeko, berrerabili edo ezabatu gako hori.</translation>
+<translation id="907841381057066561">Ezin izan da sortu behin behineko zip fitxategia paketatu bitartean</translation>
+<translation id="941543339607623937">Gako pribatu baliogabea.</translation>
 </translationbundle>

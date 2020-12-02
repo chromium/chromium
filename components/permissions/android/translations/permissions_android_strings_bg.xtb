@@ -1,4 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="2077832278056815832">Затворете всички балончета и наслагвания от други приложения. След това опитайте отново.</translation>
+<translation id="2359808026110333948">Напред</translation>
+<translation id="2416359993254398973">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт.</translation>
+<translation id="2987449669841041897">Този сайт не може да извежда запитвания за разрешения</translation>
+<translation id="557283862590186398">Chrome се нуждае от разрешение за достъп до микрофона ви за този сайт.</translation>
+<translation id="5860491529813859533">Включване</translation>
+<translation id="6092062101542170135">За да продължите, включете NFC в настройките на Android</translation>
+<translation id="6393863479814692971">Chrome се нуждае от разрешение за достъп до камерата и микрофона ви за този сайт.</translation>
+<translation id="6697947395630195233">Chrome се нуждае от достъп до данните за местоположението ви, за да ги сподели с този сайт.</translation>
+<translation id="7134415045456331657">Chrome се нуждае от разрешение за достъп до камерата ви, за да създаде триизмерна карта на заобикалящата ви среда.</translation>
 </translationbundle>

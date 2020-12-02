@@ -1,4 +1,81 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1282031177488366470">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
+<translation id="1479202195792305274">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chrome तुमचे पासवर्ड तपासू शकते.</translation>
+<translation id="1504372625950710826">Chrome ला अपडेट तपासता आली नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पाहा.</translation>
+<translation id="1682483655351012182">तुमचा Chrome डेटा सिंक करा</translation>
+<translation id="1759842336958782510">Chrome</translation>
+<translation id="1917964099031477364">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chrome आणि या डिव्हाइसवरील इतर Google अ‍ॅप्समधून काढून टाकला जाईल.</translation>
+<translation id="2009224836393115614">Chrome ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
+<translation id="2147651015520127414"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chrome ने पडताळले.</translation>
+<translation id="2199719347983604670">Chrome सिंक मधील डेटा</translation>
+<translation id="2347208864470321755">हे वैशिष्‍ट्य सुरू असते तेव्‍हा, Google Translate चा वापर करून Chrome इतर भाषांमध्‍ये लिहिलेल्‍या पृष्‍ठांचे भाषांतर करण्‍यासाठी ऑफर करेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्‍या<ph name="END_LINK" /></translation>
+<translation id="2415682770504543561">Chrome ला तुमचे डीफॉल्ट बनवा</translation>
+<translation id="2574249610672786438">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
+<translation id="2576431527583832481">Chrome आता आणखी सर्वोत्तम झाले आहे! नवीन आवृत्ती उपलब्ध आहे.</translation>
+<translation id="257708665678654955">पुढील वेळी Google Chrome ने या साइटवरील <ph name="LANGUAGE_NAME" /> पेजचे भाषांतर करण्याची ऑफर द्यावी असे तुम्हाला वाटते?</translation>
+<translation id="2695886661449553974">Chrome ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="2732745070297234559">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
+<translation id="2919738076569633423">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK_TOS" />सेवा अटी<ph name="END_LINK_TOS" /> यांना सहमती दर्शवता.</translation>
+<translation id="3030414234702425231">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chrom डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल</translation>
+<translation id="3148688391461398285">आपल्या स्थानाच्या आधारावर Chrome मध्ये उत्कृष्ट अनुभव मिळवा.</translation>
+<translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
+<translation id="3173834708294760622">Google Chrome पेज</translation>
+<translation id="3196546062792660320">तुमची खाती वेबवर आणून Chrome तुमचा वेळ वाचविते. तुम्ही सेटिंग्जमध्ये खाती जोडू किंवा काढू शकता.</translation>
+<translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
+<translation id="3345341804167540816">Chrome सर्वत्र वापरा</translation>
+<translation id="3522659714780527202">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
+<translation id="3533694711092285624">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते.</translation>
+<translation id="3706101708757577809">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chrome वापरू शकता.</translation>
+<translation id="384394811301901750">Google Chrome आत्ता तुमचा कॅमेरा वापरू शकत नाही</translation>
+<translation id="3980220367029651214">तुम्ही संकालित केलेली खाती <ph name="USER_EMAIL1" /> वरून <ph name="USER_EMAIL2" /> वर स्विच करीत आहात. तुमचा विद्यमान Chrome डेटा <ph name="DOMAIN" /> द्वारे व्यवस्थापित केला आहे. हे तुमचा डेटा या डिव्हाइस वरून हटवेल परंतु तुमचा डेटा <ph name="USER_EMAIL1" /> मध्ये असेल.</translation>
+<translation id="3988789688219830639">Google Chrome ला तुमच्या फोटो आणि व्हिडिओ ॲक्सेस नाही. iOS सेटिंग्ज &gt; गोपनीयता &gt; फोटो  ॲक्सेस सक्षम करा.</translation>
+<translation id="4099578267706723511">वापर आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chrome अधिक चांगले करण्यास मदत करा.</translation>
+<translation id="415767770115540173">आपल्या स्थानावर आधारित Chrome मध्ये उत्कृष्ट Google अनुभव मिळवा.</translation>
+<translation id="417201473131094001">Chrome कॅनरी वर सपोर्ट नाही</translation>
+<translation id="424864128008805179">Chrome मधून साइन आउट करायचे?</translation>
+<translation id="4249068189593983585">Chrome टीप. आणखी टॅब पर्यायांसाठी, तुमच्या स्क्रीनच्या तळाशी किंवा सर्वात वर असलेल्या टूलबारवरील टॅब दाखवा बटणाला स्पर्श करा आणि धरून ठेवा.</translation>
+<translation id="4523886039239821078">Chrome क्रॅश होण्याचे कारण काही ॲड-ऑन आहेत. कृपया ती अनइंस्टॉल करा:</translation>
+<translation id="4633328489441962921">Chrome ला अपडेट तपासता आले नाहीत</translation>
+<translation id="4698415050768537821">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
+<translation id="484033449593719797">Chrome बीटा वर सपोर्ट नाही</translation>
+<translation id="5030102366287574140">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते.</translation>
+<translation id="5162467219239570114">Chrome कालबाह्य झाले आहे. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> मध्ये अपडेट उपलब्ध नसल्यास, तुमचे डिव्हाइस यापुढे Chrome च्या नवीन आवृत्तींना सपोर्ट करत नाही याची शक्यता आहे.</translation>
+<translation id="5389212809648216794">Google Chrome तुमचा कॅमेरा वापरू शकत नाही कारण दुसरे ॲप्स सध्या तो वापरत आहे.</translation>
+<translation id="5639704535586432836">सेटिंग्ज &gt; गोपनीयता &gt; कॅमेरा &gt; Google Chrome उघडा आणि कॅमेरा सुरू करा.</translation>
+<translation id="5642200033778930880">विभाजित दृश्य मोडमध्ये Google Chrome तुमचा कॅमेरा वापरू शकत नाही</translation>
+<translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">ऑफलाइन, Chrome अपडेट तपासू शकत नाही</translation>
+<translation id="5854621639439811139">Chrome टीप. काही बटणे आता तुमच्या स्क्रीनच्या तळाशी आहेत, जसे की मागे, पुढे आणि शोध.</translation>
+<translation id="6036420186814142909">Google Chrome कडे अशी वैशिष्ट्ये आहेत जी तुम्हाला तुमचा इंटरनेट डेटा आणि तुम्ही किती द्रुतपणे वेबपृष्ठे लोड करण्यात सक्षम होते हे व्यवस्थापित करण्यात मदत करतात.
+<ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="6573431926118603307">आपल्या अन्य डिव्हाइसेसवर तुम्ही Chrome मध्ये उघडलेले टॅब येथे दिसतील.</translation>
+<translation id="6600954340915313787">Chrome वर कॉपी केले</translation>
+<translation id="6648150602980899529"><ph name="DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यासह तुम्ही साइन इन करत आहात आणि त्याच्या ॲडमिनिस्ट्रेटरला तुमच्या Chrome डेटाचे नियंत्रण देत आहात. तुमचा डेटा कायमचा या खात्यामध्ये असेल. Chrome मधून साइन आउट केल्याने तुमचा डेटा या डिव्हाइस वरून हटवला जाईल परंतु तो तुमच्या Google खात्यामध्ये स्टोअर केलेला असेल.</translation>
+<translation id="6676840375528380067">या डिव्हाइसवरून तुमचा Chrom डेटा साफ करायचा?</translation>
+<translation id="6822673484890854830">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="7124339256045485976">Chrome अप टू डेट ठेवा</translation>
+<translation id="7161390184744336561">Google Chrome कालबाह्य झाले आहे</translation>
+<translation id="7165736900384873061">Google Chrome QR स्कॅनर वापरणे आरंभ करा</translation>
+<translation id="7172660552945675509">टीप: <ph name="BEGIN_LINK" />Chrome तुमच्या डॉकमध्ये हलवा<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">तुमच्या पासवर्डच्या परवानगी दिलेल्या ॲक्सेसची खात्री करण्यासाठी Chrome फेस आयडी वापरते.</translation>
+<translation id="7261678641327190792">Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
+<translation id="7265369419224458312">तुम्ही तुमच्या कॉंप्युटरवर उघडलेल्‍या टॅबमध्‍ये, थेट येथून ॲक्सेस करा.
+तुमच्या कॉंप्युटरवर फक्त Chrome उघडा, मेनूवर जा आणि "Chrome वर साइन इन करा…" निवडा</translation>
+<translation id="7272930098487145294">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chrome ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
+<translation id="7400722733683201933">Google Chrome बद्दल</translation>
+<translation id="756809126120519699">Chrome डेटा साफ केला</translation>
+<translation id="7626032353295482388">Chrome मध्ये स्वागत आहे</translation>
+<translation id="7662994914830945754">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
+<translation id="766361182512894255">तुमचा पासवर्ड डेटा भंगामध्ये उघड झाला होता. Chrome आता पासवर्ड बदलण्याची शिफारस करते.</translation>
+<translation id="7698568245838009292">Chrome ला कॅमेरा ॲक्सेस करायचा आहे</translation>
+<translation id="7855730255114109580">Google Chrome अपडेट झाले आहे</translation>
+<translation id="8045508249136869751">Chrome ला तुमचे डीफॉल्ट बनवण्यासाठी, सेटिंग्ज उघडा, डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा आणि Chrome निवडा.</translation>
+<translation id="8160472928944011082">Chrome अपडेट करू शकत नाही</translation>
+<translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
+<translation id="840168496893712993">काही ॲड-ऑनमुळे Chrome क्रॅश होऊ शकते. कृपया ते अनइंस्टॉल करून पहा.</translation>
+<translation id="8459495907675268833">निवडलेला डेटा Chrome आणि सिंक केलेल्या डिव्हाइसमधून काढला गेला आहे. तुमच्या Google खात्यामध्ये history.google.com येथे ब्राउझिंग इतिहासाची Google च्या इतर सेवांमधील शोध आणि ॲक्टिव्हिटी यासारखी इतर स्वरूपे असू शकतात.</translation>
+<translation id="8540666473246803645">Google Chrome</translation>
+<translation id="9135668017386497357">तुम्ही Chrome ला तुमचे स्थान जाणून घेण्याची परवानगी दिल्यास, Chrome हे तुमच्या डीफॉल्ट शोध इंजिनला आणि तुम्ही अनुमती दिलेल्या कोणत्याही साइटला पाठवते. साइटकडे तुम्हाला दाखवण्यासाठी जवळपासची दुकाने किंवा बातम्या यासारखी स्थानिक माहिती असल्यास, त्या कदाचित तुमचे स्थान मागू शकतात.</translation>
 </translationbundle>
