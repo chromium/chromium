@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/lacros/feedback_util.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -37,16 +36,6 @@ constexpr char kHistogramsFilename[] = "lacros_histograms.txt";
 constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 constexpr char kDefaultDownloadsPath[] = "/home/chronos/user/MyFiles/Downloads";
 
-// Overrides the directory specified by |key| but does not try to create the
-// directory if it does not exist. On device, the paths all exist already. For
-// tests and the linux emulator, we don't want to pollute the file system.
-void OverridePath(int key, const base::FilePath& path) {
-  // Ash should only send absolute paths.
-  CHECK(path.IsAbsolute()) << path;
-  base::PathService::OverrideAndCreateIfNeeded(key, path, /*is_absolute=*/true,
-                                               /*create=*/false);
-}
-
 }  // namespace
 
 LacrosChromeServiceDelegateImpl::LacrosChromeServiceDelegateImpl() = default;
@@ -57,34 +46,21 @@ void LacrosChromeServiceDelegateImpl::OnInitialized(
     const crosapi::mojom::LacrosInitParams& init_params) {
   if (init_params.default_paths) {
     // Set up default paths with values provided by ash.
-    OverridePath(chrome::DIR_USER_DOCUMENTS,
-                 init_params.default_paths->documents);
-    OverridePath(chrome::DIR_DEFAULT_DOWNLOADS,
-                 init_params.default_paths->downloads);
-    // "Safe" just means not configured by the user. On other platforms, the
-    // user can configure their default download directory to unsafe paths
-    // outside of chrome's control, but Chrome OS does not allow arbitrary
-    // path selection.
-    OverridePath(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
-                 init_params.default_paths->downloads);
+    chrome::SetLacrosDefaultPaths(init_params.default_paths->documents,
+                                  init_params.default_paths->downloads);
   } else {
     // On older ash, provide some defaults.
     // TODO(https://crbug.com/1150702): Remove this block after Lacros drops
     // support for Chrome OS M89.
     if (base::SysInfo::IsRunningOnChromeOS()) {
       // On device, use /home/chronos/user paths.
-      OverridePath(chrome::DIR_USER_DOCUMENTS, base::FilePath(kMyFilesPath));
-      OverridePath(chrome::DIR_DEFAULT_DOWNLOADS,
-                   base::FilePath(kDefaultDownloadsPath));
-      OverridePath(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
-                   base::FilePath(kDefaultDownloadsPath));
+      chrome::SetLacrosDefaultPaths(base::FilePath(kMyFilesPath),
+                                    base::FilePath(kDefaultDownloadsPath));
     } else {
       // For developers on Linux desktop, just pick reasonable defaults.
       base::FilePath home_dir = base::GetHomeDir();
-      OverridePath(chrome::DIR_USER_DOCUMENTS, home_dir.Append("Documents"));
-      OverridePath(chrome::DIR_DEFAULT_DOWNLOADS, home_dir.Append("Downloads"));
-      OverridePath(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
-                   home_dir.Append("Downloads"));
+      chrome::SetLacrosDefaultPaths(home_dir.Append("Documents"),
+                                    home_dir.Append("Downloads"));
     }
   }
 }

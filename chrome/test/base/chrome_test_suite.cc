@@ -35,6 +35,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "chrome/common/chrome_paths_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(OS_MAC)
@@ -107,15 +108,13 @@ void ChromeTestSuite::Initialize() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The lacros binary receives certain paths from ash very early in startup and
-  // overrides the path service entries. Simulate that behavior here. See
-  // chrome_paths_lacros.cc for details. The specific path doesn't matter as
-  // long as it exists.
+  // The lacros binary receives certain paths from ash very early in startup.
+  // Simulate that behavior here. See chrome_paths_lacros.cc for details. The
+  // specific path doesn't matter as long as it exists.
   CHECK(scoped_temp_dir_.CreateUniqueTempDir());
   base::FilePath temp_path = scoped_temp_dir_.GetPath();
-  base::PathService::Override(chrome::DIR_USER_DOCUMENTS, temp_path);
-  base::PathService::Override(chrome::DIR_DEFAULT_DOWNLOADS, temp_path);
-  base::PathService::Override(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, temp_path);
+  chrome::SetLacrosDefaultPaths(/*documents_dir=*/temp_path,
+                                /*downloads_dir=*/temp_path);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

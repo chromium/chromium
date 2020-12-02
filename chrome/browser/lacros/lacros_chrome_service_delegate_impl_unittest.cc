@@ -5,10 +5,9 @@
 #include "chrome/browser/lacros/lacros_chrome_service_delegate_impl.h"
 
 #include "base/files/file_path.h"
-#include "base/path_service.h"
-#include "base/test/scoped_path_override.h"
 #include "base/test/scoped_running_on_chromeos.h"
-#include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_internal.h"
+#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,17 +22,20 @@ class LacrosChromeServiceDelegateImplTest : public testing::Test {
       const LacrosChromeServiceDelegateImplTest&) = delete;
   ~LacrosChromeServiceDelegateImplTest() override = default;
 
+  // testing::Test:
+  void SetUp() override {
+    ASSERT_TRUE(chrome::GetUserDocumentsDirectory(&old_documents_dir_));
+    ASSERT_TRUE(chrome::GetUserDownloadsDirectory(&old_downloads_dir_));
+  }
+
+  void TearDown() override {
+    chrome::SetLacrosDefaultPaths(old_documents_dir_, old_downloads_dir_);
+  }
+
  private:
   base::test::ScopedRunningOnChromeOS running_on_chromeos_;
-  // Ensure we restore the previous paths for subsequent tests. We don't
-  // actually use these paths, so just point them at /tmp to avoid
-  // ScopedPathOverride from creating unnecessary temp directories.
-  base::ScopedPathOverride documents_override_{chrome::DIR_USER_DOCUMENTS,
-                                               base::FilePath("/tmp")};
-  base::ScopedPathOverride downloads_override_{chrome::DIR_DEFAULT_DOWNLOADS,
-                                               base::FilePath("/tmp")};
-  base::ScopedPathOverride downloads_safe_override_{
-      chrome::DIR_DEFAULT_DOWNLOADS_SAFE, base::FilePath("/tmp")};
+  base::FilePath old_documents_dir_;
+  base::FilePath old_downloads_dir_;
 };
 
 TEST_F(LacrosChromeServiceDelegateImplTest, DefaultPaths) {
@@ -47,13 +49,12 @@ TEST_F(LacrosChromeServiceDelegateImplTest, DefaultPaths) {
   init_params->default_paths = std::move(default_paths);
   delegate_impl.OnInitialized(*init_params);
 
-  // PathService has the new values.
+  // Paths are overridden. We test via the chrome functions because
+  // PathService::Get() requires some paths to exist on disk.
   base::FilePath path;
-  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &path);
+  ASSERT_TRUE(chrome::GetUserDocumentsDirectory(&path));
   EXPECT_EQ(path.AsUTF8Unsafe(), "/test/documents");
-  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &path);
-  EXPECT_EQ(path.AsUTF8Unsafe(), "/test/downloads");
-  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, &path);
+  ASSERT_TRUE(chrome::GetUserDownloadsDirectory(&path));
   EXPECT_EQ(path.AsUTF8Unsafe(), "/test/downloads");
 }
 
@@ -67,13 +68,12 @@ TEST_F(LacrosChromeServiceDelegateImplTest, DefaultPathsWithLegacyAsh) {
   ASSERT_TRUE(init_params->default_paths.is_null());
   delegate_impl.OnInitialized(*init_params);
 
-  // PathService has reasonable values.
+  // Paths are overridden. We test via the chrome functions because
+  // PathService::Get() requires some paths to exist on disk.
   base::FilePath path;
-  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &path);
+  ASSERT_TRUE(chrome::GetUserDocumentsDirectory(&path));
   EXPECT_EQ(path.AsUTF8Unsafe(), "/home/chronos/user/MyFiles");
-  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &path);
-  EXPECT_EQ(path.AsUTF8Unsafe(), "/home/chronos/user/MyFiles/Downloads");
-  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE, &path);
+  ASSERT_TRUE(chrome::GetUserDownloadsDirectory(&path));
   EXPECT_EQ(path.AsUTF8Unsafe(), "/home/chronos/user/MyFiles/Downloads");
 }
 
