@@ -49,7 +49,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Signin" units="ms"
-    expires_after="2020-12-06">
+    expires_after="2021-08-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on error screens during signin.</summary>
