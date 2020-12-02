@@ -122,10 +122,6 @@ RenderViewHostDelegateView* RenderWidgetHostDelegate::GetDelegateView() {
   return nullptr;
 }
 
-bool RenderWidgetHostDelegate::OnUpdateDragCursor() {
-  return false;
-}
-
 bool RenderWidgetHostDelegate::IsWidgetForMainFrame(RenderWidgetHostImpl*) {
   return false;
 }

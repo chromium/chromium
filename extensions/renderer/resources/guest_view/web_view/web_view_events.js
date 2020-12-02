@@ -72,10 +72,6 @@ WebViewEvents.EVENTS = {
     fields: ['defaultPromptText', 'messageText', 'messageType', 'url'],
     handler: 'handleDialogEvent'
   },
-  'droplink': {
-    evt: CreateEvent('webViewInternal.onDropLink'),
-    fields: ['url']
-  },
   'exit': {
     evt: CreateEvent('webViewInternal.onExit'),
     fields: ['processId', 'reason']

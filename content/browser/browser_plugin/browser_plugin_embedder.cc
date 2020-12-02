@@ -5,20 +5,17 @@
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
 
 #include "base/bind.h"
-#include "content/browser/bad_message.h"
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "content/public/browser/render_view_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace content {
 
 BrowserPluginEmbedder::BrowserPluginEmbedder(WebContentsImpl* web_contents)
-    : web_contents_(web_contents), guest_drag_ending_(false) {}
+    : web_contents_(web_contents) {}
 
 BrowserPluginEmbedder::~BrowserPluginEmbedder() = default;
 
@@ -26,19 +23,6 @@ BrowserPluginEmbedder::~BrowserPluginEmbedder() = default;
 BrowserPluginEmbedder* BrowserPluginEmbedder::Create(
     WebContentsImpl* web_contents) {
   return new BrowserPluginEmbedder(web_contents);
-}
-
-bool BrowserPluginEmbedder::DragEnteredGuest(BrowserPluginGuest* guest) {
-  guest_dragging_over_ = guest->AsWeakPtr();
-  return guest_started_drag_.get() == guest;
-}
-
-void BrowserPluginEmbedder::DragLeftGuest(BrowserPluginGuest* guest) {
-  // Avoid race conditions in switching between guests being hovered over by
-  // only un-setting if the caller is marked as the guest being dragged over.
-  if (guest_dragging_over_.get() == guest) {
-    guest_dragging_over_.reset();
-  }
 }
 
 // static
@@ -59,57 +43,9 @@ void BrowserPluginEmbedder::CancelGuestDialogs() {
       base::BindRepeating(&BrowserPluginEmbedder::CancelDialogs));
 }
 
-void BrowserPluginEmbedder::StartDrag(BrowserPluginGuest* guest) {
-  guest_started_drag_ = guest->AsWeakPtr();
-  guest_drag_ending_ = false;
-}
-
 BrowserPluginGuestManager*
 BrowserPluginEmbedder::GetBrowserPluginGuestManager() const {
   return web_contents_->GetBrowserContext()->GetGuestManager();
-}
-
-void BrowserPluginEmbedder::ClearGuestDragStateIfApplicable() {
-  // The order at which we observe SystemDragEnded() and DragSourceEndedAt() is
-  // platform dependent.
-  // In OSX, we see SystemDragEnded() first, where in aura, we see
-  // DragSourceEndedAt() first. For this reason, we check if both methods were
-  // called before resetting |guest_started_drag_|.
-  if (guest_drag_ending_) {
-    if (guest_started_drag_)
-      guest_started_drag_.reset();
-  } else {
-    guest_drag_ending_ = true;
-  }
-}
-
-void BrowserPluginEmbedder::DragSourceEndedAt(float client_x,
-                                              float client_y,
-                                              float screen_x,
-                                              float screen_y,
-                                              blink::DragOperation operation) {
-  if (guest_started_drag_) {
-    gfx::Point guest_offset =
-        guest_started_drag_->GetScreenCoordinates(gfx::Point());
-    guest_started_drag_->DragSourceEndedAt(client_x - guest_offset.x(),
-        client_y - guest_offset.y(), screen_x, screen_y, operation);
-  }
-  ClearGuestDragStateIfApplicable();
-}
-
-void BrowserPluginEmbedder::SystemDragEnded() {
-  // When the embedder's drag/drop operation ends, we need to pass the message
-  // to the guest that initiated the drag/drop operation. This will ensure that
-  // the guest's RVH state is reset properly.
-  if (guest_started_drag_)
-    guest_started_drag_->EmbedderSystemDragEnded();
-
-  guest_dragging_over_.reset();
-  ClearGuestDragStateIfApplicable();
-}
-
-bool BrowserPluginEmbedder::OnUpdateDragCursor() {
-  return !!guest_dragging_over_;
 }
 
 bool BrowserPluginEmbedder::HandleKeyboardEvent(

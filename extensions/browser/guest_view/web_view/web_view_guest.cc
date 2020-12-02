@@ -466,13 +466,6 @@ void WebViewGuest::DidAttachToEmbedder() {
   ApplyAttributes(*attach_params());
 }
 
-void WebViewGuest::DidDropLink(const GURL& url) {
-  auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, url.spec());
-  DispatchEventToView(std::make_unique<GuestViewEvent>(webview::kEventDropLink,
-                                                       std::move(args)));
-}
-
 void WebViewGuest::DidInitialize(const base::DictionaryValue& create_params) {
   script_executor_ = std::make_unique<ScriptExecutor>(web_contents());
 

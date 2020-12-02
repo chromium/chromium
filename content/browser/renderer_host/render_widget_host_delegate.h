@@ -266,9 +266,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the associated RenderViewHostDelegateView*, if possible.
   virtual RenderViewHostDelegateView* GetDelegateView();
 
-  // Allow the delegate to handle the cursor update. Returns true if handled.
-  virtual bool OnUpdateDragCursor();
-
   // Returns true if the provided RenderWidgetHostImpl matches the current
   // RenderWidgetHost on the main frame, and false otherwise.
   virtual bool IsWidgetForMainFrame(RenderWidgetHostImpl*);

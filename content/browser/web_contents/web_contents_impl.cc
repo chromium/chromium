@@ -4129,12 +4129,6 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
   return text_input_manager_.get();
 }
 
-bool WebContentsImpl::OnUpdateDragCursor() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnUpdateDragCursor");
-  return browser_plugin_embedder_ &&
-         browser_plugin_embedder_->OnUpdateDragCursor();
-}
-
 bool WebContentsImpl::IsWidgetForMainFrame(
     RenderWidgetHostImpl* render_widget_host) {
   return render_widget_host == GetMainFrame()->GetRenderWidgetHost();
@@ -4693,10 +4687,6 @@ void WebContentsImpl::DragSourceEndedAt(float client_x,
                                         RenderWidgetHost* source_rwh) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::DragSourceEndedAt");
-  if (browser_plugin_embedder_) {
-    browser_plugin_embedder_->DragSourceEndedAt(client_x, client_y, screen_x,
-                                                screen_y, operation);
-  }
   if (source_rwh) {
     source_rwh->DragSourceEndedAt(gfx::PointF(client_x, client_y),
                                   gfx::PointF(screen_x, screen_y), operation);
@@ -4767,8 +4757,6 @@ void WebContentsImpl::SystemDragEnded(RenderWidgetHost* source_rwh) {
                         "render_widget_host", source_rwh);
   if (source_rwh)
     source_rwh->DragSourceSystemDragEnded();
-  if (browser_plugin_embedder_)
-    browser_plugin_embedder_->SystemDragEnded();
 }
 
 void WebContentsImpl::SetClosedByUserGesture(bool value) {

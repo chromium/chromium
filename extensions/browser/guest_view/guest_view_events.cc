@@ -46,7 +46,6 @@ class EventMap {
          events::WEB_VIEW_INTERNAL_ON_CONSOLE_MESSAGE},
         {webview::kEventContentLoad, events::WEB_VIEW_INTERNAL_ON_CONTENT_LOAD},
         {webview::kEventDialog, events::WEB_VIEW_INTERNAL_ON_DIALOG},
-        {webview::kEventDropLink, events::WEB_VIEW_INTERNAL_ON_DROP_LINK},
         {webview::kEventExit, events::WEB_VIEW_INTERNAL_ON_EXIT},
         {webview::kEventExitFullscreen,
          events::WEB_VIEW_INTERNAL_ON_EXIT_FULLSCREEN},

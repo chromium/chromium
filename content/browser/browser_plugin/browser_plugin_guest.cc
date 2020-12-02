@@ -37,9 +37,6 @@ BrowserPluginGuest::BrowserPluginGuest(WebContentsImpl* web_contents,
     : WebContentsObserver(web_contents),
       owner_web_contents_(nullptr),
       initialized_(false),
-      last_drag_status_(blink::kWebDragStatusUnknown),
-      seen_embedder_system_drag_ended_(false),
-      seen_embedder_drag_source_ended_at_(false),
       delegate_(delegate) {
   DCHECK(web_contents);
   DCHECK(delegate);
@@ -62,10 +59,6 @@ void BrowserPluginGuest::Init() {
       delegate_->GetOwnerWebContents());
   owner_web_contents->CreateBrowserPluginEmbedderIfNecessary();
   InitInternal(owner_web_contents);
-}
-
-base::WeakPtr<BrowserPluginGuest> BrowserPluginGuest::AsWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void BrowserPluginGuest::SetFocus(bool focused,
@@ -149,59 +142,6 @@ bool BrowserPluginGuest::IsGuest(WebContentsImpl* web_contents) {
 
 WebContentsImpl* BrowserPluginGuest::GetWebContents() const {
   return static_cast<WebContentsImpl*>(web_contents());
-}
-
-gfx::Point BrowserPluginGuest::GetScreenCoordinates(
-    const gfx::Point& relative_position) const {
-  return relative_position;
-}
-
-void BrowserPluginGuest::DragSourceEndedAt(float client_x,
-                                           float client_y,
-                                           float screen_x,
-                                           float screen_y,
-                                           blink::DragOperation operation) {
-  web_contents()->GetRenderViewHost()->GetWidget()->DragSourceEndedAt(
-      gfx::PointF(client_x, client_y), gfx::PointF(screen_x, screen_y),
-      operation);
-  seen_embedder_drag_source_ended_at_ = true;
-  EndSystemDragIfApplicable();
-}
-
-void BrowserPluginGuest::EndSystemDragIfApplicable() {
-  // Ideally we'd want either WebDragStatusDrop or WebDragStatusLeave...
-  // Call guest RVH->DragSourceSystemDragEnded() correctly on the guest where
-  // the drag was initiated. Calling DragSourceSystemDragEnded() correctly
-  // means we call it in all cases and also make sure we only call it once.
-  // This ensures that the input state of the guest stays correct, otherwise
-  // it will go stale and won't accept any further input events.
-  //
-  // The strategy used here to call DragSourceSystemDragEnded() on the RVH
-  // is when the following conditions are met:
-  //   a. Embedder has seen SystemDragEnded()
-  //   b. Embedder has seen DragSourceEndedAt()
-  //   c. The guest has seen some drag status update other than
-  //      WebDragStatusUnknown. Note that this step should ideally be done
-  //      differently: The guest has seen at least one of
-  //      {WebDragStatusOver, WebDragStatusDrop}. However, if a user drags
-  //      a source quickly outside of <webview> bounds, then the
-  //      BrowserPluginGuest never sees any of these drag status updates,
-  //      there we just check whether we've seen any drag status update or
-  //      not.
-  if (last_drag_status_ != blink::kWebDragStatusOver &&
-      seen_embedder_drag_source_ended_at_ && seen_embedder_system_drag_ended_) {
-    RenderViewHostImpl* guest_rvh = static_cast<RenderViewHostImpl*>(
-        GetWebContents()->GetRenderViewHost());
-    guest_rvh->GetWidget()->DragSourceSystemDragEnded();
-    last_drag_status_ = blink::kWebDragStatusUnknown;
-    seen_embedder_system_drag_ended_ = false;
-    seen_embedder_drag_source_ended_at_ = false;
-  }
-}
-
-void BrowserPluginGuest::EmbedderSystemDragEnded() {
-  seen_embedder_system_drag_ended_ = true;
-  EndSystemDragIfApplicable();
 }
 
 void BrowserPluginGuest::SendTextInputTypeChangedToView(

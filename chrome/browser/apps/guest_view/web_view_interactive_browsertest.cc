@@ -321,16 +321,6 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
     gfx::Rect offset = embedder_web_contents_->GetContainerBounds();
     corner_ = offset.origin();
-
-    const testing::TestInfo* const test_info =
-            testing::UnitTest::GetInstance()->current_test_info();
-    const char* prefix = "DragDropWithinWebView";
-    if (!strncmp(test_info->name(), prefix, strlen(prefix))) {
-      // In the drag drop test we add 20px padding to the page body because on
-      // windows if we get too close to the edge of the window the resize cursor
-      // appears and we start dragging the window edge.
-      corner_.Offset(20, 20);
-    }
   }
 
   content::WebContents* guest_web_contents() {
@@ -465,58 +455,6 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
                               false, false, false);
   }
 
-  void DragTestStep1() {
-    // Move mouse to start of text.
-    MoveMouseInsideWindow(gfx::Point(45, 8));
-    MoveMouseInsideWindow(gfx::Point(45, 9));
-    SendMouseEvent(ui_controls::LEFT, ui_controls::DOWN);
-
-    MoveMouseInsideWindow(gfx::Point(74, 12));
-    MoveMouseInsideWindow(gfx::Point(78, 12));
-
-    // Now wait a bit before moving mouse to initiate drag/drop.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&WebViewInteractiveTest::DragTestStep2,
-                       base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(200));
-  }
-
-  void DragTestStep2() {
-    // Drag source over target.
-    MoveMouseInsideWindow(gfx::Point(76, 76));
-
-    // Create a second mouse over the source to trigger the drag over event.
-    MoveMouseInsideWindow(gfx::Point(76, 77));
-
-    // Release mouse to drop.
-    SendMouseEvent(ui_controls::LEFT, ui_controls::UP);
-    SendMouseClick(ui_controls::LEFT);
-
-    quit_closure_.Run();
-
-    // Note that following ExtensionTestMessageListener and ExecuteScript*
-    // call must be after we quit |quit_closure_|. Otherwise the class
-    // here won't be able to receive messages sent by chrome.test.sendMessage.
-    // This is because of the nature of drag and drop code (esp. the
-    // MessageLoop) in it.
-
-    // Now check if we got a drop and read the drop data.
-    embedder_web_contents_ = GetFirstAppWindowWebContents();
-    ExtensionTestMessageListener drop_listener("guest-got-drop", false);
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
-                                       "window.checkIfGuestGotDrop()"));
-    EXPECT_TRUE(drop_listener.WaitUntilSatisfied());
-
-    std::string last_drop_data;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-                    embedder_web_contents_,
-                    "window.domAutomationController.send(getLastDropData())",
-                    &last_drop_data));
-
-    last_drop_data_ = last_drop_data;
-  }
-
   void FullscreenTestHelper(const std::string& test_name,
                             const std::string& test_dir) {
     TestHelper(test_name, test_dir, NO_TEST_SERVER);
@@ -541,9 +479,6 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   gfx::Point corner_;
   bool mouse_click_result_;
   bool first_click_;
-  // Only used in drag/drop test.
-  base::Closure quit_closure_;
-  std::string last_drop_data_;
 };
 
 class WebViewImeInteractiveTest : public WebViewInteractiveTest {
@@ -591,7 +526,6 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
   };
 };
 
-class WebViewDragDropInteractiveTest : public WebViewInteractiveTest {};
 class WebViewNewWindowInteractiveTest : public WebViewInteractiveTest {};
 class WebViewFocusInteractiveTest : public WebViewInteractiveTest {};
 class WebViewPointerLockInteractiveTest : public WebViewInteractiveTest {};

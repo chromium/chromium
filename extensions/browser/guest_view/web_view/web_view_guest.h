@@ -183,10 +183,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                                     bool last_unlocked_by_target,
                                     base::OnceCallback<void(bool)> callback);
 
-  // TODO(533069): This appears to be dead code following BrowserPlugin removal.
-  // Investigate removing this.
-  void DidDropLink(const GURL& url);
-
   // GuestViewBase implementation.
   void CreateWebContents(const base::DictionaryValue& create_params,
                          WebContentsCreatedCallback callback) final;

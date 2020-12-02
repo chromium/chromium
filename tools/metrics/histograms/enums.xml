@@ -23768,7 +23768,7 @@ Called by update_extension_histograms.py.-->
   <int value="353" label="WEB_VIEW_INTERNAL_ON_CONSOLE_MESSAGE"/>
   <int value="354" label="WEB_VIEW_INTERNAL_ON_CONTENT_LOAD"/>
   <int value="355" label="WEB_VIEW_INTERNAL_ON_DIALOG"/>
-  <int value="356" label="WEB_VIEW_INTERNAL_ON_DROP_LINK"/>
+  <int value="356" label="DELETED_WEB_VIEW_INTERNAL_ON_DROP_LINK"/>
   <int value="357" label="WEB_VIEW_INTERNAL_ON_EXIT"/>
   <int value="358" label="WEB_VIEW_INTERNAL_ON_EXIT_FULLSCREEN"/>
   <int value="359" label="WEB_VIEW_INTERNAL_ON_FIND_REPLY"/>

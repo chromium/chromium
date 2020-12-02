@@ -939,7 +939,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::FrameVisibility visibility) override;
   void SendScreenRects() override;
   TextInputManager* GetTextInputManager() override;
-  bool OnUpdateDragCursor() override;
   bool IsWidgetForMainFrame(RenderWidgetHostImpl* render_widget_host) override;
   bool AddDomainInfoToRapporSample(rappor::Sample* sample) override;
   bool IsShowingContextMenuOnPage() const override;

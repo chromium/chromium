@@ -15,9 +15,7 @@
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/common/page/drag_operation.h"
 
 namespace content {
 
@@ -35,35 +33,8 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   static BrowserPluginEmbedder* Create(WebContentsImpl* web_contents);
 
-  // Sends a 'dragend' message to the guest that started the drag.
-  void DragSourceEndedAt(float client_x,
-                         float client_y,
-                         float screen_x,
-                         float screen_y,
-                         blink::DragOperation operation);
-
-  // Indicates that a drag operation has entered into the bounds of a given
-  // |guest|. Returns whether the |guest| also started the operation.
-  bool DragEnteredGuest(BrowserPluginGuest* guest);
-
-  // Indicates that a drag operation has left the bounds of a given |guest|.
-  void DragLeftGuest(BrowserPluginGuest* guest);
-
   // Closes modal dialogs in all of the guests.
   void CancelGuestDialogs();
-
-  // Called by WebContentsViewGuest when a drag operation is started within
-  // |guest|. This |guest| will be signaled at the end of the drag operation.
-  void StartDrag(BrowserPluginGuest* guest);
-
-  // Sends EndSystemDrag message to the guest that initiated the last drag/drop
-  // operation, if there's any.
-  void SystemDragEnded();
-
-  // The page wants to update the mouse cursor during a drag & drop
-  // operation. This update will be suppressed if the cursor is dragging over a
-  // guest.
-  bool OnUpdateDragCursor();
 
   // Used to handle special keyboard events.
   bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event);
@@ -82,8 +53,6 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   BrowserPluginGuestManager* GetBrowserPluginGuestManager() const;
 
-  void ClearGuestDragStateIfApplicable();
-
   // Closes modal dialogs in |guest_web_contents|.
   static bool CancelDialogs(WebContents* guest_web_contents);
 
@@ -94,20 +63,6 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   // Pointer to the WebContentsImpl that owns this object.
   WebContentsImpl* web_contents_;
-
-  // Used to correctly update the cursor when dragging over a guest, and to
-  // handle a race condition when dropping onto the guest that started the drag
-  // (the race is that the dragend message arrives before the drop message so
-  // the drop never takes place).
-  // crbug.com/233571
-  base::WeakPtr<BrowserPluginGuest> guest_dragging_over_;
-
-  // Pointer to the guest that started the drag, used to forward necessary drag
-  // status messages to the correct guest.
-  base::WeakPtr<BrowserPluginGuest> guest_started_drag_;
-
-  // Keeps track of "dragend" state.
-  bool guest_drag_ending_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserPluginEmbedder);
 };
