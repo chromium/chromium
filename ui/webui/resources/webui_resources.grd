@@ -46,6 +46,10 @@ without changes to the corresponding grd file. -->
       <!-- Non-apps images -->
       <include name="IDR_WEBUI_IMAGES_ADD_SVG"
                file="images/add.svg" type="BINDATA" />
+      <include name="IDR_WEBUI_IMAGES_CANCEL_RED_SVG"
+               file="images/cancel_red.svg" type="BINDATA" />
+      <include name="IDR_WEBUI_IMAGES_CHECK_CIRCLE_GREEN_SVG"
+               file="images/check_circle_green.svg" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_CHECK_PNG"
                file="images/check.png" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_CHECKBOX_BLACK_PNG"
@@ -59,6 +63,10 @@ without changes to the corresponding grd file. -->
       <!-- Similar to IDR_WEBUI_IMAGES_ERROR except that it is white-filled instead of transparent-filled. Useful for badging images where the background may be red. -->
       <include name="IDR_WEBUI_IMAGES_ERROR_BADGE_SVG"
                file="images/error_badge.svg" type="BINDATA" />
+      <include name="IDR_WEBUI_IMAGES_ICON_SEARCH_SVG"
+               file="images/icon_search.svg" type="BINDATA" />
+      <include name="IDR_WEBUI_IMAGES_ICON_REFRESH_SVG"
+               file="images/icon_refresh.svg" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_SELECT_PNG"
                file="images/select.png" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_THROBBER_MEDIUM_SVG"

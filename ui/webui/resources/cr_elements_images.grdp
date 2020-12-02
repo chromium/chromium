@@ -11,10 +11,6 @@
            file="images/arrow_right.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_BUSINESS" file="images/business.svg"
            type="BINDATA" />
-  <include name="IDR_WEBUI_IMAGES_CANCEL_RED_SVG" file="images/cancel_red.svg"
-           type="BINDATA" />
-  <include name="IDR_WEBUI_IMAGES_CHECK_CIRCLE_GREEN_SVG"
-           file="images/check_circle_green.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_DARK_ARROW_DOWN_SVG"
            file="images/dark/arrow_down.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_DARK_ICON_SEARCH_SVG"
@@ -41,10 +37,6 @@
            file="images/icon_more_vert.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_ICON_PICTURE_DELETE_SVG"
            file="images/icon_picture_delete.svg" type="BINDATA" />
-  <include name="IDR_WEBUI_IMAGES_ICON_REFRESH_SVG"
-           file="images/icon_refresh.svg" type="BINDATA" />
-  <include name="IDR_WEBUI_IMAGES_ICON_SEARCH_SVG"
-           file="images/icon_search.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_ICON_SETTINGS_SVG"
            file="images/icon_settings.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_ICON_VISIBILITY_SVG"
