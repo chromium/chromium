@@ -372,7 +372,8 @@ export class Camera extends View {
    * @protected
    */
   beginTake_(shutterType) {
-    if (!state.get(state.State.STREAMING) || state.get(state.State.TAKING)) {
+    if (state.get(state.State.CAMERA_CONFIGURING) ||
+        state.get(state.State.TAKING)) {
       return null;
     }
 
