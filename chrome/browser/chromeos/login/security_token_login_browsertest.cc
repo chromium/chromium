@@ -268,6 +268,7 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
         TestCertificateProviderExtension::GetExtensionSourcePath(),
         TestCertificateProviderExtension::GetExtensionPemPath(),
         ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
+    certificate_provider_extension_->TriggerSetCertificates();
   }
 
  private:

@@ -18,7 +18,6 @@
 #include "extensions/common/extension_id.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace base {
 class FilePath;
@@ -27,6 +26,10 @@ class Value;
 
 namespace content {
 class BrowserContext;
+}
+
+namespace crypto {
+class RSAPrivateKey;
 }
 
 // This class provides the C++ side of the test certificate provider extension's
@@ -51,6 +54,10 @@ class TestCertificateProviderExtension final
   explicit TestCertificateProviderExtension(
       content::BrowserContext* browser_context);
   ~TestCertificateProviderExtension() override;
+
+  // Causes the extension to call chrome.certificateProvider.setCertificates,
+  // providing the certificates that are currently available.
+  void TriggerSetCertificates();
 
   int certificate_request_count() const { return certificate_request_count_; }
 
@@ -97,7 +104,7 @@ class TestCertificateProviderExtension final
 
   content::BrowserContext* const browser_context_;
   const scoped_refptr<net::X509Certificate> certificate_;
-  const bssl::UniquePtr<EVP_PKEY> private_key_;
+  std::unique_ptr<crypto::RSAPrivateKey> private_key_;
   int certificate_request_count_ = 0;
   // When non-empty, contains the expected PIN; the implementation will request
   // the PIN on every signature request in this case.
