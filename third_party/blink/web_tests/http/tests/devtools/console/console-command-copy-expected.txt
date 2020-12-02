@@ -11,7 +11,7 @@ InspectorFrontendHost.copyText: null
 InspectorFrontendHost.copyText: qwerty
 InspectorFrontendHost.copyText: true
 InspectorFrontendHost.copyText: {
-  "foo": "bar"
+    "foo": "bar"
 }
 InspectorFrontendHost.copyText: undefined
 
