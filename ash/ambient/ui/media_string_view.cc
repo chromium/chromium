@@ -30,6 +30,7 @@
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/transform.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -244,8 +245,17 @@ void MediaStringView::InitLayout() {
       ambient::util::GetDefaultFontlist()
           .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
           .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-  media_text_->SetShadows(ambient::util::GetTextShadowValues());
   media_text_->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
+
+  auto shadow_values = ambient::util::GetTextShadowValues();
+  media_text_->SetShadows(shadow_values);
+  gfx::Insets shadow_insets = gfx::ShadowValue::GetMargin(shadow_values);
+  // Compensate the shadow insets to put the text middle align with the icon.
+  media_text_->SetBorder(views::CreateEmptyBorder(
+      /*top=*/-shadow_insets.bottom(),
+      /*left=*/0,
+      /*bottom=*/-shadow_insets.top(),
+      /*right=*/0));
 
   BindMediaControllerObserver();
 }
