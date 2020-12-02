@@ -4129,8 +4129,6 @@ crbug.com/660384 external/wpt/webmessaging/with-ports/001.html [ Failure ]
 crbug.com/660384 external/wpt/webmessaging/without-ports/001.html [ Failure ]
 crbug.com/660384 external/wpt/webmessaging/with-options/broken-origin.html [ Failure ]
 
-crbug.com/1150389 [ Mac ] virtual/hidpi/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure ]
-
 # Added 2016-12-12
 crbug.com/610835 http/tests/security/XFrameOptions/x-frame-options-deny-multiple-clients.html [ Failure Pass ]
 
