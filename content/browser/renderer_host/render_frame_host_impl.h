@@ -2506,6 +2506,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void LogCannotCommitOriginCrashKeys(bool is_same_document_navigation,
                                       NavigationRequest* navigation_request);
 
+  // Verifies that browser-calculated and renderer-calculated values for some
+  // params in DidCommitProvisionalLoadParams match, to ensure we can completely
+  // remove the dependence on the renderer-calculated values. Logs crash keys
+  // and dumps them without crashing if some params don't match.
+  // See crbug.com/1131832.
+  void VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
+      NavigationRequest* navigation_request,
+      const mojom::DidCommitProvisionalLoadParams& params,
+      bool is_same_document_navigation);
+
   // Evicts the document from the BackForwardCache if it is in the cache,
   // and ineligible for caching.
   void MaybeEvictFromBackForwardCache();

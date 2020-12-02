@@ -8473,6 +8473,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     return false;
   }
 
+  if (navigation_request) {
+    VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
+        navigation_request.get(), *params, is_same_document_navigation);
+  }
+
   // TODO(clamy): We should stop having a special case for same-document
   // navigation and just put them in the general map of NavigationRequests.
   if (navigation_request &&
@@ -9310,6 +9315,199 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
             base::debug::CrashKeySize::Size32),
         bool_to_crash_key(dest_instance == GetSiteInstance()));
   }
+}
+
+int64_t CalculatePostID(
+    const std::string& method,
+    const scoped_refptr<network::ResourceRequestBody>& request_body,
+    NavigationEntryImpl* last_committed_entry,
+    bool is_same_document) {
+  if (method != "POST")
+    return -1;
+  if (!is_same_document)
+    return request_body ? request_body->identifier() : -1;
+  // We have a DCHECK to catch issues in testing, but handle the null case
+  // anyways so that we won't crash the browser process.
+  DCHECK(last_committed_entry);
+  return last_committed_entry ? last_committed_entry->GetPostID() : -1;
+}
+
+bool DoBaseURLExpectationsMatch(const GURL& browser_base_url,
+                                const GURL& renderer_base_url,
+                                const net::Error& net_error_code) {
+  // base_url value is currently only used in the browser side for two cases:
+  // 1) To check if the document is loaded with loadDataWithBaseURL in
+  // ValidateDidCommitParams. In this case, |renderer_base_url| should be the
+  // same as |browser_base_url|, except for when the browser sent an
+  // invalid URL - |renderer_base_url| should be empty in this case.
+  if (!browser_base_url.is_empty() && browser_base_url != renderer_base_url &&
+      (browser_base_url.is_valid() || !renderer_base_url.is_empty())) {
+    return false;
+  }
+  // 2) To check if a navigation results in an error page or not in
+  // NavigationRequest::DidCommitNavigation. This can be known by just checking
+  // for the net error code value instead, as all navigations that result in an
+  // error page should be known by the browser side before committing.
+  if (renderer_base_url == kUnreachableWebDataURL &&
+      net_error_code == net::OK) {
+    return false;
+  }
+  // Note: base_url might be set in |params| in other cases (e.g. if a page has
+  // the <base> element and it's doing a same document navigation, about:srcdoc,
+  // MHTML), but those cases do not matter because they aren't handled at all
+  // in the browser side.
+  return true;
+}
+
+bool CalculateURLIsUnreachable(
+    const GURL& history_url_for_data_url,
+    const GURL& base_url_for_data_url,
+    const base::Optional<std::string>& data_url_as_string,
+    const net::Error& net_error_code,
+    bool is_main_frame) {
+  // url_is_unreachable should be true if either the navigation is for an
+  // error page, or this is a navigation to a data: URL where
+  // history_url_for_data_url is saved in  WebNavigationParams' unreachable_url
+  // in the renderer (see crbug.com/522567).
+  const bool has_history_url_for_data_url =
+      !history_url_for_data_url.is_empty();
+  if (has_history_url_for_data_url) {
+    // These DCHECKs follow the handling of data: URLs in
+    // RenderFrameImpl::CommitNavigation.
+    bool should_load_data_url = !base_url_for_data_url.is_empty();
+    should_load_data_url |=
+        data_url_as_string.has_value() && !data_url_as_string.value().empty();
+    DCHECK(should_load_data_url);
+  }
+  return net_error_code != net::OK || has_history_url_for_data_url;
+}
+
+void RenderFrameHostImpl::
+    VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
+        NavigationRequest* request,
+        const mojom::DidCommitProvisionalLoadParams& params,
+        bool is_same_document_navigation) {
+  // Check if these values from DidCommitProvisionalLoadParams sent by the
+  // renderer can be calculated entirely in the browser side:
+  // - intended_as_new_entry
+  // - method
+  // - url_is_unreachable
+  // - base_url
+  // - post_id
+  // - is_overriding_user_agent
+  // TODO(crbug.com/1131832): Verify more params.
+  base::Optional<std::string> data_url_as_string;
+#if defined(OS_ANDROID)
+  data_url_as_string = request->commit_params().data_url_as_string;
+#endif
+  const GURL& browser_base_url = request->common_params().base_url_for_data_url;
+  const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
+      request->common_params().history_url_for_data_url, browser_base_url,
+      data_url_as_string, request->GetNetErrorCode(),
+      frame_tree_node_->IsMainFrame());
+
+  const bool base_url_expectations_match = DoBaseURLExpectationsMatch(
+      browser_base_url, params.base_url, request->GetNetErrorCode());
+
+  const int64_t browser_post_id =
+      CalculatePostID(params.method, request->common_params().post_data,
+                      NavigationEntryImpl::FromNavigationEntry(
+                          frame_tree()->controller()->GetLastCommittedEntry()),
+                      is_same_document_navigation);
+
+  const bool browser_is_overriding_user_agent =
+      is_same_document_navigation ? is_overriding_user_agent_
+                                  : (request->IsOverridingUserAgent() &&
+                                     frame_tree_node_->IsMainFrame());
+  if (request->commit_params().intended_as_new_entry ==
+          params.intended_as_new_entry &&
+      request->common_params().method == params.method &&
+      browser_url_is_unreachable == params.url_is_unreachable &&
+      base_url_expectations_match && browser_post_id == params.post_id &&
+      browser_is_overriding_user_agent == params.is_overriding_user_agent) {
+    return;
+  }
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", browser_intended,
+                        request->commit_params().intended_as_new_entry);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_intended,
+                        params.intended_as_new_entry);
+
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", browser_method,
+                            request->common_params().method);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", renderer_method, params.method);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", original_method,
+                            request->commit_params().original_method);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", browser_unreachable,
+                        browser_url_is_unreachable);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_unreachable,
+                        params.url_is_unreachable);
+
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", browser_base_url,
+                             browser_base_url.possibly_invalid_spec());
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", renderer_base_url,
+                             params.base_url.possibly_invalid_spec());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", base_url_exp_match,
+                        base_url_expectations_match);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", b_base_url_valid,
+                        browser_base_url.is_valid());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", b_base_url_empty,
+                        browser_base_url.is_empty());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", r_base_url_empty,
+                        params.base_url.is_empty());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", r_base_url_is_error,
+                        params.base_url == kUnreachableWebDataURL);
+
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", browser_post_id, browser_post_id);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", renderer_post_id, params.post_id);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", browser_override_ua,
+                        browser_is_overriding_user_agent);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_override_ua,
+                        params.is_overriding_user_agent);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_same_document,
+                        is_same_document_navigation);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_initiated,
+                        request->IsRendererInitiated());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_subframe,
+                        !frame_tree_node_->IsMainFrame());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_form_submission,
+                        request->IsFormSubmission());
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", net_error,
+                          request->GetNetErrorCode());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_server_redirect,
+                        request->WasServerRedirect());
+
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", navigation_url,
+                             params.url.possibly_invalid_spec());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", nav_url_blank,
+                        params.url.IsAboutBlank());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", nav_url_srcdoc,
+                        params.url.IsAboutSrcdoc());
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", last_committed_url,
+                             GetLastCommittedURL().spec());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", last_url_blank,
+                        GetLastCommittedURL().IsAboutBlank());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", last_url_srcdoc,
+                        GetLastCommittedURL().IsAboutSrcdoc());
+  bool has_original_url =
+      GetSiteInstance() && !GetSiteInstance()->IsDefaultSiteInstance();
+  SCOPED_CRASH_KEY_STRING256(
+      "VerifyDidCommit", original_url,
+      has_original_url
+          ? GetSiteInstance()->original_url().possibly_invalid_spec()
+          : "");
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", original_url_blank,
+                        has_original_url
+                            ? GetSiteInstance()->original_url().IsAboutBlank()
+                            : false);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", original_url_srcdoc,
+                        has_original_url
+                            ? GetSiteInstance()->original_url().IsAboutSrcdoc()
+                            : false);
+  base::debug::DumpWithoutCrashing();
 }
 
 void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
