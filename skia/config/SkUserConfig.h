@@ -204,10 +204,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 #   define SK_SUPPORT_LEGACY_ANISOTROPIC_MIPMAP_SCALE
 #endif
 
-#ifndef SK_DISABLE_LEGACY_CONTEXT_FACTORIES
-#define SK_DISABLE_LEGACY_CONTEXT_FACTORIES
-#endif
-
 #ifndef SK_SUPPORT_LEGACY_ONDRAWIMAGERECT
 #define SK_SUPPORT_LEGACY_ONDRAWIMAGERECT
 #endif
@@ -231,9 +227,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 // Staging for lowp::bilerp_clamp_8888, and for planned misc. others.
 #define SK_DISABLE_LOWP_BILERP_CLAMP_CLAMP_STAGE
-
-// Staging for Skia requiring GrDirectContext in SkImage::readPixels.
-#define SK_IMAGE_READ_PIXELS_LEGACY_API
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
