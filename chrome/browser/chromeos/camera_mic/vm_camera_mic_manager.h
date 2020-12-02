@@ -11,8 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -25,7 +27,8 @@ namespace chromeos {
 // the primary and non-incognito profile. We might need to change this if we
 // extend this class to support the browser, in which case we will also need to
 // make the notification ids different for different profiles.
-class VmCameraMicManager : public KeyedService {
+class VmCameraMicManager : public KeyedService,
+                           public media::CameraActiveClientObserver {
  public:
   enum class VmType { kCrostiniVm, kPluginVm };
 
@@ -51,10 +54,16 @@ class VmCameraMicManager : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // TODO(b/167491603): Make `SetActive()` private after we implement audio
+  // service observer.
   void SetActive(VmType vm, DeviceType device, bool active);
   bool GetActive(VmType vm, DeviceType device) const;
   // Return true if any of the VMs is using the device.
   bool GetDeviceActive(DeviceType device) const;
+
+  // media::CameraActiveClientObserver
+  void OnActiveClientChange(cros::mojom::CameraClientType type,
+                            bool is_active) override;
 
  private:
   using ActiveMap = base::flat_map<std::pair<VmType, DeviceType>, bool>;
@@ -91,6 +100,15 @@ class VmCameraMicManager : public KeyedService {
 
   base::RetainingOneShotTimer observer_timer_;
   base::ObserverList<Observer> observers_;
+
+  base::ScopedObservation<
+      media::CameraHalDispatcherImpl,
+      media::CameraActiveClientObserver,
+      &media::CameraHalDispatcherImpl::AddActiveClientObserver,
+      &media::CameraHalDispatcherImpl::RemoveActiveClientObserver>
+      camera_observation_{this};
+
+  base::WeakPtrFactory<VmCameraMicManager> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
