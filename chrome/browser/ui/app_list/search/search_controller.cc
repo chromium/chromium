@@ -194,7 +194,6 @@ void SearchController::OnSearchResultsDisplayed(
       result_types.push_back(
           RankingItemTypeFromSearchResult(*FindSearchResult(result.id)));
     }
-    LogZeroStateResultsListMetrics(result_types, launched_index);
   }
 }
 

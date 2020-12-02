@@ -411,6 +411,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.SuggestedFiles.ChipLaunched" enum="Boolean"
     expires_after="2021-05-16">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -432,6 +435,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.SuggestedFiles.LaunchType"
     enum="LauncherRankingItemType" expires_after="2021-05-30">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
@@ -554,6 +560,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResults.ReceivedScore.DriveQuickAccess"
     units="score" expires_after="2021-04-18">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -566,6 +575,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResults.ReceivedScore.OmniboxSearch"
     units="score" expires_after="2021-04-11">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -578,6 +590,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResults.ReceivedScore.ZeroStateFile"
     units="score" expires_after="2020-12-06">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -590,6 +605,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResultsList.Clicked"
     enum="BooleanClicked" expires_after="2021-04-11">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -602,6 +620,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResultsList.ContainsDriveFiles"
     enum="Boolean" expires_after="2021-05-30">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -624,6 +645,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResultsList.LaunchedItemPositionV2"
     units="position" expires_after="2021-02-07">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -634,6 +658,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.ZeroStateResultsList.NumImpressionTypesV2"
     units="count" expires_after="2021-01-03">
+  <obsolete>
+    Removed December 2020.
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>

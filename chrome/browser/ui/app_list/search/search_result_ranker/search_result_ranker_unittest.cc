@@ -672,36 +672,4 @@ TEST_F(SearchResultRankerTest, ZeroStateClickedTypeMetrics) {
       ZeroStateResultType::kDriveQuickAccess, 1);
 }
 
-// Scores received from zero state providers should be logged.
-TEST_F(SearchResultRankerTest, ZeroStateReceivedScoreMetrics) {
-  EnableOneFeature(app_list_features::kEnableZeroStateMixedTypesRanker,
-                   {
-                       {"item_coeff", "1.0"},
-                       {"group_coeff", "1.0"},
-                       {"paired_coeff", "0.0"},
-                       {"default_group_score", "0.1"},
-                   });
-  auto ranker = MakeRanker();
-  ranker->InitializeRankers(MakeSearchController());
-  Wait();
-
-  ranker->FetchRankings(base::string16());
-  auto results =
-      MakeSearchResults({"A", "B", "C"},
-                        {ResultType::kOmnibox, ResultType::kZeroStateFile,
-                         ResultType::kDriveQuickAccess},
-                        {0.15f, 0.255f, 0.359f});
-  ranker->Rank(&results);
-
-  // Scores should scaled to the range 0-100 and logged into the correct bucket.
-  // Zero state file and omnibox scores map the range [0,1] to [0,100], and
-  // Drive scores map the range [-10,10] to [0,100].
-  histogram_tester_.ExpectUniqueSample(
-      "Apps.AppList.ZeroStateResults.ReceivedScore.OmniboxSearch", 15, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Apps.AppList.ZeroStateResults.ReceivedScore.ZeroStateFile", 25, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Apps.AppList.ZeroStateResults.ReceivedScore.DriveQuickAccess", 51, 1);
-}
-
 }  // namespace app_list

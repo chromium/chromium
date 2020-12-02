@@ -96,29 +96,6 @@ void LogJsonConfigConversionStatus(const std::string& suffix,
 
 void LogZeroStateLaunchType(RankingItemType type);
 
-// Log |score| within the [lo, hi] range divided into 100 buckets. |lo| is
-// reported as 0 and |hi| as 100. Values below |lo| are reported in the bottom
-// bucket, similarly for |hi|.
-void LogZeroStateReceivedScore(const std::string& suffix,
-                               float score,
-                               float lo,
-                               float hi);
-
-// Logs zero state UI-related metrics. These comprise of the clicked position,
-// number of types per impression set, and CTR metrics.
-void LogZeroStateResultsListMetrics(
-    const std::vector<RankingItemType>& result_types,
-    int launched_index);
-
-// Logs three metrics of interest related to the suggested chips.
-//
-//  1. How many chips are launched overall.
-//  2. How many of each chip type is launched: local file, drive file, app.
-//  3. The index of a launched chip.
-//
-// We are interested in absolute numbers for these values, not CTR, because
-// we expect experiments with the chips to change the base rate usage of the
-// launcher chips itself.
 void LogChipUsageMetrics(const AppLaunchData& app_launch_data);
 
 }  // namespace app_list
