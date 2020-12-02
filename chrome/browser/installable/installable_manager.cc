@@ -189,12 +189,6 @@ bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode) {
        base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay)));
 }
 
-// Returns true if |params| specifies a full PWA check.
-bool IsParamsForPwaCheck(const InstallableParams& params) {
-  return params.valid_manifest && params.has_worker &&
-         params.valid_primary_icon;
-}
-
 void OnDidCompleteGetAllErrors(
     base::OnceCallback<void(std::vector<content::InstallabilityError>
                                 installability_errors)> callback,
@@ -234,7 +228,7 @@ InstallableManager::IconProperty::IconProperty()
 
 InstallableManager::IconProperty::IconProperty(IconProperty&& other) = default;
 
-InstallableManager::IconProperty::~IconProperty() {}
+InstallableManager::IconProperty::~IconProperty() = default;
 
 InstallableManager::IconProperty& InstallableManager::IconProperty::operator=(
     InstallableManager::IconProperty&& other) = default;
@@ -245,8 +239,7 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),
       worker_(std::make_unique<ServiceWorkerProperty>()),
-      service_worker_context_(nullptr),
-      has_pwa_check_(false) {
+      service_worker_context_(nullptr) {
   // This is null in unit tests.
   if (web_contents) {
     content::StoragePartition* storage_partition =
@@ -303,9 +296,6 @@ void InstallableManager::GetData(const InstallableParams& params,
                                  InstallableCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
-
-  if (IsParamsForPwaCheck(params))
-    has_pwa_check_ = true;
 
   // Return immediately if we're already working on a task. The new task will be
   // looked at once the current task is finished.
@@ -482,7 +472,6 @@ void InstallableManager::Reset(base::Optional<InstallableStatusCode> error) {
     task_queue_.ResetWithError(error.value());
   else
     task_queue_.Reset();
-  has_pwa_check_ = false;
 
   eligibility_ = std::make_unique<EligiblityProperty>();
   manifest_ = std::make_unique<ManifestProperty>();
@@ -835,7 +824,7 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
     icon.error = NO_ICON_AVAILABLE;
   } else {
     icon.url = icon_url;
-    icon.icon.reset(new SkBitmap(bitmap));
+    icon.icon = std::make_unique<SkBitmap>(bitmap);
   }
 
   WorkOnTask();
