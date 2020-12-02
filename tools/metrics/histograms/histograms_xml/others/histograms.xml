@@ -5899,6 +5899,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
+    units="%" expires_after="2021-11-12">
+  <owner>behdadb@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    The percent dropped frame is calculated for each sliding window of 1 second
+    length and added to a histogram, and then the 95 percentile of that
+    histogram is reported as 95pctPercentDroppedFrames_1sWindow.
+
+    The sliding windows cover the duration of page-load (From start of page-load
+    until user navigates away, or closes the tab/chrome, or when app goes to
+    background). Note that this means that this metric will bias toward tabs
+    that are closed more quickly, and might underreport tabs that remain open
+    for a long duration.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
 <histogram name="Graphics.Smoothness.Checkerboarding" units="%"
     expires_after="2021-05-09">
   <owner>sadrul@chromium.org</owner>

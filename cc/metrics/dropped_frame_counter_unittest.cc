@@ -278,6 +278,10 @@ class DroppedFrameCounterTest : public testing::Test {
     return dropped_frame_counter_.sliding_window_max_percent_dropped();
   }
 
+  double PercentDroppedFrame95Percentile() {
+    return dropped_frame_counter_.SlidingWindow95PercentilePercentDropped();
+  }
+
   void SetInterval(base::TimeDelta interval) { interval_ = interval; }
 
  private:
@@ -304,18 +308,25 @@ TEST_F(DroppedFrameCounterTest, SimplePattern1) {
   // 2 out of every 3 frames are dropped (In total 80 frames out of 120).
   SimulateFrameSequence({true, true, true, false, true, false}, 20);
   EXPECT_EQ(MaxPercentDroppedFrame(), 200.0 / 3);
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);  // all values are in the
+  // 67th bucket, and as a result 95th percentile is also 67.
 }
 
 TEST_F(DroppedFrameCounterTest, SimplePattern2) {
   // 1 out of every 5 frames are dropped (In total 24 frames out of 120).
   SimulateFrameSequence({false, false, false, false, true}, 24);
   EXPECT_EQ(MaxPercentDroppedFrame(), 20.0);
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 20);  // all values are in the
+  // 20th bucket, and as a result 95th percentile is also 20.
 }
 
 TEST_F(DroppedFrameCounterTest, MaxPercentDroppedChanges) {
   // First 60 frames have 20% dropped.
   SimulateFrameSequence({false, false, false, false, true}, 12);
   EXPECT_EQ(MaxPercentDroppedFrame(), 20.0);
+
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 20);  // There is only one
+  // element in the histogram and that is 20.
 
   // 30 new frames are added that have 18 dropped frames.
   // and the 30 frame before that had 6 dropped frames.
@@ -328,6 +339,12 @@ TEST_F(DroppedFrameCounterTest, MaxPercentDroppedChanges) {
   // So in total in the window has 42 frames dropped out of 60 frames.
   SimulateFrameSequence({false, true, true, true, true}, 6);
   EXPECT_EQ(MaxPercentDroppedFrame(), 70.0);
+
+  // Percent dropped frame of window increases gradually to 70%.
+  // 1 value exist when we reach 60 frames and 1 value thereafter for each
+  // frame added. So there 61 values in histogram. Last value is 70 (2 sampels)
+  // and then 67 with 1 sample, which would be the 95th percentile.
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);
 }
 
 TEST_F(DroppedFrameCounterTest, MaxPercentDroppedWithIdleFrames) {

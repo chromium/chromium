@@ -27,6 +27,17 @@ class CC_EXPORT DroppedFrameCounter {
     kFrameStateComplete
   };
 
+  class CC_EXPORT SlidingWindowHistogram {
+   public:
+    void AddPercentDroppedFrame(double percent_dropped_frame);
+    uint32_t GetPercentDroppedFramePercentile(double percentile) const;
+    void clear();
+
+   private:
+    uint32_t histogram_bins_[101] = {0};
+    uint32_t total_count = 0;
+  };
+
   DroppedFrameCounter();
   ~DroppedFrameCounter();
 
@@ -72,6 +83,10 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_max_percent_dropped_;
   }
 
+  uint32_t SlidingWindow95PercentilePercentDropped() const {
+    return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.95);
+  }
+
  private:
   void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
   base::TimeDelta ComputeCurrentWindowSize() const;
@@ -80,6 +95,7 @@ class CC_EXPORT DroppedFrameCounter {
       base::TimeDelta::FromSeconds(1);
   std::queue<std::pair<const viz::BeginFrameArgs, bool>> sliding_window_;
   uint32_t dropped_frame_count_in_window_ = 0;
+  SlidingWindowHistogram sliding_window_histogram_;
 
   RingBufferType ring_buffer_;
   size_t total_frames_ = 0;
