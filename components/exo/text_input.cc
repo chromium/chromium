@@ -8,6 +8,7 @@
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "base/strings/string_piece.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -141,7 +142,14 @@ void TextInput::InsertChar(const ui::KeyEvent& event) {
     InsertText(base::string16(1, ch));
     return;
   }
-  delegate_->SendKey(event);
+  // TextInput is currently used only for Lacros, and this is the
+  // short term workaround not to duplicate KeyEvent there.
+  // This is what we do for ARC, which is being removed in the near
+  // future.
+  // TODO(fukino): Get rid of this, too, when the wl_keyboard::key
+  // and text_input::keysym events are handled properly in Lacros.
+  if (window_ && ConsumedByIme(window_, event))
+    delegate_->SendKey(event);
 }
 
 ui::TextInputType TextInput::GetTextInputType() const {

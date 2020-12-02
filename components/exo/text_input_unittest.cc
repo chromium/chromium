@@ -270,13 +270,27 @@ TEST_F(TextInputTest, Commit) {
 }
 
 TEST_F(TextInputTest, InsertChar) {
+  text_input()->Activate(surface());
+
   ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
   text_input()->InsertChar(ev);
 }
 
+TEST_F(TextInputTest, InsertCharCtrlV) {
+  text_input()->Activate(surface());
+
+  // CTRL+V is interpreted as non-IME consumed KeyEvent, so should
+  // not be sent.
+  ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_V, ui::EF_CONTROL_DOWN);
+  EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
+  text_input()->InsertChar(ev);
+}
+
 TEST_F(TextInputTest, InsertCharNormalKey) {
+  text_input()->Activate(surface());
+
   base::char16 ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
 

@@ -20,6 +20,7 @@ class TimeDelta;
 
 namespace ui {
 class LocatedEvent;
+class KeyEvent;
 }
 
 namespace exo {
@@ -87,6 +88,9 @@ std::unique_ptr<exo::Permission> GrantPermissionToActivate(
 
 // Returns true if the |window| has permission to activate itself.
 bool HasPermissionToActivate(aura::Window* window);
+
+// Returns true if event is/will be consumed by IME.
+bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event);
 
 }  // namespace exo
 
