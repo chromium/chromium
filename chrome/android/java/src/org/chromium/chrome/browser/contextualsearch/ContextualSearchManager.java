@@ -526,7 +526,8 @@ public class ContextualSearchManager
     public void startSearchTermResolutionRequest(String selection, boolean isExactResolve) {
         WebContents baseWebContents = getBaseWebContents();
         if (baseWebContents != null && mContext != null && mContext.canResolve()) {
-            if (isExactResolve) mContext.setExactResolve();
+            mContext.prepareToResolve(
+                    isExactResolve, mPolicy.getRelatedSearchesStamp((getBasePageLanguage())));
             ContextualSearchManagerJni.get().startSearchTermResolutionRequest(
                     mNativeContextualSearchManagerPtr, this, mContext, getBaseWebContents());
             ContextualSearchUma.logResolveRequested(mSelectionController.isTapSelection());
@@ -644,6 +645,7 @@ public class ContextualSearchManager
                 mInternalStateController.reset(StateChangeReason.UNKNOWN);
             } else {
                 mContext.setSurroundingText(encoding, surroundingText, startOffset, endOffset);
+                mPolicy.logRelatedSearchesQualifiedUsers(getBasePageLanguage());
                 mInternalStateController.notifyFinishedWorkOn(InternalState.GATHERING_SURROUNDINGS);
             }
         }
@@ -1617,7 +1619,7 @@ public class ContextualSearchManager
                     mContext.setResolveProperties(mPolicy.getHomeCountry(mActivity),
                             mPolicy.doSendBasePageUrl(), interaction.getEventId(),
                             interaction.getEncodedUserInteractions(), targetLanguage,
-                            fluentLanguages, mPolicy.doRelatedSearches());
+                            fluentLanguages);
                 }
                 WebContents webContents = getBaseWebContents();
                 if (webContents != null) {
@@ -1830,6 +1832,13 @@ public class ContextualSearchManager
     public static void setContextualSearchState(boolean enabled) {
         getPrefService().setString(Pref.CONTEXTUAL_SEARCH_ENABLED,
                 enabled ? CONTEXTUAL_SEARCH_ENABLED : CONTEXTUAL_SEARCH_DISABLED);
+    }
+
+    // Private helper functions
+
+    /** @return The language of the base page being viewed by the user. */
+    private String getBasePageLanguage() {
+        return mContext.getDetectedLanguage();
     }
 
     private static PrefService getPrefService() {

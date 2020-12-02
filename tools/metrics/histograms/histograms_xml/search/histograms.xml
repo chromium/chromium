@@ -666,7 +666,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>twellington@chromium.org</owner>
   <summary>
     The state of the Contextual Search Preference. Can be logged multiple times.
-    Used to determine the population size (user view). Implemented for Android.
+    Used to determine the population size (user view). Logged whenever the
+    Chrome application is paused. Implemented for Android.
   </summary>
 </histogram>
 
@@ -1399,6 +1400,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
     Records the width of a single query tile when shown in the carousel.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.AllUserPermissions"
+    enum="ContextualSearchPermissions" expires_after="M91">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    Enumerates all users by the permissions needed in order to use the Related
+    Searches feature. This tells us the potential user pool if we were to remove
+    one of the current requirements (which are sending page content and sending
+    the URL to Google). Logged whenever the Chrome application is paused. NOTE:
+    Use the Count unique clients option to count users since multiple events are
+    logged for each user. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
+    expires_after="M92">
+  <owner>donnd@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    Records true for every user that is qualified for the Related Searches
+    experiment regardless of whether that feature is enabled or not. Never logs
+    false. Used to validate that population sizes are relatively equal (since
+    only a subset is actually qualified). Logged whenever a user triggers
+    Contextual Search in way that could activate Related Searches (i.e. sends
+    context). NOTE: Use the Count unique clients option to count users since
+    multiple events are logged for each user. Implemented for Android.
   </summary>
 </histogram>
 

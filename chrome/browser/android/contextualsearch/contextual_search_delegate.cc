@@ -63,6 +63,7 @@ const char kContextualSearchCategory[] = "category";
 const char kContextualSearchCardTag[] = "card_tag";
 const char kContextualSearchSearchUrlFull[] = "search_url_full";
 const char kContextualSearchSearchUrlPreload[] = "search_url_preload";
+const char kRelatedSearchesQueryList[] = "searches";
 
 const char kActionCategoryAddress[] = "ADDRESS";
 const char kActionCategoryEmail[] = "EMAIL";
@@ -333,7 +334,8 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
       context->GetExactResolve(),
       context->GetTranslationLanguages().detected_language,
       context->GetTranslationLanguages().target_language,
-      context->GetTranslationLanguages().fluent_languages, std::string());
+      context->GetTranslationLanguages().fluent_languages,
+      context->GetRelatedSearchesStamp());
 
   search_terms_args.contextual_search_params = params;
 
@@ -541,6 +543,23 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
   dict->GetString("logged_event_id", &logged_event_id_string);
   if (!logged_event_id_string.empty()) {
     *logged_event_id = std::stoll(logged_event_id_string, nullptr);
+  }
+
+  // Do minimal decoding of Related Searches.
+  // This should not be needed because the server shouldn't return any
+  // Related Searches to this client because it should know that it's
+  // too old to display them properly. As a fallback we just display
+  // the first one.
+  base::ListValue* search_query_list = nullptr;
+  dict->GetList(kRelatedSearchesQueryList, &search_query_list);
+  if (search_query_list && search_query_list->GetSize() >= 1) {
+    // For now, just use the first search from the list as the text to
+    // display and the query to search for.
+    // TODO(donnd): Decode the searches and associated metadata once the
+    // server sends all of that. Also use the non-deprecated ListValue
+    // accessors.
+    search_query_list->GetString(0, display_text);
+    search_query_list->GetString(0, search_term);
   }
 }
 
