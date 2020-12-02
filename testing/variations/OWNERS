@@ -1,10 +1,4 @@
 file://base/metrics/OWNERS
 
-# Temporarily listed here while training up as broader metrics owners.
-per-file fieldtrial_testing_config.json=caitlinfischer@google.com
-per-file fieldtrial_testing_config.json=sweilun@chromium.org
-
-# Use the following owners only if:
-#  - You work in the same area as them.
-#  - They are already aware of the field trial being modified.
-per-file fieldtrial_testing_config.json=tbansal@chromium.org
+# Changes to the testing config can be approved by any committer.
+per-file fieldtrial_testing_config.json=*
