@@ -67,13 +67,16 @@ void MaybeReportDeepScanningVerdict(
                        return (c >= '0' && c <= '9') ||
                               (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
                      }));
+  auto* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
+  if (!router)
+    return;
 
   std::string unscanned_reason = MaybeGetUnscannedReason(result);
   if (!unscanned_reason.empty()) {
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-        ->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
-                               mime_type, trigger, access_point,
-                               unscanned_reason, content_size, event_result);
+    router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
+                                 mime_type, trigger, access_point,
+                                 unscanned_reason, content_size, event_result);
   }
 
   if (result != BinaryUploadService::Result::SUCCESS)
@@ -88,16 +91,14 @@ void MaybeReportDeepScanningVerdict(
       else if (result.tag() == "dlp")
         unscanned_reason = "DLP_SCAN_FAILED";
 
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-          ->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
-                                 mime_type, trigger, access_point,
-                                 std::move(unscanned_reason), content_size,
-                                 event_result);
+      router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
+                                   mime_type, trigger, access_point,
+                                   std::move(unscanned_reason), content_size,
+                                   event_result);
     } else if (result.triggered_rules_size() > 0) {
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-          ->OnAnalysisConnectorResult(url, file_name, download_digest_sha256,
-                                      mime_type, trigger, access_point, result,
-                                      content_size, event_result);
+      router->OnAnalysisConnectorResult(url, file_name, download_digest_sha256,
+                                        mime_type, trigger, access_point,
+                                        result, content_size, event_result);
     }
   }
 }
