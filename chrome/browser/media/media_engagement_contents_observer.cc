@@ -649,7 +649,7 @@ MediaEngagementContentsObserver::GetOrCreateSession(
   }
 
   MediaEngagementSession::RestoreType restore_type =
-      navigation_handle->GetRestoreType() == content::RestoreType::NONE
+      navigation_handle->GetRestoreType() == content::RestoreType::kNotRestored
           ? MediaEngagementSession::RestoreType::kNotRestored
           : MediaEngagementSession::RestoreType::kRestored;
 

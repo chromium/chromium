@@ -1179,7 +1179,6 @@ void TabRestoreServiceImpl::PersistenceDelegate::LoadStateChanged() {
 
   // And add them.
   for (auto& staging_entry : staging_entries_) {
-    staging_entry->from_last_session = true;
     tab_restore_service_helper_->AddEntry(std::move(staging_entry), false,
                                           false);
   }

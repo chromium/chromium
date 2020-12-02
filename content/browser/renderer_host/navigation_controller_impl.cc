@@ -1095,7 +1095,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   DCHECK(pending_entry_index_ == -1 || pending_entry_->site_instance() ||
          pending_entry_->IsRestored());
   if (pending_entry_ && pending_entry_->IsRestored()) {
-    pending_entry_->set_restore_type(RestoreType::NONE);
+    pending_entry_->set_restore_type(RestoreType::kNotRestored);
     was_restored = true;
   }
 
@@ -2089,8 +2089,7 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
     session_storage_namespace_map_[it->first] = source_namespace->Clone();
   }
 
-  FinishRestore(source->last_committed_entry_index_,
-                RestoreType::CURRENT_SESSION);
+  FinishRestore(source->last_committed_entry_index_, RestoreType::kRestored);
 }
 
 void NavigationControllerImpl::CopyStateFromAndPrune(NavigationController* temp,

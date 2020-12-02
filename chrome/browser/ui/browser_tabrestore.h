@@ -32,8 +32,7 @@ namespace chrome {
 // |extension_app_id| is non-empty the tab is an app tab and |extension_app_id|
 // is the id of the extension. If |group| has a value, it specifies the
 // ID corresponding to the tab's group. If |pin| is true and |tab_index|/ is
-// the last pinned tab, then the newly created tab is pinned. If
-// |from_last_session| is true, |navigations| are from the previous session.
+// the last pinned tab, then the newly created tab is pinned.
 // |user_agent_override| contains the string being used as the user agent for
 // all of the tab's navigations when the regular user agent is overridden. If
 // |from_session_restore| is true, the restored tab is created by session
@@ -49,7 +48,6 @@ content::WebContents* AddRestoredTab(
     base::Optional<tab_groups::TabGroupId> group,
     bool select,
     bool pin,
-    bool from_last_session,
     base::TimeTicks last_active_time,
     content::SessionStorageNamespace* storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
@@ -62,7 +60,6 @@ content::WebContents* ReplaceRestoredTab(
     Browser* browser,
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
     int selected_navigation,
-    bool from_last_session,
     const std::string& extension_app_id,
     content::SessionStorageNamespace* session_storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,

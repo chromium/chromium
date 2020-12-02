@@ -345,7 +345,7 @@ NavigationEntryImpl::NavigationEntryImpl(
       update_virtual_url_with_url_(false),
       title_(title),
       transition_type_(transition_type),
-      restore_type_(RestoreType::NONE),
+      restore_type_(RestoreType::kNotRestored),
       is_overriding_user_agent_(false),
       http_status_code_(0),
       is_renderer_initiated_(is_renderer_initiated),
@@ -634,7 +634,7 @@ NavigationEntryImpl::GetReplacedEntryData() {
 }
 
 bool NavigationEntryImpl::IsRestored() {
-  return restore_type_ != RestoreType::NONE;
+  return restore_type_ == RestoreType::kRestored;
 }
 
 std::string NavigationEntryImpl::GetExtraHeaders() {

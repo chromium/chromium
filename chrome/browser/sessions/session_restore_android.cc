@@ -37,7 +37,7 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   content::WebContents* raw_new_web_contents = new_web_contents.get();
   int selected_index = session_tab.normalized_navigation_index();
   new_web_contents->GetController().Restore(
-      selected_index, content::RestoreType::LAST_SESSION, &entries);
+      selected_index, content::RestoreType::kRestored, &entries);
 
   TabAndroid* current_tab = TabAndroid::FromWebContents(web_contents);
   DCHECK(current_tab);

@@ -76,11 +76,8 @@ void ProcessRestoreCommands(
     ua_override.ua_metadata_override = blink::UserAgentMetadata::Demarshal(
         session_tab.user_agent_override.opaque_ua_metadata_override);
     web_contents->SetUserAgentOverride(ua_override, false);
-    // CURRENT_SESSION matches what clank does. On the desktop, we should
-    // use a different type.
-    web_contents->GetController().Restore(selected_navigation_index,
-                                          content::RestoreType::CURRENT_SESSION,
-                                          &entries);
+    web_contents->GetController().Restore(
+        selected_navigation_index, content::RestoreType::kRestored, &entries);
     DCHECK(entries.empty());
     TabImpl* tab = browser->CreateTabForSessionRestore(std::move(web_contents),
                                                        session_tab.guid);

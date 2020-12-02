@@ -373,7 +373,7 @@ WebContents* RestoreContentsFromByteBuffer(void* data,
   params.initially_hidden = initially_hidden;
   std::unique_ptr<WebContents> web_contents(WebContents::Create(params));
   web_contents->GetController().Restore(
-      current_entry_index, content::RestoreType::CURRENT_SESSION, &entries);
+      current_entry_index, content::RestoreType::kRestored, &entries);
   return web_contents.release();
 }
 

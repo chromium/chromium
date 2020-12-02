@@ -219,7 +219,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (disposition == WindowOpenDisposition::CURRENT_TAB) {
       DCHECK(!use_new_window);
       web_contents = chrome::ReplaceRestoredTab(
-          browser, tab.navigations, selected_index, true, tab.extension_app_id,
+          browser, tab.navigations, selected_index, tab.extension_app_id,
           nullptr, tab.user_agent_override, true /* from_session_restore */);
     } else {
       int tab_index =
@@ -228,7 +228,7 @@ class SessionRestoreImpl : public BrowserListObserver {
           browser, tab.navigations, tab_index, selected_index,
           tab.extension_app_id, base::nullopt,
           disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB,  // selected
-          tab.pinned, true, base::TimeTicks(), nullptr, tab.user_agent_override,
+          tab.pinned, base::TimeTicks(), nullptr, tab.user_agent_override,
           true /* from_session_restore */);
       // Start loading the tab immediately.
       web_contents->GetController().LoadIfNecessary();
@@ -614,7 +614,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     // Apply the stored group.
     WebContents* web_contents = chrome::AddRestoredTab(
         browser, tab.navigations, tab_index, selected_index,
-        tab.extension_app_id, tab.group, is_selected_tab, tab.pinned, true,
+        tab.extension_app_id, tab.group, is_selected_tab, tab.pinned,
         last_active_time, session_storage_namespace.get(),
         tab.user_agent_override, true /* from_session_restore */);
     DCHECK(web_contents);

@@ -60,7 +60,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(GetSearchableFormURL, const GURL&());
   MOCK_METHOD0(GetSearchableFormEncoding, const std::string&());
   ReloadType GetReloadType() override { return reload_type_; }
-  RestoreType GetRestoreType() override { return RestoreType::NONE; }
+  RestoreType GetRestoreType() override { return RestoreType::kNotRestored; }
   const GURL& GetBaseURLForDataURL() override { return base_url_for_data_url_; }
   MOCK_METHOD0(IsPost, bool());
   const blink::mojom::Referrer& GetReferrer() override { return referrer_; }

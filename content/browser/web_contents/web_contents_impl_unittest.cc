@@ -802,7 +802,7 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredSitelessUrl) {
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));
-  controller().Restore(0, RestoreType::LAST_SESSION, &entries);
+  controller().Restore(0, RestoreType::kRestored, &entries);
   ASSERT_EQ(0u, entries.size());
   ASSERT_EQ(1, controller().GetEntryCount());
 
@@ -844,7 +844,7 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
           false, std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entries.push_back(std::move(new_entry));
-  controller().Restore(0, RestoreType::LAST_SESSION, &entries);
+  controller().Restore(0, RestoreType::kRestored, &entries);
   ASSERT_EQ(0u, entries.size());
 
   ASSERT_EQ(1, controller().GetEntryCount());

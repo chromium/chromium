@@ -1010,7 +1010,7 @@ NavigationRequest::NavigationRequest(
       commit_params_(std::move(commit_params)),
       browser_initiated_(browser_initiated),
       navigation_ui_data_(std::move(navigation_ui_data)),
-      restore_type_(entry ? entry->restore_type() : RestoreType::NONE),
+      restore_type_(entry ? entry->restore_type() : RestoreType::kNotRestored),
       // Some navigations, such as renderer-initiated subframe navigations,
       // won't have a NavigationEntryImpl. Set |reload_type_| if applicable
       // for them.

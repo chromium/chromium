@@ -115,7 +115,6 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
-    bool from_last_session,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
     const SessionID* tab_id) {
@@ -133,7 +132,6 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
     base::Optional<tab_groups::TabGroupId> group,
     int selected_navigation,
-    bool from_last_session,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override) {

@@ -42,10 +42,10 @@ SessionRestorePageLoadMetricsObserver::OnStart(
     return STOP_OBSERVING;
   }
 
-  // The navigation should be from the last session.
-  DCHECK_EQ(content::RestoreType::LAST_SESSION,
+  // The navigation should be from restoring the last session or restoring a
+  // tab.
+  DCHECK_EQ(content::RestoreType::kRestored,
             navigation_handle->GetRestoreType());
-
   return CONTINUE_OBSERVING;
 }
 

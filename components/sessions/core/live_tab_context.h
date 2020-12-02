@@ -58,8 +58,8 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual ui::WindowShowState GetRestoredState() const = 0;
   virtual std::string GetWorkspace() const = 0;
 
-  // Note: |tab_platform_data| may be null (e.g., if |from_last_session| is
-  // true, as this data is not persisted, or if the platform does not provide
+  // Note: |tab_platform_data| may be null (e.g., if restoring from last session
+  // as this data is not persisted, or if the platform does not provide
   // platform-specific data).
   // |tab_id| is the tab's unique SessionID. Only present if a historical tab
   // has been created by TabRestoreService.
@@ -72,19 +72,17 @@ class SESSIONS_EXPORT LiveTabContext {
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
-      bool from_last_session,
       const PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
       const SessionID* tab_id) = 0;
 
-  // Note: |tab_platform_data| may be null (e.g., if |from_last_session| is
-  // true, as this data is not persisted, or if the platform does not provide
+  // Note: |tab_platform_data| may be null (e.g., if restoring from last session
+  // as this data is not persisted, or if the platform does not provide
   // platform-specific data).
   virtual LiveTab* ReplaceRestoredTab(
       const std::vector<SerializedNavigationEntry>& navigations,
       base::Optional<tab_groups::TabGroupId> group,
       int selected_navigation,
-      bool from_last_session,
       const std::string& extension_app_id,
       const PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override) = 0;

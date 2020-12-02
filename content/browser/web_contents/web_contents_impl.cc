@@ -5588,7 +5588,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // Restore the previously created NavigationEntry.
   std::vector<std::unique_ptr<NavigationEntry>> navigation_entries;
   navigation_entries.push_back(std::move(navigation_entry));
-  view_source_contents->GetController().Restore(0, RestoreType::CURRENT_SESSION,
+  view_source_contents->GetController().Restore(0, RestoreType::kRestored,
                                                 &navigation_entries);
 
   // Add |view_source_contents| as a new tab.

@@ -181,7 +181,7 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
         test_web_contents_factory_->CreateWebContents(&testing_profile_);
     std::vector<std::unique_ptr<content::NavigationEntry>> entries;
     entries.push_back(content::NavigationEntry::Create());
-    contents->GetController().Restore(0, content::RestoreType::LAST_SESSION,
+    contents->GetController().Restore(0, content::RestoreType::kRestored,
                                       &entries);
     // Create a last active time in the past.
     content::WebContentsTester::For(contents)->SetLastActiveTime(

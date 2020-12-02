@@ -5420,8 +5420,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, RestoreHasSSLState) {
   std::vector<std::unique_ptr<content::NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
   content::TestNavigationObserver observer(raw_tab2);
-  raw_tab2->GetController().Restore(
-      entries.size() - 1, content::RestoreType::LAST_SESSION, &entries);
+  raw_tab2->GetController().Restore(entries.size() - 1,
+                                    content::RestoreType::kRestored, &entries);
   raw_tab2->GetController().LoadIfNecessary();
   observer.Wait();
   ssl_test_util::CheckAuthenticatedState(raw_tab2, AuthState::NONE);

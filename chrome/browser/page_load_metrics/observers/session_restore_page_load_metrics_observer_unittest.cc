@@ -130,7 +130,7 @@ class SessionRestorePageLoadMetricsObserverTest
     entries.emplace_back(std::move(entry));
 
     content::NavigationController& controller = contents->GetController();
-    controller.Restore(0, content::RestoreType::LAST_SESSION, &entries);
+    controller.Restore(0, content::RestoreType::kRestored, &entries);
     ASSERT_EQ(0u, entries.size());
     ASSERT_EQ(1, controller.GetEntryCount());
 

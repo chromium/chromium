@@ -74,11 +74,6 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // creation.
     base::Time timestamp;
 
-    // Is this entry from the last session? This is set to true for entries that
-    // were closed during the last session, and false for entries that were
-    // closed during this session.
-    bool from_last_session = false;
-
     // Estimates memory usage. By default returns 0.
     virtual size_t EstimateMemoryUsage() const;
 
