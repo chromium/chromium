@@ -9,7 +9,7 @@ import sys
 from core import path_util
 path_util.AddPyUtilsToPath()
 
-from cli_tools import validate_tbmv3_metric
+from cli_tools.tbmv3 import validate_tbmv3_metric
 
 
 if __name__ == '__main__':

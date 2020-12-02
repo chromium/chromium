@@ -11,11 +11,8 @@ import tempfile
 import csv
 
 from core.tbmv3 import run_tbmv3_metric
-from py_utils import cloud_storage
+from cli_tools.tbmv3 import trace_downloader
 from tracing.metrics import metric_runner
-
-
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def SetUpLogging(level):
@@ -50,10 +47,8 @@ def ParseArgs():
   parser.add_argument('--traces-dir',
                       type=str,
                       required=False,
-                      default=('/'.join([_SCRIPT_DIR, 'traces'])),
-                      help=('Directory to store all intermediary files. '
-                            'If non is given, %s will be used') %
-                      '/'.join([_SCRIPT_DIR, 'traces']))
+                      default=trace_downloader.DEFAULT_TRACE_DIR,
+                      help='Directory to store all intermediate files')
   parser.add_argument('--trace-links-csv-path',
                       type=str,
                       required=False,
@@ -69,92 +64,18 @@ def ParseArgs():
                       default=None,
                       help=('Path to trace_processor shell. '
                             'Default: Binary downloaded from cloud storage.'))
+  parser.add_argument('-v', '--verbose', action='store_true')
   args = parser.parse_args()
   if args.trace_links_csv_path is None:
     args.trace_links_csv_path = '/'.join([args.traces_dir, 'trace_links.csv'])
   return args
 
 
-def DownloadTraceFile(trace_link, traces_dir):
-  trace_link_extension = os.path.splitext(trace_link)[1]
-  if trace_link.startswith('/'):
-    trace_link = trace_link[1:]
-  if not os.path.exists(traces_dir):
-    os.mkdir(traces_dir, 0755)
-  with tempfile.NamedTemporaryFile(dir=traces_dir,
-                                   suffix='_trace%s' % trace_link_extension,
-                                   delete=False) as trace_file:
-    cloud_storage.Get(cloud_storage.TELEMETRY_OUTPUT, trace_link,
-                      trace_file.name)
-    logging.debug('Downloading trace to %s\ntrace_link: %s.' %
-                  (trace_file.name, trace_link))
-    return trace_file.name
-
-
-def GetProtoTraceLinkFromTraceEventsDir(link_prefix):
-  proto_link_prefix = '/'.join([link_prefix, 'trace/traceEvents/**'])
-  proto_link = None
-  try:
-    for link in cloud_storage.List(cloud_storage.TELEMETRY_OUTPUT,
-                                   proto_link_prefix):
-      if link.endswith('.pb.gz') or link.endswith('.pb'):
-        proto_link = link
-        break
-    if proto_link is not None:
-      return proto_link
-    raise cloud_storage.NotFoundError(
-        'Proto trace link not found in cloud storage. Path: %s.' %
-        proto_link_prefix)
-  except cloud_storage.NotFoundError, e:
-    raise cloud_storage.NotFoundError('No URLs match the prefix %s: %s' %
-                                      (proto_link_prefix, str(e)))
-
-
-def ParseGSLinksFromHTTPLink(http_link):
-  """Parses gs:// links to traces from HTTP link.
-
-  The link to HTML trace can be obtained by substituting the part of http_link
-  ending with /o/ with 'gs://chrome-telemetry-output/'.
-
-  The link to proto trace in the simplest case can be obtained from HTML trace
-  link by replacing the extension from 'html' to 'pb'. In case this approach
-  does not work the proto trace link can be found in trace/traceEvents
-  subdirectory.
-  For example, the first approach works for
-  https://console.developers.google.com/m/cloudstorage/b/chrome-telemetry-output/o/20201004T094119_6100/rendering.desktop/animometer_webgl_attrib_arrays/retry_0/trace.html:
-  The cloud storage paths to HTML and proto traces are:
-  20201004T094119_6100/rendering.desktop/animometer_webgl_attrib_arrays/retry_0/trace.html
-  20201004T094119_6100/rendering.desktop/animometer_webgl_attrib_arrays/retry_0/trace.pb,
-  but doesn't work for
-  https://console.developers.google.com/m/cloudstorage/b/chrome-telemetry-output/o/20200928T183503_42028/v8.browsing_desktop/browse_social_tumblr_infinite_scroll_2018/retry_0/trace.html:
-  The cloud storage paths to HTML and proto traces are:
-  20200928T183503_42028/v8.browsing_desktop/browse_social_tumblr_infinite_scroll_2018/
-  retry_0/trace.html,
-  20200928T183503_42028/v8.browsing_desktop/browse_social_tumblr_infinite_scroll_2018/
-  retry_0/trace/traceEvents/tmpTq5XNv.pb.gz
-  """
-  html_link_suffix = '/trace.html'
-  assert http_link.endswith(html_link_suffix), (
-      'Link passed to ParseGSLinksFromHTTPLink ("%s") is '
-      ' invalid. The link must end with "%s".') % (http_link, html_link_suffix)
-
-  html_link = http_link.split('/o/')[1]
-  if not cloud_storage.Exists(cloud_storage.TELEMETRY_OUTPUT, html_link):
-    raise cloud_storage.NotFoundError(
-        'HTML trace link %s not found in cloud storage.' % html_link)
-
-  proto_link = os.path.splitext(html_link)[0] + '.pb'
-
-  if not cloud_storage.Exists(cloud_storage.TELEMETRY_OUTPUT, proto_link):
-    link_prefix = html_link[:-len(html_link_suffix)]
-    proto_link = GetProtoTraceLinkFromTraceEventsDir(link_prefix)
-  return html_link, proto_link
-
-
 def RunTBMv2Metric(tbmv2_name, html_trace_filename, traces_dir):
   metrics = [tbmv2_name]
   TEN_MINUTES = 60 * 10
-  mre_result = metric_runner.RunMetricOnSingleTrace(html_trace_filename,
+  trace_abspath = os.path.abspath(html_trace_filename)
+  mre_result = metric_runner.RunMetricOnSingleTrace(trace_abspath,
                                                     metrics,
                                                     timeout=TEN_MINUTES)
   with tempfile.NamedTemporaryFile(dir=traces_dir,
@@ -219,9 +140,11 @@ def ValidateTBMv3Metric(args):
   for trace_info in reader:
     bot = trace_info['Bot']
     benchmark = trace_info['Benchmark']
-    html_link, proto_link = ParseGSLinksFromHTTPLink(trace_info['Trace Link'])
-    html_trace = DownloadTraceFile(html_link, args.traces_dir)
-    proto_trace = DownloadTraceFile(proto_link, args.traces_dir)
+    html_trace_url = trace_info['Trace Link']
+    html_trace = trace_downloader.DownloadHtmlTrace(
+        html_trace_url, download_dir=args.traces_dir)
+    proto_trace = trace_downloader.DownloadProtoTrace(
+        html_trace_url, download_dir=args.traces_dir)
     tbmv3_out_filename = RunTBMv3Metric(args.tbmv3_name, proto_trace,
                                         args.traces_dir,
                                         args.trace_processor_path)
@@ -259,7 +182,9 @@ def ValidateTBMv3Metric(args):
                **filenames))
   return 1
 
+
 def Main():
-  SetUpLogging(level=logging.WARNING)
   args = ParseArgs()
+  loglevel = logging.DEBUG if args.verbose else logging.WARNING
+  SetUpLogging(level=loglevel)
   sys.exit(ValidateTBMv3Metric(args))
