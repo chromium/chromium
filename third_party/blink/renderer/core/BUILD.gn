@@ -24,6 +24,7 @@ import("//third_party/blink/renderer/core/context_features/build.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/blink/renderer/core/css/build.gni")
 import("//third_party/blink/renderer/core/display_lock/build.gni")
+import("//third_party/blink/renderer/core/document_transition/build.gni")
 import("//third_party/blink/renderer/core/dom/build.gni")
 import("//third_party/blink/renderer/core/editing/build.gni")
 import("//third_party/blink/renderer/core/events/build.gni")
@@ -193,6 +194,9 @@ component("core") {
       rebase_path(blink_core_sources_context_features, "", "context_features")
   sources += rebase_path(blink_core_sources_css, "", "css")
   sources += rebase_path(blink_core_sources_display_lock, "", "display_lock")
+  sources += rebase_path(blink_core_sources_document_transition,
+                         "",
+                         "document_transition")
   sources += rebase_path(blink_core_sources_dom, "", "dom")
   sources += rebase_path(blink_core_sources_editing, "", "editing")
   sources += rebase_path(blink_core_sources_events, "", "events")
@@ -1187,6 +1191,7 @@ source_set("unit_tests") {
     "css/mock_css_paint_image_generator.h",
     "display_lock/display_lock_context_test.cc",
     "display_lock/display_lock_utilities_test.cc",
+    "document_transition/document_transition_test.cc",
     "dom/attr_test.cc",
     "dom/document_statistics_collector_test.cc",
     "dom/document_test.cc",

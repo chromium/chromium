@@ -1,0 +1,10 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_document_transition = [
+  "document_create_transition.cc",
+  "document_create_transition.h",
+  "document_transition.cc",
+  "document_transition.h",
+]

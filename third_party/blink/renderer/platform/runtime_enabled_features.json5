@@ -761,6 +761,11 @@
       depends_on: ['DocumentPolicy']
     },
     {
+      // Document transitions, including shared element transitions.
+      // See https://github.com/WICG/proposals/issues/12.
+      name: "DocumentTransition"
+    },
+    {
       name: "DocumentWrite",
     },
     {
