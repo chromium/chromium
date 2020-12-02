@@ -62,17 +62,6 @@ class ArcIntentHelperBridge : public KeyedService,
                         ArcBridgeService* bridge_service);
   ~ArcIntentHelperBridge() override;
 
-  void SetAdaptiveIconDelegate(AdaptiveIconDelegate* delegate);
-
-  void AddObserver(ArcIntentHelperObserver* observer);
-  void RemoveObserver(ArcIntentHelperObserver* observer);
-  bool HasObserver(ArcIntentHelperObserver* observer) const;
-  void HandleCameraResult(
-      uint32_t intent_id,
-      arc::mojom::CameraIntentAction action,
-      const std::vector<uint8_t>& data,
-      arc::mojom::IntentHelperInstance::HandleCameraResultCallback callback);
-
   // mojom::IntentHelperHost
   void OnIconInvalidated(const std::string& package_name) override;
   void OnIntentFiltersUpdated(
@@ -85,10 +74,10 @@ class ArcIntentHelperBridge : public KeyedService,
                        int32_t top_margin,
                        OnOpenCustomTabCallback callback) override;
   void OnOpenChromePage(mojom::ChromePage page) override;
+  void FactoryResetArc() override;
   void OpenWallpaperPicker() override;
   void SetWallpaperDeprecated(const std::vector<uint8_t>& jpeg_data) override;
   void OpenVolumeControl() override;
-  void FactoryResetArc() override;
   void OnOpenWebApp(const std::string& url) override;
   void RecordShareFilesMetrics(mojom::ShareFiles flag) override;
   void LaunchCameraApp(uint32_t intent_id,
@@ -124,6 +113,18 @@ class ArcIntentHelperBridge : public KeyedService,
   // scheme is neither http nor https, the function immediately returns true
   // without checking the filters.
   bool ShouldChromeHandleUrl(const GURL& url);
+
+  void SetAdaptiveIconDelegate(AdaptiveIconDelegate* delegate);
+
+  void AddObserver(ArcIntentHelperObserver* observer);
+  void RemoveObserver(ArcIntentHelperObserver* observer);
+  bool HasObserver(ArcIntentHelperObserver* observer) const;
+
+  void HandleCameraResult(
+      uint32_t intent_id,
+      arc::mojom::CameraIntentAction action,
+      const std::vector<uint8_t>& data,
+      arc::mojom::IntentHelperInstance::HandleCameraResultCallback callback);
 
   // Returns false if |package_name| is for the intent_helper apk.
   static bool IsIntentHelperPackage(const std::string& package_name);

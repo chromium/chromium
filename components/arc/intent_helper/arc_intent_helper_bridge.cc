@@ -137,6 +137,18 @@ void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {
   icon_loader_.InvalidateIcons(package_name);
 }
 
+void ArcIntentHelperBridge::OnIntentFiltersUpdated(
+    std::vector<IntentFilter> filters) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  intent_filters_.clear();
+
+  for (auto& filter : filters)
+    intent_filters_[filter.package_name()].push_back(std::move(filter));
+
+  for (auto& observer : observer_list_)
+    observer.OnIntentFiltersUpdated(base::nullopt);
+}
+
 void ArcIntentHelperBridge::OnOpenDownloads() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordOpenType(ArcIntentHelperOpenType::DOWNLOADS);
@@ -370,18 +382,6 @@ ArcIntentHelperBridge::FilterOutIntentHelper(
     handlers_filtered.push_back(std::move(handler));
   }
   return handlers_filtered;
-}
-
-void ArcIntentHelperBridge::OnIntentFiltersUpdated(
-    std::vector<IntentFilter> filters) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  intent_filters_.clear();
-
-  for (auto& filter : filters)
-    intent_filters_[filter.package_name()].push_back(std::move(filter));
-
-  for (auto& observer : observer_list_)
-    observer.OnIntentFiltersUpdated(base::nullopt);
 }
 
 const std::vector<IntentFilter>&
