@@ -31,8 +31,14 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -72,6 +78,10 @@ class AssistantOnboardingCoordinator {
     private AssistantOverlayCoordinator mOverlayCoordinator;
 
     @Nullable
+    private WebContentsObserver mWebContentsObserver;
+    private BottomSheetObserver mBottomSheetObserver;
+
+    @Nullable
     private AssistantBottomSheetContent mContent;
     private boolean mAnimate = true;
 
@@ -100,6 +110,35 @@ class AssistantOnboardingCoordinator {
      * <p>The {@code callback} will be called with true or false when the user accepts or cancels
      * the onboarding (respectively).
      *
+     * <p>The {@code targetUrl} is the initial URL Autofill Assistant is being started on. The
+     * navigation to that URL is allowed, other navigations will hide Autofill Assistant.
+     */
+    void show(Callback<Boolean> callback, WebContents webContents, String targetUrl) {
+        mWebContentsObserver = new WebContentsObserver(webContents) {
+            @Override
+            public void didStartNavigation(NavigationHandle navigationHandle) {
+                if (navigationHandle.getUrl().getSpec().equals(targetUrl)) {
+                    return;
+                }
+
+                if (navigationHandle.isInMainFrame() && !navigationHandle.isRendererInitiated()
+                        && !navigationHandle.isSameDocument()) {
+                    onUserAction(/* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
+                            DropOutReason.ONBOARDING_NAVIGATION);
+                }
+            }
+        };
+        webContents.addObserver(mWebContentsObserver);
+
+        show(callback);
+    }
+
+    /**
+     * Shows onboarding and provides the result to the given callback.
+     *
+     * <p>The {@code callback} will be called with true or false when the user accepts or cancels
+     * the onboarding (respectively).
+     *
      * <p>Note that the bottom sheet will be hidden after the callback returns. Call, from the
      * callback, {@link #hide} to hide it earlier or {@link #transferControls} to take ownership of
      * it and possibly keep it past the end of the callback.
@@ -113,6 +152,20 @@ class AssistantOnboardingCoordinator {
         mOverlayCoordinator = new AssistantOverlayCoordinator(
                 mContext, mBrowserControls, mCompositorViewHolder, mScrimCoordinator, overlayModel);
         overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
+
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetStateChanged(int newState) {
+                if (newState == SheetState.HIDDEN) {
+                    overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.HIDDEN);
+                }
+                if (newState == SheetState.PEEK || newState == SheetState.HALF
+                        || newState == SheetState.FULL) {
+                    overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
+                }
+            }
+        };
+        mController.addObserver(mBottomSheetObserver);
 
         AssistantBottomBarDelegate delegate = new AssistantBottomBarDelegate() {
             @Override
@@ -166,6 +219,13 @@ class AssistantOnboardingCoordinator {
             mController.hideContent(mContent, /* animate= */ mAnimate);
             mContent = null;
         }
+
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.destroy();
+            mWebContentsObserver = null;
+        }
+
+        mController.removeObserver(mBottomSheetObserver);
     }
 
     /**

@@ -51,8 +51,9 @@ class Metrics {
     ONBOARDING_BACK_BUTTON_CLICKED = 23,
     NAVIGATION_WHILE_RUNNING = 24,
     UI_CLOSED_UNEXPECTEDLY = 25,  // This is a "should never happen" entry.
+    ONBOARDING_NAVIGATION = 26,
 
-    kMaxValue = UI_CLOSED_UNEXPECTEDLY
+    kMaxValue = ONBOARDING_NAVIGATION
   };
 
   // The different ways that autofill assistant can stop.
@@ -424,6 +425,9 @@ class Metrics {
         break;
       case DropOutReason::UI_CLOSED_UNEXPECTEDLY:
         out << "UI_CLOSED_UNEXPECTEDLY";
+        break;
+      case DropOutReason::ONBOARDING_NAVIGATION:
+        out << "ONBOARDING_NAVIGATION";
         break;
         // Do not add default case to force compilation error for new values.
     }

@@ -182,7 +182,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             AutofillAssistantClient.fromWebContents(webContents)
                     .start(initialUrl, parameters, experimentIds, callerAccount, userName,
                             isChromeCustomTab, onboardingCoordinator);
-        });
+        }, webContents, initialUrl);
     }
 
     @Override

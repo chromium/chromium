@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -552,5 +553,61 @@ public class AutofillAssistantChromeTabIntegrationTest {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mTestRule.getActivity());
         waitUntilViewMatchesCondition(withText("Shutdown"), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    // Restricted to phones due to https://crbug.com/429671
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void newTabButtonHidesAndRecoversOnboarding() {
+        // Onboarding has not been accepted.
+        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+
+        waitUntil(
+                ()
+                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
+                                   .getSpec()
+                                   .equals(getURL(TEST_PAGE_A)));
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+
+        onView(withId(org.chromium.chrome.R.id.tab_switcher_button)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), not(isDisplayed()));
+        onView(is(mScrimCoordinator.getViewForTesting())).check(doesNotExist());
+
+        Espresso.pressBack();
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    }
+
+    @Test
+    @MediumTest
+    public void interactingWithLocationBarHidesOnboarding() {
+        // Onboarding has not been accepted.
+        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+
+        waitUntil(
+                ()
+                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
+                                   .getSpec()
+                                   .equals(getURL(TEST_PAGE_A)));
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+
+        // Clicking location bar hides UI and shows the keyboard.
+        onView(withId(org.chromium.chrome.R.id.url_bar)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), not(isDisplayed()));
+        waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
+
+        // Closing keyboard brings it back.
+        Espresso.pressBack();
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     }
 }
