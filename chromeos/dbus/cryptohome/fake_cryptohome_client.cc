@@ -694,14 +694,6 @@ void FakeCryptohomeClient::NotifyAsyncCallStatusWithData(
     observer.AsyncCallStatusWithData(async_id, return_status, data);
 }
 
-void FakeCryptohomeClient::NotifyTpmInitStatusUpdated(
-    bool ready,
-    bool owned,
-    bool was_owned_this_boot) {
-  for (auto& observer : observer_list_)
-    observer.TpmInitStatusUpdated(ready, owned, was_owned_this_boot);
-}
-
 void FakeCryptohomeClient::NotifyDircryptoMigrationProgress(
     cryptohome::DircryptoMigrationStatus status,
     uint64_t current,

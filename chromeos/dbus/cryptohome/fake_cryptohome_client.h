@@ -243,11 +243,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
     rsu_device_id_ = rsu_device_id;
   }
 
-  // Calls TpmInitStatusUpdated() on Observer instances.
-  void NotifyTpmInitStatusUpdated(bool ready,
-                                  bool owned,
-                                  bool was_owned_this_boot);
-
   // Calls DircryptoMigrationProgress() on Observer instances.
   void NotifyDircryptoMigrationProgress(
       cryptohome::DircryptoMigrationStatus status,

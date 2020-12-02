@@ -72,12 +72,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
                                          bool return_status,
                                          const std::string& data) {}
 
-    // Called when TpmInitStatus signal is received, when the status of the TPM
-    // initialization is changed.
-    virtual void TpmInitStatusUpdated(bool ready,
-                                      bool owned,
-                                      bool was_owned_this_boot) {}
-
     // Called when LowDiskSpace signal is received, when the cryptohome
     // partition is running out of disk space.
     virtual void LowDiskSpace(uint64_t disk_free_bytes) {}

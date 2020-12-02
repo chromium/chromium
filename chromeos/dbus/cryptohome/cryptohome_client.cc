@@ -797,12 +797,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
         base::BindOnce(&CryptohomeClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
     proxy_->ConnectToSignal(
-        cryptohome::kCryptohomeInterface, cryptohome::kSignalTpmInitStatus,
-        base::BindRepeating(&CryptohomeClientImpl::TpmInitStatusReceived,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CryptohomeClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    proxy_->ConnectToSignal(
         cryptohome::kCryptohomeInterface, cryptohome::kSignalLowDiskSpace,
         base::BindRepeating(&CryptohomeClientImpl::LowDiskSpaceReceived,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -1050,21 +1044,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
                             return_data_length);
     for (auto& observer : observer_list_)
       observer.AsyncCallStatusWithData(async_id, return_status, return_data);
-  }
-
-  // Handles TpmInitStatus signal.
-  void TpmInitStatusReceived(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    bool ready = false;
-    bool owned = false;
-    bool was_owned_this_boot = false;
-    if (!reader.PopBool(&ready) || !reader.PopBool(&owned) ||
-        !reader.PopBool(&was_owned_this_boot)) {
-      LOG(ERROR) << "Invalid signal: " << signal->ToString();
-      return;
-    }
-    for (auto& observer : observer_list_)
-      observer.TpmInitStatusUpdated(ready, owned, was_owned_this_boot);
   }
 
   // Handles LowDiskSpace signal.
