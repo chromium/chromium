@@ -3174,6 +3174,9 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   } else {
     // RenderDocument: After a local<->local swap, this function is called with
     // a null |proxy|.
+    // TODO(https://crbug.com/1146573): Delete this.
+    SCOPED_CRASH_KEY_BOOL(Bug1146573, Live, IsRenderFrameLive());
+    SCOPED_CRASH_KEY_BOOL(Bug1146573, MustBeReplaced, must_be_replaced());
     CHECK(ShouldCreateNewHostForSameSiteSubframe());
 
     // The unload handlers already ran for this document during the

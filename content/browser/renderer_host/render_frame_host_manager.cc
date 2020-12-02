@@ -586,6 +586,13 @@ void RenderFrameHostManager::UnloadOldFrame(
         CreateRenderFrameProxyHost(old_render_frame_host->GetSiteInstance(),
                                    old_render_frame_host->render_view_host());
   }
+  // TODO(https://crbug.com/1146573): Delete this.
+  SCOPED_CRASH_KEY_STRING256(
+      Bug1146573, OldSiteInstance,
+      old_render_frame_host->GetSiteInstance()->GetSiteURL().spec());
+  SCOPED_CRASH_KEY_STRING256(
+      Bug1146573, NewSiteInstance,
+      render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
 
   // |old_render_frame_host| will be deleted when its unload ACK is received,
   // or when the timer times out, or when the RFHM itself is deleted (whichever
