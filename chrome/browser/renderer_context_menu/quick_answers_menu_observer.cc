@@ -69,6 +69,8 @@ QuickAnswersMenuObserver::~QuickAnswersMenuObserver() = default;
 void QuickAnswersMenuObserver::OnContextMenuShown(
     const content::ContextMenuParams& params,
     const gfx::Rect& bounds_in_screen) {
+  menu_shown_time_ = base::TimeTicks::Now();
+
   if (!quick_answers_controller_ || !is_eligible_)
     return;
 
@@ -112,6 +114,17 @@ void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
 }
 
 void QuickAnswersMenuObserver::OnMenuClosed() {
+  const base::TimeDelta time_since_request_sent =
+      base::TimeTicks::Now() - menu_shown_time_;
+  if (is_other_command_executed_) {
+    base::UmaHistogramTimes("QuickAnswers.ContextMenu.Close.DurationWithClick",
+                            time_since_request_sent);
+  } else {
+    base::UmaHistogramTimes(
+        "QuickAnswers.ContextMenu.Close.DurationWithoutClick",
+        time_since_request_sent);
+  }
+
   base::UmaHistogramBoolean("QuickAnswers.ContextMenu.Close",
                             is_other_command_executed_);
 
