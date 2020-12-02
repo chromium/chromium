@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/paint_preview/common/file_utils.h"
+#include "components/paint_preview/common/proto_validator.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace paint_preview {
@@ -230,8 +231,9 @@ FileManager::DeserializePaintPreviewProto(const DirectoryKey& key) const {
     return std::make_pair(ProtoReadStatus::kNoProto, nullptr);
 
   auto proto = ReadProtoFromFile(path->AppendASCII(kProtoName));
-  if (proto == nullptr)
+  if (proto == nullptr || !PaintPreviewProtoValid(*proto)) {
     return std::make_pair(ProtoReadStatus::kDeserializationError, nullptr);
+  }
 
   return std::make_pair(ProtoReadStatus::kOk, std::move(proto));
 }

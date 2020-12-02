@@ -4,92 +4,95 @@
 
 import("//testing/test.gni")
 
-if (!is_ios) {
-  static_library("common") {
-    sources = [
-      "capture_result.cc",
-      "capture_result.h",
-      "file_stream.cc",
-      "file_stream.h",
-      "file_utils.cc",
-      "file_utils.h",
-      "glyph_usage.cc",
-      "glyph_usage.h",
-      "paint_preview_tracker.cc",
-      "paint_preview_tracker.h",
-      "recording_map.cc",
-      "recording_map.h",
-      "serial_utils.cc",
-      "serial_utils.h",
-      "serialized_recording.cc",
-      "serialized_recording.h",
-      "subset_font.cc",
-      "subset_font.h",
-      "version.cc",
-      "version.h",
-    ]
+assert(!is_ios, "Paint Previews are not supported on iOS.")
 
-    deps = [
-      "//base",
-      "//skia",
-      "//third_party:freetype_harfbuzz",
-      "//third_party/harfbuzz-ng:hb_scoped_util",
-      "//ui/gfx/geometry",
-      "//url",
-    ]
+source_set("common") {
+  sources = [
+    "capture_result.cc",
+    "capture_result.h",
+    "file_stream.cc",
+    "file_stream.h",
+    "file_utils.cc",
+    "file_utils.h",
+    "glyph_usage.cc",
+    "glyph_usage.h",
+    "paint_preview_tracker.cc",
+    "paint_preview_tracker.h",
+    "proto_validator.cc",
+    "proto_validator.h",
+    "recording_map.cc",
+    "recording_map.h",
+    "serial_utils.cc",
+    "serial_utils.h",
+    "serialized_recording.cc",
+    "serialized_recording.h",
+    "subset_font.cc",
+    "subset_font.h",
+    "version.cc",
+    "version.h",
+  ]
 
-    public_deps = [
-      "//components/paint_preview/common/mojom",
-      "//components/paint_preview/common/proto",
-    ]
-  }
+  deps = [
+    "//base",
+    "//skia",
+    "//third_party:freetype_harfbuzz",
+    "//third_party/harfbuzz-ng:hb_scoped_util",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
 
-  source_set("test_utils") {
-    testonly = true
+  public_deps = [
+    "//components/paint_preview/common/mojom",
+    "//components/paint_preview/common/proto",
+  ]
+}
 
-    sources = [
-      "test_utils.cc",
-      "test_utils.h",
-    ]
+source_set("test_utils") {
+  testonly = true
 
-    deps = [
-      "//components/paint_preview/common",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
 
-  source_set("unit_tests") {
-    testonly = true
+  deps = [
+    "//components/paint_preview/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
 
-    sources = [
-      "file_stream_unittest.cc",
-      "glyph_usage_unittest.cc",
-      "paint_preview_tracker_unittest.cc",
-      "serial_utils_unittest.cc",
-      "serialized_recording_unittest.cc",
-      "subset_font_unittest.cc",
-    ]
+source_set("unit_tests") {
+  testonly = true
 
-    deps = [
-      ":common",
-      ":test_utils",
-      "//base",
-      "//base/test:test_support",
-      "//skia",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party:freetype_harfbuzz",
-      "//ui/gfx/geometry",
-    ]
-  }
+  sources = [
+    "file_stream_unittest.cc",
+    "glyph_usage_unittest.cc",
+    "paint_preview_tracker_unittest.cc",
+    "proto_validator_unittest.cc",
+    "serial_utils_unittest.cc",
+    "serialized_recording_unittest.cc",
+    "subset_font_unittest.cc",
+  ]
 
-  test("paint_preview_common_unit_tests") {
-    deps = [
-      ":unit_tests",
-      "//base",
-      "//base/test:test_support",
-      "//components/test:run_all_unittests",
-    ]
-  }
+  deps = [
+    ":common",
+    ":test_utils",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party:freetype_harfbuzz",
+    "//ui/gfx/geometry",
+  ]
+}
+
+test("paint_preview_common_unit_tests") {
+  deps = [
+    ":unit_tests",
+    "//base",
+    "//base/test:test_support",
+    "//components/test:run_all_unittests",
+  ]
 }

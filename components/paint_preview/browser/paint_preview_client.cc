@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
+#include "components/paint_preview/common/proto_validator.h"
 #include "components/paint_preview/common/version.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -536,6 +537,10 @@ void PaintPreviewClient::OnFinished(
     InProgressDocumentCaptureState* document_data) {
   if (!document_data || !document_data->callback)
     return;
+
+  if (!PaintPreviewProtoValid(document_data->proto)) {
+    document_data->had_success = false;
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "paint_preview", "PaintPreviewClient::CapturePaintPreview",
