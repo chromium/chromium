@@ -5,7 +5,6 @@
 #include "chrome/browser/net/chrome_network_delegate.h"
 
 #include "base/base_paths.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,18 +23,38 @@ namespace {
 
 bool g_access_to_all_files_enabled = false;
 
-bool IsAccessAllowedInternal(const base::FilePath& path,
-                             const base::FilePath& profile_path) {
-  if (g_access_to_all_files_enabled)
-    return true;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    defined(OS_ANDROID)
+// Returns true if |allowlist| contains |path| or a parent of |path|.
+bool IsPathOnAllowlist(const base::FilePath& path,
+                       const std::vector<base::FilePath>& allowlist) {
+  for (const auto& allowlisted_path : allowlist) {
+    // base::FilePath::operator== should probably handle trailing separators.
+    if (allowlisted_path == path.StripTrailingSeparators() ||
+        allowlisted_path.IsParent(path)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
-    !defined(OS_ANDROID)
-  return true;
-#else
-
-  std::vector<base::FilePath> allowlist;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns true if access is allowed for |path| for a user with |profile_path).
+bool IsAccessAllowedChromeOS(const base::FilePath& path,
+                             const base::FilePath& profile_path) {
+  // Allow access to DriveFS logs. These reside in
+  // $PROFILE_PATH/GCache/v2/<opaque id>/Logs.
+  base::FilePath path_within_gcache_v2;
+  if (profile_path.Append("GCache/v2")
+          .AppendRelativePath(path, &path_within_gcache_v2)) {
+    std::vector<std::string> components;
+    path_within_gcache_v2.GetComponents(&components);
+    if (components.size() > 1 && components[1] == "Logs") {
+      return true;
+    }
+  }
+
   // Use an allowlist to only allow access to files residing in the list of
   // directories below.
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
@@ -49,6 +68,9 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
       "/usr/share/chromeos-assets",
       "/var/log",
   };
+  std::vector<base::FilePath> allowlist;
+  for (const auto* allowlisted_path : kLocalAccessAllowList)
+    allowlist.emplace_back(allowlisted_path);
 
   base::FilePath temp_dir;
   if (base::PathService::Get(base::DIR_TEMP, &temp_dir))
@@ -71,7 +93,13 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
   if (!base::SysInfo::IsRunningOnChromeOS())
     allowlist.push_back(DownloadPrefs::GetDefaultDownloadDirectory());
 
-#elif defined(OS_ANDROID)
+  return IsPathOnAllowlist(path, allowlist);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if defined(OS_ANDROID)
+// Returns true if access is allowed for |path|.
+bool IsAccessAllowedAndroid(const base::FilePath& path) {
   // Access to files in external storage is allowed.
   base::FilePath external_storage_path;
   base::PathService::Get(base::DIR_ANDROID_EXTERNAL_STORAGE,
@@ -79,6 +107,7 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
   if (external_storage_path.IsParent(path))
     return true;
 
+  std::vector<base::FilePath> allowlist;
   std::vector<base::FilePath> all_download_dirs =
       base::android::GetAllPrivateDownloadsDirectories();
   allowlist.insert(allowlist.end(), all_download_dirs.begin(),
@@ -98,36 +127,25 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
       "/sdcard",
       "/mnt/sdcard",
   };
-#endif
-
   for (const auto* allowlisted_path : kLocalAccessAllowList)
-    allowlist.push_back(base::FilePath(allowlisted_path));
+    allowlist.emplace_back(allowlisted_path);
 
-  for (const auto& allowlisted_path : allowlist) {
-    // base::FilePath::operator== should probably handle trailing separators.
-    if (allowlisted_path == path.StripTrailingSeparators() ||
-        allowlisted_path.IsParent(path)) {
-      return true;
-    }
-  }
+  return IsPathOnAllowlist(path, allowlist);
+}
+#endif  // defined(OS_ANDROID)
+
+bool IsAccessAllowedInternal(const base::FilePath& path,
+                             const base::FilePath& profile_path) {
+  if (g_access_to_all_files_enabled)
+    return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Allow access to DriveFS logs. These reside in
-  // $PROFILE_PATH/GCache/v2/<opaque id>/Logs.
-  base::FilePath path_within_gcache_v2;
-  if (profile_path.Append("GCache/v2")
-          .AppendRelativePath(path, &path_within_gcache_v2)) {
-    std::vector<std::string> components;
-    path_within_gcache_v2.GetComponents(&components);
-    if (components.size() > 1 && components[1] == "Logs") {
-      return true;
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DVLOG(1) << "File access denied - " << path.value().c_str();
-  return false;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+  return IsAccessAllowedChromeOS(path, profile_path);
+#elif defined(OS_ANDROID)
+  return IsAccessAllowedAndroid(path);
+#else
+  return true;
+#endif
 }
 
 }  // namespace
