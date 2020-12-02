@@ -62,21 +62,6 @@ void TestAppListControllerDelegate::OpenURL(Profile* profile,
   last_opened_url_ = url;
 }
 
-void TestAppListControllerDelegate::ActivateApp(
-    Profile* profile,
-    const extensions::Extension* extension,
-    AppListSource source,
-    int event_flags) {
-}
-
-void TestAppListControllerDelegate::LaunchApp(
-    Profile* profile,
-    const extensions::Extension* extension,
-    AppListSource source,
-    int event_flags,
-    int64_t display_id) {
-}
-
 void TestAppListControllerDelegate::Reset() {
   did_dismiss_view_ = false;
   last_opened_url_ = GURL();

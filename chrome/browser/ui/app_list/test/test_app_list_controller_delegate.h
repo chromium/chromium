@@ -31,15 +31,6 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
                const GURL& url,
                ui::PageTransition transition,
                WindowOpenDisposition deposition) override;
-  void ActivateApp(Profile* profile,
-                   const extensions::Extension* extension,
-                   AppListSource source,
-                   int event_flags) override;
-  void LaunchApp(Profile* profile,
-                 const extensions::Extension* extension,
-                 AppListSource source,
-                 int event_flags,
-                 int64_t display_id) override;
 
   void Reset();
 

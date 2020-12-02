@@ -96,7 +96,6 @@ class AppListClientImpl
   void DismissView() override;
   aura::Window* GetAppListWindow() override;
   int64_t GetAppListDisplayId() override;
-  void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
   bool IsAppPinned(const std::string& app_id) override;
   bool IsAppOpen(const std::string& app_id) const override;
   void PinApp(const std::string& app_id) override;
@@ -107,15 +106,6 @@ class AppListClientImpl
                const GURL& url,
                ui::PageTransition transition,
                WindowOpenDisposition disposition) override;
-  void ActivateApp(Profile* profile,
-                   const extensions::Extension* extension,
-                   AppListSource source,
-                   int event_flags) override;
-  void LaunchApp(Profile* profile,
-                 const extensions::Extension* extension,
-                 AppListSource source,
-                 int event_flags,
-                 int64_t display_id) override;
 
   // Associates this client with the current active user, called when this
   // client is accessed or active user is changed.
@@ -149,8 +139,6 @@ class AppListClientImpl
 
   // Updates the speech webview and start page for the current |profile_|.
   void SetUpSearchUI();
-
-  ash::ShelfLaunchSource AppListSourceToLaunchSource(AppListSource source);
 
   // The current display id showing the app list.
   int64_t display_id_ = display::kInvalidDisplayId;

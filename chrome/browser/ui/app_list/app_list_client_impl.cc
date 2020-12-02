@@ -433,16 +433,6 @@ int64_t AppListClientImpl::GetAppListDisplayId() {
   return display_id_;
 }
 
-void AppListClientImpl::GetAppInfoDialogBounds(
-    GetAppInfoDialogBoundsCallback callback) {
-  if (!app_list_controller_) {
-    LOG(ERROR) << "app_list_controller_ is null";
-    std::move(callback).Run(gfx::Rect());
-    return;
-  }
-  app_list_controller_->GetAppInfoDialogBounds(std::move(callback));
-}
-
 bool AppListClientImpl::IsAppPinned(const std::string& app_id) {
   return ChromeLauncherController::instance()->IsAppPinned(app_id);
 }
@@ -478,38 +468,6 @@ void AppListClientImpl::OpenURL(Profile* profile,
   Navigate(&params);
 }
 
-void AppListClientImpl::ActivateApp(Profile* profile,
-                                    const extensions::Extension* extension,
-                                    AppListSource source,
-                                    int event_flags) {
-  // Platform apps treat activations as a launch. The app can decide whether to
-  // show a new window or focus an existing window as it sees fit.
-  if (extension->is_platform_app()) {
-    LaunchApp(profile, extension, source, event_flags, GetAppListDisplayId());
-    return;
-  }
-
-  ChromeLauncherController::instance()->ActivateApp(
-      extension->id(), AppListSourceToLaunchSource(source), event_flags,
-      GetAppListDisplayId());
-
-  if (!IsTabletMode())
-    DismissView();
-}
-
-void AppListClientImpl::LaunchApp(Profile* profile,
-                                  const extensions::Extension* extension,
-                                  AppListSource source,
-                                  int event_flags,
-                                  int64_t display_id) {
-  ChromeLauncherController::instance()->LaunchApp(
-      ash::ShelfID(extension->id()), AppListSourceToLaunchSource(source),
-      event_flags, display_id);
-
-  if (!IsTabletMode())
-    DismissView();
-}
-
 void AppListClientImpl::NotifySearchResultsForLogging(
     const base::string16& trimmed_query,
     const ash::SearchResultIdWithPositionIndices& results,
@@ -522,16 +480,4 @@ void AppListClientImpl::NotifySearchResultsForLogging(
 
 ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
-}
-
-ash::ShelfLaunchSource AppListClientImpl::AppListSourceToLaunchSource(
-    AppListSource source) {
-  switch (source) {
-    case LAUNCH_FROM_APP_LIST:
-      return ash::LAUNCH_FROM_APP_LIST;
-    case LAUNCH_FROM_APP_LIST_SEARCH:
-      return ash::LAUNCH_FROM_APP_LIST_SEARCH;
-    default:
-      return ash::LAUNCH_FROM_UNKNOWN;
-  }
 }
