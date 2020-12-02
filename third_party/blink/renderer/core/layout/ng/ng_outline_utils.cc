@@ -21,35 +21,4 @@ bool NGOutlineUtils::HasPaintedOutline(const ComputedStyle& style,
   return true;
 }
 
-bool NGOutlineUtils::ShouldPaintOutline(
-    const NGPhysicalBoxFragment& physical_fragment) {
-  if (!physical_fragment.IsInlineBox())
-    return true;
-
-  // In order to compute united outlines, collect all rectangles of inline
-  // fragments for |LayoutInline| if |this| is the first inline fragment.
-  // Otherwise return none.
-  const LayoutObject* layout_object = physical_fragment.GetLayoutObject();
-  DCHECK(layout_object);
-  DCHECK(layout_object->IsLayoutInline());
-  NGInlineCursor cursor;
-  cursor.MoveTo(*layout_object);
-  DCHECK(cursor);
-  if (cursor.Current().BoxFragment() == &physical_fragment)
-    return true;
-  if (!cursor.IsBlockFragmented())
-    return false;
-
-  // When |LayoutInline| is block fragmented, unite rectangles for each block
-  // fragment. To do this, return |true| if |this| is the first inline fragment
-  // of a block fragment.
-  while (true) {
-    wtf_size_t fragment_index = cursor.ContainerFragmentIndex();
-    cursor.MoveToNextForSameLayoutObject();
-    DCHECK(cursor);
-    if (cursor.Current().BoxFragment() == &physical_fragment)
-      return fragment_index != cursor.ContainerFragmentIndex();
-  }
-}
-
 }  // namespace blink

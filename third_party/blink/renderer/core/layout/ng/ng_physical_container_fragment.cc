@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_overflow_calculator.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -360,7 +359,7 @@ void NGPhysicalContainerFragment::AddOutlineRectsForDescendant(
     // for its line box which cover the line boxes of this LayoutInline. So
     // the LayoutInline needs to add rects for children and continuations
     // only.
-    if (NGOutlineUtils::ShouldPaintOutline(*descendant_box)) {
+    if (descendant_box->IsOutlineOwner()) {
       // We don't pass additional_offset here because the function requires
       // additional_offset to be the offset from the containing block.
       descendant_layout_inline->AddOutlineRectsForChildrenAndContinuations(

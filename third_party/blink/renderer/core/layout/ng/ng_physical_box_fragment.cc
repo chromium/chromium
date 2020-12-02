@@ -653,6 +653,39 @@ PhysicalSize NGPhysicalBoxFragment::ScrollSize() const {
   return {box->ScrollWidth(), box->ScrollHeight()};
 }
 
+const NGPhysicalBoxFragment*
+NGPhysicalBoxFragment::InlineContainerFragmentIfOutlineOwner() const {
+  DCHECK(IsInlineBox());
+  // In order to compute united outlines, collect all rectangles of inline
+  // fragments for |LayoutInline| if |this| is the first inline fragment.
+  // Otherwise return none.
+  const LayoutObject* layout_object = GetLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(layout_object->IsLayoutInline());
+  NGInlineCursor cursor;
+  cursor.MoveTo(*layout_object);
+  DCHECK(cursor);
+  if (cursor.Current().BoxFragment() == this)
+    return &cursor.ContainerFragment();
+  if (!cursor.IsBlockFragmented())
+    return nullptr;
+
+  // When |LayoutInline| is block fragmented, unite rectangles for each block
+  // fragment. To do this, return |true| if |this| is the first inline fragment
+  // of a block fragment.
+  for (wtf_size_t previous_fragment_index = cursor.ContainerFragmentIndex();;) {
+    cursor.MoveToNextForSameLayoutObject();
+    DCHECK(cursor);
+    const wtf_size_t fragment_index = cursor.ContainerFragmentIndex();
+    if (cursor.Current().BoxFragment() == this) {
+      if (fragment_index != previous_fragment_index)
+        return &cursor.ContainerFragment();
+      return nullptr;
+    }
+    previous_fragment_index = fragment_index;
+  }
+}
+
 PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
   CheckCanUpdateInkOverflow();
@@ -663,8 +696,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK(GetLayoutObject());
   PhysicalRect ink_overflow(LocalRect());
   ink_overflow.Expand(style.BoxDecorationOutsets());
-  if (NGOutlineUtils::HasPaintedOutline(style, GetNode()) &&
-      NGOutlineUtils::ShouldPaintOutline(*this)) {
+  if (NGOutlineUtils::HasPaintedOutline(style, GetNode()) && IsOutlineOwner()) {
     Vector<PhysicalRect> outline_rects;
     // The result rects are in coordinates of this object's border box.
     AddSelfOutlineRects(PhysicalOffset(),
@@ -705,7 +737,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
                                 inline_container_relative, outline_rects);
     return;
   }
-  DCHECK(NGOutlineUtils::ShouldPaintOutline(*this));
+  DCHECK(IsOutlineOwner());
 
   // For anonymous blocks, the children add outline rects.
   if (!IsAnonymousBlock())
@@ -743,7 +775,9 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   DCHECK_EQ(PostLayout(), this);
   DCHECK(IsInlineBox());
 
-  if (!NGOutlineUtils::ShouldPaintOutline(*this))
+  const NGPhysicalBoxFragment* container =
+      InlineContainerFragmentIfOutlineOwner();
+  if (!container)
     return;
 
   // In order to compute united outlines, collect all rectangles of inline
@@ -756,27 +790,17 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   DCHECK(GetLayoutObject()->IsLayoutInline());
   const auto* layout_object = To<LayoutInline>(GetLayoutObject());
   const wtf_size_t initial_rects_size = rects->size();
-  NGInlineCursor cursor;
+  NGInlineCursor cursor(*container);
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
-  wtf_size_t fragment_index = cursor.ContainerFragmentIndex();
+#if DCHECK_IS_ON()
   bool has_this_fragment = false;
-  for (;; cursor.MoveToNextForSameLayoutObject()) {
-    if (!cursor) {
-      DCHECK(has_this_fragment);
-      break;
-    }
-    if (fragment_index != cursor.ContainerFragmentIndex()) {
-      // If this block fragment has |this|, exit the loop.
-      if (has_this_fragment)
-        break;
-      // Otherwise clear the result and continue to the next block fragment.
-      fragment_index = cursor.ContainerFragmentIndex();
-      rects->Shrink(initial_rects_size);
-    }
-
+#endif
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGInlineCursorPosition& current = cursor.Current();
+#if DCHECK_IS_ON()
     has_this_fragment = has_this_fragment || current.BoxFragment() == this;
+#endif
     if (!current.Size().IsZero())
       rects->push_back(current.RectInContainerFragment());
 
@@ -787,6 +811,9 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
     AddOutlineRectsForCursor(rects, PhysicalOffset(), outline_type,
                              layout_object, &descendants);
   }
+#if DCHECK_IS_ON()
+  DCHECK(has_this_fragment);
+#endif
   DCHECK_GE(rects->size(), initial_rects_size);
   if (rects->size() <= initial_rects_size)
     return;

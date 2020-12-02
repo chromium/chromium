@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"

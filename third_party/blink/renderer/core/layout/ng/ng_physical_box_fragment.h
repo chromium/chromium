@@ -226,6 +226,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                     const HitTestLocation& hit_test_location,
                     const PhysicalOffset& accumulated_offset) const;
 
+  // In order to paint united outline rectangles, the "owner" fragment paints
+  // outlines for non-owner fragments.
+  bool IsOutlineOwner() const {
+    return !IsInlineBox() || InlineContainerFragmentIfOutlineOwner();
+  }
+  const NGPhysicalBoxFragment* InlineContainerFragmentIfOutlineOwner() const;
+
   // Returns the |ComputedStyle| to use for painting outlines. When |this| is
   // a block in a continuation-chain, it may need to paint outlines if its
   // ancestor inline boxes in the DOM tree has outlines.
