@@ -91,6 +91,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -1915,7 +1916,7 @@ WebLocalFrameImpl::WebLocalFrameImpl(
       input_method_controller_(*this),
       spell_check_panel_host_client_(nullptr),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {
-  DCHECK(client_);
+  CHECK(client_);
   g_frame_count++;
   client_->BindToFrame(this);
 }
@@ -2388,6 +2389,17 @@ void WebLocalFrameImpl::SendOrientationChangeEvent() {
   // a WebView that is still active.
   if (!GetFrame() || !GetFrame()->DomWindow())
     return;
+
+  if (GetFrame()) {
+    // If GetFrame() returns non-null, the frame should be attached. Make sure
+    // the other state on WebLocalFrameImpl agrees.
+    CHECK(GetFrame()->IsAttached());
+    CHECK(GetFrame()->Client());
+    CHECK(Client());
+  }
+
+  SCOPED_CRASH_KEY_NUMBER("debug-1154141", web_dom_window,
+                          reinterpret_cast<uintptr_t>(GetFrame()->DomWindow()));
 
   // Screen Orientation API
   CoreInitializer::GetInstance().NotifyOrientationChanged(*GetFrame());

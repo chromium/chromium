@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <utility>
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -148,8 +150,19 @@ void ScreenOrientationController::PageVisibilityChanged() {
 
 void ScreenOrientationController::NotifyOrientationChanged() {
   // TODO(dcheng): Remove this and check in the caller.
-  if (!DomWindow())
+  if (!DomWindow()) {
+    // In theory, it should not be possible to reach this when called via
+    // WebLocalFrameImpl, as WebLocalFrameImpl's checks should be sufficient
+    // to avoid notifying orientation change events on a detached execution
+    // context. Nonetheless, ExecutionContextLifecycleObserver::DomWindow() is
+    // returning null here, which seems to indicate the execution context is
+    // detached... make sure this isn't somehow associated with a null
+    // LocalDOMWindow, even though that should be impossible...
+    SCOPED_CRASH_KEY_NUMBER("debug-1154141", supplement,
+                            reinterpret_cast<uintptr_t>(GetSupplementable()));
+    base::debug::DumpWithoutCrashing();
     return;
+  }
 
   // Keep track of the frames that need to be notified before notifying the
   // current frame as it will prevent side effects from the change event
