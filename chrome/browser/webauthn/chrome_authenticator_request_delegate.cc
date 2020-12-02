@@ -502,12 +502,12 @@ bool ChromeAuthenticatorRequestDelegate::IsWebAuthnUIEnabled() {
 #if defined(OS_MAC)
 base::Optional<ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfig>
 ChromeAuthenticatorRequestDelegate::GetTouchIdAuthenticatorConfig() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Touch ID is available in Incognito but not Guest windows.
-  if (Profile::FromBrowserContext(browser_context())->IsGuestSession())
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     return base::nullopt;
 
-  return TouchIdAuthenticatorConfigForProfile(
-      Profile::FromBrowserContext(browser_context()));
+  return TouchIdAuthenticatorConfigForProfile(profile);
 }
 #endif  // defined(OS_MAC)
 
