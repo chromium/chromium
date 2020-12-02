@@ -76,7 +76,7 @@ int32_t AwMetricsServiceClient::GetProduct() {
   return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;
 }
 
-int AwMetricsServiceClient::GetSampleRatePerMille() {
+int AwMetricsServiceClient::GetSampleRatePerMille() const {
   // Down-sample unknown channel as a precaution in case it ends up being
   // shipped to Stable users.
   version_info::Channel channel = version_info::android::GetChannel();
@@ -132,10 +132,6 @@ void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
       std::make_unique<android_webview::AwStabilityMetricsProvider>(
           pref_service()));
   delegate_->RegisterAdditionalMetricsProviders(service);
-}
-
-bool AwMetricsServiceClient::IsPersistentHistogramsEnabled() {
-  return base::FeatureList::IsEnabled(base::kPersistentHistogramsFeature);
 }
 
 // static

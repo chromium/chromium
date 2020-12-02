@@ -7,14 +7,19 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/persistent_histogram_allocator.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/persistent_histograms.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,9 +80,11 @@ class TestClient : public AndroidMetricsServiceClient {
 
   void OnMetricsNotStarted() override {}
 
-  int GetSampleBucketValue() override { return sample_bucket_value_; }
+  int GetSampleBucketValue() const override { return sample_bucket_value_; }
 
-  int GetSampleRatePerMille() override { return sampled_in_rate_per_mille_; }
+  int GetSampleRatePerMille() const override {
+    return sampled_in_rate_per_mille_;
+  }
 
   bool CanRecordPackageNameForAppType() override {
     return record_package_name_for_app_type_;
@@ -126,6 +133,10 @@ class AndroidMetricsServiceClientTest : public testing::Test {
   }
 
   const int64_t test_begin_time_;
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
 
  protected:
   ~AndroidMetricsServiceClientTest() override = default;
@@ -364,6 +375,56 @@ TEST_F(AndroidMetricsServiceClientTest,
 
   EXPECT_FALSE(client->IsReportingEnabled());
   EXPECT_FALSE(client->IsRecordingActive());
+}
+
+TEST_F(AndroidMetricsServiceClientTest,
+       TestBrowserMetricsDirClearedIfReportingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      base::kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
+
+  base::FilePath metrics_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
+  InstantiatePersistentHistograms(metrics_dir);
+  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
+  ASSERT_TRUE(base::PathExists(upload_dir));
+
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+
+  // Setup the client isn't in sample.
+  client->SetHaveMetricsConsent(/* user_consent= */ true,
+                                /* app_consent= */ true);
+  client->SetInSample(false);
+  client->Initialize(prefs.get());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(upload_dir));
+}
+
+TEST_F(AndroidMetricsServiceClientTest,
+       TestBrowserMetricsDirExistsIfReportingEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      base::kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
+
+  base::FilePath metrics_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
+  InstantiatePersistentHistograms(metrics_dir);
+  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
+  ASSERT_TRUE(base::PathExists(upload_dir));
+
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+
+  // Setup the client is in sample.
+  client->SetHaveMetricsConsent(/* user_consent= */ true,
+                                /* app_consent= */ true);
+  client->SetInSample(true);
+  client->Initialize(prefs.get());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(base::PathExists(upload_dir));
 }
 
 }  // namespace metrics

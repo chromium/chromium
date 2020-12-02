@@ -127,7 +127,7 @@ std::string WebLayerMetricsServiceClient::GetUploadSigningKey() {
   return decoded_key;
 }
 
-int WebLayerMetricsServiceClient::GetSampleRatePerMille() {
+int WebLayerMetricsServiceClient::GetSampleRatePerMille() const {
   version_info::Channel channel = version_info::android::GetChannel();
   if (channel == version_info::Channel::STABLE ||
       channel == version_info::Channel::UNKNOWN) {
@@ -159,10 +159,6 @@ void WebLayerMetricsServiceClient::RegisterAdditionalMetricsProviders(
       std::make_unique<metrics::ContentStabilityMetricsProvider>(pref_service(),
                                                                  nullptr));
   service->RegisterMetricsProvider(std::make_unique<PageLoadMetricsProvider>());
-}
-
-bool WebLayerMetricsServiceClient::IsPersistentHistogramsEnabled() {
-  return true;
 }
 
 bool WebLayerMetricsServiceClient::IsOffTheRecordSessionActive() {

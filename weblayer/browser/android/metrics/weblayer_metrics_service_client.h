@@ -42,13 +42,12 @@ class WebLayerMetricsServiceClient
   std::string GetUploadSigningKey() override;
 
   // metrics::AndroidMetricsServiceClient:
-  int GetSampleRatePerMille() override;
+  int GetSampleRatePerMille() const override;
   void OnMetricsStart() override;
   void OnMetricsNotStarted() override;
   int GetPackageNameLimitRatePerMille() override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
-  bool IsPersistentHistogramsEnabled() override;
   bool IsOffTheRecordSessionActive() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
