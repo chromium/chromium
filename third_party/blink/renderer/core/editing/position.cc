@@ -594,13 +594,14 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
     }
     DCHECK(!anchor->IsElementNode() || anchor->CanParticipateInFlatTree());
     int offset = pos.ComputeOffsetInContainerNode();
+    if (!offset) {
+      Node* node = anchor->IsShadowRoot() ? anchor->OwnerShadowHost() : anchor;
+      return PositionInFlatTree::FirstPositionInNode(*node);
+    }
     Node* child = NodeTraversal::ChildAt(*anchor, offset);
     if (!child) {
-      if (anchor->IsShadowRoot()) {
-        return PositionInFlatTree::LastPositionInNode(
-            *anchor->OwnerShadowHost());
-      }
-      return PositionInFlatTree::LastPositionInNode(*anchor);
+      Node* node = anchor->IsShadowRoot() ? anchor->OwnerShadowHost() : anchor;
+      return PositionInFlatTree::LastPositionInNode(*node);
     }
     child->UpdateDistributionForFlatTreeTraversal();
     if (!child->CanParticipateInFlatTree()) {

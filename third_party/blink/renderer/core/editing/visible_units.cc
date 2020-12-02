@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_iterator.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/editing/selection_adjuster.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -614,6 +616,44 @@ static bool IsStreamer(const PositionIteratorAlgorithm<Strategy>& pos) {
   return pos.AtStartOfNode();
 }
 
+template <typename F>
+static Position MostBackwardOrForwardCaretPosition(
+    const Position& position,
+    EditingBoundaryCrossingRule rule,
+    F AlgorithmInFlatTree) {
+  if (position.IsNull())
+    return Position();
+  DCHECK(position.IsValidFor(*position.GetDocument()));
+
+  // Find the most backward or forward caret position in the flat tree.
+  const Position& candidate = ToPositionInDOMTree(
+      AlgorithmInFlatTree(ToPositionInFlatTree(position), rule));
+  if (candidate.IsNull())
+    return candidate;
+
+  // Adjust the candidate to avoid crossing shadow boundaries.
+  const SelectionInDOMTree& selection =
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(position, candidate)
+          .Build();
+  if (selection.IsCaret())
+    return candidate;
+  const SelectionInDOMTree& shadow_adjusted_selection =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
+          selection);
+
+  // If we have to adjust the position, the editability may change, so avoid
+  // crossing editing boundaries if it's not allowed.
+  if (rule == kCannotCrossEditingBoundary &&
+      selection != shadow_adjusted_selection) {
+    const SelectionInDOMTree& editing_adjusted_selection =
+        SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+            shadow_adjusted_selection);
+    return editing_adjusted_selection.Extent();
+  }
+  return shadow_adjusted_selection.Extent();
+}
+
 template <typename Strategy>
 static PositionTemplate<Strategy> AdjustPositionForBackwardIteration(
     const PositionTemplate<Strategy>& position) {
@@ -747,7 +787,8 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
 
 Position MostBackwardCaretPosition(const Position& position,
                                    EditingBoundaryCrossingRule rule) {
-  return MostBackwardCaretPosition<EditingStrategy>(position, rule);
+  return MostBackwardOrForwardCaretPosition(
+      position, rule, MostBackwardCaretPosition<EditingInFlatTreeStrategy>);
 }
 
 PositionInFlatTree MostBackwardCaretPosition(const PositionInFlatTree& position,
@@ -885,7 +926,8 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
 
 Position MostForwardCaretPosition(const Position& position,
                                   EditingBoundaryCrossingRule rule) {
-  return MostForwardCaretPosition<EditingStrategy>(position, rule);
+  return MostBackwardOrForwardCaretPosition(
+      position, rule, MostForwardCaretPosition<EditingInFlatTreeStrategy>);
 }
 
 PositionInFlatTree MostForwardCaretPosition(const PositionInFlatTree& position,

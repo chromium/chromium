@@ -162,13 +162,13 @@ TEST_F(VisiblePositionTest, ShadowV0DistributedNodes) {
             SnapForward(Position(one, 0)).GetPosition());
   EXPECT_EQ(Position(one->firstChild(), 0),
             CreateVisiblePosition(Position(one, 0)).DeepEquivalent());
-  EXPECT_EQ(Position(one->firstChild(), 2),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             CanonicalPositionOf(Position(two, 0)));
-  EXPECT_EQ(Position(one->firstChild(), 2),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             SnapBackward(Position(two, 0)).GetPosition());
   EXPECT_EQ(Position(two->firstChild(), 0),
             SnapForward(Position(two, 0)).GetPosition());
-  EXPECT_EQ(Position(one->firstChild(), 2),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(Position(two, 0)).DeepEquivalent());
 
   EXPECT_EQ(PositionInFlatTree(five->firstChild(), 2),

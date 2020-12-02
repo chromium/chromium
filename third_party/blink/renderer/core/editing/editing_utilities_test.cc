@@ -59,7 +59,7 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
 
   EXPECT_EQ(Position(one, 0),
             FirstEditablePositionAfterPositionInRoot(Position(one, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  EXPECT_EQ(Position(two->firstChild(), 2),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       Position(one, 0), *host))
                 .DeepEquivalent());
@@ -75,7 +75,7 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
   EXPECT_EQ(
       Position::FirstPositionInNode(*host),
       FirstEditablePositionAfterPositionInRoot(Position(three, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       Position(three, 0), *host))
                 .DeepEquivalent());
@@ -211,7 +211,7 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
 
   EXPECT_EQ(Position(one, 0),
             LastEditablePositionBeforePositionInRoot(Position(one, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  EXPECT_EQ(Position(two->firstChild(), 2),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       Position(one, 0), *host))
                 .DeepEquivalent());
@@ -227,7 +227,7 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
   EXPECT_EQ(
       Position::FirstPositionInNode(*host),
       LastEditablePositionBeforePositionInRoot(Position(three, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       Position(three, 0), *host))
                 .DeepEquivalent());
@@ -271,7 +271,7 @@ TEST_F(EditingUtilitiesTest, NextVisuallyDistinctCandidate) {
   Node* two = GetDocument().getElementById("two");
   Node* three = GetDocument().getElementById("three");
 
-  EXPECT_EQ(Position(two->firstChild(), 1),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             NextVisuallyDistinctCandidate(Position(one, 1)));
   EXPECT_EQ(PositionInFlatTree(three->firstChild(), 1),
             NextVisuallyDistinctCandidate(PositionInFlatTree(one, 1)));

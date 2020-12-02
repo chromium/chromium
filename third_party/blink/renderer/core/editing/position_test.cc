@@ -180,7 +180,7 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithNotDistributed) {
   SetBodyContent("<progress id=sample>foo</progress>");
   Element* sample = GetDocument().getElementById("sample");
 
-  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*sample),
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*sample),
             ToPositionInFlatTree(Position(sample, 0)));
 }
 
@@ -222,7 +222,7 @@ TEST_F(PositionTest, ToPositionInFlatTreeWithEmptyShadowRoot) {
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* host = GetDocument().getElementById("host");
 
-  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(*host),
+  EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*host),
             ToPositionInFlatTree(Position(shadow_root, 0)));
 }
 

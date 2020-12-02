@@ -213,7 +213,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, StartOfWordShadowDOM) {
                 StartOfWordPosition(
                     CreateVisiblePositionInFlatTree(*one, 1).DeepEquivalent()))
                 .DeepEquivalent());
-  EXPECT_EQ(Position(one, 0),
+  EXPECT_EQ(Position(four, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
                     CreateVisiblePositionInDOMTree(*two, 0).DeepEquivalent()))
@@ -428,7 +428,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, EndOfWordShadowDOM) {
       EndOfWord(CreateVisiblePositionInFlatTree(*one, 1)).DeepEquivalent());
 
   EXPECT_EQ(
-      Position(five, 5),
+      Position(two, 2),
       EndOfWord(CreateVisiblePositionInDOMTree(*two, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
