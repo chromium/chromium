@@ -70,6 +70,7 @@ bool WaylandToplevelWindow::CreateShellSurface() {
   shell_surface_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges();
+  InitializeAuraShellSurface();
   return true;
 }
 
@@ -386,7 +387,6 @@ bool WaylandToplevelWindow::OnInitialize(
 #endif
   SetWaylandExtension(this, static_cast<WaylandExtension*>(this));
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
-  InitializeAuraShell();
   return true;
 }
 
@@ -465,9 +465,12 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
   }
 }
 
-void WaylandToplevelWindow::InitializeAuraShell() {
-  if (connection()->zaura_shell()) {
-    DCHECK(!aura_surface_);
+void WaylandToplevelWindow::InitializeAuraShellSurface() {
+  // InitializeAuraShellSurface() should be called after the XDG surface is
+  // initialized.
+  DCHECK(shell_surface_);
+
+  if (connection()->zaura_shell() && !aura_surface_) {
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
     zaura_surface_set_fullscreen_mode(aura_surface_.get(),
