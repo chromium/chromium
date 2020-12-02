@@ -27,7 +27,7 @@ let FilesToastData;
  * toast.show('Toast with action', {text: 'Action', callback:function(){}});
  * toast.hide();
  */
-const FilesToast = Polymer({
+/* #export */ const FilesToast = Polymer({
   is: 'files-toast',
 
   properties: {
