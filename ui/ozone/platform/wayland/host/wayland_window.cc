@@ -98,11 +98,11 @@ void WaylandWindow::UpdateBufferScale(bool update_bounds) {
     else
       ui_scale_ = display.device_scale_factor();
   }
-  // At this point, buffer_scale() still returns the old scale.
-  if (update_bounds)
-    SetBoundsDip(gfx::ScaleToRoundedRect(bounds_px_, 1.0 / buffer_scale()));
-
+  int32_t old_scale = buffer_scale();
   root_surface_->SetBufferScale(new_scale, update_bounds);
+  // We need to keep DIP size of the window the same whenever the scale changes.
+  if (update_bounds)
+    SetBoundsDip(gfx::ScaleToRoundedRect(bounds_px_, 1.0 / old_scale));
 }
 
 gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
