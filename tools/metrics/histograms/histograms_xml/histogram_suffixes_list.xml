@@ -7517,6 +7517,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="ImportantFileWriterSuffix" separator=".">
   <suffix name="BookmarkStorage" label=""/>
   <suffix name="FeedbackReport" label=""/>
+  <suffix name="Local_State" label="Local State file"/>
+  <suffix name="Preferences" label="Preferences file"/>
+  <suffix name="Secure_Preferences" label="Secure Preferences file"/>
   <affected-histogram name="ImportantFile.DeleteOnCloseError"/>
   <affected-histogram name="ImportantFile.FileCreateError"/>
   <affected-histogram name="ImportantFile.FileDeleteError"/>
@@ -7526,6 +7529,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ImportantFile.FileOpenError"/>
   <affected-histogram name="ImportantFile.FileRenameError"/>
   <affected-histogram name="ImportantFile.FileWriteError"/>
+  <affected-histogram name="ImportantFile.SerializationDuration"/>
   <affected-histogram name="ImportantFile.TempFileFailures"/>
   <affected-histogram name="ImportantFile.TimeToWrite"/>
 </histogram_suffixes>

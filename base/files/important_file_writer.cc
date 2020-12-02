@@ -76,6 +76,19 @@ void UmaHistogramExactLinearWithSuffix(const char* histogram_name,
                           static_cast<int>(max_sample));
 }
 
+void UmaHistogramTimesWithSuffix(const char* histogram_name,
+                                 StringPiece histogram_suffix,
+                                 base::TimeDelta sample) {
+  DCHECK(histogram_name);
+  std::string histogram_full_name(histogram_name);
+  if (!histogram_suffix.empty()) {
+    histogram_full_name.append(".");
+    histogram_full_name.append(histogram_suffix.data(),
+                               histogram_suffix.length());
+  }
+  UmaHistogramTimes(histogram_full_name, sample);
+}
+
 void LogFailure(const FilePath& path,
                 StringPiece histogram_suffix,
                 TempFileFailure failure_code,
@@ -298,7 +311,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
 ImportantFileWriter::ImportantFileWriter(
     const FilePath& path,
     scoped_refptr<SequencedTaskRunner> task_runner,
-    const char* histogram_suffix)
+    StringPiece histogram_suffix)
     : ImportantFileWriter(path,
                           std::move(task_runner),
                           kDefaultCommitInterval,
@@ -308,12 +321,12 @@ ImportantFileWriter::ImportantFileWriter(
     const FilePath& path,
     scoped_refptr<SequencedTaskRunner> task_runner,
     TimeDelta interval,
-    const char* histogram_suffix)
+    StringPiece histogram_suffix)
     : path_(path),
       task_runner_(std::move(task_runner)),
       serializer_(nullptr),
       commit_interval_(interval),
-      histogram_suffix_(histogram_suffix ? histogram_suffix : "") {
+      histogram_suffix_(histogram_suffix) {
   DCHECK(task_runner_);
   ImportantFileWriterCleaner::AddDirectory(path.DirName());
 }
@@ -378,7 +391,13 @@ void ImportantFileWriter::DoScheduledWrite() {
   // from tiny to very large.
   data->reserve(previous_data_size_ + 1024);
 
-  if (serializer_->SerializeData(data.get())) {
+  const TimeTicks serialization_start = TimeTicks::Now();
+  const bool success = serializer_->SerializeData(data.get());
+  const TimeDelta serialization_duration =
+      TimeTicks::Now() - serialization_start;
+  if (success) {
+    UmaHistogramTimesWithSuffix("ImportantFile.SerializationDuration",
+                                histogram_suffix_, serialization_duration);
     previous_data_size_ = data->size();
     WriteNow(std::move(data));
   } else {

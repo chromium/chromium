@@ -314,6 +314,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWrite_WriteNow) {
 }
 
 TEST_F(ImportantFileWriterTest, DoScheduledWrite_FailToSerialize) {
+  base::HistogramTester histogram_tester;
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, ThreadTaskRunnerHandle::Get());
   writer.SetTimerForTesting(&timer);
@@ -327,6 +328,8 @@ TEST_F(ImportantFileWriterTest, DoScheduledWrite_FailToSerialize) {
   EXPECT_FALSE(writer.HasPendingWrite());
   RunLoop().RunUntilIdle();
   EXPECT_FALSE(PathExists(writer.path()));
+  // We don't record metrics in case the serialization fails.
+  histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 0);
 }
 
 TEST_F(ImportantFileWriterTest, WriteFileAtomicallyHistogramSuffixTest) {
@@ -358,6 +361,30 @@ TEST_F(ImportantFileWriterTest, WriteLargeFile) {
   std::string actual;
   EXPECT_TRUE(ReadFileToString(file_, &actual));
   EXPECT_EQ(large_data, actual);
+}
+
+// Verify that a UMA metric for the serialization duration is recorded.
+TEST_F(ImportantFileWriterTest, SerializationDuration) {
+  base::HistogramTester histogram_tester;
+  ImportantFileWriter writer(file_, ThreadTaskRunnerHandle::Get());
+  DataSerializer serializer("foo");
+  writer.ScheduleWrite(&serializer);
+  writer.DoScheduledWrite();
+  RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 1);
+}
+
+// Verify that a UMA metric for the serialization duration is recorded if the
+// ImportantFileWriter has a custom histogram suffix.
+TEST_F(ImportantFileWriterTest, SerializationDurationWithCustomSuffix) {
+  base::HistogramTester histogram_tester;
+  ImportantFileWriter writer(file_, ThreadTaskRunnerHandle::Get(), "Foo");
+  DataSerializer serializer("foo");
+  writer.ScheduleWrite(&serializer);
+  writer.DoScheduledWrite();
+  RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration.Foo",
+                                    1);
 }
 
 }  // namespace base

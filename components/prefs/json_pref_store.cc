@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -131,6 +132,17 @@ std::unique_ptr<JsonPrefStore::ReadResult> ReadPrefsFromDisk(
   return read_result;
 }
 
+// Returns the a histogram suffix for a few allowlisted JsonPref files.
+const char* GetHistogramSuffix(const base::FilePath& path) {
+  std::string spaceless_basename;
+  base::ReplaceChars(path.BaseName().MaybeAsASCII(), " ", "_",
+                     &spaceless_basename);
+  static constexpr std::array<const char*, 3> kAllowList{
+      "Secure_Preferences", "Preferences", "Local_State"};
+  const char* const* it = base::ranges::find(kAllowList, spaceless_basename);
+  return it != kAllowList.end() ? *it : "";
+}
+
 }  // namespace
 
 JsonPrefStore::JsonPrefStore(
@@ -141,7 +153,9 @@ JsonPrefStore::JsonPrefStore(
       file_task_runner_(std::move(file_task_runner)),
       prefs_(new base::DictionaryValue()),
       read_only_(false),
-      writer_(pref_filename, file_task_runner_),
+      writer_(pref_filename,
+              file_task_runner_,
+              GetHistogramSuffix(pref_filename)),
       pref_filter_(std::move(pref_filter)),
       initialized_(false),
       filtering_in_progress_(false),

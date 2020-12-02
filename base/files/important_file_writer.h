@@ -65,13 +65,13 @@ class BASE_EXPORT ImportantFileWriter {
   // All non-const methods, ctor and dtor must be called on the same thread.
   ImportantFileWriter(const FilePath& path,
                       scoped_refptr<SequencedTaskRunner> task_runner,
-                      const char* histogram_suffix = nullptr);
+                      StringPiece histogram_suffix = StringPiece());
 
   // Same as above, but with a custom commit interval.
   ImportantFileWriter(const FilePath& path,
                       scoped_refptr<SequencedTaskRunner> task_runner,
                       TimeDelta interval,
-                      const char* histogram_suffix = nullptr);
+                      StringPiece histogram_suffix = StringPiece());
 
   // You have to ensure that there are no pending writes at the moment
   // of destruction.
