@@ -784,6 +784,10 @@ body.check-select .dialog-header #delete-button > .icon {
   background-image: url(../images/files/ui/delete.svg);
 }
 
+.dialog-header #restore-from-trash-button > .icon {
+  -webkit-mask-image: url(../images/files/ui/restore.svg);
+}
+
 .dialog-header.files-ng #refresh-button > .icon {
   -webkit-mask-image: url(../images/files/ui/refresh.svg);
 }

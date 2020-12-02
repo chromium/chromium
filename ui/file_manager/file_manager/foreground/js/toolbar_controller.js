@@ -60,6 +60,13 @@ class ToolbarController {
      * @private {!HTMLElement}
      * @const
      */
+    this.restoreFromTrashButton_ =
+        queryRequiredElement('#restore-from-trash-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
     this.readOnlyIndicator_ =
         queryRequiredElement('#read-only-indicator', this.toolbar_);
 
@@ -83,6 +90,15 @@ class ToolbarController {
     this.deleteCommand_ = assertInstanceof(
         queryRequiredElement(
             '#delete', assert(this.toolbar_.ownerDocument.body)),
+        cr.ui.Command);
+
+    /**
+     * @private {!cr.ui.Command}
+     * @const
+     */
+    this.restoreFromTrashCommand_ = assertInstanceof(
+        queryRequiredElement(
+            '#restore-from-trash', assert(this.toolbar_.ownerDocument.body)),
         cr.ui.Command);
 
     /**
@@ -183,6 +199,9 @@ class ToolbarController {
     this.deleteButton_.addEventListener(
         'click', this.onDeleteButtonClicked_.bind(this));
 
+    this.restoreFromTrashButton_.addEventListener(
+        'click', this.onRestoreFromTrashButtonClicked_.bind(this));
+
     if (util.isFilesNg()) {
       this.togglePinnedCommand_.addEventListener(
           'checkedChange', this.updatePinnedToggle_.bind(this));
@@ -280,10 +299,16 @@ class ToolbarController {
 
     // Update visibility of the delete button.
     this.deleteButton_.hidden =
-        (selection.totalCount === 0 || this.directoryModel_.isReadOnly() ||
+        (selection.totalCount === 0 ||
+         !this.directoryModel_.canDeleteEntries() ||
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
              entry => util.isNonModifiable(this.volumeManager_, entry)));
+
+    // Update visibility of the restore-from-trash button.
+    this.restoreFromTrashButton_.hidden = (selection.totalCount == 0) ||
+        this.directoryModel_.getCurrentRootType() !==
+            VolumeManagerCommon.RootType.TRASH;
 
     if (util.isFilesNg()) {
       this.togglePinnedCommand_.canExecuteChange(
@@ -327,6 +352,17 @@ class ToolbarController {
   onDeleteButtonClicked_() {
     this.deleteCommand_.canExecuteChange(this.listContainer_.currentList);
     this.deleteCommand_.execute(this.listContainer_.currentList);
+  }
+
+  /**
+   * Handles click event for restore from trash button to execute the restore
+   * command.
+   * @private
+   */
+  onRestoreFromTrashButtonClicked_() {
+    this.restoreFromTrashCommand_.canExecuteChange(
+        this.listContainer_.currentList);
+    this.restoreFromTrashCommand_.execute(this.listContainer_.currentList);
   }
 
   /**

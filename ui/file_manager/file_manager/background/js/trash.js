@@ -32,6 +32,34 @@ class Trash {
   }
 
   /**
+   * Get the TrashConfig for the trash that this entry would be placed in, if
+   * any. Initializes TrashConfig with pathPrefix if required.
+   *
+   * @param {!VolumeManager} volumeManager
+   * @param {!Entry} entry The entry to find a matching TrashConfig for.
+   * @return {?TrashConfig} TrashConfig for entry or null.
+   * @private
+   */
+  getConfig_(volumeManager, entry) {
+    const info = volumeManager.getLocationInfo(entry);
+    if (!loadTimeData.getBoolean('FILES_TRASH_ENABLED') || !info) {
+      return null;
+    }
+    const fullPathSlash = entry.fullPath + '/';
+    for (const config of TrashConfig.CONFIG) {
+      const entryInVolume = fullPathSlash.startsWith(config.topDir);
+      if (config.volumeType === info.volumeInfo.volumeType && entryInVolume) {
+        if (config.prefixPathWithRemoteMount &&
+            info.volumeInfo.remoteMountPath) {
+          config.pathPrefix = info.volumeInfo.remoteMountPath;
+        }
+        return config;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Only move to trash if feature is on, and entry is in one of the supported
    * volumes, but not already in the trash.
    *
@@ -41,19 +69,12 @@ class Trash {
    *     else null if item should be permanently deleted.
    */
   shouldMoveToTrash(volumeManager, entry) {
-    const info = volumeManager.getLocationInfo(entry);
-    if (!loadTimeData.getBoolean('FILES_TRASH_ENABLED') || !info) {
-      return null;
-    }
-    const fullPathSlash = entry.fullPath + '/';
-    for (const config of TrashConfig.CONFIG) {
-      const entryInVolume = fullPathSlash.startsWith(config.topDir);
-      if (config.volumeType === info.volumeInfo.volumeType && entryInVolume) {
-        if (config.prefixPathWithRemoteMount) {
-          config.pathPrefix = info.volumeInfo.remoteMountPath;
-        }
-        const entryInTrash = fullPathSlash.startsWith(config.trashDir);
-        return entryInTrash ? null : config;
+    const config = this.getConfig_(volumeManager, entry);
+    if (config) {
+      const fullPathSlash = entry.fullPath + '/';
+      const entryInTrash = fullPathSlash.startsWith(config.trashDir);
+      if (!entryInTrash) {
+        return config;
       }
     }
     return null;
@@ -202,8 +223,7 @@ class Trash {
     const infoEntry = await this.writeTrashInfoFile_(
         trashDirs.info, trashInfoName, path, deletionDate);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
-    return new TrashEntry(
-        entry.name, deletionDate, filesEntry, infoEntry, config.pathPrefix);
+    return new TrashEntry(entry.name, deletionDate, filesEntry, infoEntry);
   }
 
   /**
@@ -214,20 +234,25 @@ class Trash {
    * @return {Promise<void>} Promise which resolves when file is restored.
    */
   async restore(volumeManager, trashEntry) {
+    const infoEntry = trashEntry.infoEntry;
+    const config = this.getConfig_(volumeManager, infoEntry);
+    if (!config) {
+      throw new Error(`No TrashConfig for ${infoEntry.toURL()}`);
+    }
+
     // Read Path from info entry.
-    const file = await new Promise(
-        (resolve, reject) => trashEntry.infoEntry.file(resolve, reject));
+    const file =
+        await new Promise((resolve, reject) => infoEntry.file(resolve, reject));
     const text = await file.text();
     const path = TrashEntry.parsePath(text);
     if (!path) {
-      throw new Error(`No Path found to restore in ${
-          trashEntry.infoEntry.fullPath}, text=${text}`);
-    } else if (!path.startsWith(trashEntry.pathPrefix)) {
+      throw new Error(
+          `No Path found to restore in ${infoEntry.fullPath}, text=${text}`);
+    } else if (!path.startsWith(config.pathPrefix)) {
       throw new Error(`Path does not match expected prefix in ${
-          trashEntry.infoEntry.fullPath}, prefix=${
-          trashEntry.pathPrefix}, text=${text}`);
+          infoEntry.fullPath}, prefix=${config.pathPrefix}, text=${text}`);
     }
-    const pathNoLeadingSlash = path.substring(trashEntry.pathPrefix.length + 1);
+    const pathNoLeadingSlash = path.substring(config.pathPrefix.length + 1);
     const parts = pathNoLeadingSlash.split('/');
 
     // Move to last directory in path, making sure dirs are created if needed.
@@ -243,7 +268,7 @@ class Trash {
     const name =
         await fileOperationUtil.deduplicatePath(dir, parts[parts.length - 1]);
     await this.moveTo_(trashEntry.filesEntry, dir, name);
-    await this.permanentlyDeleteFileOrDirectory_(trashEntry.infoEntry);
+    await this.permanentlyDeleteFileOrDirectory_(infoEntry);
   }
 
   /**

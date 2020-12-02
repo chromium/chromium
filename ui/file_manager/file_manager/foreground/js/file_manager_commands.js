@@ -1146,7 +1146,7 @@ CommandHandler.COMMANDS_['delete'] = new class extends Command {
   canDeleteEntries_(entries, fileManager) {
     return entries.length > 0 &&
         !this.containsReadOnlyEntry_(entries, fileManager) &&
-        !fileManager.directoryModel.isReadOnly() &&
+        fileManager.directoryModel.canDeleteEntries() &&
         CommandUtil.hasCapability(fileManager, entries, 'canDelete');
   }
 
@@ -1213,6 +1213,33 @@ CommandHandler.registerUndoDeleteToast = function(fileManager) {
 
   util.addEventListenerToBackgroundComponent(
       assert(fileManager.fileOperationManager), 'delete', onDeleted);
+};
+
+/**
+ * Restores selected files from trash.
+ *
+ * @suppress {invalidCasts} See FilesAppEntry in files_app_entry_interfaces.js
+ * for explanation of why FilesAppEntry cannot extend Entry.
+ */
+CommandHandler.COMMANDS_['restore-from-trash'] = new class extends Command {
+  execute(event, fileManager) {
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    fileManager.fileOperationManager.restoreDeleted(entries.map(e => {
+      return /** @type {!TrashEntry} */ (e);
+    }));
+    fileManager.directoryModel.rescanSoon(/*refresh=*/ false);
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+
+    const enabled = entries.length > 0 && entries.every(e => {
+      return e.rootType && e.rootType === VolumeManagerCommon.RootType.TRASH;
+    });
+    event.canExecute = enabled;
+    event.command.setHidden(!enabled);
+  }
 };
 
 /**
