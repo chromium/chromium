@@ -91,6 +91,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
@@ -1345,13 +1347,25 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
   // In order to avoid pathological behavior when inlines are deeply nested, we
   // do include them in the chain that we mark dirty (even though they're kind
   // of irrelevant).
-  LayoutObject* o = IsTableCell() ? ContainingBlock() : Container();
+  auto IntrinsicContainer = [](const LayoutObject* current) -> LayoutObject* {
+    // Table cell intrinsic logical-widths are queried directly from a <table>
+    // rather than from their parents (sections or rows). Skip these when
+    // invalidating.
+    if (current->IsTableCell()) {
+      if (current->IsTableCellLegacy())
+        return current->ContainingBlock();
+      else
+        return To<LayoutNGTableCell>(current)->Table();
+    }
+    return current->Container();
+  };
+
+  LayoutObject* o = IntrinsicContainer(this);
   while (o &&
          (!o->IntrinsicLogicalWidthsDirty() || NGKeepInvalidatingBeyond(o))) {
     // Don't invalidate the outermost object of an unrooted subtree. That object
     // will be invalidated when the subtree is added to the document.
-    LayoutObject* container =
-        o->IsTableCell() ? o->ContainingBlock() : o->Container();
+    LayoutObject* container = IntrinsicContainer(o);
     if (!container && !IsA<LayoutView>(o))
       break;
 

@@ -2687,6 +2687,13 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
     return;
   }
 
+  // When computing the baseline for an inline-block, table's don't contribute
+  // to any baselines.
+  if (child.IsTableNG() && ConstraintSpace().BaselineAlgorithmType() !=
+                               NGBaselineAlgorithmType::kFirstLine) {
+    return;
+  }
+
   NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(child));
 

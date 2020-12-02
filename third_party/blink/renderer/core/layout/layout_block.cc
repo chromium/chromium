@@ -1597,6 +1597,10 @@ MinMaxSizes LayoutBlock::PreferredLogicalWidths() const {
     sizes.max_size = LayoutUnit(sizes.max_size.Ceil());
   }
 
+  if (IsLayoutNGMixin() && IsTable()) {
+    sizes.Encompass(IntrinsicLogicalWidths().min_size);
+  }
+
   return sizes;
 }
 

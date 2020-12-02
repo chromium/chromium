@@ -51,8 +51,14 @@ inline void InlineSizesFromStyle(
     if (*min_inline_size)
       *max_inline_size = std::max(**min_inline_size, **max_inline_size);
   }
-  if (length.IsPercent())
+  if (length.IsPercent()) {
     *percentage_inline_size = length.Percent();
+  } else if (length.IsCalculated()) {
+    // crbug.com/1154376 Style engine should handle %+0px case automatically.
+    PixelsAndPercent pixels_and_percent = length.GetPixelsAndPercent();
+    if (pixels_and_percent.pixels == 0.0f)
+      *percentage_inline_size = pixels_and_percent.percent;
+  }
 
   if (*percentage_inline_size && max_length.IsPercent()) {
     *percentage_inline_size =
@@ -265,8 +271,6 @@ void NGTableTypes::CellInlineConstraint::Encompass(
     max_inline_size = std::max(min_inline_size, other.max_inline_size);
   }
   is_constrained = is_constrained || other.is_constrained;
-  max_inline_size = std::max(max_inline_size, other.max_inline_size);
-  percent = std::max(percent, other.percent);
   if (other.percent > percent) {
     percent = other.percent;
     percent_border_padding = other.percent_border_padding;
