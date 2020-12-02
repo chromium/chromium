@@ -8,11 +8,14 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/layer_tree_host_client.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/public/platform/input/input_handler_proxy.h"
+#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
 

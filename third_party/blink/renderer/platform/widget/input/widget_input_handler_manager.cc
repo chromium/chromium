@@ -171,14 +171,17 @@ class SynchronousCompositorProxyRegistry
 
 scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
     base::WeakPtr<WidgetBase> widget,
+    base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+        frame_widget_input_handler,
     bool never_composited,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scheduler::WebThreadScheduler* main_thread_scheduler,
     bool uses_input_handler) {
   scoped_refptr<WidgetInputHandlerManager> manager =
-      new WidgetInputHandlerManager(std::move(widget), never_composited,
-                                    std::move(compositor_task_runner),
-                                    main_thread_scheduler);
+      new WidgetInputHandlerManager(
+          std::move(widget), std::move(frame_widget_input_handler),
+          never_composited, std::move(compositor_task_runner),
+          main_thread_scheduler);
   if (uses_input_handler)
     manager->InitInputHandler();
 
@@ -193,10 +196,14 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
 
 WidgetInputHandlerManager::WidgetInputHandlerManager(
     base::WeakPtr<WidgetBase> widget,
+    base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+        frame_widget_input_handler,
     bool never_composited,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scheduler::WebThreadScheduler* main_thread_scheduler)
-    : widget_(widget),
+    : widget_(std::move(widget)),
+      frame_widget_input_handler_(std::move(frame_widget_input_handler)),
+
       widget_scheduler_(main_thread_scheduler->CreateWidgetScheduler()),
       main_thread_scheduler_(main_thread_scheduler),
       input_event_queue_(base::MakeRefCounted<MainThreadEventQueue>(
@@ -635,7 +642,8 @@ void WidgetInputHandlerManager::BindChannel(
   // |compositor_task_runner_| as events might get out of order.
   WidgetInputHandlerImpl* handler = new WidgetInputHandlerImpl(
       this, main_thread_task_runner_,
-      compositor_task_runner_ ? input_event_queue_ : nullptr, widget_);
+      compositor_task_runner_ ? input_event_queue_ : nullptr, widget_,
+      frame_widget_input_handler_);
   handler->SetReceiver(std::move(receiver));
 }
 

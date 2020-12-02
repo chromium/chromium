@@ -342,7 +342,7 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
     bool never_composited,
     bool is_for_child_local_root,
     bool is_for_nested_main_frame)
-    : widget_base_(std::make_unique<WidgetBase>(this,
+    : widget_base_(std::make_unique<WidgetBase>(/*widget_base_client=*/this,
                                                 std::move(widget_host),
                                                 std::move(widget),
                                                 task_runner,
@@ -406,6 +406,9 @@ void WebFrameWidgetImpl::Close() {
   client_ = nullptr;
   widget_base_->Shutdown();
   widget_base_.reset();
+  // These WeakPtrs must be invalidated for WidgetInputHandlerManager at the
+  // same time as the WidgetBase is.
+  input_handler_weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
   input_target_receiver_.reset();
   self_keep_alive_.Clear();
@@ -1939,7 +1942,8 @@ cc::LayerTreeHost* WebFrameWidgetImpl::InitializeCompositing(
     const cc::LayerTreeSettings* settings) {
   widget_base_->InitializeCompositing(
       main_thread_scheduler, task_graph_runner, is_for_child_local_root_,
-      screen_info, std::move(ukm_recorder_factory), settings);
+      screen_info, std::move(ukm_recorder_factory), settings,
+      input_handler_weak_ptr_factory_.GetWeakPtr());
 
   LocalFrameView* frame_view;
   if (is_for_child_local_root_) {

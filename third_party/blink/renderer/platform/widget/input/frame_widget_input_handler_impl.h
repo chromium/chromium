@@ -40,8 +40,12 @@ class WidgetBase;
 class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
     : public mojom::blink::FrameWidgetInputHandler {
  public:
+  // The `widget` and `frame_widget_input_handler` should be invalidated
+  // at the same time.
   FrameWidgetInputHandlerImpl(
       base::WeakPtr<WidgetBase> widget,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+          frame_widget_input_handler,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       scoped_refptr<MainThreadEventQueue> input_event_queue);
   ~FrameWidgetInputHandlerImpl() override;
@@ -112,12 +116,16 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   };
 
   void RunOnMainThread(base::OnceClosure closure);
-  static void ExecuteCommandOnMainThread(base::WeakPtr<WidgetBase> widget,
-                                         const char* command,
-                                         UpdateState state);
+  static void ExecuteCommandOnMainThread(
+      base::WeakPtr<WidgetBase> widget,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+      const char* command,
+      UpdateState state);
 
-  // |widget_| should only be accessed on the main thread.
+  // These should only be accessed on the main thread.
   base::WeakPtr<WidgetBase> widget_;
+  base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+      main_thread_frame_widget_input_handler_;
 
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

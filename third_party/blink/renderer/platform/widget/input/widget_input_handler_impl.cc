@@ -38,13 +38,16 @@ WidgetInputHandlerImpl::WidgetInputHandlerImpl(
     scoped_refptr<WidgetInputHandlerManager> manager,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     scoped_refptr<MainThreadEventQueue> input_event_queue,
-    base::WeakPtr<WidgetBase> widget)
+    base::WeakPtr<WidgetBase> widget,
+    base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+        frame_widget_input_handler)
     : main_thread_task_runner_(main_thread_task_runner),
       input_handler_manager_(manager),
       input_event_queue_(input_event_queue),
-      widget_(widget) {}
+      widget_(std::move(widget)),
+      frame_widget_input_handler_(std::move(frame_widget_input_handler)) {}
 
-WidgetInputHandlerImpl::~WidgetInputHandlerImpl() {}
+WidgetInputHandlerImpl::~WidgetInputHandlerImpl() = default;
 
 void WidgetInputHandlerImpl::SetReceiver(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler>
@@ -173,7 +176,8 @@ void WidgetInputHandlerImpl::GetFrameWidgetInputHandler(
         frame_receiver) {
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<FrameWidgetInputHandlerImpl>(
-          widget_, main_thread_task_runner_, input_event_queue_),
+          widget_, frame_widget_input_handler_, main_thread_task_runner_,
+          input_event_queue_),
       std::move(frame_receiver));
 }
 

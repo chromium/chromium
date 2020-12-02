@@ -75,13 +75,22 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Initialize the compositor. |settings| is typically null. When |settings| is
   // null the default settings will be used, tests may provide a |settings|
   // object to override the defaults.
+  //
+  // TODO(dtapuska): The WebFrameWidgetImpl should be responsible for making
+  // the FrameWidgetInputHandlerImpl, but currently it is done in the general
+  // widget input handler classes directly, so we have to plumb through the
+  // main-thread mojom implementation.
+  // The `frame_widget_input_handler` must be invalidated when the WidgetBase is
+  // destroyed/invalidated.
   void InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,
       const ScreenInfo& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-      const cc::LayerTreeSettings* settings);
+      const cc::LayerTreeSettings* settings,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+          frame_widget_input_handler);
 
   // Shutdown the compositor.
   void Shutdown();
@@ -355,6 +364,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   const bool is_for_child_local_root_;
   // When true, the device scale factor is a part of blink coordinates.
   const bool use_zoom_for_dsf_;
+
+  // The client which handles behaviour specific to the type of widget.
   WidgetBaseClient* const client_;
 
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;

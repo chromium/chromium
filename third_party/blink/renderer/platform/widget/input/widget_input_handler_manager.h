@@ -68,8 +68,12 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   };
 
  public:
+  // The `widget` and `frame_widget_input_handler` should be invalidated
+  // at the same time.
   static scoped_refptr<WidgetInputHandlerManager> Create(
       base::WeakPtr<WidgetBase> widget_base,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+          frame_widget_input_handler,
       bool never_composited,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scheduler::WebThreadScheduler* main_thread_scheduler,
@@ -168,6 +172,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
  private:
   WidgetInputHandlerManager(
       base::WeakPtr<WidgetBase> widget,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+          frame_widget_input_handler,
       bool never_composited,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scheduler::WebThreadScheduler* main_thread_scheduler);
@@ -251,6 +257,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // Only valid to be called on the main thread.
   base::WeakPtr<WidgetBase> widget_;
+  base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+      frame_widget_input_handler_;
   std::unique_ptr<scheduler::WebWidgetScheduler> widget_scheduler_;
   scheduler::WebThreadScheduler* main_thread_scheduler_;
 

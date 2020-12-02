@@ -176,7 +176,9 @@ void WidgetBase::InitializeCompositing(
     bool for_child_local_root_frame,
     const ScreenInfo& screen_info,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-    const cc::LayerTreeSettings* settings) {
+    const cc::LayerTreeSettings* settings,
+    base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+        frame_widget_input_handler) {
   main_thread_compositor_task_runner_ =
       main_thread_scheduler->CompositorTaskRunner();
 
@@ -219,9 +221,9 @@ void WidgetBase::InitializeCompositing(
   // WidgetBaseInputHandler.
   bool uses_input_handler = frame_widget;
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
-      weak_ptr_factory_.GetWeakPtr(), never_composited_,
-      std::move(compositor_input_task_runner), main_thread_scheduler,
-      uses_input_handler);
+      weak_ptr_factory_.GetWeakPtr(), std::move(frame_widget_input_handler),
+      never_composited_, std::move(compositor_input_task_runner),
+      main_thread_scheduler, uses_input_handler);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

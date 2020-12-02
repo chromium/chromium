@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -41,6 +42,7 @@
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/drag.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
@@ -96,6 +98,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       public WidgetBaseClient,
       public mojom::blink::FrameWidget,
       public viz::mojom::blink::InputTargetClient,
+      public mojom::blink::FrameWidgetInputHandler,
       public FrameWidget,
       public PageWidgetEventHandler {
  public:
@@ -172,7 +175,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   HitTestResult CoreHitTestResultAt(const gfx::PointF&);
 
-  // FrameWidget overrides:
+  // FrameWidget overrides.
   WebWidgetClient* Client() const final { return client_; }
   cc::AnimationHost* AnimationHost() const final;
   void SetOverscrollBehavior(
@@ -240,52 +243,13 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool ShouldHandleImeEvents() override;
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands) override;
-
-  void AddImeTextSpansToExistingText(
-      uint32_t start,
-      uint32_t end,
-      const Vector<ui::ImeTextSpan>& ime_text_spans) override;
   Vector<ui::mojom::blink::ImeTextSpanInfoPtr> GetImeTextSpansInfo(
       const WebVector<ui::ImeTextSpan>& ime_text_spans) override;
-  void ClearImeTextSpansByType(uint32_t start,
-                               uint32_t end,
-                               ui::ImeTextSpan::Type type) override;
-  void SetCompositionFromExistingText(
-      int32_t start,
-      int32_t end,
-      const Vector<ui::ImeTextSpan>& ime_text_spans) override;
-  void ExtendSelectionAndDelete(int32_t before, int32_t after) override;
-  void DeleteSurroundingText(int32_t before, int32_t after) override;
-  void DeleteSurroundingTextInCodePoints(int32_t before,
-                                         int32_t after) override;
-  void SetEditableSelectionOffsets(int32_t start, int32_t end) override;
-  void ExecuteEditCommand(const String& command, const String& value) override;
-  void Undo() override;
-  void Redo() override;
-  void Cut() override;
-  void Copy() override;
-  void CopyToFindPboard() override;
-  void Paste() override;
-  void PasteAndMatchStyle() override;
-  void Delete() override;
-  void SelectAll() override;
-  void CollapseSelection() override;
-  void Replace(const String& word) override;
-  void ReplaceMisspelling(const String& word) override;
-  void SelectRange(const gfx::Point& base_in_dips,
-                   const gfx::Point& extent_in_dips) override;
-  void AdjustSelectionByCharacterOffset(
-      int32_t start,
-      int32_t end,
-      mojom::blink::SelectionMenuBehavior behavior) override;
-  void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
-  void ScrollFocusedEditableNodeIntoRect(
-      const gfx::Rect& rect_in_dips) override;
-  void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
-  void MoveCaret(const gfx::Point& point_in_dips) override;
-#if defined(OS_ANDROID)
-  void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
-#endif
+  void RequestMouseLock(
+      bool has_transient_user_activation,
+      bool request_unadjusted_movement,
+      mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback callback)
+      override;
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect) override;
   gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) override;
   gfx::Size BlinkSpaceToFlooredDIPs(const gfx::Size& size) override;
@@ -293,11 +257,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) override;
   gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) override;
   float DIPsToBlinkSpace(float scalar) override;
-  void RequestMouseLock(
-      bool has_transient_user_activation,
-      bool request_unadjusted_movement,
-      mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback callback)
-      override;
   void MouseCaptureLost() override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPlugin() override;
@@ -312,7 +271,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                               int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
-  // WebFrameWidget implementation.
+  // WebFrameWidget overrides.
   WebLocalFrame* LocalRoot() const override;
   void SendOverscrollEventFromImplSide(
       const gfx::Vector2dF& overscroll_delta,
@@ -344,6 +303,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetZoomLevelForTesting(double zoom_level) override;
   void ResetZoomLevelForTesting() override;
   void SetDeviceScaleFactorForTesting(float factor) override;
+  void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
 
   // Called when a drag-n-drop operation should begin.
@@ -362,7 +322,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // events.
   void ResetMeaningfulLayoutStateForMainFrame();
 
-  // WebWidget overrides:
+  // WebWidget overrides.
   cc::LayerTreeHost* InitializeCompositing(
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
@@ -611,7 +571,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
 
-  // WidgetBaseClient overrides:
+  // WidgetBaseClient overrides.
   void BeginCommitCompositorFrame() override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
@@ -710,6 +670,50 @@ class CORE_EXPORT WebFrameWidgetImpl
 #if defined(OS_MAC)
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
                         GetStringAtPointCallback callback) override;
+#endif
+
+  // mojom::blink::FrameWidgetInputHandler overrides.
+  void AddImeTextSpansToExistingText(
+      uint32_t start,
+      uint32_t end,
+      const Vector<ui::ImeTextSpan>& ime_text_spans) override;
+  void ClearImeTextSpansByType(uint32_t start,
+                               uint32_t end,
+                               ui::ImeTextSpan::Type type) override;
+  void SetCompositionFromExistingText(
+      int32_t start,
+      int32_t end,
+      const Vector<ui::ImeTextSpan>& ime_text_spans) override;
+  void ExtendSelectionAndDelete(int32_t before, int32_t after) override;
+  void DeleteSurroundingText(int32_t before, int32_t after) override;
+  void DeleteSurroundingTextInCodePoints(int32_t before,
+                                         int32_t after) override;
+  void SetEditableSelectionOffsets(int32_t start, int32_t end) override;
+  void ExecuteEditCommand(const String& command, const String& value) override;
+  void Undo() override;
+  void Redo() override;
+  void Cut() override;
+  void Copy() override;
+  void CopyToFindPboard() override;
+  void Paste() override;
+  void PasteAndMatchStyle() override;
+  void Delete() override;
+  void SelectAll() override;
+  void CollapseSelection() override;
+  void Replace(const String& word) override;
+  void ReplaceMisspelling(const String& word) override;
+  void SelectRange(const gfx::Point& base_in_dips,
+                   const gfx::Point& extent_in_dips) override;
+  void AdjustSelectionByCharacterOffset(
+      int32_t start,
+      int32_t end,
+      mojom::blink::SelectionMenuBehavior behavior) override;
+  void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
+  void ScrollFocusedEditableNodeIntoRect(
+      const gfx::Rect& rect_in_dips) override;
+  void MoveCaret(const gfx::Point& point_in_dips) override;
+#if defined(OS_ANDROID)
+  void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
 #endif
 
   // PageWidgetEventHandler overrides:
@@ -992,6 +996,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
 
   SelfKeepAlive<WebFrameWidgetImpl> self_keep_alive_;
+
+  base::WeakPtrFactory<mojom::blink::FrameWidgetInputHandler>
+      input_handler_weak_ptr_factory_{this};
 };
 
 }  // namespace blink

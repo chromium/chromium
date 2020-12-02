@@ -279,7 +279,7 @@ WebPagePopupImpl::WebPagePopupImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : popup_widget_host_(std::move(popup_widget_host)),
       widget_base_(
-          std::make_unique<WidgetBase>(this,
+          std::make_unique<WidgetBase>(/*widget_base_client=*/this,
                                        std::move(widget_host),
                                        std::move(widget),
                                        task_runner,
@@ -439,10 +439,11 @@ cc::LayerTreeHost* WebPagePopupImpl::InitializeCompositing(
     const cc::LayerTreeSettings* settings) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
   // much work here.
-  widget_base_->InitializeCompositing(
-      main_thread_scheduler, task_graph_runner,
-      /*for_child_local_root_frame=*/false, screen_info,
-      std::move(ukm_recorder_factory), settings);
+  widget_base_->InitializeCompositing(main_thread_scheduler, task_graph_runner,
+                                      /*for_child_local_root_frame=*/false,
+                                      screen_info,
+                                      std::move(ukm_recorder_factory), settings,
+                                      /*frame_widget_input_handler=*/nullptr);
   return widget_base_->LayerTreeHost();
 }
 

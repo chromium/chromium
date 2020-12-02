@@ -31,10 +31,9 @@ namespace blink {
 // on this class occur on the main thread. input/FrameWidgetInputHandlerImpl
 // which also implements the FrameWidgetInputHandler interface runs on the
 // compositor thread and proxies calls to this class.
-class PLATFORM_EXPORT FrameWidget
-    : public mojom::blink::FrameWidgetInputHandler {
+class PLATFORM_EXPORT FrameWidget {
  public:
-  ~FrameWidget() override;
+  virtual ~FrameWidget();
 
   // Returns the WebWidgetClient, which is implemented outside of blink.
   virtual WebWidgetClient* Client() const = 0;

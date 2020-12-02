@@ -23,11 +23,15 @@ class WidgetInputHandlerManager;
 // is done so that events stay in order relative to other events.
 class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
  public:
+  // The `widget` and `frame_widget_input_handler` should be invalidated
+  // at the same time.
   WidgetInputHandlerImpl(
       scoped_refptr<WidgetInputHandlerManager> manager,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       scoped_refptr<MainThreadEventQueue> input_event_queue,
-      base::WeakPtr<WidgetBase> widget);
+      base::WeakPtr<WidgetBase> widget,
+      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+          frame_widget_input_handler);
   ~WidgetInputHandlerImpl() override;
 
   void SetReceiver(mojo::PendingReceiver<mojom::blink::WidgetInputHandler>
@@ -78,6 +82,8 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
   scoped_refptr<WidgetInputHandlerManager> input_handler_manager_;
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
   base::WeakPtr<WidgetBase> widget_;
+  base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+      frame_widget_input_handler_;
 
   // This callback is used to respond to the WaitForInputProcessed Mojo
   // message. We keep it around so that we can respond even if the renderer is

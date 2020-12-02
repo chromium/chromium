@@ -77,8 +77,8 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
     ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
 
     widget_base_ = std::make_unique<WidgetBase>(
-        &client_, widget_host_remote.Unbind(), std::move(widget_receiver),
-        base::ThreadTaskRunnerHandle::Get(),
+        /*widget_base_client=*/&client_, widget_host_remote.Unbind(),
+        std::move(widget_receiver), base::ThreadTaskRunnerHandle::Get(),
         /*is_hidden=*/false,
         /*never_composited=*/false,
         /*is_for_child_local_root=*/false);
