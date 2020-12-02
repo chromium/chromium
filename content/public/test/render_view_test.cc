@@ -494,15 +494,10 @@ void RenderViewTest::SetUp() {
       render_thread_->GetNextRoutingID();
   view_params->main_frame_frame_token = base::UnguessableToken::Create();
   view_params->main_frame_routing_id = render_thread_->GetNextRoutingID();
-  view_params->main_frame_interface_bundle =
-      mojom::DocumentScopedInterfaceBundle::New();
 
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker;
   // Ignoring the returned PendingReceiver because it is not bound to anything
-  ignore_result(browser_interface_broker.InitWithNewPipeAndPassReceiver());
-  view_params->main_frame_interface_bundle->browser_interface_broker =
-      std::move(browser_interface_broker);
+  ignore_result(view_params->main_frame_interface_broker
+                    .InitWithNewPipeAndPassReceiver());
   view_params->session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
   view_params->replicated_frame_state = FrameReplicationState();

@@ -442,10 +442,8 @@ WebView* RenderViewImpl::CreateView(
   view_params->widget_host = std::move(reply->widget_host);
   view_params->widget = std::move(reply->widget),
   view_params->blink_page_broadcast = std::move(reply->page_broadcast);
-  view_params->main_frame_interface_bundle =
-      mojom::DocumentScopedInterfaceBundle::New(
-          std::move(
-              reply->main_frame_interface_bundle->browser_interface_broker));
+  view_params->main_frame_interface_broker =
+      std::move(reply->main_frame_interface_broker);
   view_params->main_frame_widget_routing_id = reply->main_frame_widget_route_id;
   view_params->session_storage_namespace_id =
       reply->cloned_session_storage_namespace_id;

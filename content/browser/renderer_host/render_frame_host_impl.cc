@@ -2210,14 +2210,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
 
   DCHECK(GetProcess()->IsInitializedAndNotDead());
 
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker;
-  BindBrowserInterfaceBrokerReceiver(
-      browser_interface_broker.InitWithNewPipeAndPassReceiver());
-
   mojom::CreateFrameParamsPtr params = mojom::CreateFrameParams::New();
-  params->interface_bundle = mojom::DocumentScopedInterfaceBundle::New(
-      std::move(browser_interface_broker));
+  BindBrowserInterfaceBrokerReceiver(
+      params->interface_broker.InitWithNewPipeAndPassReceiver());
 
   params->routing_id = routing_id_;
   params->previous_routing_id = previous_routing_id;
@@ -5272,10 +5267,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       std::move(blink_frame_widget_host),
       std::move(blink_frame_widget_receiver), std::move(blink_widget_host),
       std::move(blink_widget_receiver), std::move(page_broadcast_receiver),
-      mojom::DocumentScopedInterfaceBundle::New(
-          std::move(browser_interface_broker)),
-      cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
-      wait_for_debugger,
+      std::move(browser_interface_broker), cloned_namespace->id(),
+      main_frame->GetDevToolsFrameToken(), wait_for_debugger,
       main_frame->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,

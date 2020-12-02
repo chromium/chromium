@@ -436,11 +436,8 @@ bool RenderViewHostImpl::CreateRenderView(
     params->main_frame_routing_id = main_frame_routing_id_;
     params->main_frame_widget_routing_id =
         main_rfh->GetRenderWidgetHost()->GetRoutingID();
-    params->main_frame_interface_bundle =
-        mojom::DocumentScopedInterfaceBundle::New();
     main_rfh->BindBrowserInterfaceBrokerReceiver(
-        params->main_frame_interface_bundle->browser_interface_broker
-            .InitWithNewPipeAndPassReceiver());
+        params->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
 
     std::tie(params->widget_host, params->widget) =
         main_rfh->GetRenderWidgetHost()->BindNewWidgetInterfaces();

@@ -5,11 +5,11 @@
 module content.mojom;
 
 import "content/common/associated_interfaces.mojom";
-import "content/common/document_scoped_interface_bundle.mojom";
 import "content/common/native_types.mojom";
 import "ipc/constants.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
@@ -51,7 +51,8 @@ struct CreateViewParams {
 
   // This is null precisely when |main_frame_routing_id| is MSG_ROUTING_NONE,
   // that is, when creating a RenderView for a remote main frame.
-  DocumentScopedInterfaceBundle? main_frame_interface_bundle;
+  pending_remote<blink.mojom.BrowserInterfaceBroker>?
+      main_frame_interface_broker;
 
   // The communication interfaces for the WebFrameWidget in blink. All should
   // be set if there is a |main_frame_routing_id|.
@@ -175,7 +176,7 @@ struct CreateFrameParams {
   // parent frame, in front of any other children.
   int32 previous_sibling_routing_id;
 
-  DocumentScopedInterfaceBundle interface_bundle;
+  pending_remote<blink.mojom.BrowserInterfaceBroker> interface_broker;
 
   // When the new frame has a parent, |replication_state| holds the new frame's
   // properties replicated from the process rendering the parent frame, such as

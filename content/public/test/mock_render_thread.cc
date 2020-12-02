@@ -281,15 +281,9 @@ void MockRenderThread::OnCreateWindow(
     mojom::CreateNewWindowReply* reply) {
   reply->route_id = GetNextRoutingID();
   reply->main_frame_route_id = GetNextRoutingID();
-  reply->main_frame_interface_bundle =
-      mojom::DocumentScopedInterfaceBundle::New();
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker;
   frame_routing_id_to_initial_browser_broker_receivers_.emplace(
       reply->main_frame_route_id,
-      browser_interface_broker.InitWithNewPipeAndPassReceiver());
-  reply->main_frame_interface_bundle->browser_interface_broker =
-      std::move(browser_interface_broker);
+      reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
 
   reply->main_frame_frame_token = base::UnguessableToken::Create();
   reply->main_frame_widget_route_id = GetNextRoutingID();

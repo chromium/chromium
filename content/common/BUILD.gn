@@ -440,7 +440,6 @@ mojom("mojo_bindings") {
     "agent_scheduling_group.mojom",
     "associated_interfaces.mojom",
     "child_process.mojom",
-    "document_scoped_interface_bundle.mojom",
     "dom_automation_controller.mojom",
     "download/mhtml_file_writer.mojom",
     "field_trial_recorder.mojom",

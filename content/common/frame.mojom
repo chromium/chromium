@@ -4,7 +4,6 @@
 
 module content.mojom;
 
-import "content/common/document_scoped_interface_bundle.mojom";
 import "content/common/frame_messages.mojom";
 import "content/common/native_types.mojom";
 import "content/common/navigation_client.mojom";
@@ -322,7 +321,8 @@ struct CreateNewWindowReply {
   // The communication interfaces for the PageBroadcast.
   pending_associated_receiver<blink.mojom.PageBroadcast> page_broadcast;
 
-  DocumentScopedInterfaceBundle main_frame_interface_bundle;
+  pending_remote<blink.mojom.BrowserInterfaceBroker>
+      main_frame_interface_broker;
 
   // Duplicated from CreateNewWindowParams because legacy code.
   string cloned_session_storage_namespace_id;

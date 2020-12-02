@@ -1562,11 +1562,9 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // A main frame RenderFrame must have a RenderWidget.
   DCHECK_NE(MSG_ROUTING_NONE, params->main_frame_widget_routing_id);
 
-  CHECK(params->main_frame_interface_bundle);
-
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
       agent_scheduling_group, render_view, params->main_frame_routing_id,
-      std::move(params->main_frame_interface_bundle->browser_interface_broker),
+      std::move(params->main_frame_interface_broker),
       params->devtools_main_frame_token);
   render_frame->InitializeBlameContext(nullptr);
 
