@@ -81,7 +81,7 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="                IconProvider.getIcon(context, R.drawable.permission_location),"
+        errorLine1="                IconProvider.getIcon(context, R.drawable.ic_permission_location_outline),"
         errorLine2="                             ~~~~~~~">
         <location
             file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetCoordinator.java"

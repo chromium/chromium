@@ -134,7 +134,7 @@ public class ContentSettingsResources {
                             ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
                             R.string.website_settings_category_cookie_allowed, 0));
             localMap.put(ContentSettingsType.GEOLOCATION,
-                    new ResourceItem(R.drawable.permission_location,
+                    new ResourceItem(R.drawable.ic_permission_location_filled,
                             R.string.website_settings_device_location, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_location_ask, 0));
