@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import android.graphics.drawable.Drawable;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +17,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -29,11 +34,14 @@ import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        shadows = {PaymentRequestServiceTest.ShadowPaymentFeatureList.class})
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
     private final BrowserPaymentRequest mBrowserPaymentRequest;
@@ -63,6 +71,26 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private PaymentAppService mPaymentAppService;
     private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
 
+    /** The shadow of PaymentFeatureList. Not to use outside the test. */
+    @Implements(PaymentFeatureList.class)
+    /* package */ static class ShadowPaymentFeatureList {
+        private static Set<String> sEnabledFeatures = new HashSet<>();
+
+        @Resetter
+        public static void reset() {
+            sEnabledFeatures.clear();
+        }
+
+        @Implementation
+        public static boolean isEnabled(String featureName) {
+            return sEnabledFeatures.contains(featureName);
+        }
+
+        private static void setEnabledFeature(String featureName) {
+            sEnabledFeatures.add(featureName);
+        }
+    }
+
     public PaymentRequestServiceTest() {
         mPaymentAppService = Mockito.mock(PaymentAppService.class);
         Mockito.doAnswer((args) -> {
@@ -83,8 +111,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .patchPaymentResponseIfNeeded(Mockito.any());
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
-                .showOrSkipAppSelector(
-                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+                .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(true)
                 .when(mBrowserPaymentRequest)
                 .parseAndValidateDetailsFurtherIfNeeded(Mockito.any());
@@ -95,11 +122,35 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                })
                 .when(mBrowserPaymentRequest)
                 .notifyPaymentUiOfPendingApps(Mockito.any());
+
+        PaymentApp app =
+                new PaymentApp("appId", "appLabel", "appSublabel", Mockito.mock(Drawable.class)) {
+                    @Override
+                    public Set<String> getInstrumentMethodNames() {
+                        Set<String> names = new HashSet<>();
+                        names.add("https://www.chromium.org");
+                        return names;
+                    }
+
+                    @Override
+                    public void dismissInstrument() {}
+
+                    @Override
+                    public boolean isUserGestureRequiredToSkipUi() {
+                        return false;
+                    }
+                };
+        Mockito.doReturn(app).when(mBrowserPaymentRequest).getSelectedPaymentApp();
+        List<PaymentApp> apps = new ArrayList();
+        apps.add(app);
+        Mockito.doReturn(apps).when(mBrowserPaymentRequest).getPaymentApps();
     }
 
     @Before
     public void setUp() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
+        ShadowPaymentFeatureList.setEnabledFeature(
+                PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP);
     }
 
     @After
@@ -218,6 +269,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     private PaymentDetails getDefaultPaymentDetailsUpdate() {
         return new PaymentDetails();
+    }
+
+    private void verifyShowAppSelector(int times) {
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(times))
+                .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
     }
 
     @Test
@@ -493,17 +549,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testAppSelectorIsTriggeredOnShownAndAppsQueried() {
         PaymentRequestService service = defaultBuilder().build();
-        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .showOrSkipAppSelector(
-                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        verifyShowAppSelector(0);
         show(service);
-        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .showOrSkipAppSelector(
-                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        verifyShowAppSelector(0);
         queryPaymentApps();
-        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .showOrSkipAppSelector(
-                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        verifyShowAppSelector(1);
     }
 
     @Test
@@ -525,13 +575,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testAppSelectorIsNotTriggeredOnAppsQueriedOnly() {
         PaymentRequestService service = defaultBuilder().build();
         queryPaymentApps();
-        Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .showOrSkipAppSelector(
-                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        verifyShowAppSelector(0);
         show(service);
-        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .showOrSkipAppSelector(
-                        Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
+        verifyShowAppSelector(1);
     }
 
     @Test

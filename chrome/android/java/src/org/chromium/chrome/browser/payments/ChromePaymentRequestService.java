@@ -142,6 +142,18 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
+    public PaymentApp getSelectedPaymentApp() {
+        return (PaymentApp) mPaymentUiService.getSelectedPaymentApp();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public List<PaymentApp> getPaymentApps() {
+        return mPaymentUiService.getPaymentAppsInPaymentAppList();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
     public void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
             WebContents webContents, PaymentMethodData[] rawMethodData) {
         mIsGooglePayBridgeActivated = googlePayBridgeEligible
@@ -217,7 +229,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
-            PaymentOptions paymentOptions, boolean isUserGestureShow) {
+            boolean shouldSkipAppSelector) {
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onAppListReady(
@@ -235,10 +247,7 @@ public class ChromePaymentRequestService
         boolean urlPaymentMethodIdentifiersSupported =
                 PaymentRequestService.isUrlPaymentMethodIdentifiersSupported(
                         mSpec.getMethodData().keySet());
-        mShouldSkipAppSelector = PaymentRequestService.shouldSkipAppSelector(isUserGestureShow,
-                                         mSpec.getPaymentOptions(),
-                                         (PaymentApp) mPaymentUiService.getSelectedPaymentApp(),
-                                         mPaymentUiService.getPaymentAppsInPaymentAppList())
+        mShouldSkipAppSelector = shouldSkipAppSelector
                 // Only allowing payment apps that own their own UIs.
                 // This excludes AutofillPaymentInstrument as its UI is rendered inline in
                 // the app selector UI, thus can't be skipped.

@@ -128,13 +128,13 @@ public interface BrowserPaymentRequest {
      * @param isShowWaitingForUpdatedDetails Whether {@link PaymentRequest#show} is waiting for the
      *        updated details.
      * @param total The total amount specified in the payment request.
-     * @param paymentOptions The payment options specified in the payment request.
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
+     * @param shouldSkipAppSelector True if the app selector should be skipped. Note that the
+     *        implementer may consider other factors before deciding whether to show or skip.
      * @return The error of the showing if any; null if success.
      */
     @Nullable
     String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
-            PaymentOptions paymentOptions, boolean isUserGestureShow);
+            boolean shouldSkipAppSelector);
 
     /**
      * Notifies the payment UI service of the payment apps pending to be handled
@@ -227,4 +227,10 @@ public interface BrowserPaymentRequest {
     default boolean parseAndValidateDetailsFurtherIfNeeded(PaymentDetails details) {
         return true;
     }
+
+    /** @return The selected payment app. */
+    PaymentApp getSelectedPaymentApp();
+
+    /** @return All of the available payment apps. */
+    List<PaymentApp> getPaymentApps();
 }
