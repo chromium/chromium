@@ -6,6 +6,19 @@
 It brings IDE features (e.g. diagnostics, code completion, code navigations) to
 your editor.
 
+## Quick Start
+
+* **Googlers**: clangd weekly is available by default on glinux
+  (`/usr/bin/clangd`)
+* Make sure generated ninja files are up-to-date
+* Optional: build chrome normally to get generated headers
+* Generate compilation database (note: it's not regenerated automatically):
+```
+tools/clang/scripts/generate_compdb.py -p out/<build> > compile_commands.json
+```
+* Indexing is enabled by default (since clangd 9)
+* Use clangd in your favourite editor
+
 ## Getting clangd
 
 See [instructions](https://clang.llvm.org/extra/clangd/Installation.html#installing-clangd).
@@ -65,19 +78,23 @@ ninja -C out/Release chrome
 4. Use clangd in your favourite editor, see detailed [instructions](
 https://clang.llvm.org/extra/clangd/Installation.html#getting-started-with-clangd).
 
-## Index
+## Background Indexing
 
-By default, clangd only knows the files you are currently editing. To provide
-project-wide code navigations (e.g. find references), clangd neesds a
-project-wide index.
+clangd builds an incremental index of your project (all files listed in the
+compilation database). The index improves code navigation features
+(go-to-definition, find-references) and code completion.
 
-You can pass an **experimental** `--background-index` command line argument to
-clangd, clangd will incrementally build an index of Chromium in the background.
+* clangd only uses idle cores to build the index, you can limit the total amount
+  of cores by passing the *-j=\<number\>* flag;
+* the index is saved to the `.clangd/index` in the project root; index shards
+  for common headers e.g. STL will be stored in *$HOME/.clangd/index*;
+* background indexing can be disabled by the `--background-index=false` flag;
+  Note that, disabling background-index will limit clangd’s knowledge about your
+  codebase to files you are currently editing.
+
 Note: the first index time may take hours (for reference, it took 2~3 hours on
-a 48-core, 64GB machine).
-
-A full index of Chromium (including v8, blink) takes ~550 MB disk space and ~2.7
-GB memory in clangd.
+a 48-core, 64GB machine). A full index of Chromium (including v8, blink) takes
+~550 MB disk space and ~2.7 GB memory in clangd.
 
 ## Questions
 
