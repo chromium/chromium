@@ -482,6 +482,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       return;
     }
 
+    // Disable further key handling when in Presentation mode.
+    if (document.fullscreenElement !== null) {
+      return;
+    }
+
     switch (e.key) {
       case 'a':
         if (e.ctrlKey || e.metaKey) {

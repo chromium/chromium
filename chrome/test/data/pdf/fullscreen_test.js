@@ -5,25 +5,35 @@
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
 import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+const viewer = /** @type {!PDFViewerElement} */ (
+    document.body.querySelector('pdf-viewer'));
+const scroller =
+    /** @type {!HTMLElement} */ (viewer.shadowRoot.querySelector('#scroller'));
+
+/** @return {!Promise<void>} */
+async function ensureFullscreen() {
+  if (document.fullscreenElement !== null) {
+    return;
+  }
+
+  const toolbar = viewer.shadowRoot.querySelector('viewer-pdf-toolbar-new');
+  toolbar.dispatchEvent(new CustomEvent('fullscreen-click'));
+  await eventToPromise('fullscreenchange', scroller);
+}
 
 const tests = [
   async function testFullscreen() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('pdf-viewer'));
-    const scroller = /** @type {!HTMLElement} */ (
-        viewer.shadowRoot.querySelector('#scroller'));
     chrome.test.assertTrue(scroller !== null);
-
+    chrome.test.assertEq(null, document.fullscreenElement);
     chrome.test.assertEq(FittingType.NONE, viewer.viewport.fittingType);
 
     const whenFitToTypeChanged =
         eventToPromise('fitting-type-changed-for-testing', scroller);
-    const whenFullscreenChange = eventToPromise('fullscreenchange', scroller);
 
-    const toolbar = viewer.shadowRoot.querySelector('viewer-pdf-toolbar-new');
-    toolbar.dispatchEvent(new CustomEvent('fullscreen-click'));
+    await ensureFullscreen();
     await whenFitToTypeChanged;
-    await whenFullscreenChange;
 
     // Check that the scrollbars are hidden.
     chrome.test.assertEq('hidden', window.getComputedStyle(scroller).overflow);
@@ -31,6 +41,15 @@ const tests = [
     chrome.test.assertEq(
         FittingType.FIT_TO_HEIGHT, viewer.viewport.fittingType);
 
+    chrome.test.succeed();
+  },
+  async function testRotateKeyboardShortcutsDisabled() {
+    await ensureFullscreen();
+    chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
+    pressAndReleaseKeyOn(viewer, 0, 'ctrl', '[');
+    chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
+    pressAndReleaseKeyOn(viewer, 0, 'ctrl', ']');
+    chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
     chrome.test.succeed();
   },
 ];
