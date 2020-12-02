@@ -187,6 +187,7 @@ preprocess_if_expr("preprocess_generated") {
     "autofill_page/passwords_section.js",
     "autofill_page/passwords_device_section.js",
     "autofill_page/password_edit_dialog.js",
+    "autofill_page/password_move_multiple_passwords_to_account_dialog.js",
     "autofill_page/password_move_to_account_dialog.js",
     "autofill_page/password_remove_dialog.js",
     "autofill_page/passwords_export_dialog.js",

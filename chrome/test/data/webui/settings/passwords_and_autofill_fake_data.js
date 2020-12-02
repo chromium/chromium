@@ -416,6 +416,34 @@ export class PasswordSectionElementFactory {
   }
 }
 
+/**
+ * Helper class for creating password-device-section sub-element from fake data
+ * and appending them to the document.
+ */
+export class PasswordDeviceSectionElementFactory {
+  /**
+   * @param {HTMLDocument} document The test's |document| object.
+   */
+  constructor(document) {
+    this.document = document;
+  }
+
+  /**
+   * Helper method used to create a move multiple password to the Google Account
+   * dialog.
+   * @param {!Array<!MultiStorePasswordUiEntry>} passwordsToMove
+   * @return {!Object}
+   */
+  createMoveMultiplePasswordsDialog(passwordsToMove) {
+    const moveDialog = this.document.createElement(
+        'password-move-multiple-passwords-to-account-dialog');
+    moveDialog.passwordsToMove = passwordsToMove;
+    this.document.body.appendChild(moveDialog);
+    flush();
+    return moveDialog;
+  }
+}
+
 /** Helper class to track AutofillManager expectations. */
 export class AutofillManagerExpectations {
   constructor() {

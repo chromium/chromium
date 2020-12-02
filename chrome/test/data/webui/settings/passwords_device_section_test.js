@@ -6,10 +6,11 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {createMultiStorePasswordEntry, createPasswordEntry} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
+import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 /**
  * Sets the fake password data, the appropriate route and creates the element.
@@ -66,6 +67,8 @@ suite('PasswordsDeviceSection', function() {
   let syncBrowserProxy = null;
   /** @type {!settings.StoredAccount} */
   const SIGNED_IN_ACCOUNT = {email: 'john@gmail.com'};
+  /** @type {PasswordDeviceSectionElementFactory} */
+  let elementFactory = null;
 
   setup(function() {
     PolymerTest.clearBody();
@@ -73,6 +76,7 @@ suite('PasswordsDeviceSection', function() {
     PasswordManagerImpl.instance_ = passwordManager;
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    elementFactory = new PasswordDeviceSectionElementFactory(document);
 
     // The user only enters this page when they are eligible (signed-in but not
     // syncing) and opted-in to account storage.
@@ -304,5 +308,39 @@ suite('PasswordsDeviceSection', function() {
     passwordManager.setIsOptedInForAccountStorageAndNotify(false);
     flush();
     assertEquals(Router.getInstance().currentRoute, routes.PASSWORDS);
+  });
+
+  // The move multiple password dialog is dismissable.
+  test('moveMultiplePasswordsDialogDismissable', function() {
+    const deviceEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', deviceId: 42});
+    const moveMultipleDialog =
+        elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
+    assertTrue(moveMultipleDialog.$.dialog.open);
+    moveMultipleDialog.$.cancelButton.click();
+    flush();
+    assertFalse(moveMultipleDialog.$.dialog.open);
+  });
+
+  test('moveMultiplePasswordsDialogFiresCloseEventWhenCanceled', function() {
+    const deviceEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', deviceId: 42});
+    const moveMultipleDialog =
+        elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
+    moveMultipleDialog.$.cancelButton.click();
+    return eventToPromise('close', moveMultipleDialog);
+  });
+
+  // Testing moving multiple password dialog Move button.
+  test('moveMultiplePasswordsDialogMoveButton', function() {
+    const deviceEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', deviceId: 42});
+    const moveMultipleDialog =
+        elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
+    assertTrue(moveMultipleDialog.$.dialog.open);
+    moveMultipleDialog.$.moveButton.click();
+    flush();
+    // The move button only close the dialog for now.
+    assertFalse(moveMultipleDialog.$.dialog.open);
   });
 });

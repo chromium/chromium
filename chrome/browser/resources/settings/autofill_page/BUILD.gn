@@ -31,6 +31,7 @@ js_type_check("closure_compile_module") {
     ":password_edit_dialog",
     ":password_list_item",
     ":password_manager_proxy",
+    ":password_move_multiple_passwords_to_account_dialog",
     ":password_move_to_account_dialog",
     ":password_remove_confirmation_dialog",
     ":password_remove_dialog",
@@ -239,6 +240,13 @@ js_library("passwords_list_handler") {
   ]
 }
 
+js_library("password_move_multiple_passwords_to_account_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("password_move_to_account_dialog") {
   deps = [
     ":avatar_icon",
@@ -317,6 +325,7 @@ js_library("passwords_device_section") {
     ":multi_store_password_ui_entry",
     ":password_list_item",
     ":password_manager_proxy",
+    ":password_move_multiple_passwords_to_account_dialog",
     ":passwords_list_handler",
     "..:i18n_setup",
     "..:open_window_proxy",
@@ -406,6 +415,7 @@ html_to_js("web_components") {
     "password_edit_dialog.js",
     "password_remove_dialog.js",
     "password_list_item.js",
+    "password_move_multiple_passwords_to_account_dialog.js",
     "password_move_to_account_dialog.js",
     "password_remove_confirmation_dialog.js",
     "passwords_export_dialog.js",
