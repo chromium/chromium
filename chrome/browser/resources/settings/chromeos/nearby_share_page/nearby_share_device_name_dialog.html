@@ -4,18 +4,30 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../shared/nearby_share_settings.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
 
 <dom-module id="nearby-share-device-name-dialog">
   <template>
-    <style include="iron-flex"></style>
+    <style>
+      :host {
+        --cr-dialog-width: 340px;
+      }
+
+      h1 {
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 24px;
+        margin: 0;
+        padding-block-end: 24px;
+        padding-block-start: 24px;
+      }
+    </style>
 
     <cr-dialog id="dialog">
-      <div slot="title">
+      <h1 slot="title">
         $i18n{nearbyShareDeviceNameDialogTitle}
-      </div>
+      </h1>
       <div slot="body">
         <cr-input value="[[settings.deviceName]]" on-input="onDeviceNameInput_"
             error-message="[[errorMessage]]"
