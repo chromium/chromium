@@ -198,6 +198,36 @@ def _PolicyStillSupported(supported_on, current_version):
   return False
 
 
+def _GetPolicyValueType(policy_type):
+  if policy_type == 'main':
+    return bool
+  elif policy_type in ('string', 'string-enum'):
+    return str
+  elif policy_type in ('int', 'int-enum'):
+    return int
+  elif policy_type in ('list', 'string-enum-list'):
+    return list
+  elif policy_type == 'external':
+    return dict
+  elif policy_type == 'dict':
+    return [dict, list]
+  else:
+    raise NotImplementedError('Unknown value type for policy type: %s' %
+                              policy_type)
+
+
+def _GetPolicyItemType(policy_type):
+  if policy_type == 'main':
+    return bool
+  elif policy_type in ('string-enum', 'string-enum-list'):
+    return str
+  elif policy_type in ('int-enum'):
+    return int
+  else:
+    raise NotImplementedError('Unknown item type for policy type: %s' %
+                              policy_type)
+
+
 def MergeDict(*dicts):
   result = {}
   for dictionary in dicts:
@@ -529,7 +559,7 @@ class PolicyTemplateChecker(object):
     return policy.get('type') in ('main', 'int-enum', 'string-enum',
                                   'string-enum-list')
 
-  def _CheckItems(self, policy, item_type):
+  def _CheckItems(self, policy):
     if not self._NeedsItems(policy):
       return
 
@@ -627,7 +657,7 @@ class PolicyTemplateChecker(object):
         # Each item must have a value of the correct type.
         self._CheckContains(item,
                             'value',
-                            item_type,
+                            _GetPolicyItemType(policy_type),
                             container_name='item',
                             identifier=policy.get('name'))
 
@@ -965,22 +995,8 @@ class PolicyTemplateChecker(object):
               supported_chrome_os_management)
 
       # Each policy must have an 'example_value' of appropriate type.
-      if policy_type == 'main':
-        value_type = item_type = bool
-      elif policy_type in ('string', 'string-enum'):
-        value_type = item_type = str
-      elif policy_type in ('int', 'int-enum'):
-        value_type = item_type = int
-      elif policy_type in ('list', 'string-enum-list'):
-        value_type = list
-        item_type = str
-      elif policy_type == 'external':
-        value_type = item_type = dict
-      elif policy_type == 'dict':
-        value_type = item_type = [dict, list]
-      else:
-        raise NotImplementedError('Unimplemented policy type: %s' % policy_type)
-      self._CheckContains(policy, 'example_value', value_type)
+      self._CheckContains(policy, 'example_value',
+                          _GetPolicyValueType(policy_type))
 
       # Verify that the example complies with the schema and that all properties
       # are used at least once, so the examples are as useful as possible for
@@ -1020,7 +1036,7 @@ class PolicyTemplateChecker(object):
       if is_in_group:
         self.num_policies_in_groups += 1
 
-      self._CheckItems(policy, item_type)
+      self._CheckItems(policy)
 
       if policy_type == 'external':
         # Each policy referencing external data must specify a maximum data
