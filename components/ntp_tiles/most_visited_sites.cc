@@ -680,7 +680,7 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
     const PopularSites::SitesVector& sites_vector,
     const std::set<std::string>& hosts_to_skip,
     size_t num_max_tiles) {
-  // Collect non-blacklisted popular suggestions, skipping those already present
+  // Collect non-blocked popular suggestions, skipping those already present
   // in the personal suggestions.
   NTPTilesVector popular_sites_tiles;
   for (const PopularSites::Site& popular_site : sites_vector) {
