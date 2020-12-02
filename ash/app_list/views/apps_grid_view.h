@@ -261,7 +261,8 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
 
   // Passes scroll information from AppListView to the PaginationController,
   // returns true if this scroll would change pages.
-  bool HandleScrollFromAppListView(const gfx::Vector2d& offset,
+  bool HandleScrollFromAppListView(const gfx::Point& location,
+                                   const gfx::Vector2d& offset,
                                    ui::EventType type);
 
   // Moves |reparented_item| from its folder to the root AppsGridView in the

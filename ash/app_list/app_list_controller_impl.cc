@@ -648,7 +648,7 @@ void AppListControllerImpl::EndDragFromShelf(AppListViewState app_list_state) {
 
 void AppListControllerImpl::ProcessMouseWheelEvent(
     const ui::MouseWheelEvent& event) {
-  presenter_.ProcessMouseWheelOffset(event.offset());
+  presenter_.ProcessMouseWheelOffset(event.location(), event.offset());
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(

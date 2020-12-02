@@ -2551,7 +2551,8 @@ TEST_F(AppListPresenterDelegateTest,
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
-  GetAppListView()->HandleScroll(gfx::Vector2d(0, -30), ui::ET_MOUSEWHEEL);
+  GetAppListView()->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
+                                 ui::ET_MOUSEWHEEL);
 
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }

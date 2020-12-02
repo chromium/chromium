@@ -2193,11 +2193,19 @@ void AppsGridView::UpdateOpacity(bool restore_opacity) {
   }
 }
 
-bool AppsGridView::HandleScrollFromAppListView(const gfx::Vector2d& offset,
+bool AppsGridView::HandleScrollFromAppListView(const gfx::Point& location,
+                                               const gfx::Vector2d& offset,
                                                ui::EventType type) {
+  const auto* root_apps_grid_view =
+      contents_view_->apps_container_view()->apps_grid_view();
+  gfx::Point root_apps_grid_view_location(location);
+  views::View::ConvertPointToTarget(this, root_apps_grid_view,
+                                    &root_apps_grid_view_location);
+
   // Scroll up at first page in top level apps grid should close the launcher.
   if (!folder_delegate_ && offset.y() > 0 &&
-      !pagination_model()->IsValidPageRelative(-1)) {
+      !pagination_model()->IsValidPageRelative(-1) &&
+      !root_apps_grid_view->bounds().Contains(root_apps_grid_view_location)) {
     return false;
   }
 

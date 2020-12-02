@@ -100,7 +100,8 @@ class APP_LIST_EXPORT AppListPresenterImpl
   void EndDragFromShelf(AppListViewState app_list_state);
 
   // Passes a MouseWheelEvent from the shelf to the AppListView.
-  void ProcessMouseWheelOffset(const gfx::Vector2d& scroll_offset_vector);
+  void ProcessMouseWheelOffset(const gfx::Point& location,
+                               const gfx::Vector2d& scroll_offset_vector);
 
   // Scales the home launcher view maintaining the view center point, and
   // updates its opacity. If |callback| is non-null, the update should be

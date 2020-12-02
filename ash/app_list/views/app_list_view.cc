@@ -1343,7 +1343,8 @@ views::View* AppListView::GetInitiallyFocusedView() {
 }
 
 void AppListView::OnScrollEvent(ui::ScrollEvent* event) {
-  if (!HandleScroll(gfx::Vector2d(event->x_offset(), event->y_offset()),
+  if (!HandleScroll(event->location(),
+                    gfx::Vector2d(event->x_offset(), event->y_offset()),
                     event->type())) {
     return;
   }
@@ -1397,7 +1398,8 @@ void AppListView::OnMouseEvent(ui::MouseEvent* event) {
       SetIsInDrag(false);
       break;
     case ui::ET_MOUSEWHEEL:
-      if (HandleScroll(event->AsMouseWheelEvent()->offset(), ui::ET_MOUSEWHEEL))
+      if (HandleScroll(event->location(), event->AsMouseWheelEvent()->offset(),
+                       ui::ET_MOUSEWHEEL))
         event->SetHandled();
       break;
     default:
@@ -1459,7 +1461,8 @@ void AppListView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_MOUSEWHEEL: {
-      if (HandleScroll(event->AsMouseWheelEvent()->offset(), ui::ET_MOUSEWHEEL))
+      if (HandleScroll(event->location(), event->AsMouseWheelEvent()->offset(),
+                       ui::ET_MOUSEWHEEL))
         event->SetHandled();
       break;
     }
@@ -1498,7 +1501,8 @@ void AppListView::OnWallpaperColorsChanged() {
   search_box_view_->OnWallpaperColorsChanged();
 }
 
-bool AppListView::HandleScroll(const gfx::Vector2d& offset,
+bool AppListView::HandleScroll(const gfx::Point& location,
+                               const gfx::Vector2d& offset,
                                ui::EventType type) {
   // Ignore 0-offset events to prevent spurious dismissal, see crbug.com/806338
   // The system generates 0-offset ET_SCROLL_FLING_CANCEL events during simple
@@ -1518,8 +1522,14 @@ bool AppListView::HandleScroll(const gfx::Vector2d& offset,
     AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
                                        ? GetFolderAppsGridView()
                                        : GetRootAppsGridView();
-    if (apps_grid_view->HandleScrollFromAppListView(offset, type))
+    gfx::Point apps_grid_location(location);
+    views::View::ConvertPointToTarget(this, apps_grid_view,
+                                      &apps_grid_location);
+
+    if (apps_grid_view->HandleScrollFromAppListView(apps_grid_location, offset,
+                                                    type)) {
       return true;
+    }
   }
 
   // The AppList should not be dismissed with scroll in tablet mode.

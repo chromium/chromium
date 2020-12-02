@@ -260,9 +260,10 @@ void AppListPresenterImpl::EndDragFromShelf(AppListViewState app_list_state) {
 }
 
 void AppListPresenterImpl::ProcessMouseWheelOffset(
+    const gfx::Point& location,
     const gfx::Vector2d& scroll_offset_vector) {
   if (view_)
-    view_->HandleScroll(scroll_offset_vector, ui::ET_MOUSEWHEEL);
+    view_->HandleScroll(location, scroll_offset_vector, ui::ET_MOUSEWHEEL);
 }
 
 void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(

@@ -1674,12 +1674,25 @@ TEST_F(AppListViewTest, MouseWheelScrollTransitionsToFullscreen) {
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
 
-  view_->HandleScroll(gfx::Vector2d(0, -30), ui::ET_MOUSEWHEEL);
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
+                      ui::ET_MOUSEWHEEL);
   EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
   // This should use animation instead of drag.
   // TODO(oshima): Test AnimationSmoothness.
   histogram_tester.ExpectTotalCount(
       "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
+
+  auto grid_bounds = gfx::RectF(apps_grid_view()->bounds());
+  views::View::ConvertRectToTarget(apps_grid_view(), view_, &grid_bounds);
+
+  view_->HandleScroll(gfx::ToRoundedPoint(grid_bounds.CenterPoint()),
+                      gfx::Vector2d(0, 30), ui::ET_MOUSEWHEEL);
+  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
+
+  view_->HandleScroll(
+      gfx::ToRoundedPoint(grid_bounds.left_center()) + gfx::Vector2d(-20, 0),
+      gfx::Vector2d(0, 30), ui::ET_MOUSEWHEEL);
+  ASSERT_EQ(1, delegate_->dismiss_count());
 }
 
 TEST_F(AppListViewTest, GestureScrollTransitionsToFullscreen) {
@@ -1688,7 +1701,7 @@ TEST_F(AppListViewTest, GestureScrollTransitionsToFullscreen) {
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
 
-  view_->HandleScroll(gfx::Vector2d(0, -30), ui::ET_SCROLL);
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30), ui::ET_SCROLL);
   EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
   // This should use animation instead of drag.
   // TODO(oshima): Test AnimationSmoothness.

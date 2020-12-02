@@ -200,7 +200,9 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   void OnWallpaperColorsChanged();
 
   // Handles scroll events from various sources.
-  bool HandleScroll(const gfx::Vector2d& offset, ui::EventType type);
+  bool HandleScroll(const gfx::Point& location,
+                    const gfx::Vector2d& offset,
+                    ui::EventType type);
 
   // Changes the app list state.
   void SetState(AppListViewState new_state);
