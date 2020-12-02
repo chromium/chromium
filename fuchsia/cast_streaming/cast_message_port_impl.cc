@@ -8,92 +8,10 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "fuchsia/cast_streaming/message_serialization.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 namespace cast_streaming {
-
-namespace {
-
-// TODO(b/156118960): Remove all these when Cast messages are handled by Open
-// Screen.
-const char kMirroringNamespace[] = "urn:x-cast:com.google.cast.webrtc";
-const char kRemotingNamespace[] = "urn:x-cast:com.google.cast.remoting";
-const char kSystemNamespace[] = "urn:x-cast:com.google.cast.system";
-const char kInjectNamespace[] = "urn:x-cast:com.google.cast.inject";
-
-const char kKeySenderId[] = "senderId";
-const char kKeyNamespace[] = "namespace";
-const char kKeyData[] = "data";
-const char kKeyType[] = "type";
-const char kKeyRequestId[] = "requestId";
-const char kKeyCode[] = "code";
-
-const char kValueSystemSenderId[] = "SystemSender";
-const char kValueWrapped[] = "WRAPPED";
-const char kValueError[] = "ERROR";
-const char kValueWrappedError[] = "WRAPPED_ERROR";
-const char kValueInjectNotSupportedError[] =
-    R"({"code":"NOT_SUPPORTED","type":"ERROR"})";
-
-const char kInitialConnectMessage[] = R"(
-    {
-      "type": "ready",
-      "activeNamespaces": [
-        "urn:x-cast:com.google.cast.webrtc",
-        "urn:x-cast:com.google.cast.remoting",
-        "urn:x-cast:com.google.cast.inject"
-      ],
-      "version": "2.0.0",
-      "messagesVersion": "1.0"
-    }
-    )";
-
-// Extracts |buffer| data into |sender_id|, |message_namespace| and |message|.
-// Returns true on success.
-bool ParseMessageBuffer(base::StringPiece buffer,
-                        std::string* sender_id,
-                        std::string* message_namespace,
-                        std::string* message) {
-  base::Optional<base::Value> converted_value = base::JSONReader::Read(buffer);
-  if (!converted_value)
-    return false;
-
-  const std::string* sender_id_value =
-      converted_value->FindStringPath(kKeySenderId);
-  if (!sender_id_value)
-    return false;
-  *sender_id = *sender_id_value;
-
-  const std::string* message_namespace_value =
-      converted_value->FindStringPath(kKeyNamespace);
-  if (!message_namespace_value)
-    return false;
-  *message_namespace = *message_namespace_value;
-
-  const std::string* message_value = converted_value->FindStringPath(kKeyData);
-  if (!message_value)
-    return false;
-  *message = *message_value;
-
-  return true;
-}
-
-// Creates a message string out of the |sender_id|, |message_namespace| and
-// |message|.
-std::string CreateStringMessage(const std::string& sender_id,
-                                const std::string& message_namespace,
-                                const std::string& message) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kKeyNamespace, message_namespace);
-  value.SetStringKey(kKeySenderId, sender_id);
-  value.SetStringKey(kKeyData, message);
-
-  std::string json_message;
-  CHECK(base::JSONWriter::Write(value, &json_message));
-  return json_message;
-}
-
-}  // namespace
 
 CastMessagePortImpl::CastMessagePortImpl(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port)
@@ -187,7 +105,7 @@ void CastMessagePortImpl::PostMessage(const std::string& sender_id,
   DVLOG(3) << "Received Open Screen message. SenderId: " << sender_id
            << ". Namespace: " << message_namespace << ". Message: " << message;
   message_port_->PostMessage(
-      CreateStringMessage(sender_id, message_namespace, message));
+      SerializeCastMessage(sender_id, message_namespace, message));
 }
 
 bool CastMessagePortImpl::OnMessage(
@@ -201,19 +119,18 @@ bool CastMessagePortImpl::OnMessage(
   if (!ports.empty()) {
     // We should never receive any ports for Cast Streaming.
     LOG(ERROR) << "Received ports on Cast Streaming MessagePort.";
-    MaybeClose();
     return false;
   }
 
   std::string sender_id;
   std::string message_namespace;
   std::string str_message;
-  if (!ParseMessageBuffer(message, &sender_id, &message_namespace,
-                          &str_message)) {
+  if (!DeserializeCastMessage(message, &sender_id, &message_namespace,
+                              &str_message)) {
     LOG(ERROR) << "Received bad message.";
     client_->OnError(
         openscreen::Error(openscreen::Error::Code::kCastV2InvalidMessage));
-    return false;
+    return true;
   }
   DVLOG(3) << "Received Cast message. SenderId: " << sender_id
            << ". Namespace: " << message_namespace

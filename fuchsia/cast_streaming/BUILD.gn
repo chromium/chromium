@@ -4,8 +4,28 @@
 
 assert(is_fuchsia)
 
+import("//testing/test.gni")
+
+source_set("cast_streaming_message_port") {
+  deps = [
+    "//base",
+    "//components/openscreen_platform",
+    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
+  visibility = [ ":*" ]
+  public_deps = [ "//components/cast/message_port" ]
+  sources = [
+    "cast_message_port_impl.cc",
+    "cast_message_port_impl.h",
+    "message_serialization.cc",
+    "message_serialization.h",
+  ]
+}
+
 source_set("cast_streaming") {
   deps = [
+    ":cast_streaming_message_port",
     "//base",
     "//components/openscreen_platform",
     "//components/openscreen_platform:openscreen_platform_network_service",
@@ -16,7 +36,6 @@ source_set("cast_streaming") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/openscreen/src/cast/common:public",
     "//third_party/openscreen/src/cast/streaming:receiver",
-    "//third_party/openscreen/src/platform:api",
     "//third_party/openscreen/src/util",
   ]
   public_deps = [ "//components/cast/message_port" ]
@@ -26,11 +45,22 @@ source_set("cast_streaming") {
     "public/cast_streaming_session.h",
   ]
   sources = [
-    "cast_message_port_impl.cc",
-    "cast_message_port_impl.h",
     "cast_streaming.cc",
     "cast_streaming_session.cc",
     "stream_consumer.cc",
     "stream_consumer.h",
+  ]
+}
+
+test("cast_streaming_unittests") {
+  sources = [ "cast_message_port_impl_unittest.cc" ]
+  deps = [
+    ":cast_streaming_message_port",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//components/cast/message_port:test_message_port_receiver",
+    "//media",
+    "//testing/gtest",
+    "//third_party/openscreen/src/platform:api",
   ]
 }
