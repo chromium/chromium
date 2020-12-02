@@ -554,13 +554,13 @@ void ScrollableShelfView::OnFocusRingActivationChanged(bool activated) {
   if (activated) {
     focus_ring_activated_ = true;
     SetPaneFocusAndFocusDefault();
-    if (Shell::Get()->IsInTabletMode())
-      GetShelf()->shelf_widget()->ForceToShowHotseat();
+    force_show_hotseat_resetter_ =
+        GetShelf()->shelf_widget()->ForceShowHotseatInTabletMode();
   } else {
     // Shows the gradient shader when the focus ring is disabled.
     focus_ring_activated_ = false;
-    if (Shell::Get()->IsInTabletMode())
-      GetShelf()->shelf_widget()->ForceToHideHotseat();
+    if (force_show_hotseat_resetter_)
+      force_show_hotseat_resetter_.RunAndReset();
   }
 
   MaybeUpdateGradientZone();
@@ -1157,8 +1157,8 @@ void ScrollableShelfView::ButtonPressed(views::Button* sender,
 void ScrollableShelfView::HandleAccessibleActionScrollToMakeVisible(
     ShelfButton* button) {
   // Scrollable shelf can only be hidden in tablet mode.
-  if (Shell::Get()->IsInTabletMode())
-    GetShelf()->shelf_widget()->ForceToShowHotseat();
+  GetShelf()->hotseat_widget()->set_manually_extended(true);
+  GetShelf()->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
 }
 
 std::unique_ptr<ScrollableShelfView::ScopedActiveInkDropCount>

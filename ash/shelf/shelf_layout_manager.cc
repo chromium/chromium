@@ -1305,7 +1305,8 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
     return HotseatState::kHidden;
 
   // Only force to show if there is not a pending drag operation.
-  if (shelf_widget_->is_hotseat_forced_to_show() && drag_status_ == kDragNone)
+  if (shelf_widget_->IsHotseatForcedShowInTabletMode() &&
+      drag_status_ == kDragNone)
     return app_list_target_visibility ? HotseatState::kShownHomeLauncher
                                       : HotseatState::kExtended;
 

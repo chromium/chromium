@@ -577,6 +577,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // Records the presentation time for the scrollable shelf dragging.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
+  base::ScopedClosureRunner force_show_hotseat_resetter_;
+
   DISALLOW_COPY_AND_ASSIGN(ScrollableShelfView);
 };
 

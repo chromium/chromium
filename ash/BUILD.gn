@@ -2123,6 +2123,7 @@ test("ash_unittests") {
     "session/session_controller_impl_unittest.cc",
     "shelf/back_button_unittest.cc",
     "shelf/contextual_tooltip_unittest.cc",
+    "shelf/drag_handle_unittest.cc",
     "shelf/home_button_unittest.cc",
     "shelf/home_to_overview_nudge_controller_unittest.cc",
     "shelf/hotseat_widget_unittest.cc",

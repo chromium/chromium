@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/animation/animation_change_type.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/focus_cycler.h"
@@ -479,12 +478,18 @@ bool ShelfWidget::GetHitTestRects(aura::Window* target,
   return true;
 }
 
-void ShelfWidget::ForceToShowHotseat() {
-  if (is_hotseat_forced_to_show_)
-    return;
+base::ScopedClosureRunner ShelfWidget::ForceShowHotseatInTabletMode() {
+  ++force_show_hotseat_count_;
 
-  is_hotseat_forced_to_show_ = true;
-  shelf_layout_manager_->UpdateVisibilityState();
+  if (force_show_hotseat_count_ == 1)
+    shelf_layout_manager_->UpdateVisibilityState();
+
+  return base::ScopedClosureRunner(base::BindOnce(
+      &ShelfWidget::ResetForceShowHotseat, weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool ShelfWidget::IsHotseatForcedShowInTabletMode() const {
+  return force_show_hotseat_count_ > 0;
 }
 
 bool ShelfWidget::SetLoginShelfSwipeHandler(
@@ -540,14 +545,6 @@ void ShelfWidget::SetLoginShelfButtonOpacity(float target_opacity) {
     login_shelf_view_->SetButtonOpacity(target_opacity);
 }
 
-void ShelfWidget::ForceToHideHotseat() {
-  if (!is_hotseat_forced_to_show_)
-    return;
-
-  is_hotseat_forced_to_show_ = false;
-  shelf_layout_manager_->UpdateVisibilityState();
-}
-
 ShelfWidget::ShelfWidget(Shelf* shelf)
     : shelf_(shelf),
       background_animator_(shelf_, Shell::Get()->wallpaper_controller()),
@@ -558,8 +555,6 @@ ShelfWidget::ShelfWidget(Shelf* shelf)
 }
 
 ShelfWidget::~ShelfWidget() {
-  Shell::Get()->accessibility_controller()->RemoveObserver(this);
-
   // Must call Shutdown() before destruction.
   DCHECK(!status_area_widget());
 }
@@ -601,8 +596,6 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
   // Sets initial session state to make sure the UI is properly shown.
   OnSessionStateChanged(Shell::Get()->session_controller()->GetSessionState());
   delegate_view_->SetEnableArrowKeyTraversal(true);
-
-  Shell::Get()->accessibility_controller()->AddObserver(this);
 }
 
 void ShelfWidget::Shutdown() {
@@ -646,9 +639,6 @@ void ShelfWidget::RegisterHotseatWidget(HotseatWidget* hotseat_widget) {
 
 void ShelfWidget::OnTabletModeChanged() {
   if (!Shell::Get()->IsInTabletMode()) {
-    // Resets |is_hotseat_forced_to_show| when leaving the tablet mode.
-    is_hotseat_forced_to_show_ = false;
-
     // Disable login shelf gesture controller, if one is set when leacing tablet
     // mode.
     ClearLoginShelfSwipeHandler();
@@ -991,10 +981,13 @@ void ShelfWidget::OnScrollEvent(ui::ScrollEvent* event) {
     views::Widget::OnScrollEvent(event);
 }
 
-void ShelfWidget::OnAccessibilityStatusChanged() {
-  is_hotseat_forced_to_show_ =
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
-  shelf_layout_manager_->UpdateVisibilityState();
+void ShelfWidget::ResetForceShowHotseat() {
+  if (force_show_hotseat_count_ == 0)
+    return;
+  --force_show_hotseat_count_;
+
+  if (force_show_hotseat_count_ == 0)
+    shelf_layout_manager_->UpdateVisibilityState();
 }
 
 }  // namespace ash
