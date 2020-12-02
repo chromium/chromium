@@ -81,7 +81,14 @@ constexpr char kFakeONC[] =
 constexpr char kPolicyCompliantResponse[] = "{ \"policyCompliant\": true }";
 
 constexpr char kFakeCertName[] = "cert_name";
-constexpr char kRequiredKeyPairFormat[] = "\"requiredKeyPairs\":[%s%s%s]";
+constexpr char kRequiredKeyPairsEmpty[] = "\"requiredKeyPairs\":[]";
+constexpr char kRequiredKeyPairsFormat[] =
+    "\"requiredKeyPairs\":[{\"alias\":\"%s\"}]";
+
+constexpr char kChoosePrivateKeyRulesFormat[] =
+    "\"choosePrivateKeyRules\":["
+    "{\"packageNames\":[\"%s\"],"
+    "\"privateKeyAlias\":\"%s\"}]";
 
 constexpr char kSupervisedUserPlayStoreModePolicySetting[] =
     "\"playStoreMode\":\"SUPERVISED\"";
@@ -106,6 +113,9 @@ constexpr char kApplicationsPolicy[] =
 
 constexpr char kTestUserEmail[] = "user@gmail.com";
 
+constexpr char kChromeAppId[] = "chromeappid";
+constexpr char kAndroidAppId[] = "android.app.id";
+
 std::string GetSupervisedUserPlayStoreApplicationPolicy(
     bool include_playstore_restriction,
     const std::string& user_email) {
@@ -114,6 +124,14 @@ std::string GetSupervisedUserPlayStoreApplicationPolicy(
           ? base::StringPrintf(kPlayStoreManagedRestriction, user_email.c_str())
           : "";
   return base::StringPrintf(kApplicationsPolicy, restriction_used.c_str());
+}
+
+void AddKeyPermissionForAppId(base::Value* key_permissions,
+                              const std::string& app_id,
+                              bool allowed) {
+  base::Value cert_key_permission(base::Value::Type::DICTIONARY);
+  cert_key_permission.SetKey("allowCorporateKeyUsage", base::Value(allowed));
+  key_permissions->SetKey(app_id, std::move(cert_key_permission));
 }
 
 MATCHER_P(ValueEquals, expected, "value matches") {
@@ -336,7 +354,7 @@ class ArcPolicyBridgeAffiliatedTest : public ArcPolicyBridgeTestBase,
 };
 
 // Tests required key pair policy.
-class ArcPolicyBridgeRequiredKeyPairTest : public ArcPolicyBridgeTest {
+class ArcPolicyBridgeCertStoreTest : public ArcPolicyBridgeTest {
  protected:
   CertStoreService* GetCertStoreService() override {
     return static_cast<CertStoreService*>(
@@ -683,24 +701,80 @@ INSTANTIATE_TEST_SUITE_P(ArcPolicyBridgeAffiliatedTestInstance,
 
 // Tests that if cert store service is non-null, the required key pair policy is
 // set to the required certificate list.
-TEST_F(ArcPolicyBridgeRequiredKeyPairTest, RequiredKeyPairsBasicTest) {
+TEST_F(ArcPolicyBridgeCertStoreTest, RequiredKeyPairsBasicTest) {
+  // One certificate is required to be installed.
+  cert_store_service()->set_required_cert_names_for_testing({kFakeCertName});
+  GetPoliciesAndVerifyResult(base::StrCat(
+      {"{\"guid\":\"", instance_guid(), "\",",
+       base::StringPrintf(kRequiredKeyPairsFormat, kFakeCertName), "}"}));
+
+  // An empty list is required to be installed.
+  cert_store_service()->set_required_cert_names_for_testing({});
+  GetPoliciesAndVerifyResult(base::StrCat(
+      {"{\"guid\":\"", instance_guid(), "\",", kRequiredKeyPairsEmpty, "}"}));
+}
+
+// Tests that if cert store service is non-null, corporate usage key exists and
+// available to ARC app, ChoosePrivateKeyRules policy is propagated correctly.
+TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsBasicTest) {
   EXPECT_TRUE(cert_store_service());
 
   // One certificate is required to be installed.
-  cert_store_service()->set_required_cert_names_for_testing(
-      std::vector<std::string>({kFakeCertName}));
-  GetPoliciesAndVerifyResult("{\"guid\":\"" + instance_guid() + "\"," +
-                             base::StringPrintf(kRequiredKeyPairFormat,
-                                                "{\"alias\":\"", kFakeCertName,
-                                                "\"}") +
-                             "}");
+  cert_store_service()->set_required_cert_names_for_testing({kFakeCertName});
 
-  // An empty list is required to be installed.
-  cert_store_service()->set_required_cert_names_for_testing(
-      std::vector<std::string>());
-  GetPoliciesAndVerifyResult(
-      "{\"guid\":\"" + instance_guid() + "\"," +
-      base::StringPrintf(kRequiredKeyPairFormat, "", "", "") + "}");
+  base::Value key_permissions(base::Value::Type::DICTIONARY);
+  AddKeyPermissionForAppId(&key_permissions, kAndroidAppId, true /* allowed */);
+  AddKeyPermissionForAppId(&key_permissions, kChromeAppId, true /* allowed */);
+
+  policy_map().Set(policy::key::kKeyPermissions, policy::POLICY_LEVEL_MANDATORY,
+                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                   std::move(key_permissions),
+                   /* external_data_fetcher */ nullptr);
+  GetPoliciesAndVerifyResult(base::StrCat(
+      {"{",
+       base::StringPrintf(kChoosePrivateKeyRulesFormat, kAndroidAppId,
+                          kFakeCertName),
+       ",\"guid\":\"", instance_guid(),
+       "\",\"privateKeySelectionEnabled\":true,",
+       base::StringPrintf(kRequiredKeyPairsFormat, kFakeCertName), "}"}));
+}
+
+// Tests that if cert store service is non-null, corporate usage key exists and
+// not to any ARC apps, ChoosePrivateKeyRules policy is not set.
+TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsEmptyTest) {
+  base::Value key_permissions(base::Value::Type::DICTIONARY);
+  AddKeyPermissionForAppId(&key_permissions, kAndroidAppId,
+                           false /* allowed */);
+  AddKeyPermissionForAppId(&key_permissions, kChromeAppId, true /* allowed */);
+
+  // One certificate is required to be installed.
+  cert_store_service()->set_required_cert_names_for_testing({kFakeCertName});
+
+  policy_map().Set(policy::key::kKeyPermissions, policy::POLICY_LEVEL_MANDATORY,
+                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                   std::move(key_permissions),
+                   /* external_data_fetcher */ nullptr);
+  GetPoliciesAndVerifyResult(base::StrCat(
+      {"{\"guid\":\"", instance_guid(), "\",",
+       base::StringPrintf(kRequiredKeyPairsFormat, kFakeCertName), "}"}));
+}
+
+// Tests that if cert store service is non-null, corporate usage keys do not
+// exist, but in theory are available to ARC apps, ChoosePrivateKeyRules policy
+// is not set.
+TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsNoCertsTest) {
+  base::Value key_permissions(base::Value::Type::DICTIONARY);
+  AddKeyPermissionForAppId(&key_permissions, kAndroidAppId, true /* allowed */);
+  AddKeyPermissionForAppId(&key_permissions, kChromeAppId, true /* allowed */);
+
+  cert_store_service()->set_required_cert_names_for_testing({});
+
+  policy_map().Set(policy::key::kKeyPermissions, policy::POLICY_LEVEL_MANDATORY,
+                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                   std::move(key_permissions),
+                   /* external_data_fetcher */ nullptr);
+  GetPoliciesAndVerifyResult(base::StrCat(
+      {"{\"guid\":\"", instance_guid(), "\",", kRequiredKeyPairsEmpty, "}"}));
 }
 
 }  // namespace arc
