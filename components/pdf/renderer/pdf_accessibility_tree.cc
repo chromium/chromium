@@ -1484,9 +1484,9 @@ PdfAccessibilityTree::MakeTransformFromViewInfo() const {
   double applicable_scale_factor =
       content::RenderThread::Get()->IsUseZoomForDSF() ? scale_ : 1;
   auto transform = std::make_unique<gfx::Transform>();
-  // |scroll_| represents the x offset from which PDF content starts. It is the
-  // width of the PDF toolbar in pixels. Size of PDF toolbar does not change
-  // with zoom.
+  // |scroll_| represents the offset from which PDF content starts. It is the
+  // height of the PDF toolbar and the width of sidenav in pixels if it is open.
+  // Sizes of PDF toolbar and sidenav do not change with zoom.
   transform->Scale(applicable_scale_factor, applicable_scale_factor);
   transform->Translate(-scroll_);
   transform->Scale(zoom_, zoom_);
