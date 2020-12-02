@@ -322,7 +322,7 @@ class TrashDirectoryReader {
    */
   async createTrashEntry_(infoEntry) {
     const error = (msg, text = '') => {
-      console.error(`${msg}: ${infoEntry.toURL()}: ${text}`);
+      console.warn(`${msg}: ${infoEntry.toURL()}: ${text}`);
       return null;
     };
 
@@ -345,9 +345,14 @@ class TrashDirectoryReader {
       return error('Ignoring trash info file with no matching files entry');
     }
 
-    const file =
-        await new Promise((resolve, reject) => infoEntry.file(resolve, reject));
-    const text = await file.text();
+    let text;
+    try {
+      const file = await new Promise(
+          (resolve, reject) => infoEntry.file(resolve, reject));
+      text = await file.text();
+    } catch (e) {
+      return error('Ignoring removed file');
+    }
     const path = TrashEntry.parsePath(text);
     if (!path) {
       return error('Ignoring trash info file with no Path', text);
@@ -399,7 +404,7 @@ class TrashDirectoryReader {
           entries.forEach(entry => this.filesEntries_[entry.name] = entry);
         }
       } catch (e) {
-        console.error('Error reading trash files entries', e);
+        console.warn('Error reading trash files entries', e);
         error(e);
         return;
       }
@@ -415,7 +420,7 @@ class TrashDirectoryReader {
       try {
         entries = await ls(this.infoReader_);
       } catch (e) {
-        console.error('Error reading trash info entries', e);
+        console.warn('Error reading trash info entries', e);
         error(e);
         return;
       }

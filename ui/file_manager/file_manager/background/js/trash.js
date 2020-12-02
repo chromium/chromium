@@ -287,7 +287,7 @@ class Trash {
       if (entry) {
         log(`Deleting ${entry.toURL()}: ${desc}`);
         return this.permanentlyDeleteFileOrDirectory_(entry).catch(
-            e => console.error(`Error deleting ${entry.toURL()}: ${desc}`, e));
+            e => console.warn(`Error deleting ${entry.toURL()}: ${desc}`, e));
       }
     };
 
@@ -304,7 +304,7 @@ class Trash {
         entries.forEach(entry => filesEntries[entry.name] = entry);
       }
     } catch (e) {
-      console.error('Error reading old files entries', e);
+      console.warn('Error reading old files entries', e);
       return;
     }
 
@@ -319,13 +319,13 @@ class Trash {
         for (const entry of entries) {
           // Delete any directories.
           if (!entry.isFile) {
-            rm(entry, console.error, 'Unexpected trash info directory');
+            rm(entry, console.warn, 'Unexpected trash info directory');
             continue;
           }
 
           // Delete any files not *.trashinfo.
           if (!entry.name.endsWith('.trashinfo')) {
-            rm(entry, console.error, 'Unexpected trash info file');
+            rm(entry, console.warn, 'Unexpected trash info file');
             continue;
           }
 
@@ -343,7 +343,7 @@ class Trash {
           // Delete any .trashinfo file with no matching file entry (unless it
           // was write-in-progress).
           if (!filesEntry) {
-            rm(entry, console.error, 'No matching files entry');
+            rm(entry, console.warn, 'No matching files entry');
             continue;
           }
 
@@ -353,16 +353,16 @@ class Trash {
           const text = await file.text();
           const found = text.match(/^DeletionDate=(.*)/m);
           if (!found) {
-            rm(entry, console.error, 'Could not find DeletionDate in ' + text);
-            rm(filesEntry, console.error, 'Invalid matching trashinfo');
+            rm(entry, console.warn, 'Could not find DeletionDate in ' + text);
+            rm(filesEntry, console.warn, 'Invalid matching trashinfo');
             continue;
           }
 
           // Delete any entries with invalid DeletionDate.
           const d = Date.parse(found[1]);
           if (!d) {
-            rm(entry, console.error, 'Could not parse DeletionDate in ' + text);
-            rm(filesEntry, console.error, 'Invalid matching trashinfo');
+            rm(entry, console.warn, 'Could not parse DeletionDate in ' + text);
+            rm(filesEntry, console.warn, 'Invalid matching trashinfo');
             continue;
           }
 
@@ -377,13 +377,13 @@ class Trash {
         }
       }
     } catch (e) {
-      console.error('Error reading old info entries', e);
+      console.warn('Error reading old info entries', e);
       return;
     }
 
     // Any entries left in filesEntries have no matching *.trashinfo file.
     for (const entry of Object.values(filesEntries)) {
-      rm(entry, console.error, 'No matching *.trashinfo file');
+      rm(entry, console.warn, 'No matching *.trashinfo file');
     }
   }
 }
