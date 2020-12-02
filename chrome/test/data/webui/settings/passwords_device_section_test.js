@@ -343,4 +343,15 @@ suite('PasswordsDeviceSection', function() {
     // The move button only close the dialog for now.
     assertFalse(moveMultipleDialog.$.dialog.open);
   });
+
+  // Testing moving multiple password dialog doesn't have more actions menu
+  // button next to each password row..
+  test('moveMultiplePasswordsDialogNoMoreActionButton', function() {
+    const deviceEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', deviceId: 42});
+    const moveMultipleDialog =
+        elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
+    const firstPasswordItem = moveMultipleDialog.$$('password-list-item');
+    assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
+  });
 });

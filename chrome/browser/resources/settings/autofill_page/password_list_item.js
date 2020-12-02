@@ -38,6 +38,16 @@ Polymer({
     ShowPasswordBehavior,
   ],
 
+  properties: {
+    /**
+     * Whether to hide the 3 dot button that open the more actions menu.
+     */
+    shouldHideMoreActionsButton: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
   /**
    * Selects the password on tap if revealed.
    * @private
