@@ -454,7 +454,9 @@ enum class MoveToAccountStoreTrigger {
   kSuccessfulLoginWithProfileStorePassword = 0,
   // The user explicitly asked to move a password listed in Settings.
   kExplicitlyTriggeredInSettings = 1,
-  kMaxValue = kExplicitlyTriggeredInSettings,
+  // The user explicitly asked to move multiple passwords at once in Settings.
+  kExplicitlyTriggeredForMultiplePasswordsInSettings = 2,
+  kMaxValue = kExplicitlyTriggeredForMultiplePasswordsInSettings,
 };
 
 // Used to record metrics for the usage and timing of the GetChangePasswordUrl

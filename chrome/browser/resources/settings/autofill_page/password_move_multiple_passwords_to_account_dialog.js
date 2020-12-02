@@ -15,6 +15,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
 
 Polymer({
   is: 'password-move-multiple-passwords-to-account-dialog',
@@ -32,7 +33,13 @@ Polymer({
   },
 
   /** @override */
-  attached() {},
+  attached() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered',
+        MoveToAccountStoreTrigger
+            .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS,
+        MoveToAccountStoreTrigger.COUNT);
+  },
 
   /** @private */
   onMoveButtonClick_() {
