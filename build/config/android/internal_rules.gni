@@ -3602,16 +3602,19 @@ if (enable_java_templates) {
     }
 
     if (_is_prebuilt || _has_sources) {
+      _java_res_deps = []
       _java_header_deps = []
       _java_impl_deps = []
       _non_java_deps = []
       if (defined(invoker.deps)) {
         foreach(_dep, invoker.deps) {
           _target_label = get_label_info(_dep, "label_no_toolchain")
-          if (filter_exclude([ _target_label ], _java_library_patterns) == [] &&
-              filter_exclude([ _target_label ], _java_resource_patterns) !=
+          if (filter_exclude([ _target_label ], _java_resource_patterns) ==
               []) {
-            # This is a java dep, so replace it with its header.
+            _java_res_deps += [ _dep ]
+          } else if (filter_exclude([ _target_label ],
+                                    _java_library_patterns) == []) {
+            # This is a java library dep, so it has header and impl targets.
             _java_header_deps += [ "${_target_label}__header" ]
             _java_impl_deps += [ "${_target_label}__impl" ]
           } else {
@@ -3660,10 +3663,13 @@ if (enable_java_templates) {
         _extra_java_deps += [ _sdk_java_dep ]
       }
 
+      # Classpath deps is used for header and dex targets, they do not need
+      # resource deps.
       _classpath_deps = _java_header_deps + _non_java_deps + _extra_java_deps +
                         [ ":$_build_config_target_name" ]
+
       _full_classpath_deps =
-          _java_impl_deps + _non_java_deps + _extra_java_deps +
+          _java_impl_deps + _java_res_deps + _non_java_deps + _extra_java_deps +
           [ ":$_build_config_target_name" ]
     }
 
