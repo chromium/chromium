@@ -549,10 +549,10 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   specifics.mutable_history_delete_directive();
 
   SyncChangeList change_list;
-  change_list.push_back(SyncChange(
-      FROM_HERE, SyncChange::ACTION_DELETE,
-      SyncData::CreateRemoteData(specifics,
-                                 /*client_tag_hash=*/kClientTagHash)));
+  change_list.push_back(
+      SyncChange(FROM_HERE, SyncChange::ACTION_DELETE,
+                 SyncData::CreateRemoteData(
+                     specifics, ClientTagHash::FromHashed(kClientTagHash))));
 
   sync_change_processor->ProcessSyncChanges(FROM_HERE, change_list);
 
@@ -584,10 +584,10 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   specifics.mutable_history_delete_directive();
 
   SyncChangeList change_list;
-  change_list.push_back(SyncChange(
-      FROM_HERE, SyncChange::ACTION_DELETE,
-      SyncData::CreateRemoteData(specifics,
-                                 /*client_tag_hash=*/kClientTagHash)));
+  change_list.push_back(
+      SyncChange(FROM_HERE, SyncChange::ACTION_DELETE,
+                 SyncData::CreateRemoteData(
+                     specifics, ClientTagHash::FromHashed(kClientTagHash))));
 
   sync_change_processor->ProcessSyncChanges(FROM_HERE, change_list);
 

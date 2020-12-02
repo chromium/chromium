@@ -66,6 +66,14 @@ bool ShouldAllowInstall(const Extension* extension) {
          extensions::sync_helper::IsSyncable(extension);
 }
 
+std::map<std::string, syncer::SyncData> ToSyncerSyncDataMap(
+    const std::vector<ExtensionSyncData>& data) {
+  std::map<std::string, syncer::SyncData> result;
+  for (const ExtensionSyncData& item : data)
+    result[item.id()] = item.GetSyncData();
+  return result;
+}
+
 syncer::SyncDataList ToSyncerSyncDataList(
     const std::vector<ExtensionSyncData>& data) {
   syncer::SyncDataList result;
@@ -179,7 +187,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   // we couldn't safely clear the flag. So just send out everything and let the
   // sync client handle no-op changes.
   std::vector<ExtensionSyncData> data_list = GetLocalSyncDataList(type);
-  bundle->PushSyncDataList(ToSyncerSyncDataList(data_list));
+  bundle->PushSyncDataMap(ToSyncerSyncDataMap(data_list));
 
   for (const ExtensionSyncData& data : data_list)
     ExtensionPrefs::Get(profile_)->SetNeedsSync(data.id(), false);

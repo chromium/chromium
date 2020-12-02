@@ -25,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error_factory.h"
@@ -329,7 +330,8 @@ TEST_F(SpellcheckCustomDictionaryTest,
   for (size_t i = 0; i < data.size(); i++) {
     EXPECT_TRUE(data[i].GetSpecifics().has_dictionary());
     EXPECT_EQ(syncer::DICTIONARY, data[i].GetDataType());
-    EXPECT_EQ(words[i], syncer::SyncDataLocal(data[i]).GetTag());
+    EXPECT_EQ(syncer::ClientTagHash::FromUnhashed(syncer::DICTIONARY, words[i]),
+              data[i].GetClientTagHash());
     EXPECT_EQ(words[i], data[i].GetSpecifics().dictionary().word());
   }
 

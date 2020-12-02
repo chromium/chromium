@@ -214,7 +214,8 @@ class PrefServiceSyncableTest : public testing::Test {
                                          const syncer::SyncChangeList& list) {
     auto it = list.begin();
     for (; it != list.end(); ++it) {
-      if (syncer::SyncDataLocal(it->sync_data()).GetTag() == name) {
+      if (it->sync_data().GetClientTagHash() ==
+          syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
         return base::JSONReader::ReadDeprecated(
             it->sync_data().GetSpecifics().preference().value());
       }
@@ -242,8 +243,9 @@ TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
   syncer::SyncData sync_data;
   EXPECT_TRUE(pref_sync_service_->CreatePrefSyncData(
       pref->name(), *pref->GetValue(), &sync_data));
-  EXPECT_EQ(std::string(kStringPrefName),
-            syncer::SyncDataLocal(sync_data).GetTag());
+  EXPECT_EQ(
+      syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, kStringPrefName),
+      sync_data.GetClientTagHash());
   const sync_pb::PreferenceSpecifics& specifics(
       sync_data.GetSpecifics().preference());
   EXPECT_EQ(std::string(kStringPrefName), specifics.name());
@@ -446,7 +448,8 @@ class PrefServiceSyncableMergeTest : public testing::Test {
                                          const syncer::SyncChangeList& list) {
     auto it = list.begin();
     for (; it != list.end(); ++it) {
-      if (syncer::SyncDataLocal(it->sync_data()).GetTag() == name) {
+      if (it->sync_data().GetClientTagHash() ==
+          syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
         return base::JSONReader::ReadDeprecated(
             it->sync_data().GetSpecifics().preference().value());
       }

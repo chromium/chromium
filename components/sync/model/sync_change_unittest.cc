@@ -32,7 +32,8 @@ TEST_F(SyncChangeTest, LocalDelete) {
   SyncChange e(FROM_HERE, change_type,
                SyncData::CreateLocalDelete(tag, PREFERENCES));
   EXPECT_EQ(change_type, e.change_type());
-  EXPECT_EQ(tag, SyncDataLocal(e.sync_data()).GetTag());
+  EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, tag),
+            e.sync_data().GetClientTagHash());
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
 }
 
@@ -46,7 +47,8 @@ TEST_F(SyncChangeTest, LocalUpdate) {
   SyncChange e(FROM_HERE, change_type,
                SyncData::CreateLocalData(tag, title, specifics));
   EXPECT_EQ(change_type, e.change_type());
-  EXPECT_EQ(tag, SyncDataLocal(e.sync_data()).GetTag());
+  EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, tag),
+            e.sync_data().GetClientTagHash());
   EXPECT_EQ(title, e.sync_data().GetTitle());
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   std::unique_ptr<base::DictionaryValue> ref_spec(
@@ -66,7 +68,8 @@ TEST_F(SyncChangeTest, LocalAdd) {
   SyncChange e(FROM_HERE, change_type,
                SyncData::CreateLocalData(tag, title, specifics));
   EXPECT_EQ(change_type, e.change_type());
-  EXPECT_EQ(tag, SyncDataLocal(e.sync_data()).GetTag());
+  EXPECT_EQ(ClientTagHash::FromUnhashed(PREFERENCES, tag),
+            e.sync_data().GetClientTagHash());
   EXPECT_EQ(title, e.sync_data().GetTitle());
   EXPECT_EQ(PREFERENCES, e.sync_data().GetDataType());
   std::unique_ptr<base::DictionaryValue> ref_spec(
