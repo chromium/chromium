@@ -240,6 +240,9 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kMouseScrollAcceleration, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
+      ::prefs::kPointingStickAcceleration, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterBooleanPref(
       ::prefs::kTouchpadAcceleration, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
@@ -527,6 +530,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   mouse_acceleration_.Init(::prefs::kMouseAcceleration, prefs, callback);
   mouse_scroll_acceleration_.Init(::prefs::kMouseScrollAcceleration, prefs,
                                   callback);
+  pointing_stick_acceleration_.Init(::prefs::kPointingStickAcceleration, prefs,
+                                    callback);
   touchpad_acceleration_.Init(::prefs::kTouchpadAcceleration, prefs, callback);
   touchpad_scroll_acceleration_.Init(::prefs::kTouchpadScrollAcceleration,
                                      prefs, callback);
@@ -847,6 +852,14 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       mouse_settings.SetScrollAcceleration(enabled);
     ReportBooleanPrefApplication(reason, "Mouse.ScrollAcceleration.Changed",
                                  "Mouse.ScrollAcceleration.Started", enabled);
+  }
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kPointingStickAcceleration) {
+    const bool enabled = pointing_stick_acceleration_.GetValue();
+    if (user_is_active)
+      pointing_stick_settings.SetAcceleration(enabled);
+    ReportBooleanPrefApplication(reason, "PointingStick.Acceleration.Changed",
+                                 "PointingStick.Acceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadAcceleration) {

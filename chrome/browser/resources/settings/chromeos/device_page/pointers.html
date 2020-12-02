@@ -56,6 +56,7 @@
               class="hr"
               pref="{{prefs.settings.mouse.acceleration}}"
               label="$i18n{mouseAccelerationLabel}"
+              on-change="onMouseAccelerationChanged_"
               deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
           </settings-toggle-button>
         </template>
@@ -115,6 +116,14 @@
         <!-- Subsection title only appears if multiple sections are visible. -->
         <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
         <div class$="[[subsectionClass_]]">
+          <template is="dom-if" if="[[allowDisableAcceleration_]]">
+            <settings-toggle-button id="pointingStickAcceleration"
+                class="hr"
+                pref="{{prefs.settings.pointing_stick.acceleration}}"
+                label="$i18n{pointingStickAccelerationLabel}"
+                deep-link-focus-id$="[[Setting.kPointingStickAcceleration]]">
+            </settings-toggle-button>
+          </template>
           <div class="settings-box">
             <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
               $i18n{pointingStickSpeed}

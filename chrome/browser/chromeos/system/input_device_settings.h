@@ -156,6 +156,10 @@ class PointingStickSettings {
   int GetSensitivity() const;
   bool IsSensitivitySet() const;
 
+  void SetAcceleration(bool enabled);
+  bool GetAcceleration() const;
+  bool IsAccelerationSet() const;
+
   // Updates |this| with |settings|. If at least one setting was updated returns
   // true.
   bool Update(const PointingStickSettings& settings);
@@ -165,6 +169,7 @@ class PointingStickSettings {
                     InputDeviceSettings* input_device_settings);
 
  private:
+  base::Optional<bool> acceleration_;
   base::Optional<int> sensitivity_;
 };
 
@@ -266,6 +271,9 @@ class InputDeviceSettings {
   // Sets the pointing stick sensitivity in the range [kMinPointerSensitivity,
   // kMaxPointerSensitivity].
   virtual void SetPointingStickSensitivity(int value) = 0;
+
+  // Turns pointing stick acceleration on/off.
+  virtual void SetPointingStickAcceleration(bool enabled) = 0;
 
   // Turns touchpad acceleration on/off.
   virtual void SetTouchpadAcceleration(bool enabled) = 0;

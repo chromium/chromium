@@ -51,6 +51,7 @@ class StubInputController : public InputController {
   void EndMouseAccelerationSuspension() override {}
   void SetMouseScrollAcceleration(bool enabled) override {}
   void SetPointingStickSensitivity(int value) override {}
+  void SetPointingStickAcceleration(bool enabled) override {}
   void SetTouchpadAcceleration(bool enabled) override {}
   void SetTouchpadScrollAcceleration(bool enabled) override {}
   void SetTapToClickPaused(bool state) override {}

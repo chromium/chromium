@@ -357,6 +357,11 @@ cr.define('device_page_tests', function() {
           },
         },
         pointing_stick: {
+          acceleration: {
+            key: 'settings.pointing_stick.acceleration',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          },
           sensitivity: {
             key: 'settings.pointing_stick.sensitivity',
             type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -699,6 +704,15 @@ cr.define('device_page_tests', function() {
         expectEquals(5, slider.pref.value);
       });
 
+      test('mouse acceleration also sets pointing stick', function() {
+        // TODO(crbug.com/1114828): remove once the feature is launched.
+        const toggle = assert(pointersPage.$$('#mouseAcceleration'));
+        expectEquals(true, toggle.pref.value);
+        toggle.click();
+        expectEquals(
+            false, devicePage.prefs.settings.pointing_stick.acceleration.value);
+      });
+
       test('mouse speed also sets pointing stick speed', function() {
         // TODO(crbug.com/1114828): remove once the feature is launched.
         const slider = assert(pointersPage.$$('#mouse settings-slider'));
@@ -850,6 +864,18 @@ cr.define('device_page_tests', function() {
             });
       });
 
+      test('acceleration toggle sets and responds to preference', function() {
+        const toggle = assert(pointersPage.$$('#pointingStickAcceleration'));
+        expectEquals(true, toggle.pref.value);
+        toggle.click();
+        expectEquals(
+            false, devicePage.prefs.settings.pointing_stick.acceleration.value);
+
+        pointersPage.set(
+            'prefs.settings.pointing_stick.acceleration.value', true);
+        expectEquals(true, toggle.pref.value);
+      });
+
       test('speed slider sets and responds to preference', function() {
         const slider =
             assert(pointersPage.$$('#pointingStick settings-slider'));
@@ -861,6 +887,24 @@ cr.define('device_page_tests', function() {
 
         pointersPage.set('prefs.settings.pointing_stick.sensitivity.value', 5);
         expectEquals(5, slider.pref.value);
+      });
+
+      test('deep link to acceleration setting', async () => {
+        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+        const params = new URLSearchParams();
+        params.append('settingId', '436');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.POINTERS, params);
+
+        const deepLinkElement =
+            pointersPage.$$('#pointingStickAcceleration').$$('cr-toggle');
+        await test_util.waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            'pointing stick acceleration slider should be focused for ' +
+                'settingId=436.');
       });
 
       test('deep link to speed setting', async () => {

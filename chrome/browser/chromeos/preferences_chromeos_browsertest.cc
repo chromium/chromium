@@ -64,6 +64,7 @@ class PreferencesTest : public LoginManagerTest {
     prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, !variant);
     prefs->SetBoolean(prefs::kMouseAcceleration, variant);
     prefs->SetBoolean(prefs::kMouseScrollAcceleration, variant);
+    prefs->SetBoolean(prefs::kPointingStickAcceleration, variant);
     prefs->SetBoolean(prefs::kTouchpadAcceleration, variant);
     prefs->SetBoolean(prefs::kTouchpadScrollAcceleration, variant);
     prefs->SetBoolean(prefs::kEnableTouchpadThreeFingerClick, !variant);
@@ -93,6 +94,9 @@ class PreferencesTest : public LoginManagerTest {
     EXPECT_EQ(
         prefs->GetBoolean(prefs::kMouseScrollAcceleration),
         input_settings_->current_mouse_settings().GetScrollAcceleration());
+    EXPECT_EQ(
+        prefs->GetBoolean(prefs::kPointingStickAcceleration),
+        input_settings_->current_pointing_stick_settings().GetAcceleration());
     EXPECT_EQ(prefs->GetBoolean(prefs::kTouchpadAcceleration),
               input_settings_->current_touchpad_settings().GetAcceleration());
     EXPECT_EQ(

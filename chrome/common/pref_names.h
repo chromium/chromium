@@ -222,6 +222,7 @@ extern const char kEnableTouchpadThreeFingerClick[];
 extern const char kPrimaryMouseButtonRight[];
 extern const char kMouseAcceleration[];
 extern const char kMouseScrollAcceleration[];
+extern const char kPointingStickAcceleration[];
 extern const char kTouchpadAcceleration[];
 extern const char kTouchpadScrollAcceleration[];
 extern const char kMouseSensitivity[];

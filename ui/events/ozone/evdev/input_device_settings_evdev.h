@@ -29,6 +29,7 @@ struct InputDeviceSettingsEvdev {
   bool mouse_reverse_scroll_enabled = false;
   bool mouse_acceleration_enabled = true;
   bool mouse_scroll_acceleration_enabled = true;
+  bool pointing_stick_acceleration_enabled = true;
   bool touchpad_acceleration_enabled = true;
   bool touchpad_scroll_acceleration_enabled = true;
 

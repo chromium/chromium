@@ -142,6 +142,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   BooleanPrefMember mouse_reverse_scroll_;
   BooleanPrefMember mouse_acceleration_;
   BooleanPrefMember mouse_scroll_acceleration_;
+  BooleanPrefMember pointing_stick_acceleration_;
   BooleanPrefMember touchpad_acceleration_;
   BooleanPrefMember touchpad_scroll_acceleration_;
   FilePathPrefMember download_default_directory_;

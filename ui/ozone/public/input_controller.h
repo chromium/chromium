@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
 
   // Pointing stick settings.
   virtual void SetPointingStickSensitivity(int value) = 0;
+  virtual void SetPointingStickAcceleration(bool enabled) = 0;
 
   // Touch log collection.
   virtual void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) = 0;

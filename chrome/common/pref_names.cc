@@ -491,6 +491,11 @@ const char kMouseAcceleration[] = "settings.mouse.acceleration";
 // disabled, only simple linear scaling is applied based on sensitivity.
 const char kMouseScrollAcceleration[] = "settings.mouse.scroll_acceleration";
 
+// A boolean pref set to true if pointing stick acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kPointingStickAcceleration[] =
+    "settings.pointing_stick.acceleration";
+
 // A boolean pref set to true if touchpad acceleration is enabled. When
 // disabled only simple linear scaling is applied based on sensitivity.
 const char kTouchpadAcceleration[] = "settings.touchpad.acceleration";

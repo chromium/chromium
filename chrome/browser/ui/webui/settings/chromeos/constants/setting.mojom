@@ -123,6 +123,7 @@ enum Setting {
   kPowerIdleBehaviorWhileOnBattery = 433,
   kDisplayOverscan = 434,
   kPointingStickSpeed = 435,
+  kPointingStickAcceleration = 436,
 
   // Personalization section.
   kOpenWallpaper = 500,

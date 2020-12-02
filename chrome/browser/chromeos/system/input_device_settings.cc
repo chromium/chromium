@@ -367,9 +367,23 @@ bool PointingStickSettings::IsSensitivitySet() const {
   return sensitivity_.has_value();
 }
 
+void PointingStickSettings::SetAcceleration(bool enabled) {
+  acceleration_ = enabled;
+}
+
+bool PointingStickSettings::GetAcceleration() const {
+  return *acceleration_;
+}
+
+bool PointingStickSettings::IsAccelerationSet() const {
+  return acceleration_.has_value();
+}
+
 bool PointingStickSettings::Update(const PointingStickSettings& settings) {
   bool updated = false;
   if (UpdateIfHasValue(settings.sensitivity_, &sensitivity_))
+    updated = true;
+  if (UpdateIfHasValue(settings.acceleration_, &acceleration_))
     updated = true;
   return updated;
 }
@@ -383,6 +397,10 @@ void PointingStickSettings::Apply(
   if (pointing_stick_settings.sensitivity_.has_value()) {
     input_device_settings->SetPointingStickSensitivity(
         pointing_stick_settings.sensitivity_.value());
+  }
+  if (pointing_stick_settings.acceleration_.has_value()) {
+    input_device_settings->SetPointingStickAcceleration(
+        pointing_stick_settings.acceleration_.value());
   }
 }
 

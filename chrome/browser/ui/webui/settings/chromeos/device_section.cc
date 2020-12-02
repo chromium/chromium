@@ -242,6 +242,12 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
 
 const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPointingStickAcceleration}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
        mojom::kPointersSubpagePath,
        mojom::SearchResultIcon::kLaptop,
@@ -898,6 +904,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kTouchpadScrollAcceleration,
       mojom::Setting::kTouchpadSpeed,
       mojom::Setting::kPointingStickSpeed,
+      mojom::Setting::kPointingStickAcceleration,
       mojom::Setting::kMouseSwapPrimaryButtons,
       mojom::Setting::kMouseReverseScrolling,
       mojom::Setting::kMouseAcceleration,
@@ -1171,6 +1178,8 @@ void DeviceSection::AddDevicePointersStrings(
       {"mouseAccelerationLabel", IDS_SETTINGS_MOUSE_ACCELERATION_LABEL},
       {"mouseScrollAccelerationLabel",
        IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL},
+      {"pointingStickAccelerationLabel",
+       IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL},
       {"touchpadAccelerationLabel", IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL},
       {"touchpadScrollAccelerationLabel",
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},

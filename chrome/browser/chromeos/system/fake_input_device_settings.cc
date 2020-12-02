@@ -122,6 +122,12 @@ void FakeInputDeviceSettings::SetPointingStickSensitivity(int value) {
   UpdatePointingStickSettings(settings);
 }
 
+void FakeInputDeviceSettings::SetPointingStickAcceleration(bool enabled) {
+  PointingStickSettings settings;
+  settings.SetAcceleration(enabled);
+  UpdatePointingStickSettings(settings);
+}
+
 void FakeInputDeviceSettings::SetTouchpadAcceleration(bool enabled) {
   TouchpadSettings settings;
   settings.SetAcceleration(enabled);
