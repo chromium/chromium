@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -987,6 +989,16 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
       .Record(ukm::UkmRecorder::Get());
+
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Graphics.Smoothness.PerSession.AveragePercentDroppedFrames",
+      smoothness_data.avg_smoothness);
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow",
+      smoothness_data.percentile_95);
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow",
+      smoothness_data.worst_smoothness);
 }
 
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
