@@ -2671,6 +2671,11 @@
           'scripts': 'chromium_linux_scripts',
         },
       },
+      'linux-example-builder': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-xenial',

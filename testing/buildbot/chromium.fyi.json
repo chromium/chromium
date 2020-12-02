@@ -51993,6 +51993,11 @@
       }
     ]
   },
+  "linux-example-builder": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
   "linux-fieldtrial-rel": {
     "gtest_tests": [
       {

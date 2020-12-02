@@ -588,6 +588,13 @@
       "use_goma": true
     }
   },
+  "linux-example-builder": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
   "linux-fieldtrial-rel": {
     "gn_args": {
       "is_component_build": false,

@@ -2573,6 +2573,15 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "linux-example-builder",
+    console_view_entry = ci.console_view_entry(
+        category = "linux",
+    ),
+    schedule = "with 12h interval",
+    triggered_by = [],
+)
+
+ci.fyi_builder(
     name = "linux-inverse-fieldtrials-fyi-rel",
     console_view_entry = ci.console_view_entry(
         category = "linux",
