@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/native_file_system_directory_handle_impl.h"
 
+#include "base/i18n/file_util_icu.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +13,7 @@
 #include "content/browser/file_system_access/native_file_system_transfer_token_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/escape.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -29,27 +31,6 @@ using storage::FileSystemOperationRunner;
 namespace content {
 
 using HandleType = NativeFileSystemPermissionContext::HandleType;
-
-namespace {
-
-// Returns true when |name| contains a path separator like "/".
-bool ContainsPathSeparator(const std::string& name) {
-  const base::FilePath filepath_name = storage::StringToFilePath(name);
-
-  const size_t separator_position =
-      filepath_name.value().find_first_of(base::FilePath::kSeparators);
-
-  return separator_position != base::FilePath::StringType::npos;
-}
-
-// Returns true when |name| is "." or "..".
-bool IsCurrentOrParentDirectory(const std::string& name) {
-  const base::FilePath filepath_name = storage::StringToFilePath(name);
-  return filepath_name.value() == base::FilePath::kCurrentDirectory ||
-         filepath_name.value() == base::FilePath::kParentDirectory;
-}
-
-}  // namespace
 
 NativeFileSystemDirectoryHandleImpl::NativeFileSystemDirectoryHandleImpl(
     NativeFileSystemManagerImpl* manager,
@@ -412,25 +393,97 @@ void NativeFileSystemDirectoryHandleImpl::RemoveEntryImpl(
       url, recurse);
 }
 
+namespace {
+
+// Returns whether the specified extension receives special handling by the
+// Windows shell.
+bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
+  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
+
+  // .lnk files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568).
+  if (extension_lower == FILE_PATH_LITERAL("lnk"))
+    return true;
+
+  // Setting a file's extension to a CLSID may conceal its actual file type on
+  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
+  if (!extension_lower.empty() &&
+      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
+      (extension_lower.back() == FILE_PATH_LITERAL('}')))
+    return true;
+  return false;
+}
+
+}  // namespace
+
+// static
+bool NativeFileSystemDirectoryHandleImpl::IsSafePathComponent(
+    const std::string& name) {
+  // This method is similar to net::IsSafePortablePathComponent, with a few
+  // notable differences where the net version does not consider names safe
+  // while here we do want to allow them. These cases are:
+  //  - Names starting with a '.'. These would be hidden files in most file
+  //    managers, but are something we explicitly want to support for the
+  //    File System Access API, for names like .git.
+  //  - Names that end in '.local'. For downloads writing to such files is
+  //    dangerous since it might modify what code is executed when an executable
+  //    is ran from the same directory. For the File System Access API this
+  //    isn't really a problem though, since if a website can write to a .local
+  //    file via a FileSystemDirectoryHandle they can also just modify the
+  //    executables in the directory directly.
+  //
+  // TODO(https://crbug.com/1154757): Unify this with
+  // net::IsSafePortablePathComponent, with the result probably ending up in
+  // base/i18n/file_util_icu.h.
+
+  const base::FilePath component = storage::StringToFilePath(name);
+  // Empty names, or names that contain path separators are invalid.
+  if (component.empty() || component != component.BaseName() ||
+      component != component.StripTrailingSeparators()) {
+    return false;
+  }
+
+  base::string16 component16;
+#if defined(OS_WIN)
+  component16.assign(component.value().begin(), component.value().end());
+#else
+  std::string component8 = component.AsUTF8Unsafe();
+  if (!base::UTF8ToUTF16(component8.c_str(), component8.size(), &component16))
+    return false;
+#endif
+  // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out
+  // a leading '.' before passing it to that method.
+  // TODO(mek): Consider making IsFilenameLegal more flexible to support this
+  // use case.
+  if (component16[0] == '.')
+    component16 = component16.substr(1);
+  if (!base::i18n::IsFilenameLegal(component16))
+    return false;
+
+  base::FilePath::StringType extension = component.Extension();
+  if (!extension.empty())
+    extension.erase(extension.begin());  // Erase preceding '.'.
+  if (IsShellIntegratedExtension(extension))
+    return false;
+
+  if (base::TrimString(component.value(), FILE_PATH_LITERAL("."),
+                       base::TRIM_TRAILING) != component.value()) {
+    return false;
+  }
+
+  if (net::IsReservedNameOnWindows(component.value()))
+    return false;
+
+  return true;
+}
+
 blink::mojom::NativeFileSystemErrorPtr
 NativeFileSystemDirectoryHandleImpl::GetChildURL(
     const std::string& basename,
     storage::FileSystemURL* result) {
-  // TODO(mek): Rather than doing URL serialization and parsing we should just
-  // have a way to get a child FileSystemURL directly from its parent.
-
-  if (basename.empty()) {
+  if (!IsSafePathComponent(basename)) {
     return native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kInvalidArgument,
-        "Name can't be an empty string.");
-  }
-
-  if (ContainsPathSeparator(basename) || IsCurrentOrParentDirectory(basename)) {
-    // |basename| must refer to a entry that exists in this directory as a
-    // direct child.
-    return native_file_system_error::FromStatus(
-        NativeFileSystemStatus::kInvalidArgument,
-        "Name contains invalid characters.");
+        NativeFileSystemStatus::kInvalidArgument, "Name is not allowed.");
   }
 
   const storage::FileSystemURL parent = url();
