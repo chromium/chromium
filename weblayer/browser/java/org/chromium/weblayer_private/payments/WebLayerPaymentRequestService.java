@@ -32,7 +32,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     private PaymentRequestService mPaymentRequestService;
     private PaymentRequestSpec mSpec;
     private boolean mHasClosed;
-    private boolean mShouldSkipShowingPaymentRequestUi;
+    private boolean mShouldSkipAppSelector;
     private PaymentApp mSelectedApp;
 
     /**
@@ -110,13 +110,12 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     @Nullable
-    public String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+    public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             PaymentOptions paymentOptions, boolean isUserGestureShow) {
         assert mAvailableApps.size() <= 1 : "Only GooglePay payment app is supported.";
-        mShouldSkipShowingPaymentRequestUi =
-                PaymentRequestService.shouldSkipShowingPaymentRequestUi(
-                        isUserGestureShow, mSpec.getPaymentOptions(), mSelectedApp, mAvailableApps);
-        if (!mShouldSkipShowingPaymentRequestUi) {
+        mShouldSkipAppSelector = PaymentRequestService.shouldSkipAppSelector(
+                isUserGestureShow, mSpec.getPaymentOptions(), mSelectedApp, mAvailableApps);
+        if (!mShouldSkipAppSelector) {
             return "This request is not supported in Web Layer. Please try in Chrome, or make sure "
                     + "that: (1) show() is triggered by user gesture, or"
                     + "(2) do not request any contact information.";
@@ -132,7 +131,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
             : "triggerPaymentAppUiSkipIfApplicable() should be called only when there is any "
                 + "available app.";
         PaymentApp selectedPaymentApp = mAvailableApps.get(0);
-        if (mShouldSkipShowingPaymentRequestUi) {
+        if (mShouldSkipAppSelector) {
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
             assert mSpec.getRawTotal() != null;
             // The total amount in details should be finalized at this point. So it is safe to

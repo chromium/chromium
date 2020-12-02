@@ -83,7 +83,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .patchPaymentResponseIfNeeded(Mockito.any());
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
-                .showAppSelector(
+                .showOrSkipAppSelector(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(true)
                 .when(mBrowserPaymentRequest)
@@ -494,15 +494,15 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     public void testAppSelectorIsTriggeredOnShownAndAppsQueried() {
         PaymentRequestService service = defaultBuilder().build();
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .showAppSelector(
+                .showOrSkipAppSelector(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
         show(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .showAppSelector(
+                .showOrSkipAppSelector(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .showAppSelector(
+                .showOrSkipAppSelector(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
     }
 
@@ -526,11 +526,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service = defaultBuilder().build();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .showAppSelector(
+                .showOrSkipAppSelector(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
         show(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .showAppSelector(
+                .showOrSkipAppSelector(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.anyBoolean());
     }
 

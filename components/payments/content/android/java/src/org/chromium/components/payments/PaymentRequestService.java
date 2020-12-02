@@ -774,8 +774,9 @@ public class PaymentRequestService
         PaymentNotShownError ensureError = ensureHasSupportedPaymentMethods();
         if (ensureError != null) return ensureError;
 
-        String showError = mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails,
-                mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
+        String showError =
+                mBrowserPaymentRequest.showOrSkipAppSelector(mIsShowWaitingForUpdatedDetails,
+                        mSpec.getRawTotal(), mSpec.getPaymentOptions(), mIsUserGestureShow);
         if (showError != null) {
             return new PaymentNotShownError(
                     NotShownReason.OTHER, showError, PaymentErrorReason.NOT_SUPPORTED);
@@ -1109,8 +1110,8 @@ public class PaymentRequestService
      * @param allApps All available payment apps.
      * @return Whether the browser payment sheet should be skipped directly into the payment app.
      */
-    public static boolean shouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
-            PaymentOptions options, PaymentApp selectedApp, List<PaymentApp> allApps) {
+    public static boolean shouldSkipAppSelector(boolean isUserGestureShow, PaymentOptions options,
+            PaymentApp selectedApp, List<PaymentApp> allApps) {
         // If there is only a single payment app which can provide all merchant requested
         // information, we can safely go directly to the payment app instead of showing Payment
         // Request UI.

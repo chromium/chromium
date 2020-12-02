@@ -124,7 +124,7 @@ public interface BrowserPaymentRequest {
     boolean hasAvailableApps();
 
     /**
-     * Shows the payment apps selector.
+     * Shows the payment apps selector or skip it to invoke the payment app directly.
      * @param isShowWaitingForUpdatedDetails Whether {@link PaymentRequest#show} is waiting for the
      *        updated details.
      * @param total The total amount specified in the payment request.
@@ -133,7 +133,7 @@ public interface BrowserPaymentRequest {
      * @return The error of the showing if any; null if success.
      */
     @Nullable
-    String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+    String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             PaymentOptions paymentOptions, boolean isUserGestureShow);
 
     /**

@@ -97,10 +97,10 @@ public class ChromePaymentRequestService
      * True if the browser should skip showing PaymentRequest UI.
      *
      * <p>In cases where there is a single payment app and the merchant does not request shipping
-     * or billing, the browser can skip showing UI as Payment Request UI is not benefiting the user
+     * or billing, the browser can skip showing UI as the app selector UI is not benefiting the user
      * at all.
      */
-    private boolean mShouldSkipShowingPaymentRequestUi;
+    private boolean mShouldSkipAppSelector;
 
     /** The delegate of this class */
     public interface Delegate extends PaymentRequestService.Delegate {
@@ -216,7 +216,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public String showAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
+    public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             PaymentOptions paymentOptions, boolean isUserGestureShow) {
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
@@ -235,16 +235,15 @@ public class ChromePaymentRequestService
         boolean urlPaymentMethodIdentifiersSupported =
                 PaymentRequestService.isUrlPaymentMethodIdentifiersSupported(
                         mSpec.getMethodData().keySet());
-        mShouldSkipShowingPaymentRequestUi =
-                PaymentRequestService.shouldSkipShowingPaymentRequestUi(isUserGestureShow,
-                        mSpec.getPaymentOptions(),
-                        (PaymentApp) mPaymentUiService.getSelectedPaymentApp(),
-                        mPaymentUiService.getPaymentAppsInPaymentAppList())
+        mShouldSkipAppSelector = PaymentRequestService.shouldSkipAppSelector(isUserGestureShow,
+                                         mSpec.getPaymentOptions(),
+                                         (PaymentApp) mPaymentUiService.getSelectedPaymentApp(),
+                                         mPaymentUiService.getPaymentAppsInPaymentAppList())
                 // Only allowing payment apps that own their own UIs.
                 // This excludes AutofillPaymentInstrument as its UI is rendered inline in
-                // the payment request UI, thus can't be skipped.
+                // the app selector UI, thus can't be skipped.
                 && (urlPaymentMethodIdentifiersSupported || mDelegate.skipUiForBasicCard());
-        if (!mShouldSkipShowingPaymentRequestUi && mSkipToGPayHelper == null) {
+        if (!mShouldSkipAppSelector && mSkipToGPayHelper == null) {
             mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
         }
         return null;
@@ -269,9 +268,9 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
-        // If we are skipping showing the Payment Request UI, we should call into the payment app
+        // If we are skipping showing the app selector UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
-        if (mShouldSkipShowingPaymentRequestUi || mSkipToGPayHelper != null) {
+        if (mShouldSkipAppSelector || mSkipToGPayHelper != null) {
             assert !mPaymentUiService.getPaymentApps().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
@@ -432,7 +431,7 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
-        if (isFinishedQueryingPaymentApps && !mShouldSkipShowingPaymentRequestUi) {
+        if (isFinishedQueryingPaymentApps && !mShouldSkipAppSelector) {
             boolean providedInformationToPaymentRequestUI =
                     mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
             if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
@@ -666,9 +665,9 @@ public class ChromePaymentRequestService
                     selectedPaymentMethod.getIdentifier());
         }
 
-        // Showing the payment request UI if we were previously skipping it so the loading
+        // Showing the app selector UI if we were previously skipping it so the loading
         // spinner shows up until the merchant notifies that payment was completed.
-        if (mShouldSkipShowingPaymentRequestUi && mPaymentUiService.getPaymentRequestUI() != null) {
+        if (mShouldSkipAppSelector && mPaymentUiService.getPaymentRequestUI() != null) {
             mPaymentUiService.getPaymentRequestUI().showProcessingMessageAfterUiSkip();
         }
     }
@@ -690,7 +689,7 @@ public class ChromePaymentRequestService
         }
 
         // When skipping UI, any errors/cancel from fetching payment details should abort payment.
-        if (mShouldSkipShowingPaymentRequestUi) {
+        if (mShouldSkipAppSelector) {
             assert !TextUtils.isEmpty(errorMessage);
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             disconnectFromClientWithDebugMessage(errorMessage);
