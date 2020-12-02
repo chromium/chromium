@@ -1077,6 +1077,7 @@ ci.chromium_builder(
 ci.chromium_builder(
     name = "android-official",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
     main_console_view = "main",
     console_view_entry = ci.console_view_entry(
         category = "android",
