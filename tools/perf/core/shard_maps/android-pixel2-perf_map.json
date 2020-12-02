@@ -76,6 +76,9 @@
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
             },
+            "speedometer2-pcscan": {
+                "abridged": false
+            },
             "jetstream": {
                 "abridged": false
             }
@@ -368,7 +371,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1130,
+        "num_stories": 1131,
         "predicted_min_shard_time": 921.0,
         "predicted_min_shard_index": 3,
         "predicted_max_shard_time": 1194.0,
@@ -376,7 +379,7 @@
         "shard #0": 1143.0,
         "shard #1": 1137.0,
         "shard #2": 1137.0,
-        "shard #3": 921.0,
+        "shard #3": 931.0,
         "shard #4": 1150.0,
         "shard #5": 1170.0,
         "shard #6": 1153.0,

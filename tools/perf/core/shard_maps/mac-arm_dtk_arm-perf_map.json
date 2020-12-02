@@ -112,6 +112,9 @@
             "memory.desktop": {
                 "abridged": false
             },
+            "speedometer2-pcscan": {
+                "abridged": false
+            },
             "octane": {
                 "abridged": false
             }
@@ -226,15 +229,15 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1063,
-        "predicted_min_shard_time": 1418.0,
+        "num_stories": 1064,
+        "predicted_min_shard_time": 1428.0,
         "predicted_min_shard_index": 3,
         "predicted_max_shard_time": 1500,
         "predicted_max_shard_index": 5,
         "shard #0": 1480.0,
         "shard #1": 1480,
         "shard #2": 1482.0,
-        "shard #3": 1418.0,
+        "shard #3": 1428.0,
         "shard #4": 1490.0,
         "shard #5": 1500,
         "shard #6": 1490,

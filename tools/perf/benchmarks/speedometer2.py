@@ -87,7 +87,7 @@ class Speedometer2PCScan(Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer2-pcscan'
+    return 'speedometer2-pcscan'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-features=PartitionAllocPCScan')

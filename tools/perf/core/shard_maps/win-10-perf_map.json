@@ -264,6 +264,9 @@
             "speedometer2-future": {
                 "abridged": false
             },
+            "speedometer2-pcscan": {
+                "abridged": false
+            },
             "system_health.common_desktop": {
                 "end": 18,
                 "abridged": false
@@ -377,7 +380,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1063,
+        "num_stories": 1064,
         "predicted_min_shard_time": 1141.0,
         "predicted_min_shard_index": 3,
         "predicted_max_shard_time": 1266.0,
@@ -398,7 +401,7 @@
         "shard #13": 1219.0,
         "shard #14": 1187.0,
         "shard #15": 1193.0,
-        "shard #16": 1226.0,
+        "shard #16": 1236.0,
         "shard #17": 1241.0,
         "shard #18": 1189.0,
         "shard #19": 1170.0,
