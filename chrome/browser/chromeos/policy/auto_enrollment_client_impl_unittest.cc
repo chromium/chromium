@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/optional.h"
@@ -134,7 +135,19 @@ class AutoEnrollmentClientImplTest
         local_state_(scoped_testing_local_state_.Get()),
         state_(AUTO_ENROLLMENT_STATE_PENDING) {}
 
+  void SetUpCommandLine(base::CommandLine* command_line) const {
+    // Disable private set membership switch when its protocol state param is
+    // kDisabled.
+    if (GetPrivateSetMembershipState() ==
+        PrivateSetMembershipState::kDisabled) {
+      command_line->AppendSwitchASCII(
+          chromeos::switches::kEnterpriseEnablePrivateSetMembership,
+          chromeos::AutoEnrollmentController::kEnablePsmNever);
+    }
+  }
+
   void SetUp() override {
+    SetUpCommandLine(base::CommandLine::ForCurrentProcess());
     CreateClient(kPowerStart, kPowerLimit);
     ASSERT_FALSE(local_state_->GetUserPref(prefs::kShouldAutoEnroll));
     ASSERT_FALSE(local_state_->GetUserPref(prefs::kAutoEnrollmentPowerLimit));
@@ -145,15 +158,17 @@ class AutoEnrollmentClientImplTest
     base::RunLoop().RunUntilIdle();
   }
 
-  AutoEnrollmentProtocol GetAutoEnrollmentProtocol() {
+  AutoEnrollmentProtocol GetAutoEnrollmentProtocol() const {
     return std::get<0>(GetParam()).auto_enrollment_protocol;
   }
 
-  PrivateSetMembershipState GetPrivateSetMembershipState() {
+  PrivateSetMembershipState GetPrivateSetMembershipState() const {
     return std::get<0>(GetParam()).private_set_membership_state;
   }
 
-  int GetPrivateSetMembershipTestCaseIndex() { return std::get<1>(GetParam()); }
+  int GetPrivateSetMembershipTestCaseIndex() const {
+    return std::get<1>(GetParam());
+  }
 
   void CreateClient(int power_initial, int power_limit) {
     state_ = AUTO_ENROLLMENT_STATE_PENDING;
@@ -1293,7 +1308,8 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
     ASSERT_EQ(GetPrivateSetMembershipState(),
               PrivateSetMembershipState::kEnabled);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        chromeos::switches::kEnterpriseEnablePrivateSetMembership, "always");
+        chromeos::switches::kEnterpriseEnablePrivateSetMembership,
+        chromeos::AutoEnrollmentController::kEnablePsmAlways);
 
     // Verify that private set membership state pref has not been set before.
     ASSERT_EQ(local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState),
