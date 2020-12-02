@@ -13,7 +13,6 @@ class GURL;
 
 namespace net {
 class SiteForCookies;
-class URLRequest;
 }  // namespace net
 
 namespace android_webview {
@@ -37,7 +36,6 @@ class AwCookieAccessPolicy {
   bool GetShouldAcceptThirdPartyCookies(int render_process_id,
                                         int render_frame_id,
                                         int frame_tree_node_id);
-  bool GetShouldAcceptThirdPartyCookies(const net::URLRequest& request);
 
   // Whether or not to allow cookies for requests with these parameters.
   bool AllowCookies(const GURL& url,

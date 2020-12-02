@@ -7,10 +7,6 @@
 
 #include <string>
 
-namespace net {
-class URLRequest;
-}
-
 namespace android_webview {
 
 enum RealmRestriction {
@@ -38,12 +34,6 @@ struct HeaderData {
 bool ParseHeader(const std::string& header,
                  RealmRestriction realm_restriction,
                  HeaderData* header_data);
-
-// Helper function that also retrieves the header from the response of the
-// given URLRequest.
-bool ParserHeaderInResponse(net::URLRequest* request,
-                            RealmRestriction realm_restriction,
-                            HeaderData* header_data);
 
 }  // namespace android_webview
 

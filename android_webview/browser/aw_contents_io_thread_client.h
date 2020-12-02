@@ -21,10 +21,6 @@ namespace content {
 class WebContents;
 }
 
-namespace net {
-class URLRequest;
-}
-
 namespace android_webview {
 
 class AwWebResourceInterceptResponse;

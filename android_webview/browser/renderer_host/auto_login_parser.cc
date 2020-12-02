@@ -10,13 +10,10 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "net/base/escape.h"
-#include "net/url_request/url_request.h"
 
 namespace android_webview {
 
 namespace {
-
-const char kHeaderName[] = "X-Auto-Login";
 
 bool MatchRealm(const std::string& realm, RealmRestriction restriction) {
   switch (restriction) {
@@ -70,14 +67,6 @@ bool ParseHeader(const std::string& header,
 
   *header_data = local_params;
   return true;
-}
-
-bool ParserHeaderInResponse(net::URLRequest* request,
-                            RealmRestriction realm_restriction,
-                            HeaderData* header_data) {
-  std::string header_string;
-  request->GetResponseHeaderByName(kHeaderName, &header_string);
-  return ParseHeader(header_string, realm_restriction, header_data);
 }
 
 }  // namespace android_webview

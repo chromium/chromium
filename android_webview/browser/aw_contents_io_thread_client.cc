@@ -32,7 +32,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/data_url.h"
-#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
 
 using base::LazyInstance;
