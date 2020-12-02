@@ -998,6 +998,7 @@ if (!is_android) {
       "../browser/component_updater/component_patcher_operation_browsertest.cc",
       "../browser/content_index/content_index_browsertest.cc",
       "../browser/content_settings/content_settings_browsertest.cc",
+      "../browser/conversions/conversions_usage_restriction_trial_browsertest.cc",
       "../browser/conversions/conversions_usecounter_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
       "../browser/custom_handlers/protocol_handler_registry_browsertest.cc",

@@ -17,4 +17,8 @@ const base::Feature kOriginTrialsSampleAPIThirdPartyAlternativeUsage{
     "OriginTrialsSampleAPIThirdPartyAlternativeUsage",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kConversionMeasurementAPIAlternativeUsage{
+    "ConversionMeasurementAPIAlternativeUsage",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace embedder_support
