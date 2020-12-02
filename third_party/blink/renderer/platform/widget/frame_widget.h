@@ -20,6 +20,7 @@
 namespace cc {
 class AnimationHost;
 class Layer;
+class LayerTreeSettings;
 class PaintImage;
 }  // namespace cc
 
@@ -76,6 +77,10 @@ class PLATFORM_EXPORT FrameWidget {
   // A stable numeric Id for the local root's compositor. For tracing/debugging
   // purposes.
   virtual int GetLayerTreeId() = 0;
+
+  // Return the LayerTreeSettings from the compositor. These are constant from
+  // the time the compositor is created.
+  virtual const cc::LayerTreeSettings& GetLayerTreeSettings() = 0;
 
   // Set or get what event handlers exist in the document contained in the
   // WebWidget in order to inform the compositor thread if it is able to handle

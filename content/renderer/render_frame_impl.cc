@@ -3723,11 +3723,11 @@ blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
     blink::MediaInspectorContext* inspector_context,
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
     WebContentDecryptionModule* initial_cdm,
-    const blink::WebString& sink_id) {
+    const blink::WebString& sink_id,
+    const cc::LayerTreeSettings& settings) {
   return media_factory_.CreateMediaPlayer(
       source, client, inspector_context, encrypted_client, initial_cdm, sink_id,
-      GetLocalRootWebFrameWidget()->GetFrameSinkId(),
-      GetLocalRootRenderWidget()->layer_tree_host()->GetSettings());
+      GetLocalRootWebFrameWidget()->GetFrameSinkId(), settings);
 }
 
 std::unique_ptr<blink::WebContentSettingsClient>

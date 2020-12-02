@@ -191,6 +191,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       WebReportTimeCallback presentation_callback) final;
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
+  const cc::LayerTreeSettings& GetLayerTreeSettings() final;
   void SetEventListenerProperties(cc::EventListenerClass,
                                   cc::EventListenerProperties) final;
   cc::EventListenerProperties EventListenerProperties(

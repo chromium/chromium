@@ -1591,6 +1591,10 @@ int WebFrameWidgetImpl::GetLayerTreeId() {
   return widget_base_->LayerTreeHost()->GetId();
 }
 
+const cc::LayerTreeSettings& WebFrameWidgetImpl::GetLayerTreeSettings() {
+  return widget_base_->LayerTreeHost()->GetSettings();
+}
+
 void WebFrameWidgetImpl::SetHaveScrollEventHandlers(bool has_handlers) {
   widget_base_->LayerTreeHost()->SetHaveScrollEventHandlers(has_handlers);
 }
