@@ -690,14 +690,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BrowserActionRemovePopup) {
       << "a specific tab id.";
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Flaky: https://crbug.com/1113904
-#define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
-#else
-#define MAYBE_IncognitoBasic IncognitoBasic
-#endif
-
-IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, MAYBE_IncognitoBasic) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoBasic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
   scoped_refptr<const Extension> extension = LoadExtensionWithParamFlags(
