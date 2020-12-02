@@ -156,7 +156,8 @@ LayoutBoxModelObject::ComputeBackgroundPaintLocationIfComposited() const {
     // Solid color layers with an effective background clip of the padding box
     // can be treated as local.
     if (!layer->GetImage() && !layer->Next() &&
-        ResolveColor(GetCSSPropertyBackgroundColor()).Alpha() > 0) {
+        ResolveColor(GetCSSPropertyBackgroundColor()).Alpha() > 0 &&
+        StyleRef().IsScrollbarGutterAuto()) {
       EFillBox clip = layer->Clip();
       if (clip == EFillBox::kPadding)
         continue;
