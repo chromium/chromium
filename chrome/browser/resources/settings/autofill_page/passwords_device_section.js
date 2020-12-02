@@ -109,6 +109,17 @@ Polymer({
           'savedPasswords.splices)',
     },
 
+    /**
+     * Passwords displayed in both the device-only and 'device and account'
+     * subsections.
+     * @private {!Array<!MultiStorePasswordUiEntry>}
+     */
+    allDevicePasswords_: {
+      type: Array,
+      value: () => [],
+      computed: 'computeAllDevicePasswords_(savedPasswords.splices)',
+    },
+
     /** @private {!MultiStorePasswordUiEntry} */
     lastFocused_: Object,
 
@@ -157,6 +168,13 @@ Polymer({
     currentRoute_: {
       type: Object,
       value: null,
+    },
+
+    /** @private */
+    devicePasswordsLabel_: {
+      type: String,
+      value: '',
+      computed: 'computeDevicePasswordsLabel_(allDevicePasswords_)',
     },
 
     /** @private */
@@ -210,6 +228,14 @@ Polymer({
    * @return {!Array<!MultiStorePasswordUiEntry>}
    * @private
    */
+  computeAllDevicePasswords_() {
+    return this.savedPasswords.filter(p => p.isPresentOnDevice());
+  },
+
+  /**
+   * @return {!Array<!MultiStorePasswordUiEntry>}
+   * @private
+   */
   computeDeviceOnlyPasswords_() {
     return this.savedPasswords.filter(
         p => p.isPresentOnDevice() && !p.isPresentInAccount());
@@ -235,6 +261,17 @@ Polymer({
         (this.syncDisabled_ === null || !!this.syncDisabled_) &&
         (this.optedInForAccountStorage_ === null ||
          !!this.optedInForAccountStorage_);
+  },
+
+  /**
+   * @private
+   * @return {string}
+   */
+  computeDevicePasswordsLabel_() {
+    return this.allDevicePasswords_.length === 1 ?
+        this.i18n('devicePasswordsLinkLabelSingular') :
+        this.i18n(
+            'devicePasswordsLinkLabelPlural', this.allDevicePasswords_.length);
   },
 
   /**
