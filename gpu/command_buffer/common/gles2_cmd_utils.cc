@@ -1167,6 +1167,7 @@ uint32_t GLES2Util::GetChannelsForFormat(int format) {
       return kRGB;
     case GL_RGB_YCRCB_420_CHROMIUM:
     case GL_RGB_YCBCR_420V_CHROMIUM:
+    case GL_RGB_YCBCR_P010_CHROMIUM:
     case GL_BGRA_EXT:
     case GL_BGRA8_EXT:
     case GL_RGBA16F_EXT:
