@@ -843,7 +843,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // TODO(crbug.com/238179): Cure these flaky tests.
-#if !defined(NDEBUG)
+// Bulk-disabled as part of mac arm64 bot greening: https://crbug.com/1154345
+#if !defined(NDEBUG) || (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
 #define MAYBE_PostData1 DISABLED_PostData1
 #define MAYBE_PostData2 DISABLED_PostData2
 #else

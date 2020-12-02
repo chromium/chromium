@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
@@ -431,7 +432,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, IsStorageEnabled) {
   EXPECT_TRUE(frontend->IsStorageEnabled(MANAGED));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ExtensionsSchemas) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_ExtensionsSchemas DISABLED_ExtensionsSchemas
+#else
+#define MAYBE_ExtensionsSchemas ExtensionsSchemas
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, MAYBE_ExtensionsSchemas) {
   // Verifies that the Schemas for the extensions domain are created on startup.
   Profile* profile = browser()->profile();
   ExtensionSystem* extension_system = ExtensionSystem::Get(profile);
@@ -510,7 +517,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ExtensionsSchemas) {
   EXPECT_EQ(base::Value::Type::INTEGER, dict.GetProperty("anything").type());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ManagedStorage) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_ManagedStorage DISABLED_ManagedStorage
+#else
+#define MAYBE_ManagedStorage ManagedStorage
+#endif
+
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, MAYBE_ManagedStorage) {
   // Set policies for the test extension.
   std::unique_ptr<base::DictionaryValue> policy =
       extensions::DictionaryBuilder()
