@@ -222,11 +222,9 @@ public class TabListCoordinator implements Destroyable {
         }
 
         if (mode == TabListMode.CAROUSEL) {
-            // TODO(mattsimmons): Remove this height and let the parent determine the correct
-            //  height. This can be done once the width is dynamic as well in
-            //  TabCarouselViewHolder.
-            mRecyclerView.getLayoutParams().height =
-                    context.getResources().getDimensionPixelSize(R.dimen.tab_carousel_height);
+            ViewGroup.LayoutParams layoutParams = mRecyclerView.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            mRecyclerView.setLayoutParams(layoutParams);
         }
 
         mRecyclerView.setAdapter(mAdapter);
