@@ -60,11 +60,6 @@ FontFallbackMap& GetFontFallbackMap(FontSelector* font_selector) {
 scoped_refptr<FontFallbackList> GetOrCreateFontFallbackList(
     const FontDescription& font_description,
     FontSelector* font_selector) {
-  if (!RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled()) {
-    return FontFallbackList::Create(font_selector);
-  }
-
   return GetFontFallbackMap(font_selector).Get(font_description);
 }
 
@@ -101,9 +96,7 @@ Font::~Font() {
 // should clear the entry from FontFallbackMap.
 // Note that we must not persist a FontFallbackList reference outside Font.
 void Font::ReleaseFontFallbackListRef() const {
-  if (!RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled() ||
-      !font_fallback_list_ || !font_fallback_list_->IsValid()) {
+  if (!font_fallback_list_ || !font_fallback_list_->IsValid()) {
     font_fallback_list_.reset();
     return;
   }
@@ -117,12 +110,6 @@ void Font::ReleaseFontFallbackListRef() const {
 }
 
 void Font::RevalidateFontFallbackList() const {
-  if (!RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled()) {
-    font_fallback_list_->RevalidateDeprecated();
-    return;
-  }
-
   font_fallback_list_ =
       GetFontFallbackMap(GetFontSelector()).Get(font_description_);
 }
@@ -138,15 +125,12 @@ FontFallbackList* Font::EnsureFontFallbackList() const {
 }
 
 bool Font::operator==(const Font& other) const {
-  if (RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled()) {
-    // When the feature is enabled, two Font objects with the same
-    // FontDescription and FontSelector should always hold reference to the same
-    // FontFallbackList object, unless invalidated.
-    if (font_fallback_list_ && font_fallback_list_->IsValid() &&
-        other.font_fallback_list_ && other.font_fallback_list_->IsValid()) {
-      return font_fallback_list_ == other.font_fallback_list_;
-    }
+  // Two Font objects with the same FontDescription and FontSelector should
+  // always hold reference to the same FontFallbackList object, unless
+  // invalidated.
+  if (font_fallback_list_ && font_fallback_list_->IsValid() &&
+      other.font_fallback_list_ && other.font_fallback_list_->IsValid()) {
+    return font_fallback_list_ == other.font_fallback_list_;
   }
 
   FontSelector* first =

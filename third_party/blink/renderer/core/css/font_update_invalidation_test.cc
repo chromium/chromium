@@ -17,12 +17,9 @@ namespace blink {
 // This test suite verifies that after font changes (e.g., font loaded), we do
 // not invalidate the full document's style or layout, but for affected elements
 // only.
-class FontUpdateInvalidationTest
-    : private ScopedCSSReducedFontLoadingLayoutInvalidationsForTest,
-      public SimTest {
+class FontUpdateInvalidationTest : public SimTest {
  public:
-  FontUpdateInvalidationTest()
-      : ScopedCSSReducedFontLoadingLayoutInvalidationsForTest(true) {}
+  FontUpdateInvalidationTest() = default;
 
  protected:
   static Vector<char> ReadAhemWoff2() {

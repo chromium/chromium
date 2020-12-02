@@ -2110,11 +2110,8 @@ void LayoutText::TextDidChangeWithoutInvalidation() {
 
 void LayoutText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled() &&
-      IsFontFallbackValid()) {
+  if (IsFontFallbackValid())
     return;
-  }
 
   known_to_have_no_overflow_and_no_fallback_fonts_ = false;
   valid_ng_items_ = false;

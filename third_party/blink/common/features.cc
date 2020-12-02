@@ -562,10 +562,6 @@ const base::Feature kDawn2dCanvas{"Dawn2dCanvas",
 const base::Feature kWebviewAccelerateSmallCanvases{
     "WebviewAccelerateSmallCanvases", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kCSSReducedFontLoadingLayoutInvalidations{
-    "CSSReducedFontLoadingLayoutInvalidations",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, frees up CachedMetadata after consumption by script resources
 // and modules. Needed for the experiment in http://crbug.com/1045052.
 const base::Feature kDiscardCodeCacheAfterFirstUse{

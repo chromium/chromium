@@ -92,9 +92,7 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
 
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled() ||
-      !IsFontFallbackValid()) {
+  if (!IsFontFallbackValid()) {
     if (LayoutSVGText* text_layout_object =
             LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
       text_layout_object->SetNeedsTextMetricsUpdate();

@@ -42,7 +42,6 @@ namespace blink {
 FontFallbackList::FontFallbackList(FontSelector* font_selector)
     : cached_primary_simple_font_data_(nullptr),
       font_selector_(font_selector),
-      font_selector_version_(font_selector ? font_selector->Version() : 0),
       family_index_(0),
       generation_(FontCache::GetFontCache()->Generation()),
       has_loading_fallback_(false),
@@ -51,22 +50,6 @@ FontFallbackList::FontFallbackList(FontSelector* font_selector)
       can_shape_word_by_word_(false),
       can_shape_word_by_word_computed_(false),
       is_invalid_(false) {}
-
-void FontFallbackList::RevalidateDeprecated() {
-  DCHECK(!RuntimeEnabledFeatures::
-             CSSReducedFontLoadingLayoutInvalidationsEnabled());
-  ReleaseFontData();
-  font_list_.clear();
-  cached_primary_simple_font_data_ = nullptr;
-  family_index_ = 0;
-  has_loading_fallback_ = false;
-  has_custom_font_ = false;
-  has_advance_override_ = false;
-  can_shape_word_by_word_ = false;
-  can_shape_word_by_word_computed_ = false;
-  font_selector_version_ = font_selector_ ? font_selector_->Version() : 0;
-  generation_ = FontCache::GetFontCache()->Generation();
-}
 
 void FontFallbackList::ReleaseFontData() {
   unsigned num_fonts = font_list_.size();
@@ -83,8 +66,7 @@ void FontFallbackList::ReleaseFontData() {
 bool FontFallbackList::ShouldSkipDrawing() const {
   // The DCHECK hit will be fixed by the runtime enabled feature below, so we
   // don't fix it in the legacy code paths.
-  DCHECK(IsValid() || !RuntimeEnabledFeatures::
-                          CSSReducedFontLoadingLayoutInvalidationsEnabled());
+  DCHECK(IsValid());
 
   if (!has_loading_fallback_)
     return false;
@@ -289,21 +271,6 @@ bool FontFallbackList::CanShapeWordByWord(
     can_shape_word_by_word_computed_ = true;
   }
   return can_shape_word_by_word_;
-}
-
-bool FontFallbackList::IsValid() const {
-  if (RuntimeEnabledFeatures::
-          CSSReducedFontLoadingLayoutInvalidationsEnabled()) {
-    return !is_invalid_;
-  }
-
-  // The flag can be set only when the feature above is enabled.
-  DCHECK(!is_invalid_);
-
-  if (!font_selector_)
-    return font_selector_version_ == 0;
-
-  return font_selector_->Version() == font_selector_version_;
 }
 
 }  // namespace blink
