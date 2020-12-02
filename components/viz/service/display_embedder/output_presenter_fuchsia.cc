@@ -421,12 +421,12 @@ void OutputPresenterFuchsia::ScheduleOverlays(
   for (size_t i = 0; i < overlays.size(); ++i) {
     next_frame_->overlays.emplace_back(std::move(overlays[i]),
                                        accesses[i]->TakeReleaseFences());
-    // Merge all fences under |acquire_fences|, because we are trying to sync
-    // primary plane and overlay updates to avoid artifacts.
-    for (auto& fence : accesses[i]->TakeAcquireFences()) {
-      next_frame_->acquire_fences.push_back(
-          std::move(fence.GetGpuFenceHandle().Clone().owned_event));
-    }
+    // TODO(crbug.com/1144890): Enqueue overlay plane's acquire fences
+    // after |supports_commit_overlay_planes| is supported. Overlay plane might
+    // display the same Image more than once, which can create a fence
+    // dependency that can be broken by a later Image. However, primary plane
+    // implementation allows only one present at a time. In this scenario,
+    // merging fences might cause hangs, see crbug.com/1151042.
   }
 }
 
