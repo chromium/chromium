@@ -325,10 +325,6 @@ def _OptimizeWithR8(options,
       raise build_utils.CalledProcessError(err.cwd, err.args,
                                            err.output + debugging_link)
 
-    if options.uses_split:
-      _SplitChildFeatures(options, feature_contexts, tmp_dir, tmp_mapping_path,
-                          print_stdout)
-
     base_has_imported_lib = False
     if options.desugar_jdk_libs_json:
       logging.debug('Running L8')
@@ -341,6 +337,10 @@ def _OptimizeWithR8(options,
           options.desugar_jdk_libs_configuration_jar,
           options.desugared_library_keep_rule_output, jdk_dex_output,
           options.warnings_as_errors)
+
+    if options.uses_split:
+      _SplitChildFeatures(options, feature_contexts, base_dex_context, tmp_dir,
+                          tmp_mapping_path, print_stdout)
 
     logging.debug('Collecting ouputs')
     base_dex_context.CreateOutput(base_has_imported_lib,
@@ -355,7 +355,11 @@ def _OptimizeWithR8(options,
       out_file.writelines(l for l in in_file if not l.startswith('#'))
 
 
-def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
+def _CheckForMissingSymbols(r8_path,
+                            dex_files,
+                            classpath,
+                            warnings_as_errors,
+                            error_message=None):
   cmd = build_utils.JavaCmd(warnings_as_errors) + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
@@ -423,7 +427,8 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
         stderr, '|'.join(re.escape(x) for x in ignored_lines))
     if stderr:
       if '  ' in stderr:
-        stderr = """
+        if error_message is None:
+          stderr = """
 DEX contains references to non-existent symbols after R8 optimization.
 Tip: Build with:
         is_java_debug=false
@@ -435,6 +440,8 @@ Tip: Build with:
        third_party/android_sdk/public/build-tools/*/dexdump -d \
 out/Release/apks/YourApk.apk > dex.txt
 """ + stderr
+        else:
+          stderr = error_message + stderr
       elif had_unfiltered_items:
         # Left only with empty headings. All indented items filtered out.
         stderr = ''
@@ -447,8 +454,8 @@ out/Release/apks/YourApk.apk > dex.txt
                           fail_on_output=warnings_as_errors)
 
 
-def _SplitChildFeatures(options, feature_contexts, tmp_dir, mapping_path,
-                        print_stdout):
+def _SplitChildFeatures(options, feature_contexts, base_dex_context, tmp_dir,
+                        mapping_path, print_stdout):
   feature_map = {f.name: f for f in feature_contexts}
   parent_to_child = defaultdict(list)
   for child, parent in options.uses_split.items():
@@ -504,6 +511,37 @@ def _SplitChildFeatures(options, feature_contexts, tmp_dir, mapping_path,
       for dex_file in os.listdir(child_split_output):
         shutil.move(os.path.join(child_split_output, dex_file),
                     os.path.join(child_staging_dir, dex_file))
+
+  if not options.disable_checks:
+    logging.debug('Verifying dex files')
+    _VerifySplitDexFiles(parent_to_child, feature_map, base_dex_context,
+                         options)
+
+
+def _VerifySplitDexFiles(parent_to_child, feature_map, base_dex_context,
+                         options):
+  def list_dex_files(feature):
+    staging_dir = feature.staging_dir
+    return [os.path.join(staging_dir, f) for f in os.listdir(staging_dir)]
+
+  # This list will only have "chrome" as the parent for now, unless other splits
+  # are used as targets of uses_split in the future. We only care about running
+  # on the chrome split because DexSplitter was used to split out the DFMs that
+  # depend on it, and may have pulled too much into the DFM. This is not a
+  # problem for the base split because DFMs are pulled out of base using R8,
+  # which shouldn't mess anything up.
+  for parent in parent_to_child:
+    error_message = """
+Classes in a DFM may have been merged into the interface they implement.
+DexSplitter does not support unmerging interfaces, so @DoNotInline may need to
+be added to the interfaces implemented by the classes below.
+"""
+    _CheckForMissingSymbols(options.r8_path,
+                            list_dex_files(feature_map[parent]) +
+                            list_dex_files(base_dex_context),
+                            options.classpath,
+                            options.warnings_as_errors,
+                            error_message=error_message)
 
 
 def _CombineConfigs(configs, dynamic_config_data, exclude_generated=False):
