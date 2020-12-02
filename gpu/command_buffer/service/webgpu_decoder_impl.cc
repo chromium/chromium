@@ -30,6 +30,11 @@
 #include "gpu/config/gpu_preferences.h"
 #include "ipc/ipc_channel.h"
 
+#if defined(OS_WIN)
+#include <dawn_native/D3D12Backend.h>
+#include "ui/gl/gl_angle_util_win.h"
+#endif
+
 namespace gpu {
 namespace webgpu {
 
@@ -698,26 +703,29 @@ error::Error WebGPUDecoderImpl::InitDawnDeviceAndSetWireServer(
 }
 
 void WebGPUDecoderImpl::DiscoverAdapters() {
+#if defined(OS_WIN)
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  if (!d3d11_device) {
+    // In the case where the d3d11 device is nullptr, we want to return a null
+    // adapter
+    return;
+  }
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  d3d11_device.As(&dxgi_device);
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  dxgi_device->GetAdapter(&dxgi_adapter);
+  dawn_native::d3d12::AdapterDiscoveryOptions options(std::move(dxgi_adapter));
+  dawn_instance_->DiscoverAdapters(&options);
+#else
   dawn_instance_->DiscoverDefaultAdapters();
+#endif
+
   std::vector<dawn_native::Adapter> adapters = dawn_instance_->GetAdapters();
   for (const dawn_native::Adapter& adapter : adapters) {
-#if defined(OS_WIN)
-    // On Windows 10, we pick D3D12 backend because the rest of Chromium renders
-    // with D3D11. By the same token, we pick the first adapter because ANGLE
-    // also picks the first adapter. Later, we'll need to centralize adapter
-    // picking such that Dawn and ANGLE are told which adapter to use by
-    // Chromium. If we decide to handle multiple adapters, code on the Chromium
-    // side will need to change to do appropriate cross adapter copying to make
-    // this happen, either manually or by using DirectComposition.
-    if (adapter.GetBackendType() == dawn_native::BackendType::D3D12) {
-#else
     if (adapter.GetBackendType() != dawn_native::BackendType::Null &&
         adapter.GetBackendType() != dawn_native::BackendType::OpenGL) {
-#endif
       dawn_adapters_.push_back(adapter);
-#if defined(OS_WIN)
-      break;
-#endif
     }
   }
 }
