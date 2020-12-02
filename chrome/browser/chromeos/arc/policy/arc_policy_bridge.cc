@@ -348,8 +348,9 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   // Add CA certificates.
   AddOncCaCertsToPolicies(policy_map, &filtered_policies);
 
-  if (!is_affiliated)
-    filtered_policies.RemoveKey("apkCacheEnabled");
+  // Always enable APK Cache for affiliated users, and always disable it for not
+  // affiliated ones.
+  filtered_policies.SetBoolKey("apkCacheEnabled", is_affiliated);
 
   filtered_policies.SetStringKey("guid", guid);
 
