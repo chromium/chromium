@@ -122,7 +122,7 @@
 <translation id="54609108002486618">托管</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">前往帮助中心了解详情</translation>
-<translation id="5719918614880940190">此指标旨在衡量 CPU 使用情况，是所有核心指标的汇总数据</translation>
+<translation id="5719918614880940190">此指标旨在衡量 CPU 使用情况，是所有核心的汇总数据</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5982592372228113572">（<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />）</translation>

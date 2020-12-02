@@ -5,7 +5,7 @@
 <translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
 <translation id="1071587090247825784">cortafuegos detectado</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
-<translation id="1175697296044146566"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> gestiona el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -178,7 +178,7 @@
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>
-<translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>
+<translation id="8395584934117017006">Este dispositivo <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
 <translation id="8475690821716466388">La red Wi-Fi está protegida con un protocolo poco seguro WEP PSK</translation>
 <translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>

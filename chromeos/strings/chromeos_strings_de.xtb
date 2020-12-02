@@ -5,7 +5,7 @@
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
-<translation id="1175697296044146566">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet.</translation>
+<translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
@@ -27,7 +27,7 @@
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
-<translation id="1743558184855585519">Der Akku gilt als leer, wenn er das Limit erreicht hat</translation>
+<translation id="1743558184855585519">Der Akku gilt als verbraucht, wenn er das Limit erreicht hat</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1930797645656624981">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
@@ -171,7 +171,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Legen Sie das Dokument in den Scanner und wählen Sie <ph name="SPAN_BEGIN" />Scannen<ph name="SPAN_END" /> aus</translation>
+<translation id="8160445423316272678">Lege das Dokument in den Scanner und wähle <ph name="SPAN_BEGIN" />Scannen<ph name="SPAN_END" /> aus</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8294431847097064396">Quelle</translation>
@@ -179,8 +179,8 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>
-<translation id="8395584934117017006">Dieses <ph name="DEVICE_TYPE" /> wird von einem Unternehmen verwaltet</translation>
-<translation id="8398927464629426868">Die Geschwindigkeit, mit der das Gerät momentan aufgeladen oder entladen wird</translation>
+<translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
+<translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
 <translation id="8475690821716466388">Das WLAN ist mit dem schwachen Protokoll WEP PSK gesichert</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>

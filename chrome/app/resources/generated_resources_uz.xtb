@@ -4965,7 +4965,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6785518634832172390">PIN kod 12 ta raqamdan oshmasin</translation>
 <translation id="6786747875388722282">Kengaytmalar</translation>
 <translation id="6787839852456839824">Klaviatura yorliqlari</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# ta kontant aloqada emas. Ular bilan Atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.}other{# ta kontant aloqada emas. Ular bilan Atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.}}</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# ta kontakt aloqada emas. Ular bilan Yaqin-atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.}other{# ta kontant aloqada emas. Ular bilan Yaqin-atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.}}</translation>
 <translation id="6788210894632713004">To‘plamdan chiqarilgan kengaytma</translation>
 <translation id="6789592661892473991">Gorizontal ajratish</translation>
 <translation id="6790428901817661496">Ijro etish</translation>

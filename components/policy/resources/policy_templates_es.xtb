@@ -511,7 +511,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1690383938831887552">Evitar que se cargue contenido Signed HTTP Exchange</translation>
 <translation id="1700811900332333712">Permite el uso de Powerwash en el dispositivo</translation>
 <translation id="1708496595873025510">Establecer restricción en obtención de base de variaciones</translation>
-<translation id="1713829924716792485">Si se habilita esta política o no se le asigna ningún valor, los usuarios conectados a un host de acceso remoto podrán transferir archivos entre el cliente y el host. No se aplica a las conexiones de asistencia remota, ya que no admiten la transferencia de archivos.
+<translation id="1713829924716792485">Si se habilita esta política o no se le asigna ningún valor, los usuarios conectados a un host de acceso remoto podrán transferir archivos entre el cliente y el host. Esto no se aplica a las conexiones de asistencia remota, ya que no admiten la transferencia de archivos.
 
       Si se inhabilita esta política, no se permitirá la transferencia de archivos.</translation>
 <translation id="171511968762040550">Si se asigna el valor "Verdadero" a esta política o no se le asigna ninguno, se permitirá a los usuarios añadir, quitar o modificar marcadores.
@@ -576,7 +576,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1827523283178827583">Utilizar servidores proxy fijos</translation>
 <translation id="1829839214911753838">Si se habilita esta política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. Así, los usuarios remotos podrán interactuar con ventanas a las que se puede acceder con permisos de administrador en el ordenador del usuario local.
 
-      Si se inhabilita esta política o se le asigna ningún valor, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
+      Si se inhabilita esta política o no se le asigna ningún valor, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
 <translation id="1839278886947586809">
       Esta política se eliminó en M80. No es necesaria porque ahora
       WebDriver es compatible con todas las políticas.
@@ -1072,7 +1072,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se inhabilita esta política o no se le asigna ningún valor, las solicitudes de autenticación gnubby no se enviarán mediante un proxy.
 
-      Ten en cuenta que esta función necesita componentes adicionales que solo están disponibles en el entorno de red de Google para funcionar correctamente.</translation>
+      Ten en cuenta que para funcionar correctamente, esta función necesita componentes adicionales que solo están disponibles en el entorno de red de Google.</translation>
 <translation id="2536525645274582300">El usuario decide si quiere habilitar los servicios de ubicación de Google</translation>
 <translation id="254653220329944566">Activa los informes en la nube de <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Si se asigna un valor a esta política, se establecerá la resolución y el factor de escala de cada pantalla. La configuración de las pantallas externas se aplicará a las pantallas conectadas. Si una pantalla no es compatible con la resolución o la escala especificadas, la política no tendrá efecto.
@@ -1302,7 +1302,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2877225735001246144">Inhabilitar la consulta de nombre canónico en negociación de autenticación Kerberos</translation>
 <translation id="288448261660192095">Si se habilita esta política, los dispositivos físicos de entrada y salida del host de acceso remoto se inhabilitarán durante la conexión remota.
 
-      Si se inhabilita esta política o no se le asigna ningún valor, los usuarios locales y los remotos podrán interactuar con el host mientras se comparte.</translation>
+      Si se inhabilita esta política o no se le asigna ningún valor, los usuarios locales y los remotos podrán interactuar con el host cuando este se encuentre en modo compartido.</translation>
 <translation id="2886215882246310669">Controla si <ph name="PRODUCT_OS_NAME" /> permite añadir nuevas cuentas de usuario de Family Link en el dispositivo.
       Esta política solo es útil si se combina con <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Permite añadir cuentas de Family Link, así como las cuentas que se definan en la lista de permitidas.
       Esta política no afecta al comportamiento de otras políticas de inicio de sesión. En concreto, no tendrá ningún efecto al:

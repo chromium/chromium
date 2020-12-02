@@ -128,7 +128,7 @@
 <translation id="2377319039870049694">Cambiar a la vista de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> carpetas compartidas con Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> archivos seleccionados</translation>
-<translation id="2389832672041313158">Birmano (Birmania)</translation>
+<translation id="2389832672041313158">Birmano</translation>
 <translation id="240770291734945588">Espacio disponible: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Tamaño total de archivos</translation>
 <translation id="2428749644083375155">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos en <ph name="FOLDER_NAME" /></translation>
@@ -153,7 +153,7 @@
 <translation id="2638942478653899953">No se pudo establecer conexión con Google Drive. <ph name="BEGIN_LINK" />Sal de la cuenta<ph name="END_LINK" /> y vuelve a acceder.</translation>
 <translation id="2649120831653069427">Pez arco iris</translation>
 <translation id="2661146741306740526">16 x 9</translation>
-<translation id="2663066752008346276">Birmano (Birmania) con teclado Myansan</translation>
+<translation id="2663066752008346276">Birmano con teclado Myansan</translation>
 <translation id="2664412712123763093">Ubicación del archivo</translation>
 <translation id="2672394958563893062">Ocurrió un error. Haz clic para reiniciar desde el principio.</translation>
 <translation id="2676946222714718093">Reproduciendo en</translation>
@@ -165,7 +165,7 @@
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2787047795752739979">Sobrescribir en el original</translation>
-<translation id="2830077785865012357">Chino (zhuyin)</translation>
+<translation id="2830077785865012357">Chino (Zhuyin)</translation>
 <translation id="2843806747483486897">Cambiar el valor predeterminado...</translation>
 <translation id="2850124913210091882">Crear una copia de seguridad</translation>
 <translation id="2873951654529031587">Papelera</translation>
@@ -218,7 +218,7 @@
 <translation id="3335337277364016868">Año de grabación</translation>
 <translation id="3353984535370177728">Seleccionar una carpeta para cargar</translation>
 <translation id="3356580349448036450">Completo</translation>
-<translation id="3382143449143186018">Nepalés con teclado InScript</translation>
+<translation id="3382143449143186018">Nepalí con teclado InScript</translation>
 <translation id="3408236822532681288">Alemán (Alemania) con teclado Neo 2</translation>
 <translation id="3414856743105198592">El formato de los medios extraíbles borrará todos los datos. ¿Deseas continuar?</translation>
 <translation id="3437801641691368414">Hora de creación</translation>
@@ -320,7 +320,7 @@
 <translation id="4594543368593301662">Se muestran los resultados de <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
-<translation id="4646813851450205600">Checo (con teclado Qwerty)</translation>
+<translation id="4646813851450205600">Checo con teclado Qwerty</translation>
 <translation id="4656293982926141856">Esta computadora</translation>
 <translation id="4669606053856530811">Los miembros de "<ph name="SOURCE_NAME" />" ya no tendrán acceso a estos elementos, a menos que se los comparta con ellos.</translation>
 <translation id="4690246192099372265">Sueco</translation>
@@ -482,7 +482,7 @@
 <translation id="604001903249547235">Copia de seguridad en la nube</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6074825444536523002">Formulario de Google</translation>
-<translation id="6079871810119356840">Húngaro (con teclado Qwerty)</translation>
+<translation id="6079871810119356840">Húngaro con teclado Qwerty</translation>
 <translation id="6096979789310008754">Busca texto borrado, con todos los archivos y carpetas.</translation>
 <translation id="610101264611565198">Moviendo <ph name="FILE_NAME" /> a <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Espacio</translation>
@@ -743,7 +743,7 @@
 <translation id="8810671769985673465">Se produjo un error al comprimir: ya existe el elemento "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Español (España)</translation>
 <translation id="8834164572807951958">Los miembros de "<ph name="DESTINATION_NAME" />" tendrán acceso a la copia de estos elementos.</translation>
-<translation id="8857149712089373752">Nepalés con teclado fonético</translation>
+<translation id="8857149712089373752">Nepalí con teclado fonético</translation>
 <translation id="8860454412039442620">Hoja de cálculo de Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteración)</translation>
 <translation id="8900820606136623064">Húngaro</translation>

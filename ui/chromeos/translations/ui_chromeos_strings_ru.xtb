@@ -56,11 +56,11 @@
 <translation id="1556189134700913550">Применить ко всем</translation>
 <translation id="1561842594491319104">Устройства Chrome</translation>
 <translation id="1572585716423026576">Установить как обои</translation>
-<translation id="1576937952766665062">Бенгальский (транслитерация)</translation>
+<translation id="1576937952766665062">Бенгальский, транслитерация</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="162175252992296058">Португальский в американской международной раскладке</translation>
-<translation id="1641780993263690097">Китайский (пиньинь)</translation>
+<translation id="162175252992296058">Португальский, американская международная раскладка</translation>
+<translation id="1641780993263690097">Китайский, пиньинь</translation>
 <translation id="1646019627374511909">Скачивание файлов (<ph name="NUMBER_OF_ITEMS" />) для офлайн-доступа…</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
 <translation id="1665611772925418501">Не удалось изменить файл.</translation>
@@ -68,17 +68,17 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Архивирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="1729953886957086472">Немецкий (Германия)</translation>
-<translation id="1730235522912993863">Китайский (цанцзе)</translation>
+<translation id="1730235522912993863">Китайский, цанцзе</translation>
 <translation id="1731889557567069540">Скопировано объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="174173592514158117">Показать все папки Google Play</translation>
-<translation id="1742316578210444689">Иврит (транслитерация)</translation>
+<translation id="1742316578210444689">Иврит, транслитерация</translation>
 <translation id="1747761757048858544">Нидерландский (Нидерланды)</translation>
 <translation id="174937106936716857">Общее количество файлов</translation>
 <translation id="1775381402323441512">Информация о видео</translation>
 <translation id="180035236176489073">Для доступа к файлам необходимо подключение к Интернету.</translation>
 <translation id="1807938677607439181">Все файлы</translation>
 <translation id="1810764548349082891">Предпросмотр недоступен</translation>
-<translation id="1812302367230252929">Амхарский (транслитерация)</translation>
+<translation id="1812302367230252929">Амхарский, транслитерация</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание!<ph name="END_BOLD" /> Эти файлы являются временными и могут быть автоматически удалены, чтобы освободить место на диске. <ph name="BEGIN_LINK" />Подробнее...<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Загрузка данных…</translation>
@@ -87,7 +87,7 @@
 <translation id="1847880352285315359">Сохранено</translation>
 <translation id="1853795129690976061">Доступ к этой папке предоставлен Linux.</translation>
 <translation id="1864756863218646478">Не удалось найти файл.</translation>
-<translation id="1920670151694390848">Малаялам (транслитерация)</translation>
+<translation id="1920670151694390848">Малаялам, транслитерация</translation>
 <translation id="1924372192547904021">Внешнее хранилище "<ph name="DRIVE_NAME" />" отформатировано.</translation>
 <translation id="1931134289871235022">Словацкий</translation>
 <translation id="1933345018156373194">Произошла непредвиденная ошибка. <ph name="ERROR_MESSAGE" /></translation>
@@ -110,7 +110,7 @@
 <translation id="2125607626296734455">Кхмерский</translation>
 <translation id="2142680004883808240">Русский, фонетическая раскладка YaZHert</translation>
 <translation id="2163152940313951844">Недопустимый символ: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2184934335987813305">Португальский в американской международной раскладке (ПК)</translation>
+<translation id="2184934335987813305">Португальский, американская международная раскладка (ПК)</translation>
 <translation id="2198315389084035571">Китайский (упрощенный)</translation>
 <translation id="2208158072373999562">ZIP-архив</translation>
 <translation id="22085916256174561">Корейский</translation>
@@ -136,7 +136,7 @@
 <translation id="2453576648990281505">Файл уже существует</translation>
 <translation id="2464079411014186876">Мороженое</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
-<translation id="2500392669976258912">Гуджарати (фонетическая)</translation>
+<translation id="2500392669976258912">Гуджарати, фонетический</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2534155362429831547">Удалено записей: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2541377937973966830">Содержимое этой папки доступно только для чтения. Некоторые действия не поддерживаются.</translation>
@@ -146,7 +146,7 @@
 <translation id="2562685439590298522">Документы</translation>
 <translation id="2563185590376525700">Лягушка</translation>
 <translation id="2572501073504669105">Вы можете скачать файлы, чтобы получать к ним доступ без подключения к Интернету.</translation>
-<translation id="2578394532502990878">Тамильский (фонетическая)</translation>
+<translation id="2578394532502990878">Тамильский, фонетический</translation>
 <translation id="2579959351793446050">Ория</translation>
 <translation id="2614589611416690597">Видео <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">В данный момент Google Диск недоступен.</translation>
@@ -165,7 +165,7 @@
 <translation id="2781645665747935084">Бельгийская</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2787047795752739979">Перезаписать оригинал</translation>
-<translation id="2830077785865012357">Китайский (чжуинь)</translation>
+<translation id="2830077785865012357">Китайский, чжуинь</translation>
 <translation id="2843806747483486897">Изменить настройки по умолчанию…</translation>
 <translation id="2850124913210091882">Резервное копирование</translation>
 <translation id="2873951654529031587">Корзина</translation>
@@ -189,7 +189,7 @@
 <translation id="3003633581067744647">Показать в виде уменьшенных изображений</translation>
 <translation id="3007214526293698309">Фикс. соотношение сторон</translation>
 <translation id="303198083543495566">Место съемки</translation>
-<translation id="3047197340186497470">Китайский (даи)</translation>
+<translation id="3047197340186497470">Китайский, даи</translation>
 <translation id="3057861065630527966">Создать резервные копии фото и видео</translation>
 <translation id="3067790092342515856">Файлы Windows</translation>
 <translation id="3078461028045006476">Поделиться с помощью приложения "<ph name="EXTENSION_NAME" />"</translation>
@@ -219,7 +219,7 @@
 <translation id="3353984535370177728">Выберите папку для загрузки</translation>
 <translation id="3356580349448036450">Готово</translation>
 <translation id="3382143449143186018">Непальский, раскладка InScript</translation>
-<translation id="3408236822532681288">Немецкий (Германия) в раскладке Neo 2</translation>
+<translation id="3408236822532681288">Немецкий (Германия), раскладка Neo 2</translation>
 <translation id="3414856743105198592">Форматирование съемного накопителя приведет к удалению всех данных. Продолжить?</translation>
 <translation id="3437801641691368414">Время создания</translation>
 <translation id="3455931012307786678">Эстонский</translation>
@@ -269,15 +269,15 @@
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="386548886866354912">Создать архив <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Описание</translation>
-<translation id="3899991606604168269">Французский (Канада) в мультиязычной раскладке</translation>
+<translation id="3899991606604168269">Французский (Канада), мультиязычная раскладка</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">Воспроизвести</translation>
 <translation id="3943857333388298514">Вставить</translation>
-<translation id="3952872973865944257">Телугу (фонетическая)</translation>
+<translation id="3952872973865944257">Телугу, фонетический</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3966388904776714213">Аудиоплеер</translation>
 <translation id="3973925058222872294">Английский (Великобритания)</translation>
-<translation id="3975895378829046965">Бенгальский (фонетическая)</translation>
+<translation id="3975895378829046965">Бенгальский, фонетический</translation>
 <translation id="4002066346123236978">Название</translation>
 <translation id="4017788180641807848">Английский (США), раскладка Workman</translation>
 <translation id="4092890906744441904">Ирландский</translation>
@@ -295,11 +295,11 @@
 <translation id="4290535918735525311">Linux предоставлен доступ к 1 папке</translation>
 <translation id="4299729908419173967">бразильская</translation>
 <translation id="4309915981827077375">Общая информация</translation>
-<translation id="432252891123397018">Румынский (стандартная)</translation>
+<translation id="432252891123397018">Румынский, стандартная раскладка</translation>
 <translation id="4325128273762811722">Словенский</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Не удалось выполнить копирование. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="4348495354623233847">Сорани (арабский алфавит)</translation>
+<translation id="4348495354623233847">Сорани, раскладка с арабским алфавитом</translation>
 <translation id="4363958938297989186">Русский, фонетическая раскладка</translation>
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4372884569765913867">1x1</translation>
@@ -320,13 +320,13 @@
 <translation id="4594543368593301662">Результаты поиска по запросу "<ph name="SEARCH_TERM" />".</translation>
 <translation id="4603392156942865207">Копирование файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="4631887759990505102">Исполнитель</translation>
-<translation id="4646813851450205600">Чешский (QWERTY-клавиатура)</translation>
+<translation id="4646813851450205600">Чешский, раскладка QWERTY</translation>
 <translation id="4656293982926141856">С компьютера</translation>
 <translation id="4669606053856530811">Пользователи общего диска "<ph name="SOURCE_NAME" />" больше не смогут использовать эти объекты, если к ним не будет включен общий доступ.</translation>
 <translation id="4690246192099372265">Шведский</translation>
 <translation id="4693155481716051732">Суши</translation>
 <translation id="4694604912444486114">Обезьяна</translation>
-<translation id="469612310041132144">Китайский (быстрое письмо)</translation>
+<translation id="469612310041132144">Китайский, быстрое письмо</translation>
 <translation id="4697043402264950621">Данные в столбце "<ph name="COLUMN_NAME" />" отсортированы по возрастанию.</translation>
 <translation id="4706042980341760088">Тамильский, раскладка пишущей машинки</translation>
 <translation id="4711094779914110278">Турецкий</translation>
@@ -377,7 +377,7 @@
 <translation id="5036159836254554629">Управлять доступом для Parallels Desktop</translation>
 <translation id="5038625366300922036">Ещё...</translation>
 <translation id="5044852990838351217">Армянский</translation>
-<translation id="5059127710849015030">Непальский (транслитерация)</translation>
+<translation id="5059127710849015030">Непальский, транслитерация</translation>
 <translation id="5061708541166515394">Контрастность</translation>
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911">Будут удалены файлы общим объемом <ph name="TOTAL_FILE_SIZE" /></translation>
@@ -423,7 +423,7 @@
 <translation id="5358764674931277">Частота кадров</translation>
 <translation id="5368191757080475556">Предоставление доступа к папке для Linux</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
-<translation id="541890217011173530">Сорани (латиница)</translation>
+<translation id="541890217011173530">Сорани, раскладка с латиницей</translation>
 <translation id="5428105026674456456">Испанский</translation>
 <translation id="5438282218546237410">По запросу "<ph name="SEARCH_TERM" />" ничего не найдено.</translation>
 <translation id="5449551289610225147">Неправильный пароль</translation>
@@ -436,7 +436,7 @@
 <translation id="5524517123096967210">Не удалось прочитать файл.</translation>
 <translation id="5533102081734025921">Изображение <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Подсчет размера…</translation>
-<translation id="554153475311314364">Греческий (транслитерация)</translation>
+<translation id="554153475311314364">Греческий, транслитерация</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5602622065581044566">Болгарский, фонетическая раскладка</translation>
 <translation id="5605830556594064952">США (раскладка Дворака)</translation>
@@ -458,7 +458,7 @@
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5788127256798019331">Файлы Google Play</translation>
 <translation id="5790193330357274855">Казахский</translation>
-<translation id="5804245609861364054">Каннада (транслитерация)</translation>
+<translation id="5804245609861364054">Каннада, транслитерация</translation>
 <translation id="5817397429773072584">Китайский (традиционный)</translation>
 <translation id="5818003990515275822">Корейский</translation>
 <translation id="5819442873484330149">Корейская раскладка (Sebeolsik Final)</translation>
@@ -471,7 +471,7 @@
 <translation id="5911887972742538906">При установке приложения для Linux произошла ошибка.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Произошла непредвиденная ошибка. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="5926082595146149752">Нидерландский (Нидерланды) в американской международной раскладке (ПК)</translation>
+<translation id="5926082595146149752">Нидерландский (Нидерланды), американская международная раскладка (ПК)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5955954492236143329">Объектов: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Устройства Chromebox</translation>
@@ -482,12 +482,12 @@
 <translation id="604001903249547235">Резервное копирование в облако</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6074825444536523002">Форма Google</translation>
-<translation id="6079871810119356840">Венгерский (QWERTY-клавиатура)</translation>
+<translation id="6079871810119356840">Венгерский, раскладка QWERTY</translation>
 <translation id="6096979789310008754">Поисковый запрос удален. Показаны все файлы и папки.</translation>
 <translation id="610101264611565198">Перемещение файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6133173853026656527">Перемещение файла "<ph name="FILE_NAME" />"…</translation>
-<translation id="613750717151263950">Японский в американской раскладке</translation>
+<translation id="613750717151263950">Японский, американская раскладка</translation>
 <translation id="6146563240635539929">Видео</translation>
 <translation id="6150853954427645995">Чтобы работать с этим файлом в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="6164412158936057769">Бабочки</translation>
@@ -530,14 +530,14 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6650726141019353908">Розовая бабочка</translation>
 <translation id="6657585470893396449">Пароль</translation>
-<translation id="6673674183150363784">Французский (Франция) в раскладке Bépo</translation>
+<translation id="6673674183150363784">Французский (Франция), раскладка Bépo</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6718273304615422081">Архивирование…</translation>
 <translation id="6751256176799620176">1 папка выбрана</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Настроить доступ Linux</translation>
-<translation id="6806796368146926706">Японский (буквенно-цифровая)</translation>
+<translation id="6806796368146926706">Японский, буквенно-цифровая раскладка</translation>
 <translation id="6808193438228982088">Лиса</translation>
 <translation id="6820687829547641339">Сжатый TAR-архив Gzip</translation>
 <translation id="6823166707458800069">Для всех файлов, сохраненных в этой папке, автоматически создается резервная копия в онлайн-хранилище.</translation>
@@ -560,7 +560,7 @@
     <ph name="LINE_BREAK1" />
     Обнаружены файлы (<ph name="FILE_COUNT" />).</translation>
 <translation id="6935521024859866267">Вверх ногами</translation>
-<translation id="6949408524333579394">Сербский (транслитерация)</translation>
+<translation id="6949408524333579394">Сербский, транслитерация</translation>
 <translation id="696203921837389374">Синхронизировать по мобильной сети</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6970230597523682626">Болгарский</translation>
@@ -573,7 +573,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Установка не выполнена.</translation>
 <translation id="7031639531908619281">Турецкий</translation>
-<translation id="7037472120706603960">Тамильский (транслитерация)</translation>
+<translation id="7037472120706603960">Тамильский, транслитерация</translation>
 <translation id="7040138676081995583">Открыть с помощью…</translation>
 <translation id="7075931588889865715">Тайский, раскладка TIS 820-2531</translation>
 <translation id="7086590977277044826">Тамильский, раскладка InScript</translation>
@@ -581,7 +581,7 @@
 <translation id="7103992300314999525">Македонский</translation>
 <translation id="7106346894903675391">Приобрести дополнительное пространство…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;искать на Диске&lt;/em&gt;</translation>
-<translation id="7135561821015524160">Каннада (фонетическая)</translation>
+<translation id="7135561821015524160">Каннада, фонетический</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
@@ -590,7 +590,7 @@
 <translation id="7248671827512403053">Приложение</translation>
 <translation id="7268659760406822741">Доступные сервисы</translation>
 <translation id="7283041136720745563">На Google Диске недостаточно места</translation>
-<translation id="7294063083760278948">Телугу (транслитерация)</translation>
+<translation id="7294063083760278948">Телугу, транслитерация</translation>
 <translation id="7295662345261934369">Предоставить доступ</translation>
 <translation id="7309413087278791451">Немецкий (Бельгия)</translation>
 <translation id="7339898014177206373">Новое окно</translation>
@@ -604,11 +604,11 @@
 <translation id="7489215562877293245">Обнаружены файлы (<ph name="FILE_COUNT" />).
     <ph name="LINE_BREAK1" />
     Файлы готовы к сохранению на <ph name="BEGIN_LINK" />Google Диске<ph name="END_LINK" />.</translation>
-<translation id="7495372004724182530">Малаялам (фонетическая)</translation>
+<translation id="7495372004724182530">Малаялам, фонетический</translation>
 <translation id="7505167922889582512">Показывать скрытые файлы</translation>
 <translation id="7508545000531937079">Слайд-шоу</translation>
 <translation id="751507702149411736">Белорусский</translation>
-<translation id="7532029025027028521">Персидский (транслитерация)</translation>
+<translation id="7532029025027028521">Персидский, транслитерация</translation>
 <translation id="7544830582642184299">Приложения Linux смогут получать доступ к файлам Google Диска. Изменения вступят в силу на всех ваших устройствах.</translation>
 <translation id="7544853251252956727">Перемешать</translation>
 <translation id="7547780573915868306">Литовский</translation>
@@ -634,7 +634,7 @@
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7730494089396812859">Показать данные о резервных копиях в облаке</translation>
 <translation id="7748626145866214022">Больше возможностей доступно на панели действий. Чтобы перейти на нее, нажмите клавиши Alt + A.</translation>
-<translation id="7760449188139285140">Китайский (Wubi)</translation>
+<translation id="7760449188139285140">Китайский, Wubi</translation>
 <translation id="7765158879357617694">Переместить</translation>
 <translation id="7774365994322694683">Птица</translation>
 <translation id="7788080748068240085">Чтобы сохранить файл "<ph name="FILE_NAME" />" для работы в автономном режиме, необходимо освободить <ph name="TOTAL_FILE_SIZE" />.<ph name="MARKUP_1" />
@@ -695,7 +695,7 @@
 <translation id="8223479393428528563">Чтобы работать с этими файлами в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на каждый документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8261506727792406068">Удалить</translation>
-<translation id="8261561378965667560">Китайский (структурный ввод)</translation>
+<translation id="8261561378965667560">Китайский, структурный ввод</translation>
 <translation id="8269755669432358899">Свернуть панель с информацией о файлах</translation>
 <translation id="8280151743281770066">Армянская (фонетическая)</translation>
 <translation id="8294431847097064396">Источник</translation>
@@ -745,11 +745,11 @@
 <translation id="8834164572807951958">Пользователи общего диска "<ph name="DESTINATION_NAME" />" получат доступ к копиям этих объектов.</translation>
 <translation id="8857149712089373752">Непальский, фонетическая раскладка</translation>
 <translation id="8860454412039442620">Электронные таблицы Excel</translation>
-<translation id="8866284467018526531">Арабский (транслитерация)</translation>
+<translation id="8866284467018526531">Арабский, транслитерация</translation>
 <translation id="8900820606136623064">Венгерский</translation>
 <translation id="8919081441417203123">Датский</translation>
 <translation id="8965697826696209160">Недостаточно свободного места.</translation>
-<translation id="8997962250644902079">Китайский пиньинь (традиционный)</translation>
+<translation id="8997962250644902079">Китайский (традиционный), пиньинь</translation>
 <translation id="9017798300203431059">Русская (фонетическая)</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9035012421917565900">Объекты нельзя переместить обратно на общий диск "<ph name="DESTINATION_NAME" />", поэтому вы не сможете отменить это действие.</translation>
@@ -769,7 +769,7 @@
 <translation id="9144340019284012223">Каталанский</translation>
 <translation id="9148058034647219655">Выйти</translation>
 <translation id="9154418932169119429">Это изображение недоступно в автономном режиме.</translation>
-<translation id="9172592259078059678">Гуджарати (транслитерация)</translation>
+<translation id="9172592259078059678">Гуджарати, транслитерация</translation>
 <translation id="9173120999827300720">Английский (США), международная раскладка</translation>
 <translation id="9189836632794948435">Казахский</translation>
 <translation id="9213073329713032541">Установка началась.</translation>

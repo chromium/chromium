@@ -575,9 +575,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Esta política dejó de estar disponible; usa la política <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> en su lugar.
       </translation>
 <translation id="1827523283178827583">Usar servidores proxy fijos</translation>
-<translation id="1829839214911753838">Si habilitas la política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. De esta manera los usuarios remotos podrán interactuar con las ventanas con permisos elevados en el escritorio del usuario local.
+<translation id="1829839214911753838">Si habilitas la política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. De esta manera los usuarios remotos podrán interactuar con permisos de administrador en el escritorio del usuario local.
 
-      Si inhabilitas la política o no la estableces, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas con permisos elevados en el escritorio.</translation>
+      Si inhabilitas la política o no la estableces, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con permisos de administrador en el escritorio.</translation>
 <translation id="1839278886947586809">
       Se quitó esta política en M80. Ya no es necesaria porque WebDriver ahora es compatible con todas las políticas existentes.
 
@@ -656,7 +656,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1971991630422430420">Si habilitas esta política, significa que se usará la Transición rápida cuando el punto de acceso inalámbrico lo admita. Se aplica a todos los usuarios y las interfaces del dispositivo.
 
       Si la inhabilitas o no la estableces, no se podrá usar la Transición rápida.</translation>
-<translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para usar cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
+<translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para permitir que el host use cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
 
       Esta política permite ofrecer archivos JSON de configuración de servidores de impresión externos para dispositivos con el <ph name="PRODUCT_OS_NAME" />.
@@ -1178,7 +1178,7 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 <translation id="2702023190395322609">Habilitar las recomendaciones de contenido multimedia</translation>
 <translation id="2706708761587205154">Permite la impresión solo con PIN</translation>
 <translation id="2707873794476722903">Se activó la Navegación segura en el modo estándar.</translation>
-<translation id="2714359695399346815">Si habilitas la política o no la estableces, se permitirá el uso de servidores STUN, lo que posibilitará que los clientes remotos descubran este equipo y se conecten con él aunque los separe un firewall.
+<translation id="2714359695399346815">Si habilitas la política o no la estableces, se permitirá el uso de servidores STUN, lo que posibilitará que los clientes remotos descubran este equipo y se conecten con él aunque haya un firewall.
 
       Si no habilitas esta política y el firewall filtra las conexiones UDP en establecimiento, solo los clientes con equipos en la red local podrán conectarse con este equipo.</translation>
 <translation id="2716623398185506073">Si habilitas la política, los dispositivos inscritos informarán sobre las estadísticas de hardware y los identificadores relacionados con la energía.
@@ -4837,7 +4837,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si habilitas o inhabilitas esta configuración, los usuarios no podrán cambiar ni anular esta configuración en <ph name="PRODUCT_NAME" />.
 
       Si no se configura esta política, se habilitará, pero el usuario podrá cambiarla.</translation>
-<translation id="7955263399078148032">Si habilitas la política <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> y habilitas la política <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no la estableces, los clientes remotos podrán usar servidores de retransmisión para conectarse con este equipo cuando no hay conexiones directas disponibles, por ejemplo, debido a la presencia de firewall.
+<translation id="7955263399078148032">Si habilitas la política <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> y habilitas la política <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no la estableces, los clientes remotos podrán usar servidores de retransmisión para conectarse con este equipo cuando no haya conexiones directas disponibles, por ejemplo, debido a la presencia de firewall.
 
       Si inhabilitas la política, no se desactivará el acceso remoto, pero solo se permitirán conexiones de la misma red (no se permitirán retransmisiones ni NAT traversal).</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema para <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -5359,7 +5359,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="8672321184841719703">Versión de destino para las actualizaciones automáticas</translation>
 <translation id="867410340948518937">U2F (segundo factor universal)</translation>
-<translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("johndoe," si el host le pertenece a "johndoe@example.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
+<translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("juanperez" si el host le pertenece a "juanperez@ejemplo.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
 <translation id="8680488165461049026">Esta política le otorga permiso a Respuestas rápidas para acceder al contenido seleccionado y enviar información al servidor.

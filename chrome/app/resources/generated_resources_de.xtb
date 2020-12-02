@@ -335,7 +335,7 @@
 <translation id="1374844444528092021">Das vom Netzwerk "<ph name="NETWORK_NAME" />" benötigte Zertifikat ist entweder nicht installiert oder nicht mehr gültig. Bitte fordern Sie ein neues Zertifikat an und versuchen Sie es erneut.</translation>
 <translation id="1375321115329958930">Gespeicherte Passwörter</translation>
 <translation id="137651782282853227">Hier werden gespeicherte Adressen angezeigt</translation>
-<translation id="1376771218494401509">&amp;Fenster benennen…</translation>
+<translation id="1376771218494401509">Fenster &amp;benennen…</translation>
 <translation id="1377600615067678409">Zunächst überspringen</translation>
 <translation id="1378613616312864539">Diese Einstellung wird von <ph name="NAME" /> gesteuert</translation>
 <translation id="1380028686461971526">Verbindung mit Netzwerk automatisch herstellen</translation>
@@ -508,7 +508,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1556302226221634923">Personen, die festgelegt haben, dass sie für Sie sichtbar sind, während ihr Display entsperrt ist, und Geräte in der Nähe, wenn Nearby Share geöffnet ist</translation>
 <translation id="1556537182262721003">Erweiterungsverzeichnis konnte nicht in Profil verschoben werden.</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1562119309884184621">Wenn Sie diesen Kontakt hinzufügen, wird er beim nächsten Teilen von Inhalten wiedererkannt</translation>
+<translation id="1562119309884184621">Wenn dieser Kontakt hinzugefügt wird, wird er beim nächsten Teilen von Inhalten wiedererkannt</translation>
 <translation id="1563702743503072935">Die Passwörter aus Ihrem Google-Konto sind auch auf diesem Gerät verfügbar, solange Sie angemeldet sind</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Der ausgewählte Drucker ist entweder nicht verfügbar oder nicht ordnungsgemäß installiert. Überprüfen Sie den Drucker oder wählen Sie einen anderen Drucker aus.</translation>
@@ -1265,7 +1265,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
 <translation id="2434449159125086437">Der Drucker kann nicht eingerichtet werden. Prüfen Sie die Konfiguration und probieren Sie es dann noch einmal.</translation>
-<translation id="2434758125294431199">Wählen Sie aus, wer Inhalte mit Ihnen teilen kann</translation>
+<translation id="2434758125294431199">Wähle aus, wer Inhalte mit dir teilen kann</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2435579801172349831">Alle (<ph name="URL_COUNT" />) in Inkognitofenster öffnen</translation>
@@ -1606,7 +1606,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2805646850212350655">Verschlüsselndes Microsoft-Dateisystem</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2805770823691782631">Zusätzliche Informationen</translation>
-<translation id="2806372837663997957">Das Gerät, für das Sie Dateien freigeben möchten, hat nicht diese nicht angenommen</translation>
+<translation id="2806372837663997957">Das Gerät, für das du Dateien freigeben möchtest, hat diese nicht angenommen</translation>
 <translation id="2807517655263062534">Hier werden heruntergeladene Dateien angezeigt</translation>
 <translation id="2809586584051668049">und <ph name="NUMBER_ADDITIONAL_DISABLED" /> weitere</translation>
 <translation id="2810390687497823527">Wenn Sie eine Erweiterung nicht wiedererkennen oder Ihr Browser nicht wie erwartet funktioniert, können Sie die Erweiterungen hier deaktivieren oder anpassen.</translation>
@@ -4209,7 +4209,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
-<translation id="5893589697005440881">Teilen Sie Dateien ganz einfach mit Menschen in der Nähe</translation>
+<translation id="5893589697005440881">Dateien ganz einfach mit Menschen in der Nähe teilen</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
@@ -4964,7 +4964,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6785518634832172390">PIN darf maximal 12 Zeichen lang sein</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6787839852456839824">Tastenkombinationen</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# Kontakt ist nicht verfügbar. Wenn du Nearby Share mit ihm verwenden möchtest, musst du deinen Kontakten die mit seinem Google-Konto verknüpfte E-Mail-Adresse hinzufügen.}other{# Kontakte sind nicht verfügbar. Wenn du Nearby Share mit ihnen verwenden möchtest, musst du deinen Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.}}</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# Kontakt ist nicht verfügbar. Wenn du Nearby Share mit ihm verwenden möchtest, musst du in deinen Kontakten die mit seinem Google-Konto verknüpfte E-Mail-Adresse hinzufügen.}other{# Kontakte sind nicht verfügbar. Wenn du Nearby Share mit ihnen verwenden möchtest, musst du deinen Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.}}</translation>
 <translation id="6788210894632713004">Entpackte Erweiterung</translation>
 <translation id="6789592661892473991">Horizontal teilen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
@@ -5011,7 +5011,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="683373380308365518">Steigen Sie auf einen intelligenten und sicheren Browser um</translation>
 <translation id="6835762382653651563">Stellen Sie eine Internetverbindung her, um Ihr Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6838034009068684089">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte (empfohlen)</translation>
-<translation id="6838694093138907871">Ungültiger Code. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="6838694093138907871">Ungültiger Code. Bitte noch einmal versuchen.</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>
 <translation id="6840155290835956714">Vor dem Senden nachfragen</translation>
@@ -6013,7 +6013,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7970673414865679092">Ethernet-Details</translation>
 <translation id="7970882136539140748">Karte kann momentan nicht gespeichert werden</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
-<translation id="797394244396603170">Wählen Sie das Gerät aus, mit dem Sie Dateien teilen möchten</translation>
+<translation id="797394244396603170">Wähle das Gerät aus, mit dem du Dateien teilen möchtest</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7974566588408714340">Über <ph name="EXTENSIONNAME" /> erneut versuchen</translation>
 <translation id="7974936243149753750">Overscan</translation>
@@ -6523,7 +6523,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8584280235376696778">&amp;Video in neuem Tab öffnen</translation>
 <translation id="8584427708066927472">Passwort von diesem Gerät gelöscht</translation>
 <translation id="8585480574870650651">Crostini entfernen</translation>
-<translation id="8585841788766257444">Für die unten aufgeführten Websites wird automatisch eine benutzerdefinierte Einstellung statt der Standardeinstellung verwendet</translation>
+<translation id="8585841788766257444">Für die unten aufgeführten Websites wird eine benutzerdefinierte Einstellung statt der Standardeinstellung verwendet</translation>
 <translation id="8588866096426746242">Profilstatistiken anzeigen</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR wird auf Headset abgespielt</translation>
 <translation id="8590375307970699841">Automatische Updates einrichten</translation>
@@ -6791,7 +6791,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8859402192569844210">Nutzungsbedingungen konnten nicht geladen werden</translation>
 <translation id="8859662783913000679">Elternkonto</translation>
 <translation id="8862003515646449717">Steigen Sie auf einen schnellen Browser um</translation>
-<translation id="8863140399813345099">Über die Sichtbarkeit Ihres Geräts legen Sie fest, wer Dateien mit Ihnen teilen kann, während Ihr Display entsperrt ist</translation>
+<translation id="8863140399813345099">Über die Sichtbarkeit deines Geräts legst du fest, wer Dateien mit dir teilen kann, während dein Display entsperrt ist</translation>
 <translation id="8863753581171631212">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wird mit <ph name="APP_NAME" /> geteilt</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> wurde von diesem Gerät entfernt</translation>
@@ -7005,7 +7005,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9102610709270966160">Erweiterung aktivieren</translation>
 <translation id="9103479157856427471">Bildschirm-Zoom folgt Tastaturfokus</translation>
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
-<translation id="9108035152087032312">&amp;Fenster benennen…</translation>
+<translation id="9108035152087032312">Fenster &amp;benennen…</translation>
 <translation id="9108072915170399168">Aktuelle Einstellung für Datennutzung ist "Ohne Internet"</translation>
 <translation id="9108692355621501797">In den <ph name="LINK_BEGIN" />G Suite for Education-Datenschutzhinweisen<ph name="LINK_END" /> können G Suite for Education-Nutzer und Eltern nachlesen, welche Daten zu welchen Zwecken erhoben werden und was damit passiert.</translation>
 <translation id="9108808586816295166">Sicheres DNS ist möglicherweise nicht immer verfügbar</translation>

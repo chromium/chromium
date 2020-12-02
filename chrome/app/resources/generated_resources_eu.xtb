@@ -3183,7 +3183,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4651484272688821107">Ezin izan da kargatu sareko osagaia demo moduko baliabideekin.</translation>
 <translation id="4652935475563630866">Kameraren ezarpenean egindako aldaketa gauzatzeko, berrabiarazi egin behar da Parallels Desktop. Aurrera egiteko, berrabiarazi Parallels Desktop.</translation>
 <translation id="4653405415038586100">Errore bat gertatu da Linux konfiguratzean</translation>
-<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{Segurua ez den pasahitz bat}other{Seguruak ez diren {NUM_WEAK} pasahitz}}</translation>
+<translation id="4653408778024877479">{NUM_WEAK,plural, =0{}=1{1 pasahitz ez da segurua}other{{NUM_WEAK} pasahitz ez dira seguruak}}</translation>
 <translation id="4657914796247705218">TrackPoint-aren abiadura</translation>
 <translation id="465878909996028221">HTTP, HTTPS eta fitxategi-protokoloak soilik onartzen dira arakatzaileen birbideratzeak gauzatzeko.</translation>
 <translation id="4659077111144409915">Kontu nagusia</translation>
@@ -4967,7 +4967,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6785518634832172390">PIN kodeak 12 digitu edo gutxiago izan behar ditu</translation>
 <translation id="6786747875388722282">Luzapenak</translation>
 <translation id="6787839852456839824">Laster-teklak</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# kontaktu ez dago erabilgarri. Nearby Share kontaktu horrekin erabiltzeko, gehitu haren Google-ko kontuarekin lotutako helbide elektronikoa zure kontaktuetan.}other{# kontaktu ez daude erabilgarri. Nearby Share kontaktu horiekin erabiltzeko, gehitu haren Google-ko kontuarekin lotutako helbide elektronikoa zure kontaktuetan.}}</translation>
+<translation id="6788036387349419582">{COUNT,plural, =1{# kontaktu ez dago erabilgarri. Nearby Share kontaktu horrekin erabiltzeko, gehitu haren Google-ko kontuarekin lotutako helbide elektronikoa zure kontaktuetan.}other{# kontaktu ez daude erabilgarri. Nearby Share kontaktu horiekin erabiltzeko, gehitu haien Google-ko kontuarekin lotutako helbide elektronikoa zure kontaktuetan.}}</translation>
 <translation id="6788210894632713004">Paketetik ateratako luzapena</translation>
 <translation id="6789592661892473991">Zatitu horizontalki</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>

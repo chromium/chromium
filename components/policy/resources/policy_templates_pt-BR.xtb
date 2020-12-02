@@ -505,7 +505,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se ela for definida como falsa, os usuários não poderão adicionar, remover ou modificar favoritos. Eles ainda poderão usar os favoritos já existentes.</translation>
 <translation id="1715151459541210849">Ativar recurso de acessibilidade de ditado</translation>
-<translation id="1721158690981421598">Se a política for definida, os nomes de domínio de host impostos aos hosts de acesso remoto serão especificados. Os usuários não poderão mudar isso. Os hosts podem ser compartilhados somente por contas registradas em um dos nomes de domínio especificados.
+<translation id="1721158690981421598">Se a política for definida, os nomes de domínio impostos aos hosts de acesso remoto serão especificados. Os usuários não poderão mudar isso. Os hosts podem ser compartilhados somente por contas registradas em um dos nomes de domínio especificados.
 
       Se a política for definida como uma lista vazia ou deixada sem definição, os hosts poderão ser compartilhados usando qualquer conta.
 
@@ -642,7 +642,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1971991630422430420">Se a política for definida como "Ativada", a transição rápida será usada quando for compatível com o ponto de acesso sem fio. Isso se aplica a todos os usuários e interfaces no dispositivo.
 
       Se a política for definida como "Desativada" ou não for definida, a transição rápida não será usada.</translation>
-<translation id="1977581177449752640">Se a política for definida, o host de acesso remoto usará um certificado do cliente com o CN do emissor para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Defina a política como <ph name="WILDCARD_VALUE" /> para usar qualquer certificado do cliente disponível. Este recurso será desativado se for deixado vazio ou sem definição.</translation>
+<translation id="1977581177449752640">Se a política for definida, o host de acesso remoto usará um certificado do cliente com o CN do emissor para se autenticar em <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Defina a política como <ph name="WILDCARD_VALUE" /> para usar qualquer certificado do cliente disponível. Este recurso será desativado se for deixado vazio ou sem definição.</translation>
 <translation id="1988345404999458987">Oferece as configurações dos servidores de impressão disponíveis.
 
       Esta política permite fornecer a configuração de servidores de impressão externos no formato de arquivo JSON para dispositivos <ph name="PRODUCT_OS_NAME" />.
@@ -2034,7 +2034,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Para que os destinos da <ph name="CLOUD_PRINT_NAME" /> continuem disponíveis, é necessário que esta política seja definida como verdadeira e que <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> não seja incluída na política <ph name="POLICY_PRINTERTYPEDENYLIST" />.</translation>
 <translation id="3915395663995367577">URL de um arquivo proxy .pac</translation>
-<translation id="3915587396318773837">Se a política for definida, o host de acesso remoto precisará autenticar os clientes usando um token de autenticação desta URL para se conectar.
+<translation id="3915587396318773837">Se a política for definida, o host de acesso remoto precisará autenticar os clientes usando um token de autenticação deste URL para se conectar.
 
       Este recurso será desativado se for deixado vazio ou sem definição.
 
@@ -2477,7 +2477,7 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="4653465451589191309">Se a política for definida como "Ativada" ou não for definida, será possível gerenciar (desconectar ou modificar) conexões VPN. Se a conexão VPN tiver sido criada com um app de VPN, a IU do app não será afetada. Portanto, usuários ainda poderão usar o app para modificar a conexão VPN. Use esta política com o recurso "VPN sempre ativa", que permite ao administrador decidir estabelecer uma conexão VPN ao ligar um dispositivo.
 
       Se a política for definida como "Desativada", as interfaces do usuário do <ph name="PRODUCT_OS_NAME" /> que permitem desconectar ou modificar conexões VPN serão desativadas.</translation>
-<translation id="4654729794394330974">Definir a política especifica os nome de domínio de cliente impostos aos clientes de acesso remoto. Os usuários não poderão mudar isso. Apenas clientes de um dos domínios especificados poderão se conectar ao host.
+<translation id="4654729794394330974">Definir a política especifica os nome de domínio impostos aos clientes de acesso remoto. Os usuários não poderão mudar isso. Apenas clientes de um dos domínios especificados poderão se conectar ao host.
 
       Se a política for definida como uma lista vazia ou deixada sem definição, a política padrão será aplicada conforme o tipo de conexão. Para assistência remota, isso permite que clientes de qualquer domínio se conectem ao host. Para acesso remoto a qualquer momento, apenas o proprietário do host poderá se conectar.
 
@@ -3825,7 +3825,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política não for definida, o cliente DNS integrado será ativado por padrão no macOS, no Android (quando o DNS particular e a VPN não estiverem ativados) e no ChromeOS. Os usuários poderão decidir se o cliente DNS integrado será usado fazendo as alterações em chrome://flags ou especificando a sinalização de uma linha de comando.</translation>
 <translation id="6614557704487944013">Permitir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
-<translation id="6621830999036927230">Se a política for definida, o host de acesso remoto usará esta URL para validar os tokens de autenticação para aceitar conexões de clientes de acesso remoto. Este recurso será desativado se for deixado vazio ou sem definição.
+<translation id="6621830999036927230">Se a política for definida, o host de acesso remoto usará este URL na validação dos tokens de autenticação para aceitar conexões de clientes de acesso remoto. Este recurso será desativado se for deixado vazio ou sem definição.
 
       Observação: use esta política com <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6621839881150363218">Se a política for definida como "Ativada", todos os sites serão isolados e cada um executará um processo próprio. Se a política for definida como "Desativada", não haverá isolamento explícito de sites e as versões de teste de IsolateOriginsAndroid e SitePerProcessAndroid serão desativadas. Os usuários ainda poderão ativar a política manualmente.
@@ -5317,7 +5317,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="8672321184841719703">Versão de atualização automática de destino</translation>
 <translation id="867410340948518937">Segundo fator universal (U2F, na sigla em inglês)</translation>
-<translation id="8676959842615154675">Se a política for definida como "Ativada", o host de acesso remoto fará a comparação do nome do usuário local associado com o host e o nome da Conta do Google registrada como proprietária do host ("joaosilva", se o host for propriedade de "joaosilva@exemplo.com"). Este host não será iniciado se o nome do proprietário do host for diferente do nome do usuário local associado com o host. Use a política <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> para garantir que o proprietário da Conta do Google seja associado com um domínio específico.
+<translation id="8676959842615154675">Se a política for definida como "Ativada", o host de acesso remoto fará a comparação entre o nome do usuário local associado com o host e o nome da Conta do Google registrada como proprietária do host ("joaosilva", se o host for propriedade de "joaosilva@exemplo.com"). Este host não será iniciado se o nome do proprietário do host for diferente do nome do usuário local associado com o host. Use a política <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> para garantir que a Conta do Google do proprietário seja associada com um domínio específico.
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de acesso remoto poderá ser associado com qualquer usuário local.</translation>
 <translation id="8680488165461049026">Essa política concede ao "Respostas rápidas" permissão para acessar conteúdos selecionados e enviar informações ao servidor.

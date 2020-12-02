@@ -417,7 +417,7 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 
       Wenn „<ph name="IDLE_ACTION_FIELD_NAME" />“ nicht festgelegt ist, wird die Aktion „<ph name="IDLE_ACTION_ENUM_SUSPEND" />“ ausgeführt.
 
-      Hinweis: Es können außerdem spezifische Einstellungen für den Netz- und Akkubetrieb vorgenommen werden.</translation>
+      Hinweis: Es können jeweils eigene Einstellungen für den Netz- und Akkubetrieb vorgenommen werden.</translation>
 <translation id="1606917441621112087">Wenn die Richtlinie auf "True" gesetzt ist, wird der interne PDF Viewer in <ph name="PRODUCT_NAME" /> ausgeschaltet und PDF-Dateien werden als Download behandelt. Nutzer können sie dann mit der Standardanwendung öffnen.
 
       Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht vom Nutzer deaktiviert wird.</translation>
@@ -4420,7 +4420,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
           Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie „DefaultKeygenSetting“, sofern diese konfiguriert ist, oder aus der persönlichen Konfiguration des Nutzers.
 
           Genaue Informationen zu gültigen URL-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="739556497251174388">Erneutes Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
+<translation id="739556497251174388">Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
 <translation id="7400971609879083218">Wenn die Richtlinie aktiviert ist, kann in Bildern von Drittanbietern auf einer Seite eine Authentifizierungsaufforderung angezeigt werden.
 
        Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann in Bildern von Drittanbietern keine Authentifizierungsaufforderung angezeigt werden.
@@ -5206,7 +5206,7 @@ Die Richtlinie wird in M75 entfernt.</translation>
       Ist die Richtlinie nicht konfiguriert, wird HTTP/0.9 auf nicht standardmäßigen Ports deaktiviert.</translation>
 <translation id="8504243661032323176">Wenn diese Richtlinie konfiguriert ist, wird die eingestellte minimale PIN-Länge erzwungen. Werte unter 1 werden auf den Mindestwert von 1 aufgerundet.
 
-      Ist diese Richtlinie nicht konfiguriert, wird eine Mindestlänge von 6 Ziffern für die PIN erzwungen. Dabei handelt es sich um die empfohlene Mindestlänge.</translation>
+      Ist diese Richtlinie nicht konfiguriert, wird eine Mindestlänge von 6 Ziffern für die PIN erzwungen. Dies ist die empfohlene Mindestlänge.</translation>
 <translation id="8504725006737796967">Gibt die Drucker an, die ein Nutzer verwenden kann.
 
       Diese Richtlinie wird nur verwendet, wenn <ph name="PRINTERS_WHITELIST" /> für <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt wurde.

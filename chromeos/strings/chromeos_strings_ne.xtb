@@ -4,6 +4,7 @@
 <translation id="1018656279737460067">रद्द गरियो</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
+<translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1204296502688602597">DNS को विलम्बता</translation>
 <translation id="1238612778414822719">HTTPS को विलम्बता</translation>
@@ -25,6 +26,7 @@
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिजल्भर प्रिजेन्ट</translation>
+<translation id="1743558184855585519">तोकिएको सीमामा पुग्दा ब्याट्री सकिएको मानिन्छ</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1930797645656624981">Chrome OS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
@@ -42,6 +44,7 @@
 <translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}other{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}}</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
+<translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
@@ -116,6 +119,7 @@
 <translation id="54609108002486618">व्यवस्थापन गरिएको</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">मद्दत केन्द्रमा गई थप जान्नुहोस्</translation>
+<translation id="5719918614880940190">यसले CPU कति प्रयोग भएको छ भन्ने कुरा मापन गर्छ र यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> औँ संस्करण)</translation>
@@ -151,6 +155,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो यन्त्र कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">फाइलको प्रकार</translation>
+<translation id="7441459999606975924">प्रयोग गर्दै जाँदा ब्याट्रीको क्षमता घट्दै जान्छ</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
@@ -170,6 +175,8 @@
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
 <translation id="8352772353338965963">बहुविध साइन-इन को लागि एउटा खाता थप्नुहोस्। सबै साइन-इन भएका खाताहरू पासवर्ड विना नै पहुँच गर्न सकिन्छ, त्यसैले यो सुविधा विश्वसनीय खाताहरूसँग मात्रै प्रयोग गर्नुपर्छ।</translation>
 <translation id="8364946094152050673">डोमेन नेम सर्भरहरू खाली छन्</translation>
+<translation id="8395584934117017006">इन्टरप्राइजले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
+<translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>

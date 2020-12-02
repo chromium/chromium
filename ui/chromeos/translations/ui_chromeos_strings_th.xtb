@@ -9,8 +9,8 @@
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1119069657431255176">ไฟล์ Tar ที่บีบอัดโดย Bzip2</translation>
 <translation id="1120073797882051782">ฮังกูลแบบโรมัน</translation>
-<translation id="112387589102719461">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์ดีโวรักโปรแกรมเมอร์</translation>
-<translation id="1134697384939541955">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์แบบ Extended</translation>
+<translation id="112387589102719461">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ดีโวรักโปรแกรมเมอร์</translation>
+<translation id="1134697384939541955">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์แบบ Extended</translation>
 <translation id="1148097584170732637">พบ <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
     มีพื้นที่เก็บข้อมูลในเครื่องไม่พอ ต้องการอีก <ph name="FILE_SIZE" />
@@ -50,7 +50,7 @@
 <translation id="1482884275703521657">ฟินแลนด์</translation>
 <translation id="148466539719134488">สวิส</translation>
 <translation id="1497522201463361063">ไม่สามารถเปลี่ยนชื่อ "<ph name="FILE_NAME" />" <ph name="ERROR_MESSAGE" /></translation>
-<translation id="1499943022354839699">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์ดีโวรัก</translation>
+<translation id="1499943022354839699">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ดีโวรัก</translation>
 <translation id="1538729222189715449">กำลังเปิดไฟล์ Linux...</translation>
 <translation id="1547964879613821194">อังกฤษแบบแคนาดา</translation>
 <translation id="1556189134700913550">ใช้กับทั้งหมด</translation>
@@ -108,7 +108,7 @@
 <translation id="2085470240340828803">มีไฟล์ที่ชื่อว่า "<ph name="FILENAME" />" อยู่แล้ว คุณต้องการทำอย่างไร</translation>
 <translation id="2121825465123208577">ปรับขนาด</translation>
 <translation id="2125607626296734455">เขมร</translation>
-<translation id="2142680004883808240">รัสเซียด้วยแป้นพิมพ์ YaZHert ตามการออกเสียง</translation>
+<translation id="2142680004883808240">รัสเซียด้วยแป้นพิมพ์ YaZHert (ตามการออกเสียง)</translation>
 <translation id="2163152940313951844">อักขระไม่ถูกต้อง: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">โปรตุเกสด้วยแป้นพิมพ์พีซีสหรัฐฯ แบบสากล</translation>
 <translation id="2198315389084035571">จีนตัวย่อ</translation>
@@ -235,7 +235,7 @@
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3549797760399244642">ไปยัง drive.google.com...</translation>
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
-<translation id="3556731189587832921">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
+<translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
 <translation id="357479282490346887">ลิทัวเนีย</translation>
 <translation id="3603385196401704894">ฝรั่งเศสแบบแคนาดา</translation>
 <translation id="3606220979431771195">ภาษาตุรกี-F</translation>
@@ -279,14 +279,14 @@
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
-<translation id="4017788180641807848">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์ Workman</translation>
+<translation id="4017788180641807848">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4158739975813877944">เปิดเพลย์ลิสต์</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4193154014135846272">เอกสารของ Google</translation>
 <translation id="4197674956721858839">การเลือกซิป</translation>
-<translation id="4202378258276439759">สเปน (ละตินอเมริกา)</translation>
+<translation id="4202378258276439759">สเปน (ลาตินอเมริกา)</translation>
 <translation id="4202977638116331303">จอร์เจีย</translation>
 <translation id="421017592316736757">คุณจะต้องออนไลน์เพื่อเข้าถึงไฟล์นี้</translation>
 <translation id="4212740939091998969">มีโฟลเดอร์ชื่อ "<ph name="FOLDER_NAME" />" อยู่แล้ว โปรดเลือกชื่ออื่น</translation>
@@ -308,7 +308,7 @@
 <translation id="4470564870223067757">ฮังกูลแบบ 2 ชุด</translation>
 <translation id="4477002475007461989">โรมาเนีย</translation>
 <translation id="4477219268485577442">การออกเสียงภาษาบัลแกเรีย</translation>
-<translation id="4509667233588080747">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์ Workman แบบสากล</translation>
+<translation id="4509667233588080747">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman แบบสากล</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4527800702232535228">โฟลเดอร์นี้แชร์อยู่กับ Parallels Desktop</translation>
 <translation id="4552678318981539154">ซื้อพื้นที่เก็บข้อมูลเพิ่ม</translation>
@@ -668,7 +668,7 @@
 <translation id="7953739707111622108">ไม่สามารถเปิดอุปกรณ์นี้ได้เนื่องจากระบบไฟล์ของอุปกรณ์ไม่เป็นที่รู้จัก</translation>
 <translation id="7969525169268594403">สโลวีเนีย</translation>
 <translation id="7972920761225148017">ฝรั่งเศส (สวิตเซอร์แลนด์)</translation>
-<translation id="7980421588063892270">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์ Colemak</translation>
+<translation id="7980421588063892270">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Colemak</translation>
 <translation id="7982283708762922719">ความสูง</translation>
 <translation id="8008366997883261463">สุนัข</translation>
 <translation id="8028993641010258682">ขนาด</translation>
@@ -720,7 +720,7 @@
 <translation id="8521441079177373948">สหราชอาณาจักร</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="853494022971700746">ฝรั่งเศส (ฝรั่งเศส)</translation>
-<translation id="8545476925160229291">อังกฤษ (สหรัฐอเมริกา)</translation>
+<translation id="8545476925160229291">อังกฤษ (สหรัฐฯ)</translation>
 <translation id="8549186985808798022">อิตาลี</translation>
 <translation id="8551494947769799688">ลัตเวีย</translation>
 <translation id="8560515948038859357">จีนกวางตุ้ง</translation>
@@ -770,7 +770,7 @@
 <translation id="9148058034647219655">ออก</translation>
 <translation id="9154418932169119429">ภาพนี้ไม่สามารถใช้งานแบบออฟไลน์ได้</translation>
 <translation id="9172592259078059678">คุชราต (การทับศัพท์)</translation>
-<translation id="9173120999827300720">อังกฤษ (สหรัฐอเมริกา) ด้วยแป้นพิมพ์สากล</translation>
+<translation id="9173120999827300720">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์สากล</translation>
 <translation id="9189836632794948435">คาซัค</translation>
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>

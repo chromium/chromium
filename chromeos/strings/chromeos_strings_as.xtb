@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
+<translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
 <translation id="4985509611418653372">চলাওক</translation>
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
@@ -164,6 +166,7 @@
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7855434858642800953">স্কেন কৰা ফাইল ছেভ কৰা হ'ল!</translation>
+<translation id="7928373994957558460">ফাইলৰ অৱস্থান দেখুৱাওক</translation>
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
