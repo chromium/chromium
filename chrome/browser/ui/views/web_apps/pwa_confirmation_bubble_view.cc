@@ -4,14 +4,10 @@
 
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 
-#include <utility>
-
-#include "base/i18n/message_formatter.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -41,13 +37,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-constexpr char kDeviceTypeForCheckbox[] = "computer";
-#else
-constexpr char kDeviceTypeForCheckbox[] = "other";
-#endif
 
 PWAConfirmationBubbleView* g_bubble_ = nullptr;
 
@@ -170,17 +159,6 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
         web_app_info_->enable_experimental_tabbed_window);
   }
 
-  // TODO(crbug.com/897302): This is an experimental UI added to prototype
-  // The PWA Run on OS Login feature, final design is yet to be decided.
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    // TODO(crbug.com/897302): Detect the type of device and supply the proper
-    // constant for the string.
-    run_on_os_login_ = labels->AddChildView(std::make_unique<views::Checkbox>(
-        base::i18n::MessageFormatter::FormatWithNumberedArgs(
-            l10n_util::GetStringUTF16(IDS_INSTALL_PWA_RUN_ON_OS_LOGIN_LABEL),
-            kDeviceTypeForCheckbox)));
-  }
-
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PWA_CONFIRMATION);
 
   SetHighlightedButton(highlight_button);
@@ -224,13 +202,6 @@ bool PWAConfirmationBubbleView::Accept() {
         tabbed_window_checkbox_->GetChecked();
   }
 
-  // User opt-in in checkbox is passed via the web_app_info structure to the
-  // underlying PWA install code.
-  // The definition of run_on_os_login_ is dependent on
-  // features::kDesktopPWAsRunOnOsLogin being enabled.
-  if (run_on_os_login_)
-    web_app_info_->run_on_os_login = run_on_os_login_->GetChecked();
-
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
     web_app::AppId app_id =
         web_app::GenerateAppIdFromURL(web_app_info_->start_url);
@@ -241,11 +212,6 @@ bool PWAConfirmationBubbleView::Accept() {
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
-}
-
-views::Checkbox*
-PWAConfirmationBubbleView::GetRunOnOsLoginCheckboxForTesting() {
-  return run_on_os_login_;
 }
 
 namespace chrome {

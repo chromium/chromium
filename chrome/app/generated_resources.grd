@@ -2339,12 +2339,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_INSTALL_PWA_BUTTON_LABEL" desc="Text for button that installs a web app to the operating system.">
         Install
       </message>
-      <message name="IDS_INSTALL_PWA_RUN_ON_OS_LOGIN_LABEL" desc="Text for checkbox label for auto starting the web app with user login to the operating system session.">
-        {0, select,
-        tablet {Start app when you sign in to your tablet}
-        computer {Start app when you sign in to your computer}
-        other {Start app when you sign in to your device}}
-      </message>
 
       <message name="IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a bookmark app, read by spoken feedback.">
         Shortcut name
