@@ -884,7 +884,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
       }
     }
     // Try for leading and trailing spaces between lines.
-    return ContainingNGBlockFlow()->PositionForPoint(*this, point);
+    return ContainingNGBlockFlow()->PositionForPoint(point);
   }
 
   DCHECK(CanUseInlineBox(*this));

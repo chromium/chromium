@@ -211,6 +211,14 @@ class NGBoxFragmentPainter : public BoxPainterBase {
                          const NGPhysicalBoxFragment* box_fragment,
                          const PhysicalRect& bounds_rect,
                          const PhysicalOffset& offset) const;
+    // Same as |AddNodeToResult|, except that |offset| is in the content
+    // coordinate system rather than the container coordinate system. They
+    // differ when |container| is a scroll container.
+    bool AddNodeToResultWithContentOffset(
+        Node* node,
+        const NGPhysicalBoxFragment& container,
+        const PhysicalRect& bounds_rect,
+        PhysicalOffset offset) const;
 
     HitTestAction action;
     const HitTestLocation& location;

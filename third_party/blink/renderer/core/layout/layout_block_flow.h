@@ -480,8 +480,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void RecalcInlineChildrenVisualOverflow();
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
-  PositionWithAffinity PositionForPoint(const LayoutObject& offset_parent,
-                                        const PhysicalOffset& offset) const;
+
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
 
   LayoutUnit LowestFloatLogicalBottom(EClear = EClear::kBoth) const;

@@ -253,10 +253,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                        NGOutlineType include_block_overflows,
                        Vector<PhysicalRect>* outline_rects) const;
 
-  // When |is_content_offset|, the offset is relative to the content, not to the
-  // scroll container.
-  PositionWithAffinity PositionForPoint(PhysicalOffset,
-                                        bool is_content_offset = false) const;
+  PositionWithAffinity PositionForPoint(PhysicalOffset) const;
 
   UBiDiLevel BidiLevel() const;
 

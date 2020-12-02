@@ -829,8 +829,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
 }
 
 PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
-    PhysicalOffset point,
-    bool is_content_offset) const {
+    PhysicalOffset point) const {
   if (layout_object_->IsBox() && !layout_object_->IsLayoutNGObject()) {
     // Layout engine boundary. Enter legacy PositionForPoint().
     return layout_object_->PositionForPoint(point);
@@ -844,7 +843,7 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
   DCHECK(!IsAtomicInline() ||
          PhysicalRect(PhysicalOffset(), Size()).Contains(point));
 
-  if (!is_content_offset && IsScrollContainer())
+  if (IsScrollContainer())
     point += PhysicalOffset(PixelSnappedScrolledContentOffset());
 
   if (const NGFragmentItems* items = Items()) {

@@ -4659,29 +4659,6 @@ void LayoutBlockFlow::RecalcFloatingDescendantsVisualOverflow(
 }
 
 PositionWithAffinity LayoutBlockFlow::PositionForPoint(
-    const LayoutObject& offset_parent,
-    const PhysicalOffset& offset) const {
-  NOT_DESTROYED();
-  // Currently this function is called only from an inline child of this
-  // |LayoutBlockFlow|.
-  DCHECK(offset_parent.IsInline());
-  DCHECK(offset_parent.IsDescendantOf(this));
-  DCHECK(ChildrenInline());
-
-  // For inline children, the offset is relative to its containing
-  // |LayoutBlockFlow|. If this is scrolling, convert the content offset to the
-  // offset of this |LayoutBlockFlow|.
-  if (IsScrollContainer()) {
-    PhysicalOffset offset_in_this = offset;
-    offset_in_this -= PhysicalOffset(PixelSnappedScrolledContentOffset());
-    return PositionForPoint(offset_in_this);
-  }
-
-  // Otherwise no covnersion is needed.
-  return PositionForPoint(offset);
-}
-
-PositionWithAffinity LayoutBlockFlow::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
   if (IsAtomicInlineLevel()) {

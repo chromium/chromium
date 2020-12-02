@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -33,15 +34,14 @@ class SelectionControllerTest : public EditingTestBase {
     return GetFrame().GetEventHandler().HitTestResultAtLocation(location);
   }
 
+  HitTestResult HitTestResultAtLocation(int x, int y) {
+    HitTestLocation location(IntPoint(x, y));
+    return HitTestResultAtLocation(location);
+  }
+
   static PositionWithAffinity GetPositionFromHitTestResult(
       const HitTestResult& hit_test_result) {
     return hit_test_result.GetPosition();
-  }
-
-  PositionWithAffinity GetPositionAtLocation(const IntPoint& point) {
-    HitTestLocation location(point);
-    HitTestResult result = HitTestResultAtLocation(location);
-    return GetPositionFromHitTestResult(result);
   }
 
   VisibleSelection VisibleSelectionInDOMTree() const {
@@ -96,6 +96,8 @@ class ParameterizedSelectionControllerTest
       private ScopedLayoutNGForTest {
  public:
   ParameterizedSelectionControllerTest() : ScopedLayoutNGForTest(GetParam()) {}
+
+  bool LayoutNGEnabled() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(SelectionControllerTest,
@@ -443,11 +445,11 @@ TEST_P(ParameterizedSelectionControllerTest, Scroll) {
     html, body {
       margin: 0;
       font-size: 50px;
-      line-height: 1;
+      line-height: 2;
     }
     #scroller {
       width: 400px;
-      height: 5em;
+      height: 600px;
       overflow: scroll;
     }
     </style>
@@ -456,21 +458,26 @@ TEST_P(ParameterizedSelectionControllerTest, Scroll) {
       <span>line2</span><br>
       <span>line3</span><br>
       <span>line4</span><br>
-      <span>line5</span><br>
-      <span>line6</span><br>
-      <span>line7</span><br>
-      <span>line8</span><br>
+      <span style="padding-left: 100px">line5</span><br>
+      <span style="border-left: 100px solid blue">line6</span><br>
+      <span style="margin-left: 100px">line7</span><br>
+      <span style="display: inline-block; width: 100px; height: 1em; line-height: 1">x</span>line8<br>
       <span>line9</span><br>
     </div>
   )HTML");
 
   // Scroll #scroller by 2 lines. "line3" should be at the top.
   Element* scroller = GetElementById("scroller");
-  scroller->setScrollTop(100);
+  scroller->setScrollTop(200);
 
   // Hit-test on the first visible line. This should be "line3".
-  PositionWithAffinity line3 = GetPositionAtLocation(IntPoint(5, 5));
-  EXPECT_EQ(line3.AnchorNode()->textContent(), "line3");
+  HitTestResult line3_result = HitTestResultAtLocation(5, 50);
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line3_result.LocalPoint(), PhysicalOffset(5, 50));
+  PositionWithAffinity line3 = line3_result.GetPosition();
+  Node* line3_node = line3.AnchorNode();
+  EXPECT_EQ(line3_node->nodeName(), "#text");
+  EXPECT_EQ(line3_node->textContent(), "line3");
 
   // Then hit-test beyond the end of the first visible line. This should snap to
   // the end of the "line3".
@@ -478,8 +485,59 @@ TEST_P(ParameterizedSelectionControllerTest, Scroll) {
   // +------------
   // |line3   x <-- Click here
   // |line4
-  PositionWithAffinity line3_end = GetPositionAtLocation(IntPoint(300, 5));
-  EXPECT_EQ(line3_end.AnchorNode()->textContent(), "line3");
+  HitTestResult line3_end_result = HitTestResultAtLocation(300, 50);
+  EXPECT_EQ(line3_end_result.LocalPoint(), PhysicalOffset(300, 50));
+  PositionWithAffinity line3_end = line3_end_result.GetPosition();
+  Node* line3_end_node = line3_end.AnchorNode();
+  EXPECT_EQ(line3_end_node->nodeName(), "#text");
+  EXPECT_EQ(line3_end_node->textContent(), "line3");
+
+  // At the line-gap between line3 and line4.
+  // There is no |LayoutText| here, but it should snap to line4.
+  HitTestResult line4_over_result = HitTestResultAtLocation(5, 101);
+  EXPECT_EQ(line4_over_result.LocalPoint(), PhysicalOffset(5, 101));
+  PositionWithAffinity line4_over = line4_over_result.GetPosition();
+  Node* line4_over_node = line4_over.AnchorNode();
+  EXPECT_EQ(line4_over_node->nodeName(), "#text");
+  EXPECT_EQ(line4_over_node->textContent(), "line4");
+
+  // At the padding of an inline box.
+  HitTestResult line5_result = HitTestResultAtLocation(5, 250);
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line5_result.LocalPoint(), PhysicalOffset(5, 250));
+  PositionWithAffinity line5 = line5_result.GetPosition();
+  Node* line5_node = line5.AnchorNode();
+  EXPECT_EQ(line5_node->nodeName(), "#text");
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line5_node->textContent(), "line5");
+
+  // At the border of an inline box.
+  HitTestResult line6_result = HitTestResultAtLocation(5, 350);
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line6_result.LocalPoint(), PhysicalOffset(5, 350));
+  PositionWithAffinity line6 = line6_result.GetPosition();
+  Node* line6_node = line6.AnchorNode();
+  EXPECT_EQ(line6_node->nodeName(), "#text");
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line6_node->textContent(), "line6");
+
+  // At the margin of an inline box.
+  HitTestResult line7_result = HitTestResultAtLocation(5, 450);
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line7_result.LocalPoint(), PhysicalOffset(5, 450));
+  PositionWithAffinity line7 = line7_result.GetPosition();
+  Node* line7_node = line7.AnchorNode();
+  EXPECT_EQ(line7_node->nodeName(), "#text");
+  if (LayoutNGEnabled())  // Legacy fails this test.
+    EXPECT_EQ(line7_node->textContent(), "line7");
+
+  // At the inline-block.
+  HitTestResult line8_result = HitTestResultAtLocation(5, 550);
+  EXPECT_EQ(line8_result.LocalPoint(), PhysicalOffset(5, 25));
+  PositionWithAffinity line8 = line8_result.GetPosition();
+  Node* line8_node = line8.AnchorNode();
+  EXPECT_EQ(line8_node->nodeName(), "#text");
+  EXPECT_EQ(line8_node->textContent(), "x");
 }
 
 }  // namespace blink
