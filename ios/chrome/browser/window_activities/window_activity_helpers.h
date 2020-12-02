@@ -14,6 +14,8 @@ struct UrlLoadParams;
 
 // Window activity origins.  Please add new origins at the end, to keep
 // numeric values of existing origins.
+// If new values are added, they must also be added to the WindowActivityOrigin
+// histogram definition in //tools/metrics/histograms/enums.xml
 typedef NS_ENUM(NSInteger, WindowActivityOrigin) {
   WindowActivityUnknownOrigin = 0,
   // The command origin comes outside of chrome.
@@ -36,8 +38,10 @@ typedef NS_ENUM(NSInteger, WindowActivityOrigin) {
   WindowActivityLocationBarSteadyViewOrigin,
   // The command origin comes from the NTP content suggestions.
   WindowActivityContentSuggestionsOrigin,
+  // The command origin comes from dragging a tab to create a new window.
+  WindowActivityTabDragOrigin,
   // Size of enum.
-  kMaxValue = WindowActivityContentSuggestionsOrigin
+  kMaxValue = WindowActivityTabDragOrigin
 };
 
 // Helper functions to create NSUserActivity instances that encode specific

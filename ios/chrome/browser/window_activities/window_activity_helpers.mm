@@ -74,7 +74,9 @@ NSUserActivity* ActivityToMoveTab(NSString* tab_id) {
       base::SysUTF8ToNSString(BUILDFLAG(IOS_MOVE_TAB_ACTIVITY_TYPE));
   NSUserActivity* activity =
       [[NSUserActivity alloc] initWithActivityType:moveTabActivityType];
-  [activity addUserInfoEntriesFromDictionary:@{kTabIdentifierKey : tab_id}];
+  NSNumber* origin = @(WindowActivityOrigin::WindowActivityTabDragOrigin);
+  NSDictionary* params = @{kOriginKey : origin, kTabIdentifierKey : tab_id};
+  [activity addUserInfoEntriesFromDictionary:params];
   return activity;
 }
 

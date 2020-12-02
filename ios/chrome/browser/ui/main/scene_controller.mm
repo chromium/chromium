@@ -384,14 +384,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
   }
 
-  if (sceneState.currentOrigin != WindowActivityRestoredOrigin) {
-    if (IsMultiwindowSupported()) {
-      if (@available(iOS 13, *)) {
-        base::UmaHistogramEnumeration(kMultiWindowOpenInNewWindowHistogram,
-                                      sceneState.currentOrigin);
-      }
-    }
-  }
+  [self recordWindowCreationForSceneState:sceneState];
 
   if (self.sceneState.hasInitializedUI &&
       level == SceneActivationLevelUnattached) {
@@ -500,6 +493,25 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                  startupInformation:self.sceneState.appState.startupInformation
                            appState:self.sceneState.appState];
   }
+}
+
+- (void)recordWindowCreationForSceneState:(SceneState*)sceneState {
+  // Don't record window creation for single-window environments
+  if (!IsMultipleScenesSupported())
+    return;
+
+  // Don't record restored window creation.
+  if (sceneState.currentOrigin == WindowActivityRestoredOrigin)
+    return;
+
+  // If there's only one connected scene, and it isn't being restored, this
+  // must be the initial app launch with scenes, so don't record the window
+  // creation.
+  if (sceneState.appState.connectedScenes.count <= 1)
+    return;
+
+  base::UmaHistogramEnumeration(kMultiWindowOpenInNewWindowHistogram,
+                                sceneState.currentOrigin);
 }
 
 - (BOOL)presentSignInAccountsViewControllerIfNecessary {
