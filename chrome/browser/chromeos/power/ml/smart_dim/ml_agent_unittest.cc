@@ -33,10 +33,10 @@ namespace {
 constexpr double kTestInactivityScore = -3.7;
 constexpr int kQuantizedTestInactivityScore = 2;
 
-// Quantization of k20190521ModelDefaultDimThreshold (-0.6), the builtin
+// Quantization of k20190521ModelDefaultDimThreshold (-0.5), the builtin
 // threshold for SmartDimModelV3, via sigmoid.
 // It's higher than kTestInactivityScore , which implies a no dim decision.
-constexpr int kQuantizedBuiltinThreshold = 35;
+constexpr int kQuantizedBuiltinThreshold = 37;
 
 // Arbitrary dim thresholds lower than kTestInactivityScore and its quantization
 // via sigmoid transform, implying a yes dim decisions.

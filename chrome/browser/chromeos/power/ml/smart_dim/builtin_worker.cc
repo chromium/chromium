@@ -28,7 +28,7 @@ constexpr size_t k20181115ModelInputVectorSize = 343;
 constexpr size_t k20190521ModelInputVectorSize = 592;
 
 constexpr double k20181115ModelDefaultDimThreshold = -1.0;
-constexpr double k20190521ModelDefaultDimThreshold = -0.6;
+constexpr double k20190521ModelDefaultDimThreshold = -0.5;
 
 }  // namespace
 
