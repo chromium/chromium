@@ -9,7 +9,7 @@ import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.Stage;
 import android.util.AndroidRuntimeException;
 import android.util.Base64;
 import android.view.ViewGroup;
@@ -29,6 +29,8 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.Log;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.InMemorySharedPreferences;
@@ -52,7 +54,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Custom ActivityTestRunner for WebView instrumentation tests */
-public class AwActivityTestRule extends ActivityTestRule<AwTestRunnerActivity> {
+public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivity> {
     public static final long WAIT_TIMEOUT_MS = scaleTimeout(15000L);
 
     public static final int CHECK_INTERVAL = 100;
@@ -79,7 +81,7 @@ public class AwActivityTestRule extends ActivityTestRule<AwTestRunnerActivity> {
     private List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown = new ArrayList<>();
 
     public AwActivityTestRule() {
-        super(AwTestRunnerActivity.class, /* initialTouchMode */ false, /* launchActivity */ false);
+        super(AwTestRunnerActivity.class);
     }
 
     @Override
@@ -134,10 +136,15 @@ public class AwActivityTestRule extends ActivityTestRule<AwTestRunnerActivity> {
         return null;
     }
 
+    @Override
+    public void launchActivity(Intent intent) {
+        if (getActivity() != null) return;
+        super.launchActivity(intent);
+        ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
+    }
+
     public AwTestRunnerActivity launchActivity() {
-        if (getActivity() == null) {
-            return launchActivity(getLaunchIntent());
-        }
+        launchActivity(getLaunchIntent());
         return getActivity();
     }
 
@@ -199,6 +206,10 @@ public class AwActivityTestRule extends ActivityTestRule<AwTestRunnerActivity> {
                     () -> mBrowserContext.setNativePointer(
                             AwBrowserContext.getDefault().getNativePointer()));
         }
+    }
+
+    public void runOnUiThread(Runnable r) {
+        TestThreadUtils.runOnUiThreadBlocking(r);
     }
 
     public static void enableJavaScriptOnUiThread(final AwContents awContents) {
