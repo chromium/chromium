@@ -38,8 +38,11 @@ class ParameterizedTextOffsetMappingTest
   }
 
   std::string GetRange(const std::string& selection_text) {
-    const PositionInFlatTree position =
-        ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base());
+    return GetRange(
+        ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base()));
+  }
+
+  std::string GetRange(const PositionInFlatTree& position) {
     return GetRange(GetInlineContents(position));
   }
 
@@ -421,13 +424,41 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithNestedPosition) {
 }
 
 // http://crbug.com//834623
-TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect) {
-  EXPECT_EQ(
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect1) {
+  SetBodyContent("<select></select>foo");
+  Element* select = GetDocument().QuerySelector("select");
+  const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
       "<slot name=\"user-agent-custom-assign-slot\"></slot>"
-      "</select>foo|",
-      GetRange("<select>|</select>foo"));
+      "</select>foo|";
+  const auto& expected_inner =
+      "<select>"
+      "<div aria-hidden=\"true\">^|</div>"
+      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "</select>foo";
+  EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
+  EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
+  EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::AfterNode(*select)));
+}
+
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect2) {
+  SetBodyContent("<select>bar</select>foo");
+  Element* select = GetDocument().QuerySelector("select");
+  const auto& expected_outer =
+      "^<select>"
+      "<div aria-hidden=\"true\"></div>"
+      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "</select>foo|";
+  const auto& expected_inner =
+      "<select>"
+      "<div aria-hidden=\"true\">^|</div>"
+      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "</select>foo";
+  EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
+  EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
+  EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree(select, 1)));
+  EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::AfterNode(*select)));
 }
 
 // http://crbug.com//832350
