@@ -534,7 +534,9 @@ void ChromeScreenshotGrabber::OnReadScreenshotFileForPreviewCompleted(
           new ScreenshotGrabberNotificationDelegate(success, GetProfile(),
                                                     screenshot_path),
           vector_icons::kBusinessIcon,
-          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+          success ? message_center::SystemNotificationWarningLevel::NORMAL
+                  : message_center::SystemNotificationWarningLevel::
+                        CRITICAL_WARNING);
 
   NotificationDisplayService::GetForProfile(GetProfile())
       ->Display(NotificationHandler::Type::TRANSIENT, *notification,
