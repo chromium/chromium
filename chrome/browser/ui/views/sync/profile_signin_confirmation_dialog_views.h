@@ -50,6 +50,13 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView {
   // Called when the "learn more" link is clicked.
   void LearnMoreClicked(const ui::Event& event);
 
+  // Builds the default view for the dialog.
+  void BuildDefaultView();
+
+  // Build the view with the "work profile" wording enabled by
+  // |features::SyncConfirmationUpdatedText|.
+  void BuildWorkProfileView();
+
   // Weak ptr to parent view.
   Browser* const browser_;
 
@@ -61,6 +68,8 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView {
 
   // Whether the user should be prompted to create a new profile.
   const bool prompt_for_new_profile_;
+
+  const bool use_work_profile_wording_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationDialogViews);
 };

@@ -58,8 +58,12 @@ const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
 const base::Feature kScrollableTabStripButtons{
     "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Hosts some content in a side panel. https://crbug.com/1141224
+// Hosts some content in a side panel. https://crbug.com/1149995
 const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Updated managed profile sign-in popup. https://crbug.com/1141224
+const base::Feature kSyncConfirmationUpdatedText{
+    "SyncConfirmationUpdatedText", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Revamp of profiles. https://crbug.com/1108289
 const base::Feature kProfilesUIRevamp{"ProfilesUIRevamp",

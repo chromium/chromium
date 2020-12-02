@@ -7529,6 +7529,9 @@ the Bookmarks menu.">
         <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_PROFILE" desc="Text of the button to create a new profile after enterprise account sign-in">
           Create a New Profile
         </message>
+        <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_WORK_PROFILE" desc="Text of the button to create a new work profile after enterprise account sign-in">
+          Add Work Profile
+        </message>
         <message name="IDS_ENTERPRISE_SIGNIN_CONTINUE" desc="Text of the button to link the current profile with the signed-in enterprise account">
           Link Data
         </message>
@@ -7536,6 +7539,9 @@ the Bookmarks menu.">
       <if expr="not use_titlecase">
         <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_PROFILE" desc="Text of the button to create a new profile after enterprise account sign-in">
           Create a new profile
+        </message>
+        <message name="IDS_ENTERPRISE_SIGNIN_CREATE_NEW_WORK_PROFILE" desc="Text of the button to create a new work profile after enterprise account sign-in">
+          Add work profile
         </message>
         <message name="IDS_ENTERPRISE_SIGNIN_CONTINUE" desc="Text of the button to link the current profile with the signed-in enterprise account">
           Link data

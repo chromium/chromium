@@ -44,6 +44,8 @@ extern const base::Feature kScrollableTabStripButtons;
 
 extern const base::Feature kSidePanel;
 
+extern const base::Feature kSyncConfirmationUpdatedText;
+
 extern const base::Feature kProfilesUIRevamp;
 
 extern const base::Feature kTabGroupsAutoCreate;
