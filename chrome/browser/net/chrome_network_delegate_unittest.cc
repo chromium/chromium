@@ -12,10 +12,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/time/time.h"
-#include "chrome/browser/download/download_prefs.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_paths.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -69,10 +73,24 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user", ""));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos", ""));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If profile path is given, the following additional paths are allowed.
   EXPECT_TRUE(IsAccessAllowed("/profile/Downloads", "/profile"));
   EXPECT_TRUE(IsAccessAllowed("/profile/MyFiles", "/profile"));
   EXPECT_TRUE(IsAccessAllowed("/profile/MyFiles/file.pdf", "/profile"));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // System level documents and downloads directories are allowed.
+  base::FilePath documents_dir;
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &documents_dir);
+  EXPECT_TRUE(IsAccessAllowed(documents_dir.AsUTF8Unsafe(), ""));
+  base::FilePath downloads_dir;
+  base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir);
+  EXPECT_TRUE(IsAccessAllowed(downloads_dir.AsUTF8Unsafe(), ""));
+#endif
+
+  // WebRTC logs for the current profile are allowed.
   EXPECT_TRUE(IsAccessAllowed("/profile/WebRTC Logs", "/profile"));
 
   // GCache/v2/<opaque ID>/Logs is allowed.
@@ -87,24 +105,13 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2", "/profile"));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/GCache/v2/id/Logs", ""));
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1150575): The block below seems wrong. We should
-  // probably explicitly allow GetHomeDir().Append("Downloads") in
-  // ChromeNetworkDelegate::IsAccessAllowed on linux-chromeos. The default
-  // download directory should always be accessible, whether on linux-chromeos
-  // or device. The EXPECT_FALSE currently fails because ChromeTestSuite
-  // overrides DIR_USER_DOWNLOADS with a temp dir, which is under /tmp, which is
-  // always allowed.
-
   // $HOME/Downloads is allowed for linux-chromeos, but not on devices.
-  const std::string& home_downloads =
-      DownloadPrefs::GetDefaultDownloadDirectory().value();
+  std::string home_downloads = base::GetHomeDir().Append("Downloads").value();
   EXPECT_TRUE(IsAccessAllowed(home_downloads, ""));
   {
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
     EXPECT_FALSE(IsAccessAllowed(home_downloads, ""));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #elif defined(OS_ANDROID)
   // Android allows the following directories.

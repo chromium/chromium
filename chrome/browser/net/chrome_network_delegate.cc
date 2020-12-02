@@ -10,8 +10,13 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/download/download_prefs.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_paths.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -76,6 +81,11 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   if (base::PathService::Get(base::DIR_TEMP, &temp_dir))
     allowlist.push_back(temp_dir);
 
+  // For developers on linux-chromeos, MyFiles dir is at $HOME/Downloads.
+  if (!base::SysInfo::IsRunningOnChromeOS())
+    allowlist.push_back(base::GetHomeDir().Append("Downloads"));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The actual location of "/home/chronos/user/Xyz" is the Xyz directory under
   // the profile path ("/home/chronos/user' is a hard link to current primary
   // logged in profile.) For the support of multi-profile sessions, we are
@@ -88,10 +98,22 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
     const base::FilePath webrtc_logs = profile_path.AppendASCII("WebRTC Logs");
     allowlist.push_back(webrtc_logs);
   }
+#else
+  // Lacros uses the system-level documents directory and downloads directory
+  // under /home/chronos/u-<hash>, which are provided via PathService. Since
+  // they are system-level, they are not subdirectories of |profile_path|.
+  base::FilePath documents_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &documents_dir))
+    allowlist.push_back(documents_dir);
 
-  // In linux-chromeos, MyFiles dir is at $HOME/Downloads.
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    allowlist.push_back(DownloadPrefs::GetDefaultDownloadDirectory());
+  base::FilePath downloads_dir;
+  if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir))
+    allowlist.push_back(downloads_dir);
+
+  // Lacros can access WebRTC logs under its browser profile directories.
+  if (!profile_path.empty())
+    allowlist.push_back(profile_path.AppendASCII("WebRTC Logs"));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return IsPathOnAllowlist(path, allowlist);
 }
