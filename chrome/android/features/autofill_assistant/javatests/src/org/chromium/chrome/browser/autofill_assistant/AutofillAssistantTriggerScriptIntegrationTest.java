@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.util.Base64;
 
@@ -34,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
@@ -306,7 +308,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    public void transitionToOnboardingAndRegularScript() throws Exception {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    transitionToOnboardingAndRegularScript() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
                         .newBuilder()
