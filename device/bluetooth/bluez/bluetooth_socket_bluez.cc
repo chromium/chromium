@@ -106,7 +106,7 @@ void BluetoothSocketBlueZ::Connect(const BluetoothDeviceBlueZ* device,
   uuid_ = uuid;
   options_.reset(new bluez::BluetoothProfileManagerClient::Options());
   if (security_level == SECURITY_LEVEL_LOW)
-    options_->require_authentication.reset(new bool(false));
+    options_->require_authentication = std::make_unique<bool>(false);
 
   adapter_ = device->adapter();
 
@@ -148,6 +148,11 @@ void BluetoothSocketBlueZ::Listen(
       break;
     default:
       NOTREACHED();
+  }
+
+  if (service_options.require_authentication) {
+    options_->require_authentication =
+        std::make_unique<bool>(*service_options.require_authentication);
   }
 
   RegisterProfile(static_cast<BluetoothAdapterBlueZ*>(adapter.get()),

@@ -94,7 +94,7 @@ std::unique_ptr<api::BluetoothServerSocket>
 BluetoothClassicMedium::ListenForService(const std::string& service_name,
                                          const std::string& service_uuid) {
   mojo::PendingRemote<bluetooth::mojom::ServerSocket> server_socket;
-  bool success = adapter_->CreateRfcommService(
+  bool success = adapter_->CreateRfcommServiceInsecurely(
       service_name, device::BluetoothUUID(service_uuid), &server_socket);
 
   if (success && server_socket) {

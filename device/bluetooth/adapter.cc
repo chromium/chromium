@@ -199,18 +199,20 @@ void Adapter::ConnectToServiceInsecurely(
 #endif
 }
 
-void Adapter::CreateRfcommService(const std::string& service_name,
-                                  const device::BluetoothUUID& service_uuid,
-                                  CreateRfcommServiceCallback callback) {
+void Adapter::CreateRfcommServiceInsecurely(
+    const std::string& service_name,
+    const device::BluetoothUUID& service_uuid,
+    CreateRfcommServiceInsecurelyCallback callback) {
   device::BluetoothAdapter::ServiceOptions service_options;
   service_options.name = service_name;
+  service_options.require_authentication = false;
 
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   adapter_->CreateRfcommService(
       service_uuid, service_options,
-      base::BindOnce(&Adapter::OnCreateRfcommService,
+      base::BindOnce(&Adapter::OnCreateRfcommServiceInsecurely,
                      weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindOnce(&Adapter::OnCreateRfcommServiceError,
+      base::BindOnce(&Adapter::OnCreateRfcommServiceInsecurelyError,
                      weak_ptr_factory_.GetWeakPtr(), copyable_callback));
 }
 
@@ -421,8 +423,8 @@ void Adapter::OnConnectToServiceError(
   std::move(callback).Run(/*result=*/nullptr);
 }
 
-void Adapter::OnCreateRfcommService(
-    CreateRfcommServiceCallback callback,
+void Adapter::OnCreateRfcommServiceInsecurely(
+    CreateRfcommServiceInsecurelyCallback callback,
     scoped_refptr<device::BluetoothSocket> socket) {
   mojo::PendingRemote<mojom::ServerSocket> pending_server_socket;
   mojo::MakeSelfOwnedReceiver(
@@ -431,8 +433,9 @@ void Adapter::OnCreateRfcommService(
   std::move(callback).Run(std::move(pending_server_socket));
 }
 
-void Adapter::OnCreateRfcommServiceError(CreateRfcommServiceCallback callback,
-                                         const std::string& message) {
+void Adapter::OnCreateRfcommServiceInsecurelyError(
+    CreateRfcommServiceInsecurelyCallback callback,
+    const std::string& message) {
   LOG(ERROR) << "Failed to create service: '" << message << "'";
   std::move(callback).Run(/*server_socket=*/mojo::NullRemote());
 }
