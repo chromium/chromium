@@ -225,7 +225,6 @@ class SVGElementResourceClient final
 
   void UpdateFilterData(CompositorFilterOperations&);
   void InvalidateFilterData();
-  bool ClearFilterData();
   void MarkFilterDataDirty();
 
   void Trace(Visitor*) const override;
