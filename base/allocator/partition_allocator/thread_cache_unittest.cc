@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/thread_cache.h"
 
+#include <algorithm>
 #include <atomic>
 #include <vector>
 
@@ -37,11 +38,13 @@ namespace {
 
 constexpr size_t kSmallSize = 12;
 constexpr size_t kMaxCountForSmallBucket = 128;
-constexpr size_t kFillCountForSmallBucket = kMaxCountForSmallBucket / 4;
+constexpr size_t kFillCountForSmallBucket =
+    kMaxCountForSmallBucket / ThreadCache::kBatchFillRatio;
 
 constexpr size_t kMediumSize = 200;
 constexpr size_t kMaxCountForMediumBucket = 64;
-constexpr size_t kFillCountForMediumBucket = kMaxCountForMediumBucket / 4;
+constexpr size_t kFillCountForMediumBucket =
+    kMaxCountForMediumBucket / ThreadCache::kBatchFillRatio;
 
 class LambdaThreadDelegate : public PlatformThread::Delegate {
  public:
@@ -164,10 +167,12 @@ TEST_F(ThreadCacheTest, ObjectsCachedCountIsLimited) {
 }
 
 TEST_F(ThreadCacheTest, Purge) {
-  size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize, 10);
+  size_t allocations = 10;
+  size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize, allocations);
   auto* tcache = g_root->thread_cache_for_testing();
-  EXPECT_EQ(kFillCountForMediumBucket,
-            tcache->bucket_count_for_testing(bucket_index));
+  EXPECT_EQ(
+      (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket,
+      tcache->bucket_count_for_testing(bucket_index));
   tcache->Purge();
   EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
 }
@@ -318,17 +323,20 @@ TEST_F(ThreadCacheTest, RecordStats) {
   tcache->Purge();
   cache_fill_counter.Reset();
   // Buckets are never full, fill always succeeds.
-  size_t bucket_index =
-      FillThreadCacheAndReturnIndex(kMediumSize, kMaxCountForMediumBucket + 10);
-  EXPECT_EQ(kMaxCountForMediumBucket + 10, cache_fill_counter.Delta());
+  size_t allocations = 10;
+  size_t bucket_index = FillThreadCacheAndReturnIndex(
+      kMediumSize, kMaxCountForMediumBucket + allocations);
+  EXPECT_EQ(kMaxCountForMediumBucket + allocations, cache_fill_counter.Delta());
   EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
 
   // Memory footprint.
   ThreadCacheStats stats;
   ThreadCacheRegistry::Instance().DumpStats(true, &stats);
   // Bucket was cleared (count halved, then refilled).
-  EXPECT_EQ(g_root->buckets[bucket_index].slot_size *
-                (kMaxCountForMediumBucket / 2 + kFillCountForMediumBucket),
+  size_t expected_count =
+      kMaxCountForMediumBucket / 2 +
+      (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket;
+  EXPECT_EQ(g_root->buckets[bucket_index].slot_size * expected_count,
             stats.bucket_total_memory);
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }

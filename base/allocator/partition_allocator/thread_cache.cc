@@ -198,7 +198,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // For each bucket, there is a |limit| of how many cached objects there are in
   // the bucket, so |count| < |limit| at all times.
   // - Clearing: limit -> limit / 2
-  // - Filling: 0 -> limit / 4
+  // - Filling: 0 -> limit / kBatchFillRatio
   //
   // These thresholds are somewhat arbitrary, with these considerations:
   // (1) Batched filling should not completely fill the bucket
@@ -210,7 +210,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // tries to keep memory usage low. So clearing half of the bucket, and filling
   // a quarter of it are sensible defaults.
   Bucket& bucket = buckets_[bucket_index];
-  int count = bucket.limit / 4;
+  int count = bucket.limit / kBatchFillRatio;
 
   size_t utilized_slot_size;
   bool is_already_zeroed;

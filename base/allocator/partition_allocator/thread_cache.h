@@ -185,6 +185,9 @@ class BASE_EXPORT ThreadCache {
     return buckets_[index].count;
   }
 
+  // TODO(lizeb): Once we have periodic purge, lower the ratio.
+  static constexpr uint16_t kBatchFillRatio = 8;
+
  private:
   struct Bucket {
     PartitionFreelistEntry* freelist_head;
