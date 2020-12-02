@@ -5,9 +5,5 @@ cablev2_authenticator_module_desc = {
   native_deps =
       [ "//chrome/android/modules/cablev2_authenticator/internal:native" ]
   load_native_on_get_impl = true
-
-  # This module uses native->Java JNI calls, which isn't currently supported
-  # in isolated splits. The following line should be uncommented once it is.
-  #
-  # uses_split = "chrome"
+  uses_split = "chrome"
 }
