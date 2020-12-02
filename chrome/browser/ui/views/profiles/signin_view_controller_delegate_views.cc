@@ -257,16 +257,19 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       modal_signin_widget_->Show();
       break;
     case ui::MODAL_TYPE_CHILD:
-      modal_signin_widget_ = constrained_window::ShowWebModalDialogViews(
-          this, browser()->tab_strip_model()->GetActiveWebContents());
+      modal_signin_widget_ = constrained_window::CreateWebModalDialogViews(
+          this, host_web_contents);
+      if (should_show_close_button_) {
+        GetBubbleFrameView()->SetBubbleBorder(
+            std::make_unique<views::BubbleBorder>(
+                views::BubbleBorder::NONE, views::BubbleBorder::BIG_SHADOW,
+                SK_ColorWHITE));
+      }
+      constrained_window::ShowModalDialog(
+          modal_signin_widget_->GetNativeWindow(), host_web_contents);
       break;
     default:
       NOTREACHED() << "Unsupported dialog modal type " << dialog_modal_type_;
-  }
-  if (should_show_close_button_) {
-    GetBubbleFrameView()->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
-        views::BubbleBorder::NONE, views::BubbleBorder::BIG_SHADOW,
-        SK_ColorWHITE));
   }
 
   content_view_->RequestFocus();
