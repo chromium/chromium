@@ -88,22 +88,24 @@ void MultiProfileBrowserStatusMonitor::RemoveV1AppFromShelf(Browser* browser) {
 
 void MultiProfileBrowserStatusMonitor::ConnectV1AppToLauncher(
     Browser* browser) {
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
-
   // Adding a V1 app to the launcher consists of two actions: Add the browser
   // (launcher item) and add the content (launcher item status).
   BrowserStatusMonitor::AddV1AppToShelf(browser);
-  launcher_controller_->UpdateAppState(web_contents, false /*remove*/);
+
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (web_contents)
+    launcher_controller_->UpdateAppState(web_contents, false /*remove*/);
 }
 
 void MultiProfileBrowserStatusMonitor::DisconnectV1AppFromLauncher(
     Browser* browser) {
   // Removing a V1 app from the launcher requires to remove the content and
   // the launcher item.
-  launcher_controller_->UpdateAppState(
-      browser->tab_strip_model()->GetActiveWebContents(), true /*remove*/);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (web_contents)
+    launcher_controller_->UpdateAppState(web_contents, true /*remove*/);
+
   BrowserStatusMonitor::RemoveV1AppFromShelf(browser);
 }

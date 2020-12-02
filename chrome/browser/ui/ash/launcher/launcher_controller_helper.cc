@@ -211,6 +211,7 @@ ash::AppStatus LauncherControllerHelper::GetAppStatus(
 }
 
 std::string LauncherControllerHelper::GetAppID(content::WebContents* tab) {
+  DCHECK(tab);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {
     const std::vector<Profile*> profile_list =

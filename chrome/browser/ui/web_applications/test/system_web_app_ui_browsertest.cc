@@ -517,15 +517,8 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   AccountId account_id2_;
 };
 
-#if defined(OS_CHROMEOS)
-// https://crbug.com/1154381
-#define MAYBE_LaunchToActiveDesktop DISABLED_LaunchToActiveDesktop
-#else
-#define MAYBE_LaunchToActiveDesktop LaunchToActiveDesktop
-#endif
-
 IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
-                       MAYBE_LaunchToActiveDesktop) {
+                       LaunchToActiveDesktop) {
   // Login two users.
   LoginUser(account_id1_);
   base::RunLoop().RunUntilIdle();
