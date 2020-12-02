@@ -42,6 +42,7 @@ include_rules = [
     "+base/task/sequence_manager/task_time_observer.h",
     "+base/test",
     "+base/test/fuzzed_data_provider.h",
+    "+base/threading/platform_thread.h",
     "+base/threading/thread_task_runner_handle.h",
     "+base/threading/thread_restrictions.h",
     "+base/time",

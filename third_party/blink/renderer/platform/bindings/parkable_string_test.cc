@@ -4,13 +4,15 @@
 
 #include <algorithm>
 #include <limits>
-#include <thread>
 
+#include "base/bind.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -42,6 +44,15 @@ String MakeLargeString(char c = 'a') {
   Vector<char> data(kSizeKb * 1000, c);
   return String(data.data(), data.size()).ReleaseImpl();
 }
+
+class LambdaThreadDelegate : public base::PlatformThread::Delegate {
+ public:
+  explicit LambdaThreadDelegate(base::OnceClosure f) : f_(std::move(f)) {}
+  void ThreadMain() override { std::move(f_).Run(); }
+
+ private:
+  base::OnceClosure f_;
+};
 
 }  // namespace
 
@@ -382,8 +393,13 @@ TEST_F(ParkableStringTest, LockUnlock) {
   EXPECT_TRUE(ParkAndWait(parkable));
 
   parkable.ToString();
-  std::thread t([&]() { parkable.Lock(); });
-  t.join();
+
+  LambdaThreadDelegate delegate(
+      base::BindLambdaForTesting([&]() { parkable.Lock(); }));
+  base::PlatformThreadHandle thread_handle;
+  base::PlatformThread::Create(0, &delegate, &thread_handle);
+  base::PlatformThread::Join(thread_handle);
+
   EXPECT_FALSE(ParkAndWait(parkable));
   parkable.Unlock();
   EXPECT_TRUE(ParkAndWait(parkable));
@@ -504,11 +520,13 @@ TEST_F(ParkableStringTest, ShouldPark) {
   String parkable(MakeLargeString().ReleaseImpl());
   EXPECT_TRUE(ParkableStringManager::ShouldPark(*parkable.Impl()));
 
-  std::thread t([]() {
+  LambdaThreadDelegate delegate(base::BindLambdaForTesting([]() {
     String parkable(MakeLargeString().ReleaseImpl());
     EXPECT_FALSE(ParkableStringManager::ShouldPark(*parkable.Impl()));
-  });
-  t.join();
+  }));
+  base::PlatformThreadHandle thread_handle;
+  base::PlatformThread::Create(0, &delegate, &thread_handle);
+  base::PlatformThread::Join(thread_handle);
 }
 
 #if defined(ADDRESS_SANITIZER)
