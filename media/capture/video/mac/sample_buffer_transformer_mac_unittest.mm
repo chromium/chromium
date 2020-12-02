@@ -152,6 +152,111 @@ enum class PixelBufferType {
   kIoSurfaceMissing,
 };
 
+void NonPlanarCvPixelBufferReleaseCallback(void* releaseRef, const void* data) {
+  free(const_cast<void*>(data));
+}
+
+void PlanarCvPixelBufferReleaseCallback(void* releaseRef,
+                                        const void* data,
+                                        size_t size,
+                                        size_t num_planes,
+                                        const void* planes[]) {
+  free(const_cast<void*>(data));
+  for (size_t plane = 0; plane < num_planes; ++plane)
+    free(const_cast<void*>(planes[plane]));
+}
+
+std::pair<uint8_t*, size_t> GetDataAndStride(CVPixelBufferRef pixel_buffer,
+                                             size_t plane) {
+  if (CVPixelBufferIsPlanar(pixel_buffer)) {
+    return {static_cast<uint8_t*>(
+                CVPixelBufferGetBaseAddressOfPlane(pixel_buffer, plane)),
+            CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer, plane)};
+  } else {
+    DCHECK_EQ(plane, 0u) << "Non-planar pixel buffers only have 1 plane.";
+    return {static_cast<uint8_t*>(CVPixelBufferGetBaseAddress(pixel_buffer)),
+            CVPixelBufferGetBytesPerRow(pixel_buffer)};
+  }
+}
+
+base::ScopedCFTypeRef<CVPixelBufferRef> AddPadding(
+    CVPixelBufferRef pixel_buffer,
+    OSType pixel_format,
+    int width,
+    int height,
+    int padding) {
+  size_t num_planes = CVPixelBufferGetPlaneCount(pixel_buffer);
+  size_t padded_size = 0;
+  std::vector<size_t> plane_widths;
+  std::vector<size_t> plane_heights;
+  std::vector<size_t> plane_strides;
+  if (CVPixelBufferIsPlanar(pixel_buffer)) {
+    for (size_t plane = 0; plane < num_planes; ++plane) {
+      size_t plane_stride =
+          CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer, plane);
+      size_t padded_stride = plane_stride + padding;
+      size_t h = CVPixelBufferGetHeightOfPlane(pixel_buffer, plane);
+      size_t w = CVPixelBufferGetWidthOfPlane(pixel_buffer, plane);
+      plane_heights.push_back(h);
+      plane_widths.push_back(w);
+      plane_strides.push_back(padded_stride);
+      padded_size += h * padded_stride;
+    }
+  } else {
+    // CVPixelBufferGetPlaneCount returns 0 for non-planar buffers.
+    num_planes = 1;
+    size_t plane_stride = CVPixelBufferGetBytesPerRow(pixel_buffer);
+    size_t padded_stride = plane_stride + padding;
+    size_t h = CVPixelBufferGetHeight(pixel_buffer);
+    padded_size += h * padded_stride;
+    plane_heights.push_back(h);
+    plane_strides.push_back(padded_stride);
+  }
+  std::vector<void*> plane_address;
+  CHECK_EQ(
+      CVPixelBufferLockBaseAddress(pixel_buffer, kCVPixelBufferLock_ReadOnly),
+      kCVReturnSuccess);
+  // Allocate and copy each plane.
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    plane_address.push_back(
+        calloc(1, plane_strides[plane] * plane_heights[plane]));
+    uint8_t* dst_ptr = static_cast<uint8_t*>(plane_address[plane]);
+    uint8_t* src_ptr;
+    size_t plane_stride;
+    std::tie(src_ptr, plane_stride) = GetDataAndStride(pixel_buffer, plane);
+    CHECK(dst_ptr);
+    CHECK(src_ptr);
+    for (size_t r = 0; r < plane_heights[plane]; ++r) {
+      memcpy(dst_ptr, src_ptr, plane_stride);
+      src_ptr += plane_stride;
+      dst_ptr += plane_strides[plane];
+    }
+  }
+  CHECK_EQ(
+      CVPixelBufferUnlockBaseAddress(pixel_buffer, kCVPixelBufferLock_ReadOnly),
+      kCVReturnSuccess);
+
+  base::ScopedCFTypeRef<CVPixelBufferRef> padded_pixel_buffer;
+  CVReturn create_buffer_result;
+  if (CVPixelBufferIsPlanar(pixel_buffer)) {
+    // Without some memory block the callback won't be called and we leak the
+    // planar data.
+    void* descriptor = calloc(1, sizeof(CVPlanarPixelBufferInfo_YCbCrPlanar));
+    create_buffer_result = CVPixelBufferCreateWithPlanarBytes(
+        nullptr, width, height, pixel_format, descriptor, 0, num_planes,
+        plane_address.data(), plane_widths.data(), plane_heights.data(),
+        plane_strides.data(), &PlanarCvPixelBufferReleaseCallback,
+        plane_strides.data(), nullptr, padded_pixel_buffer.InitializeInto());
+  } else {
+    create_buffer_result = CVPixelBufferCreateWithBytes(
+        nullptr, width, height, pixel_format, plane_address[0],
+        plane_strides[0], &NonPlanarCvPixelBufferReleaseCallback, nullptr,
+        nullptr, padded_pixel_buffer.InitializeInto());
+  }
+  DCHECK_EQ(create_buffer_result, kCVReturnSuccess);
+  return padded_pixel_buffer;
+}
+
 base::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(
     OSType pixel_format,
     int width,
@@ -159,9 +264,14 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(
     uint8_t r,
     uint8_t g,
     uint8_t b,
-    PixelBufferType pixel_buffer_type) {
+    PixelBufferType pixel_buffer_type,
+    size_t padding = 0) {
   base::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer =
       CreatePixelBuffer(pixel_format, width, height, r, g, b);
+  if (padding != 0) {
+    CHECK_EQ(pixel_buffer_type, PixelBufferType::kIoSurfaceMissing)
+        << "Padding does not work with IOSurfaces.";
+  }
   if (pixel_buffer_type == PixelBufferType::kIoSurfaceMissing) {
     // Our pixel buffer currently has an IOSurface. To get rid of it, we perform
     // a pixel buffer transfer to a destination pixel buffer that is not backed
@@ -177,6 +287,11 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(
     DCHECK(success);
     DCHECK(!CVPixelBufferGetIOSurface(iosurfaceless_pixel_buffer));
     pixel_buffer = iosurfaceless_pixel_buffer;
+
+    if (padding > 0) {
+      pixel_buffer =
+          AddPadding(pixel_buffer, pixel_format, width, height, padding);
+    }
   }
 
   // Wrap the pixel buffer in a sample buffer.
@@ -335,6 +450,57 @@ TEST_P(SampleBufferTransformerPixelTransferTest,
       PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
 }
 
+TEST_P(SampleBufferTransformerPixelTransferTest,
+       CanConvertWithPaddingFullScale) {
+  OSType input_pixel_format;
+  OSType output_pixel_format;
+  std::tie(input_pixel_format, output_pixel_format) = GetParam();
+  base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
+      CreateSampleBuffer(input_pixel_format, kFullResolutionWidth,
+                         kFullResolutionHeight, kColorR, kColorG, kColorB,
+                         PixelBufferType::kIoSurfaceMissing, /*padding*/ 100);
+  std::unique_ptr<SampleBufferTransformer> transformer =
+      SampleBufferTransformer::Create();
+  transformer->Reconfigure(
+      SampleBufferTransformer::Transformer::kPixelBufferTransfer,
+      output_pixel_format, kFullResolutionWidth, kFullResolutionHeight, 1);
+  base::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
+      transformer->Transform(input_sample_buffer);
+
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_pixel_buffer));
+  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_pixel_buffer));
+  EXPECT_TRUE(
+      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+}
+
+TEST_P(SampleBufferTransformerPixelTransferTest,
+       CanConvertAndScaleWithPadding) {
+  OSType input_pixel_format;
+  OSType output_pixel_format;
+  std::tie(input_pixel_format, output_pixel_format) = GetParam();
+  base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
+      CreateSampleBuffer(input_pixel_format, kFullResolutionWidth,
+                         kFullResolutionHeight, kColorR, kColorG, kColorB,
+                         PixelBufferType::kIoSurfaceMissing, /*padding*/ 100);
+  std::unique_ptr<SampleBufferTransformer> transformer =
+      SampleBufferTransformer::Create();
+  transformer->Reconfigure(
+      SampleBufferTransformer::Transformer::kPixelBufferTransfer,
+      output_pixel_format, kScaledDownResolutionWidth,
+      kScaledDownResolutionHeight, 1);
+  base::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
+      transformer->Transform(input_sample_buffer);
+
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_EQ(kScaledDownResolutionWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer));
+  EXPECT_EQ(kScaledDownResolutionHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer));
+  EXPECT_TRUE(
+      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+}
+
 INSTANTIATE_TEST_SUITE_P(SampleBufferTransformerTest,
                          SampleBufferTransformerPixelTransferTest,
                          ::testing::Combine(SupportedCaptureFormats(),
@@ -378,6 +544,54 @@ TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleDown) {
       CreateSampleBuffer(input_pixel_format, kFullResolutionWidth,
                          kFullResolutionHeight, kColorR, kColorG, kColorB,
                          PixelBufferType::kIoSurfaceBacked);
+  std::unique_ptr<SampleBufferTransformer> transformer =
+      SampleBufferTransformer::Create();
+  transformer->Reconfigure(SampleBufferTransformer::Transformer::kLibyuv,
+                           output_pixel_format, kScaledDownResolutionWidth,
+                           kScaledDownResolutionHeight, 1);
+  base::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
+      transformer->Transform(input_sample_buffer);
+
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_EQ(kScaledDownResolutionWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer));
+  EXPECT_EQ(kScaledDownResolutionHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer));
+  EXPECT_TRUE(
+      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+}
+
+TEST_P(SampleBufferTransformerLibyuvTest, CanConvertWithPaddingFullScale) {
+  OSType input_pixel_format;
+  OSType output_pixel_format;
+  std::tie(input_pixel_format, output_pixel_format) = GetParam();
+  base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
+      CreateSampleBuffer(input_pixel_format, kFullResolutionWidth,
+                         kFullResolutionHeight, kColorR, kColorG, kColorB,
+                         PixelBufferType::kIoSurfaceMissing, /*padding*/ 100);
+  std::unique_ptr<SampleBufferTransformer> transformer =
+      SampleBufferTransformer::Create();
+  transformer->Reconfigure(SampleBufferTransformer::Transformer::kLibyuv,
+                           output_pixel_format, kFullResolutionWidth,
+                           kFullResolutionHeight, 1);
+  base::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
+      transformer->Transform(input_sample_buffer);
+
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_pixel_buffer));
+  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_pixel_buffer));
+  EXPECT_TRUE(
+      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+}
+
+TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleWithPadding) {
+  OSType input_pixel_format;
+  OSType output_pixel_format;
+  std::tie(input_pixel_format, output_pixel_format) = GetParam();
+  base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
+      CreateSampleBuffer(input_pixel_format, kFullResolutionWidth,
+                         kFullResolutionHeight, kColorR, kColorG, kColorB,
+                         PixelBufferType::kIoSurfaceMissing, /*padding*/ 100);
   std::unique_ptr<SampleBufferTransformer> transformer =
       SampleBufferTransformer::Create();
   transformer->Reconfigure(SampleBufferTransformer::Transformer::kLibyuv,

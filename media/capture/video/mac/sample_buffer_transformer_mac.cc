@@ -37,47 +37,6 @@ constexpr OSType kPixelFormatI420 = kCVPixelFormatType_420YpCbCr8Planar;
 // MJPEG a.k.a. dmb1
 constexpr OSType kPixelFormatMjpeg = kCMVideoCodecType_JPEG_OpenDML;
 
-// Pixel formats mappings to allow these pixel formats to be converted to I420
-// with libyuv.
-libyuv::FourCC MacFourCCToLibyuvFourCC(OSType mac_fourcc) {
-  switch (mac_fourcc) {
-    // NV12 a.k.a. 420v
-    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-      return libyuv::FOURCC_NV12;
-    // UYVY a.k.a. 2vuy
-    case kCVPixelFormatType_422YpCbCr8:
-      return libyuv::FOURCC_UYVY;
-    // YUY2 a.k.a. yuvs
-    case kCMPixelFormat_422YpCbCr8_yuvs:
-      return libyuv::FOURCC_YUY2;
-    // MJPEG a.k.a. dmb1
-    case kCMVideoCodecType_JPEG_OpenDML:
-      return libyuv::FOURCC_MJPG;
-    // I420 a.k.a. y420
-    case kCVPixelFormatType_420YpCbCr8Planar:
-      return libyuv::FOURCC_I420;
-    default:
-      NOTREACHED();
-  }
-  return libyuv::FOURCC_ANY;
-}
-
-std::pair<uint8_t*, size_t> GetPixelBufferBaseAddressAndSize(
-    CVPixelBufferRef pixel_buffer) {
-  uint8_t* data_base_address;
-  if (!CVPixelBufferIsPlanar(pixel_buffer)) {
-    data_base_address =
-        static_cast<uint8_t*>(CVPixelBufferGetBaseAddress(pixel_buffer));
-  } else {
-    data_base_address = static_cast<uint8_t*>(
-        CVPixelBufferGetBaseAddressOfPlane(pixel_buffer, 0));
-  }
-  size_t data_size = CVPixelBufferGetDataSize(pixel_buffer);
-  DCHECK(data_base_address);
-  DCHECK(data_size);
-  return std::make_pair(data_base_address, data_size);
-}
-
 std::pair<uint8_t*, size_t> GetSampleBufferBaseAddressAndSize(
     CMSampleBufferRef sample_buffer) {
   // Access source sample buffer bytes.
@@ -233,25 +192,103 @@ NV12Planes GetNV12PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
   return nv12_planes;
 }
 
+bool ConvertFromMjpegToI420(uint8_t* source_buffer_base_address,
+                            size_t source_buffer_size,
+                            const I420Planes& destination) {
+  int result = libyuv::MJPGToI420(
+      source_buffer_base_address, source_buffer_size, destination.y_plane_data,
+      destination.y_plane_stride, destination.u_plane_data,
+      destination.u_plane_stride, destination.v_plane_data,
+      destination.v_plane_stride, destination.width, destination.height,
+      destination.width, destination.height);
+  return result == 0;
+}
+
 // Returns true on success. Converting uncompressed pixel formats should never
 // fail, however MJPEG frames produces by some webcams have been observed to be
 // invalid in special circumstances (see https://crbug.com/1147867). To support
 // a graceful failure path in this case, this function may return false.
-bool ConvertFromAnyToI420(OSType source_pixel_format,
-                          uint8_t* source_buffer_base_address,
-                          size_t source_buffer_size,
+bool ConvertFromAnyToI420(CVPixelBufferRef source_pixel_buffer,
                           const I420Planes& destination) {
-  int result = libyuv::ConvertToI420(
-      source_buffer_base_address, source_buffer_size, destination.y_plane_data,
-      destination.y_plane_stride, destination.u_plane_data,
-      destination.u_plane_stride, destination.v_plane_data,
-      destination.v_plane_stride,
-      /*crop_x*/ 0,
-      /*crop_y*/ 0, destination.width, destination.height,
-      /*crop_width*/ destination.width,
-      /*crop_height*/ destination.height, libyuv::kRotate0,
-      MacFourCCToLibyuvFourCC(source_pixel_format));
-  return result == 0;
+  auto pixel_format = CVPixelBufferGetPixelFormatType(source_pixel_buffer);
+  switch (pixel_format) {
+    // UYVY a.k.a. 2vuy
+    case kCVPixelFormatType_422YpCbCr8: {
+      const uint8_t* src_uyvy = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddress(source_pixel_buffer));
+      size_t src_stride_uyvy = CVPixelBufferGetBytesPerRow(source_pixel_buffer);
+      return libyuv::UYVYToI420(
+                 src_uyvy, src_stride_uyvy, destination.y_plane_data,
+                 destination.y_plane_stride, destination.u_plane_data,
+                 destination.u_plane_stride, destination.v_plane_data,
+                 destination.v_plane_stride, destination.width,
+                 destination.height) == 0;
+    }
+    // YUY2 a.k.a. yuvs
+    case kCMPixelFormat_422YpCbCr8_yuvs: {
+      const uint8_t* src_yuy2 = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddress(source_pixel_buffer));
+      size_t src_stride_yuy2 = CVPixelBufferGetBytesPerRow(source_pixel_buffer);
+      return libyuv::YUY2ToI420(
+                 src_yuy2, src_stride_yuy2, destination.y_plane_data,
+                 destination.y_plane_stride, destination.u_plane_data,
+                 destination.u_plane_stride, destination.v_plane_data,
+                 destination.v_plane_stride, destination.width,
+                 destination.height) == 0;
+    }
+    // MJPEG a.k.a. dmb1
+    case kCMVideoCodecType_JPEG_OpenDML: {
+      uint8_t* src_jpg = static_cast<uint8_t*>(
+          CVPixelBufferGetBaseAddress(source_pixel_buffer));
+      size_t src_jpg_size = CVPixelBufferGetDataSize(source_pixel_buffer);
+      return ConvertFromMjpegToI420(src_jpg, src_jpg_size, destination);
+    }
+    // NV12 a.k.a. 420v
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange: {
+      DCHECK(CVPixelBufferIsPlanar(source_pixel_buffer));
+      DCHECK_EQ(2u, CVPixelBufferGetPlaneCount(source_pixel_buffer));
+      const uint8_t* src_y = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 0));
+      size_t src_stride_y =
+          CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 0);
+      const uint8_t* src_uv = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 1));
+      size_t src_stride_uv =
+          CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 1);
+      return libyuv::NV12ToI420(
+                 src_y, src_stride_y, src_uv, src_stride_uv,
+                 destination.y_plane_data, destination.y_plane_stride,
+                 destination.u_plane_data, destination.u_plane_stride,
+                 destination.v_plane_data, destination.v_plane_stride,
+                 destination.width, destination.height) == 0;
+    }
+    // I420 a.k.a. y420
+    case kCVPixelFormatType_420YpCbCr8Planar: {
+      DCHECK(CVPixelBufferIsPlanar(source_pixel_buffer));
+      DCHECK_EQ(3u, CVPixelBufferGetPlaneCount(source_pixel_buffer));
+      const uint8_t* src_y = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 0));
+      size_t src_stride_y =
+          CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 0);
+      const uint8_t* src_u = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 1));
+      size_t src_stride_u =
+          CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 1);
+      const uint8_t* src_v = static_cast<const uint8_t*>(
+          CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 2));
+      size_t src_stride_v =
+          CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 2);
+      return libyuv::I420Copy(
+                 src_y, src_stride_y, src_u, src_stride_u, src_v, src_stride_v,
+                 destination.y_plane_data, destination.y_plane_stride,
+                 destination.u_plane_data, destination.u_plane_stride,
+                 destination.v_plane_data, destination.v_plane_stride,
+                 destination.width, destination.height) == 0;
+    }
+    default:
+      NOTREACHED() << "Pixel format " << pixel_format << " not supported.";
+  }
+  return false;
 }
 
 void ConvertFromI420ToNV12(const I420Planes& source,
@@ -299,6 +336,18 @@ void ScaleI420(const I420Planes& source, const I420Planes& destination) {
   DCHECK_EQ(result, 0);
 }
 
+void CopyI420(const I420Planes& source, const I420Planes& destination) {
+  DCHECK_EQ(source.width, destination.width);
+  DCHECK_EQ(source.height, destination.height);
+  libyuv::I420Copy(source.y_plane_data, source.y_plane_stride,
+                   source.u_plane_data, source.u_plane_stride,
+                   source.v_plane_data, source.v_plane_stride,
+                   destination.y_plane_data, destination.y_plane_stride,
+                   destination.u_plane_data, destination.u_plane_stride,
+                   destination.v_plane_data, destination.v_plane_stride,
+                   source.width, source.height);
+}
+
 void ScaleNV12(const NV12Planes& source, const NV12Planes& destination) {
   int result = libyuv::NV12Scale(
       source.y_plane_data, source.y_plane_stride, source.uv_plane_data,
@@ -307,6 +356,19 @@ void ScaleNV12(const NV12Planes& source, const NV12Planes& destination) {
       destination.uv_plane_data, destination.uv_plane_stride, destination.width,
       destination.height, libyuv::kFilterBilinear);
   DCHECK_EQ(result, 0);
+}
+
+void CopyNV12(const NV12Planes& source, const NV12Planes& destination) {
+  DCHECK_EQ(source.width, destination.width);
+  DCHECK_EQ(source.height, destination.height);
+  libyuv::CopyPlane(source.y_plane_data, source.y_plane_stride,
+                    destination.y_plane_data, destination.y_plane_stride,
+                    destination.width, destination.height);
+  size_t half_width = (destination.width + 1) >> 1;
+  size_t half_height = (destination.height + 1) >> 1;
+  libyuv::CopyPlane(source.uv_plane_data, source.uv_plane_stride,
+                    destination.uv_plane_data, destination.uv_plane_stride,
+                    half_width * 2, half_height);
 }
 
 }  // namespace
@@ -538,10 +600,6 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToI420(
   size_t source_height = CVPixelBufferGetHeight(source_pixel_buffer);
   OSType source_pixel_format =
       CVPixelBufferGetPixelFormatType(source_pixel_buffer);
-  uint8_t* source_buffer_data_base_address;
-  size_t source_buffer_data_size;
-  std::tie(source_buffer_data_base_address, source_buffer_data_size) =
-      GetPixelBufferBaseAddressAndSize(source_pixel_buffer);
 
   // Rescaling has to be done in a separate step.
   const bool rescale_needed = destination_width_ != source_width ||
@@ -552,7 +610,15 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToI420(
   if (source_pixel_format == kPixelFormatI420) {
     // We are already at I420.
     i420_fullscale_buffer = GetI420PlanesFromPixelBuffer(source_pixel_buffer);
-    DCHECK(rescale_needed);
+    // Fast path should have been taken if no resize needed and the buffer is on
+    // an IOSurface already.
+    DCHECK(rescale_needed || !CVPixelBufferGetIOSurface(source_pixel_buffer));
+    if (!rescale_needed) {
+      I420Planes i420_destination_buffer =
+          GetI420PlanesFromPixelBuffer(destination_pixel_buffer);
+      CopyI420(i420_fullscale_buffer, i420_destination_buffer);
+      return;
+    }
   } else {
     // Convert X -> I420.
     if (!rescale_needed) {
@@ -562,9 +628,7 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToI420(
       i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
           source_width, source_height, &intermediate_i420_buffer_);
     }
-    if (!ConvertFromAnyToI420(source_pixel_format,
-                              source_buffer_data_base_address,
-                              source_buffer_data_size, i420_fullscale_buffer)) {
+    if (!ConvertFromAnyToI420(source_pixel_buffer, i420_fullscale_buffer)) {
       // Only MJPEG conversions are known to be able to fail. Because X is an
       // uncompressed pixel format, this conversion should never fail.
       NOTREACHED();
@@ -587,10 +651,6 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToNV12(
   size_t source_height = CVPixelBufferGetHeight(source_pixel_buffer);
   OSType source_pixel_format =
       CVPixelBufferGetPixelFormatType(source_pixel_buffer);
-  uint8_t* source_buffer_data_base_address;
-  size_t source_buffer_data_size;
-  std::tie(source_buffer_data_base_address, source_buffer_data_size) =
-      GetPixelBufferBaseAddressAndSize(source_pixel_buffer);
 
   // Rescaling has to be done in a separate step.
   const bool rescale_needed = destination_width_ != source_width ||
@@ -601,9 +661,18 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToNV12(
   if (source_pixel_format == kPixelFormatNv12) {
     // We are already at NV12.
     nv12_fullscale_buffer = GetNV12PlanesFromPixelBuffer(source_pixel_buffer);
-    DCHECK(rescale_needed);
+    // Fast path should have been taken if no resize needed and the buffer is on
+    // an IOSurface already.
+    DCHECK(rescale_needed || !CVPixelBufferGetIOSurface(source_pixel_buffer));
+    if (!rescale_needed) {
+      NV12Planes nv12_destination_buffer =
+          GetNV12PlanesFromPixelBuffer(destination_pixel_buffer);
+      CopyNV12(nv12_fullscale_buffer, nv12_destination_buffer);
+      return;
+    }
   } else {
     // Convert X -> I420 -> NV12. (We don't know how to do X -> NV12.)
+    // TODO(https://crbug.com/1154273): Convert to NV12 directly.
     I420Planes i420_fullscale_buffer;
     if (source_pixel_format == kPixelFormatI420) {
       // We are already at I420.
@@ -612,9 +681,7 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToNV12(
       // Convert X -> I420.
       i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
           source_width, source_height, &intermediate_i420_buffer_);
-      if (!ConvertFromAnyToI420(
-              source_pixel_format, source_buffer_data_base_address,
-              source_buffer_data_size, i420_fullscale_buffer)) {
+      if (!ConvertFromAnyToI420(source_pixel_buffer, i420_fullscale_buffer)) {
         NOTREACHED();
       }
     }
@@ -704,8 +771,8 @@ bool SampleBufferTransformer::TransformSampleBufferFromMjpegToI420(
     i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
         source_width, source_height, &intermediate_i420_buffer_);
   }
-  if (!ConvertFromAnyToI420(kPixelFormatMjpeg, source_buffer_data_base_address,
-                            source_buffer_data_size, i420_fullscale_buffer)) {
+  if (!ConvertFromMjpegToI420(source_buffer_data_base_address,
+                              source_buffer_data_size, i420_fullscale_buffer)) {
     return false;
   }
 
