@@ -31,8 +31,8 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
             return false;
         }
         return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return phoneOnly && !DeviceFormFactor.isTablet()
-                    || tabletOnly && DeviceFormFactor.isTablet()
+            boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
+            return phoneOnly && !isTablet || tabletOnly && isTablet
                     || largeTabletOnly
                     && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mTargetContext);
         });
