@@ -254,7 +254,8 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest {
     loop.Run();
   }
 
-  void CheckInstalledCerts(int installed_cert_num, CertStoreService* service) {
+  void CheckInstalledCerts(size_t installed_cert_num,
+                           CertStoreService* service) {
     EXPECT_EQ(installed_cert_num, client_certs_.size());
     EXPECT_EQ(installed_cert_num, installer()->certs().size());
     EXPECT_EQ(installed_cert_num, service->get_required_cert_names().size());
@@ -425,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(CertStoreServiceTest, UninstalledCorporateUsageKeys) {
   installer()->RunCompletionCallback(true /* success */);
   CheckInstalledCerts(kCertFiles.size(), service);
 
-  int installed_cert_num = kCertFiles.size();
+  size_t installed_cert_num = kCertFiles.size();
   while (!client_certs_.empty()) {
     DeleteCert(client_certs_.back().get());
     installer()->Wait();
