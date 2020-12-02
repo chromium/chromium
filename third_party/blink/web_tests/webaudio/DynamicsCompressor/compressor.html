@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test DynamicsCompressor Output</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audit-util.js"></script>
+    <script src="../resources/audit.js"></script>
+    <script src="../resources/audio-file-utils.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let audit = Audit.createTaskRunner();
+
+      // Fairly arbitrary sample rate.  If you change this you MUST change the
+      // reference files as well.
+      const sampleRate = 48000;
+      const renderFrames = sampleRate;
+
+      // The file containing the expected output from the compressor.
+      const expectedCompressorOutputURL = 'compressor-output-expected.wav';
+      // The file containing the expected reduction values from the compressor.
+      const expectedGainReductionValuesURL =
+          'compressor-reduction-expected.wav';
+
+      // Audio buffer containing the measured reduction values.
+      let reductionBuffer;
+
+      // Audio buffer containing the output of compressor.
+      let compressorOutputBuffer;
+
+      audit.define('Compressor output', async(task, should) => {
+        let context = new OfflineAudioContext({
+          numberOfChannels: 2,
+          length: renderFrames,
+          sampleRate: sampleRate
+        });
+
+        // The expected compressor output.
+        let expectedCompressorOutput;
+
+        // The expected gain reduction values.
+        let expectedGainReductionValues;
+
+        // Get the expected output and the reduction values.  The reference
+        // files were created by running this test and saving the output.
+        // The reference files should be updated only if the compressor
+        // algorithm changes.  Adjust the test threshold below as needed.
+        should(async() => {
+          let response =
+              await Audit.loadFileFromUrl(expectedCompressorOutputURL);
+          expectedCompressorOutput = await context.decodeAudioData(response);
+        }, 'Loading reference output').notThrow();
+
+        should(async() => {
+          let response =
+              await Audit.loadFileFromUrl(expectedGainReductionValuesURL);
+          expectedGainReductionValues = await context.decodeAudioData(response);
+        }, 'Loading reference reduction values').notThrow();
+
+        // Use an oscillator for each stereo channel.  The types and
+        // frequencies are fairly arbitrary.
+        let osc1 =
+            new OscillatorNode(context, {type: 'sawtooth', frequency: 880});
+        let osc2 =
+            new OscillatorNode(context, {type: 'square', frequency: 440});
+
+        let merger = new ChannelMergerNode(context, {numberOfInputs: 2});
+
+        osc1.connect(merger, 0, 0);
+        osc2.connect(merger, 0, 1);
+
+        let gain = new GainNode(context);
+
+        merger.connect(gain);
+
+        compressor = new DynamicsCompressorNode(context);
+
+        gain.connect(compressor).connect(context.destination);
+
+        // Modulate the gain to change the input amplitude to the
+        // compressor. Nothing special here except we want the amplitude to
+        // go near zero and also be larger than 1 for some time.
+        gain.gain.setValueAtTime(1, 0)
+            .linearRampToValueAtTime(.001, .25)
+            .setValueAtTime(10, .3)
+            .linearRampToValueAtTime(2, .5)
+            .linearRampToValueAtTime(.5, .75);
+
+        osc1.start();
+        osc2.start();
+
+        // Let's get the reduction value every 8 renders.  This is pretty
+        // arbitrary.
+        let reduction = [];
+        for (let frame = 0; frame < renderFrames;
+             frame += 8 * RENDER_QUANTUM_FRAMES) {
+          context.suspend(frame / context.sampleRate)
+              .then(
+                  () =>
+                      {
+                        reduction.push(compressor.reduction);
+                      })
+              .then(() => context.resume());
+        }
+
+        buffer = await context.startRendering();
+
+        // Verify that the reduction values match.  Threshold was determined
+        // by experimentation.
+        should(reduction, 'Compressor reduction')
+            .beCloseToArray(
+                expectedGainReductionValues.getChannelData(0),
+                {absoluteThreshold: 3.8147e-6});
+
+        // Verify the output matches the reference.  Thresholds determined
+        // by experimentation.
+        let actual0 = buffer.getChannelData(0);
+        let actual1 = buffer.getChannelData(1);
+        let expected0 = expectedCompressorOutput.getChannelData(0);
+        let expected1 = expectedCompressorOutput.getChannelData(1);
+
+        should(actual0, 'Compressor channel 0 output')
+            .beCloseToArray(expected0, {absoluteThreshold: 3.5763e-7});
+        should(actual1, 'Compressor channel 1 output')
+            .beCloseToArray(expected1, {absoluteThreshold: 4.1724e-7});
+
+        // Test SNR too.
+        let snr0 = 10 * Math.log10(computeSNR(actual0, expected0));
+        let snr1 = 10 * Math.log10(computeSNR(actual1, expected1));
+
+        // The SNR threshold values here were determined experimentally.
+        should(snr0, 'SNR for channel 0').beGreaterThanOrEqualTo(136.395);
+        should(snr1, 'SNR for channel 1').beGreaterThanOrEqualTo(136.934);
+
+        // Save the reduction values to a file so we can update the
+        // reference if needed.  The file should ony be saved if you run the
+        // test locally.
+        reductionBuffer = new AudioBuffer({
+          numberOfCHannels: 1,
+          length: reduction.length,
+          sampleRate: context.sampleRate
+        });
+        reductionBuffer.copyToChannel(Float32Array.from(reduction), 0, 0);
+
+        task.done();
+      });
+
+      // When running on the bots, we don't want or need to save the output
+      // files.  But when run manually, we do so we can get new references if
+      // needed.
+      if (!window.testRunner) {
+        audit.define('Save reference files', (task, should) => {
+          let filename =
+              expectedGainReductionValuesURL.replace('expected', 'actual');
+          if (downloadAudioBuffer(reductionBuffer, filename, true)) {
+            should(true, 'Saved compressor reduction file')
+                .message(filename, '');
+          }
+
+          // Save the output so we can update the reference if needed.
+          filename = expectedCompressorOutputURL.replace('expected', 'actual');
+          if (downloadAudioBuffer(buffer, filename, true)) {
+            should(true, 'Saved reference file').message(filename, '');
+          }
+          task.done();
+        });
+      }
+
+      audit.run();
+    </script>
+  </body>
+</html>
