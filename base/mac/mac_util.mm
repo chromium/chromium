@@ -212,11 +212,11 @@ void AddToLoginItems(bool hide_on_startup) {
   NSDictionary* properties =
       @{(NSString*)kLSSharedFileListLoginItemHidden : @(hide) };
 
-  ScopedCFTypeRef<LSSharedFileListItemRef> new_item;
-  new_item.reset(LSSharedFileListInsertItemURL(
-      login_items.GetLoginFileList(), kLSSharedFileListItemLast, NULL, NULL,
-      reinterpret_cast<CFURLRef>(url),
-      reinterpret_cast<CFDictionaryRef>(properties), NULL));
+  ScopedCFTypeRef<LSSharedFileListItemRef> new_item(
+      LSSharedFileListInsertItemURL(
+          login_items.GetLoginFileList(), kLSSharedFileListItemLast, nullptr,
+          nullptr, reinterpret_cast<CFURLRef>(url),
+          reinterpret_cast<CFDictionaryRef>(properties), nullptr));
 #pragma clang diagnostic pop
 
   if (!new_item.get()) {
