@@ -25,6 +25,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
  * Provides data access and generate content URI for downloaded files open or shared to other
@@ -84,12 +85,10 @@ public class DownloadFileProvider extends FileProvider {
                     URI_PATH, filePath.substring(primaryDir.getAbsolutePath().length() + 1));
         }
 
-        File[] files;
-        files = delegate.getExternalFilesDirs();
-        for (int i = 1; i < files.length; ++i) {
-            File file = files[i];
-            index = filePath.indexOf(file.getAbsolutePath());
-            if (index == 0 && filePath.length() > file.getAbsolutePath().length()) {
+        List<File> files = delegate.getSecondaryStorageDownloadDirectories();
+        for (File file : files) {
+            if (file == null) continue;
+            if (filePath.startsWith(file.getAbsolutePath())) {
                 return buildUri(
                         URI_EXTERNAL_PATH, filePath.substring(file.getAbsolutePath().length() + 1));
             }
@@ -271,11 +270,11 @@ public class DownloadFileProvider extends FileProvider {
         }
 
         // Parse download on external SD card.
-        File[] files;
-        files = delegate.getExternalFilesDirs();
-        if (files.length < 1) return null;
-        if (path.equals(URI_EXTERNAL_PATH) && files.length > 1) {
-            return files[1].getAbsolutePath() + File.separator + query;
+        List<File> files = delegate.getSecondaryStorageDownloadDirectories();
+        if (files.isEmpty()) return null;
+        if (path.equals(URI_EXTERNAL_PATH)) {
+            // This only supports one SD card.
+            return files.get(0).getAbsolutePath() + File.separator + query;
         }
         return null;
     }

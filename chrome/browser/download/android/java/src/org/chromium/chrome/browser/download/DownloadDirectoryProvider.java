@@ -8,10 +8,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
+import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -23,6 +30,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to provide download related directory options including the default download directory on
@@ -44,18 +52,18 @@ public class DownloadDirectoryProvider {
      */
     public interface Delegate {
         /**
-         * Get the primary download directory in public external storage. The directory will be
-         * created if it doesn't exist. Should be called on background thread.
-         * @return The download directory. Can be an invalid directory if failed to create the
-         *         directory.
+         * Get the primary download directory. See {@link
+         * DownloadDirectoryProvider#getPrimaryDownloadDirectory()}.
          */
+        @NonNull
         File getPrimaryDownloadDirectory();
 
         /**
-         * Get external files directories for {@link Environment#DIRECTORY_DOWNLOADS}.
-         * @return A list of directories.
+         * Get download directories on secondary storage.
+         * @return A list of directories on the secondary storage.
          */
-        File[] getExternalFilesDirs();
+        @NonNull
+        List<File> getSecondaryStorageDownloadDirectories();
     }
 
     /**
@@ -68,18 +76,14 @@ public class DownloadDirectoryProvider {
         }
 
         @Override
-        public File[] getExternalFilesDirs() {
-            return ContextUtils.getApplicationContext().getExternalFilesDirs(
-                    Environment.DIRECTORY_DOWNLOADS);
+        public List<File> getSecondaryStorageDownloadDirectories() {
+            return DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories();
         }
     }
 
     /**
      * Asynchronous task to retrieve all download directories on a background thread. Only one task
      * can exist at the same time.
-     *
-     * The logic to retrieve directories should match
-     * {@link PathUtils#getAllPrivateDownloadsDirectories}.
      */
     private class AllDirectoriesTask extends AsyncTask<ArrayList<DirectoryOption>> {
         private DownloadDirectoryProvider.Delegate mDelegate;
@@ -109,18 +113,14 @@ public class DownloadDirectoryProvider {
 
             // Retrieve additional directories, i.e. the external SD card directory.
             mExternalStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-            File[] files = mDelegate.getExternalFilesDirs();
+            List<File> files = mDelegate.getSecondaryStorageDownloadDirectories();
 
-            if (files.length <= 1) return dirs;
-
+            if (files.isEmpty()) return dirs;
             boolean hasAddtionalDirectory = false;
-            for (int i = 0; i < files.length; ++i) {
-                if (files[i] == null) continue;
-
-                // Skip primary storage directory.
-                if (files[i].getAbsolutePath().contains(mExternalStorageDirectory)) continue;
+            for (File file : files) {
+                if (file == null) continue;
                 dirs.add(toDirectoryOption(
-                        files[i], DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL));
+                        file, DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL));
                 hasAddtionalDirectory = true;
             }
 
@@ -231,14 +231,18 @@ public class DownloadDirectoryProvider {
     }
 
     /**
-     * Get the primary download directory in public external storage. The directory will be created
-     * if it doesn't exist. Should be called on background thread.
+     * Get the primary download directory. Before Android Q, this is the public external download
+     * directory. Starting from Android Q, this is the app private download directory on primary
+     * storage.
+     * The directory will be created if it doesn't exist. Should be called on background thread.
      * @return The download directory. Can be an invalid directory if failed to create the
      *         directory.
      */
-    public static File getPrimaryDownloadDirectory() {
-        File downloadDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    public static @Nullable File getPrimaryDownloadDirectory() {
+        String primaryDownloadDir = PathUtils.getDownloadsDirectory();
+        if (TextUtils.isEmpty(primaryDownloadDir)) return null;
+
+        File downloadDir = new File(primaryDownloadDir);
 
         // Create the directory if needed.
         if (!downloadDir.exists()) {
@@ -252,17 +256,49 @@ public class DownloadDirectoryProvider {
     }
 
     /**
+     * Get download directories on secondary storage.
+     * @return A list of directories on the secondary storage.
+     */
+    public static List<File> getSecondaryStorageDownloadDirectories() {
+        // Starting from Android R, we use a different location for secondary storage.
+        String[] dirPaths;
+        ArrayList<File> files = new ArrayList<>();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            dirPaths = PathUtils.getExternalDownloadVolumesNames();
+            // getExternalDownloadVolumesNames() doesn't include dirs on primary storage.
+            for (String dir : dirPaths) files.add(new File(dir));
+        } else {
+            dirPaths = PathUtils.getAllPrivateDownloadsDirectories();
+            // The first element returned from getAllPrivateDownloadsDirectories() is on primary
+            // storage.
+            for (int i = 1; i < dirPaths.length; ++i) files.add(new File(dirPaths[i]));
+        }
+
+        return files;
+    }
+
+    /**
      * Returns whether the downloaded file path is on an external SD card.
      * @param filePath The download file path.
      */
     public static boolean isDownloadOnSDCard(String filePath) {
-        File[] dirs = ContextUtils.getApplicationContext().getExternalFilesDirs(
-                Environment.DIRECTORY_DOWNLOADS);
-        if (dirs.length <= 1 || TextUtils.isEmpty(filePath)) return false;
+        if (ContentUriUtils.isContentUri(filePath) || filePath == null) return false;
+
+        // Check private dirs on secondary storage. On Android R, there might be legacy downloads
+        // that use this path before the migration to getExternalDownloadVolumesNames().
+        String[] dirs = PathUtils.getAllPrivateDownloadsDirectories();
         for (int i = 1; i < dirs.length; ++i) {
-            if (dirs[i] == null) continue;
-            if (filePath.startsWith(dirs[i].getAbsolutePath())) return true;
+            if (filePath.startsWith(dirs[i])) return true;
         }
+
+        // Check directories returned from media volume API on R.
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
+            dirs = PathUtils.getExternalDownloadVolumesNames();
+            for (String dir : dirs) {
+                if (filePath.startsWith(dir)) return true;
+            }
+        }
+
         return false;
     }
 

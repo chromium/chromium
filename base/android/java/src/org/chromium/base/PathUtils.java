@@ -203,7 +203,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    private static @NonNull String getDownloadsDirectory() {
+    public static @NonNull String getDownloadsDirectory() {
         // TODO(crbug.com/508615): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (BuildInfo.isAtLeastQ()) {
@@ -213,7 +213,8 @@ public abstract class PathUtils {
                 // using Context.getExternalFilesDir() will return a path to sandboxed external
                 // storage for which no additional permissions are required.
                 String[] dirs = getAllPrivateDownloadsDirectories();
-                return getAllPrivateDownloadsDirectories().length == 0 ? "" : dirs[0];
+                assert dirs != null;
+                return dirs[0];
             }
             return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     .getPath();
@@ -226,17 +227,13 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    public static String[] getAllPrivateDownloadsDirectories() {
+    public static @NonNull String[] getAllPrivateDownloadsDirectories() {
         List<File> files = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                files = Arrays.asList(ContextUtils.getApplicationContext().getExternalFilesDirs(
-                        Environment.DIRECTORY_DOWNLOADS));
-            }
-        } else {
-            files.add(Environment.getExternalStorageDirectory());
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            File[] externalDirs = ContextUtils.getApplicationContext().getExternalFilesDirs(
+                    Environment.DIRECTORY_DOWNLOADS);
+            files = (externalDirs == null) ? files : Arrays.asList(externalDirs);
         }
-
         return toAbsolutePathStrings(files);
     }
 
@@ -248,7 +245,7 @@ public abstract class PathUtils {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
-    public static String[] getExternalDownloadVolumesNames() {
+    public static @NonNull String[] getExternalDownloadVolumesNames() {
         ArrayList<File> files = new ArrayList<>();
         Set<String> volumes =
                 MediaStore.getExternalVolumeNames(ContextUtils.getApplicationContext());
@@ -272,7 +269,7 @@ public abstract class PathUtils {
         return toAbsolutePathStrings(files);
     }
 
-    private static String[] toAbsolutePathStrings(List<File> files) {
+    private static @NonNull String[] toAbsolutePathStrings(@NonNull List<File> files) {
         ArrayList<String> absolutePaths = new ArrayList<String>();
         for (File file : files) {
             if (file == null || TextUtils.isEmpty(file.getAbsolutePath())) continue;
