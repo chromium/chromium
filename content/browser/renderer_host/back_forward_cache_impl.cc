@@ -238,8 +238,7 @@ void RestoreBrowserControlsState(RenderFrameHostImpl* cached_rfh) {
     // know, so that it then reacts correctly to the SHOW controls message
     // that might follow during DidCommitNavigation.
     cached_rfh->UpdateBrowserControlsState(
-        BrowserControlsState::BROWSER_CONTROLS_STATE_BOTH,
-        BrowserControlsState::BROWSER_CONTROLS_STATE_HIDDEN,
+        cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
         // Do not animate as we want this to happen "instantaneously"
         false);
   }

@@ -12,7 +12,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/browser_controls_state.h"
 #include "ui/android/resources/resource.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/view_android.h"

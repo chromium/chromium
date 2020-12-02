@@ -17,8 +17,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 

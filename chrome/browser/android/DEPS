@@ -1,6 +1,7 @@
 include_rules = [
   "-components/devtools_bridge",
   "+components/resources/android",
+  "+cc/input/browser_controls_state.h",
   "+cc/layers/layer.h",
   "+chrome/android/test_support_jni_headers",
   "+chrome/browser/web_share_target",

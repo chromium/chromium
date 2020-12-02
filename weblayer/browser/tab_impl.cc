@@ -639,11 +639,11 @@ void TabImpl::UpdateBrowserControlsConstraint(JNIEnv* env,
                                               jint constraint,
                                               jboolean animate) {
   current_browser_controls_visibility_constraint_ =
-      static_cast<content::BrowserControlsState>(constraint);
+      static_cast<cc::BrowserControlsState>(constraint);
   // Passing BOTH here means that it doesn't matter what state the controls are
   // currently in; don't change the current state unless it's incompatible with
   // the new constraint.
-  UpdateBrowserControlsState(content::BROWSER_CONTROLS_STATE_BOTH, animate);
+  UpdateBrowserControlsState(cc::BrowserControlsState::kBoth, animate);
 }
 
 ScopedJavaLocalRef<jstring> TabImpl::GetGuid(JNIEnv* env) {
@@ -694,9 +694,8 @@ TabImpl::ScreenShotErrors TabImpl::PrepareForCaptureScreenShot(
   return ScreenShotErrors::kNone;
 }
 
-void TabImpl::UpdateBrowserControlsState(
-    content::BrowserControlsState new_state,
-    bool animate) {
+void TabImpl::UpdateBrowserControlsState(cc::BrowserControlsState new_state,
+                                         bool animate) {
   if (base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest))
     animate = false;
   // The constraint is managed by Java code, so re-use the existing constraint
@@ -1062,7 +1061,7 @@ void TabImpl::EnterFullscreenModeForTab(
 #if defined(OS_ANDROID)
   // Make sure browser controls cannot show when the tab is fullscreen.
   SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
-                               content::BROWSER_CONTROLS_STATE_HIDDEN);
+                               cc::BrowserControlsState::kHidden);
 #endif
 }
 
@@ -1072,7 +1071,7 @@ void TabImpl::ExitFullscreenModeForTab(content::WebContents* web_contents) {
 #if defined(OS_ANDROID)
   // Attempt to show browser controls when exiting fullscreen.
   SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
-                               content::BROWSER_CONTROLS_STATE_BOTH);
+                               cc::BrowserControlsState::kBoth);
 #endif
 }
 
@@ -1194,7 +1193,7 @@ void TabImpl::OnFindResultAvailable(content::WebContents* web_contents) {
 #if defined(OS_ANDROID)
 void TabImpl::OnBrowserControlsStateStateChanged(
     ControlsVisibilityReason reason,
-    content::BrowserControlsState state) {
+    cc::BrowserControlsState state) {
   SetBrowserControlsConstraint(reason, state);
 }
 
@@ -1204,22 +1203,22 @@ void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
   // updateEnabledState() in Chrome's TabBrowserControlsConstraintsHelper.
   if (did_commit &&
       current_browser_controls_visibility_constraint_ ==
-          content::BROWSER_CONTROLS_STATE_SHOWN &&
+          cc::BrowserControlsState::kShown &&
       top_controls_container_view_ &&
       top_controls_container_view_->IsFullyVisible()) {
     // The top-control is fully visible, don't animate this else the controls
     // bounce around.
-    UpdateBrowserControlsState(content::BROWSER_CONTROLS_STATE_SHOWN, false);
+    UpdateBrowserControlsState(cc::BrowserControlsState::kShown, false);
   } else {
     if (did_commit && current_browser_controls_visibility_constraint_ ==
-                          content::BROWSER_CONTROLS_STATE_BOTH) {
-      // If the current state is BROWSER_CONTROLS_STATE_BOTH, then
+                          cc::BrowserControlsState::kBoth) {
+      // If the current state is kBoth, then
       // TabImpl::UpdateBrowserControlsState() is going to call
       // WebContents::UpdateBrowserControlsState() with both current and
-      // constraints set to BROWSER_CONTROLS_STATE_BOTH. cc does
+      // constraints set to kBoth. cc does
       // nothing in this case. During a navigation the top-view needs to be
       // shown. To force the top-view to show, supply
-      // BROWSER_CONTROLS_STATE_SHOWN. This path is only hit if top-view
+      // kShown. This path is only hit if top-view
       // is configured to only-expand-at-top, as in this case the top-view isn't
       // forced shown during a page load.
       //
@@ -1230,15 +1229,15 @@ void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
       const bool animate =
           !base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest);
       web_contents_->GetMainFrame()->UpdateBrowserControlsState(
-          content::BROWSER_CONTROLS_STATE_BOTH,
-          content::BROWSER_CONTROLS_STATE_SHOWN, animate);
+          cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kShown,
+          animate);
       // This falls through to call UpdateBrowserControlsState() again to
       // ensure the constraint is set back to BOTH.
     }
     UpdateBrowserControlsState(
-        content::BROWSER_CONTROLS_STATE_BOTH,
+        cc::BrowserControlsState::kBoth,
         current_browser_controls_visibility_constraint_ !=
-            content::BROWSER_CONTROLS_STATE_HIDDEN);
+            cc::BrowserControlsState::kHidden);
   }
 }
 
@@ -1273,10 +1272,10 @@ void TabImpl::UpdateRendererPrefs(bool should_sync_prefs) {
 #if defined(OS_ANDROID)
 void TabImpl::SetBrowserControlsConstraint(
     ControlsVisibilityReason reason,
-    content::BrowserControlsState constraint) {
+    cc::BrowserControlsState constraint) {
   Java_TabImpl_setBrowserControlsVisibilityConstraint(
       base::android::AttachCurrentThread(), java_impl_,
-      static_cast<int>(reason), constraint);
+      static_cast<int>(reason), static_cast<int>(constraint));
 }
 #endif
 

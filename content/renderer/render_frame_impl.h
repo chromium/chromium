@@ -31,6 +31,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_state.h"
 #include "content/common/buildflags.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/common/frame.mojom.h"
@@ -39,7 +40,6 @@
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/web_ui.mojom.h"
-#include "content/public/common/browser_controls_state.h"
 #include "content/public/common/fullscreen_video_element.mojom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
@@ -436,8 +436,8 @@ class CONTENT_EXPORT RenderFrameImpl
       GetCanonicalUrlForSharingCallback callback) override;
   void BlockRequests() override;
   void ResumeBlockedRequests() override;
-  void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                  BrowserControlsState current,
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
                                   bool animate) override;
   void SnapshotAccessibilityTree(
       uint32_t ax_mode,

@@ -2636,8 +2636,8 @@ void RenderFrameImpl::SwapIn() {
 }
 
 void RenderFrameImpl::UpdateBrowserControlsState(
-    BrowserControlsState constraints,
-    BrowserControlsState current,
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
     bool animate) {
   TRACE_EVENT2("renderer", "RenderFrameImpl::UpdateBrowserControlsState",
                "Constraint", static_cast<int>(constraints), "Current",
@@ -2647,22 +2647,8 @@ void RenderFrameImpl::UpdateBrowserControlsState(
 
   DCHECK(is_main_frame_);
 
-  // Check content::BrowserControlsState, and cc::BrowserControlsState
-  // are kept in sync.
-  static_assert(static_cast<int>(BROWSER_CONTROLS_STATE_SHOWN) ==
-                    static_cast<int>(cc::BrowserControlsState::kShown),
-                "mismatching enums: SHOWN");
-  static_assert(static_cast<int>(BROWSER_CONTROLS_STATE_HIDDEN) ==
-                    static_cast<int>(cc::BrowserControlsState::kHidden),
-                "mismatching enums: HIDDEN");
-  static_assert(static_cast<int>(BROWSER_CONTROLS_STATE_BOTH) ==
-                    static_cast<int>(cc::BrowserControlsState::kBoth),
-                "mismatching enums: BOTH");
-
   cc::LayerTreeHost* host = render_widget_->layer_tree_host();
-  host->UpdateBrowserControlsState(
-      static_cast<cc::BrowserControlsState>(constraints),
-      static_cast<cc::BrowserControlsState>(current), animate);
+  host->UpdateBrowserControlsState(constraints, current, animate);
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_state.h"
 #include "chrome/android/chrome_jni_headers/OverlayPanelContent_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -22,7 +23,6 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/browser_controls_state.h"
 #include "ui/android/view_android.h"
 
 using base::android::JavaParamRef;
@@ -150,12 +150,12 @@ void OverlayPanelContent::UpdateBrowserControlsState(
   if (!web_contents_)
     return;
 
-  content::BrowserControlsState state = content::BROWSER_CONTROLS_STATE_SHOWN;
+  cc::BrowserControlsState state = cc::BrowserControlsState::kShown;
   if (are_controls_hidden)
-    state = content::BROWSER_CONTROLS_STATE_HIDDEN;
+    state = cc::BrowserControlsState::kHidden;
 
   web_contents_->GetMainFrame()->UpdateBrowserControlsState(
-      state, content::BROWSER_CONTROLS_STATE_BOTH, false);
+      state, cc::BrowserControlsState::kBoth, false);
 }
 
 jlong JNI_OverlayPanelContent_Init(JNIEnv* env,

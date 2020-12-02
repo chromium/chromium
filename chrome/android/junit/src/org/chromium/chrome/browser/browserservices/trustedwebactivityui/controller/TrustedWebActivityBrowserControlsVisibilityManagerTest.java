@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -38,7 +39,6 @@ import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBui
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
-import org.chromium.content_public.common.BrowserControlsState;
 
 /**
  * Tests for {@link TrustedWebActivityBrowserControlsVisibilityManager}.

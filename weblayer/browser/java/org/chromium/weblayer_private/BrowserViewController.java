@@ -18,11 +18,11 @@ import android.widget.RelativeLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;

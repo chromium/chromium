@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "cc/input/browser_controls_state.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/browser_controls_state.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -51,36 +51,36 @@ bool IsSpokenFeedbackEnabled() {
 // This function is mostly similar to its corresponding Android one in Java code
 // (See TabStateBrowserControlsVisibilityDelegate#canAutoHideBrowserControls()
 // in TabStateBrowserControlsVisibilityDelegate.java).
-content::BrowserControlsState GetBrowserControlsStateConstraints(
+cc::BrowserControlsState GetBrowserControlsStateConstraints(
     content::WebContents* contents) {
   DCHECK(contents);
 
   if (!IsTabletModeEnabled() || contents->IsFullscreen() ||
       contents->IsFocusedElementEditable() || contents->IsBeingDestroyed() ||
       contents->IsCrashed() || IsSpokenFeedbackEnabled()) {
-    return content::BROWSER_CONTROLS_STATE_SHOWN;
+    return cc::BrowserControlsState::kShown;
   }
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   if (!entry || entry->GetPageType() != content::PAGE_TYPE_NORMAL)
-    return content::BROWSER_CONTROLS_STATE_SHOWN;
+    return cc::BrowserControlsState::kShown;
 
   const GURL& url = entry->GetURL();
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(chrome::kChromeNativeScheme) ||
       url.SchemeIs(extensions::kExtensionScheme)) {
-    return content::BROWSER_CONTROLS_STATE_SHOWN;
+    return cc::BrowserControlsState::kShown;
   }
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   if (profile && search::IsNTPOrRelatedURL(url, profile))
-    return content::BROWSER_CONTROLS_STATE_SHOWN;
+    return cc::BrowserControlsState::kShown;
 
   auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   switch (helper->GetSecurityLevel()) {
     case security_state::WARNING:
     case security_state::DANGEROUS:
-      return content::BROWSER_CONTROLS_STATE_SHOWN;
+      return cc::BrowserControlsState::kShown;
 
     // Force compiler failure if new security level types were added without
     // this being updated.
@@ -95,9 +95,9 @@ content::BrowserControlsState GetBrowserControlsStateConstraints(
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(contents);
   if (permission_manager && permission_manager->IsRequestInProgress())
-    return content::BROWSER_CONTROLS_STATE_SHOWN;
+    return cc::BrowserControlsState::kShown;
 
-  return content::BROWSER_CONTROLS_STATE_BOTH;
+  return cc::BrowserControlsState::kBoth;
 }
 
 // Triggers a visual properties synchrnoization event on |contents|' main
@@ -582,13 +582,13 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
 
   // If the omnibox is focused, then the top controls should be constrained to
   // remain fully shown until the omnibox is blurred.
-  const content::BrowserControlsState constraints_state =
+  const cc::BrowserControlsState constraints_state =
       observed_omni_box_ && observed_omni_box_->HasFocus()
-          ? content::BROWSER_CONTROLS_STATE_SHOWN
+          ? cc::BrowserControlsState::kShown
           : GetBrowserControlsStateConstraints(web_contents);
 
-  const content::BrowserControlsState current_state =
-      content::BROWSER_CONTROLS_STATE_SHOWN;
+  const cc::BrowserControlsState current_state =
+      cc::BrowserControlsState::kShown;
   main_frame->UpdateBrowserControlsState(constraints_state, current_state,
                                          animate);
 }

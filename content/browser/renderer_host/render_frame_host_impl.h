@@ -381,8 +381,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool HasTransientUserActivation() override;
   void NotifyUserActivation(
       blink::mojom::UserActivationNotificationType notification_type) override;
-  void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                  BrowserControlsState current,
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
                                   bool animate) override;
   bool Reload() override;
   bool IsDOMContentLoaded() override;

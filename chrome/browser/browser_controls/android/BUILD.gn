@@ -16,6 +16,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//cc:cc_java",
     "//chrome/browser/flags:java",
     "//components/browser_ui/util/android:java",
     "//content/public/android:content_java",
@@ -33,6 +34,7 @@ java_library("junit") {
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
+    "//cc:cc_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",

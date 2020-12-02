@@ -94,7 +94,6 @@ source_set("common_sources") {
 
   sources = [
     "bindings_policy.h",
-    "browser_controls_state.h",
     "cdm_info.h",
     "child_process_host.h",
     "child_process_host_delegate.h",
@@ -323,7 +322,6 @@ mojom("interfaces") {
   ]
 
   sources = [
-    "browser_controls_state.mojom",
     "drop_data.mojom",
     "fullscreen_video_element.mojom",
     "resource_usage_reporter.mojom",
@@ -355,17 +353,6 @@ mojom("interfaces") {
   component_deps = [ "//third_party/blink/public/common" ]
 
   cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "content.mojom.BrowserControlsState"
-          cpp = "::content::BrowserControlsState"
-        },
-      ]
-      traits_headers = [ "browser_controls_state.h" ]
-      traits_private_headers = _common_param_traits_headers
-      traits_deps = _common_param_traits_deps
-    },
     {
       types = [
         {

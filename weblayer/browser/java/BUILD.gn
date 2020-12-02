@@ -182,6 +182,7 @@ android_library("java") {
     ":weblayer_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//cc:cc_java",
     "//components/autofill/android/provider:java",
     "//components/browser_ui/banners/android:java",
     "//components/browser_ui/client_certificate/android:java",

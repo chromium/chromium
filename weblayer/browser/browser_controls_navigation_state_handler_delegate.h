@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_BROWSER_BROWSER_CONTROLS_NAVIGATION_STATE_HANDLER_DELEGATE_H_
 #define WEBLAYER_BROWSER_BROWSER_CONTROLS_NAVIGATION_STATE_HANDLER_DELEGATE_H_
 
-#include "content/public/common/browser_controls_state.h"
+#include "cc/input/browser_controls_state.h"
 
 namespace weblayer {
 
@@ -17,7 +17,7 @@ class BrowserControlsNavigationStateHandlerDelegate {
   // Called when the state changes.
   virtual void OnBrowserControlsStateStateChanged(
       ControlsVisibilityReason reason,
-      content::BrowserControlsState state) = 0;
+      cc::BrowserControlsState state) = 0;
 
   // Called when UpdateBrowserControlsState() should be called because a new
   // navigation started. This is necessary as the browser-controls state is

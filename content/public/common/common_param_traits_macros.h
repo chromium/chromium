@@ -9,7 +9,6 @@
 #define CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
-#include "content/public/common/browser_controls_state.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/webplugininfo_param_traits.h"
@@ -36,9 +35,6 @@
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
-
-IPC_ENUM_TRAITS_MAX_VALUE(content::BrowserControlsState,
-                          content::BROWSER_CONTROLS_STATE_LAST)
 
 IPC_ENUM_TRAITS_VALIDATE(ui::PageTransition,
                          ((value &

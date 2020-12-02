@@ -10,6 +10,7 @@ import android.os.Message;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -21,7 +22,6 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**

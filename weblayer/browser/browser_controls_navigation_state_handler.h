@@ -7,15 +7,15 @@
 
 #include "base/optional.h"
 #include "base/timer/timer.h"
+#include "cc/input/browser_controls_state.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/browser_controls_state.h"
 
 namespace weblayer {
 
 class BrowserControlsNavigationStateHandlerDelegate;
 
 // BrowserControlsNavigationStateHandler is responsible for the tracking the
-// value of content::BrowserControlsState as related to navigation state and
+// value of cc::BrowserControlsState as related to navigation state and
 // notifying the delegate when the state changes.
 //
 // This class is roughly a combination of TopControlsSliderControllerChromeOS
@@ -67,10 +67,10 @@ class BrowserControlsNavigationStateHandler
 
   // Calculates whether the renderer is available to control the browser
   // controls.
-  content::BrowserControlsState CalculateStateForReasonRendererAvailability();
+  cc::BrowserControlsState CalculateStateForReasonRendererAvailability();
 
   // Calculates the value of the ControlsVisibilityReason::kOther state.
-  content::BrowserControlsState CalculateStateForReasonOther();
+  cc::BrowserControlsState CalculateStateForReasonOther();
 
   bool IsRendererHungOrCrashed();
 
@@ -84,10 +84,9 @@ class BrowserControlsNavigationStateHandler
   base::OneShotTimer forced_show_during_load_timer_;
 
   // Last values supplied to the delegate.
-  content::BrowserControlsState last_renderer_availability_state_ =
-      content::BROWSER_CONTROLS_STATE_BOTH;
-  content::BrowserControlsState last_other_state_ =
-      content::BROWSER_CONTROLS_STATE_BOTH;
+  cc::BrowserControlsState last_renderer_availability_state_ =
+      cc::BrowserControlsState::kBoth;
+  cc::BrowserControlsState last_other_state_ = cc::BrowserControlsState::kBoth;
 
   // This is cached as WebContents::IsCrashed() does not always return the
   // right thing.

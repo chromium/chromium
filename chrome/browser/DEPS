@@ -1,5 +1,6 @@
 include_rules = [
   "+apps",
+  "+cc/input/browser_controls_state.h",
   "+cc/metrics",
   "+cc/paint",
   "+cc/test",

@@ -6,6 +6,7 @@
 #define CC_IPC_CC_PARAM_TRAITS_MACROS_H_
 
 #include "base/component_export.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/touch_action.h"
 #include "cc/trees/browser_controls_params.h"
@@ -33,5 +34,8 @@ IPC_STRUCT_TRAITS_BEGIN(cc::BrowserControlsParams)
   IPC_STRUCT_TRAITS_MEMBER(browser_controls_shrink_blink_size)
   IPC_STRUCT_TRAITS_MEMBER(only_expand_top_controls_at_page_top)
 IPC_STRUCT_TRAITS_END()
+
+IPC_ENUM_TRAITS_MAX_VALUE(cc::BrowserControlsState,
+                          cc::BrowserControlsState::kMaxValue)
 
 #endif  // CC_IPC_CC_PARAM_TRAITS_MACROS_H_

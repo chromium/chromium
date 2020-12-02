@@ -7,6 +7,10 @@ import("//skia/features.gni")
 
 import("//cc/cc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 cc_component("cc") {
   sources = [
     "benchmarks/benchmark_instrumentation.cc",
@@ -33,6 +37,7 @@ cc_component("cc") {
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
     "input/browser_controls_offset_manager_client.h",
+    "input/browser_controls_state.h",
     "input/compositor_input_interfaces.h",
     "input/input_handler.h",
     "input/layer_selection_bound.cc",
@@ -912,4 +917,20 @@ cc_test("cc_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("cc_android_java_enums_srcjar") {
+    sources = [ "//cc/input/browser_controls_state.h" ]
+  }
+
+  android_library("cc_java") {
+    # Right now, this only includes the Java switches. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
+    deps = [
+      "//base:base_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
+    ]
+  }
 }

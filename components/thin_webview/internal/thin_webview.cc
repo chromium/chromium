@@ -5,13 +5,13 @@
 #include "components/thin_webview/internal/thin_webview.h"
 
 #include "base/android/jni_android.h"
+#include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/thin_webview/internal/jni_headers/ThinWebViewImpl_jni.h"
 #include "components/thin_webview/thin_webview_initializer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/browser_controls_state.h"
 
 using base::android::JavaParamRef;
 using web_contents_delegate_android::WebContentsDelegateAndroid;
@@ -80,8 +80,8 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
 
   // Disable browser controls when used for thin webview.
   web_contents->GetMainFrame()->UpdateBrowserControlsState(
-      content::BROWSER_CONTROLS_STATE_HIDDEN,
-      content::BROWSER_CONTROLS_STATE_HIDDEN, false);
+      cc::BrowserControlsState::kHidden, cc::BrowserControlsState::kHidden,
+      false);
 }
 
 void ThinWebView::SizeChanged(JNIEnv* env,

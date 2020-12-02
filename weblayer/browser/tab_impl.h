@@ -14,10 +14,10 @@
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/browser_controls_state.h"
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/public/tab.h"
 
@@ -320,7 +320,7 @@ class TabImpl : public Tab,
       gfx::Rect* src_rect,
       gfx::Size* output_size);
 
-  void UpdateBrowserControlsState(content::BrowserControlsState new_state,
+  void UpdateBrowserControlsState(cc::BrowserControlsState new_state,
                                   bool animate);
 #endif
 
@@ -335,7 +335,7 @@ class TabImpl : public Tab,
   // BrowserControlsNavigationStateHandlerDelegate:
   void OnBrowserControlsStateStateChanged(
       ControlsVisibilityReason reason,
-      content::BrowserControlsState state) override;
+      cc::BrowserControlsState state) override;
   void OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
       bool did_commit) override;
 #endif
@@ -355,7 +355,7 @@ class TabImpl : public Tab,
 
 #if defined(OS_ANDROID)
   void SetBrowserControlsConstraint(ControlsVisibilityReason reason,
-                                    content::BrowserControlsState constraint);
+                                    cc::BrowserControlsState constraint);
 #endif
 
   void UpdateBrowserVisibleSecurityStateIfNecessary();
@@ -385,9 +385,8 @@ class TabImpl : public Tab,
   // visible, HIDDEN, if for example fullscreen is forcing the controls to be
   // hidden, or BOTH, if either state is viable (e.g. during normal browsing).
   // When BOTH, the actual current state could be showing or hidden.
-  content::BrowserControlsState
-      current_browser_controls_visibility_constraint_ =
-          content::BROWSER_CONTROLS_STATE_SHOWN;
+  cc::BrowserControlsState current_browser_controls_visibility_constraint_ =
+      cc::BrowserControlsState::kShown;
 
   std::map<std::string, std::unique_ptr<WebMessageHostFactoryProxy>>
       js_name_to_proxy_;

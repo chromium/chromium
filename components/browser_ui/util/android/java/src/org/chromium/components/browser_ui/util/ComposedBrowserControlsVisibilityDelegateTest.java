@@ -14,7 +14,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.common.BrowserControlsState;
+import org.chromium.cc.input.BrowserControlsState;
 
 /** Unit tests for {@link ComposedBrowserControlsVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)

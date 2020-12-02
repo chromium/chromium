@@ -4,11 +4,11 @@
 
 #include "chrome/browser/android/tab_browser_controls_constraints_helper.h"
 
+#include "cc/input/browser_controls_state.h"
 #include "chrome/android/chrome_jni_headers/TabBrowserControlsConstraintsHelper_jni.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/browser_controls_state.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -35,10 +35,10 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
     jint constraints,
     jint current,
     jboolean animate) {
-  content::BrowserControlsState constraints_state =
-      static_cast<content::BrowserControlsState>(constraints);
-  content::BrowserControlsState current_state =
-      static_cast<content::BrowserControlsState>(current);
+  cc::BrowserControlsState constraints_state =
+      static_cast<cc::BrowserControlsState>(constraints);
+  cc::BrowserControlsState current_state =
+      static_cast<cc::BrowserControlsState>(current);
 
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);

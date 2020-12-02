@@ -4,12 +4,12 @@
 
 module content.mojom;
 
+import "cc/mojom/browser_controls_state.mojom";
 import "content/common/frame_messages.mojom";
 import "content/common/native_types.mojom";
 import "content/common/navigation_client.mojom";
 import "content/common/navigation_params.mojom";
 import "content/common/web_ui.mojom";
-import "content/public/common/browser_controls_state.mojom";
 import "content/public/common/window_container_type.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -92,8 +92,8 @@ interface Frame {
   // Notifies the renderer whether hiding/showing the browser controls is
   // enabled, what the current state should be, and whether or not to
   // animate to the proper state.
-  UpdateBrowserControlsState(BrowserControlsState constraints,
-                             BrowserControlsState current,
+  UpdateBrowserControlsState(cc.mojom.BrowserControlsState constraints,
+                             cc.mojom.BrowserControlsState current,
                              bool animate);
 
   // Requests a one-time snapshot of the accessibility tree without enabling

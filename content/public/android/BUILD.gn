@@ -359,7 +359,6 @@ java_cpp_enum("content_public_android_java_enums_srcjar") {
     "//content/public/browser/invalidate_type.h",
     "//content/public/browser/navigation_controller.h",
     "//content/public/browser/visibility.h",
-    "//content/public/common/browser_controls_state.h",
     "//content/public/common/console_message_level.h",
   ]
 }

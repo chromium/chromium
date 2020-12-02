@@ -20,6 +20,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -62,7 +63,6 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 

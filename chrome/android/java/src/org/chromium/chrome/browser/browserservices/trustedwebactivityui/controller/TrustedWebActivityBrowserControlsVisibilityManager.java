@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices.trustedwebactivityui.control
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.webapps.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappExtras;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
-import org.chromium.content_public.common.BrowserControlsState;
 
 import javax.inject.Inject;
 

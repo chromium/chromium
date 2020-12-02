@@ -4387,8 +4387,8 @@ RenderWidgetHostViewBase* RenderFrameHostImpl::GetViewForAccessibility() {
 }
 
 void RenderFrameHostImpl::UpdateBrowserControlsState(
-    BrowserControlsState constraints,
-    BrowserControlsState current,
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
     bool animate) {
   if (frame_)
     frame_->UpdateBrowserControlsState(constraints, current, animate);

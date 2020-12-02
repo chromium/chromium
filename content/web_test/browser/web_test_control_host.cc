@@ -597,7 +597,8 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   // TODO(danakj): We no longer run web tests on android, and this is an android
   // feature, so maybe this isn't needed anymore.
   main_window_->web_contents()->GetMainFrame()->UpdateBrowserControlsState(
-      BROWSER_CONTROLS_STATE_BOTH, BROWSER_CONTROLS_STATE_HIDDEN, false);
+      cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kHidden,
+      false);
 
   // We did not track the |main_window_| RenderFrameHost during the creation of
   // |main_window_|, since we need the pointer value in this class set first. So

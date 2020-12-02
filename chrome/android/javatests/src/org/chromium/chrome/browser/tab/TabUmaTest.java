@@ -22,6 +22,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -31,7 +32,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.DataOutputStream;

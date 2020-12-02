@@ -23,6 +23,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "browser_controls_params.mojom",
+    "browser_controls_state.mojom",
     "overscroll_behavior.mojom",
     "render_frame_metadata.mojom",
     "touch_action.mojom",
@@ -39,6 +40,16 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   shared_typemap = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.BrowserControlsState"
+          cpp = "::cc::BrowserControlsState"
+        },
+      ]
+      traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
+      traits_public_deps = [ "//cc/ipc" ]
+    },
     {
       types = [
         {

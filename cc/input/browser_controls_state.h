@@ -7,7 +7,14 @@
 
 namespace cc {
 
-enum class BrowserControlsState { kShown = 1, kHidden = 2, kBoth = 3 };
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.cc.input
+enum class BrowserControlsState {
+  kShown = 1,
+  kHidden = 2,
+  kBoth = 3,
+  kMaxValue = kBoth
+};
 
 }  // namespace cc
 

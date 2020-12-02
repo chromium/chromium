@@ -5,7 +5,7 @@
 package org.chromium.components.browser_ui.util;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.content_public.common.BrowserControlsState;
+import org.chromium.cc.input.BrowserControlsState;
 
 /**
  * A delegate to determine visibility of the browser controls.
