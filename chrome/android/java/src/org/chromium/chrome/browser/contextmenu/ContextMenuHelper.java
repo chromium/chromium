@@ -8,11 +8,14 @@ import android.util.Pair;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -30,6 +33,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class ContextMenuHelper {
     public static Callback<RevampedContextMenuCoordinator> sRevampedContextMenuShownCallback;
+
+    private static final String TAG = "ContextMenuHelper";
+
+    private boolean mDismissedFromHere;
 
     private final WebContents mWebContents;
     private long mNativeContextMenuHelper;
@@ -62,6 +69,9 @@ public class ContextMenuHelper {
     @CalledByNative
     private void destroy() {
         if (mCurrentContextMenu != null) {
+            Thread.dumpStack();
+            Log.i(TAG, "Dismissing context menu " + mCurrentContextMenu);
+            mDismissedFromHere = true;
             mCurrentContextMenu.dismiss();
             mCurrentContextMenu = null;
         }
@@ -73,6 +83,12 @@ public class ContextMenuHelper {
     @CalledByNative
     private void setPopulatorFactory(ContextMenuPopulatorFactory populatorFactory) {
         if (mCurrentContextMenu != null) {
+            // TODO(crbug.com/1154731): Clean the debugging statements once we figure out the cause
+            // of the crash.
+            Thread.dumpStack();
+            Log.i(TAG, "Dismissing context menu " + mCurrentContextMenu);
+            mDismissedFromHere = true;
+
             mCurrentContextMenu.dismiss();
             mCurrentContextMenu = null;
         }
@@ -110,6 +126,37 @@ public class ContextMenuHelper {
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
         mCallback = (result) -> {
+            if (mCurrentPopulator == null) {
+                Log.i(TAG, "mCurrentPopulator was null when mCallback was called.");
+                Log.i(TAG, "mCurrentContextMenu is " + mCurrentContextMenu);
+                Log.i(TAG,
+                        "ContextMenuHelper is " + (mNativeContextMenuHelper == 0 ? "" : "NOT")
+                                + " destroyed.");
+                Log.i(TAG,
+                        "Context menu was "
+                                + (mCurrentContextMenu != null && mCurrentContextMenu.isDismissed()
+                                                ? ""
+                                                : "NOT")
+                                + " dismissed.");
+
+                Throwable throwable = new Throwable(
+                        "This is not a crash. See https://crbug.com/1153706 for details."
+                        + "\nmCurrentContextMenu is " + mCurrentContextMenu
+                        + "\nmCurrentPopulator was null when mCallback was called."
+                        + "\nContextMenuHelper is " + (mNativeContextMenuHelper == 0 ? "" : "NOT")
+                        + " destroyed."
+                        + "\nContext menu was "
+                        + (mCurrentContextMenu != null && mCurrentContextMenu.isDismissed() ? ""
+                                                                                            : "NOT")
+                        + " dismissed."
+                        + "\nContext menu was " + (mDismissedFromHere ? "" : "NOT")
+                        + " dismissed by ContextMenuHelper.");
+                PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        () -> PureJavaExceptionReporter.reportJavaException(throwable));
+
+                return;
+            }
+
             mSelectedItemBeforeDismiss = true;
             mCurrentPopulator.onItemSelected(result);
         };
@@ -124,6 +171,9 @@ public class ContextMenuHelper {
             }
         };
         mOnMenuClosed = () -> {
+            Log.i(TAG, "mCurrentPopulator was " + mCurrentPopulator + " when the menu closed.");
+            Log.i(TAG, "mCurrentContextMenu was " + mCurrentContextMenu + " when the menu closed.");
+
             recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss);
             mCurrentContextMenu = null;
             if (mCurrentNativeDelegate != null) {
