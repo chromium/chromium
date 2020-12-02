@@ -326,7 +326,7 @@ async function testRestore(done) {
 /**
  * Test removeOldEntries_().
  *
- * @suppress {accessControls} Access removeOldItems_() and inProgress_().
+ * @suppress {accessControls} Access removeOldItems_() and inProgress_.
  */
 async function testRemoveOldItems_(done) {
   const trash = new Trash();
@@ -343,6 +343,10 @@ async function testRemoveOldItems_(done) {
   const file5 = MockFileEntry.create(fs, '/dir/file5', null, new Blob(['f5']));
   const file6 = MockFileEntry.create(fs, '/dir/file6', null, new Blob(['f6']));
 
+  // Get TrashConfig.
+  const config = trash.shouldMoveToTrash(volumeManager, fs.root);
+  assert(config);
+
   // Move files to trash.
   for (const f of [file1, file2, file3, file4, file5, file6]) {
     await trash.removeFileOrDirectory(volumeManager, f, deletePermanently);
@@ -357,8 +361,7 @@ async function testRemoveOldItems_(done) {
   // Files that are write-in-progress with no DeletionDate should be ignored.
   fs.entries['/.Trash/info/file1.trashinfo'].content =
       new Blob(['no-deletion-date']);
-  trash.inProgress_.add(
-      `${fs.entries['/.Trash/info'].toURL()}/file1.trashinfo`);
+  trash.inProgress_.set('downloads-/', new Set(['file1.trashinfo']));
   delete fs.entries['/.Trash/files/file1'];
   // Files without a matching file in .Trash/files should be deleted.
   delete fs.entries['/.Trash/files/file2'];
@@ -373,7 +376,7 @@ async function testRemoveOldItems_(done) {
 
   const trashDirs =
       new TrashDirs(fs.entries['/.Trash/files'], fs.entries['/.Trash/info']);
-  await trash.removeOldItems_(trashDirs, now);
+  await trash.removeOldItems_(trashDirs, config, now);
   assertTrue(!!fs.entries['/']);
   assertTrue(!!fs.entries['/.Trash']);
   assertTrue(!!fs.entries['/.Trash/files']);
@@ -387,18 +390,18 @@ async function testRemoveOldItems_(done) {
   // Items older than 30d should be deleted.
   const daysAgo29 = now + (29 * 24 * 60 * 60 * 1000);
   const daysAgo31 = now + (31 * 24 * 60 * 60 * 1000);
-  await trash.removeOldItems_(trashDirs, daysAgo29);
+  await trash.removeOldItems_(trashDirs, config, daysAgo29);
   assertEquals(8, Object.keys(fs.entries).length);
 
-  await trash.removeOldItems_(trashDirs, daysAgo31);
+  await trash.removeOldItems_(trashDirs, config, daysAgo31);
   assertTrue(!!fs.entries['/.Trash/info/file1.trashinfo']);
   assertFalse(!!fs.entries['/.Trash/info/file5.trashinfo']);
   assertFalse(!!fs.entries['/.Trash/files/file5']);
   assertEquals(6, Object.keys(fs.entries).length);
 
-  trash.inProgress_.delete(
-      `${fs.entries['/.Trash/info'].toURL()}/file1.trashinfo`);
-  await trash.removeOldItems_(trashDirs, daysAgo31);
+  // trashinfo with no matching file, and not in-progress should be deleted.
+  trash.inProgress_.get('downloads-/').delete('file1.trashinfo');
+  await trash.removeOldItems_(trashDirs, config, daysAgo31);
   assertFalse(!!fs.entries['/.Trash/info/file1.trashinfo']);
   assertEquals(5, Object.keys(fs.entries).length);
 

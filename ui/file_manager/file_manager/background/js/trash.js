@@ -32,21 +32,22 @@ class TrashItem {
 class Trash {
   constructor() {
     /**
-     * Store TrashDirs to avoid repeated lookup.
+     * Store TrashDirs to avoid repeated lookup, keyed by TrashConfig.id.
      * @private {!Object<string, !TrashDirs>}
      * @const
      */
     this.trashDirs_ = {};
 
     /**
-     * Set of in-progress deletes. Items in this list are ignored by
-     * removeOldItems_(). Use getInProgressKey_() to create a globally unique
-     * key.
+     * Set of in-progress deletes, keyed by TrashConfig.id with Set containing
+     * *.trashinfo filename. Items in this list are ignored by
+     * removeOldItems_(). Each Set entry is removed once removeOldItems_() runs
+     * for the related TrashConfig.
      *
-     * @private {!Set<string>}
+     * @private {!Map<string, Set<string>>}
      * @const
      */
-    this.inProgress_ = new Set();
+    this.inProgress_ = new Map(TrashConfig.CONFIG.map(c => [c.id, new Set()]));
   }
 
   /**
@@ -139,7 +140,10 @@ class Trash {
     trashDirs = await TrashDirs.getTrashDirs(entry.filesystem, config);
 
     // Check and remove old items max once per session.
-    this.removeOldItems_(trashDirs, Date.now());
+    this.removeOldItems_(trashDirs, config, Date.now()).then(() => {
+      // In-progress set is not required after removeOldItems_() runs.
+      this.inProgress_.delete(config.id);
+    });
     this.trashDirs_[config.id] = trashDirs;
     return trashDirs;
   }
@@ -189,16 +193,6 @@ class Trash {
   }
 
   /**
-   * Gets a globally unique key to use in the in-progress set.
-   *
-   * @param {!DirectoryEntry} trashInfoDir /.Trash/info directory.
-   * @param {string} trashInfoName name of the *.trashinfo file.
-   */
-  getInProgressKey_(trashInfoDir, trashInfoName) {
-    return `${trashInfoDir.toURL()}/${trashInfoName}`;
-  }
-
-  /**
    * Move a file or a directory to the trash.
    *
    * @param {!Entry} entry The entry to remove.
@@ -215,12 +209,13 @@ class Trash {
     // Write trashinfo first, then only move file if info write succeeds.
     // If any step fails, the file will be unchanged, and any partial trashinfo
     // file created will be cleaned up when we remove old items.
-    const inProgressKey = this.getInProgressKey_(trashDirs.info, trashInfoName);
-    this.inProgress_.add(inProgressKey);
+    const inProgress = this.inProgress_.get(config.id);
+    if (inProgress) {
+      inProgress.add(trashInfoName);
+    }
     const infoEntry = await this.writeTrashInfoFile_(
         trashDirs.info, trashInfoName, config.pathPrefix + entry.fullPath);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
-    this.inProgress_.delete(inProgressKey);
     return new TrashItem(entry.name, filesEntry, infoEntry, config.pathPrefix);
   }
 
@@ -269,9 +264,10 @@ class Trash {
   /**
    * Remove any items from trash older than 30d.
    * @param {!TrashDirs} trashDirs
+   * @param {!TrashConfig} config trash config for entry.
    * @param {number} now Current time in milliseconds from epoch.
    */
-  async removeOldItems_(trashDirs, now) {
+  async removeOldItems_(trashDirs, config, now) {
     const ls = (reader) => {
       return new Promise((resolve, reject) => {
         reader.readEntries(results => resolve(results), error => reject(error));
@@ -324,8 +320,8 @@ class Trash {
           }
 
           // Ignore any in-progress files.
-          if (this.inProgress_.has(
-                  this.getInProgressKey_(trashDirs.info, entry.name))) {
+          const inProgress = this.inProgress_.get(config.id);
+          if (inProgress && inProgress.has(entry.name)) {
             console.log(`Ignoring write in progress ${entry.toURL()}`);
             continue;
           }
