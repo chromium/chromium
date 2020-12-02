@@ -527,6 +527,11 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
     return;
   }
 
+  if (!gfx::Rect(pic_size).Contains(*visible_rect)) {
+    client_->OnBackendError();
+    return;
+  }
+
   auto ctrl = device_->GetCtrl(V4L2_CID_MIN_BUFFERS_FOR_CAPTURE);
   constexpr size_t DEFAULT_NUM_OUTPUT_BUFFERS = 7;
   const size_t num_output_buffers =
