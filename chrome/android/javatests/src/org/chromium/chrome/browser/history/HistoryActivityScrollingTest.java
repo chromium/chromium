@@ -156,7 +156,7 @@ public class HistoryActivityScrollingTest {
         mTestObserver = new TestObserver();
         mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
         mAdapter.registerAdapterDataObserver(mTestObserver);
-        mRecyclerView = activity.findViewById(R.id.recycler_view);
+        mRecyclerView = activity.findViewById(R.id.selectable_list_recycler_view);
     }
 
     @Test

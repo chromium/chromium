@@ -50,9 +50,9 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
-  </issue> 
-  <!-- Androidx InvalidSetHasFixedSize lint check is buggy. crbug.com/1151562 -->
-  <issue id="InvalidSetHasFixedSize" severity="ignore"/>
+  </issue>
+  <!-- InvalidSetHasFixedSize should not be disabled. If the check fails, check that
+    RecyclerViews which set RecyclerView#setHasFixedSize(true) have a globally unique id. -->
   <issue id="InvalidVectorPath" severity="ignore"/>
   <issue id="LogConditional" severity="ignore"/>
   <issue id="LongLogTag" severity="ignore"/>

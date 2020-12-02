@@ -146,14 +146,15 @@ public class SelectableListLayout<E>
         mAdapter = adapter;
 
         if (recyclerView == null) {
-            mRecyclerView = findViewById(R.id.recycler_view);
+            mRecyclerView = findViewById(R.id.selectable_list_recycler_view);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         } else {
             mRecyclerView = recyclerView;
 
             // Replace the inflated recycler view with the one supplied to this method.
             FrameLayout contentView = findViewById(R.id.list_content);
-            RecyclerView existingView = contentView.findViewById(R.id.recycler_view);
+            RecyclerView existingView =
+                    contentView.findViewById(R.id.selectable_list_recycler_view);
             contentView.removeView(existingView);
             contentView.addView(mRecyclerView, 0);
         }

@@ -145,7 +145,7 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
     }
 
     private RecyclerView getRecyclerView() {
-        return (RecyclerView) mDialog.findViewById(R.id.recycler_view);
+        return (RecyclerView) mDialog.findViewById(R.id.selectable_list_recycler_view);
     }
 
     /**

@@ -299,7 +299,7 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
 
         View customView = LayoutInflater.from(activity).inflate(
                 R.layout.language_ask_prompt_content, null, false);
-        RecyclerView list = customView.findViewById(R.id.recycler_view);
+        RecyclerView list = customView.findViewById(R.id.language_ask_prompt_content_recycler_view);
         LanguageItemAdapter adapter = new LanguageItemAdapter(activity, mLanguagesUpdate);
         list.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(activity);

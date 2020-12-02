@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/language_ask_prompt_content_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

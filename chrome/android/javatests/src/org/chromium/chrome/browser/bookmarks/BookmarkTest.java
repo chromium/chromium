@@ -217,7 +217,8 @@ public class BookmarkTest {
     private void openBookmarkManager() throws InterruptedException {
         if (mActivityTestRule.getActivity().isTablet()) {
             mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
-            mItemsContainer = mActivityTestRule.getActivity().findViewById(R.id.recycler_view);
+            mItemsContainer = mActivityTestRule.getActivity().findViewById(
+                    R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
             mManager = ((BookmarkPage) mActivityTestRule.getActivity()
                                 .getActivityTab()
@@ -229,7 +230,7 @@ public class BookmarkTest {
                     InstrumentationRegistry.getInstrumentation(), BookmarkActivity.class,
                     new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
                             mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
-            mItemsContainer = mBookmarkActivity.findViewById(R.id.recycler_view);
+            mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
             mManager = mBookmarkActivity.getManagerForTesting();
         }
