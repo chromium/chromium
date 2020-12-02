@@ -28,8 +28,11 @@ void AXRelationCache::DoInitialDocumentScan() {
     // document are created, e.g. in the devtools accessibility panel.
     // Defers adding aria-owns targets as children of their new parents,
     // and to the relation cache, until the appropriate document lifecycle.
+#if DCHECK_IS_ON()
+    DCHECK(document.Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
+        << "Unclean document at lifecycle " << document.Lifecycle().ToString();
+#endif
     if (element.FastHasAttribute(html_names::kAriaOwnsAttr)) {
-      // FIXME(accessibility) This can be a dangerous time to GetOrCreate().
       if (AXObject* owner = GetOrCreate(&element)) {
         owner_ids_to_update_.insert(owner->AXObjectID());
       }
