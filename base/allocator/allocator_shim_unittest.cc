@@ -550,6 +550,23 @@ TEST_F(AllocatorShimTest, InterceptCppSymbols) {
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
 
+// PartitionAlloc disallows large allocations to avoid errors with int
+// overflows.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+struct TooLarge {
+  char padding1[1UL << 31];
+  int padding2;
+};
+
+TEST_F(AllocatorShimTest, NewNoThrowTooLarge) {
+  char* too_large_array = new (std::nothrow) char[(1UL << 31) + 100];
+  EXPECT_EQ(nullptr, too_large_array);
+
+  TooLarge* too_large_struct = new (std::nothrow) TooLarge;
+  EXPECT_EQ(nullptr, too_large_struct);
+}
+#endif
+
 // This test exercises the case of concurrent OOM failure, which would end up
 // invoking std::new_handler concurrently. This is to cover the CallNewHandler()
 // paths of allocator_shim.cc and smoke-test its thread safey.

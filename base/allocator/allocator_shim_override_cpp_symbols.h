@@ -71,12 +71,12 @@ SHIM_ALWAYS_EXPORT void operator delete[](void* p) __THROW {
 
 SHIM_ALWAYS_EXPORT void* operator new(size_t size,
                                       const std::nothrow_t&) __THROW {
-  return ShimCppNew(size);
+  return ShimCppNewNoThrow(size);
 }
 
 SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
                                         const std::nothrow_t&) __THROW {
-  return ShimCppNew(size);
+  return ShimCppNewNoThrow(size);
 }
 
 SHIM_ALWAYS_EXPORT void operator delete(void* p, const std::nothrow_t&) __THROW {

@@ -149,6 +149,15 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
   return ptr;
 }
 
+ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
+  void* context = nullptr;
+#if defined(OS_APPLE)
+  context = malloc_default_zone();
+#endif
+  const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->alloc_unchecked_function(chain_head, size, context);
+}
+
 ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
