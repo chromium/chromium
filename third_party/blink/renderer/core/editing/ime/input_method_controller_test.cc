@@ -32,6 +32,8 @@ namespace blink {
 
 class InputMethodControllerTest : public EditingTestBase {
  protected:
+  enum SelectionType { kNoSelection, kCaretSelection, kRangeSelection };
+
   InputMethodController& Controller() {
     return GetFrame().GetInputMethodController();
   }

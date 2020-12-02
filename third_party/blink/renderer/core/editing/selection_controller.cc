@@ -1293,18 +1293,16 @@ void SelectionController::NotifySelectionChanged() {
 
   const SelectionInDOMTree& selection =
       this->Selection().GetSelectionInDOMTree();
-  switch (selection.Type()) {
-    case kNoSelection:
-      selection_state_ = SelectionState::kHaveNotStartedSelection;
-      return;
-    case kCaretSelection:
-      selection_state_ = SelectionState::kPlacedCaret;
-      return;
-    case kRangeSelection:
-      selection_state_ = SelectionState::kExtendedSelection;
-      return;
+  if (selection.IsNone()) {
+    selection_state_ = SelectionState::kHaveNotStartedSelection;
+    return;
   }
-  NOTREACHED() << "We should handle all SelectionType" << selection;
+  if (selection.IsCaret()) {
+    selection_state_ = SelectionState::kPlacedCaret;
+    return;
+  }
+  DCHECK(selection.IsRange()) << selection;
+  selection_state_ = SelectionState::kExtendedSelection;
 }
 
 FrameSelection& SelectionController::Selection() const {

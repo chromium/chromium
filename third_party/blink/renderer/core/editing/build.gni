@@ -262,7 +262,6 @@ blink_core_sources_editing = [
   "selection_strategy.h",
   "selection_template.cc",
   "selection_template.h",
-  "selection_type.h",
   "serializers/create_markup_options.cc",
   "serializers/create_markup_options.h",
   "serializers/html_interchange.cc",

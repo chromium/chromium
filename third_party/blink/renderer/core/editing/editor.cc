@@ -886,7 +886,7 @@ void Editor::SetMarkedTextMatchesAreHighlighted(bool flag) {
 void Editor::RespondToChangedSelection() {
   GetSpellChecker().RespondToChangedSelection();
   frame_->Client()->DidChangeSelection(
-      GetFrameSelection().GetSelectionInDOMTree().Type() != kRangeSelection);
+      !GetFrameSelection().GetSelectionInDOMTree().IsRange());
   SetStartNewKillRingSequence(true);
 }
 
