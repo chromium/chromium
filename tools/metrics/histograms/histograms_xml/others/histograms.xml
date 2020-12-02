@@ -17134,6 +17134,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Webapp.Update.ManifestUpdateResult.DefaultApp"
+    enum="WebAppManifestUpdateResult" expires_after="M92">
+  <owner>alancutter@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Identical to Webapp.Update.ManifestUpdateResult but restricted to just
+    default installed web apps.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
     enum="WebAppUrlLoaderResult" expires_after="2021-05-02">
   <owner>qjw@chromium.org</owner>

@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,17 +61,17 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
   }
 
   if (app_id.empty() || !registrar_->IsLocallyInstalled(app_id)) {
-    NotifyResult(url, ManifestUpdateResult::kNoAppInScope);
+    NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }
 
   if (system_web_app_manager_->IsSystemWebApp(app_id)) {
-    NotifyResult(url, ManifestUpdateResult::kAppIsSystemWebApp);
+    NotifyResult(url, app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
   }
 
   if (registrar_->IsPlaceholderApp(app_id)) {
-    NotifyResult(url, ManifestUpdateResult::kAppIsPlaceholder);
+    NotifyResult(url, app_id, ManifestUpdateResult::kAppIsPlaceholder);
     return;
   }
 
@@ -79,7 +79,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
 
   if (!MaybeConsumeUpdateCheck(url.GetOrigin(), app_id)) {
-    NotifyResult(url, ManifestUpdateResult::kThrottled);
+    NotifyResult(url, app_id, ManifestUpdateResult::kThrottled);
     return;
   }
 
@@ -98,7 +98,8 @@ void ManifestUpdateManager::OnWebAppUninstalled(const AppId& app_id) {
 
   auto it = tasks_.find(app_id);
   if (it != tasks_.end()) {
-    NotifyResult(it->second->url(), ManifestUpdateResult::kAppUninstalled);
+    NotifyResult(it->second->url(), app_id,
+                 ManifestUpdateResult::kAppUninstalled);
     tasks_.erase(it);
   }
   DCHECK(!tasks_.contains(app_id));
@@ -141,7 +142,7 @@ void ManifestUpdateManager::SetLastUpdateCheckTime(const GURL& origin,
 void ManifestUpdateManager::OnUpdateStopped(const ManifestUpdateTask& task,
                                             ManifestUpdateResult result) {
   DCHECK_EQ(&task, tasks_[task.app_id()].get());
-  NotifyResult(task.url(), result);
+  NotifyResult(task.url(), task.app_id(), result);
   tasks_.erase(task.app_id());
 }
 
@@ -152,11 +153,17 @@ void ManifestUpdateManager::SetResultCallbackForTesting(
 }
 
 void ManifestUpdateManager::NotifyResult(const GURL& url,
+                                         const AppId& app_id,
                                          ManifestUpdateResult result) {
   // Don't log kNoAppInScope because it will be far too noisy (most page loads
   // will hit it).
   if (result != ManifestUpdateResult::kNoAppInScope) {
-    UMA_HISTOGRAM_ENUMERATION("Webapp.Update.ManifestUpdateResult", result);
+    base::UmaHistogramEnumeration("Webapp.Update.ManifestUpdateResult", result);
+    if (registrar_->HasExternalAppWithInstallSource(
+            app_id, ExternalInstallSource::kExternalDefault)) {
+      base::UmaHistogramEnumeration(
+          "Webapp.Update.ManifestUpdateResult.DefaultApp", result);
+    }
   }
   if (result_callback_for_testing_)
     std::move(result_callback_for_testing_).Run(url, result);

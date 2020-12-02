@@ -79,7 +79,9 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                               base::Time time);
   void OnUpdateStopped(const ManifestUpdateTask& task,
                        ManifestUpdateResult result);
-  void NotifyResult(const GURL& url, ManifestUpdateResult result);
+  void NotifyResult(const GURL& url,
+                    const AppId& app_id,
+                    ManifestUpdateResult result);
 
   AppRegistrar* registrar_ = nullptr;
   AppIconManager* icon_manager_ = nullptr;
