@@ -4998,7 +4998,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.WebSocket.CloseCode" enum="WebSocketCloseCode"
-    expires_after="2020-12-01">
+    expires_after="2021-07-01">
   <owner>ricea@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
