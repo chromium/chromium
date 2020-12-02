@@ -108,12 +108,14 @@ void WebAppInternalsPageHandlerImpl::GetPreinstalledWebAppDebugInfo(
     info->disabled_configs.push_back(std::move(disabled_config_info));
   }
 
-  for (std::pair<const GURL&, const web_app::InstallResultCode&>
+  for (std::pair<const GURL&, const web_app::PendingAppManager::InstallResult&>
            install_result : debug_info->install_results) {
     auto install_result_info = mojom::web_app_internals::InstallResult::New();
     install_result_info->install_url = install_result.first.spec();
     install_result_info->install_result_code =
-        ConvertToString(install_result.second);
+        ConvertToString(install_result.second.code);
+    install_result_info->did_uninstall_and_replace =
+        install_result.second.did_uninstall_and_replace;
     info->install_results.push_back(std::move(install_result_info));
   }
 

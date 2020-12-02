@@ -38,18 +38,23 @@ enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 // should wait for the update request to finish before uninstalling the app.
 class PendingAppManager {
  public:
+  struct InstallResult {
+    InstallResultCode code;
+    bool did_uninstall_and_replace = false;
+    bool operator==(const InstallResult& other) const;
+  };
+
   using OnceInstallCallback =
-      base::OnceCallback<void(const GURL& app_url, InstallResultCode code)>;
+      base::OnceCallback<void(const GURL& app_url, InstallResult result)>;
   using RepeatingInstallCallback =
-      base::RepeatingCallback<void(const GURL& app_url,
-                                   InstallResultCode code)>;
+      base::RepeatingCallback<void(const GURL& app_url, InstallResult result)>;
   using RegistrationCallback =
       base::RepeatingCallback<void(const GURL& launch_url,
                                    RegistrationResultCode code)>;
   using UninstallCallback =
       base::RepeatingCallback<void(const GURL& app_url, bool succeeded)>;
   using SynchronizeCallback =
-      base::OnceCallback<void(std::map<GURL, InstallResultCode> install_results,
+      base::OnceCallback<void(std::map<GURL, InstallResult> install_results,
                               std::map<GURL, bool> uninstall_results)>;
 
   PendingAppManager();
@@ -144,14 +149,14 @@ class PendingAppManager {
 
     SynchronizeCallback callback;
     int remaining_requests;
-    std::map<GURL, InstallResultCode> install_results;
+    std::map<GURL, InstallResult> install_results;
     std::map<GURL, bool> uninstall_results;
 
   };
 
   void InstallForSynchronizeCallback(ExternalInstallSource source,
                                      const GURL& app_url,
-                                     InstallResultCode code);
+                                     PendingAppManager::InstallResult result);
   void UninstallForSynchronizeCallback(ExternalInstallSource source,
                                        const GURL& app_url,
                                        bool succeeded);

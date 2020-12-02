@@ -716,16 +716,17 @@ void SystemWebAppManager::RecordSystemWebAppInstallDuration(
 }
 
 void SystemWebAppManager::RecordSystemWebAppInstallResults(
-    const std::map<GURL, InstallResultCode>& install_results) const {
+    const std::map<GURL, PendingAppManager::InstallResult>& install_results)
+    const {
   // Report install result codes. Exclude kSuccessAlreadyInstalled from metrics.
   // This result means the installation pipeline is a no-op (which happens every
   // time user logs in, and if there hasn't been a version upgrade). This skews
   // the install success rate.
-  std::map<GURL, InstallResultCode> results_to_report;
+  std::map<GURL, PendingAppManager::InstallResult> results_to_report;
   std::copy_if(install_results.begin(), install_results.end(),
                std::inserter(results_to_report, results_to_report.end()),
                [](const auto& url_and_result) {
-                 return url_and_result.second !=
+                 return url_and_result.second.code !=
                         InstallResultCode::kSuccessAlreadyInstalled;
                });
 
@@ -735,14 +736,14 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
         kInstallResultHistogramName,
         shutting_down_
             ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
-            : url_and_result.second);
+            : url_and_result.second.code);
 
     // Record per-profile result.
     base::UmaHistogramEnumeration(
         install_result_per_profile_histogram_name_,
         shutting_down_
             ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
-            : url_and_result.second);
+            : url_and_result.second.code);
   }
 
   // Record per-app result.
@@ -757,7 +758,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
           app_histogram_name,
           shutting_down_
               ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
-              : url_and_result->second);
+              : url_and_result->second.code);
     }
   }
 }
@@ -765,7 +766,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
 void SystemWebAppManager::OnAppsSynchronized(
     bool did_force_install_apps,
     const base::TimeTicks& install_start_time,
-    std::map<GURL, InstallResultCode> install_results,
+    std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   // TODO(crbug.com/1053371): Clean up File Handler install. We install SWA file
   // handlers here, because the code that registers file handlers for regular

@@ -29,6 +29,9 @@ struct InstallResult {
 
   // The InstallResultCode returned by the installation process.
   string install_result_code;
+
+  // Whether the installation uninstalled and replaced an old app.
+  bool did_uninstall_and_replace;
 };
 
 struct UninstallResult {

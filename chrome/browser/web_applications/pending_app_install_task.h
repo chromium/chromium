@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
@@ -37,19 +38,9 @@ enum class InstallResultCode;
 // PendingAppManager. Can only be called from the UI thread.
 class PendingAppInstallTask {
  public:
-  // TODO(loyso): Use InstallManager::OnceInstallCallback directly.
-  struct Result {
-    Result(InstallResultCode code, base::Optional<AppId> app_id);
-    Result(Result&&);
-    Result(const Result&) = delete;
-    Result& operator=(const Result&) = delete;
-    ~Result();
-
-    const InstallResultCode code;
-    const base::Optional<AppId> app_id;
-  };
-
-  using ResultCallback = base::OnceCallback<void(Result)>;
+  using ResultCallback =
+      base::OnceCallback<void(base::Optional<AppId> app_id,
+                              PendingAppManager::InstallResult result)>;
 
   // Ensures the tab helpers necessary for installing an app are present.
   static void CreateTabHelpers(content::WebContents* web_contents);
@@ -100,7 +91,8 @@ class PendingAppInstallTask {
                          const AppId& app_id,
                          InstallResultCode code);
   void TryAppInfoFactoryOnFailure(ResultCallback result_callback,
-                                  Result result);
+                                  base::Optional<AppId> app_id,
+                                  PendingAppManager::InstallResult result);
   void OnOsHooksCreated(const AppId& app_id,
                         base::ScopedClosureRunner scoped_closure,
                         const OsHooksResults os_hooks_results);

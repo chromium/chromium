@@ -54,12 +54,13 @@ void TestWebAppUiManager::NotifyOnAllAppWindowsClosed(
                      }));
 }
 
-void TestWebAppUiManager::UninstallAndReplaceIfExists(
+bool TestWebAppUiManager::UninstallAndReplaceIfExists(
     const std::vector<AppId>& from_apps,
     const AppId& to_app) {
   for (const AppId& from_app : from_apps) {
     uninstall_and_replace_map_[from_app] = to_app;
   }
+  return false;
 }
 
 bool TestWebAppUiManager::CanAddAppToQuickLaunchBar() const {

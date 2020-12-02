@@ -51,8 +51,9 @@ class WebAppPolicyManager {
   void InitChangeRegistrarAndRefreshPolicyInstalledApps();
 
   void RefreshPolicyInstalledApps();
-  void OnAppsSynchronized(std::map<GURL, InstallResultCode> install_results,
-                          std::map<GURL, bool> uninstall_results);
+  void OnAppsSynchronized(
+      std::map<GURL, PendingAppManager::InstallResult> install_results,
+      std::map<GURL, bool> uninstall_results);
 
   Profile* profile_;
   PrefService* pref_service_;

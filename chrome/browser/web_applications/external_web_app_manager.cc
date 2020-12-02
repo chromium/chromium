@@ -378,7 +378,7 @@ void ExternalWebAppManager::Synchronize(
 
 void ExternalWebAppManager::OnExternalWebAppsSynchronized(
     PendingAppManager::SynchronizeCallback callback,
-    std::map<GURL, InstallResultCode> install_results,
+    std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   // Note that we are storing the Chrome version instead of a "has synchronised"
   // bool in order to do version update specific logic in the future.
@@ -386,8 +386,11 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
       prefs::kWebAppsLastPreinstallSynchronizeVersion,
       version_info::GetMajorVersionNumber());
 
-  RecordExternalAppInstallResultCode("Webapp.InstallResult.Default",
-                                     install_results);
+  for (const auto& url_and_result : install_results) {
+    base::UmaHistogramEnumeration("Webapp.InstallResult.Default",
+                                  url_and_result.second.code);
+  }
+
   if (callback) {
     std::move(callback).Run(std::move(install_results),
                             std::move(uninstall_results));
@@ -395,7 +398,7 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
 }
 
 void ExternalWebAppManager::OnStartUpTaskCompleted(
-    std::map<GURL, InstallResultCode> install_results,
+    std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   if (debug_info_) {
     debug_info_->is_start_up_task_complete = true;

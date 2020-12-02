@@ -220,8 +220,8 @@ InstallResultCode PendingAppManagerInstall(
       std::move(install_options),
       base::BindLambdaForTesting(
           [&result_code, &run_loop](const GURL& provided_url,
-                                    InstallResultCode code) {
-            result_code = code;
+                                    PendingAppManager::InstallResult result) {
+            result_code = result.code;
             run_loop.Quit();
           }));
   run_loop.Run();

@@ -404,12 +404,12 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest, CannotFetchManifest) {
       ExternalInstallSource::kExternalPolicy,
       base::BindLambdaForTesting(
           [&run_loop, &app_url](
-              std::map<GURL, InstallResultCode> install_results,
+              std::map<GURL, PendingAppManager::InstallResult> install_results,
               std::map<GURL, bool> uninstall_results) {
             EXPECT_TRUE(uninstall_results.empty());
             EXPECT_EQ(install_results.size(), 1U);
-            EXPECT_EQ(install_results[app_url],
-                      InstallResultCode ::kSuccessNewInstall);
+            EXPECT_EQ(install_results[app_url].code,
+                      InstallResultCode::kSuccessNewInstall);
             run_loop.Quit();
           }));
   run_loop.Run();

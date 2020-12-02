@@ -64,10 +64,6 @@ void RecordAppBanner(content::WebContents* contents, const GURL& app_url);
 WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source);
 
-void RecordExternalAppInstallResultCode(
-    const char* histogram_name,
-    std::map<GURL, InstallResultCode> install_results);
-
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_INSTALL_UTILS_H_

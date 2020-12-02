@@ -62,7 +62,8 @@ class ExternalWebAppManagerBrowserTest
     WebAppProvider::Get(browser()->profile())
         ->external_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
-            [&](std::map<GURL, InstallResultCode> install_results,
+            [&](std::map<GURL, PendingAppManager::InstallResult>
+                    install_results,
                 std::map<GURL, bool> uninstall_results) {
               EXPECT_EQ(install_results.size(), 0u);
               EXPECT_EQ(uninstall_results.size(), 0u);
@@ -99,11 +100,12 @@ class ExternalWebAppManagerBrowserTest
     WebAppProvider::Get(browser()->profile())
         ->external_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
-            [&](std::map<GURL, InstallResultCode> install_results,
+            [&](std::map<GURL, PendingAppManager::InstallResult>
+                    install_results,
                 std::map<GURL, bool> uninstall_results) {
               auto it = install_results.find(install_url);
               if (it != install_results.end())
-                code = it->second;
+                code = it->second.code;
               sync_run_loop.Quit();
             }));
     sync_run_loop.Run();
@@ -497,59 +499,73 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
 
   auto& provider = *WebAppProvider::Get(browser()->profile());
 
+  struct Expectation {
+    const char* app_id;
+    const char* install_url;
+    const char* launch_url;
+  } kExpectations[] = {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {
+        kGoogleCalendarAppId,
+        "https://calendar.google.com/calendar/installwebapp?usp=chrome_default",
+        "https://calendar.google.com/calendar/r?usp=installed_webapp",
+    },
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    {
+        kGoogleDocsAppId,
+        "https://docs.google.com/document/installwebapp?usp=chrome_default",
+        "https://docs.google.com/document/?usp=installed_webapp",
+    },
+    {
+        kGoogleSlidesAppId,
+        "https://docs.google.com/presentation/installwebapp?usp=chrome_default",
+        "https://docs.google.com/presentation/?usp=installed_webapp",
+    },
+    {
+        kGoogleSheetsAppId,
+        "https://docs.google.com/spreadsheets/installwebapp?usp=chrome_default",
+        "https://docs.google.com/spreadsheets/?usp=installed_webapp",
+    },
+    {
+        kGoogleDriveAppId,
+        "https://drive.google.com/drive/installwebapp?usp=chrome_default",
+        "https://drive.google.com/?lfhs=2&usp=installed_webapp",
+    },
+    {
+        kGmailAppId,
+        "https://mail.google.com/mail/installwebapp?usp=chrome_default",
+        "https://mail.google.com/?usp=installed_webapp",
+    },
+    {
+        kYoutubeAppId,
+        "https://www.youtube.com/s/notifications/manifest/cr_install.html",
+        "https://www.youtube.com/?feature=ytca",
+    },
+  };
+
   base::RunLoop run_loop;
   provider.external_web_app_manager().LoadAndSynchronizeForTesting(
       base::BindLambdaForTesting(
-          [&](std::map<GURL, InstallResultCode> install_results,
+          [&](std::map<GURL, PendingAppManager::InstallResult> install_results,
               std::map<GURL, bool> uninstall_results) {
-            EXPECT_THAT(
-                install_results,
-                UnorderedElementsAre(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                    Pair(GURL("https://calendar.google.com/calendar/"
-                              "installwebapp?usp=chrome_default"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-                    Pair(GURL("https://docs.google.com/document/"
-                              "installwebapp?usp=chrome_default"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall),
-                    Pair(GURL("https://docs.google.com/presentation/"
-                              "installwebapp?usp=chrome_default"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall),
-                    Pair(GURL("https://docs.google.com/spreadsheets/"
-                              "installwebapp?usp=chrome_default"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall),
-                    Pair(GURL("https://drive.google.com/drive/"
-                              "installwebapp?usp=chrome_default"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall),
-                    Pair(GURL("https://mail.google.com/mail/"
-                              "installwebapp?usp=chrome_default"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall),
-                    Pair(GURL("https://www.youtube.com/s/notifications/"
-                              "manifest/cr_install.html"),
-                         InstallResultCode::kSuccessOfflineOnlyInstall)));
+            EXPECT_EQ(install_results.size(),
+                      base::span<Expectation>(kExpectations).size());
+
+            for (const Expectation& expectation : kExpectations) {
+              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
+                        InstallResultCode::kSuccessOfflineOnlyInstall);
+            }
+
             EXPECT_EQ(uninstall_results.size(), 0u);
+
             run_loop.Quit();
           }));
   run_loop.Run();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(
-      provider.registrar().GetAppLaunchUrl(kGoogleCalendarAppId),
-      GURL("https://calendar.google.com/calendar/r?usp=installed_webapp"));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleDocsAppId),
-            GURL("https://docs.google.com/document/?usp=installed_webapp"));
-  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleSlidesAppId),
-            GURL("https://docs.google.com/presentation/?usp=installed_webapp"));
-  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleSheetsAppId),
-            GURL("https://docs.google.com/spreadsheets/?usp=installed_webapp"));
-  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGoogleDriveAppId),
-            GURL("https://drive.google.com/?lfhs=2&usp=installed_webapp"));
-  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kGmailAppId),
-            GURL("https://mail.google.com/?usp=installed_webapp"));
-  EXPECT_EQ(provider.registrar().GetAppLaunchUrl(kYoutubeAppId),
-            GURL("https://www.youtube.com/?feature=ytca"));
+  for (const Expectation& expectation : kExpectations) {
+    EXPECT_EQ(provider.registrar().GetAppLaunchUrl(expectation.app_id),
+              GURL(expectation.launch_url));
+  }
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

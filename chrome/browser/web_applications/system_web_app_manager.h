@@ -255,10 +255,11 @@ class SystemWebAppManager {
 
   bool AppHasFileHandlingOriginTrial(SystemAppType type);
 
-  void OnAppsSynchronized(bool did_force_install_apps,
-                          const base::TimeTicks& install_start_time,
-                          std::map<GURL, InstallResultCode> install_results,
-                          std::map<GURL, bool> uninstall_results);
+  void OnAppsSynchronized(
+      bool did_force_install_apps,
+      const base::TimeTicks& install_start_time,
+      std::map<GURL, PendingAppManager::InstallResult> install_results,
+      std::map<GURL, bool> uninstall_results);
   bool ShouldForceInstallApps() const;
   void UpdateLastAttemptedInfo();
   // Returns if we have exceeded the number of retry attempts allowed for this
@@ -266,7 +267,8 @@ class SystemWebAppManager {
   bool CheckAndIncrementRetryAttempts();
 
   void RecordSystemWebAppInstallResults(
-      const std::map<GURL, InstallResultCode>& install_results) const;
+      const std::map<GURL, PendingAppManager::InstallResult>& install_results)
+      const;
 
   void RecordSystemWebAppInstallDuration(
       const base::TimeDelta& time_duration) const;

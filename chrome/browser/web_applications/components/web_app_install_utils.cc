@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
@@ -426,13 +425,6 @@ WebappInstallSource ConvertExternalInstallSourceToInstallSource(
   }
 
   return install_source;
-}
-
-void RecordExternalAppInstallResultCode(
-    const char* histogram_name,
-    std::map<GURL, InstallResultCode> install_results) {
-  for (const auto& url_and_result : install_results)
-    base::UmaHistogramEnumeration(histogram_name, url_and_result.second);
 }
 
 }  // namespace web_app

@@ -164,10 +164,11 @@ void WebAppUiManagerImpl::NotifyOnAllAppWindowsClosed(
   windows_closed_requests_map_[app_id].push_back(std::move(callback));
 }
 
-void WebAppUiManagerImpl::UninstallAndReplaceIfExists(
+bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
     const std::vector<AppId>& from_apps,
     const AppId& to_app) {
   bool has_migrated = false;
+  bool did_uninstall = false;
   for (const AppId& from_app : from_apps) {
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile_);
@@ -221,7 +222,10 @@ void WebAppUiManagerImpl::UninstallAndReplaceIfExists(
 
     proxy->UninstallSilently(from_app,
                              apps::mojom::UninstallSource::kMigration);
+    did_uninstall = true;
   }
+
+  return did_uninstall;
 }
 
 bool WebAppUiManagerImpl::CanAddAppToQuickLaunchBar() const {
