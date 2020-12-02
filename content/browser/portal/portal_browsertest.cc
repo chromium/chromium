@@ -346,10 +346,17 @@ class PortalDefaultActivationBrowserTest : public PortalBrowserTest {
   }
 };
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_DefaultActivatePortal DISABLED_DefaultActivatePortal
+#else
+#define MAYBE_DefaultActivatePortal DefaultActivatePortal
+#endif
+
 // Tests the correct trace events are generated when a portal is default
 // activated.
 IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
-                       DefaultActivatePortal) {
+                       MAYBE_DefaultActivatePortal) {
   StartTracing();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
