@@ -24,6 +24,9 @@ export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, whenReady} from './data/model.js';
 // <if expr="chromeos">
+export {PrintServerStore} from './data/print_server_store.js';
+// </if>
+// <if expr="chromeos">
 export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
 // </if>
 export {ScalingType} from './data/scaling.js';
@@ -31,7 +34,7 @@ export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
 export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, NativeInitialSettings, NativeLayer, NativeLayerImpl} from './native_layer.js';
 // <if expr="chromeos">
-export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from './native_layer_cros.js';
+export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer, PrintServersConfig} from './native_layer_cros.js';
 // </if>
 export {getSelectDropdownBackground} from './print_preview_utils.js';
 export {DEFAULT_MAX_COPIES} from './ui/copies_settings.js';

@@ -30,6 +30,10 @@ js_type_check("closure_compile_module") {
     ":state",
     ":user_manager",
   ]
+
+  if (is_chromeos) {
+    deps += [ ":print_server_store" ]
+  }
 }
 
 js_library("cdd") {
@@ -63,6 +67,15 @@ js_library("invitation_store") {
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+}
+
+if (is_chromeos) {
+  js_library("print_server_store") {
+    deps = [
+      "..:native_layer_cros",
+      "//ui/webui/resources/js/cr:event_target.m",
+    ]
+  }
 }
 
 js_library("local_parsers") {

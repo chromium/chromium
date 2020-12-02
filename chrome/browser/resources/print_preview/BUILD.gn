@@ -111,8 +111,9 @@ preprocess_if_expr("preprocess") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "native_layer_cros.js",
+      "data/print_server_store.js",
       "data/printer_status_cros.js",
+      "native_layer_cros.js",
     ]
   }
 }
@@ -247,6 +248,10 @@ js_library("print_preview") {
     "ui:app",
     "ui:settings_select",
   ]
+
+  if (is_chromeos) {
+    deps += [ "data:print_server_store" ]
+  }
 }
 
 js_library("print_preview_utils") {

@@ -660,6 +660,37 @@ TEST_F('PrintPreviewDestinationStoreTestCros', 'DriveNotMounted', function() {
 });
 GEN('#endif');
 
+GEN('#if defined(OS_CHROMEOS)');
+// eslint-disable-next-line no-var
+var PrintPreviewPrintServerStoreTestCros = class extends PrintPreviewTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://print/test_loader.html?module=print_preview/print_server_store_test.js';
+  }
+
+  /** @override */
+  get suiteName() {
+    return print_server_store_test.suiteName;
+  }
+};
+TEST_F(
+    'PrintPreviewPrintServerStoreTestCros', 'ChoosePrintServers', function() {
+      this.runMochaTest(print_server_store_test.TestNames.ChoosePrintServers);
+    });
+
+TEST_F(
+    'PrintPreviewPrintServerStoreTestCros', 'PrintServersChanged', function() {
+      this.runMochaTest(print_server_store_test.TestNames.PrintServersChanged);
+    });
+
+TEST_F(
+    'PrintPreviewPrintServerStoreTestCros', 'ServerPrintersLoading',
+    function() {
+      this.runMochaTest(
+          print_server_store_test.TestNames.ServerPrintersLoading);
+    });
+GEN('#endif');
+
 GEN('#if !defined(OS_CHROMEOS)');
 // eslint-disable-next-line no-var
 var PrintPreviewDestinationDialogTest = class extends PrintPreviewTest {

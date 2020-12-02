@@ -21,6 +21,22 @@ import {PrinterStatus, PrinterStatusReason} from './data/printer_status_cros.js'
 export let PrinterSetupResponse;
 
 /**
+ * @typedef {{
+ *   id: string,
+ *   name: string,
+ * }}
+ */
+export let PrintServer;
+
+/**
+ * @typedef {{
+ *   printServers: !Array<!PrintServer>,
+ *   isSingleServerFetchingMode: boolean,
+ * }}
+ */
+export let PrintServersConfig;
+
+/**
  * An interface to the Chrome OS platform specific part of the native Chromium
  * printing system layer.
  * @interface
@@ -72,6 +88,20 @@ export class NativeLayerCros {
    * canceled.
    */
   recordPrinterStatusHistogram(statusReason, didUserAttemptPrint) {}
+
+  /**
+   * Selects all print servers with ids in |printServerIds| to query for their
+   * printers.
+   * @param {!Array<string>} printServerIds
+   */
+  choosePrintServers(printServerIds) {}
+
+  /**
+   * Gets the available print servers and whether we are in single server
+   * fetching mode.
+   * @return {!Promise<!PrintServersConfig>}
+   */
+  getPrintServersConfig() {}
 }
 
 /** @implements {NativeLayerCros} */
@@ -124,6 +154,16 @@ export class NativeLayerCrosImpl {
     chrome.send(
         'metricsHandler:recordBooleanHistogram',
         [histogram, didUserAttemptPrint]);
+  }
+
+  /** @override */
+  choosePrintServers(printServerIds) {
+    chrome.send('choosePrintServers', [printServerIds]);
+  }
+
+  /** @override */
+  getPrintServersConfig() {
+    return sendWithPromise('getPrintServersConfig');
   }
 }
 

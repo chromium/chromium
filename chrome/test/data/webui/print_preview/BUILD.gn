@@ -97,6 +97,7 @@ js_type_check("closure_compile") {
       ":destination_select_test_cros",
       ":destination_settings_test_cros",
       ":native_layer_cros_stub",
+      ":print_server_store_test",
     ]
   } else {
     deps += [
@@ -523,4 +524,18 @@ js_library("media_size_settings_test") {
     "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+if (is_chromeos) {
+  js_library("print_server_store_test") {
+    deps = [
+      ":native_layer_cros_stub",
+      "..:chai_assert",
+      "..:test_util.m",
+      "//chrome/browser/resources/print_preview:print_preview",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:cr.m",
+    ]
+    externs_list = [ "$externs_path/mocha-2.5.js" ]
+  }
 }

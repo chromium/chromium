@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from 'chrome://print/print_preview.js';
+import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer, PrintServersConfig} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
@@ -25,6 +25,8 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
       'getEulaUrl',
       'requestPrinterStatusUpdate',
       'setupPrinter',
+      'choosePrintServers',
+      'getPrintServersConfig',
     ]);
 
     /**
@@ -55,6 +57,12 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
 
     /** @private {number} */
     this.multiplePrinterStatusRequestsCount_ = 0;
+
+    /** @private {!PrintServersConfig} */
+    this.printServersConfig_ = {
+      printServers: [],
+      isSingleServerFetchingMode: false
+    };
   }
 
   /** @override */
@@ -134,4 +142,15 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
 
   /** @override */
   recordPrinterStatusHistogram(statusReason, didUserAttemptPrint) {}
+
+  /** @override */
+  choosePrintServers(printServerIds) {
+    this.methodCalled('choosePrintServers', printServerIds);
+  }
+
+  /** @override */
+  getPrintServersConfig() {
+    this.methodCalled('getPrintServersConfig');
+    return Promise.resolve(this.printServersConfig_);
+  }
 }
