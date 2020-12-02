@@ -90,6 +90,11 @@ def ArgumentParser(standalone=False):
       action='store_true',
       help=('Specify this if you want to run proxy power metrics that use '
             'device power profiles.'))
+  group.add_argument(
+      '--extra-metric', action='append', dest='extra_metrics', metavar='METRIC',
+      help=('Compute an extra metric on the test results. Metric should have '
+            'the form "version:name", e.g. "tbmv3:power_rails_metric". '
+            'Can be used multiple times.'))
   return parser
 
 

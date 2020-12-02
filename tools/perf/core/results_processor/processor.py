@@ -72,6 +72,9 @@ def ProcessResults(options):
   should_compute_metrics = any(
       fmt in FORMATS_WITH_METRICS for fmt in options.output_formats)
 
+  if options.extra_metrics:
+    _AddExtraMetrics(test_results, options.extra_metrics)
+
   begin_time = time.time()
   util.ApplyInParallel(
       lambda result: ProcessTestResult(
@@ -119,6 +122,18 @@ def _AmortizeProcessingDuration(processing_duration, test_results):
         current_duration = float(result['runDuration'].rstrip('s'))
         new_story_cost = current_duration + per_story_cost
         result['runDuration'] = unicode(str(new_story_cost) + 's', 'utf-8')
+
+
+def _AddExtraMetrics(test_results, extra_metrics):
+  extra_metric_tags = []
+  for metric in extra_metrics:
+    version, name = metric.split(':')
+    if version not in ('tbmv2', 'tbmv3'):
+      raise ValueError('Invalid metric name: %s' % metric)
+    extra_metric_tags.append({'key': version, 'value': name})
+
+  for test_result in test_results:
+    test_result.setdefault('tags', []).extend(extra_metric_tags)
 
 
 def ProcessTestResult(test_result, upload_bucket, results_label, run_identifier,
