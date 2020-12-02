@@ -285,24 +285,6 @@ AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
     const PositionInFlatTreeWithAffinity&,
     const PositionInFlatTree&);
 
-VisiblePosition AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePosition&,
-    const Position&);
-
-VisiblePositionInFlatTree AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePositionInFlatTree&,
-    const PositionInFlatTree&);
-
-// Export below functions only for |SelectionModifier|.
-VisiblePosition AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePosition&,
-    const Position&);
-
-VisiblePositionInFlatTree
-AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePositionInFlatTree&,
-    const PositionInFlatTree&);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_UNITS_H_

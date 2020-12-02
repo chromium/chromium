@@ -269,32 +269,6 @@ AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
 }
 
 template <typename Strategy>
-VisiblePositionTemplate<Strategy>
-AdjustBackwardPositionToAvoidCrossingEditingBoundariesAlgorithm(
-    const VisiblePositionTemplate<Strategy>& pos,
-    const PositionTemplate<Strategy>& anchor) {
-  DCHECK(pos.IsValid()) << pos;
-  return CreateVisiblePosition(
-      AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
-          pos.ToPositionWithAffinity(), anchor));
-}
-
-VisiblePosition AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePosition& visiblePosition,
-    const Position& anchor) {
-  return AdjustBackwardPositionToAvoidCrossingEditingBoundariesAlgorithm(
-      visiblePosition, anchor);
-}
-
-VisiblePositionInFlatTree
-AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePositionInFlatTree& visiblePosition,
-    const PositionInFlatTree& anchor) {
-  return AdjustBackwardPositionToAvoidCrossingEditingBoundariesAlgorithm(
-      visiblePosition, anchor);
-}
-
-template <typename Strategy>
 static PositionWithAffinityTemplate<Strategy>
 AdjustForwardPositionToAvoidCrossingEditingBoundariesTemplate(
     const PositionWithAffinityTemplate<Strategy>& pos,
@@ -350,24 +324,6 @@ AdjustForwardPositionToAvoidCrossingEditingBoundaries(
     const PositionInFlatTree& anchor) {
   return AdjustForwardPositionToAvoidCrossingEditingBoundariesTemplate(
       PositionInFlatTreeWithAffinity(pos), anchor);
-}
-
-VisiblePosition AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePosition& pos,
-    const Position& anchor) {
-  DCHECK(pos.IsValid()) << pos;
-  return CreateVisiblePosition(
-      AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-          pos.ToPositionWithAffinity(), anchor));
-}
-
-VisiblePositionInFlatTree AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-    const VisiblePositionInFlatTree& pos,
-    const PositionInFlatTree& anchor) {
-  DCHECK(pos.IsValid()) << pos;
-  return CreateVisiblePosition(
-      AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-          pos.ToPositionWithAffinity(), anchor));
 }
 
 template <typename Strategy>
@@ -1133,15 +1089,15 @@ static VisiblePositionTemplate<Strategy> NextPositionOfAlgorithm(
     case kCanCrossEditingBoundary:
       return next;
     case kCannotCrossEditingBoundary:
-      return AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-          next, position.GetPosition());
+      return CreateVisiblePosition(
+          AdjustForwardPositionToAvoidCrossingEditingBoundaries(
+              next.ToPositionWithAffinity(), position.GetPosition()));
     case kCanSkipOverEditingBoundary:
       return CreateVisiblePosition(SkipToEndOfEditingBoundary(
           next.DeepEquivalent(), position.GetPosition()));
   }
   NOTREACHED();
-  return AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-      next, position.GetPosition());
+  return next;
 }
 
 VisiblePosition NextPositionOf(const VisiblePosition& visible_position,
@@ -1212,15 +1168,16 @@ static VisiblePositionTemplate<Strategy> PreviousPositionOfAlgorithm(
     case kCanCrossEditingBoundary:
       return prev;
     case kCannotCrossEditingBoundary:
-      return AdjustBackwardPositionToAvoidCrossingEditingBoundaries(prev,
-                                                                    position);
+      return CreateVisiblePosition(
+          AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
+              prev.ToPositionWithAffinity(), position));
     case kCanSkipOverEditingBoundary:
       return CreateVisiblePosition(
           SkipToStartOfEditingBoundary(prev.DeepEquivalent(), position));
   }
 
   NOTREACHED();
-  return AdjustBackwardPositionToAvoidCrossingEditingBoundaries(prev, position);
+  return prev;
 }
 
 VisiblePosition PreviousPositionOf(const VisiblePosition& visible_position,
