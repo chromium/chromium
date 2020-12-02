@@ -66,8 +66,7 @@ GURL GetUrlWithEmailParam(base::StringPiece url_string,
   return url;
 }
 
-GURL GetInlineLoginUrl(const std::string& email,
-                       const InlineLoginDialogChromeOS::Source& source) {
+GURL GetInlineLoginUrl(const std::string& email, bool is_arc_source) {
   if (IsDeviceAccountEmail(email)) {
     // It's a device account re-auth.
     return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
@@ -83,8 +82,7 @@ GURL GetInlineLoginUrl(const std::string& email,
     return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
   }
   // User type is Child.
-  if (!arc::IsSecondaryAccountForChildEnabled() &&
-      source == InlineLoginDialogChromeOS::Source::kArc) {
+  if (!arc::IsSecondaryAccountForChildEnabled() && is_arc_source) {
     return GURL(chrome::kChromeUIAccountManagerErrorURL);
   }
   return GetUrlWithEmailParam(
@@ -114,8 +112,9 @@ void InlineLoginDialogChromeOS::ShowDeprecated(const std::string& email,
   }
 
   // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
-  dialog =
-      new InlineLoginDialogChromeOS(GetInlineLoginUrl(email, source), source);
+  const bool is_arc_source = source == InlineLoginDialogChromeOS::Source::kArc;
+  dialog = new InlineLoginDialogChromeOS(
+      GetInlineLoginUrl(email, is_arc_source), is_arc_source);
   dialog->ShowSystemDialog();
 
   // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on
@@ -169,15 +168,15 @@ void InlineLoginDialogChromeOS::SetEduCoexistenceFlowResult(
   edu_coexistence_flow_result_ = result;
 }
 
-InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const Source& source)
-    : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string(), source),
-                                source) {}
+InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(bool is_arc_source)
+    : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string(), is_arc_source),
+                                is_arc_source) {}
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url,
-                                                     const Source& source)
+                                                     bool is_arc_source)
     : SystemWebDialogDelegate(url, base::string16() /* title */),
       delegate_(this),
-      source_(source),
+      is_arc_source_(is_arc_source),
       url_(url) {
   DCHECK(!dialog);
   dialog = this;
@@ -203,8 +202,7 @@ std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
 
   AccountManagerErrorType error =
       AccountManagerErrorType::kSecondaryAccountsDisabled;
-  if (source_ == Source::kArc &&
-      ProfileManager::GetActiveUserProfile()->IsChild() &&
+  if (is_arc_source_ && ProfileManager::GetActiveUserProfile()->IsChild() &&
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
           chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     error = AccountManagerErrorType::kChildUserArcDisabled;

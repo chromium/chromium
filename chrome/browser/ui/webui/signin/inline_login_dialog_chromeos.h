@@ -95,8 +95,10 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   void SetEduCoexistenceFlowResult(EduCoexistenceFlowResult result);
 
  protected:
-  explicit InlineLoginDialogChromeOS(const Source& source);
-  InlineLoginDialogChromeOS(const GURL& url, const Source& source);
+  // |is_arc_source| parameter is used to specify whether the dialog is opened
+  // from ARC. It's used to display the correct error message for Child users.
+  explicit InlineLoginDialogChromeOS(bool is_arc_source);
+  InlineLoginDialogChromeOS(const GURL& url, bool is_arc_source);
   ~InlineLoginDialogChromeOS() override;
 
   // ui::WebDialogDelegate overrides
@@ -108,7 +110,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
 
  private:
   InlineLoginHandlerModalDelegate delegate_;
-  const Source source_;
+  const bool is_arc_source_;
   const GURL url_;
   base::Optional<EduCoexistenceFlowResult> edu_coexistence_flow_result_;
 
