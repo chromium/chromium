@@ -483,7 +483,7 @@ public class OfflinePageAutoFetchTest {
     private void forceConnectivityState(boolean connected) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             NetworkChangeNotifier.forceConnectivityState(connected);
-            DeviceConditions.sForceNoConnectionForTesting = !connected;
+            DeviceConditions.sForceConnectionTypeForTesting = !connected;
         });
         OfflineTestUtil.waitForConnectivityState(connected);
     }

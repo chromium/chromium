@@ -53,8 +53,10 @@ public class AccessibilitySettingsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
+        });
     }
 
     /**
@@ -197,9 +199,11 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @Features.EnableFeatures({ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS})
     public void testImageDescriptionsPreferences_Enabled() {
-        // Enable accessibility services to display settings option.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
+        // Enable touch exploration to display settings option.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
+        });
 
         mSettingsActivityTestRule.startSettingsActivity();
         AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();

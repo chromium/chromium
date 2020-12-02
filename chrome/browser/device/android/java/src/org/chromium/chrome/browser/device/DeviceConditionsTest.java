@@ -283,12 +283,12 @@ public class DeviceConditionsTest {
 
     @Test
     public void testForceConnectionTypeNoneForTesting() {
-        DeviceConditions.sForceNoConnectionForTesting = true;
+        DeviceConditions.sForceConnectionTypeForTesting = true;
         assertEquals(ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
         assertEquals(ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
-        DeviceConditions.sForceNoConnectionForTesting = false;
+        DeviceConditions.sForceConnectionTypeForTesting = false;
     }
 
     @Test

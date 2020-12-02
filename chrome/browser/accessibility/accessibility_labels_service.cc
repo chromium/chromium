@@ -124,7 +124,13 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
 
 }  // namespace
 
-AccessibilityLabelsService::~AccessibilityLabelsService() {}
+#if !defined(OS_ANDROID)
+AccessibilityLabelsService::~AccessibilityLabelsService() = default;
+#else
+AccessibilityLabelsService::~AccessibilityLabelsService() {
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+}
+#endif
 
 // static
 void AccessibilityLabelsService::RegisterProfilePrefs(
@@ -186,23 +192,27 @@ void AccessibilityLabelsService::Init() {
 }
 
 AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+#if defined(OS_ANDROID)
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+#endif
+}
 
 ui::AXMode AccessibilityLabelsService::GetAXMode() {
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
 
   // Hidden behind a feature flag.
-  if (base::FeatureList::IsEnabled(
-          features::kExperimentalAccessibilityLabels)) {
-    bool enabled = profile_->GetPrefs()->GetBoolean(
+  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
+    return ax_mode;
+
 #if !defined(OS_ANDROID)
-        prefs::kAccessibilityImageLabelsEnabled);
+  ax_mode.set_mode(ui::AXMode::kLabelImages,
+                   profile_->GetPrefs()->GetBoolean(
+                       prefs::kAccessibilityImageLabelsEnabled));
 #else
-        prefs::kAccessibilityImageLabelsEnabledAndroid);
+  ax_mode.set_mode(ui::AXMode::kLabelImages, GetAndroidEnabledStatus());
 #endif
-    ax_mode.set_mode(ui::AXMode::kLabelImages, enabled);
-  }
 
   return ax_mode;
 }
@@ -269,14 +279,10 @@ void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
     web_contents->SetAccessibilityMode(ax_mode);
   }
 #else
-  bool enabled = profile_->GetPrefs()->GetBoolean(
-                     prefs::kAccessibilityImageLabelsEnabledAndroid) &&
-                 accessibility_state_utils::IsScreenReaderEnabled();
-
   // Android does not support AllTabContentses(), so we will get all web
   // contents from the state and set the new AXMode there.
   content::BrowserAccessibilityState::GetInstance()
-      ->SetImageLabelsModeForProfile(enabled, profile_);
+      ->SetImageLabelsModeForProfile(GetAndroidEnabledStatus(), profile_);
 #endif
 }
 
@@ -290,6 +296,32 @@ void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
 }
 
 #if defined(OS_ANDROID)
+void AccessibilityLabelsService::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  // When the network status changes, we want to (potentially) update the
+  // AXMode of all web contents for the current profile.
+  content::BrowserAccessibilityState::GetInstance()
+      ->SetImageLabelsModeForProfile(GetAndroidEnabledStatus(), profile_);
+}
+
+bool AccessibilityLabelsService::GetAndroidEnabledStatus() {
+  // On Android, user has an option to toggle "only on wifi", so also check
+  // the current connection type if necessary.
+  bool enabled = profile_->GetPrefs()->GetBoolean(
+                     prefs::kAccessibilityImageLabelsEnabledAndroid) &&
+                 accessibility_state_utils::IsScreenReaderEnabled();
+
+  bool only_on_wifi = profile_->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityImageLabelsOnlyOnWifi);
+
+  if (enabled && only_on_wifi) {
+    enabled = net::NetworkChangeNotifier::GetConnectionType() ==
+              net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI;
+  }
+
+  return enabled;
+}
+
 void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents) {

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,6 +65,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.WebappsUtils;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -472,10 +475,21 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // is currently running.
         if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
             menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
-            menu.findItem(R.id.get_image_descriptions_id)
-                    .setTitle(ImageDescriptionsController.getInstance().imageDescriptionsEnabled()
-                                    ? R.string.menu_stop_image_descriptions
-                                    : R.string.menu_get_image_descriptions);
+
+            int titleId = R.string.menu_stop_image_descriptions;
+            Profile profile = Profile.fromWebContents(currentTab.getWebContents());
+            // If image descriptions are not enabled, then we want the menu item to be "Get".
+            if (!ImageDescriptionsController.getInstance().imageDescriptionsEnabled(profile)) {
+                titleId = R.string.menu_get_image_descriptions;
+            } else if (ImageDescriptionsController.getInstance().onlyOnWifiEnabled(profile)
+                    && DeviceConditions.getCurrentNetConnectionType(mContext)
+                            != ConnectionType.CONNECTION_WIFI) {
+                // If image descriptions are enabled, then we want "Stop", except in the special
+                // case that the user specified only on Wifi, and we are not currently on Wifi.
+                titleId = R.string.menu_get_image_descriptions;
+            }
+
+            menu.findItem(R.id.get_image_descriptions_id).setTitle(titleId);
         } else {
             menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
         }

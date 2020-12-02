@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -11,27 +12,27 @@ import org.chromium.content_public.browser.WebContents;
  */
 public interface ImageDescriptionsControllerDelegate {
     /**
-     * Enable image descriptions. Calling this method will enable the image descriptions feature
-     * for the current profile. Any currently opened tabs will receive image descriptions, as will
-     * any future pages.
+     * Enable image descriptions for the given Profile. Any currently opened tabs for this profile
+     * will receive image descriptions, as will any future pages.
+     * @param profile       Profile - the profile to enable descriptions for.
      */
-    void enableImageDescriptions();
+    void enableImageDescriptions(Profile profile);
 
     /**
-     * Disable image descriptions. Calling this method will disable the image descriptions feature
-     * for the current profile. Any existing image descriptions will persist, but no new image
-     * descriptions will be generated.
+     * Disable image descriptions for the given Profile. No new image descriptions will be generated
+     * for any tabs of the given profile.
+     * @param profile       Profile - the profile to disable descriptions for.
      */
-    void disableImageDescriptions();
+    void disableImageDescriptions(Profile profile);
 
     /**
-     * Set "Only on Wi-Fi" requirement. Calling this method will set the only on wifi user
-     * preference for the current profile. If set to true, the image descriptions feature will not
-     * be run while on mobile data but instead only on wifi.
+     * Set "Only on Wi-Fi" requirement for the given profile.
+     * If set to true, the image descriptions feature will not be run while on mobile data.
      *
      * @param onlyOnWifi    Boolean - whether or not to require wifi for image descriptions.
+     * @param profile   Profile - the profile to set requirement on.
      */
-    void setOnlyOnWifiRequirement(boolean onlyOnWifi);
+    void setOnlyOnWifiRequirement(boolean onlyOnWifi, Profile profile);
 
     /**
      * Get image descriptions once. Calling this method will fetch image descriptions one time for

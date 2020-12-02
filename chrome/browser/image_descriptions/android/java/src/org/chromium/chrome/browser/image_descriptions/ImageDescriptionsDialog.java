@@ -10,13 +10,17 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Dialog for the "Get Image Descriptions" feature. If a user is a screen reader user, they will
@@ -39,6 +43,8 @@ public class ImageDescriptionsDialog
     private boolean mOnlyOnWifiState;
     private boolean mDontAskAgainState;
     private WebContents mWebContents;
+    private Profile mProfile;
+    private Context mContext;
 
     protected ImageDescriptionsDialog(Context context, ModalDialogManager modalDialogManager,
             ImageDescriptionsControllerDelegate delegate, boolean shouldShowDontAskAgainOption,
@@ -46,6 +52,8 @@ public class ImageDescriptionsDialog
         mModalDialogManager = modalDialogManager;
         mControllerDelegate = delegate;
         mWebContents = webContents;
+        mProfile = Profile.fromWebContents(mWebContents);
+        mContext = context;
 
         // Set initial state.
         mShouldShowDontAskAgainOption = shouldShowDontAskAgainOption;
@@ -53,7 +61,7 @@ public class ImageDescriptionsDialog
         mDontAskAgainState = false;
 
         // Inflate our custom view layout for this dialog.
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         View rootView = inflater.inflate(R.layout.image_descriptions_dialog, null);
 
         mRadioGroup = rootView.findViewById(R.id.image_descriptions_dialog_radio_button_group);
@@ -83,12 +91,12 @@ public class ImageDescriptionsDialog
         mPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, context.getResources(),
+                        .with(ModalDialogProperties.TITLE, mContext.getResources(),
                                 R.string.image_descriptions_dialog_header)
                         .with(ModalDialogProperties.CUSTOM_VIEW, rootView)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mContext.getResources(),
                                 R.string.no_thanks)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, context.getResources(),
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getResources(),
                                 R.string.image_descriptions_dialog_get_descriptions_button)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
                         .build();
@@ -114,21 +122,34 @@ public class ImageDescriptionsDialog
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         int dismissalCause;
+        int toastMessage = -1;
 
         // User has elected to get image descriptions
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             // Determine desired level of descriptions and default to just once
             if (mOptionAlwaysRadioButton.isChecked()) {
-                mControllerDelegate.enableImageDescriptions();
-                mControllerDelegate.setOnlyOnWifiRequirement(mOnlyOnWifiState);
+                toastMessage = R.string.image_descriptions_toast_on;
+                mControllerDelegate.enableImageDescriptions(mProfile);
+                mControllerDelegate.setOnlyOnWifiRequirement(mOnlyOnWifiState, mProfile);
+
+                // If user requested "only on wifi" and we have no wifi, provide alt toast.
+                if (mOnlyOnWifiState
+                        && (DeviceConditions.getCurrentNetConnectionType(mContext)
+                                != ConnectionType.CONNECTION_WIFI)) {
+                    toastMessage = R.string.image_descriptions_toast_on_no_wifi;
+                }
             } else if (mOptionJustOnceRadioButton.isChecked()) {
                 mControllerDelegate.getImageDescriptionsJustOnce(mDontAskAgainState, mWebContents);
+                toastMessage = R.string.image_descriptions_toast_just_once;
             }
 
             dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         } else {
             dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
         }
+
+        // Make a toast, if necessary.
+        if (toastMessage != -1) Toast.makeText(mContext, toastMessage, Toast.LENGTH_LONG).show();
 
         // Dismiss the dialog.
         dismiss(dismissalCause);

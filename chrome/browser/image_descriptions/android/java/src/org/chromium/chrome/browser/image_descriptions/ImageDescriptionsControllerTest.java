@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -16,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,17 +35,20 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
@@ -50,13 +62,13 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    private ImageDescriptionsControllerDelegate mDelegate;
-
-    @Mock
     private ImageDescriptionsController.Natives mControllerJniMock;
 
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
+
+    @Mock
+    private Profile.Natives mProfileJniMock;
 
     @Mock
     private Profile mProfile;
@@ -72,6 +84,7 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
 
     private SharedPreferencesManager mManager;
     private ImageDescriptionsController mController;
+    private ImageDescriptionsControllerDelegate mDelegate;
 
     @Before
     public void setUp() throws Exception {
@@ -82,11 +95,21 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
+        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        when(mProfileJniMock.fromWebContents(any())).thenReturn(mProfile);
+
         mJniMocker.mock(ImageDescriptionsControllerJni.TEST_HOOKS, mControllerJniMock);
 
         resetSharedPreferences();
 
         mController = ImageDescriptionsController.getInstance();
+        mDelegate = ImageDescriptionsController.getInstance().getDelegate();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> DeviceConditions.sForceConnectionTypeForTesting = false);
     }
 
     private void resetSharedPreferences() {
@@ -95,22 +118,29 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         mManager.removeKey(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN);
     }
 
+    private void simulateMenuItemClick() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mController.onImageDescriptionsMenuItemSelected(
+                    getActivity(), mModalDialogManager, mWebContents);
+        });
+    }
+
     @Test
     @SmallTest
     public void testSharedPrefs_justOnceCounter() {
-        mController.getImageDescriptionsJustOnce(false, mWebContents);
+        mDelegate.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
                 1, mManager.readInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT));
         Assert.assertFalse("Don't ask again should only be true if our just once count is >= 3",
                 mController.shouldShowDontAskAgainOption());
 
-        mController.getImageDescriptionsJustOnce(false, mWebContents);
+        mDelegate.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
                 2, mManager.readInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT));
         Assert.assertFalse("Don't ask again should only be true if our just once count is >= 3",
                 mController.shouldShowDontAskAgainOption());
 
-        mController.getImageDescriptionsJustOnce(false, mWebContents);
+        mDelegate.getImageDescriptionsJustOnce(false, mWebContents);
         Assert.assertEquals(
                 3, mManager.readInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT));
         Assert.assertTrue("Don't ask again should be true since our just once count is >= 3",
@@ -124,7 +154,7 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
                 mManager.readBoolean(
                         ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false));
 
-        mController.getImageDescriptionsJustOnce(true, mWebContents);
+        mDelegate.getImageDescriptionsJustOnce(true, mWebContents);
 
         Assert.assertTrue("After user sets dont ask again, value should stay true",
                 mManager.readBoolean(
@@ -137,16 +167,16 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
         Assert.assertFalse("Image descriptions should be disabled by default",
-                mController.imageDescriptionsEnabled());
+                mController.imageDescriptionsEnabled(mProfile));
 
-        mController.enableImageDescriptions();
-        mController.setOnlyOnWifiRequirement(false);
+        mDelegate.enableImageDescriptions(mProfile);
+        mDelegate.setOnlyOnWifiRequirement(false, mProfile);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
 
-        mController.setOnlyOnWifiRequirement(true);
+        mDelegate.setOnlyOnWifiRequirement(true, mProfile);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
     }
@@ -156,10 +186,10 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
     public void testUserPrefs_userDisablesFeature() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(true);
-        Assert.assertTrue(
-                "Image descriptions should be enabled", mController.imageDescriptionsEnabled());
+        Assert.assertTrue("Image descriptions should be enabled",
+                mController.imageDescriptionsEnabled(mProfile));
 
-        mController.disableImageDescriptions();
+        mDelegate.disableImageDescriptions(mProfile);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
     }
@@ -170,9 +200,9 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
         Assert.assertFalse("Image descriptions should be disabled by default",
-                mController.imageDescriptionsEnabled());
+                mController.imageDescriptionsEnabled(mProfile));
 
-        mController.getImageDescriptionsJustOnce(false, mWebContents);
+        mDelegate.getImageDescriptionsJustOnce(false, mWebContents);
         verify(mPrefService, never()).setBoolean(anyString(), anyBoolean());
         verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(mWebContents);
     }
@@ -182,42 +212,80 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
     public void testMenuItemSelected_featureEnabled() {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(true);
-        Assert.assertTrue(
-                "Image descriptions should be enabled", mController.imageDescriptionsEnabled());
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI))
+                .thenReturn(false);
+        Assert.assertTrue("Image descriptions should be enabled",
+                mController.imageDescriptionsEnabled(mProfile));
 
-        mController.onImageDescriptionsMenuItemSelected(
-                getActivity(), mModalDialogManager, mWebContents);
+        simulateMenuItemClick();
+
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+
+        onView(withText(R.string.image_descriptions_toast_off))
+                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testMenuItemSelected_featureEnabled_onlyOnWifi_noWifi() throws Exception {
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                .thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI))
+                .thenReturn(true);
+        Assert.assertTrue("Image descriptions should be enabled",
+                mController.imageDescriptionsEnabled(mProfile));
+        Assert.assertTrue("Image descriptions only on wifi option should be enabled",
+                mController.onlyOnWifiEnabled(mProfile));
+
+        // Setup no wifi condition.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DeviceConditions.sForceConnectionTypeForTesting = true;
+            DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_NONE;
+        });
+
+        simulateMenuItemClick();
+
+        verify(mPrefService, never()).setBoolean(any(), anyBoolean());
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(eq(mWebContents));
+
+        onView(withText(R.string.image_descriptions_toast_just_once))
+                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     public void testMenuItemSelected_dontAskAgainEnabled() {
-        mController.setDelegateForTesting(mDelegate);
-
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(false);
         mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, true);
+        Assert.assertFalse("Image descriptions should be disabled",
+                mController.imageDescriptionsEnabled(mProfile));
 
-        mController.onImageDescriptionsMenuItemSelected(
-                getActivity(), mModalDialogManager, mWebContents);
-        verify(mDelegate, times(1)).getImageDescriptionsJustOnce(anyBoolean(), eq(mWebContents));
+        simulateMenuItemClick();
+
+        verify(mPrefService, never()).setBoolean(any(), anyBoolean());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(eq(mWebContents));
+
+        onView(withText(R.string.image_descriptions_toast_just_once))
+                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     public void testMenuItemSelected_featureDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
-                    .thenReturn(false);
-            mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                .thenReturn(false);
+        mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
 
-            mController.onImageDescriptionsMenuItemSelected(
-                    getActivity(), mModalDialogManager, mWebContents);
-            verify(mModalDialogManager, times(1)).showDialog(any(), anyInt());
-        });
+        simulateMenuItemClick();
+
+        verify(mModalDialogManager, times(1)).showDialog(any(), anyInt());
     }
 }

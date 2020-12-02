@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -29,6 +30,7 @@ public class ImageDescriptionsSettings
     private ImageDescriptionsControllerDelegate mDelegate;
     private boolean mIsEnabled;
     private boolean mOnlyOnWifi;
+    private Profile mProfile;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class ImageDescriptionsSettings
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.image_descriptions_preference);
+        mProfile = Profile.getLastUsedRegularProfile();
 
         Bundle extras = getArguments();
         if (extras != null) {
@@ -67,19 +70,19 @@ public class ImageDescriptionsSettings
 
             // If userChoice is true, user has turned on descriptions, enable and set Wi-Fi pref.
             if (userHasEnabled) {
-                mDelegate.enableImageDescriptions();
+                mDelegate.enableImageDescriptions(mProfile);
                 mDelegate.setOnlyOnWifiRequirement(
-                        mRadioButtonGroupAccessibilityPreference.getOnlyOnWifiValue());
+                        mRadioButtonGroupAccessibilityPreference.getOnlyOnWifiValue(), mProfile);
 
                 // We enable the radio button group if get image descriptions is enabled.
                 mRadioButtonGroupAccessibilityPreference.setEnabled(true);
             } else {
-                mDelegate.disableImageDescriptions();
+                mDelegate.disableImageDescriptions(mProfile);
                 mRadioButtonGroupAccessibilityPreference.setEnabled(false);
             }
 
         } else if (preference.getKey().equals(IMAGE_DESCRIPTIONS_DATA_POLICY)) {
-            mDelegate.setOnlyOnWifiRequirement((boolean) newValue);
+            mDelegate.setOnlyOnWifiRequirement((boolean) newValue, mProfile);
         }
         return true;
     }

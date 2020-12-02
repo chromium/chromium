@@ -69,6 +69,8 @@ public class ImageDescriptionsSettingsTest {
     @Mock
     private ImageDescriptionsControllerDelegate mDelegate;
 
+    private Profile mProfile;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -92,7 +94,8 @@ public class ImageDescriptionsSettingsTest {
     // Helper method for fetching PrefService
 
     private PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        mProfile = Profile.getLastUsedRegularProfile();
+        return UserPrefs.get(mProfile);
     }
 
     // Helper methods for assertions
@@ -223,9 +226,9 @@ public class ImageDescriptionsSettingsTest {
 
         // Toggle the image descriptions setting On, verify controller is updated
         switchToggle();
-        verify(mDelegate, times(1)).enableImageDescriptions();
-        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true);
-        verify(mDelegate, never()).disableImageDescriptions();
+        verify(mDelegate, times(1)).enableImageDescriptions(mProfile);
+        verify(mDelegate, never()).disableImageDescriptions(any());
+        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true, mProfile);
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
 
         Assert.assertTrue(TOGGLE + ENABLED_ERROR, mDescriptionsSwitch.isChecked());
@@ -251,9 +254,9 @@ public class ImageDescriptionsSettingsTest {
 
         // Toggle the image descriptions setting Off, verify controller is updated
         switchToggle();
-        verify(mDelegate, times(1)).disableImageDescriptions();
-        verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
-        verify(mDelegate, never()).enableImageDescriptions();
+        verify(mDelegate, never()).enableImageDescriptions(any());
+        verify(mDelegate, times(1)).disableImageDescriptions(mProfile);
+        verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean(), any());
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
 
         Assert.assertFalse(TOGGLE + DISABLED_ERROR, mDescriptionsSwitch.isChecked());
@@ -291,9 +294,9 @@ public class ImageDescriptionsSettingsTest {
                 (view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
 
         // Verify controller was updated
-        verify(mDelegate, never()).disableImageDescriptions();
-        verify(mDelegate, never()).enableImageDescriptions();
-        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true);
+        verify(mDelegate, never()).enableImageDescriptions(any());
+        verify(mDelegate, never()).disableImageDescriptions(any());
+        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true, mProfile);
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
     }
 
@@ -323,9 +326,9 @@ public class ImageDescriptionsSettingsTest {
                 (view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
 
         // Verify controller was updated
-        verify(mDelegate, never()).disableImageDescriptions();
-        verify(mDelegate, never()).enableImageDescriptions();
-        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(false);
+        verify(mDelegate, never()).enableImageDescriptions(any());
+        verify(mDelegate, never()).disableImageDescriptions(any());
+        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(false, mProfile);
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
     }
 }

@@ -42,12 +42,15 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.Men
 import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -63,6 +66,7 @@ import org.chromium.content.browser.ContentFeatureListImplJni;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -108,6 +112,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
     @Mock
+    private Profile.Natives mProfileJniMock;
+    @Mock
     private Profile mProfile;
     @Mock
     private PrefService mPrefService;
@@ -143,8 +149,10 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        Mockito.when(mProfileJniMock.fromWebContents(any())).thenReturn(mProfile);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
@@ -157,6 +165,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void tearDown() {
         ThreadUtils.setThreadAssertsDisabledForTesting(false);
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+        ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
     }
 
     @Test
@@ -644,7 +653,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void testMenuItems_Accessibility() {
+    public void testMenuItems_Accessibility_ImageDescriptions() {
         setUpMocksForPageMenu();
         when(mTab.getUrlString()).thenReturn("https://google.com");
         when(mTab.isNativePage()).thenReturn(false);
@@ -669,6 +678,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         // Test specific setup
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
 
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
@@ -693,6 +703,17 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
         Assert.assertEquals("Stop image descriptions",
                 menu.findItem(R.id.get_image_descriptions_id).getTitle());
+
+        // Setup no wifi condition, and "only on wifi" user option.
+        DeviceConditions noWifi =
+                new DeviceConditions(false, 75, ConnectionType.CONNECTION_2G, false, false, true);
+        ShadowDeviceConditions.setCurrentConditions(noWifi);
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI))
+                .thenReturn(true);
+
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        Assert.assertEquals(
+                "Get image descriptions", menu.findItem(R.id.get_image_descriptions_id).getTitle());
     }
 
     @Test

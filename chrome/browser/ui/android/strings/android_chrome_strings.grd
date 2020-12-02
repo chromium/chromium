@@ -4352,6 +4352,18 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_IMAGE_DESCRIPTIONS_SETTINGS_USE_MOBILE_DATA_CONTENT" desc="Content of radio button to allow user to specify getting accessibility image descriptions while on mobile data.">
         Wi-Fi is used when available
       </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_TOAST_OFF" desc="Content for a toast that will appear when a user disables the image descriptions feature to confirm to the user it is now off.">
+        Image descriptions are off
+      </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_TOAST_JUST_ONCE" desc="Content for a toast that will appear when a user chooses to get image descriptions just once for the current page.">
+        Image descriptions added for this page
+      </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_TOAST_ON" desc="Content for a toast that will appear when a user enables the image descriptions feature to confirm to the user it is now on.">
+        Image descriptions are on
+      </message>
+      <message name="IDS_IMAGE_DESCRIPTIONS_TOAST_ON_NO_WIFI" desc="Content for a toast that will appear when a user enables the image descriptions feature with the wifi only requirement while the user is not currently on a wifi connection.">
+        Image descriptions will resume when you connect to Wi-Fi
+      </message>
 
       <!-- Assistant voice search consent ui. -->
       <message name="IDS_AVS_CONSENT_UI_TITLE" desc="Title for a dialog asking the user's permission to use Assistant for voice search.">

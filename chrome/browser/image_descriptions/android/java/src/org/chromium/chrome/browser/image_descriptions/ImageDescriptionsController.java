@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -18,7 +19,9 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Singleton class to control the Image Descriptions feature. This class can be used to initiate the
@@ -59,18 +62,20 @@ public class ImageDescriptionsController {
     private ImageDescriptionsControllerDelegate defaultDelegate() {
         return new ImageDescriptionsControllerDelegate() {
             @Override
-            public void enableImageDescriptions() {
-                getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+            public void enableImageDescriptions(Profile profile) {
+                getPrefService(profile).setBoolean(
+                        Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
             }
 
             @Override
-            public void disableImageDescriptions() {
-                getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
+            public void disableImageDescriptions(Profile profile) {
+                getPrefService(profile).setBoolean(
+                        Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
             }
 
             @Override
-            public void setOnlyOnWifiRequirement(boolean onlyOnWifi) {
-                getPrefService().setBoolean(
+            public void setOnlyOnWifiRequirement(boolean onlyOnWifi, Profile profile) {
+                getPrefService(profile).setBoolean(
                         Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, onlyOnWifi);
             }
 
@@ -111,17 +116,39 @@ public class ImageDescriptionsController {
      */
     public void onImageDescriptionsMenuItemSelected(
             Context context, ModalDialogManager modalDialogManager, WebContents webContents) {
-        // If descriptions are enabled, then the menu item option was to stop descriptions. If the
-        // user has the don't ask again option enabled, immediately do a "just once" fetch. In all
-        // other cases, show the dialog to prompt the user.
-        if (imageDescriptionsEnabled()) {
-            disableImageDescriptions();
-        } else if (dontAskAgainEnabled()) {
-            getImageDescriptionsJustOnce(true, webContents);
+        Profile profile = Profile.fromWebContents(webContents);
+        boolean enabledBeforeMenuItemSelected = imageDescriptionsEnabled(profile);
+
+        if (enabledBeforeMenuItemSelected) {
+            // If descriptions are enabled, and the user has selected "only on wifi", and we
+            // currently do not have a wifi connection, then do a "just once" fetch.
+            if (onlyOnWifiEnabled(profile)
+                    && DeviceConditions.getCurrentNetConnectionType(context)
+                            != ConnectionType.CONNECTION_WIFI) {
+                mDelegate.getImageDescriptionsJustOnce(false, webContents);
+                Toast.makeText(context, R.string.image_descriptions_toast_just_once,
+                             Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                // Otherwise, user has elected to stop descriptions.
+                mDelegate.disableImageDescriptions(profile);
+                Toast.makeText(context, R.string.image_descriptions_toast_off, Toast.LENGTH_LONG)
+                        .show();
+            }
         } else {
-            ImageDescriptionsDialog prompt = new ImageDescriptionsDialog(context,
-                    modalDialogManager, getDelegate(), shouldShowDontAskAgainOption(), webContents);
-            prompt.show();
+            // If descriptions are not enabled, and the user has selected "don't ask again", then do
+            // a "just once" fetch. In all other cases, show the dialog to prompt the user.
+            if (dontAskAgainEnabled()) {
+                mDelegate.getImageDescriptionsJustOnce(true, webContents);
+                Toast.makeText(context, R.string.image_descriptions_toast_just_once,
+                             Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                ImageDescriptionsDialog prompt =
+                        new ImageDescriptionsDialog(context, modalDialogManager, getDelegate(),
+                                shouldShowDontAskAgainOption(), webContents);
+                prompt.show();
+            }
         }
     }
 
@@ -136,44 +163,24 @@ public class ImageDescriptionsController {
     }
 
     public boolean shouldShowImageDescriptionsMenuItem() {
-        // TODO(mschillaci): Expand this to check touch exploration rather than accessibility
         return ContentFeatureList.isEnabled(ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS)
-                && ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+                && ChromeAccessibilityUtil.get().isTouchExplorationEnabled();
     }
 
-    public boolean imageDescriptionsEnabled() {
-        return getPrefService().getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID);
+    public boolean imageDescriptionsEnabled(Profile profile) {
+        return getPrefService(profile).getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID);
     }
 
-    public boolean onlyOnWifiEnabled() {
-        return getPrefService().getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI);
-    }
-
-    // Pass-through methods to our delegate.
-
-    protected void enableImageDescriptions() {
-        mDelegate.enableImageDescriptions();
-    }
-
-    protected void disableImageDescriptions() {
-        mDelegate.disableImageDescriptions();
-    }
-
-    protected void setOnlyOnWifiRequirement(boolean onlyOnWifi) {
-        mDelegate.setOnlyOnWifiRequirement(onlyOnWifi);
-    }
-
-    protected void getImageDescriptionsJustOnce(boolean dontAskAgain, WebContents webContents) {
-        mDelegate.getImageDescriptionsJustOnce(dontAskAgain, webContents);
+    public boolean onlyOnWifiEnabled(Profile profile) {
+        return getPrefService(profile).getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI);
     }
 
     /**
      * Helper method to return PrefService for last used regular profile.
      * @return PrefService
      */
-    private PrefService getPrefService() {
-        // TODO(mschillaci): Use the correct profile here for Incognito mode etc.
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    private PrefService getPrefService(Profile profile) {
+        return UserPrefs.get(profile);
     }
 
     /**

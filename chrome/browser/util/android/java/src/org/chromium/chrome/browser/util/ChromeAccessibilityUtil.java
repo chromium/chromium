@@ -20,6 +20,7 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
     private static ChromeAccessibilityUtil sInstance;
     private ActivityStateListenerImpl mActivityStateListener;
     private boolean mWasAccessibilityEnabledForTestingCalled;
+    private boolean mWasTouchExplorationEnabledForTestingCalled;
 
     private final class ActivityStateListenerImpl
             implements ApplicationStatus.ActivityStateListener {
@@ -32,6 +33,7 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
             if (ApplicationStatus.isEveryActivityDestroyed()) {
                 stopTrackingStateAndRemoveObservers();
             } else if (!mWasAccessibilityEnabledForTestingCalled
+                    && !mWasTouchExplorationEnabledForTestingCalled
                     && newState == ActivityState.RESUMED) {
                 updateIsAccessibilityEnabledAndNotify();
             }
@@ -64,9 +66,25 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
     }
 
     @Override
+    public boolean isTouchExplorationEnabled() {
+        if (mActivityStateListener == null) {
+            mActivityStateListener = new ActivityStateListenerImpl();
+            ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
+        }
+        return super.isTouchExplorationEnabled();
+    }
+
+    @Override
     @VisibleForTesting
     public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
         mWasAccessibilityEnabledForTestingCalled = isEnabled != null;
         super.setAccessibilityEnabledForTesting(isEnabled);
+    }
+
+    @Override
+    @VisibleForTesting
+    public void setTouchExplorationEnabledForTesting(@Nullable Boolean isEnabled) {
+        mWasTouchExplorationEnabledForTestingCalled = isEnabled != null;
+        super.setTouchExplorationEnabledForTesting(isEnabled);
     }
 }

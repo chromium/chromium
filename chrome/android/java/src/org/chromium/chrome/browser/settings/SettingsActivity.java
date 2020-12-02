@@ -315,13 +315,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     () -> PasswordCheckFactory.getOrCreate(mSettingsLauncher));
         }
         if (fragment instanceof ImageDescriptionsSettings) {
+            Profile profile = Profile.getLastUsedRegularProfile();
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;
             Bundle extras = imageFragment.getArguments();
             if (extras != null) {
                 extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS,
-                        ImageDescriptionsController.getInstance().imageDescriptionsEnabled());
+                        ImageDescriptionsController.getInstance().imageDescriptionsEnabled(
+                                profile));
                 extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY,
-                        ImageDescriptionsController.getInstance().onlyOnWifiEnabled());
+                        ImageDescriptionsController.getInstance().onlyOnWifiEnabled(profile));
             }
             imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
         }
