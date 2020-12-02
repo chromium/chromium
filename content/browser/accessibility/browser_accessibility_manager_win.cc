@@ -243,12 +243,29 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
         if (BrowserAccessibility* text_field =
                 focus_object->GetTextFieldAncestor()) {
           EnqueueSelectionChangedEvent(*text_field);
+
+          // Plain text fields (including input and textarea elements) have
+          // descendant objects that are part of their internal implementation
+          // in Blink, which are not exposed to platform APIs in the
+          // accessibility tree. Firing an event on such descendants will not
+          // reach the assistive software.
+          if (text_field->IsPlainTextField()) {
+            FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, text_field);
+          } else {
+            FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
+          }
         } else {
           // Fire the event on the root object, which in the absence of a text
           // field ancestor is the closest UIA text provider (other than the
           // focused object) in which the selection has changed.
           DCHECK(node->IsPlatformDocument());
           EnqueueSelectionChangedEvent(*node);
+
+          // "IA2_EVENT_TEXT_CARET_MOVED" should only be fired when a visible
+          // caret or a selection is present. In the case of a text field above,
+          // this is implicitly true.
+          if (node->HasVisibleCaretOrSelection())
+            FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
         }
       }
       break;
@@ -908,13 +925,6 @@ void BrowserAccessibilityManagerWin::FinalizeAccessibilityEvents() {
   // Finalize selection changed events.
   for (BrowserAccessibility* event_node : selection_changed_nodes_) {
     DCHECK(event_node);
-    // IA2_EVENT_TEXT_CARET_MOVED events should not be fired on the document
-    // object, just because a selection has been made within it, because they
-    // would be both unnecessary and noisy.
-    if (!event_node->IsPlatformDocument() &&
-        event_node->HasVisibleCaretOrSelection()) {
-      FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, event_node);
-    }
     if (ToBrowserAccessibilityWin(event_node)
             ->GetCOM()
             ->IsPatternProviderSupported(UIA_TextPatternId)) {
