@@ -5,6 +5,7 @@
 module android_webview.mojom;
 
 import "skia/public/mojom/skcolor.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Similar to blink::mojom::LocalMainFrame. This interface adds additional
 // things that webview needs from the main frame.
@@ -12,4 +13,13 @@ interface LocalMainFrame {
 
   // Sets the base background color for this view.
   SetBackgroundColor(skia.mojom.SkColor color);
+
+  // Do hit test at the given webview coordinate. "Webview" coordinates are
+  // physical pixel values with the 0,0 at the top left of the current displayed
+  // view (ie 0,0 is not the top left of the page if the page is scrolled).
+  // AwRenderViewHostExt::OnUpdateHitTestData receives the result of the hit
+  // test via AwViewHostMsg_UpdateHitTestData IPC message.
+  // TODO(crbug.com/1146495): AwViewHostMsg_UpdateHitTestData IPC message should
+  // be converted to LocalMainFrameHost interface.
+  HitTest(gfx.mojom.PointF touch_center, gfx.mojom.SizeF touch_area);
 };

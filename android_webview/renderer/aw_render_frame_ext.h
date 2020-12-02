@@ -48,8 +48,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   void OnDocumentHasImagesRequest(uint32_t id);
-  void OnDoHitTest(const gfx::PointF& touch_center,
-                   const gfx::SizeF& touch_area);
 
   void OnSetTextZoomFactor(float zoom_factor);
 
@@ -61,6 +59,8 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
 
   // mojom::LocalMainFrame overrides:
   void SetBackgroundColor(SkColor c) override;
+  void HitTest(const gfx::PointF& touch_center,
+               const gfx::SizeF& touch_area) override;
 
   void BindLocalMainFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);

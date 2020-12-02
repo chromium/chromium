@@ -35,13 +35,6 @@ IPC_STRUCT_TRAITS_END()
 IPC_MESSAGE_ROUTED1(AwViewMsg_DocumentHasImages,
                     uint32_t /* id */)
 
-// Do hit test at the given webview coordinate. "Webview" coordinates are
-// physical pixel values with the 0,0 at the top left of the current displayed
-// view (ie 0,0 is not the top left of the page if the page is scrolled).
-IPC_MESSAGE_ROUTED2(AwViewMsg_DoHitTest,
-                    gfx::PointF /* touch_center */,
-                    gfx::SizeF /* touch_area */)
-
 // Sets the zoom factor for text only. Used in layout modes other than
 // Text Autosizing.
 IPC_MESSAGE_ROUTED1(AwViewMsg_SetTextZoomFactor,

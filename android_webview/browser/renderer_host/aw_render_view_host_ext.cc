@@ -67,10 +67,10 @@ void AwRenderViewHostExt::RequestNewHitTestDataAt(
     const gfx::SizeF& touch_area) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We only need to get blink::WebView on the renderer side to invoke the
-  // blink hit test API, so sending this IPC to main frame is enough.
-  web_contents()->GetMainFrame()->Send(
-      new AwViewMsg_DoHitTest(web_contents()->GetMainFrame()->GetRoutingID(),
-                              touch_center, touch_area));
+  // blink hit test Mojo method, so sending this message via LocalMainFrame
+  // interface is enough.
+  if (local_main_frame_remote_)
+    local_main_frame_remote_->HitTest(touch_center, touch_area);
 }
 
 const AwHitTestData& AwRenderViewHostExt::GetLastHitTestData() const {

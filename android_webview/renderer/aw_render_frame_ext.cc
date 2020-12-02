@@ -229,7 +229,6 @@ bool AwRenderFrameExt::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(AwRenderFrameExt, message)
     IPC_MESSAGE_HANDLER(AwViewMsg_DocumentHasImages, OnDocumentHasImagesRequest)
-    IPC_MESSAGE_HANDLER(AwViewMsg_DoHitTest, OnDoHitTest)
     IPC_MESSAGE_HANDLER(AwViewMsg_SetTextZoomFactor, OnSetTextZoomFactor)
     IPC_MESSAGE_HANDLER(AwViewMsg_ResetScrollAndScaleState,
                         OnResetScrollAndScaleState)
@@ -277,8 +276,8 @@ void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
 // Only main frame needs to *receive* the hit test request, because all we need
 // is to get the blink::webView object and invoke a the hitTestResultForTap API
 // from it.
-void AwRenderFrameExt::OnDoHitTest(const gfx::PointF& touch_center,
-                                   const gfx::SizeF& touch_area) {
+void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
+                               const gfx::SizeF& touch_area) {
   blink::WebView* webview = GetWebView();
   if (!webview)
     return;
