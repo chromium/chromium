@@ -27,7 +27,11 @@ declare_args() {
 
   # Auto-configure for Goma RBE backend.
   # TODO(crbug.com/1015730): true if use_goma = true in the future.
-  ios_use_goma_rbe = false
+  ios_use_goma_rbe = -1
+}
+
+if (ios_use_goma_rbe == -1) {
+  ios_use_goma_rbe = is_ios && use_goma
 }
 
 assert(!is_win || !use_goma || is_clang,
