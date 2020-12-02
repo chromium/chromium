@@ -596,190 +596,170 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Diagnostics App -->
-      <!-- TODO(michaelcheco): Update with finalized copies of the strings -->
-      <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app." translateable="false">
+      <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">
         Diagnostics
       </message>
-      <message name="IDS_DIAGNOSTICS_MEMORY_TITLE" desc="The title of the diagnostics memory section which shows users' information about their computer memory." translateable="false">
+      <message name="IDS_DIAGNOSTICS_MEMORY_TITLE" desc="The title of the diagnostics memory section which shows users' information about their computer memory.">
         Memory
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_TITLE" desc="The title of the diagnostics battery section which shows users' information about their computer battery." translateable="false">
+      <message name="IDS_DIAGNOSTICS_BATTERY_TITLE" desc="The title of the diagnostics battery section which shows users' information about their computer battery.">
         Battery
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage.">
         CPU
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_USAGE_LABEL" desc="The label for the percentage of CPU that is currently being used." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_LABEL" desc="The label for the percentage of CPU that is currently being used.">
         Current usage
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_USAGE_TEXT" desc="The text displaying the percentage of CPU that is currently being used." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_TEXT" desc="The text displaying the percentage of CPU that is currently being used.">
         <ph name="PERCENTAGE_VALUE">$1<ex>50</ex></ph>%
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_USAGE_SYSTEM_LABEL" desc="The label for the percentage of CPU that is currently being used by the system." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_SYSTEM_LABEL" desc="The label for the percentage of CPU that is currently being used by the system.">
         System
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_USAGE_USER_LABEL" desc="The label for the percentage of CPU that is currently being used by the user." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_USER_LABEL" desc="The label for the percentage of CPU that is currently being used by the user.">
         User
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL" desc="The label for the current CPU temperature." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL" desc="The label for the current CPU temperature.">
         Temperature
       </message>
-      <message name="IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL" desc="The label for the total amount of memory on a device." translateable="false">
-        Total Memory
-      </message>
-      <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL" desc="The label for the amount of memory available on a device." translateable="false">
-        Memory available
-      </message>
-      <message name="IDS_DIAGNOSTICS_PERCENTAGE_LABEL" desc="The label displaying localized percentage." translateable="true">
+      <message name="IDS_DIAGNOSTICS_PERCENTAGE_LABEL" desc="The label displaying localized percentage.">
         <ph name="PERCENTAGE_VALUE">$1<ex>50</ex></ph>%
       </message>
-      <message name="IDS_DIAGNOSTICS_POWER_LABEL" desc="The label for the power adapter status." translateable="false">
-        Power
-      </message>
-      <message name="IDS_DIAGNOSTICS_POWER_TIME_LABEL" desc="The label for the time until the battery is fully charged." translateable="false">
-        Time until full
-      </message>
-      <message name="IDS_DIAGNOSTICS_CHARGE_NOW_LABEL" desc="The label for a battery's current battery level represented in milliamps." translateable="false">
-        Now charge
-      </message>
-      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="The label for a battery's current power consumption represented in milliamps." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="The label for a battery's current power consumption represented in milliamps.">
         Current
       </message>
-      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TEXT" desc="The text for a battery's current power consumption represented in milliamps." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TEXT" desc="The text for a battery's current power consumption represented in milliamps.">
         <ph name="CURRENT_VALUE">$1<ex>1123</ex></ph>mA
       </message>
-      <message name="IDS_DIAGNOSTICS_DESIGNED_FULL_CHARGE_LABEL" desc="The label for a battery's designed full charge capacity represented in milliamp hours." translateable="false">
-        Designed full charge
-      </message>
-      <message name="IDS_DIAGNOSTICS_NOW_FULL_CHARGE_LABEL" desc="The label for a battery's full charge capacity represented in milliamp hours." translateable="false">
-        Now full charge
-      </message>
-      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL" desc="The label for a battery's cycle count. The cycle count is the number of times the battery has been drained and recharged." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL" desc="The label for a battery's cycle count. The cycle count is the number of times the battery has been drained and recharged.">
         Cycle count
       </message>
-      <message name="IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL" desc="The label for the progress bar that displays users' remaining battery charge." translateable="false">
+      <message name="IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL" desc="The label for the progress bar that displays users' remaining battery charge.">
         Remaining charge
       </message>
-      <message name="IDS_DIAGNOSTICS_SESSION_LOG_LABEL" desc="The label for the button that opens the session log for the diagnostics app." translateable="false">
-        Session log
+      <message name="IDS_DIAGNOSTICS_SESSION_LOG_LABEL" desc="The label for the button that opens the session log for the diagnostics app.">
+        Save Session log
       </message>
       <message name="IDS_DIAGNOSTICS_USED_MEMORY_LABEL" desc="The label for the progress bar that displays the amount of used memory on a users' device." translateable="false">
         Used memory
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT" desc="The text for a battery's full charge capacity represented in milliamp hours." translateable="true">
+      <message name="IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT" desc="The text for a battery's full charge capacity represented in milliamp hours.">
         <ph name="CHARGE_VALUE">$1<ex>6000</ex></ph>mAh Battery
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name and thread count." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name and thread count.">
         <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads)
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health." translateable="true">
+      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health.">
         Battery health
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT" desc="The text for the battery's health percentage." translateable="true">
+      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT" desc="The text for the battery's health percentage.">
         <ph name="PERCENTAGE_VALUE">$1<ex>92</ex></ph>%
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for CPU speed." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for CPU speed.">
         CPU Speed
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius.">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
       </message>
-      <message name="IDS_DIANOSTICS_LEARN_MORE_LABEL" desc="The label for the button that links to a help support article to learn more about the test routines being run." translateable="true">
+      <message name="IDS_DIANOSTICS_LEARN_MORE_LABEL" desc="The label for the button that links to a help support article to learn more about the test routines being run.">
         Learn more in the Help Center
       </message>
-      <message name="IDS_DIAGNOSTICS_DEVICE_INFO_TEXT" desc="The text that displays the device's name and milestone version." translateable="true">
+      <message name="IDS_DIAGNOSTICS_DEVICE_INFO_TEXT" desc="The text that displays the device's name and milestone version.">
         (<ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>)
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT" desc="The tooltip that states that battery capacity declines with usage." translateable="true">
+      <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT" desc="The tooltip that states that battery capacity declines with usage.">
         Batteries capacity declines with usage
       </message>
-      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that states that a battery is considered consumed once it reaches its cycle count limit." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that states that a battery is considered consumed once it reaches its cycle count limit.">
         The battery is considered consumed once it reaches the limit
       </message>
-      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT" desc="The tooltip that states the current rate at which a user's device is charging or discharging." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT" desc="The tooltip that states the current rate at which a user's device is charging or discharging.">
         The rate at which the device is currently charging or discharging
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage.">
         This measures the CPU usage, and is an aggregation of all cores
       </message>
-      <message name="IDS_DIANOSTICS_ROUTINE_NAME_TEXT" desc="The text that informs the user which test is currently running." translateable="true">
+      <message name="IDS_DIANOSTICS_ROUTINE_NAME_TEXT" desc="The text that informs the user which test is currently running.">
         Running <ph name="TEST_NAME">$1<ex>Charging rate</ex></ph> test...
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT" desc="The text for the battery charge routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT" desc="The text for the battery charge routine.">
         Charging rate
       </message>
-      <message name="IDS_DIAGNOSTICS_BATTERY_DISCHARGE_ROUTINE_TEXT" desc="The text for the battery discharge routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_BATTERY_DISCHARGE_ROUTINE_TEXT" desc="The text for the battery discharge routine.">
         Discharging rate
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_CACHE_ROUTINE_TEXT" desc="The text for the CPU cache routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_CACHE_ROUTINE_TEXT" desc="The text for the CPU cache routine.">
         Cache
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_STRESS_ROUTINE_TEXT" desc="The text for the CPU stress routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_STRESS_ROUTINE_TEXT" desc="The text for the CPU stress routine.">
         Stress
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_FLOATING_POINT_ACCURACY_ROUTINE_TEXT" desc="The text for the CPU floating point accuracy routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_FLOATING_POINT_ACCURACY_ROUTINE_TEXT" desc="The text for the CPU floating point accuracy routine.">
         Floating point accuracy
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_PRIME_SEARCH_ROUTINE_TEXT" desc="The text for the CPU prime search routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_CPU_PRIME_SEARCH_ROUTINE_TEXT" desc="The text for the CPU prime search routine.">
         Prime search
       </message>
-      <message name="IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT" desc="The text for the memory routine." translateable="false">
+      <message name="IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT" desc="The text for the memory routine.">
         Memory
       </message>
-      <message name="IDS_CHARGE_TEST_RESULT" desc="The result text for charging routine." translateable="true">
+      <message name="IDS_CHARGE_TEST_RESULT" desc="The result text for charging routine.">
         Charged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
       </message>
-      <!-- TODO(joonbug): verify this string since it's not present in the mock -->
-      <message name="IDS_DISCHARGE_TEST_RESULT" desc="The result text for discharging routine." translateable="false">
+      <message name="IDS_DISCHARGE_TEST_RESULT" desc="The result text for discharging routine.">
         Discharged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
       </message>
-      <message name="IDS_DIAGNOSTICS_TEST_FAILURE_TEXT" desc="The text displayed when a test fails." translateable="true">
+      <message name="IDS_DIAGNOSTICS_TEST_FAILURE_TEXT" desc="The text displayed when a test fails.">
         Test failed
       </message>
-      <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT" desc="The text displayed when a test passes." translateable="true">
+      <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT" desc="The text displayed when a test passes.">
         Test succeeded
       </message>
-      <message name="IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT" desc="The text displayed to indicate that a test is running." translateable="true">
+      <message name="IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT" desc="The text displayed to indicate that a test is running.">
         RUNNING
       </message>
-      <message name="IDS_DIAGNOSTICS_TEST_FAILURE_BADGE_TEXT" desc="The text displayed to indicate that a test failed." translateable="true">
+      <message name="IDS_DIAGNOSTICS_TEST_FAILURE_BADGE_TEXT" desc="The text displayed to indicate that a test failed.">
         FAILED
       </message>
-      <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT" desc="The text displayed to indicate that a test passed." translateable="true">
+      <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT" desc="The text displayed to indicate that a test passed.">
         SUCCESS
       </message>
-      <message name="IDS_DIAGNOSTICS_TEST_RUNNING_TEXT" desc="The text displayed while a test is running." translateable="true">
+      <message name="IDS_DIAGNOSTICS_TEST_RUNNING_TEXT" desc="The text displayed while a test is running.">
         Test running
       </message>
-      <message name="IDS_DIAGNOSTICS_HIDE_REPORT_TEXT" desc="The text for the button that closes the test summary report." translateable="true">
+      <message name="IDS_DIAGNOSTICS_HIDE_REPORT_TEXT" desc="The text for the button that closes the test summary report.">
         Hide Report
       </message>
-      <message name="IDS_DIAGNOSTICS_SEE_REPORT_TEXT" desc="The text for the button that shows the test summary report" translateable="true">
+      <message name="IDS_DIAGNOSTICS_SEE_REPORT_TEXT" desc="The text for the button that shows the test summary report">
         See Report
       </message>
-      <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test." translateable="true">
+      <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test.">
         <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test
       </message>
-      <message name="IDS_DIAGNOSTICS_CHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery charge test." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery charge test.">
         Run Charge test
       </message>
-      <message name="IDS_DIAGNOSTICS_DISCHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery discharge test." translateable="true">
+      <message name="IDS_DIAGNOSTICS_DISCHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery discharge test.">
         Run Discharge test
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the CPU tests." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the CPU tests.">
         Run CPU test
       </message>
-      <message name="IDS_DIAGNOSTICS_MEMORY_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the memory test." translateable="true">
+      <message name="IDS_DIAGNOSTICS_MEMORY_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the memory test.">
         Run Memory test
       </message>
-      <message name="IDS_DIAGNOSTICS_RUN_AGAIN_BUTTON_TEXT" desc="The text for the button used to rerun a test." translateable="true">
+      <message name="IDS_DIAGNOSTICS_RUN_AGAIN_BUTTON_TEXT" desc="The text for the button used to rerun a test.">
         Run again
       </message>
-      <message name="IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT" desc="The text for the button used to stop a test." translateable="true">
+      <message name="IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT" desc="The text for the button used to stop a test.">
         Stop test
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the CPU speed. GHz is an SI unit for gigahertz." translateable="true">
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the CPU speed. GHz is an SI unit for gigahertz.">
         <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz / <ph name="MAX">$2<ex>1.9</ex></ph>GHz
+      </message>
+      <message name="IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL" desc="The label for the total amount of memory on a device." translateable="false">
+        Total Memory
       </message>
 
       <!-- Quick Answers -->

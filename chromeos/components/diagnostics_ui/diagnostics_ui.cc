@@ -33,7 +33,6 @@ constexpr char kGeneratedPath[] =
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"adapterStatus", IDS_DIAGNOSTICS_POWER_LABEL},
       {"batteryChargeRoutineText", IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT},
       {"batteryDischargeRoutineText",
        IDS_DIAGNOSTICS_BATTERY_DISCHARGE_ROUTINE_TEXT},
@@ -42,9 +41,6 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"batteryHealthText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT},
       {"batteryHealthTooltipText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT},
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
-      {"chargeFullDesign", IDS_DIAGNOSTICS_DESIGNED_FULL_CHARGE_LABEL},
-      {"chargeFullNow", IDS_DIAGNOSTICS_NOW_FULL_CHARGE_LABEL},
-      {"chargeNow", IDS_DIAGNOSTICS_CHARGE_NOW_LABEL},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
       {"cpuCacheRoutineText", IDS_DIAGNOSTICS_CPU_CACHE_ROUTINE_TEXT},
       {"cpuChipText", IDS_DIAGNOSTICS_CPU_CHIP_TEXT},
@@ -73,11 +69,9 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"dischargeTestResultText", IDS_DISCHARGE_TEST_RESULT},
       {"hideReportText", IDS_DIAGNOSTICS_HIDE_REPORT_TEXT},
       {"learnMore", IDS_DIANOSTICS_LEARN_MORE_LABEL},
-      {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
-      {"powerTime", IDS_DIAGNOSTICS_POWER_TIME_LABEL},
       {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},
       {"routineEntryText", IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT},
       {"routineNameText", IDS_DIANOSTICS_ROUTINE_NAME_TEXT},
@@ -88,7 +82,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
        IDS_DIAGNOSTICS_DISCHARGE_RUN_TESTS_BUTTON_TEXT},
       {"runCpuTestText", IDS_DIAGNOSTICS_CPU_RUN_TESTS_BUTTON_TEXT},
       {"runMemoryTestText", IDS_DIAGNOSTICS_MEMORY_RUN_TESTS_BUTTON_TEXT},
-      {"seeReportText", IDS_DIAGNOSTICS_HIDE_REPORT_TEXT},
+      {"seeReportText", IDS_DIAGNOSTICS_SEE_REPORT_TEXT},
       {"sessionLog", IDS_DIAGNOSTICS_SESSION_LOG_LABEL},
       {"stopTestButtonText", IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT},
       {"testFailure", IDS_DIAGNOSTICS_TEST_FAILURE_TEXT},
