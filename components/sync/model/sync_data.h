@@ -21,9 +21,6 @@ class SyncEntity;
 
 namespace syncer {
 
-class SyncDataLocal;
-class SyncDataRemote;
-
 // A light-weight container for immutable sync data. Pass-by-value and storage
 // in STL containers are supported and encouraged if helpful.
 class SyncData {
@@ -81,12 +78,7 @@ class SyncData {
 
   std::string ToString() const;
 
-  // TODO(zea): Query methods for other sync properties: parent, successor, etc.
-
- protected:
-  // These data members are protected so derived types like SyncDataLocal and
-  // SyncDataRemote can access them.
-
+ private:
   // Necessary since we forward-declare sync_pb::SyncEntity; see
   // comments in immutable.h.
   struct ImmutableSyncEntityTraits {
@@ -109,7 +101,6 @@ class SyncData {
   // The actual shared sync entity being held.
   ImmutableSyncEntity immutable_entity_;
 
- private:
   // Whether this SyncData represents a local change.
   bool is_local_;
 
@@ -118,26 +109,6 @@ class SyncData {
 
   // Clears |entity|.
   SyncData(bool is_local_, sync_pb::SyncEntity* entity);
-};
-
-// A SyncData going to the syncer.
-class SyncDataLocal : public SyncData {
- public:
-  // Construct a SyncDataLocal from a SyncData.
-  //
-  // |sync_data|'s IsLocal() must be true.
-  explicit SyncDataLocal(const SyncData& sync_data);
-  ~SyncDataLocal();
-};
-
-// A SyncData that comes from the syncer.
-class SyncDataRemote : public SyncData {
- public:
-  // Construct a SyncDataRemote from a SyncData.
-  //
-  // |sync_data|'s IsLocal() must be false.
-  explicit SyncDataRemote(const SyncData& sync_data);
-  ~SyncDataRemote();
 };
 
 // gmock printer helper.

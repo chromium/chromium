@@ -120,33 +120,15 @@ std::string SyncData::ToString() const {
   base::JSONWriter::WriteWithOptions(*EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &specifics);
+  std::string is_local_string = IsLocal() ? "true" : "false";
 
-  if (IsLocal()) {
-    SyncDataLocal sync_data_local(*this);
-    return "{ isLocal: true, type: " + type +
-           ", tagHash: " + sync_data_local.GetClientTagHash().value() +
-           ", title: " + GetTitle() + ", specifics: " + specifics + "}";
-  }
-
-  SyncDataRemote sync_data_remote(*this);
-  return "{ isLocal: false, type: " + type + ", specifics: " + specifics + "}";
+  return "{ isLocal: " + is_local_string + ", type: " + type +
+         ", tagHash: " + GetClientTagHash().value() + ", title: " + GetTitle() +
+         ", specifics: " + specifics + "}";
 }
 
 void PrintTo(const SyncData& sync_data, std::ostream* os) {
   *os << sync_data.ToString();
 }
-
-SyncDataLocal::SyncDataLocal(const SyncData& sync_data) : SyncData(sync_data) {
-  DCHECK(sync_data.IsLocal());
-}
-
-SyncDataLocal::~SyncDataLocal() {}
-
-SyncDataRemote::SyncDataRemote(const SyncData& sync_data)
-    : SyncData(sync_data) {
-  DCHECK(!sync_data.IsLocal());
-}
-
-SyncDataRemote::~SyncDataRemote() {}
 
 }  // namespace syncer

@@ -51,7 +51,8 @@ sync_pb::PersistedEntityData CreatePersistedFromEntityData(
 }
 
 sync_pb::PersistedEntityData CreatePersistedFromSyncData(
-    const SyncDataLocal& sync_data) {
+    const SyncData& sync_data) {
+  DCHECK(sync_data.IsLocal());
   DCHECK(!sync_data.GetTitle().empty());
   sync_pb::PersistedEntityData persisted;
   persisted.set_name(sync_data.GetTitle());
@@ -138,18 +139,17 @@ class LocalChangeProcessor : public SyncChangeProcessor {
           DCHECK_EQ(type_, change.sync_data().GetDataType());
           DCHECK(change.sync_data().IsLocal())
               << " from " << change.location().ToString();
-
-          SyncDataLocal sync_data(change.sync_data());
-          DCHECK(sync_data.IsValid())
+          DCHECK(change.sync_data().IsValid())
               << " from " << change.location().ToString();
 
-          const ClientTagHash client_tag_hash = sync_data.GetClientTagHash();
+          const ClientTagHash client_tag_hash =
+              change.sync_data().GetClientTagHash();
           const std::string storage_key = client_tag_hash.value();
           DCHECK(!storage_key.empty());
 
-          (*in_memory_store_)[storage_key] = sync_data.GetSpecifics();
+          (*in_memory_store_)[storage_key] = change.sync_data().GetSpecifics();
           sync_pb::PersistedEntityData persisted_entity =
-              CreatePersistedFromSyncData(sync_data);
+              CreatePersistedFromSyncData(change.sync_data());
           batch->WriteData(storage_key, persisted_entity.SerializeAsString());
 
           other_->Put(storage_key,
@@ -161,7 +161,6 @@ class LocalChangeProcessor : public SyncChangeProcessor {
         }
 
         case SyncChange::ACTION_DELETE: {
-          // Both SyncDataLocal and SyncDataRemote are allowed for deletions.
           const std::string storage_key =
               change.sync_data().GetClientTagHash().value();
           DCHECK(!storage_key.empty())
