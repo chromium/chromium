@@ -1,0 +1,17 @@
+<body>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script>
+    const iframe = document.createElement('iframe');
+    iframe.allow = "document-domain 'none'";
+    iframe.src = "resources/permissions-policy-iframe.xml";
+
+    async_test(t => {
+      window.addEventListener('message', t.step_func_done(event => {
+        assert_equals(event.data, 'document-domain disallowed');
+      }), {once: true});
+    });
+
+    document.body.appendChild(iframe);
+  </script>
+</body>
