@@ -219,6 +219,9 @@ class CORE_EXPORT HTMLCanvasElement final
       RasterModeHint hint) override;
   bool IsPrinting() const override;
 
+  // CanvasRenderingContextHost implementation.
+  UkmParameters GetUkmParameters() override;
+
   void DisableAcceleration(std::unique_ptr<Canvas2DLayerBridge>
                                unaccelerated_bridge_used_for_testing = nullptr);
 

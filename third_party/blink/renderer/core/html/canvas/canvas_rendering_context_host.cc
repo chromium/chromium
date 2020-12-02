@@ -23,9 +23,8 @@
 
 namespace blink {
 
-CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
-                                                       UkmParameters ukm_params)
-    : host_type_(host_type), ukm_params_(ukm_params) {}
+CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type)
+    : host_type_(host_type) {}
 
 void CanvasRenderingContextHost::RecordCanvasSizeToUMA(const IntSize& size) {
   if (did_record_canvas_size_to_uma_)
@@ -338,9 +337,9 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
       function_type =
           CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
     }
+    auto* execution_context = ExecutionContext::From(script_state);
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
-        image_bitmap, options, function_type, start_time,
-        ExecutionContext::From(script_state), ukm_params_,
+        image_bitmap, options, function_type, start_time, execution_context,
         IdentifiabilityStudySettings::Get()->IsTypeAllowed(
             IdentifiableSurface::Type::kCanvasReadback)
             ? IdentifiabilityInputDigest(context)

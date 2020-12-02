@@ -1699,6 +1699,7 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class IgnoreOpensDuringUnloadCountIncrementer;
   friend class NthIndexCache;
   friend class CanvasRenderingAPIUkmMetricsTest;
+  friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextSubresourceFilterTest,
                            DuringOnFreeze);
   FRIEND_TEST_ALL_PREFIXES(DocumentTest, FindInPageUkm);
