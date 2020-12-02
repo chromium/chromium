@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -53,7 +53,7 @@ if (optimize_webui) {
   # for bundling.
   preprocess_folder = "../preprocessed/modules"
 
-  preprocess_grit("preprocess") {
+  preprocess_if_expr("preprocess") {
     defines = [ "is_official_build=$is_official_build" ]
     in_folder = "./"
 
@@ -70,7 +70,7 @@ if (optimize_webui) {
     }
   }
 
-  preprocess_grit("preprocess_gen") {
+  preprocess_if_expr("preprocess_gen") {
     deps = [ ":web_components" ]
     defines = [ "is_official_build=$is_official_build" ]
     in_folder = target_gen_dir
