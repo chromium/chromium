@@ -11,6 +11,7 @@ import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {assertEquals, assertTrue} from '../chai_assert.js';
 
 /**
  * Sets the fake password data, the appropriate route and creates the element.
@@ -332,15 +333,24 @@ suite('PasswordsDeviceSection', function() {
   });
 
   // Testing moving multiple password dialog Move button.
-  test('moveMultiplePasswordsDialogMoveButton', function() {
-    const deviceEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42});
-    const moveMultipleDialog =
-        elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
-    assertTrue(moveMultipleDialog.$.dialog.open);
+  test('moveMultiplePasswordsDialogMoveButton', async function() {
+    const deviceEntry1 = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart1', deviceId: 41});
+    const deviceEntry2 = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart2', deviceId: 54});
+    const moveMultipleDialog = elementFactory.createMoveMultiplePasswordsDialog(
+        [deviceEntry1, deviceEntry2]);
+    // Uncheck the first entry.
+    const firstPasswordItem = moveMultipleDialog.$$('password-list-item');
+    firstPasswordItem.querySelector('cr-checkbox').click();
+    // Press the Move button
     moveMultipleDialog.$.moveButton.click();
     flush();
-    // The move button only close the dialog for now.
+    // Only the 2nd entry should be moved
+    const movedIds = await passwordManager.whenCalled('movePasswordsToAccount');
+    assertEquals(1, movedIds.length);
+    assertEquals(deviceEntry2.deviceId, movedIds[0]);
+    // The dialog should be closed.
     assertFalse(moveMultipleDialog.$.dialog.open);
   });
 

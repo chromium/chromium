@@ -43,6 +43,14 @@ Polymer({
 
   /** @private */
   onMoveButtonClick_() {
+    const checkboxes = this.$.dialog.querySelectorAll('cr-checkbox');
+    const selectedPasswords = [];
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        selectedPasswords.push(Number(checkbox.dataset.id));
+      }
+    });
+    PasswordManagerImpl.getInstance().movePasswordsToAccount(selectedPasswords);
     this.$.dialog.close();
   },
 
