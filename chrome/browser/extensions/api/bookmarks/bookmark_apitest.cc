@@ -44,12 +44,10 @@ class BookmarksApiTest : public ExtensionApiTest,
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          BookmarksApiTest,
                          ::testing::Values(ContextType::kEventPage));
-// Flaky on all platforms but Mac.  https://crbug.com/1112903
-#if defined(OS_MAC)
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          BookmarksApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
-#endif
 
 IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
   // Add test managed bookmarks to verify that the bookmarks API can read them
@@ -75,8 +73,13 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
   if (GetParam() == ContextType::kEventPage) {
     ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
   } else {
+    // TODO(https://crbug.com/1146173): This test is being run with
+    // file access to prevent flakiness for the SW version. This should
+    // be reverted to run without file access when this bug is fixed.
     ASSERT_TRUE(RunExtensionTestWithFlags(
-        "bookmarks", kFlagRunAsServiceWorkerBasedExtension, kFlagNone))
+        "bookmarks",
+        kFlagRunAsServiceWorkerBasedExtension | kFlagEnableFileAccess,
+        kFlagNone))
         << message_;
   }
 }
