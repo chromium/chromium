@@ -102,6 +102,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
   static void ContinueRequestFullscreen(Document&,
                                         Element&,
                                         FullscreenRequestType,
+                                        const FullscreenOptions*,
                                         ScriptPromiseResolver* resolver,
                                         bool error);
 
@@ -119,17 +120,20 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
    public:
     PendingRequest(Element* element,
                    FullscreenRequestType type,
+                   const FullscreenOptions* options,
                    ScriptPromiseResolver* resolver);
     virtual ~PendingRequest();
     virtual void Trace(Visitor* visitor) const;
 
     Element* element() { return element_; }
     FullscreenRequestType type() { return type_; }
+    const FullscreenOptions* options() { return options_; }
     ScriptPromiseResolver* resolver() { return resolver_; }
 
    private:
     Member<Element> element_;
     FullscreenRequestType type_;
+    Member<const FullscreenOptions> options_;
     Member<ScriptPromiseResolver> resolver_;
 
     DISALLOW_COPY_AND_ASSIGN(PendingRequest);

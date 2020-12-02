@@ -1587,7 +1587,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EnterFullscreen(blink::mojom::FullscreenOptionsPtr options,
                        EnterFullscreenCallback callback) override;
   void ExitFullscreen() override;
-  void FullscreenStateChanged(bool is_fullscreen) override;
+  void FullscreenStateChanged(
+      bool is_fullscreen,
+      blink::mojom::FullscreenOptionsPtr options) override;
   void RegisterProtocolHandler(const std::string& scheme,
                                const GURL& url,
                                bool user_gesture) override;

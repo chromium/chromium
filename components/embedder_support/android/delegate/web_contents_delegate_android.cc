@@ -324,6 +324,17 @@ void WebContentsDelegateAndroid::EnterFullscreenModeForTab(
       env, obj, options.prefers_navigation_bar);
 }
 
+void WebContentsDelegateAndroid::FullscreenStateChangedForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return;
+  Java_WebContentsDelegateAndroid_fullscreenStateChangedForTab(
+      env, obj, options.prefers_navigation_bar);
+}
+
 void WebContentsDelegateAndroid::ExitFullscreenModeForTab(
     WebContents* web_contents) {
   JNIEnv* env = AttachCurrentThread();

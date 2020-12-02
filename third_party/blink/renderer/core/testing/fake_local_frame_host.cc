@@ -25,7 +25,9 @@ void FakeLocalFrameHost::EnterFullscreen(
 
 void FakeLocalFrameHost::ExitFullscreen() {}
 
-void FakeLocalFrameHost::FullscreenStateChanged(bool is_fullscreen) {}
+void FakeLocalFrameHost::FullscreenStateChanged(
+    bool is_fullscreen,
+    mojom::blink::FullscreenOptionsPtr options) {}
 
 void FakeLocalFrameHost::RegisterProtocolHandler(const WTF::String& scheme,
                                                  const ::blink::KURL& url,

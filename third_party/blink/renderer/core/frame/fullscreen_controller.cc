@@ -50,6 +50,34 @@
 
 namespace blink {
 
+namespace {
+
+mojom::blink::FullscreenOptionsPtr ToMojoOptions(
+    LocalFrame* frame,
+    const FullscreenOptions* options,
+    FullscreenRequestType request_type) {
+  auto fullscreen_options = mojom::blink::FullscreenOptions::New();
+  fullscreen_options->prefers_navigation_bar =
+      options->navigationUI() != "hide";
+  if (options->hasScreen()) {
+    DCHECK(RuntimeEnabledFeatures::WindowPlacementEnabled(frame->DomWindow()));
+    if (options->screen()->DisplayId() != Screen::kInvalidDisplayId)
+      fullscreen_options->display_id = options->screen()->DisplayId();
+  }
+
+  // Propagate the type of fullscreen request (prefixed or unprefixed) to
+  // OOPIF ancestor frames so that they fire matching prefixed or unprefixed
+  // fullscreen events.
+  fullscreen_options->is_prefixed =
+      request_type & FullscreenRequestType::kPrefixed;
+  fullscreen_options->is_xr_overlay =
+      request_type & FullscreenRequestType::kForXrOverlay;
+
+  return fullscreen_options;
+}
+
+}  // namespace
+
 FullscreenController::FullscreenController(WebViewImpl* web_view_base)
     : web_view_base_(web_view_base),
       pending_frames_(MakeGarbageCollected<PendingFullscreenSet>()) {}
@@ -147,22 +175,8 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
     return;
 
   DCHECK(state_ == State::kInitial);
-  auto fullscreen_options = mojom::blink::FullscreenOptions::New();
-  fullscreen_options->prefers_navigation_bar =
-      options->navigationUI() != "hide";
-  if (options->hasScreen()) {
-    DCHECK(RuntimeEnabledFeatures::WindowPlacementEnabled(frame.DomWindow()));
-    if (options->screen()->DisplayId() != Screen::kInvalidDisplayId)
-      fullscreen_options->display_id = options->screen()->DisplayId();
-  }
 
-  // Propagate the type of fullscreen request (prefixed or unprefixed) to
-  // OOPIF ancestor frames so that they fire matching prefixed or unprefixed
-  // fullscreen events.
-  fullscreen_options->is_prefixed =
-      request_type & FullscreenRequestType::kPrefixed;
-  fullscreen_options->is_xr_overlay =
-      request_type & FullscreenRequestType::kForXrOverlay;
+  auto fullscreen_options = ToMojoOptions(&frame, options, request_type);
 
 #if DCHECK_IS_ON()
   DVLOG(2) << __func__ << ": request_type="
@@ -198,8 +212,11 @@ void FullscreenController::ExitFullscreen(LocalFrame& frame) {
   state_ = State::kExitingFullscreen;
 }
 
-void FullscreenController::FullscreenElementChanged(Element* old_element,
-                                                    Element* new_element) {
+void FullscreenController::FullscreenElementChanged(
+    Element* old_element,
+    Element* new_element,
+    const FullscreenOptions* options,
+    FullscreenRequestType request_type) {
   DCHECK_NE(old_element, new_element);
 
   // We only override the WebView's background color for overlay fullscreen
@@ -231,8 +248,14 @@ void FullscreenController::FullscreenElementChanged(Element* old_element,
   // Tell the browser the fullscreen state has changed.
   if (Element* owner = new_element ? new_element : old_element) {
     Document& doc = owner->GetDocument();
+    bool in_fullscreen = !!new_element;
     if (LocalFrame* frame = doc.GetFrame()) {
-      frame->GetLocalFrameHostRemote().FullscreenStateChanged(!!new_element);
+      mojom::blink::FullscreenOptionsPtr mojo_options;
+      if (in_fullscreen)
+        mojo_options = ToMojoOptions(frame, options, request_type);
+
+      frame->GetLocalFrameHostRemote().FullscreenStateChanged(
+          in_fullscreen, std::move(mojo_options));
       if (IsSpatialNavigationEnabled(frame)) {
         doc.GetPage()->GetSpatialNavigationController().FullscreenStateChanged(
             new_element);

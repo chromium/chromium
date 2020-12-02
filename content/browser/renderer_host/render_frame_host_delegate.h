@@ -299,8 +299,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void ExitFullscreenMode(bool will_cause_resize) {}
 
   // Notification that this frame has changed fullscreen state.
-  virtual void FullscreenStateChanged(RenderFrameHost* rfh,
-                                      bool is_fullscreen) {}
+  virtual void FullscreenStateChanged(
+      RenderFrameHost* rfh,
+      bool is_fullscreen,
+      blink::mojom::FullscreenOptionsPtr options) {}
 
 #if defined(OS_ANDROID)
   // Updates information to determine whether a user gesture should carryover to

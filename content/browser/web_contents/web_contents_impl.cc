@@ -3184,14 +3184,25 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
   FullscreenContentsSet(GetBrowserContext())->erase(this);
 }
 
-void WebContentsImpl::FullscreenStateChanged(RenderFrameHost* rfh,
-                                             bool is_fullscreen) {
+void WebContentsImpl::FullscreenStateChanged(
+    RenderFrameHost* rfh,
+    bool is_fullscreen,
+    blink::mojom::FullscreenOptionsPtr options) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::FullscreenStateChanged",
                         "render_frame_host", rfh, "is_fullscreen",
                         is_fullscreen);
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(rfh);
 
   if (is_fullscreen) {
+    if (options.is_null()) {
+      ReceivedBadMessage(rfh->GetProcess(),
+                         bad_message::WCI_INVALID_FULLSCREEN_OPTIONS);
+      return;
+    }
+
+    if (delegate_)
+      delegate_->FullscreenStateChangedForTab(frame, *options);
+
     if (!base::Contains(fullscreen_frames_, frame)) {
       fullscreen_frames_.insert(frame);
       FullscreenFrameSetUpdated();
@@ -6458,7 +6469,8 @@ void WebContentsImpl::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
     display_cutout_host_impl_->RenderFrameDeleted(render_frame_host);
 
   // Remove any fullscreen state that the frame has stored.
-  FullscreenStateChanged(render_frame_host, false /* is_fullscreen */);
+  FullscreenStateChanged(render_frame_host, false /* is_fullscreen */,
+                         blink::mojom::FullscreenOptionsPtr());
 }
 
 void WebContentsImpl::ShowContextMenu(RenderFrameHost* render_frame_host,

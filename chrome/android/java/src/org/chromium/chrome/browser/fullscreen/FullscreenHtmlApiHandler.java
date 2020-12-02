@@ -337,7 +337,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @param options Options to choose mode of fullscreen.
      */
     private void enterPersistentFullscreenMode(FullscreenOptions options) {
-        if (!getPersistentFullscreenMode() || ObjectsCompat.equals(mFullscreenOptions, options)) {
+        if (!getPersistentFullscreenMode() || !ObjectsCompat.equals(mFullscreenOptions, options)) {
             mPersistentModeSupplier.set(true);
             if (mAreControlsHidden.get()) {
                 // The browser controls are currently hidden.

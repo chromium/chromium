@@ -195,7 +195,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                        FullscreenRequestType) override;
   void ExitFullscreen(LocalFrame&) override;
   void FullscreenElementChanged(Element* old_element,
-                                Element* new_element) override;
+                                Element* new_element,
+                                const FullscreenOptions*,
+                                FullscreenRequestType) override;
 
   void AnimateDoubleTapZoom(const gfx::Point& point,
                             const gfx::Rect& rect) override;

@@ -628,8 +628,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenMode(bool will_cause_resize) override;
-  void FullscreenStateChanged(RenderFrameHost* rfh,
-                              bool is_fullscreen) override;
+  void FullscreenStateChanged(
+      RenderFrameHost* rfh,
+      bool is_fullscreen,
+      blink::mojom::FullscreenOptionsPtr options) override;
 #if defined(OS_ANDROID)
   void UpdateUserGestureCarryoverInfo() override;
 #endif
@@ -1279,6 +1281,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            NotifyFullscreenAcquired_Navigate);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            NotifyFullscreenAcquired_SameOrigin);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
+                           PropagateFullscreenOptions);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            FullscreenAfterFrameUnload);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,

@@ -389,7 +389,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                FullscreenRequestType) {}
   virtual void ExitFullscreen(LocalFrame&) {}
   virtual void FullscreenElementChanged(Element* old_element,
-                                        Element* new_element) {}
+                                        Element* new_element,
+                                        const FullscreenOptions* options,
+                                        FullscreenRequestType) {}
 
   virtual void AnimateDoubleTapZoom(const gfx::Point& point,
                                     const gfx::Rect& rect) {}

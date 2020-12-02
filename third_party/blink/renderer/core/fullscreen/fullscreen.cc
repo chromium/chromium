@@ -66,7 +66,8 @@ namespace {
 void FullscreenElementChanged(Document& document,
                               Element* old_element,
                               Element* new_element,
-                              FullscreenRequestType new_request_type) {
+                              FullscreenRequestType new_request_type,
+                              const FullscreenOptions* new_options) {
   DCHECK_NE(old_element, new_element);
 
   document.GetStyleEngine().EnsureUAStyleForFullscreen();
@@ -84,6 +85,8 @@ void FullscreenElementChanged(Document& document,
 
   if (new_element) {
     DCHECK_EQ(new_element, Fullscreen::FullscreenElementFrom(document));
+    // FullscreenOptions should be provided for incoming fullscreen element.
+    CHECK(new_options);
 
     new_element->PseudoStateChanged(CSSSelector::kPseudoFullScreen);
     new_element->PseudoStateChanged(CSSSelector::kPseudoFullscreen);
@@ -115,7 +118,8 @@ void FullscreenElementChanged(Document& document,
     // TODO(foolip): Synchronize hover state changes with animation frames.
     // https://crbug.com/668758
     frame->GetEventHandler().ScheduleHoverStateUpdate();
-    frame->GetChromeClient().FullscreenElementChanged(old_element, new_element);
+    frame->GetChromeClient().FullscreenElementChanged(
+        old_element, new_element, new_options, new_request_type);
 
     // Update paint properties on the visual viewport since
     // user-input-scrollable bits will change based on fullscreen state.
@@ -124,33 +128,63 @@ void FullscreenElementChanged(Document& document,
   }
 }
 
-using ElementRequestTypeMap =
-    HeapHashMap<WeakMember<Element>, FullscreenRequestType>;
+class MetaParams : public GarbageCollected<MetaParams> {
+ public:
+  MetaParams() = default;
+  MetaParams(FullscreenRequestType request_type,
+             const FullscreenOptions* options)
+      : request_type_(request_type), options_(options) {}
+  virtual ~MetaParams() = default;
 
-ElementRequestTypeMap& FullscreenFlagMap() {
-  DEFINE_STATIC_LOCAL(Persistent<ElementRequestTypeMap>, map,
-                      (MakeGarbageCollected<ElementRequestTypeMap>()));
+  MetaParams(const MetaParams&) = delete;
+  MetaParams& operator=(const MetaParams&) = delete;
+
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(options_); }
+
+  FullscreenRequestType request_type() const { return request_type_; }
+  const FullscreenOptions* options() const { return options_; }
+
+ private:
+  FullscreenRequestType request_type_;
+  Member<const FullscreenOptions> options_;
+};
+
+using ElementMetaParamsMap =
+    HeapHashMap<WeakMember<Element>, Member<const MetaParams>>;
+
+ElementMetaParamsMap& FullscreenParamsMap() {
+  DEFINE_STATIC_LOCAL(Persistent<ElementMetaParamsMap>, map,
+                      (MakeGarbageCollected<ElementMetaParamsMap>()));
   return *map;
 }
 
 bool HasFullscreenFlag(Element& element) {
-  return FullscreenFlagMap().Contains(&element);
+  return FullscreenParamsMap().Contains(&element);
 }
 
-void SetFullscreenFlag(Element& element, FullscreenRequestType request_type) {
-  FullscreenFlagMap().insert(&element, request_type);
+void SetFullscreenFlag(Element& element,
+                       FullscreenRequestType request_type,
+                       const FullscreenOptions* options) {
+  FullscreenParamsMap().insert(
+      &element, MakeGarbageCollected<MetaParams>(request_type, options));
 }
 
 void UnsetFullscreenFlag(Element& element) {
-  FullscreenFlagMap().erase(&element);
+  FullscreenParamsMap().erase(&element);
 }
 
 FullscreenRequestType GetRequestType(Element& element) {
-  return FullscreenFlagMap().find(&element)->value;
+  return FullscreenParamsMap().find(&element)->value->request_type();
+}
+
+const MetaParams* GetParams(Element& element) {
+  return FullscreenParamsMap().find(&element)->value;
 }
 
 // https://fullscreen.spec.whatwg.org/#fullscreen-an-element
-void GoFullscreen(Element& element, FullscreenRequestType request_type) {
+void GoFullscreen(Element& element,
+                  FullscreenRequestType request_type,
+                  const FullscreenOptions* options) {
   Document& document = element.GetDocument();
   Element* old_element = Fullscreen::FullscreenElementFrom(document);
 
@@ -163,11 +197,12 @@ void GoFullscreen(Element& element, FullscreenRequestType request_type) {
 
   // To fullscreen an |element| within a |document|, set the |element|'s
   // fullscreen flag and add it to |document|'s top layer.
-  SetFullscreenFlag(element, request_type);
+  SetFullscreenFlag(element, request_type, options);
   document.AddToTopLayer(&element);
 
   DCHECK_EQ(&element, Fullscreen::FullscreenElementFrom(document));
-  FullscreenElementChanged(document, old_element, &element, request_type);
+  FullscreenElementChanged(document, old_element, &element, request_type,
+                           options);
 }
 
 // https://fullscreen.spec.whatwg.org/#unfullscreen-an-element
@@ -196,11 +231,18 @@ void Unfullscreen(Element& element) {
 
   Element* new_element = Fullscreen::FullscreenElementFrom(document);
   if (old_element != new_element) {
-    FullscreenRequestType new_request_type =
-        new_element ? GetRequestType(*new_element)
-                    : FullscreenRequestType::kUnprefixed;
+    FullscreenRequestType new_request_type;
+    const FullscreenOptions* new_options;
+    if (new_element) {
+      const MetaParams* params = GetParams(*new_element);
+      new_request_type = params->request_type();
+      new_options = params->options();
+    } else {
+      new_request_type = FullscreenRequestType::kUnprefixed;
+      new_options = FullscreenOptions::Create();
+    }
     FullscreenElementChanged(document, old_element, new_element,
-                             new_request_type);
+                             new_request_type, new_options);
   }
 }
 
@@ -650,7 +692,8 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
     }
 
     From(window).pending_requests_.push_back(
-        MakeGarbageCollected<PendingRequest>(&pending, request_type, resolver));
+        MakeGarbageCollected<PendingRequest>(&pending, request_type, options,
+                                             resolver));
     LocalFrame& frame = *window.GetFrame();
     frame.GetChromeClient().EnterFullscreen(frame, options, request_type);
 
@@ -663,8 +706,8 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
     // synchronously because when |error| is true, |ContinueRequestFullscreen()|
     // will only queue a task and return. This is indistinguishable from, e.g.,
     // enqueueing a microtask to continue at step 9.
-    ContinueRequestFullscreen(document, pending, request_type, resolver,
-                              true /* error */);
+    ContinueRequestFullscreen(document, pending, request_type, options,
+                              resolver, true /* error */);
   }
 
   return promise;
@@ -693,13 +736,15 @@ void Fullscreen::DidResolveEnterFullscreenRequest(Document& document,
   requests.swap(From(*document.domWindow()).pending_requests_);
   for (const Member<PendingRequest>& request : requests) {
     ContinueRequestFullscreen(document, *request->element(), request->type(),
-                              request->resolver(), !granted);
+                              request->options(), request->resolver(),
+                              !granted);
   }
 }
 
 void Fullscreen::ContinueRequestFullscreen(Document& document,
                                            Element& pending,
                                            FullscreenRequestType request_type,
+                                           const FullscreenOptions* options,
                                            ScriptPromiseResolver* resolver,
                                            bool error) {
   DCHECK(document.IsActive());
@@ -781,7 +826,7 @@ void Fullscreen::ContinueRequestFullscreen(Document& document,
     // https://crbug.com/644695
 
     // 13.4. Fullscreen |element| within |doc|.
-    GoFullscreen(*element, request_type);
+    GoFullscreen(*element, request_type, options);
 
     // 13.5. Append (fullscreenchange, |element|) to |doc|'s list of pending
     // fullscreen events.
@@ -1061,13 +1106,15 @@ void Fullscreen::Trace(Visitor* visitor) const {
 
 Fullscreen::PendingRequest::PendingRequest(Element* element,
                                            FullscreenRequestType type,
+                                           const FullscreenOptions* options,
                                            ScriptPromiseResolver* resolver)
-    : element_(element), type_(type), resolver_(resolver) {}
+    : element_(element), type_(type), options_(options), resolver_(resolver) {}
 
 Fullscreen::PendingRequest::~PendingRequest() = default;
 
 void Fullscreen::PendingRequest::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
+  visitor->Trace(options_);
   visitor->Trace(resolver_);
 }
 

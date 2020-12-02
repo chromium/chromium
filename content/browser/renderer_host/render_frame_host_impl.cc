@@ -4103,10 +4103,12 @@ void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
   delegate_->FrameSizeChanged(this, frame_size);
 }
 
-void RenderFrameHostImpl::FullscreenStateChanged(bool is_fullscreen) {
+void RenderFrameHostImpl::FullscreenStateChanged(
+    bool is_fullscreen,
+    blink::mojom::FullscreenOptionsPtr options) {
   if (IsInactiveAndDisallowReactivation())
     return;
-  delegate_->FullscreenStateChanged(this, is_fullscreen);
+  delegate_->FullscreenStateChanged(this, is_fullscreen, std::move(options));
 }
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,
@@ -4591,7 +4593,8 @@ void RenderFrameHostImpl::EnterFullscreen(
   }
 
   delegate_->EnterFullscreenMode(this, *options);
-  delegate_->FullscreenStateChanged(this, true /* is_fullscreen */);
+  delegate_->FullscreenStateChanged(this, true /* is_fullscreen */,
+                                    std::move(options));
 
   // The previous call might change the fullscreen state. We need to make sure
   // the renderer is aware of that, which is done via the resize message.

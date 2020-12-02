@@ -1774,8 +1774,11 @@ void WebViewImpl::ExitFullscreen(LocalFrame& frame) {
 }
 
 void WebViewImpl::FullscreenElementChanged(Element* old_element,
-                                           Element* new_element) {
-  fullscreen_controller_->FullscreenElementChanged(old_element, new_element);
+                                           Element* new_element,
+                                           const FullscreenOptions* options,
+                                           FullscreenRequestType request_type) {
+  fullscreen_controller_->FullscreenElementChanged(old_element, new_element,
+                                                   options, request_type);
 }
 
 bool WebViewImpl::HasHorizontalScrollbar() {

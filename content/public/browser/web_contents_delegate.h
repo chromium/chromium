@@ -441,6 +441,10 @@ class CONTENT_EXPORT WebContentsDelegate {
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) {}
 
+  virtual void FullscreenStateChangedForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) {}
+
   // Called when the renderer puts a tab out of fullscreen mode.
   virtual void ExitFullscreenModeForTab(WebContents*) {}
 

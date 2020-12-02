@@ -1698,10 +1698,18 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override {
     is_fullscreen_ = true;
+    options_ = options;
+  }
+
+  void FullscreenStateChangedForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override {
+    options_ = options;
   }
 
   void ExitFullscreenModeForTab(WebContents*) override {
     is_fullscreen_ = false;
+    options_ = blink::mojom::FullscreenOptions();
 
     if (waiting_for_ == kFullscreenExit) {
       waiting_for_ = kNothing;
@@ -1711,6 +1719,10 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
 
   bool IsFullscreenForTabOrPending(const WebContents* web_contents) override {
     return is_fullscreen_;
+  }
+
+  const blink::mojom::FullscreenOptions& fullscreen_options() {
+    return options_;
   }
 
   void AddNewContents(WebContents* source,
@@ -1781,6 +1793,7 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   std::string last_message_;
 
   bool is_fullscreen_ = false;
+  blink::mojom::FullscreenOptions options_;
 
   std::vector<std::unique_ptr<WebContents>> popups_;
 
@@ -3507,6 +3520,68 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   fullscreen_frames.erase(child_frame);
   EXPECT_EQ(fullscreen_frames, web_contents->fullscreen_frames_);
   EXPECT_EQ(main_frame, web_contents->current_fullscreen_frame_);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, PropagateFullscreenOptions) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  TestWCDelegateForDialogsAndFullscreen test_delegate(web_contents);
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/page_with_iframe.html");
+  EXPECT_TRUE(NavigateToURL(web_contents, url));
+  RenderFrameHostImpl* main_frame = web_contents->GetMainFrame();
+
+  EXPECT_FALSE(IsInFullscreen());
+
+  // Make the top page fullscreen with system navigation ui.
+  {
+    TitleWatcher title_watcher(web_contents,
+                               base::ASCIIToUTF16("main_fullscreen_fulfilled"));
+    EXPECT_TRUE(ExecuteScript(
+        main_frame,
+        "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
+        "{document.title = 'main_fullscreen_fulfilled'});"));
+
+    base::string16 title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, base::ASCIIToUTF16("main_fullscreen_fulfilled"));
+  }
+
+  EXPECT_TRUE(test_delegate.fullscreen_options().prefers_navigation_bar);
+
+  RenderFrameHostImpl* child_frame =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
+  // Make the child frame fullscreen without system navigation ui.
+  {
+    TitleWatcher title_watcher(
+        web_contents, base::ASCIIToUTF16("child_fullscreen_fulfilled"));
+    EXPECT_TRUE(ExecuteScript(
+        child_frame,
+        "document.body.requestFullscreen({ navigationUI: 'hide' }).then(() => "
+        "{parent.document.title = 'child_fullscreen_fulfilled'});"));
+
+    base::string16 title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, base::ASCIIToUTF16("child_fullscreen_fulfilled"));
+  }
+
+  EXPECT_FALSE(test_delegate.fullscreen_options().prefers_navigation_bar);
+
+  // Exit fullscreen on the child frame and restore system navigation ui for the
+  // top page.
+  {
+    EXPECT_TRUE(ExecuteScript(
+        main_frame,
+        "document.body.onfullscreenchange = "
+        "function (event) { document.title = 'main_in_fullscreen_again' };"));
+    TitleWatcher title_watcher(web_contents,
+                               base::ASCIIToUTF16("main_in_fullscreen_again"));
+    EXPECT_TRUE(ExecuteScript(child_frame, "document.exitFullscreen();"));
+    base::string16 title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, base::ASCIIToUTF16("main_in_fullscreen_again"));
+  }
+
+  EXPECT_TRUE(test_delegate.fullscreen_options().prefers_navigation_bar);
 }
 
 class MockDidOpenRequestedURLObserver : public WebContentsObserver {

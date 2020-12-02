@@ -773,9 +773,13 @@ void ChromeClientImpl::ExitFullscreen(LocalFrame& frame) {
   web_view_->ExitFullscreen(frame);
 }
 
-void ChromeClientImpl::FullscreenElementChanged(Element* old_element,
-                                                Element* new_element) {
-  web_view_->FullscreenElementChanged(old_element, new_element);
+void ChromeClientImpl::FullscreenElementChanged(
+    Element* old_element,
+    Element* new_element,
+    const FullscreenOptions* options,
+    FullscreenRequestType request_type) {
+  web_view_->FullscreenElementChanged(old_element, new_element, options,
+                                      request_type);
 }
 
 void ChromeClientImpl::AnimateDoubleTapZoom(const gfx::Point& point,

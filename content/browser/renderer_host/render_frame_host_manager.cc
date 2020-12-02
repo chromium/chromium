@@ -2970,7 +2970,8 @@ void RenderFrameHostManager::CommitPending(
   // will have trouble removing the descendants.
   frame_tree_node_->frame_tree()
       ->render_frame_delegate()
-      ->FullscreenStateChanged(current_frame_host(), false);
+      ->FullscreenStateChanged(current_frame_host(), false,
+                               blink::mojom::FullscreenOptionsPtr());
 
   // If the removed frame was created by a script, then its history entry will
   // never be reused - we can save some memory by removing the history entry.

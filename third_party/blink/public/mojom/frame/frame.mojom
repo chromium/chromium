@@ -158,8 +158,8 @@ interface LocalFrameHost {
   ExitFullscreen();
 
   // Notifies the browser that the current frame has either become or is no
-  // longer fullscreen.
-  FullscreenStateChanged(bool is_fullscreen);
+  // longer fullscreen. |options| is only provided if |is_fullscreen == true|.
+  FullscreenStateChanged(bool is_fullscreen, FullscreenOptions? options);
 
   // Register a new handler for URL requests with the given scheme. |scheme|
   // and |url| are provided directly from javascript. See

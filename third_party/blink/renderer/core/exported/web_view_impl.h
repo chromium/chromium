@@ -411,7 +411,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
                        const FullscreenOptions*,
                        FullscreenRequestType);
   void ExitFullscreen(LocalFrame&);
-  void FullscreenElementChanged(Element* old_element, Element* new_element);
+  void FullscreenElementChanged(Element* old_element,
+                                Element* new_element,
+                                const FullscreenOptions* options,
+                                FullscreenRequestType);
 
   // Sends a request to the main frame's view to resize, and updates the page
   // scale limits if needed.

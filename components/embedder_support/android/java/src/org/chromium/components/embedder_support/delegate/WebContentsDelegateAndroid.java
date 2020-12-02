@@ -112,6 +112,9 @@ public class WebContentsDelegateAndroid {
     public void enterFullscreenModeForTab(boolean prefersNavigationBar) {}
 
     @CalledByNative
+    public void fullscreenStateChangedForTab(boolean prefersNavigationBar) {}
+
+    @CalledByNative
     public void exitFullscreenModeForTab() {}
 
     @CalledByNative
