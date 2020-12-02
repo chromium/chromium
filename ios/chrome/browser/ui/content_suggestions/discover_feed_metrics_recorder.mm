@@ -107,6 +107,14 @@ const char kDiscoverFeedUserActionInfiniteFeedTriggered[] =
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
 
+// Histogram name to capture Feed Notice card impressions.
+const char kDiscoverFeedNoticeCardFulfilled[] =
+    "ContentSuggestions.Feed.NoticeCardFulfilled2";
+
+// Histogram name to measure the time it tood the Feed to fetch articles.
+const char kDiscoverFeedArticlesFetchNetworkDuration[] =
+    "ContentSuggestions.Feed.Network.Duration";
+
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
 const int kMinScrollThreshold = 160;
@@ -277,6 +285,16 @@ const int kMinutesBetweenSessions = 5;
 
 - (void)recordCommandID:(int)commandID {
   base::UmaHistogramSparse(kDiscoverFeedUserActionCommandHistogram, commandID);
+}
+
+- (void)recordNoticeCardShown:(BOOL)shown {
+  base::UmaHistogramBoolean(kDiscoverFeedNoticeCardFulfilled, shown);
+}
+
+- (void)recordFeedArticlesFetchDurationInSeconds:
+    (NSTimeInterval)durationInSeconds {
+  UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDuration,
+                             base::TimeDelta::FromSeconds(durationInSeconds));
 }
 
 #pragma mark - Private
