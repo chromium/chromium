@@ -248,12 +248,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 // Navigating twice to the same URL should be equivalent to refresh. This means
 // showing the bubbles twice.
 // http://crbug.com/512849 flaky
-#if defined(OS_WIN)
-#define MAYBE_NavTwice DISABLED_NavTwice
-#else
-#define MAYBE_NavTwice NavTwice
-#endif
-IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MAYBE_NavTwice) {
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, DISABLED_NavTwice) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -275,13 +270,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MAYBE_NavTwice) {
 // Navigating twice to the same URL with a hash should be navigation within the
 // page. This means the bubble is only shown once.
 // http://crbug.com/512849 flaky
-#if defined(OS_WIN)
-#define MAYBE_NavTwiceWithHash DISABLED_NavTwiceWithHash
-#else
-#define MAYBE_NavTwiceWithHash NavTwiceWithHash
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
-                       MAYBE_NavTwiceWithHash) {
+                       DISABLED_NavTwiceWithHash) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
