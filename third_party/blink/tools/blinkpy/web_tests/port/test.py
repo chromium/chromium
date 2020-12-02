@@ -647,7 +647,11 @@ class TestPort(Port):
     def default_configuration(self):
         return 'Release'
 
-    def diff_image(self, expected_contents, actual_contents):
+    def diff_image(self,
+                   expected_contents,
+                   actual_contents,
+                   max_channel_diff=None,
+                   max_pixels_diff=None):
         diffed = actual_contents != expected_contents
         if not actual_contents and not expected_contents:
             return (None, None)

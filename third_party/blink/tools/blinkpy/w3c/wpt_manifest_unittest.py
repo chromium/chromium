@@ -194,3 +194,71 @@ class WPTManifestUnitTest(unittest.TestCase):
         self.assertTrue(manifest.is_crash_test(u'test-crash.html'))
         self.assertFalse(manifest.is_crash_test(u'test.html'))
         self.assertFalse(manifest.is_crash_test(u'different-test-crash.html'))
+
+    def test_extract_fuzzy_metadata(self):
+        manifest_json = '''
+{
+    "items": {
+        "reftest": {
+            "not_fuzzy.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [
+                    null,
+                    [
+                        [
+                            "not_fuzzy-ref.html",
+                            "=="
+                        ]
+                    ],
+                    {}
+                ]
+            ],
+            "fuzzy.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [
+                    null,
+                    [
+                        [
+                            "fuzzy-ref.html",
+                            "=="
+                        ]
+                    ],
+                    {
+                        "fuzzy": [
+                            [
+                                null,
+                                [
+                                    [2, 2],
+                                    [40, 40]
+                                ]
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "testharness": {
+            "not_a_reftest.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [null, {}]
+            ]
+        }
+    }
+}
+        '''
+
+        host = MockHost()
+        host.filesystem.write_text_file(
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(host,
+                               WEB_TEST_DIR + '/external/wpt/MANIFEST.json')
+
+        self.assertEqual(
+            manifest.extract_fuzzy_metadata('fuzzy.html'),
+            [[2, 2], [40, 40]],
+        )
+
+        self.assertEqual(manifest.extract_fuzzy_metadata('not_fuzzy.html'),
+                         (None, None))
+        self.assertEqual(manifest.extract_fuzzy_metadata('not_a_reftest.html'),
+                         (None, None))

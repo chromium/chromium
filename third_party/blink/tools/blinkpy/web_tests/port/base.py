@@ -531,7 +531,11 @@ class Port(object):
     def do_audio_results_differ(self, expected_audio, actual_audio):
         return expected_audio != actual_audio
 
-    def diff_image(self, expected_contents, actual_contents):
+    def diff_image(self,
+                   expected_contents,
+                   actual_contents,
+                   max_channel_diff=None,
+                   max_pixels_diff=None):
         """Compares two images and returns an (image diff, error string) pair.
 
         If an error occurs (like image_diff isn't found, or crashes), we log an
@@ -567,6 +571,15 @@ class Port(object):
         # GPU.
         if self.get_option('fuzzy_diff'):
             command.append('--fuzzy-diff')
+        # The max_channel_diff and max_pixels_diff arguments are used by WPT
+        # tests for fuzzy reftests. See
+        # https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
+        if max_channel_diff is not None:
+            command.append('--fuzzy-max-channel-diff={}'.format('-'.join(
+                map(str, max_channel_diff))))
+        if max_pixels_diff is not None:
+            command.append('--fuzzy-max-pixels-diff={}'.format('-'.join(
+                map(str, max_pixels_diff))))
 
         result = None
         err_str = None
@@ -990,6 +1003,22 @@ class Port(object):
         wpt_path = match.group(1)
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_slow_test(path_in_wpt)
+
+    def get_wpt_fuzzy_metadata(self, test_file):
+        """Returns the WPT fuzzy metadata for the given test.
+
+        The metadata is a pair of lists, (maxDifference, totalPixels), where
+        each list is a [min, max] range, inclusive. If the test is not a WPT
+        test or has no fuzzy metadata, returns (None, None).
+
+        See https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
+        """
+        match = self.WPT_REGEX.match(test_file)
+        if not match:
+            return None, None
+        wpt_path = match.group(1)
+        path_in_wpt = match.group(2)
+        return self.wpt_manifest(wpt_path).extract_fuzzy_metadata(path_in_wpt)
 
     def test_key(self, test_name):
         """Turns a test name into a pair of sublists: the natural sort key of the

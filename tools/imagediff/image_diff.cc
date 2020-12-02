@@ -23,7 +23,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
 #include "base/process/memory.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -44,6 +47,13 @@ static const char kOptionGenerateDiff[] = "diff";
 // Causes the app to have a tolerance for difference in output. To account for
 // differences which occur when running vs hardware GPU output.
 static const char kOptionFuzzyDiff[] = "fuzzy-diff";
+// Causes the app to use the WPT fuzzy-matching algorithm. Both arguments are
+// ranges of the form "x-y", where x and y are integers. If either of these
+// arguments are used, both must be.
+//
+// https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
+static const char kOptionFuzzyMaxChannelDiff[] = "fuzzy-max-channel-diff";
+static const char kOptionFuzzyMaxPixelsDiff[] = "fuzzy-max-pixels-diff";
 
 // Return codes used by this utility.
 static const int kStatusSame = 0;
@@ -365,9 +375,21 @@ int CompareImages(const base::FilePath& file1,
 */
 }
 
+// Calculate the absolute difference between two pixels in a specified channel
+// c, assuming the pixels are encoded with four 8-bit channels.
+uint8_t GetChannelDiff(int c, uint32_t base_pixel, uint32_t actual_pixel) {
+  int shift = c * 8;
+  uint8_t channel_base = (base_pixel >> shift) & 0xFF;
+  uint8_t channel_actual = (actual_pixel >> shift) & 0xFF;
+  return channel_base > channel_actual ? channel_base - channel_actual
+                                       : channel_actual - channel_base;
+}
+
 bool CreateImageDiff(const Image& image1,
                      const Image& image2,
                      bool fuzzy_diff,
+                     std::vector<int> fuzzy_allowed_max_channel_diff,
+                     std::vector<int> fuzzy_allowed_pixels_diff,
                      Image* out) {
   int w = std::min(image1.w(), image2.w());
   int h = std::min(image1.h(), image2.h());
@@ -376,13 +398,24 @@ bool CreateImageDiff(const Image& image1,
 
   // TODO(estade): do something with the extra pixels if the image sizes
   // are different.
+  int pixels_different = 0;
+  uint8_t max_channel_diff = 0;
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
       uint32_t base_pixel = image1.pixel_at(x, y);
-      if (base_pixel != image2.pixel_at(x, y)) {
+      uint32_t actual_pixel = image2.pixel_at(x, y);
+      if (base_pixel != actual_pixel) {
         // Set differing pixels red.
         out->set_pixel_at(x, y, RGBA_RED | RGBA_ALPHA);
         same = false;
+
+        // Record the necessary information for WPT fuzzy matching. WPT images
+        // only compare on the RGB channels, not A.
+        pixels_different++;
+        for (int c = 0; c < 3; c++) {
+          max_channel_diff = std::max(
+              max_channel_diff, GetChannelDiff(c, base_pixel, actual_pixel));
+        }
       } else {
         // Set same pixels as faded.
         uint32_t alpha = base_pixel & RGBA_ALPHA;
@@ -396,13 +429,32 @@ bool CreateImageDiff(const Image& image1,
     return same;
   }
 
-  float percent = PercentageDifferent(image1, image2, fuzzy_diff);
-  return percent < 1.0f;
+  if (fuzzy_allowed_max_channel_diff.empty()) {
+    float percent = PercentageDifferent(image1, image2, fuzzy_diff);
+    return percent < 1.0f;
+  }
+
+  // WPT fuzzy matching. This algorithm is equivalent to 'check_pass' in
+  // tools/wptrunner/wptrunner/executors/base.py
+  fprintf(stderr, "Found pixels_different: %d, max_channel_diff: %u\n",
+          pixels_different, max_channel_diff);
+  fprintf(stderr, "Allowed pixels different; %d-%d, channel diff: %u-%u\n",
+          fuzzy_allowed_pixels_diff[0], fuzzy_allowed_pixels_diff[1],
+          fuzzy_allowed_max_channel_diff[0], fuzzy_allowed_max_channel_diff[1]);
+
+  return ((pixels_different == 0 && fuzzy_allowed_pixels_diff[0] == 0) ||
+          (max_channel_diff == 0 && fuzzy_allowed_max_channel_diff[0] == 0) ||
+          (fuzzy_allowed_pixels_diff[0] <= pixels_different &&
+           pixels_different <= fuzzy_allowed_pixels_diff[1] &&
+           fuzzy_allowed_max_channel_diff[0] <= max_channel_diff &&
+           max_channel_diff <= fuzzy_allowed_max_channel_diff[1]));
 }
 
 int DiffImages(const base::FilePath& file1,
                const base::FilePath& file2,
                bool fuzzy_diff,
+               std::vector<int> max_per_channel,
+               std::vector<int> max_pixels_different,
                const base::FilePath& out_file) {
   Image actual_image;
   Image baseline_image;
@@ -420,7 +472,8 @@ int DiffImages(const base::FilePath& file1,
 
   Image diff_image;
   bool same =
-      CreateImageDiff(baseline_image, actual_image, fuzzy_diff, &diff_image);
+      CreateImageDiff(baseline_image, actual_image, fuzzy_diff, max_per_channel,
+                      max_pixels_different, &diff_image);
   if (same)
     return kStatusSame;
 
@@ -447,6 +500,31 @@ base::FilePath FilePathFromASCII(const std::string& str) {
 #endif
 }
 
+// Parses a range command line option of the form "x-y", where x and y are both
+// integers. If the range cannot be parsed, returns kStatusError.
+int ParseRangeOption(const std::string& range, std::vector<int>& parsed_range) {
+  if (range.empty())
+    return 0;
+
+  std::vector<std::string> tokens = base::SplitString(
+      range, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (tokens.size() != 2) {
+    fprintf(stderr, "Unable to parse range: '%s'\n", range.c_str());
+    return kStatusError;
+  }
+
+  int min, max;
+  if (!base::StringToInt(tokens[0], &min) ||
+      !base::StringToInt(tokens[1], &max)) {
+    fprintf(stderr, "Unable to parse range: '%s'\n", range.c_str());
+    return kStatusError;
+  }
+
+  parsed_range.push_back(min);
+  parsed_range.push_back(max);
+  return 0;
+}
+
 int main(int argc, const char* argv[]) {
   base::EnableTerminationOnHeapCorruption();
   base::CommandLine::Init(argc, argv);
@@ -454,6 +532,31 @@ int main(int argc, const char* argv[]) {
       *base::CommandLine::ForCurrentProcess();
   bool fuzzy_diff = parsed_command_line.HasSwitch(kOptionFuzzyDiff);
   bool histograms = parsed_command_line.HasSwitch(kOptionCompareHistograms);
+  std::vector<int> fuzzy_max_channel_diff;
+  if (ParseRangeOption(
+          parsed_command_line.GetSwitchValueASCII(kOptionFuzzyMaxChannelDiff),
+          fuzzy_max_channel_diff) == kStatusError) {
+    return kStatusError;
+  }
+  std::vector<int> fuzzy_max_pixels_diff;
+  if (ParseRangeOption(
+          parsed_command_line.GetSwitchValueASCII(kOptionFuzzyMaxPixelsDiff),
+          fuzzy_max_pixels_diff) == kStatusError) {
+    return kStatusError;
+  }
+
+  // If using either of the WPT fuzzy options, both must be supplied.
+  if (fuzzy_max_channel_diff.size() != fuzzy_max_pixels_diff.size()) {
+    fprintf(
+        stderr,
+        "Either both --%s and --%s must be specified, or neither should be.\n",
+        kOptionFuzzyMaxChannelDiff, kOptionFuzzyMaxPixelsDiff);
+    return kStatusError;
+  } else if (!fuzzy_max_channel_diff.empty()) {
+    // The WPT fuzzy options imply a fuzzy diff is happening.
+    fuzzy_diff = true;
+  }
+
   if (parsed_command_line.HasSwitch(kOptionPollStdin)) {
     // Watch stdin for filenames.
     std::string stdin_buffer;
@@ -484,7 +587,8 @@ int main(int argc, const char* argv[]) {
   if (parsed_command_line.HasSwitch(kOptionGenerateDiff)) {
     if (args.size() == 3) {
       return DiffImages(base::FilePath(args[0]), base::FilePath(args[1]),
-                        fuzzy_diff, base::FilePath(args[2]));
+                        fuzzy_diff, fuzzy_max_channel_diff,
+                        fuzzy_max_pixels_diff, base::FilePath(args[2]));
     }
   } else if (args.size() == 2) {
     return CompareImages(base::FilePath(args[0]), base::FilePath(args[1]),

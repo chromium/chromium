@@ -229,6 +229,48 @@ class WPTManifest(object):
                 reftest_list.append((expectation, ref_path_in_wpt))
         return reftest_list
 
+    def extract_fuzzy_metadata(self, url):
+        """Extracts the fuzzy reftest metadata for the specified reference test.
+
+        Although WPT supports multiple fuzzy references for a given test (one
+        for each reference file), blinkpy only supports a single reference per
+        test. As such, we just return the first fuzzy reference that we find.
+
+        FIXME: It is possible for the references and the fuzzy metadata to be
+        listed in different orders, which would then make our 'choose first'
+        logic incorrect. Instead we should return a dictionary and let our
+        caller select the reference being used.
+
+        See https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
+
+        Args:
+            url: A WPT URL.
+
+        Returns:
+            A pair of lists representing the maxDifference and totalPixel ranges
+            for the test. If the test isn't a reference test or doesn't have
+            fuzzy information, a pair of Nones are returned.
+        """
+
+        items = self.raw_dict.get('items', {})
+        if url not in items.get('reftest', {}):
+            return None, None
+
+        for item in items['reftest'][url]:
+            # Each item is a list of [url, refs, properties], and the fuzzy
+            # metadata is stored in the properties dict.
+            if 'fuzzy' not in item[2]:
+                return None, None
+            fuzzy_metadata_list = item[2]['fuzzy']
+            for fuzzy_metadata in fuzzy_metadata_list:
+                # The fuzzy metadata is a nested list of [url, [maxDifference,
+                # maxPixels]].
+                assert len(
+                    fuzzy_metadata[1]
+                ) == 2, 'Malformed fuzzy ref data for {}'.format(url)
+                return fuzzy_metadata[1]
+        return None, None
+
     def file_path_for_test_url(self, url):
         """Finds the file path for the given test URL.
 

@@ -736,8 +736,13 @@ class SingleTestRunner(object):
                         actual_driver_output, reference_driver_output,
                         reference_filename))
         elif reference_driver_output.image_hash != actual_driver_output.image_hash:
+            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+                self._test_name)
             diff, err_str = self._port.diff_image(
-                reference_driver_output.image, actual_driver_output.image)
+                reference_driver_output.image,
+                actual_driver_output.image,
+                max_channel_diff=max_channel_diff,
+                max_pixels_diff=max_pixels_diff)
             if diff:
                 actual_driver_output.image_diff = diff
 
