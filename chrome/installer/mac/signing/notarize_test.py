@@ -188,6 +188,37 @@ class TestWaitForResults(unittest.TestCase):
             list(notarize.wait_for_results(uuids, test_config.TestConfig()))
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
+    @mock.patch('signing.commands.run_command_output')
+    def test_lost_connection_notarization_info(self, run_command_output,
+                                               **kwargs):
+        run_command_output.side_effect = [
+            subprocess.CalledProcessError(
+                13, 'altool', '*** Error: Connection failed! Error Message'
+                '- The network connection was lost.'),
+            _make_plist({
+                'notarization-info': {
+                    'Date': '2019-05-20T13:18:35Z',
+                    'LogFileURL': 'https://example.com/log.json',
+                    'RequestUUID': 'cca0aec2-7c64-4ea4-b895-051ea3a17311',
+                    'Status': 'success',
+                    'Status Code': 0
+                }
+            })
+        ]
+        uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
+        uuids = [uuid]
+        self.assertEqual(
+            [uuid],
+            list(notarize.wait_for_results(uuids, test_config.TestConfig())))
+        run_command_output.assert_has_calls(2 * [
+            mock.call([
+                'xcrun', 'altool', '--notarization-info', uuid, '--username',
+                '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
+                '--output-format', 'xml'
+            ])
+        ])
+
+    @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch.multiple('signing.commands',
                          **{'run_command_output': mock.DEFAULT})
     def test_timeout(self, **kwargs):
