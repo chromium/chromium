@@ -7,9 +7,13 @@
 #include "content/gpu/gpu_child_thread.h"
 
 #include "base/no_destructor.h"
+#include "build/branding_buildflags.h"
 #include "media/mojo/buildflags.h"
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !defined(OS_CHROMEOS)
 #include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"
 #include "services/shape_detection/shape_detection_service.h"
+#endif
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 #include "content/gpu/gpu_service_factory.h"
@@ -25,12 +29,14 @@ void GpuChildThread::BindServiceInterface(
     return;
   }
 
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !defined(OS_CHROMEOS)
   if (auto shape_detection_receiver =
           receiver.As<shape_detection::mojom::ShapeDetectionService>()) {
     static base::NoDestructor<shape_detection::ShapeDetectionService> service{
         std::move(shape_detection_receiver)};
     return;
   }
+#endif
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
   if (auto r = receiver.As<media::mojom::MediaService>()) {
