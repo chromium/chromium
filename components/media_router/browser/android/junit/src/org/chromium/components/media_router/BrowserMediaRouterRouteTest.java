@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,6 +46,11 @@ public class BrowserMediaRouterRouteTest extends BrowserMediaRouterTestBase {
                 return TAB_ID2;
             }
         });
+    }
+
+    @After
+    public void tearDown() {
+        MediaRouterClient.setInstance(null);
     }
 
     @Test

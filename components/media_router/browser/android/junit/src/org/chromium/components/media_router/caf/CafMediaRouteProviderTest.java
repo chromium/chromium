@@ -30,6 +30,7 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,6 +121,11 @@ public class CafMediaRouteProviderTest {
         doReturn(mSessionManager).when(mCastContext).getSessionManager();
         doReturn(mCastSession).when(mSessionController).getSession();
         doReturn(mRemoteMediaClient).when(mCastSession).getRemoteMediaClient();
+    }
+
+    @After
+    public void tearDown() {
+        MediaRouterClient.setInstance(null);
     }
 
     @Test

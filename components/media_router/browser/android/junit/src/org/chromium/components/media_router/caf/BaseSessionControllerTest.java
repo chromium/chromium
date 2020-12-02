@@ -29,6 +29,7 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,6 +109,11 @@ public class BaseSessionControllerTest {
         doReturn(APP_ID).when(mSource).getApplicationId();
         doReturn(mRequestInfo).when(mProvider).getPendingCreateRouteRequestInfo();
         doReturn(MediaRouter.getInstance(mContext)).when(mProvider).getAndroidMediaRouter();
+    }
+
+    @After
+    public void tearDown() {
+        MediaRouterClient.setInstance(null);
     }
 
     @Test
