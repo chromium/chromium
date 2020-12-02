@@ -17,6 +17,8 @@
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -515,35 +517,56 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
   return response;
 }
 
-bool IsUserVerifyingPlatformAuthenticatorAvailableImpl(
+void IsUserVerifyingPlatformAuthenticatorAvailableImpl(
     AuthenticatorRequestClientDelegate* delegate,
     device::FidoDiscoveryFactory* discovery_factory,
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    blink::mojom::Authenticator::
+        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
   if (!delegate) {
     // TODO(crbug/1110081): Investigate why this can be nullptr.
     NOTREACHED();
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   base::Optional<bool> is_uvpaa_override =
       delegate->IsUserVerifyingPlatformAuthenticatorAvailableOverride();
   if (is_uvpaa_override) {
-    return *is_uvpaa_override;
+    std::move(callback).Run(*is_uvpaa_override);
+    return;
   }
 
 #if defined(OS_MAC)
   const base::Optional<device::fido::mac::AuthenticatorConfig> config =
       delegate->GetTouchIdAuthenticatorConfig();
-  return config && IsUVPlatformAuthenticatorAvailable(*config);
+  std::move(callback).Run(config &&
+                          IsUVPlatformAuthenticatorAvailable(*config));
+  return;
 #elif defined(OS_WIN)
-  return !browser_context->IsOffTheRecord() &&
-         IsUVPlatformAuthenticatorAvailable(
-             discovery_factory->win_webauthn_api());
+  if (browser_context->IsOffTheRecord()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::move(callback).Run(IsUVPlatformAuthenticatorAvailable(
+      discovery_factory->win_webauthn_api()));
+  return;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return !browser_context->IsOffTheRecord() &&
-         IsUVPlatformAuthenticatorAvailable();
+  if (browser_context->IsOffTheRecord()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // ChromeOS needs to do a dbus call to determine platform authenticator
+  // availability. The call is fast in practice, but nonetheless may
+  // theoretically block.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(&IsUVPlatformAuthenticatorAvailable), std::move(callback));
 #else
-  return false;
+  std::move(callback).Run(false);
+  return;
 #endif
 }
 
@@ -566,27 +589,13 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
 
   base::flat_set<device::FidoTransportProtocol> transports;
   transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  transports.insert(device::FidoTransportProtocol::kInternal);
 
   if (discovery_factory->IsTestOverride()) {
     // The desktop implementation does not support BLE or NFC, but we emulate
     // them if the testing API is enabled.
     transports.insert(device::FidoTransportProtocol::kBluetoothLowEnergy);
     transports.insert(device::FidoTransportProtocol::kNearFieldCommunication);
-
-    // Instantiate a virtual platform discovery regardless of IsUVPAA() to
-    // support non-uv, platform authenticators.
-    transports.insert(device::FidoTransportProtocol::kInternal);
-  } else {
-    // Don't instantiate a platform discovery in contexts where IsUVPAA() would
-    // return false. This avoids platform authenticators mistakenly being
-    // available when e.g. an embedder provided implementation of
-    // IsUserVerifyingPlatformAuthenticatorAvailableOverride() returned false.
-    if (IsUserVerifyingPlatformAuthenticatorAvailableImpl(
-            delegate, discovery_factory,
-            content::WebContents::FromRenderFrameHost(render_frame_host)
-                ->GetBrowserContext())) {
-      transports.insert(device::FidoTransportProtocol::kInternal);
-    }
   }
 
   if (base::FeatureList::IsEnabled(features::kWebAuthCable) ||
@@ -1267,10 +1276,18 @@ void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
       discovery_factory_testing_override ? discovery_factory_testing_override
                                          : discovery_factory.get();
 
-  const bool result = IsUserVerifyingPlatformAuthenticatorAvailableImpl(
-      request_delegate_ptr, discovery_factory_ptr, browser_context());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  auto post_done_callback = base::BindOnce(
+      [](blink::mojom::Authenticator::
+             IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
+         bool is_available) {
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), is_available));
+      },
+      std::move(callback));
+
+  IsUserVerifyingPlatformAuthenticatorAvailableImpl(
+      request_delegate_ptr, discovery_factory_ptr, browser_context(),
+      std::move(post_done_callback));
 }
 
 void AuthenticatorCommon::Cancel() {

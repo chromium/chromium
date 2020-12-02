@@ -97,8 +97,7 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
           ? u2f::VERIFICATION_USER_PRESENCE
           : u2f::VERIFICATION_USER_VERIFICATION);
   req.set_rp_id(request.rp.id);
-  req.set_user_id(
-      std::string(request.user.id.begin(), request.user.id.end()));
+  req.set_user_id(std::string(request.user.id.begin(), request.user.id.end()));
   if (request.user.display_name.has_value())
     req.set_user_display_name(request.user.display_name.value());
   req.set_resident_credential(request.resident_key_required);
@@ -376,7 +375,7 @@ void ChromeOSAuthenticator::OnCancelResp(dbus::Response* dbus_response) {
 }
 
 // static
-bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable() {
+bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking() {
   dbus::Bus::Options dbus_options;
   dbus_options.bus_type = dbus::Bus::SYSTEM;
   scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
