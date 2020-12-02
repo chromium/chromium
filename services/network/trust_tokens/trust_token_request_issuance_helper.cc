@@ -55,6 +55,13 @@ BeginIssuanceOnPostedSequence(std::unique_ptr<Cryptographer> cryptographer,
 TrustTokenRequestIssuanceHelper::CryptographerAndUnblindedTokens
 ConfirmIssuanceOnPostedSequence(std::unique_ptr<Cryptographer> cryptographer,
                                 std::string response_header) {
+  // From the "spec" (design doc): "If the response has an empty Sec-Trust-Token
+  // header, return; this is a 'success' response bearing 0 tokens"
+  if (response_header.empty()) {
+    return {std::move(cryptographer),
+            std::make_unique<Cryptographer::UnblindedTokens>()};
+  }
+
   std::unique_ptr<Cryptographer::UnblindedTokens> unblinded_tokens =
       cryptographer->ConfirmIssuance(response_header);
   return {std::move(cryptographer), std::move(unblinded_tokens)};
@@ -286,22 +293,29 @@ void TrustTokenRequestIssuanceHelper::Finalize(
 
   response->headers->RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
-  ConfirmIssuanceResponse(std::move(header_value), std::move(done));
+  ProcessIssuanceResponse(std::move(header_value), std::move(done));
 }
 
-void TrustTokenRequestIssuanceHelper::ConfirmIssuanceResponse(
+void TrustTokenRequestIssuanceHelper::ProcessIssuanceResponse(
     std::string issuance_response,
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done) {
+  if (issuance_response.empty()) {
+    OnDoneProcessingIssuanceResponse(
+        std::move(done), {std::move(cryptographer_),
+                          std::make_unique<Cryptographer::UnblindedTokens>()});
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ConfirmIssuanceOnPostedSequence,
                      std::move(cryptographer_), std::move(issuance_response)),
-      base::BindOnce(&TrustTokenRequestIssuanceHelper::
-                         OnDelegateConfirmIssuanceCallComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(done)));
+      base::BindOnce(
+          &TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse,
+          weak_ptr_factory_.GetWeakPtr(), std::move(done)));
 }
 
-void TrustTokenRequestIssuanceHelper::OnDelegateConfirmIssuanceCallComplete(
+void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
     CryptographerAndUnblindedTokens cryptographer_and_unblinded_tokens) {
   cryptographer_ = std::move(cryptographer_and_unblinded_tokens.cryptographer);
@@ -354,7 +368,7 @@ void TrustTokenRequestIssuanceHelper::DoneRequestingLocallyFulfilledIssuance(
   // the main response processing logic when executing issuance locally:
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_ISSUANCE);
-  ConfirmIssuanceResponse(
+  ProcessIssuanceResponse(
       std::move(answer->response),
       base::BindOnce(&TrustTokenRequestIssuanceHelper::
                          DoneFinalizingLocallyFulfilledIssuance,

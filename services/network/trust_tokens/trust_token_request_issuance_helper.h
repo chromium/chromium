@@ -215,15 +215,16 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // Continuation of |Finalize| after extracting the base64-encoded issuance
   // response from a response header (or receiving it from a locally executed
   // operation).
-  void ConfirmIssuanceResponse(
+  void ProcessIssuanceResponse(
       std::string issuance_response,
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done);
 
-  // Continuation of |Finalize| after a call to the cryptography delegate to
+  // Continuation of |Finalize| after processing the received issuance response,
+  // which typically involves an off-thread call to the cryptography delegate to
   // execute the bulk of the inbound half of the issuance operation.
   // Receives ownership of the cryptographer back from the asynchronous
   // callback.
-  void OnDelegateConfirmIssuanceCallComplete(
+  void OnDoneProcessingIssuanceResponse(
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
       CryptographerAndUnblindedTokens cryptographer_and_unblinded_tokens);
 

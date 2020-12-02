@@ -41,6 +41,7 @@ using ::testing::_;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::ReturnNull;
@@ -388,6 +389,48 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseOmitsHeader) {
       net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
   EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
             mojom::TrustTokenOperationStatus::kBadResponse);
+}
+
+// Check that the issuance helper correctly handles responses bearing empty
+// Sec-Trust-Token headers, which represent "success but no tokens issued".
+TEST_F(TrustTokenRequestIssuanceHelperTest, TreatsEmptyHeaderAsSuccess) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+
+  SuitableTrustTokenOrigin issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, BeginIssuance(_))
+      .WillOnce(
+          Return(std::string("this string contains some blinded tokens")));
+
+  TrustTokenRequestIssuanceHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      store.get(), ReasonableKeyCommitmentGetter(), std::move(cryptographer),
+      std::make_unique<MockLocalOperationDelegate>(),
+      base::BindRepeating(&IsCurrentOperatingSystem));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(issuer);
+
+  ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // After the operation has successfully finished, the store should still
+  // contain no tokens for the issuer.
+  auto match_all_keys =
+      base::BindRepeating([](const std::string&) { return true; });
+  EXPECT_THAT(store->RetrieveMatchingTokens(issuer, std::move(match_all_keys)),
+              IsEmpty());
 }
 
 // Check that the issuance helper handles an issuance response rejected by the
