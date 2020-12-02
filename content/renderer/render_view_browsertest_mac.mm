@@ -83,9 +83,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   prefs.enable_scroll_animator = false;
 
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderWidget* widget = view->GetMainRenderFrame()->GetLocalRootRenderWidget();
   blink::WebFrameWidget* blink_widget =
-      static_cast<blink::WebFrameWidget*>(widget->GetWebWidget());
+      view->GetMainRenderFrame()->GetLocalRootWebFrameWidget();
 
   view->SetBlinkPreferences(prefs);
 

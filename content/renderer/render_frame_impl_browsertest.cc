@@ -165,7 +165,9 @@ class RenderFrameImplTest : public RenderViewTest {
 
   TestRenderFrame* frame() { return frame_; }
 
-  content::RenderWidget* frame_widget() const { return frame_->render_widget_; }
+  blink::WebFrameWidget* frame_widget() const {
+    return frame_->GetLocalRootWebFrameWidget();
+  }
 
   mojo::AssociatedRemote<blink::mojom::Widget>& widget_remote() {
     return widget_remote_;
@@ -218,7 +220,8 @@ TEST_F(RenderFrameImplTest, SubframeWidget) {
 
   RenderFrameImpl* main_frame =
       static_cast<RenderViewImpl*>(view_)->GetMainRenderFrame();
-  RenderWidget* main_frame_widget = main_frame->GetLocalRootRenderWidget();
+  blink::WebFrameWidget* main_frame_widget =
+      main_frame->GetLocalRootWebFrameWidget();
   EXPECT_NE(frame_widget(), main_frame_widget);
 }
 
@@ -247,11 +250,11 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   EXPECT_EQ(gfx::SizeF(view_->GetWebView()->VisualViewportSize()),
             gfx::SizeF(visible_size));
   // The main frame doesn't change other local roots directly.
-  EXPECT_NE(gfx::Size(frame_widget()->GetWebWidget()->Size()), visible_size);
+  EXPECT_NE(gfx::Size(frame_widget()->Size()), visible_size);
 
   // A subframe in the same process does not modify the WebView.
-  frame_widget()->GetWebWidget()->ApplyVisualProperties(visual_properties);
-  EXPECT_EQ(gfx::Size(frame_widget()->GetWebWidget()->Size()), widget_size);
+  frame_widget()->ApplyVisualProperties(visual_properties);
+  EXPECT_EQ(gfx::Size(frame_widget()->Size()), widget_size);
 
   // A subframe in another process would use the |visible_viewport_size| as its
   // size.
@@ -266,7 +269,7 @@ TEST_F(RenderFrameImplTest, FrameWasShown) {
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(frame_widget()->GetWebWidget()->IsHidden());
+  EXPECT_FALSE(frame_widget()->IsHidden());
   EXPECT_TRUE(observer.visible());
 }
 

@@ -82,7 +82,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
       scope, proxy.get(), proxy->blink_interface_registry_.get(),
       proxy->GetRemoteAssociatedInterfaces(), proxy_frame_token);
 
-  RenderWidget* ancestor_widget = nullptr;
+  blink::WebFrameWidget* ancestor_widget = nullptr;
   bool parent_is_local = false;
 
   // A top level frame proxy doesn't have a RenderWidget pointer. The pointer
@@ -90,7 +90,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
   if (frame_to_replace->GetWebFrame()->Parent()) {
     if (frame_to_replace->GetWebFrame()->Parent()->IsWebLocalFrame()) {
       // If the frame was a local frame, get its local root's RenderWidget.
-      ancestor_widget = frame_to_replace->GetLocalRootRenderWidget();
+      ancestor_widget = frame_to_replace->GetLocalRootWebFrameWidget();
       parent_is_local = true;
     } else {
       // Otherwise, grab the pointer from the parent RenderFrameProxy, as
@@ -99,7 +99,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
       // chain is either the root or has a local parent frame.
       RenderFrameProxy* parent = RenderFrameProxy::FromWebFrame(
           frame_to_replace->GetWebFrame()->Parent()->ToWebRemoteFrame());
-      ancestor_widget = parent->ancestor_render_widget_;
+      ancestor_widget = parent->ancestor_web_frame_widget_;
     }
   }
 
@@ -132,7 +132,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
       new RenderFrameProxy(agent_scheduling_group, routing_id));
   proxy->devtools_frame_token_ = devtools_frame_token;
   RenderViewImpl* render_view = nullptr;
-  RenderWidget* ancestor_widget = nullptr;
+  blink::WebFrameWidget* ancestor_widget = nullptr;
   blink::WebRemoteFrame* web_frame = nullptr;
 
   blink::WebFrame* opener = nullptr;
@@ -162,7 +162,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token, opener);
     render_view = parent->render_view();
-    ancestor_widget = parent->ancestor_render_widget_;
+    ancestor_widget = parent->ancestor_web_frame_widget_;
   }
 
   proxy->Init(web_frame, render_view, ancestor_widget, false);
@@ -194,7 +194,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortal(
       proxy->blink_interface_registry_.get(),
       proxy->GetRemoteAssociatedInterfaces(), frame_token, portal_element);
   proxy->Init(web_frame, parent->render_view(),
-              parent->GetLocalRootRenderWidget(), true);
+              parent->GetLocalRootWebFrameWidget(), true);
   return proxy.release();
 }
 
@@ -248,37 +248,32 @@ RenderFrameProxy::~RenderFrameProxy() {
 
 void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
                             RenderViewImpl* render_view,
-                            RenderWidget* ancestor_widget,
+                            blink::WebFrameWidget* ancestor_widget,
                             bool parent_is_local) {
   CHECK(web_frame);
   CHECK(render_view);
 
   web_frame_ = web_frame;
   render_view_ = render_view;
-  ancestor_render_widget_ = ancestor_widget;
+  ancestor_web_frame_widget_ = ancestor_widget;
 
-  // |ancestor_render_widget_| can be null if this is a proxy for a remote main
-  // frame, or a subframe of that proxy. We don't need to register as an
+  // |ancestor_web_frame_widget_| can be null if this is a proxy for a remote
+  // main frame, or a subframe of that proxy. We don't need to register as an
   // observer [since there is no ancestor RenderWidget]. The observer is used to
   // propagate VisualProperty changes down the frame/process hierarchy. Remote
   // main frame proxies do not participate in this flow.
-  if (ancestor_render_widget_) {
-    blink::WebFrameWidget* ancestor_frame_widget =
-        static_cast<blink::WebFrameWidget*>(
-            ancestor_render_widget_->GetWebWidget());
+  if (ancestor_web_frame_widget_) {
     pending_visual_properties_.zoom_level = render_view->GetZoomLevel();
     pending_visual_properties_.page_scale_factor =
-        ancestor_frame_widget->PageScaleInMainFrame();
+        ancestor_web_frame_widget_->PageScaleInMainFrame();
     pending_visual_properties_.is_pinch_gesture_active =
-        ancestor_frame_widget->PinchGestureActiveInMainFrame();
+        ancestor_web_frame_widget_->PinchGestureActiveInMainFrame();
     pending_visual_properties_.screen_info =
-        ancestor_render_widget_->GetWebWidget()->GetOriginalScreenInfo();
+        ancestor_web_frame_widget_->GetOriginalScreenInfo();
     pending_visual_properties_.visible_viewport_size =
-        ancestor_render_widget_->GetWebWidget()->VisibleViewportSizeInDIPs();
+        ancestor_web_frame_widget_->VisibleViewportSizeInDIPs();
     const blink::WebVector<gfx::Rect>& window_segments =
-        static_cast<blink::WebFrameWidget*>(
-            ancestor_render_widget_->GetWebWidget())
-            ->WindowSegments();
+        ancestor_web_frame_widget_->WindowSegments();
     pending_visual_properties_.root_widget_window_segments.assign(
         window_segments.begin(), window_segments.end());
     SynchronizeVisualProperties();
@@ -301,7 +296,7 @@ void RenderFrameProxy::ResendVisualProperties() {
 
 void RenderFrameProxy::DidChangeScreenInfo(
     const blink::ScreenInfo& screen_info) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.screen_info = screen_info;
   if (crashed_) {
@@ -314,7 +309,7 @@ void RenderFrameProxy::DidChangeScreenInfo(
 }
 
 void RenderFrameProxy::ZoomLevelChanged(double zoom_level) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.zoom_level = zoom_level;
   SynchronizeVisualProperties();
@@ -329,7 +324,7 @@ void RenderFrameProxy::DidChangeRootWindowSegments(
 
 void RenderFrameProxy::PageScaleFactorChanged(float page_scale_factor,
                                               bool is_pinch_gesture_active) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.page_scale_factor = page_scale_factor;
   pending_visual_properties_.is_pinch_gesture_active = is_pinch_gesture_active;
@@ -342,7 +337,7 @@ viz::FrameSinkId RenderFrameProxy::GetFrameSinkId() {
 
 void RenderFrameProxy::DidChangeVisibleViewportSize(
     const gfx::Size& visible_viewport_size) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.visible_viewport_size = visible_viewport_size;
   SynchronizeVisualProperties();
@@ -350,7 +345,7 @@ void RenderFrameProxy::DidChangeVisibleViewportSize(
 
 void RenderFrameProxy::UpdateCaptureSequenceNumber(
     uint32_t capture_sequence_number) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.capture_sequence_number = capture_sequence_number;
   SynchronizeVisualProperties();
@@ -472,7 +467,7 @@ void RenderFrameProxy::DidUpdateVisualProperties(
 
 void RenderFrameProxy::EnableAutoResize(const gfx::Size& min_size,
                                         const gfx::Size& max_size) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.auto_resize_enabled = true;
   pending_visual_properties_.min_size_for_auto_resize = min_size;
@@ -481,7 +476,7 @@ void RenderFrameProxy::EnableAutoResize(const gfx::Size& min_size,
 }
 
 void RenderFrameProxy::DisableAutoResize() {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.auto_resize_enabled = false;
   SynchronizeVisualProperties();
@@ -492,7 +487,7 @@ void RenderFrameProxy::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
 }
 
 void RenderFrameProxy::SynchronizeVisualProperties() {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   if (!frame_sink_id_.is_valid() || crashed_)
     return;
@@ -648,13 +643,13 @@ void RenderFrameProxy::Navigate(
 void RenderFrameProxy::FrameRectsChanged(
     const blink::WebRect& local_frame_rect,
     const blink::WebRect& screen_space_rect) {
-  DCHECK(ancestor_render_widget_);
+  DCHECK(ancestor_web_frame_widget_);
 
   pending_visual_properties_.screen_space_rect = gfx::Rect(screen_space_rect);
   pending_visual_properties_.local_frame_size =
       gfx::Size(local_frame_rect.width, local_frame_rect.height);
   pending_visual_properties_.screen_info =
-      ancestor_render_widget_->GetWebWidget()->GetOriginalScreenInfo();
+      ancestor_web_frame_widget_->GetOriginalScreenInfo();
   if (crashed_) {
     // Update the sad page to match the current size.
     compositing_helper_->ChildFrameGone(local_frame_size(),
@@ -675,10 +670,10 @@ cc::Layer* RenderFrameProxy::GetLayer() {
 void RenderFrameProxy::SetLayer(scoped_refptr<cc::Layer> layer,
                                 bool prevent_contents_opaque_changes,
                                 bool is_surface_layer) {
-  // |ancestor_render_widget_| can be null if this is a proxy for a remote main
-  // frame, or a subframe of that proxy. However, we should not be setting a
-  // layer on such a proxy (the layer is used for embedding a child proxy).
-  DCHECK(ancestor_render_widget_);
+  // |ancestor_web_frame_widget_| can be null if this is a proxy for a remote
+  // main frame, or a subframe of that proxy. However, we should not be setting
+  // a layer on such a proxy (the layer is used for embedding a child proxy).
+  DCHECK(ancestor_web_frame_widget_);
 
   if (web_frame()) {
     web_frame()->SetCcLayer(layer.get(), prevent_contents_opaque_changes,

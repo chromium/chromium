@@ -2116,8 +2116,6 @@ RenderWidget* RenderFrameImpl::GetLocalRootRenderWidget() {
 }
 
 blink::WebFrameWidget* RenderFrameImpl::GetLocalRootWebFrameWidget() {
-  // This is the same as GetLocalRootRenderWidget()->GetWebWidget() but
-  // avoids casting for type safety, woo.
   return frame_->LocalRoot()->FrameWidget();
 }
 

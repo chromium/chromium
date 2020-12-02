@@ -32,6 +32,7 @@
 #include "url/origin.h"
 
 namespace blink {
+class WebFrameWidget;
 struct WebRect;
 }
 
@@ -42,7 +43,6 @@ class BlinkInterfaceRegistryImpl;
 class ChildFrameCompositingHelper;
 class RenderFrameImpl;
 class RenderViewImpl;
-class RenderWidget;
 struct FrameReplicationState;
 
 // When a page's frames are rendered by multiple processes, each renderer has a
@@ -209,7 +209,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   void Init(blink::WebRemoteFrame* frame,
             RenderViewImpl* render_view,
-            RenderWidget* render_widget,
+            blink::WebFrameWidget* ancestor_widget,
             bool parent_is_local);
 
   void ResendVisualProperties();
@@ -270,10 +270,10 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   RenderViewImpl* render_view_ = nullptr;
 
-  // The RenderWidget of the nearest ancestor local root. If the proxy has no
+  // The WebFrameWidget of the nearest ancestor local root. If the proxy has no
   // local root ancestor (eg it is a proxy of the root frame) then the pointer
   // is null.
-  RenderWidget* ancestor_render_widget_ = nullptr;
+  blink::WebFrameWidget* ancestor_web_frame_widget_ = nullptr;
 
   // Contains token to be used as a frame id in the devtools protocol.
   // It is derived from the content's devtools_frame_token, is
