@@ -200,6 +200,11 @@ base::Optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     // setting should show up in Page Info is in ShouldShowPermission in
     // page_info.cc.
     return permission.default_setting;
+  } else if (permission.type == ContentSettingsType::JAVASCRIPT &&
+             base::FeatureList::IsEnabled(page_info::kPageInfoV2)) {
+    // The javascript content setting should show up if it is blocked globally
+    // to give users an easy way to create exceptions.
+    return permission.default_setting;
   } else if (permission.type == ContentSettingsType::SOUND) {
     // The sound content setting should always show up when the tab has played
     // audio since last navigation.
