@@ -101,8 +101,28 @@ func main() {
 		found := false
 		for _, d := range topDirs {
 			if strings.HasPrefix(f, d) {
-				bd := filepath.Base(d)
-				m[bd] = append(m[bd], f)
+				var bd string
+				for _, asm := range []string{"sse4"} {
+					pattern := "*_" + asm + "*"
+					if match, err := filepath.Match(pattern, filepath.Base(f)); err != nil {
+						panic(err)
+					} else if match {
+						bd = filepath.Base(d) + "_" + asm
+						break
+					}
+				}
+				if bd == "" {
+					bd = filepath.Base(d)
+				}
+
+				// Split the dsp headers out to their own variables as the
+				// assembly may depend on both its headers and the top-level
+				// headers.
+				if strings.HasPrefix(bd, "dsp") && filepath.Ext(f) == ".h" {
+					m[bd+"_headers"] = append(m[bd+"_headers"], f)
+				} else {
+					m[bd] = append(m[bd], f)
+				}
 				found = true
 				break
 			}

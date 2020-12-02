@@ -59,10 +59,31 @@ if (enable_libgav1_decoder || use_libgav1_parser) {
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":private_libgav1_config" ]
 
+    deps = [
+      ":libgav1_dsp_sse4",
+      ":libgav1_utils",
+    ]
+    public_configs = [ ":public_libgav1_config" ]
+
+    sources = gav1_dsp_sources + gav1_dsp_headers_sources
+  }
+
+  # SSE4 sources are split to their own target as Chrome is currently built
+  # with -msse3.
+  source_set("libgav1_dsp_sse4") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":private_libgav1_config" ]
+
     deps = [ ":libgav1_utils" ]
     public_configs = [ ":public_libgav1_config" ]
 
-    sources = gav1_dsp_sources
+    if (current_cpu == "x86" || current_cpu == "x64") {
+      cflags = [ "-msse4.1" ]
+    }
+
+    sources = gav1_dsp_sse4_sources + gav1_dsp_sse4_headers_sources +
+              gav1_dsp_headers_sources
   }
 
   static_library("libgav1") {
