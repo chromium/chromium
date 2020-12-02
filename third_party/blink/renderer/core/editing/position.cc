@@ -45,7 +45,7 @@ bool CanBeAnchorNode<EditingStrategy>(Node* node) {
 template <>
 bool CanBeAnchorNode<EditingInFlatTreeStrategy>(Node* node) {
   return CanBeAnchorNode<EditingStrategy>(node) &&
-         node->CanParticipateInFlatTree();
+         (!node || node->CanParticipateInFlatTree());
 }
 #endif
 
