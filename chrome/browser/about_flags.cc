@@ -1510,9 +1510,20 @@ const FeatureEntry::FeatureVariation kPromoBrowserCommandsVariations[] = {
          kPromoBrowserCommandOpenSafeBrowsingSettingsEnhancedProtectionCommandParam),
      nullptr}};
 #if !defined(OS_ANDROID)
+
+const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
+    {ntp_features::kNtpStatefulTasksModuleDataParam, "fake"}};
+const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
+    {"- Fake Data", kNtpRecipeTasksModuleFakeData,
+     base::size(kNtpRecipeTasksModuleFakeData), nullptr},
+};
+
+const FeatureEntry::FeatureParam kNtpShoppingTasksModuleFakeData[] = {
+    {ntp_features::kNtpStatefulTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
-    {"- Real Data", {}, 0, "t3329137" /* variation_id */},
-    {"- Fake Data", {}, 0, "t3329139" /* variation_id */},
+    {"- Fake Data", kNtpShoppingTasksModuleFakeData,
+     base::size(kNtpShoppingTasksModuleFakeData),
+     "t3329139" /* variation_id */},
 };
 
 const FeatureEntry::FeatureParam kNtpRepeatableQueriesInsertPositionStart[] = {
@@ -4361,7 +4372,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
      flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule,
+                                    kNtpRecipeTasksModuleVariations,
+                                    "NtpRecipeTasksModule")},
 
     {"ntp-shopping-tasks-module",
      flag_descriptions::kNtpShoppingTasksModuleName,

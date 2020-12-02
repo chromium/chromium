@@ -343,4 +343,42 @@ const std::vector<std::string>& GetGoogleRegistrableDomains() {
   return *kGoogleRegisterableDomains;
 }
 
+GURL AppendToAsyncQueryParam(const GURL& url,
+                             const std::string& key,
+                             const std::string& value) {
+  const std::string param_name = "async";
+  const std::string key_value = key + ":" + value;
+  bool replaced = false;
+  const std::string input = url.query();
+  url::Component cursor(0, input.size());
+  std::string output;
+  url::Component key_range, value_range;
+  while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
+                                   &value_range)) {
+    const base::StringPiece key(input.data() + key_range.begin, key_range.len);
+    std::string key_value_pair(input, key_range.begin,
+                               value_range.end() - key_range.begin);
+    if (!replaced && key == param_name) {
+      // Check |replaced| as only the first match should be replaced.
+      replaced = true;
+      key_value_pair += "," + key_value;
+    }
+    if (!output.empty()) {
+      output += "&";
+    }
+
+    output += key_value_pair;
+  }
+  if (!replaced) {
+    if (!output.empty()) {
+      output += "&";
+    }
+
+    output += (param_name + "=" + key_value);
+  }
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(output);
+  return url.ReplaceComponents(replacements);
+}
+
 }  // namespace google_util

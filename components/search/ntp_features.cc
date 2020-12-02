@@ -91,6 +91,9 @@ const char kNtpRepeatableQueriesFrequencyExponentParam[] =
 const char kNtpRepeatableQueriesInsertPositionParam[] =
     "NtpRepeatableQueriesInsertPosition";
 
+const char kNtpStatefulTasksModuleDataParam[] =
+    "NtpStatefulTasksModuleDataParam";
+
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold() {
   const base::TimeDelta kLocalHistoryRepeatableQueriesAgeThreshold =
       base::TimeDelta::FromDays(180);  // Six months.
