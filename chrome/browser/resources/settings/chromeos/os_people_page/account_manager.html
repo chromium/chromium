@@ -179,6 +179,16 @@
         margin-inline-end: 12px;
         margin-inline-start: 12px;
       }
+
+      .no-accounts-message {
+        color: var(--cr-secondary-text-color);
+        padding: 20px 50px;
+        text-align: center;
+      }
+
+      .settings-box.border-bottom {
+        border-bottom: var(--cr-separator-line);
+      }
     </style>
 
     <!-- Account management description -->
@@ -283,8 +293,6 @@
 
     <!-- Secondary Accounts list -->
     <div id="outer" class="layout vertical nowrap" role="list">
-      <!-- TODO(crbug.com/1144113): display a message when there are no
-           secondary accounts -->
       <template is="dom-repeat" id="account-list"
           items="[[getAccounts_(accounts_)]]">
         <div class="settings-box account-list-item" role="listitem">
@@ -361,7 +369,12 @@
         </div>
       </template>
 
-      <div class="clear settings-box"></div>
+      <div class$="[[getBottomBorderClassList_(accounts_)]]">
+        <div hidden$="[[!shouldShowNoAccountsMessage_(accounts_)]]"
+            class="no-accounts-message">
+          $i18n{accountManagerSecondaryAccountDescription}
+        </div>
+      </div>
 
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" on-click="onRemoveAccountTap_">
@@ -369,6 +382,7 @@
         </button>
       </cr-action-menu>
     </div>
+
   </template>
   <script src="account_manager.js"></script>
 </dom-module>

@@ -359,6 +359,24 @@ Polymer({
   },
 
   /**
+   * @return {boolean} True if secondary accounts description should be shown.
+   * @private
+   */
+  shouldShowNoAccountsMessage_() {
+    return this.isAccountManagementFlowsV2Enabled_ &&
+        this.getAccounts_().length === 0;
+  },
+
+  /**
+   * @return {string} class list.
+   * @private
+   */
+  getBottomBorderClassList_() {
+    return this.shouldShowNoAccountsMessage_() ? 'settings-box border-bottom' :
+                                                 'settings-box';
+  },
+
+  /**
    * @param {!CustomEvent<!{model: !{item: !settings.Account}}>} event
    * @private
    */
