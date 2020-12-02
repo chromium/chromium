@@ -24,7 +24,7 @@
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f amd-0x7340
 #         apple apple-apple-a12z
 #         arm
-#         google google-0xffff
+#         google google-0xffff google-angle-(metal-renderer:-apple-a12z)
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
 #               intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
@@ -542,11 +542,16 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough nvidia ] conformance/t
 # Mac ARM-based DTKs
 crbug.com/1130703 [ mac apple-apple-a12z no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1130703 [ mac apple-apple-a12z no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+# TODO(crbug.com/1153984): remove the expectations with the incorrect GPU type for the Metal backend.
 crbug.com/1130758 [ mac apple-apple-a12z ] conformance/extensions/webgl-depth-texture.html [ Failure ]
+crbug.com/1130758 [ mac google-angle-(metal-renderer:-apple-a12z) ] conformance/extensions/webgl-depth-texture.html [ Failure ]
 crbug.com/1130759 [ mac apple-apple-a12z angle-metal ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1130759 [ mac google-angle-(metal-renderer:-apple-a12z) angle-metal ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/1130759 [ mac apple-apple-a12z angle-metal ] conformance/textures/misc/texture-mips.html [ Failure ]
 crbug.com/1130760 [ mac apple-apple-a12z angle-metal ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
+crbug.com/1130760 [ mac google-angle-(metal-renderer:-apple-a12z) angle-metal ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 crbug.com/1130760 [ mac apple-apple-a12z angle-metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
+crbug.com/1130760 [ mac google-angle-(metal-renderer:-apple-a12z) angle-metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
 crbug.com/1141066 [ mac apple-apple-a12z angle-opengl passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1141066 [ mac apple-apple-a12z angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 
