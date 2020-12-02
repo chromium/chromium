@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -1705,6 +1706,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.trash) {
     enabled_features.push_back(chromeos::features::kFilesTrash);
+  }
+
+  if (options.enable_holding_space) {
+    enabled_features.push_back(ash::features::kTemporaryHoldingSpace);
+  } else {
+    disabled_features.push_back(ash::features::kTemporaryHoldingSpace);
   }
 
   if (command_line->HasSwitch("devtools-code-coverage")) {

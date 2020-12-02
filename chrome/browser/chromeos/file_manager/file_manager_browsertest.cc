@@ -148,6 +148,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableHoldingSpace(bool enable) {
+    options.enable_holding_space = enable;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -663,6 +668,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner")));
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    HoldingSpace, /* holding_space.js */
+    FilesAppBrowserTest,
+    ::testing::Values(TestCase("holdingSpaceWelcomeBannerWithFeatureDisabled")
+                          .EnableHoldingSpace(false),
+                      TestCase("holdingSpaceWelcomeBannerWithFeatureEnabled")
+                          .EnableHoldingSpace(true)));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */

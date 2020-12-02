@@ -82,7 +82,11 @@ class Banners extends cr.EventTarget {
     this.privateOnDirectoryChangedBound_ =
         this.privateOnDirectoryChanged_.bind(this);
 
-    const handler = this.maybeShowDriveBanners_.bind(this);
+    const handler = () => {
+      this.maybeShowDriveBanners_();
+      this.maybeShowHoldingSpaceWelcomeBanner_();
+    };
+
     this.directoryModel_.addEventListener('scan-completed', handler);
     this.directoryModel_.addEventListener('rescan-completed', handler);
     this.directoryModel_.addEventListener(
@@ -171,6 +175,10 @@ class Banners extends cr.EventTarget {
       this.offlineInfoBanner_.hidden = true;
       e.preventDefault();
     });
+
+    /** @const @private {!HTMLElement} */
+    this.holdingSpaceWelcomeBanner_ =
+        queryRequiredElement('.holding-space-welcome', this.document_);
   }
 
   /**
@@ -235,6 +243,55 @@ class Banners extends cr.EventTarget {
    */
   onDriveConnectionChanged_() {
     this.maybeShowAuthFailBanner_();
+  }
+
+  /**
+   * Shows the holding space welcome banner, creating the banner if necessary.
+   * @private
+   */
+  prepareAndShowHoldingSpaceWelcomeBanner_() {
+    assert(util.isHoldingSpaceEnabled());
+    this.showHoldingSpaceWelcomeBanner_(true);
+
+    // Do not recreate the banner.
+    if (this.holdingSpaceWelcomeBanner_.firstElementChild) {
+      return;
+    }
+
+    // Add banner styles to document head.
+    if (!this.document_.head.querySelector(
+            'link[holding-space-welcome-style]')) {
+      const style = this.document_.createElement('link');
+      style.rel = 'stylesheet';
+      style.href = constants.HOLDING_SPACE_WELCOME_CSS;
+      style.setAttribute('holding-space-welcome-style', '');
+      this.document_.head.appendChild(style);
+    }
+
+    const wrapper = util.createChild(
+        this.holdingSpaceWelcomeBanner_, 'holding-space-welcome-wrapper');
+    util.createChild(wrapper, 'holding-space-welcome-icon');
+
+    const message = util.createChild(wrapper, 'holding-space-welcome-message');
+    util.setClampLine(message, '2');
+
+    const title =
+        util.createChild(message, 'holding-space-welcome-title headline2');
+    title.textContent = str('HOLDING_SPACE_WELCOME_TITLE');
+
+    // TODO(crbug.com/1154347): Use different `text` string in tablet mode.
+    const body = util.createChild(message, 'body2-primary');
+    const text = util.createChild(body, 'holding-space-welcome-text');
+    text.textContent = str('HOLDING_SPACE_WELCOME_TEXT');
+
+    const buttonGroup = util.createChild(wrapper, 'button-group', 'div');
+    const dismiss = util.createChild(buttonGroup, 'text-button', 'cr-button');
+    dismiss.setAttribute('aria-label', str('HOLDING_SPACE_WELCOME_DISMISS'));
+    dismiss.textContent = str('HOLDING_SPACE_WELCOME_DISMISS');
+    dismiss.tabIndex = 0;
+
+    dismiss.addEventListener(
+        'click', this.closeHoldingSpaceWelcomeBanner_.bind(this));
   }
 
   /**
@@ -443,6 +500,15 @@ class Banners extends cr.EventTarget {
   }
 
   /**
+   * Closes the holding space welcome banner.
+   * @private
+   */
+  closeHoldingSpaceWelcomeBanner_() {
+    assert(util.isHoldingSpaceEnabled());
+    this.cleanupHoldingSpaceWelcomeBanner_();
+  }
+
+  /**
    * Closes the Drive Welcome banner.
    * @private
    */
@@ -488,6 +554,18 @@ class Banners extends cr.EventTarget {
         }
       }
     });
+  }
+
+  /**
+   * Shows or hides the welcome banner for holding space.
+   * @return {Promise<void>}
+   * @private
+   */
+  async maybeShowHoldingSpaceWelcomeBanner_() {
+    if (util.isHoldingSpaceEnabled()) {
+      await this.ready_;
+      this.prepareAndShowHoldingSpaceWelcomeBanner_();
+    }
   }
 
   /**
@@ -549,6 +627,28 @@ class Banners extends cr.EventTarget {
     }
     return locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE &&
         locationInfo.volumeInfo.profile.isCurrentProfile;
+  }
+
+  /**
+   * Shows (or hides) the holding space welcome banner.
+   * @param {boolean} show
+   * @private
+   */
+  showHoldingSpaceWelcomeBanner_(show) {
+    assert(util.isHoldingSpaceEnabled());
+
+    const /** boolean */ hidden = !show;
+    if (this.holdingSpaceWelcomeBanner_.hasAttribute('hidden') == hidden) {
+      return;
+    }
+
+    if (hidden) {
+      this.holdingSpaceWelcomeBanner_.setAttribute('hidden', '');
+    } else {
+      this.holdingSpaceWelcomeBanner_.removeAttribute('hidden');
+    }
+
+    this.requestRelayout_(200);  // Resize only after the animation is done.
   }
 
   /**
@@ -701,6 +801,15 @@ class Banners extends cr.EventTarget {
             remainingRatio < DRIVE_SPACE_WARNING_THRESHOLD_RATIO, sizeStats);
       }
     });
+  }
+
+  /**
+   * Removes the holding space welcome banner.
+   * @private
+   */
+  cleanupHoldingSpaceWelcomeBanner_() {
+    assert(util.isHoldingSpaceEnabled());
+    this.showHoldingSpaceWelcomeBanner_(false);
   }
 
   /**

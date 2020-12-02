@@ -12,6 +12,8 @@ var test = test || {};
 constants.FILES_QUICK_VIEW_HTML =
     'test/gen/foreground/elements/files_quick_view.html';
 constants.DRIVE_WELCOME_CSS = FILE_MANAGER_ROOT + constants.DRIVE_WELCOME_CSS;
+constants.HOLDING_SPACE_WELCOME_CSS =
+    FILE_MANAGER_ROOT + constants.HOLDING_SPACE_WELCOME_CSS;
 
 test.FILE_MANAGER_EXTENSION_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
 

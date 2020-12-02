@@ -111,6 +111,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test needs the single partition format feature.
     bool single_partition_format = false;
+
+    // Whether test should enable holding space.
+    bool enable_holding_space = false;
   };
 
  protected:

@@ -29,6 +29,7 @@
       "file_manager/format_dialog.js",
       "file_manager/gear_menu.js",
       "file_manager/grid_view.js",
+      "file_manager/holding_space.js",
       "file_manager/install_linux_package_dialog.js",
       "file_manager/keyboard_operations.js",
       "file_manager/launch_files_app_swa.js",
