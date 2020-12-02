@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -92,9 +92,16 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
                         OnWebAppUninstallDialogClosed closed_callback) override;
   void SetDialogShownCallbackForTesting(base::OnceClosure callback) override;
 
-  void UninstallStarted();
-  void CallCallback(bool uninstalled);
-  base::WeakPtr<WebAppUninstallDialogViews> GetWeakPtr();
+  // The following methods are used by WebAppUninstallDialogDelegateView to
+  // report the uninstallation request status. After calling one of these
+  // methods, it is invalid to call any of them again.
+
+  // Called when the view is triggering an uninstallation with the
+  // WebAppProvider system. Returns a callback to be passed to this system.
+  base::OnceCallback<void(bool uninstalled)> UninstallStarted();
+
+  // Called to signify that the uninstall has been cancelled.
+  void UninstallCancelled();
 
  private:
   // web_app::AppRegistrarObserver:
