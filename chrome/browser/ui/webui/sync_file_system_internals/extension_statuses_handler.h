@@ -33,8 +33,9 @@ class ExtensionStatusesHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void GetExtensionStatuses(const base::ListValue* args);
-  void DidGetExtensionStatuses(const base::ListValue& list);
+  void HandleGetExtensionStatuses(const base::ListValue* args);
+  void DidGetExtensionStatuses(std::string callback_id,
+                               const base::ListValue& list);
 
   Profile* profile_;
   base::WeakPtrFactory<ExtensionStatusesHandler> weak_ptr_factory_{this};

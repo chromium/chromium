@@ -13,8 +13,8 @@ const FileMetadata = (function() {
   /**
    * Gets extension data so the select drop down can be filled.
    */
-  function getExtensions() {
-    chrome.send('getExtensions');
+  function refreshExtensions() {
+    cr.sendWithPromise('getExtensions').then(FileMetadata.onGetExtensions);
   }
 
   /**
@@ -44,7 +44,7 @@ const FileMetadata = (function() {
     }
 
     // After drop down has been loaded with options, file metadata can be loaded
-    getFileMetadata();
+    refreshFileMetadata();
   };
 
   /**
@@ -63,7 +63,7 @@ const FileMetadata = (function() {
    * Get File Metadata depending on which extension is selected from the drop
    * down if any.
    */
-  function getFileMetadata() {
+  function refreshFileMetadata() {
     const dropDown = $('extensions-select');
     if (dropDown.options.length === 0) {
       $('file-metadata-header').textContent = '';
@@ -72,7 +72,8 @@ const FileMetadata = (function() {
     }
 
     const selectedExtensionId = getSelectedExtensionId();
-    chrome.send('getFileMetadata', [selectedExtensionId]);
+    cr.sendWithPromise('getFileMetadata', selectedExtensionId)
+        .then(FileMetadata.onGetFileMetadata);
   }
 
   /**
@@ -130,9 +131,9 @@ const FileMetadata = (function() {
   }
 
   function main() {
-    getExtensions();
-    $('refresh-metadata-button').addEventListener('click', getExtensions);
-    $('extensions-select').addEventListener('change', getFileMetadata);
+    refreshExtensions();
+    $('refresh-metadata-button').addEventListener('click', refreshExtensions);
+    $('extensions-select').addEventListener('change', refreshFileMetadata);
   }
 
   document.addEventListener('DOMContentLoaded', main);

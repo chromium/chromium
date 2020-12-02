@@ -76,7 +76,7 @@ ExtensionStatusesHandler::~ExtensionStatusesHandler() {}
 void ExtensionStatusesHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getExtensionStatuses",
-      base::BindRepeating(&ExtensionStatusesHandler::GetExtensionStatuses,
+      base::BindRepeating(&ExtensionStatusesHandler::HandleGetExtensionStatuses,
                           base::Unretained(this)));
 }
 
@@ -105,19 +105,20 @@ void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
       extension_service->AsWeakPtr(), callback));
 }
 
-void ExtensionStatusesHandler::GetExtensionStatuses(
+void ExtensionStatusesHandler::HandleGetExtensionStatuses(
     const base::ListValue* args) {
+  AllowJavascript();
   DCHECK(args);
   GetExtensionStatusesAsDictionary(
-      profile_,
-      base::Bind(&ExtensionStatusesHandler::DidGetExtensionStatuses,
-                 weak_ptr_factory_.GetWeakPtr()));
+      profile_, base::Bind(&ExtensionStatusesHandler::DidGetExtensionStatuses,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           args->GetList()[0].GetString() /* callback_id */));
 }
 
 void ExtensionStatusesHandler::DidGetExtensionStatuses(
+    std::string callback_id,
     const base::ListValue& list) {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "ExtensionStatuses.onGetExtensionStatuses", list);
+  ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 
 }  // namespace syncfs_internals

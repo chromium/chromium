@@ -22,24 +22,24 @@ DumpDatabaseHandler::~DumpDatabaseHandler() {}
 void DumpDatabaseHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getDatabaseDump",
-      base::BindRepeating(&DumpDatabaseHandler::GetDatabaseDump,
+      base::BindRepeating(&DumpDatabaseHandler::HandleGetDatabaseDump,
                           base::Unretained(this)));
 }
 
-void DumpDatabaseHandler::GetDatabaseDump(const base::ListValue*) {
-  std::unique_ptr<base::ListValue> list;
+void DumpDatabaseHandler::HandleGetDatabaseDump(const base::ListValue* args) {
+  AllowJavascript();
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (sync_service) {
-    sync_service->DumpDatabase(
-        base::Bind(&DumpDatabaseHandler::DidGetDatabaseDump,
-                   base::Unretained(this)));
+    sync_service->DumpDatabase(base::Bind(
+        &DumpDatabaseHandler::DidGetDatabaseDump, base::Unretained(this),
+        args->GetList()[0].GetString() /* callback_id */));
   }
 }
 
-void DumpDatabaseHandler::DidGetDatabaseDump(const base::ListValue& list) {
-  web_ui()->CallJavascriptFunctionUnsafe("DumpDatabase.onGetDatabaseDump",
-                                         list);
+void DumpDatabaseHandler::DidGetDatabaseDump(std::string callback_id,
+                                             const base::ListValue& list) {
+  ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 
 }  // namespace syncfs_internals

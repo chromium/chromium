@@ -13,8 +13,8 @@ const DumpDatabase = (function() {
   /**
    * Get the database dump.
    */
-  function getDatabaseDump() {
-    chrome.send('getDatabaseDump');
+  function refreshDatabaseDump() {
+    cr.sendWithPromise('getDatabaseDump').then(DumpDatabase.onGetDatabaseDump);
   }
 
   /**
@@ -83,8 +83,8 @@ const DumpDatabase = (function() {
   };
 
   function main() {
-    getDatabaseDump();
-    $('refresh-database-dump').addEventListener('click', getDatabaseDump);
+    refreshDatabaseDump();
+    $('refresh-database-dump').addEventListener('click', refreshDatabaseDump);
   }
 
   document.addEventListener('DOMContentLoaded', main);

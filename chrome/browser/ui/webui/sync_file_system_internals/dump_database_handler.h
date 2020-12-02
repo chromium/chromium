@@ -22,8 +22,8 @@ class DumpDatabaseHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void GetDatabaseDump(const base::ListValue* args);
-  void DidGetDatabaseDump(const base::ListValue& list);
+  void HandleGetDatabaseDump(const base::ListValue* args);
+  void DidGetDatabaseDump(std::string callback_id, const base::ListValue& list);
 
   Profile* profile_;
 

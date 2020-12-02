@@ -32,18 +32,20 @@ FileMetadataHandler::~FileMetadataHandler() {}
 
 void FileMetadataHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getExtensions", base::BindRepeating(&FileMetadataHandler::GetExtensions,
-                                           base::Unretained(this)));
+      "getExtensions",
+      base::BindRepeating(&FileMetadataHandler::HandleGetExtensions,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getFileMetadata",
-      base::BindRepeating(&FileMetadataHandler::GetFileMetadata,
+      base::BindRepeating(&FileMetadataHandler::HandleGetFileMetadata,
                           base::Unretained(this)));
 }
 
-void FileMetadataHandler::GetFileMetadata(
-    const base::ListValue* args) {
-  std::string extension_id;
-  if (!args->GetString(0, &extension_id) || extension_id.empty()) {
+void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
+  AllowJavascript();
+  std::string callback_id = args->GetList()[0].GetString();
+  std::string extension_id = args->GetList()[1].GetString();
+  if (extension_id.empty()) {
     LOG(WARNING) << "GetFileMetadata() Extension ID wasn't given";
     return;
   }
@@ -60,24 +62,26 @@ void FileMetadataHandler::GetFileMetadata(
     return;
   sync_service->DumpFiles(origin,
                           base::Bind(&FileMetadataHandler::DidGetFileMetadata,
-                                     weak_factory_.GetWeakPtr()));
+                                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void FileMetadataHandler::GetExtensions(const base::ListValue* args) {
+void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
+  AllowJavascript();
   DCHECK(args);
   ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
-      profile_,
-      base::Bind(&FileMetadataHandler::DidGetExtensions,
-                 weak_factory_.GetWeakPtr()));
+      profile_, base::Bind(&FileMetadataHandler::DidGetExtensions,
+                           weak_factory_.GetWeakPtr(),
+                           args->GetList()[0].GetString() /* callback_id */));
 }
 
-void FileMetadataHandler::DidGetExtensions(const base::ListValue& list) {
-  web_ui()->CallJavascriptFunctionUnsafe("FileMetadata.onGetExtensions", list);
+void FileMetadataHandler::DidGetExtensions(std::string callback_id,
+                                           const base::ListValue& list) {
+  ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 
-void FileMetadataHandler::DidGetFileMetadata(const base::ListValue& files) {
-  web_ui()->CallJavascriptFunctionUnsafe("FileMetadata.onGetFileMetadata",
-                                         files);
+void FileMetadataHandler::DidGetFileMetadata(std::string callback_id,
+                                             const base::ListValue& files) {
+  ResolveJavascriptCallback(base::Value(callback_id), files);
 }
 
 }  // namespace syncfs_internals

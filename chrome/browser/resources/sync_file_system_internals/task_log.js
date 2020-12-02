@@ -51,6 +51,7 @@ const TaskLog = (function() {
    * Get initial sync service values and set listeners to get updated values.
    */
   function main() {
+    cr.addWebUIListener('task-log-recorded', TaskLog.onTaskLogRecorded);
     observeTaskLog();
   }
 

@@ -14,8 +14,9 @@ const ExtensionStatuses = (function() {
    * Get initial map of extension statuses (pending batch sync, enabled and
    * disabled).
    */
-  function getExtensionStatuses() {
-    chrome.send('getExtensionStatuses');
+  function refreshExtensionStatuses() {
+    cr.sendWithPromise('getExtensionStatuses')
+        .then(ExtensionStatuses.onGetExtensionStatuses);
   }
 
   // TODO(calvinlo): Move to helper file so it doesn't need to be duplicated.
@@ -51,9 +52,9 @@ const ExtensionStatuses = (function() {
   };
 
   function main() {
-    getExtensionStatuses();
+    refreshExtensionStatuses();
     $('refresh-extensions-statuses')
-        .addEventListener('click', getExtensionStatuses);
+        .addEventListener('click', refreshExtensionStatuses);
   }
 
   document.addEventListener('DOMContentLoaded', main);

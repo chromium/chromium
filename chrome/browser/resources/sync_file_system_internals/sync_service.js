@@ -13,8 +13,8 @@ const SyncService = (function() {
   /**
    * Request Sync Service Status.
    */
-  function getServiceStatus() {
-    chrome.send('getServiceStatus');
+  function refreshServiceStatus() {
+    cr.sendWithPromise('getServiceStatus').then(SyncService.onGetServiceStatus);
   }
 
   /**
@@ -28,8 +28,9 @@ const SyncService = (function() {
   /**
    * Request Google Drive Notification Source. e.g. XMPP or polling.
    */
-  function getNotificationSource() {
-    chrome.send('getNotificationSource');
+  function refreshNotificationSource() {
+    cr.sendWithPromise('getNotificationSource')
+        .then(SyncService.onGetNotificationSource);
   }
 
   /**
@@ -46,8 +47,8 @@ const SyncService = (function() {
   /**
    * Request debug log.
    */
-  function getLog() {
-    chrome.send('getLog', [lastLogEventId]);
+  function refreshLog() {
+    cr.sendWithPromise('getLog', lastLogEventId).then(SyncService.onGetLog);
   }
 
   /**
@@ -84,11 +85,14 @@ const SyncService = (function() {
   function main() {
     cr.ui.decorate('tabbox', cr.ui.TabBox);
     $('clear-log-button').addEventListener('click', clearLogs);
-    getServiceStatus();
-    getNotificationSource();
+    refreshServiceStatus();
+    refreshNotificationSource();
+
+    cr.addWebUIListener(
+        'service-status-changed', SyncService.onGetServiceStatus);
 
     // TODO: Look for a way to push entries to the page when necessary.
-    window.setInterval(getLog, 1000);
+    window.setInterval(refreshLog, 1000);
   }
 
   document.addEventListener('DOMContentLoaded', main);

@@ -54,23 +54,25 @@ SyncFileSystemInternalsHandler::~SyncFileSystemInternalsHandler() {
 void SyncFileSystemInternalsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getServiceStatus",
-      base::BindRepeating(&SyncFileSystemInternalsHandler::GetServiceStatus,
+      base::BindRepeating(
+          &SyncFileSystemInternalsHandler::HandleGetServiceStatus,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getLog",
+      base::BindRepeating(&SyncFileSystemInternalsHandler::HandleGetLog,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getLog", base::BindRepeating(&SyncFileSystemInternalsHandler::GetLog,
-                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "clearLogs",
-      base::BindRepeating(&SyncFileSystemInternalsHandler::ClearLogs,
+      base::BindRepeating(&SyncFileSystemInternalsHandler::HandleClearLogs,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getNotificationSource",
       base::BindRepeating(
-          &SyncFileSystemInternalsHandler::GetNotificationSource,
+          &SyncFileSystemInternalsHandler::HandleGetNotificationSource,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "observeTaskLog",
-      base::BindRepeating(&SyncFileSystemInternalsHandler::ObserveTaskLog,
+      base::BindRepeating(&SyncFileSystemInternalsHandler::HandleObserveTaskLog,
                           base::Unretained(this)));
 }
 
@@ -85,8 +87,7 @@ void SyncFileSystemInternalsHandler::OnSyncStateUpdated(
 
   // TODO(calvinlo): OnSyncStateUpdated should be updated to also provide the
   // notification mechanism (XMPP or Polling).
-  web_ui()->CallJavascriptFunctionUnsafe("SyncService.onGetServiceStatus",
-                                         base::Value(state_string));
+  FireWebUIListener("service-status-changed", base::Value(state_string));
 }
 
 void SyncFileSystemInternalsHandler::OnFileSynced(
@@ -108,11 +109,12 @@ void SyncFileSystemInternalsHandler::OnLogRecorded(
   std::unique_ptr<base::ListValue> details(new base::ListValue);
   details->AppendStrings(task_log.details);
   dict.Set("details", std::move(details));
-  web_ui()->CallJavascriptFunctionUnsafe("TaskLog.onTaskLogRecorded", dict);
+  FireWebUIListener("task-log-recorded", dict);
 }
 
-void SyncFileSystemInternalsHandler::GetServiceStatus(
+void SyncFileSystemInternalsHandler::HandleGetServiceStatus(
     const base::ListValue* args) {
+  AllowJavascript();
   SyncServiceState state_enum = sync_file_system::SYNC_SERVICE_DISABLED;
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
@@ -120,29 +122,30 @@ void SyncFileSystemInternalsHandler::GetServiceStatus(
     state_enum = sync_service->GetSyncServiceState();
   const std::string state_string = chrome_apps::api::sync_file_system::ToString(
       chrome_apps::api::SyncServiceStateToExtensionEnum(state_enum));
-  web_ui()->CallJavascriptFunctionUnsafe("SyncService.onGetServiceStatus",
-                                         base::Value(state_string));
+  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */,
+                            base::Value(state_string));
 }
 
-void SyncFileSystemInternalsHandler::GetNotificationSource(
+void SyncFileSystemInternalsHandler::HandleGetNotificationSource(
     const base::ListValue* args) {
+  AllowJavascript();
   drive::DriveNotificationManager* drive_notification_manager =
       drive::DriveNotificationManagerFactory::FindForBrowserContext(profile_);
   if (!drive_notification_manager)
     return;
   bool xmpp_enabled = drive_notification_manager->push_notification_enabled();
   std::string notification_source = xmpp_enabled ? "XMPP" : "Polling";
-  web_ui()->CallJavascriptFunctionUnsafe("SyncService.onGetNotificationSource",
-                                         base::Value(notification_source));
+  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */,
+                            base::Value(notification_source));
 }
 
-void SyncFileSystemInternalsHandler::GetLog(
-    const base::ListValue* args) {
+void SyncFileSystemInternalsHandler::HandleGetLog(const base::ListValue* args) {
+  AllowJavascript();
   const std::vector<EventLogger::Event> log =
       sync_file_system::util::GetLogHistory();
 
   int last_log_id_sent;
-  if (!args->GetInteger(0, &last_log_id_sent))
+  if (!args->GetInteger(1, &last_log_id_sent))
     last_log_id_sent = -1;
 
   // Collate events which haven't been sent to WebUI yet.
@@ -162,14 +165,15 @@ void SyncFileSystemInternalsHandler::GetLog(
   if (list.empty())
     return;
 
-  web_ui()->CallJavascriptFunctionUnsafe("SyncService.onGetLog", list);
+  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */, list);
 }
 
-void SyncFileSystemInternalsHandler::ClearLogs(const base::ListValue* args) {
+void SyncFileSystemInternalsHandler::HandleClearLogs(
+    const base::ListValue* args) {
   sync_file_system::util::ClearLog();
 }
 
-void SyncFileSystemInternalsHandler::ObserveTaskLog(
+void SyncFileSystemInternalsHandler::HandleObserveTaskLog(
     const base::ListValue* args) {
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
