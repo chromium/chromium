@@ -136,6 +136,11 @@ const base::Feature kBetterUpdateScreen{"BetterUpdateScreen",
 const base::Feature kBluetoothAggressiveAppearanceFilter{
     "BluetoothAggressiveAppearanceFilter", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables Bluetooth WBS microphone be selected as default
+// audio input option.
+const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 const base::Feature kBluetoothFixA2dpPacketSize{

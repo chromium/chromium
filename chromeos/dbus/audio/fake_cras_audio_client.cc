@@ -149,6 +149,11 @@ void FakeCrasAudioClient::GetNumberOfActiveOutputStreams(
   std::move(callback).Run(0);
 }
 
+void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
+    DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(base::nullopt);
+}
+
 void FakeCrasAudioClient::SetOutputNodeVolume(uint64_t node_id,
                                               int32_t volume) {
   if (!notify_volume_change_with_delay_)

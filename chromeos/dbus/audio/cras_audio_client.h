@@ -103,6 +103,11 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void GetNumberOfActiveOutputStreams(
       DBusMethodCallback<int> callback) = 0;
 
+  // Gets the DeprioritzeBtWbsMic flag. On a few platforms CRAS may
+  // report to deprioritize Bluetooth WBS mic's node priority because
+  // WBS feature is still working to be stabilized.
+  virtual void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) = 0;
+
   // Sets output volume of the given |node_id| to |volume|, in the rage of
   // [0, 100].
   virtual void SetOutputNodeVolume(uint64_t node_id, int32_t volume) = 0;
