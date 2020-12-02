@@ -203,6 +203,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
                   SystemAppInfo("Scanning", GURL("chrome://scanning"),
                                 base::BindRepeating(
                                     &CreateWebAppInfoForScanningSystemWebApp)));
+    infos.at(SystemAppType::SCANNING).minimum_window_size = {600, 420};
   }
 
   if (SystemWebAppManager::IsAppEnabled(
