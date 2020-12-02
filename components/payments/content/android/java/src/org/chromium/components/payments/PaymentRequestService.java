@@ -1092,7 +1092,7 @@ public class PaymentRequestService
      * @return True when at least one url payment method identifier is specified in payment
      *         request.
      */
-    private static boolean isUrlPaymentMethodIdentifiersSupported(Set<String> methods) {
+    public static boolean isUrlPaymentMethodIdentifiersSupported(Set<String> methods) {
         for (String methodName : methods) {
             if (methodName.startsWith(UrlConstants.HTTPS_URL_PREFIX)
                     || methodName.startsWith(UrlConstants.HTTP_URL_PREFIX)) {
@@ -1104,28 +1104,17 @@ public class PaymentRequestService
 
     /**
      * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
-     * @param skipUiForNonUrlPaymentMethodIdentifiers True when skip UI is available for non-url
-     *         based payment method identifiers (e.g., basic-card).
      * @param options The payment options specified in the payment request.
-     * @param paymentMethods The payment methods supported by this request.
      * @param selectedApp The selected payment apps.
      * @param allApps All available payment apps.
      * @return Whether the browser payment sheet should be skipped directly into the payment app.
      */
     public static boolean shouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
-            boolean skipUiForNonUrlPaymentMethodIdentifiers, PaymentOptions options,
-            Set<String> paymentMethods, PaymentApp selectedApp, List<PaymentApp> allApps) {
-        boolean urlPaymentMethodIdentifiersSupported =
-                isUrlPaymentMethodIdentifiersSupported(paymentMethods);
-
+            PaymentOptions options, PaymentApp selectedApp, List<PaymentApp> allApps) {
         // If there is only a single payment app which can provide all merchant requested
         // information, we can safely go directly to the payment app instead of showing Payment
         // Request UI.
         return PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP)
-                // Only allowing payment apps that own their own UIs.
-                // This excludes AutofillPaymentInstrument as its UI is rendered inline in
-                // the payment request UI, thus can't be skipped.
-                && (urlPaymentMethodIdentifiersSupported || skipUiForNonUrlPaymentMethodIdentifiers)
                 && allApps.size() >= 1
                 && onlySingleAppCanProvideAllRequiredInformation(options, allApps)
                 // Skip to payment app only if it can be pre-selected.

@@ -114,10 +114,8 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
             PaymentOptions paymentOptions, boolean isUserGestureShow) {
         assert mAvailableApps.size() <= 1 : "Only GooglePay payment app is supported.";
         mShouldSkipShowingPaymentRequestUi =
-                PaymentRequestService.shouldSkipShowingPaymentRequestUi(isUserGestureShow,
-                        /*skipUiForNonUrlPaymentMethodIdentifiers=*/false,
-                        mSpec.getPaymentOptions(), mSpec.getMethodData().keySet(), mSelectedApp,
-                        mAvailableApps);
+                PaymentRequestService.shouldSkipShowingPaymentRequestUi(
+                        isUserGestureShow, mSpec.getPaymentOptions(), mSelectedApp, mAvailableApps);
         if (!mShouldSkipShowingPaymentRequestUi) {
             return "This request is not supported in Web Layer. Please try in Chrome, or make sure "
                     + "that: (1) show() is triggered by user gesture, or"

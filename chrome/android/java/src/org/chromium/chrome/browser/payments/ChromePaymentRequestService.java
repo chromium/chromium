@@ -232,12 +232,18 @@ public class ChromePaymentRequestService
         if (error != null) return error;
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
+        boolean urlPaymentMethodIdentifiersSupported =
+                PaymentRequestService.isUrlPaymentMethodIdentifiersSupported(
+                        mSpec.getMethodData().keySet());
         mShouldSkipShowingPaymentRequestUi =
                 PaymentRequestService.shouldSkipShowingPaymentRequestUi(isUserGestureShow,
-                        mDelegate.skipUiForBasicCard(), mSpec.getPaymentOptions(),
-                        mSpec.getMethodData().keySet(),
+                        mSpec.getPaymentOptions(),
                         (PaymentApp) mPaymentUiService.getSelectedPaymentApp(),
-                        mPaymentUiService.getPaymentAppsInPaymentAppList());
+                        mPaymentUiService.getPaymentAppsInPaymentAppList())
+                // Only allowing payment apps that own their own UIs.
+                // This excludes AutofillPaymentInstrument as its UI is rendered inline in
+                // the payment request UI, thus can't be skipped.
+                && (urlPaymentMethodIdentifiersSupported || mDelegate.skipUiForBasicCard());
         if (!mShouldSkipShowingPaymentRequestUi && mSkipToGPayHelper == null) {
             mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
         }
