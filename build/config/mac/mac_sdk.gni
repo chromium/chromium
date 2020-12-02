@@ -76,8 +76,11 @@ if (!use_system_xcode) {
   ]
 }
 
-# put system xcode under src to avoid absolute path.
-if (use_system_xcode && ios_use_goma_rbe) {
+# Goma RBE requires paths relative to source directory. When using system
+# Xcode, this is done by creating symbolic links in root_build_dir. It is
+# only supported when targetting iOS. The check uses `target_os` as this
+# file is parsed for the host toolchain and `is_ios` checks `current_os`.
+if (use_system_xcode && use_goma && target_os == "ios") {
   sdk_info_args += [
     "--get_sdk_info",
     "--create_symlink_at",
@@ -89,7 +92,7 @@ sdk_info_args += [ mac_sdk_name ]
 _mac_sdk_result = exec_script(script_name, sdk_info_args, "scope")
 xcode_version = _mac_sdk_result.xcode_version
 xcode_build = _mac_sdk_result.xcode_build
-if (mac_sdk_path == "" && use_system_xcode && ios_use_goma_rbe) {
+if (mac_sdk_path == "" && use_system_xcode && use_goma && target_os == "ios") {
   mac_sdk_path = _mac_sdk_result.sdk_path
 }
 
