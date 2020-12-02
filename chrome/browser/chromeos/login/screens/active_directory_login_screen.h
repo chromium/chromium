@@ -79,6 +79,9 @@ class ActiveDirectoryLoginScreen
 
   ErrorScreen* error_screen_ = nullptr;
 
+  // TODO(crbug.com/1154669) Refactor error screen usage
+  bool error_screen_visible_ = false;
+
   base::RepeatingClosure exit_callback_;
 
   base::WeakPtrFactory<ActiveDirectoryLoginScreen> weak_factory_{this};

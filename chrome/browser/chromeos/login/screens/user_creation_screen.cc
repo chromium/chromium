@@ -98,12 +98,13 @@ void UserCreationScreen::ShowImpl() {
 
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
-  if (error_screen_->is_hidden())
+  if (!error_screen_visible_)
     view_->Show();
 }
 
 void UserCreationScreen::HideImpl() {
   scoped_observer_.reset();
+  error_screen_visible_ = false;
   error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
   error_screen_->Hide();
 }
@@ -139,12 +140,14 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
   NetworkStateInformer::State state = network_state_informer_->state();
   const bool is_online = NetworkStateInformer::IsOnline(state, reason);
   if (!is_online) {
+    error_screen_visible_ = true;
     error_screen_->SetParentScreen(UserCreationView::kScreenId);
     error_screen_->ShowNetworkErrorMessage(state, reason);
   } else {
     error_screen_->HideCaptivePortal();
-    if (!error_screen_->is_hidden() &&
+    if (error_screen_visible_ &&
         error_screen_->GetParentScreen() == UserCreationView::kScreenId) {
+      error_screen_visible_ = false;
       error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
       error_screen_->Hide();
       view_->Show();

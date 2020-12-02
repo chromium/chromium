@@ -71,7 +71,7 @@ void ActiveDirectoryLoginScreen::ShowImpl() {
       ScopedObserver<NetworkStateInformer, NetworkStateInformerObserver>>(this);
   scoped_observer_->Add(network_state_informer_.get());
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
-  if (error_screen_->is_hidden())
+  if (!error_screen_visible_)
     view_->Show();
 }
 
@@ -79,6 +79,7 @@ void ActiveDirectoryLoginScreen::HideImpl() {
   scoped_observer_.reset();
   view_->Reset();
   authpolicy_login_helper_->CancelRequestsAndRestart();
+  error_screen_visible_ = false;
   error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
   error_screen_->Hide();
 }
@@ -174,13 +175,14 @@ void ActiveDirectoryLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
   NetworkStateInformer::State state = network_state_informer_->state();
   const bool is_online = NetworkStateInformer::IsOnline(state, reason);
   if (!is_online) {
+    error_screen_visible_ = true;
     error_screen_->SetParentScreen(ActiveDirectoryLoginView::kScreenId);
     error_screen_->ShowNetworkErrorMessage(state, reason);
   } else {
     error_screen_->HideCaptivePortal();
-    if (!error_screen_->is_hidden() &&
-        error_screen_->GetParentScreen() ==
-            ActiveDirectoryLoginView::kScreenId) {
+    if (error_screen_visible_ && error_screen_->GetParentScreen() ==
+                                     ActiveDirectoryLoginView::kScreenId) {
+      error_screen_visible_ = false;
       error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
       error_screen_->Hide();
       view_->Show();
