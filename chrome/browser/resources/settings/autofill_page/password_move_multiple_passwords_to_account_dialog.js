@@ -57,6 +57,9 @@ Polymer({
       }
     });
     PasswordManagerImpl.getInstance().movePasswordsToAccount(selectedPasswords);
+    chrome.metricsPrivate.recordSmallCount(
+        'PasswordManager.AccountStorage.MoveToAccountStorePasswordsCount',
+        selectedPasswords.length);
     this.$.dialog.close();
   },
 

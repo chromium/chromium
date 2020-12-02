@@ -252,6 +252,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.AccountStorage.MoveToAccountStorePasswordsCount"
+    units="credentials" expires_after="2021-06-19">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the number of credentials the user decided to move from the device
+    store to the account store from moving multiple passwords dialog in
+    settings. Recorded after the user hits the action button in the dialog.
+    Recorded only in Win/Mac/Linux.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
     units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
