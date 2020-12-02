@@ -71,7 +71,6 @@ js_type_check("closure_compile_module") {
     ":navigation_list_model",
     ":navigation_uma",
     ":path_component",
-    ":progress_center_item_group",
     ":providers_model",
     ":quick_view_controller",
     ":quick_view_model",
@@ -700,20 +699,6 @@ js_library("path_component") {
   deps = [ "//ui/file_manager/base/js:volume_manager_types" ]
 }
 
-js_library("progress_center_item_group") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_unittest("progress_center_item_group_unittest") {
-  deps = [
-    ":progress_center_item_group",
-    "//ui/file_manager/base/js:test_error_reporting",
-  ]
-}
-
 js_library("providers_model") {
   deps = [ "//ui/webui/resources/js:assert" ]
 }
@@ -914,7 +899,6 @@ js_test_gen_html("js_test_gen_html") {
     ":import_controller_unittest",
     ":list_thumbnail_loader_unittest",
     ":navigation_list_model_unittest",
-    ":progress_center_item_group_unittest",
     ":providers_model_unittest",
     ":spinner_controller_unittest",
     ":task_controller_unittest",

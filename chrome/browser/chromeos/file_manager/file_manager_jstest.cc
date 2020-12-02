@@ -221,10 +221,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NavigationListModelTest) {
   RunTestURL("foreground/js/navigation_list_model_unittest_gen.html");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ProgressCenterItemGroupTest) {
-  RunTestURL("foreground/js/progress_center_item_group_unittest_gen.html");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ProvidersModel) {
   RunTestURL("foreground/js/providers_model_unittest_gen.html");
 }

@@ -15,18 +15,11 @@ class ProgressCenterPanel {
     this.feedbackHost_ = document.querySelector('#progress-panel');
 
     /**
-     * Item group for normal priority items.
-     * @type {ProgressCenterItemGroup}
-     * @private
+     * Items that are progressing, or completed.
+     * Key is item ID.
+     * @private {!Object<ProgressCenterItem>}
      */
-    this.normalItemGroup_ = new ProgressCenterItemGroup('normal', false);
-
-    /**
-     * Item group for low priority items.
-     * @type {ProgressCenterItemGroup}
-     * @private
-     */
-    this.quietItemGroup_ = new ProgressCenterItemGroup('quiet', true);
+    this.items_ = {};
 
     /**
      * Callback to be called with the ID of the progress item when the cancel
@@ -325,6 +318,7 @@ class ProgressCenterPanel {
           if (item.type === 'copy' || item.type === 'move' ||
               item.type === 'format') {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
+            donePanelItem.id = item.id;
             donePanelItem.panelType = donePanelItem.panelTypeDone;
             donePanelItem.primaryText = primaryText;
             if (util.isTransferDetailsEnabled()) {
@@ -336,12 +330,14 @@ class ProgressCenterPanel {
             donePanelItem.signalCallback = (signal) => {
               if (signal === 'dismiss') {
                 this.feedbackHost_.removePanelItem(donePanelItem);
+                delete this.items_[donePanelItem.id];
               }
             };
             // Delete after 4 seconds, doesn't matter if it's manually deleted
             // before the timer fires, as removePanelItem handles that case.
             setTimeout(() => {
               this.feedbackHost_.removePanelItem(donePanelItem);
+              delete this.items_[donePanelItem.id];
             }, 4000);
           }
           // Drop through to remove the progress panel.
@@ -363,37 +359,58 @@ class ProgressCenterPanel {
   }
 
   /**
+   * Starts the item update and checks state changes.
+   * @param {!ProgressCenterItem} item Item containing updated information.
+   */
+  updateItemState_(item) {
+    // Compares the current state and the new state to check if the update is
+    // valid or not.
+    const previousItem = this.items_[item.id];
+    switch (item.state) {
+      case ProgressItemState.ERROR:
+        if (previousItem &&
+            previousItem.state !== ProgressItemState.PROGRESSING) {
+          return;
+        }
+        this.items_[item.id] = item.clone();
+        break;
+
+      case ProgressItemState.PROGRESSING:
+      case ProgressItemState.COMPLETED:
+        if ((!previousItem && item.state === ProgressItemState.COMPLETED) ||
+            (previousItem &&
+             previousItem.state !== ProgressItemState.PROGRESSING)) {
+          return;
+        }
+        this.items_[item.id] = item.clone();
+        break;
+
+      case ProgressItemState.CANCELED:
+        if (!previousItem ||
+            previousItem.state !== ProgressItemState.PROGRESSING) {
+          return;
+        }
+        delete this.items_[item.id];
+    }
+  }
+
+  /**
    * Updates an item to the progress center panel.
    * @param {!ProgressCenterItem} item Item including new contents.
    */
   updateItem(item) {
-    const targetGroup = this.getGroupForItem_(item);
-
-    // Update the item.
-    targetGroup.update(item);
+    this.updateItemState_(item);
 
     // Update an open view item.
-    const newItem = targetGroup.getItem(item.id);
+    const newItem = this.items_[item.id] || null;
     this.updateFeedbackPanelItem(item, newItem);
   }
 
   /**
-   * Requests all item groups to dismiss an error item.
+   * Called by background page when an error dialog is dismissed.
    * @param {string} id Item id.
    */
   dismissErrorItem(id) {
-    this.normalItemGroup_.dismissErrorItem(id);
-    this.quietItemGroup_.dismissErrorItem(id);
-
-  }
-
-  /**
-   * Obtains the group for the item.
-   * @param {ProgressCenterItem} item Progress item.
-   * @return {ProgressCenterItemGroup} Item group that should contain the item.
-   * @private
-   */
-  getGroupForItem_(item) {
-    return item.quiet ? this.quietItemGroup_ : this.normalItemGroup_;
+    delete this.items_[id];
   }
 }

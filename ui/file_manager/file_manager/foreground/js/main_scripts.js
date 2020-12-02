@@ -147,7 +147,6 @@
 // <include src="navigation_list_model.js">
 // <include src="navigation_uma.js">
 // <include src="path_component.js">
-// <include src="progress_center_item_group.js">
 // <include src="quick_view_controller.js">
 // <include src="quick_view_model.js">
 // <include src="quick_view_uma.js">
