@@ -61,7 +61,7 @@ bool AutocorrectManager::OnKeyEvent(
   if (event.type != "keydown") {
     return false;
   }
-  if (event.key == "Up" && window_visible) {
+  if (event.code == "ArrowUp" && window_visible) {
     std::string error;
     auto button = ui::ime::AssistiveWindowButton();
     button.id = ui::ime::ButtonId::kUndo;
@@ -74,7 +74,7 @@ bool AutocorrectManager::OnKeyEvent(
     button_highlighted = true;
     return true;
   }
-  if (event.key == "Enter" && window_visible && button_highlighted) {
+  if (event.code == "Enter" && window_visible && button_highlighted) {
     UndoAutocorrect();
     return true;
   }
