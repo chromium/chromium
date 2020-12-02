@@ -274,6 +274,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs(
         ['--use_gpu_driver_workaround_for_testing'])
     self._Navigate(test_path)
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
     self._ValidateDriverBugWorkarounds('use_gpu_driver_workaround_for_testing',
                                        None)
 
@@ -329,6 +330,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs([])
     self._Navigate(test_path)
     self._VerifyGpuProcessPresent()
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
     recorded_workarounds, recorded_disabled_gl_extensions = (
         self._CompareAndCaptureDriverBugWorkarounds())
     # Relaunch the browser enabling test group 1 with entry 215, where
@@ -341,6 +343,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs(additional_args)
     self._Navigate(test_path)
     self._VerifyGpuProcessPresent()
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
     new_workarounds, new_disabled_gl_extensions = (
         self._CompareAndCaptureDriverBugWorkarounds())
     diff = set(recorded_workarounds).symmetric_difference(new_workarounds)
@@ -401,6 +404,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use_gpu_driver_workaround_for_testing=0'
     ])
     self._Navigate(test_path)
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
     workarounds, _ = (self._CompareAndCaptureDriverBugWorkarounds())
     if 'use_gpu_driver_workaround_for_testing' in workarounds:
       self.fail('use_gpu_driver_workaround_for_testing erroneously present')

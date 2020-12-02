@@ -61,14 +61,6 @@ crbug.com/257109 [ linux ] GpuProcess_video [ Failure ]
 # Seems to have become flaky on Windows recently.
 crbug.com/700522 [ win ] GpuProcess_one_extra_workaround [ RetryOnFailure ]
 
-# Recently flaking badly Android, macOS and ChromeOS.
-crbug.com/1154088 [ mac ] GpuProcess_one_extra_workaround [ Skip ]
-crbug.com/1154088 [ android ] GpuProcess_one_extra_workaround [ Skip ]
-crbug.com/1154088 [ chromeos ] GpuProcess_one_extra_workaround [ Skip ]
-crbug.com/1154088 [ mac ] GpuProcess_disabling_workarounds_works [ Skip ]
-crbug.com/1154088 [ android ] GpuProcess_disabling_workarounds_works [ Skip ]
-crbug.com/1154088 [ chromeos ] GpuProcess_disabling_workarounds_works [ Skip ]
-
 crbug.com/1028974 [ linux ] GpuProcess_feature_status_under_swiftshader [ RetryOnFailure ]
 
 # Dual-GPU NVIDIA MacBook Pros no longer activate the discrete GPU.
