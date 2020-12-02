@@ -65,8 +65,13 @@ class NativeMessagingLazyApiTest
     if (GetParam() == ContextType::kEventPage) {
       return RunExtensionTest(extension_name);
     }
+    // TODO(https://crbug.com/1146173): These tests are being run with
+    // file access to prevent flakiness for the SW version. This should
+    // be reverted to run without file access when this bug is fixed.
     return RunExtensionTestWithFlags(
-        extension_name, kFlagRunAsServiceWorkerBasedExtension, kFlagNone);
+        extension_name,
+        kFlagRunAsServiceWorkerBasedExtension | kFlagEnableFileAccess,
+        kFlagNone);
   }
 
   std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
@@ -75,11 +80,9 @@ class NativeMessagingLazyApiTest
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          NativeMessagingLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
-// Service Worker versions of these tests are flaky.
-// See http://crbug.com/1111536 and http://crbug.com/1111337.
-// INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-//                          NativeMessagingLazyApiTest,
-//                         ::testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         NativeMessagingLazyApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, NativeMessagingBasic) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
