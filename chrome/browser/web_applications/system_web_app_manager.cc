@@ -204,6 +204,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
                                 base::BindRepeating(
                                     &CreateWebAppInfoForScanningSystemWebApp)));
     infos.at(SystemAppType::SCANNING).minimum_window_size = {600, 420};
+    infos.at(SystemAppType::SCANNING).capture_navigations = true;
   }
 
   if (SystemWebAppManager::IsAppEnabled(
