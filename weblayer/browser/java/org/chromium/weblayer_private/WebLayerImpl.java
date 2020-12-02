@@ -708,11 +708,12 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         String sandboxedServicesName = "org.chromium.weblayer.ChildProcessService$Sandboxed";
         boolean isExternalService = false;
         boolean loadedFromWebView = wasLoadedFromWebView(appContext);
-        if (loadedFromWebView && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // On O+ when loading from a WebView implementation, we can just use WebView's declared
-            // external services as our renderers, which means we benefit from the webview zygote
-            // process. We still need to use the client's privileged services, as only isolated
-            // services can be external.
+        if (loadedFromWebView && supportsBindingToWebViewService(appContext, implPackageName)) {
+            // When loading from a WebView implementation, use WebView's declared external services
+            // as our renderers. This means on O+ we benefit from the webview zygote process, and on
+            // other versions we ensure the client app doesn't slow down isolated process startup.
+            // We still need to use the client's privileged services, as only isolated services can
+            // be external.
             isExternalService = true;
             sandboxedServicesPackageName = implPackageName;
             sandboxedServicesName = null;
@@ -722,6 +723,29 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 sandboxedServicesPackageName, sandboxedServicesName, isExternalService,
                 LibraryProcessType.PROCESS_WEBLAYER_CHILD, bindToCaller,
                 ignoreVisibilityForImportance);
+    }
+
+    private static boolean supportsBindingToWebViewService(Context context, String packageName) {
+        // BIND_EXTERNAL_SERVICE is not supported before N.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return false;
+        }
+
+        // Android N has issues with WebView with the non-system user.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            try {
+                PackageInfo packageInfo =
+                        context.getPackageManager().getPackageInfo(packageName, 0);
+                // Package may be disabled for non-system users.
+                if (!packageInfo.applicationInfo.enabled) {
+                    return false;
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                // Package may be uninstalled for non-system users.
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean wasLoadedFromWebView(Context appContext) {
