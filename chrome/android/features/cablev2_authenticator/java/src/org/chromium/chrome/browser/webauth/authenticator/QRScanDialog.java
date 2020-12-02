@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.DialogFragment;
 
@@ -63,7 +64,16 @@ public class QRScanDialog extends DialogFragment implements Camera.PreviewCallba
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.cablev2_qr_dialog, container, false);
-        mCameraView = v.findViewById(R.id.camera_view);
+        // CameraView is not referenced from the XML in order to avoid issues
+        // with reflection of custom Views inside of split and isolated
+        // modules.
+        mCameraView = new CameraView(getContext(), null);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        ((LinearLayout) v.findViewById(R.id.qr_dialog_layout))
+                .addView(mCameraView, /*index=*/0, params);
+
         mCameraView.setCallback(this);
         mCameraView.setDisplay(getActivity().getWindowManager().getDefaultDisplay());
 
