@@ -1,0 +1,92 @@
+This is a testharness.js-based test.
+Found 72 tests; 64 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS .flexbox div 1
+PASS .flexbox div 2
+PASS .flexbox div 3
+PASS .flexbox div 4
+PASS .flexbox div 5
+PASS .flexbox div 6
+PASS .flexbox div 7
+PASS .flexbox div 8
+PASS .flexbox div 9
+PASS .flexbox div 10
+PASS .flexbox div 11
+PASS .flexbox div 12
+PASS .flexbox div 13
+PASS .flexbox div 14
+PASS .flexbox div 15
+PASS .flexbox div 16
+PASS .flexbox div 17
+PASS .flexbox div 18
+PASS .flexbox div 19
+PASS .flexbox div 20
+PASS .flexbox div 21
+PASS .flexbox div 22
+PASS .flexbox div 23
+PASS .flexbox div 24
+PASS .flexbox div 25
+PASS .flexbox div 26
+PASS .flexbox div 27
+PASS .flexbox div 28
+PASS .flexbox div 29
+PASS .flexbox div 30
+PASS .flexbox div 31
+PASS .flexbox div 32
+PASS .flexbox div 33
+PASS .flexbox div 34
+PASS .flexbox div 35
+PASS .flexbox div 36
+PASS .flexbox div 37
+PASS .flexbox div 38
+PASS .flexbox div 39
+PASS .flexbox div 40
+PASS .flexbox div 41
+PASS .flexbox div 42
+PASS .flexbox div 43
+PASS .flexbox div 44
+PASS .flexbox div 45
+PASS .flexbox div 46
+PASS .flexbox div 47
+PASS .flexbox div 48
+PASS .flexbox div 49
+PASS .flexbox div 50
+PASS .flexbox div 51
+PASS .flexbox div 52
+PASS .flexbox div 53
+PASS .flexbox div 54
+PASS .flexbox div 55
+PASS .flexbox div 56
+FAIL .flexbox div 57 assert_equals: 
+<div class="a" data-expected-width="20" data-expected-height="10" data-offset-x="470" data-offset-y="8"></div>
+offsetTop expected 8 but got 198
+FAIL .flexbox div 58 assert_equals: 
+<div class="a" data-expected-width="20" data-expected-height="10" data-offset-x="492" data-offset-y="38"></div>
+offsetTop expected 38 but got 198
+FAIL .flexbox div 59 assert_equals: 
+<div class="b" data-expected-width="20" data-expected-height="30" data-offset-x="492" data-offset-y="8"><div class="fixedSizeChild" data-expected-width="10" data-expected-height="30" data-offset-x="492" data-offset-y="8"></div></div>
+offsetTop expected 8 but got 168
+FAIL .flexbox div 60 assert_equals: 
+<div class="fixedSizeChild" data-expected-width="10" data-expected-height="30" data-offset-x="492" data-offset-y="8"></div>
+offsetTop expected 8 but got 168
+FAIL .flexbox div 61 assert_equals: 
+<div class="a" data-expected-width="20" data-expected-height="10" data-offset-x="514" data-offset-y="78"></div>
+offsetTop expected 78 but got 198
+FAIL .flexbox div 62 assert_equals: 
+<div class="b" data-expected-width="20" data-expected-height="30" data-offset-x="514" data-offset-y="48"><div class="fixedSizeChild" data-expected-width="10" data-expected-height="30" data-offset-x="514" data-offset-y="48"></div></div>
+offsetTop expected 48 but got 168
+FAIL .flexbox div 63 assert_equals: 
+<div class="fixedSizeChild" data-expected-width="10" data-expected-height="30" data-offset-x="514" data-offset-y="48"></div>
+offsetTop expected 48 but got 168
+FAIL .flexbox div 64 assert_equals: 
+<div class="c" data-expected-width="20" data-expected-height="40" data-offset-x="514" data-offset-y="8"></div>
+offsetTop expected 8 but got 128
+PASS .flexbox div 65
+PASS .flexbox div 66
+PASS .flexbox div 67
+PASS .flexbox div 68
+PASS .flexbox div 69
+PASS .flexbox div 70
+PASS .flexbox div 71
+PASS .flexbox div 72
+Harness: the test ran to completion.
+
