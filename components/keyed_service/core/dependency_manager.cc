@@ -5,7 +5,7 @@
 #include "components/keyed_service/core/dependency_manager.h"
 
 #include "base/bind.h"
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
@@ -23,6 +23,19 @@ DependencyManager::~DependencyManager() {
 }
 
 void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1150733): Tighten this check to ensure that no factories are
+  // registered after CreateContextServices() is called.
+  DCHECK(!context_services_created_ ||
+         !(component->ServiceIsCreatedWithContext() ||
+           component->ServiceIsNULLWhileTesting()))
+      << "Tried to construct " << component->name()
+      << " after context.\n"
+         "Keyed Service Factories must be constructed before the context is "
+         "created. Typically this is done by calling FooFactory::GetInstance() "
+         "for all factories in a method called "
+         "Ensure.*KeyedServiceFactoriesBuilt().";
+#endif  // DCHECK_IS_ON()
   dependency_graph_.AddNode(component);
 }
 
@@ -51,6 +64,9 @@ void DependencyManager::RegisterPrefsForServices(
 
 void DependencyManager::CreateContextServices(void* context,
                                               bool is_testing_context) {
+#if DCHECK_IS_ON()
+  context_services_created_ = true;
+#endif
   MarkContextLive(context);
 
   std::vector<DependencyNode*> construction_order;

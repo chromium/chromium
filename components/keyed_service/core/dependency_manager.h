@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_export.h"
@@ -116,6 +117,10 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // locations in memory so we can nicely assert if we're asked to do anything
   // with them.
   std::set<void*> dead_context_pointers_;
+
+#if DCHECK_IS_ON()
+  bool context_services_created_ = false;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(DependencyManager);
 };
