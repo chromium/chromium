@@ -531,22 +531,14 @@ class FileOperationManagerImpl {
   /**
    * Restores files from trash.
    *
-   * @param {Array<!fileOperationUtil.TrashEntry>} trashEntries The trash
-   *     entries.
+   * @param {Array<!fileOperationUtil.TrashEntry>} trashEntries The trash items.
    */
   restoreDeleted(trashEntries) {
-    if (!this.volumeManager_) {
-      volumeManagerFactory.getInstance().then(volumeManager => {
-        this.volumeManager_ = volumeManager;
-        this.restoreDeleted(trashEntries);
-      });
-      return;
-    }
-
+    const volumeManager = assert(this.volumeManager_);
     while (trashEntries.length) {
       this.trash_
           .restore(
-              assert(this.volumeManager_),
+              volumeManager,
               /** @type {!TrashEntry} */ (trashEntries.pop()))
           .catch(e => console.error('Error restoring deleted file', e));
     }
