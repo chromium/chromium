@@ -949,6 +949,59 @@ void NetworkQualityEstimator::ClampKbpsBasedOnEct() {
                    params_->upper_bound_typical_kbps_multiplier())));
 }
 
+void NetworkQualityEstimator::AdjustHttpRttBasedOnRTTCounts(
+    base::TimeDelta* http_rtt) const {
+  if (!params_->adjust_rtt_based_on_rtt_counts())
+    return;
+
+  // This is needed only when RTT from TCP sockets or
+  // QUIC/H2 connections is unavailable.
+  if (transport_rtt_observation_count_last_ect_computation_ >=
+          params_->http_rtt_transport_rtt_min_count() ||
+      end_to_end_rtt_observation_count_at_last_ect_computation_ >=
+          params_->http_rtt_transport_rtt_min_count()) {
+    UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
+                        base::TimeDelta());
+    return;
+  }
+
+  // We prefer to use the cached value if it's available and the network change
+  // happened recently.
+  base::TimeDelta time_since_connection_change =
+      tick_clock_->NowTicks() - last_connection_change_;
+  if (cached_estimate_applied_ &&
+      time_since_connection_change <= base::TimeDelta::FromMinutes(1)) {
+    UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
+                        base::TimeDelta());
+    return;
+  }
+
+  // If there are not enough transport RTT samples, end-to-end RTT samples and
+  // the cached estimates are unavailble/too stale, then the computed value of
+  // HTTP RTT can't be trusted due to hanging GETs. In that case, return the
+  // typical HTTP RTT for a fast connection.
+  if (current_network_id_.type == net::NetworkChangeNotifier::CONNECTION_NONE) {
+    UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
+                        base::TimeDelta());
+    return;
+  }
+
+  base::TimeDelta upper_bound_http_rtt =
+      params_->TypicalNetworkQuality(net::EFFECTIVE_CONNECTION_TYPE_4G)
+          .http_rtt();
+  if (upper_bound_http_rtt > *http_rtt) {
+    UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
+                        base::TimeDelta());
+    return;
+  }
+
+  DCHECK_LE(upper_bound_http_rtt, *http_rtt);
+
+  UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
+                      *http_rtt - upper_bound_http_rtt);
+  *http_rtt = upper_bound_http_rtt;
+}
+
 EffectiveConnectionType
 NetworkQualityEstimator::GetCappedECTBasedOnSignalStrength() const {
   if (!params_->cap_ect_based_on_signal_strength())
@@ -1084,6 +1137,10 @@ void NetworkQualityEstimator::UpdateHttpRttUsingAllRttValues(
         *http_rtt, end_to_end_rtt *
                        params_->upper_bound_http_rtt_endtoend_rtt_multiplier());
   }
+
+  // Put upper bound on |http_rtt| if there is not enough HTTP RTT samples
+  // available.
+  AdjustHttpRttBasedOnRTTCounts(http_rtt);
 }
 
 EffectiveConnectionType

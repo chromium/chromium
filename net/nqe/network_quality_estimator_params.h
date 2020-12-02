@@ -267,6 +267,16 @@ class NET_EXPORT NetworkQualityEstimatorParams {
     return wifi_signal_strength_query_interval_;
   }
 
+  // Returns true if RTTs should be adjusted based on RTT counts.
+  // If there are not enough transport RTT samples, end-to-end RTT samples and
+  // the cached estimates are unavailble/too stale, then the computed value of
+  // HTTP RTT can't be trusted due to hanging GETs. In that case, NQE returns
+  // the typical HTTP RTT for a fast connection if
+  // adjust_rtt_based_on_rtt_counts() returns true.
+  bool adjust_rtt_based_on_rtt_counts() const {
+    return adjust_rtt_based_on_rtt_counts_;
+  }
+
   // Sets the forced effective connection type as |type|.
   void SetForcedEffectiveConnectionTypeForTesting(EffectiveConnectionType type);
 
@@ -302,6 +312,7 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const double upper_bound_typical_kbps_multiplier_;
   const bool get_signal_strength_and_detailed_network_id_;
   const base::TimeDelta wifi_signal_strength_query_interval_;
+  const bool adjust_rtt_based_on_rtt_counts_;
 
   bool use_small_responses_;
 

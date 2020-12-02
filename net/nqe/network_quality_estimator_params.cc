@@ -522,6 +522,11 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
               params_,
               "wifi_signal_strength_query_interval_seconds",
               30 * 60))),
+      adjust_rtt_based_on_rtt_counts_(
+          GetStringValueForVariationParamWithDefaultValue(
+              params_,
+              "adjust_rtt_based_on_rtt_counts",
+              "false") == "true"),
       use_small_responses_(false) {
   DCHECK(hanging_request_http_rtt_upper_bound_transport_rtt_multiplier_ == -1 ||
          hanging_request_http_rtt_upper_bound_transport_rtt_multiplier_ > 0);

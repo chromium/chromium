@@ -553,6 +553,10 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // value lower than |effective_connection_type_| may be returned.
   EffectiveConnectionType GetCappedECTBasedOnSignalStrength() const;
 
+  // When RTT counts are low, it may be impossible to predict accurate ECT. In
+  // that case, we just give the highest value.
+  void AdjustHttpRttBasedOnRTTCounts(base::TimeDelta* http_rtt) const;
+
   // Clamps the throughput estimate based on the current effective connection
   // type.
   void ClampKbpsBasedOnEct();

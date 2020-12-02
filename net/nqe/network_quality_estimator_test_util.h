@@ -218,6 +218,9 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
 
   const NetworkQualityEstimatorParams* params() const;
 
+  void RecordSpdyPingLatency(const HostPortPair& host_port_pair,
+                             base::TimeDelta rtt) override;
+
   using NetworkQualityEstimator::SetTickClockForTesting;
   using NetworkQualityEstimator::OnConnectionTypeChanged;
   using NetworkQualityEstimator::OnUpdatedTransportRTTAvailable;
@@ -238,9 +241,6 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   TestNetworkQualityEstimator(
       std::unique_ptr<NetworkQualityEstimatorParams> params,
       std::unique_ptr<RecordingBoundTestNetLog> net_log);
-
-  void RecordSpdyPingLatency(const HostPortPair& host_port_pair,
-                             base::TimeDelta rtt) override;
 
   // NetworkQualityEstimator implementation that returns the overridden
   // network id and signal strength (instead of invoking platform APIs).
