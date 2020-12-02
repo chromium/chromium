@@ -13,6 +13,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/route_message_observer.h"
@@ -266,20 +267,28 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
   active_routes_.push_back(route);
   for (auto& observer : routes_observers_)
     observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
+  if (is_local) {
+    MediaRouterMetrics::RecordCreateRouteResultCode(
+        MediaRouteProviderId::ANDROID_CAF, result->result_code());
+  } else {
+    MediaRouterMetrics::RecordJoinRouteResultCode(
+        MediaRouteProviderId::ANDROID_CAF, result->result_code());
+  }
 }
 
-void MediaRouterAndroid::OnRouteRequestError(const std::string& error_text,
-                                             int route_request_id) {
-  MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
-  if (!request)
-    return;
+void MediaRouterAndroid::OnCreateRouteRequestError(
+    const std::string& error_text,
+    int route_request_id) {
+  OnRouteRequestError(
+      error_text, route_request_id,
+      base::BindOnce(&MediaRouterMetrics::RecordCreateRouteResultCode));
+}
 
-  // TODO(imcheng): Provide a more specific result code.
-  std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-      error_text, RouteRequestResult::UNKNOWN_ERROR);
-  std::move(request->callback).Run(nullptr, *result);
-
-  route_requests_.Remove(route_request_id);
+void MediaRouterAndroid::OnJoinRouteRequestError(const std::string& error_text,
+                                                 int route_request_id) {
+  OnRouteRequestError(
+      error_text, route_request_id,
+      base::BindOnce(&MediaRouterMetrics::RecordJoinRouteResultCode));
 }
 
 void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
@@ -295,6 +304,8 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
       connection->Terminate();
     }
   }
+  MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
+      MediaRouteProviderId::ANDROID_CAF, RouteRequestResult::OK);
   RemoveRoute(route_id);
 }
 
@@ -353,6 +364,25 @@ MediaRouterAndroid::GetFlingingController(const MediaRoute::Id& route_id) {
 void MediaRouterAndroid::OnPresentationConnectionError(
     const std::string& route_id) {
   presentation_connections_.erase(route_id);
+}
+
+void MediaRouterAndroid::OnRouteRequestError(
+    const std::string& error_text,
+    int route_request_id,
+    base::OnceCallback<void(MediaRouteProviderId,
+                            RouteRequestResult::ResultCode)> callback) {
+  MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
+  if (!request)
+    return;
+
+  // TODO: Provide a more specific result code.
+  std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
+      error_text, RouteRequestResult::UNKNOWN_ERROR);
+  std::move(request->callback).Run(nullptr, *result);
+
+  route_requests_.Remove(route_request_id);
+  std::move(callback).Run(MediaRouteProviderId::ANDROID_CAF,
+                          result->result_code());
 }
 
 }  // namespace media_router

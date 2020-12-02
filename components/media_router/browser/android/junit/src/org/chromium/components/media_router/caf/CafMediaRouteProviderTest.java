@@ -134,7 +134,7 @@ public class CafMediaRouteProviderTest {
 
         // Regular case.
         mProvider.joinRoute("source-id-1", "presentation-id-1", "origin", 1, 1);
-        inOrder.verify(mManager, never()).onRouteRequestError(anyString(), anyInt());
+        inOrder.verify(mManager, never()).onJoinRouteRequestError(anyString(), anyInt());
         inOrder.verify(mManager).onRouteCreated(
                 anyString(), eq("sink-id"), eq(1), eq(mProvider), eq(false));
         assertEquals(mProvider.mRoutes.size(), 1);
@@ -149,7 +149,7 @@ public class CafMediaRouteProviderTest {
 
         mProvider.joinRoute("source-id-1", "presentation-id-1", "origin", 1, 1);
 
-        verifyRouteRequestError(inOrder, "Unsupported presentation URL", 1);
+        verifyJoinRouteRequestError(inOrder, "Unsupported presentation URL", 1);
         assertTrue(mProvider.mRoutes.isEmpty());
 
         // No client ID.
@@ -158,7 +158,7 @@ public class CafMediaRouteProviderTest {
 
         mProvider.joinRoute("source-id-1", "presentation-id-1", "origin", 1, 1);
 
-        verifyRouteRequestError(inOrder, "Unsupported presentation URL", 1);
+        verifyJoinRouteRequestError(inOrder, "Unsupported presentation URL", 1);
         assertTrue(mProvider.mRoutes.isEmpty());
 
         // No session.
@@ -167,7 +167,7 @@ public class CafMediaRouteProviderTest {
 
         mProvider.joinRoute("source-id-1", "presentation-id-1", "origin", 1, 1);
 
-        verifyRouteRequestError(inOrder, "No presentation", 1);
+        verifyJoinRouteRequestError(inOrder, "No presentation", 1);
         assertTrue(mProvider.mRoutes.isEmpty());
 
         // No matching route.
@@ -177,7 +177,7 @@ public class CafMediaRouteProviderTest {
 
         mProvider.joinRoute("source-id-1", "presentation-id-1", "origin", 1, 1);
 
-        verifyRouteRequestError(inOrder, "No matching route", 1);
+        verifyJoinRouteRequestError(inOrder, "No matching route", 1);
         assertTrue(mProvider.mRoutes.isEmpty());
     }
 
@@ -444,8 +444,8 @@ public class CafMediaRouteProviderTest {
         assertFalse(mProvider.canJoinExistingSession("auto-join", "origin-2", 1, mSource2));
     }
 
-    private void verifyRouteRequestError(InOrder inOrder, String error, int nativeRequestId) {
-        inOrder.verify(mManager).onRouteRequestError(error, nativeRequestId);
+    private void verifyJoinRouteRequestError(InOrder inOrder, String error, int nativeRequestId) {
+        inOrder.verify(mManager).onJoinRouteRequestError(error, nativeRequestId);
         inOrder.verify(mManager, never())
                 .onRouteCreated(anyString(), anyString(), anyInt(),
                         any(CafBaseMediaRouteProvider.class), anyBoolean());

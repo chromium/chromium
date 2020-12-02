@@ -41,7 +41,7 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
     @Override
     public void joinRoute(
             String sourceId, String presentationId, String origin, int tabId, int nativeRequestId) {
-        mManager.onRouteRequestError(
+        mManager.onJoinRouteRequestError(
                 "Remote playback doesn't support joining routes", nativeRequestId);
     }
 

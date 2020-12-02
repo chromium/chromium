@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/route_request_result.h"
 #include "media/base/container_names.h"
 
 class GURL;
@@ -210,6 +211,24 @@ class MediaRouterMetrics {
   // Records the pref value to enable the cloud services. Recorded whenever the
   // browser is initialized.
   static void RecordCloudPrefAtInit(bool enabled);
+
+  // Records the outcome of a create route request to a Media Route Provider.
+  // This and the following methods that record ResultCode use per-provider
+  // histograms.
+  static void RecordCreateRouteResultCode(
+      MediaRouteProviderId provider_id,
+      RouteRequestResult::ResultCode result_code);
+
+  // Records the outcome of a join route request to a Media Route Provider.
+  static void RecordJoinRouteResultCode(
+      MediaRouteProviderId provider_id,
+      RouteRequestResult::ResultCode result_code);
+
+  // Records the outcome of a call to terminateRoute() on a Media Route
+  // Provider.
+  static void RecordMediaRouteProviderTerminateRoute(
+      MediaRouteProviderId provider_id,
+      RouteRequestResult::ResultCode result_code);
 };
 
 }  // namespace media_router

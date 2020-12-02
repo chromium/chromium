@@ -75,7 +75,8 @@ class MediaRouterAndroid : public MediaRouterBase {
                       bool is_local);
 
   // Notifies the media router that route creation or joining failed.
-  void OnRouteRequestError(const std::string& error_text, int request_id);
+  void OnCreateRouteRequestError(const std::string& error_text, int request_id);
+  void OnJoinRouteRequestError(const std::string& error_text, int request_id);
 
   // Notifies the media router when the route was terminated.
   void OnRouteTerminated(const MediaRoute::Id& route_id);
@@ -146,6 +147,11 @@ class MediaRouterAndroid : public MediaRouterBase {
   void UnregisterRouteMessageObserver(RouteMessageObserver* observer) override;
 
   void OnPresentationConnectionError(const std::string& route_id);
+  void OnRouteRequestError(
+      const std::string& error_text,
+      int route_request_id,
+      base::OnceCallback<void(MediaRouteProviderId,
+                              RouteRequestResult::ResultCode)> callback);
 
   void SetMediaRouterBridgeForTest(MediaRouterAndroidBridge* bridge) {
     bridge_.reset(bridge);

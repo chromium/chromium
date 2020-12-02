@@ -102,24 +102,6 @@ class MediaRouterMojoMetrics {
   // page.
   static void RecordMediaRouteProviderWakeup(MediaRouteProviderWakeup wakeup);
 
-  // Records the outcome of a create route request to a Media Route Provider.
-  // This and the following methods that record ResultCode use per-provider
-  // histograms.
-  static void RecordCreateRouteResultCode(
-      MediaRouteProviderId provider_id,
-      RouteRequestResult::ResultCode result_code);
-
-  // Records the outcome of a join route request to a Media Route Provider.
-  static void RecordJoinRouteResultCode(
-      MediaRouteProviderId provider_id,
-      RouteRequestResult::ResultCode result_code);
-
-  // Records the outcome of a call to terminateRoute() on a Media Route
-  // Provider.
-  static void RecordMediaRouteProviderTerminateRoute(
-      MediaRouteProviderId provider_id,
-      RouteRequestResult::ResultCode result_code);
-
   // Records whether the Media Route Provider succeeded or failed to create a
   // controller for a media route.
   static void RecordMediaRouteControllerCreationResult(bool success);

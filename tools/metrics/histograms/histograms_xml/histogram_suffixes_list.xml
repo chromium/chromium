@@ -8890,6 +8890,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="MediaRouteProvider" separator=".">
+  <suffix name="AndroidCaf"
+      label="Cast Application Framework (CAF) base MRPs on Clank"/>
   <suffix name="Cast" label="Native Cast MRP"/>
   <suffix name="DIAL" label="Native DIAL MRP"/>
   <suffix name="WiredDisplay" label="Wired Display MRP"/>

@@ -19,34 +19,12 @@ namespace media_router {
 
 namespace {
 
-constexpr char kHistogramProviderCreateRouteResult[] =
-    "MediaRouter.Provider.CreateRoute.Result";
-constexpr char kHistogramProviderJoinRouteResult[] =
-    "MediaRouter.Provider.JoinRoute.Result";
 constexpr char kHistogramProviderRouteControllerCreationOutcome[] =
     "MediaRouter.Provider.RouteControllerCreationOutcome";
-constexpr char kHistogramProviderTerminateRouteResult[] =
-    "MediaRouter.Provider.TerminateRoute.Result";
 constexpr char kHistogramProviderVersion[] = "MediaRouter.Provider.Version";
 constexpr char kHistogramProviderWakeReason[] =
     "MediaRouter.Provider.WakeReason";
 constexpr char kHistogramProviderWakeup[] = "MediaRouter.Provider.Wakeup";
-
-std::string GetHistogramNameForProvider(const std::string& base_name,
-                                        MediaRouteProviderId provider_id) {
-  switch (provider_id) {
-    case MediaRouteProviderId::CAST:
-      return base_name + ".Cast";
-    case MediaRouteProviderId::DIAL:
-      return base_name + ".DIAL";
-    case MediaRouteProviderId::WIRED_DISPLAY:
-      return base_name + ".WiredDisplay";
-    // |EXTENSION| and |UNKNOWN| use the base histogram name.
-    case MediaRouteProviderId::EXTENSION:
-    case MediaRouteProviderId::UNKNOWN:
-      return base_name;
-  }
-}
 
 }  // namespace
 
@@ -79,39 +57,6 @@ void MediaRouterMojoMetrics::RecordMediaRouteProviderWakeup(
             static_cast<int>(MediaRouteProviderWakeup::TOTAL_COUNT));
   base::UmaHistogramEnumeration(kHistogramProviderWakeup, wakeup,
                                 MediaRouteProviderWakeup::TOTAL_COUNT);
-}
-
-// static
-void MediaRouterMojoMetrics::RecordCreateRouteResultCode(
-    MediaRouteProviderId provider_id,
-    RouteRequestResult::ResultCode result_code) {
-  DCHECK_LT(result_code, RouteRequestResult::TOTAL_COUNT);
-  base::UmaHistogramEnumeration(
-      GetHistogramNameForProvider(kHistogramProviderCreateRouteResult,
-                                  provider_id),
-      result_code, RouteRequestResult::TOTAL_COUNT);
-}
-
-// static
-void MediaRouterMojoMetrics::RecordJoinRouteResultCode(
-    MediaRouteProviderId provider_id,
-    RouteRequestResult::ResultCode result_code) {
-  DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
-  base::UmaHistogramEnumeration(
-      GetHistogramNameForProvider(kHistogramProviderJoinRouteResult,
-                                  provider_id),
-      result_code, RouteRequestResult::TOTAL_COUNT);
-}
-
-// static
-void MediaRouterMojoMetrics::RecordMediaRouteProviderTerminateRoute(
-    MediaRouteProviderId provider_id,
-    RouteRequestResult::ResultCode result_code) {
-  DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
-  base::UmaHistogramEnumeration(
-      GetHistogramNameForProvider(kHistogramProviderTerminateRouteResult,
-                                  provider_id),
-      result_code, RouteRequestResult::TOTAL_COUNT);
 }
 
 // static

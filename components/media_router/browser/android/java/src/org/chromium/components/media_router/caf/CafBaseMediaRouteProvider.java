@@ -161,13 +161,13 @@ public abstract class CafBaseMediaRouteProvider
 
         MediaSink sink = MediaSink.fromSinkId(sinkId, mAndroidMediaRouter);
         if (sink == null) {
-            mManager.onRouteRequestError("No sink", nativeRequestId);
+            mManager.onCreateRouteRequestError("No sink", nativeRequestId);
             return;
         }
 
         MediaSource source = getSourceFromId(sourceId);
         if (source == null) {
-            mManager.onRouteRequestError("Unsupported source URL", nativeRequestId);
+            mManager.onCreateRouteRequestError("Unsupported source URL", nativeRequestId);
             return;
         }
 
@@ -179,7 +179,7 @@ public abstract class CafBaseMediaRouteProvider
             }
         }
         if (targetRouteInfo == null) {
-            mManager.onRouteRequestError("The sink does not exist", nativeRequestId);
+            mManager.onCreateRouteRequestError("The sink does not exist", nativeRequestId);
         }
 
         CastUtils.getCastContext().getSessionManager().addSessionManagerListener(
@@ -308,7 +308,7 @@ public abstract class CafBaseMediaRouteProvider
     private void cancelPendingRequest(String error) {
         if (mPendingCreateRouteRequestInfo == null) return;
 
-        mManager.onRouteRequestError(error, mPendingCreateRouteRequestInfo.nativeRequestId);
+        mManager.onCreateRouteRequestError(error, mPendingCreateRouteRequestInfo.nativeRequestId);
         mPendingCreateRouteRequestInfo = null;
     }
 

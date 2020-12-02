@@ -60,17 +60,17 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
             String sourceId, String presentationId, String origin, int tabId, int nativeRequestId) {
         CastMediaSource source = CastMediaSource.from(sourceId);
         if (source == null || source.getClientId() == null) {
-            mManager.onRouteRequestError("Unsupported presentation URL", nativeRequestId);
+            mManager.onJoinRouteRequestError("Unsupported presentation URL", nativeRequestId);
             return;
         }
 
         if (!hasSession()) {
-            mManager.onRouteRequestError("No presentation", nativeRequestId);
+            mManager.onJoinRouteRequestError("No presentation", nativeRequestId);
             return;
         }
 
         if (!canJoinExistingSession(presentationId, origin, tabId, source)) {
-            mManager.onRouteRequestError("No matching route", nativeRequestId);
+            mManager.onJoinRouteRequestError("No matching route", nativeRequestId);
             return;
         }
 

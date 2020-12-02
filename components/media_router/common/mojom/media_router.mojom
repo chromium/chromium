@@ -282,9 +282,12 @@ union ProviderState {
 // commands to the MediaRouteProvider, such as observing MediaSinks or creating
 // a MediaRoute. In return, the MediaRouteProvider notifies the MediaRouter when
 // there are changes related to sinks or routes.
-// A MediaRouteProvider may live in the Media Router component extension, or
-// the browser (e.g. DIAL and Cast MediaRouteProviders will soon move to the
-// browser).
+// Each MRP is used to manage one type of media sinks (e.g. the Cast MRP is used
+// for CAST sinks)
+// EXTENSION MRPs live in the Media Router component extension and will be
+// removed soon. WIRED_DISPLAY, CAST and DIAL MRPs live in the browser.
+// ANDROID_CAF is the Cast Application Framework based MRPs used on Android
+// only.
 interface MediaRouteProvider {
   // Each MediaRouteProvider is associated with a unique ID. This enum must be
   // kept in sync with MediaRouteProviderId in C++.
@@ -292,7 +295,8 @@ interface MediaRouteProvider {
     EXTENSION,
     WIRED_DISPLAY,
     CAST,
-    DIAL
+    DIAL,
+    ANDROID_CAF,
   };
 
   // Creates a media route from |media_source| to the sink given by |sink_id|.

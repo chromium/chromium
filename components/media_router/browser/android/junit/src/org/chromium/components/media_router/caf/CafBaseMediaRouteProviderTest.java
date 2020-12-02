@@ -292,7 +292,7 @@ public class CafBaseMediaRouteProviderTest {
         mProvider.createRoute(
                 "source-id", "other-cast-route", "presentation-id-2", "origin-2", 2, true, 2);
 
-        inOrder.verify(mManager).onRouteRequestError(eq("Request replaced"), eq(1));
+        inOrder.verify(mManager).onCreateRouteRequestError(eq("Request replaced"), eq(1));
         inOrder.verify(mSessionManager).addSessionManagerListener(mProvider, CastSession.class);
         inOrder.verify(mSessionController).requestSessionLaunch();
         pendingCreateRouteRequestInfo = mProvider.getPendingCreateRouteRequestInfo();
@@ -323,12 +323,12 @@ public class CafBaseMediaRouteProviderTest {
         // Invalid sink.
         mProvider.createRoute(
                 "source-id", "invalid-route", "presentation-id", "origin", 1, false, 1);
-        inOrder.verify(mManager).onRouteRequestError("No sink", 1);
+        inOrder.verify(mManager).onCreateRouteRequestError("No sink", 1);
 
         // Invalid source.
         doReturn(null).when(mProvider).getSourceFromId(anyString());
         mProvider.createRoute("source-id", "cast-route", "presentation-id", "origin", 1, false, 1);
-        inOrder.verify(mManager).onRouteRequestError("Unsupported source URL", 1);
+        inOrder.verify(mManager).onCreateRouteRequestError("Unsupported source URL", 1);
     }
 
     @Test
@@ -373,13 +373,13 @@ public class CafBaseMediaRouteProviderTest {
 
         // Request to create a session.
         mProvider.createRoute("source-id", "cast-route", "presentation-id", "origin", 1, false, 1);
-        inOrder.verify(mManager, never()).onRouteRequestError(anyString(), anyInt());
+        inOrder.verify(mManager, never()).onCreateRouteRequestError(anyString(), anyInt());
 
         // Session start failed.
         mProvider.onSessionStartFailed(mCastSession, 1);
 
         inOrder.verify(mProvider).removeAllRoutes("Launch error");
-        inOrder.verify(mManager).onRouteRequestError("Launch error", 1);
+        inOrder.verify(mManager).onCreateRouteRequestError("Launch error", 1);
     }
 
     @Test

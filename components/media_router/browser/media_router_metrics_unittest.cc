@@ -55,6 +55,58 @@ void TestRecordBooleanMetric(base::RepeatingCallback<void(bool)> recording_cb,
               ElementsAre(Bucket(false, 1), Bucket(true, 2)));
 }
 
+// Tests that |record_cb| records metrics for each MediaRouteProvider in a
+// histogram specific to the provider.
+void TestRouteResultCodeHistogramsWithProviders(
+    base::RepeatingCallback<void(MediaRouteProviderId,
+                                 RouteRequestResult::ResultCode)> record_cb,
+    MediaRouteProviderId provider1,
+    const std::string& histogram_provider1,
+    MediaRouteProviderId provider2,
+    const std::string& histogram_provider2) {
+  base::HistogramTester tester;
+  tester.ExpectTotalCount(histogram_provider1, 0);
+  tester.ExpectTotalCount(histogram_provider2, 0);
+
+  record_cb.Run(provider1, RouteRequestResult::SINK_NOT_FOUND);
+  record_cb.Run(provider2, RouteRequestResult::OK);
+  record_cb.Run(provider1, RouteRequestResult::SINK_NOT_FOUND);
+  record_cb.Run(provider2, RouteRequestResult::ROUTE_NOT_FOUND);
+  record_cb.Run(provider1, RouteRequestResult::OK);
+
+  tester.ExpectTotalCount(histogram_provider1, 3);
+  EXPECT_THAT(
+      tester.GetAllSamples(histogram_provider1),
+      ElementsAre(
+          Bucket(static_cast<int>(RouteRequestResult::OK), 1),
+          Bucket(static_cast<int>(RouteRequestResult::SINK_NOT_FOUND), 2)));
+
+  tester.ExpectTotalCount(histogram_provider2, 2);
+  EXPECT_THAT(
+      tester.GetAllSamples(histogram_provider2),
+      ElementsAre(
+          Bucket(static_cast<int>(RouteRequestResult::OK), 1),
+          Bucket(static_cast<int>(RouteRequestResult::ROUTE_NOT_FOUND), 1)));
+}
+
+void TestRouteResultCodeHistograms(
+    base::RepeatingCallback<void(MediaRouteProviderId,
+                                 RouteRequestResult::ResultCode)> record_cb,
+    const std::string& base_histogram_name) {
+  TestRouteResultCodeHistogramsWithProviders(
+      record_cb, MediaRouteProviderId::EXTENSION, base_histogram_name,
+      MediaRouteProviderId::WIRED_DISPLAY,
+      base_histogram_name + ".WiredDisplay");
+
+  TestRouteResultCodeHistogramsWithProviders(
+      record_cb, MediaRouteProviderId::CAST, base_histogram_name + ".Cast",
+      MediaRouteProviderId::DIAL, base_histogram_name + ".DIAL");
+
+  TestRouteResultCodeHistogramsWithProviders(
+      record_cb, MediaRouteProviderId::CAST, base_histogram_name + ".Cast",
+      MediaRouteProviderId::ANDROID_CAF, base_histogram_name + ".AndroidCaf");
+}
+
 }  // namespace
 
 TEST(MediaRouterMetricsTest, RecordMediaRouterDialogOrigin) {
@@ -254,6 +306,25 @@ TEST(MediaRouterMetricsTest, RecordCloudPrefAtInit) {
   TestRecordBooleanMetric(
       base::BindRepeating(&MediaRouterMetrics::RecordCloudPrefAtInit),
       MediaRouterMetrics::kHistogramCloudPrefAtInit);
+}
+
+TEST(MediaRouterMetricsTest, RecordCreateRouteResultCode) {
+  TestRouteResultCodeHistograms(
+      base::BindRepeating(&MediaRouterMetrics::RecordCreateRouteResultCode),
+      "MediaRouter.Provider.CreateRoute.Result");
+}
+
+TEST(MediaRouterMetricsTest, RecordJoinRouteResultCode) {
+  TestRouteResultCodeHistograms(
+      base::BindRepeating(&MediaRouterMetrics::RecordJoinRouteResultCode),
+      "MediaRouter.Provider.JoinRoute.Result");
+}
+
+TEST(MediaRouterMetricsTest, RecordTerminateRouteResultCode) {
+  TestRouteResultCodeHistograms(
+      base::BindRepeating(
+          &MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute),
+      "MediaRouter.Provider.TerminateRoute.Result");
 }
 
 }  // namespace media_router
