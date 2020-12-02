@@ -49,6 +49,30 @@ bool IsLessSignificantVerificationStatus(VerificationStatus left,
          static_cast<std::underlying_type_t<VerificationStatus>>(right);
 }
 
+std::ostream& operator<<(std::ostream& os, VerificationStatus status) {
+  switch (status) {
+    case VerificationStatus::kNoStatus:
+      os << "NoStatus";
+      break;
+    case VerificationStatus::kParsed:
+      os << "Parsed";
+      break;
+    case VerificationStatus::kFormatted:
+      os << "Formatted";
+      break;
+    case VerificationStatus::kObserved:
+      os << "Observed";
+      break;
+    case VerificationStatus::kServerParsed:
+      os << "ServerParsed";
+      break;
+    case VerificationStatus::kUserVerified:
+      os << "UserVerified";
+      break;
+  }
+  return os;
+}
+
 AddressComponent::AddressComponent(ServerFieldType storage_type,
                                    AddressComponent* parent,
                                    std::vector<AddressComponent*> subcomponents,

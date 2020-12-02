@@ -17,6 +17,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1328,68 +1329,55 @@ bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
-  return os
-         << (profile.record_type() == AutofillProfile::LOCAL_PROFILE
-                 ? profile.guid()
-                 : base::HexEncode(profile.server_id().data(),
-                                   profile.server_id().size()))
-         << " " << profile.origin() << " "
-         << UTF16ToUTF8(profile.GetRawInfo(NAME_FULL)) << " "
-         << "("
-         << base::NumberToString(profile.GetVerificationStatusInt(NAME_FULL))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(NAME_FIRST)) << " "
-         << "("
-         << base::NumberToString(profile.GetVerificationStatusInt(NAME_FIRST))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(NAME_MIDDLE)) << " "
-         << "("
-         << base::NumberToString(profile.GetVerificationStatusInt(NAME_MIDDLE))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(NAME_LAST)) << " "
-         << "("
-         << base::NumberToString(profile.GetVerificationStatusInt(NAME_LAST))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(NAME_LAST_FIRST)) << " "
-         << "("
-         << base::NumberToString(
-                profile.GetVerificationStatusInt(NAME_LAST_FIRST))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(NAME_LAST_CONJUNCTION))
-         << " "
-         << "("
-         << base::NumberToString(
-                profile.GetVerificationStatusInt(NAME_LAST_CONJUNCTION))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(NAME_LAST_SECOND)) << " "
-         << "("
-         << base::NumberToString(
-                profile.GetVerificationStatusInt(NAME_LAST_SECOND))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(COMPANY_NAME)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE1)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE2)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_LINE3)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS)) << " "
-         << "("
-         << base::NumberToString(
-                profile.GetVerificationStatusInt(ADDRESS_HOME_STREET_ADDRESS))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STREET_NAME))
-         << " "
-         << "("
-         << base::NumberToString(
-                profile.GetVerificationStatusInt(ADDRESS_HOME_STREET_NAME))
-         << ") " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER))
-         << " "
-         << "("
-         << base::NumberToString(
-                profile.GetVerificationStatusInt(ADDRESS_HOME_HOUSE_NUMBER))
-         << ") "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))
-         << " " << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_CITY)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_ZIP)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_SORTING_CODE)) << " "
-         << UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)) << " "
-         << profile.language_code() << " "
-         << UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)) << " "
-         << profile.GetClientValidityBitfieldValue() << " "
-         << profile.has_converted() << " " << profile.use_count() << " "
-         << profile.use_date();
+  os << (profile.record_type() == AutofillProfile::LOCAL_PROFILE
+             ? profile.guid()
+             : base::HexEncode(profile.server_id().data(),
+                               profile.server_id().size()))
+     << " " << profile.origin() << " "
+     << profile.GetClientValidityBitfieldValue() << " "
+     << profile.has_converted() << " " << profile.use_count() << " "
+     << profile.use_date() << " " << profile.language_code() << std::endl;
+
+  // Lambda to print the value and verification status for |type|.
+  auto print_values_lambda = [&os, &profile](ServerFieldType type) {
+    os << AutofillType::ServerFieldTypeToString(type) << ": "
+       << profile.GetRawInfo(type) << "(" << profile.GetVerificationStatus(type)
+       << ")" << std::endl;
+  };
+
+  // Use a helper function to print the values of the stored types.
+  const ServerFieldType field_types_to_print[] = {
+      NAME_FULL,
+      NAME_HONORIFIC_PREFIX,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST,
+      NAME_LAST_FIRST,
+      NAME_LAST_CONJUNCTION,
+      NAME_LAST_SECOND,
+      EMAIL_ADDRESS,
+      COMPANY_NAME,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_LINE3,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      PHONE_HOME_WHOLE_NUMBER};
+
+  base::ranges::for_each(field_types_to_print, print_values_lambda);
+
+  return os;
 }
 
 bool AutofillProfile::FinalizeAfterImport() {
