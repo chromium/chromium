@@ -1091,6 +1091,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Trash, /* trash.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("trashMoveToTrash").EnableTrash(),
-                      TestCase("trashRestore").EnableTrash()));
+                      TestCase("trashRestoreFromToast").EnableTrash(),
+                      TestCase("trashRestoreFromTrash").EnableTrash(),
+                      TestCase("trashDeleteFromTrash").EnableTrash()));
 
 }  // namespace file_manager

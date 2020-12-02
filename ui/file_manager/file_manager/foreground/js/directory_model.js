@@ -177,6 +177,20 @@ class DirectoryModel extends cr.EventTarget {
   }
 
   /**
+   * @return {boolean} True if entries in the current directory can be deleted.
+   *     Similar to !isReadOnly() except that we allow items in the read-only
+   *     Trash root to be deleted. If there is no entry set, then returns false.
+   */
+  canDeleteEntries() {
+    const currentDirEntry = this.getCurrentDirEntry();
+    if (currentDirEntry &&
+        currentDirEntry.rootType === VolumeManagerCommon.RootType.TRASH) {
+      return true;
+    }
+    return !this.isReadOnly();
+  }
+
+  /**
    * @return {boolean} True if the a scan is active.
    */
   isScanning() {

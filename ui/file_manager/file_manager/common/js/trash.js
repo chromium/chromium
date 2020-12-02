@@ -123,14 +123,11 @@ class TrashEntry {
    * @param {!Date} deletionDate DeletionDate of deleted file from infoEntry.
    * @param {!Entry} filesEntry trash files entry.
    * @param {!FileEntry} infoEntry trash info entry.
-   * @param {string=} pathPrefix Optional prefix for 'Path=' in *.trashinfo. For
-   *     crostini, this is the user's homedir (/home/<username>).
    */
-  constructor(name, deletionDate, filesEntry, infoEntry, pathPrefix = '') {
+  constructor(name, deletionDate, filesEntry, infoEntry) {
     this.name = name;
     this.filesEntry = filesEntry;
     this.infoEntry = infoEntry;
-    this.pathPrefix = pathPrefix;
 
     /** @private */
     this.deletionDate_ = deletionDate;
@@ -147,9 +144,6 @@ class TrashEntry {
     /** @override Entry  */
     this.isFile = filesEntry.isFile;
 
-    /** @override FileEntry */
-    this.file = filesEntry.file;
-
     /** @override FilesAppEntry */
     this.rootType = VolumeManagerCommon.RootType.TRASH;
 
@@ -157,9 +151,14 @@ class TrashEntry {
     this.type_name = 'TrashEntry';
   }
 
-  /** @override Entry */
+  /**
+   * Use filesEntry toURL() so this entry can be used as that file to view,
+   * copy, etc.
+   *
+   * @override Entry
+   */
   toURL() {
-    return 'trash://' + this.infoEntry.toURL();
+    return this.filesEntry.toURL();
   }
 
   /**
@@ -179,14 +178,83 @@ class TrashEntry {
     return null;
   }
 
-  /** @override FilesAppEntry */
+  /**
+   * Remove filesEntry first, then remove infoEntry. Overrides Entry.
+   *
+   * @param {function()} success
+   * @param {function(!FileError)=} error
+   */
+  remove(success, error) {
+    this.filesEntry.remove(() => this.infoEntry.remove(success, error), error);
+  }
+
+  /**
+   * Pass through to filesEntry. Overrides FileEntry.
+   *
+   * @param {function(!File)} success
+   * @param {function(!FileError)=} error
+   */
+  file(success, error) {
+    this.filesEntry.file(success, error);
+  }
+
+  /**
+   * Pass through to filesEntry. Overrides DirectoryEntry.
+   *
+   * @return {!DirectoryReader}
+   */
+  createReader() {
+    return this.filesEntry.createReader();
+  }
+
+  /**
+   * Pass through to filesEntry. Overrides DirectoryEntry.
+   *
+   * @param {string} path
+   * @param {!Object} options
+   * @param {function(!File)} success
+   * @param {function(!FileError)=} error
+   */
+  getDirectory(path, options, success, error) {
+    this.filesEntry.createReader(path, options, success, error);
+  }
+
+  /**
+   * Pass through to filesEntry. Overrides DirectoryEntry.
+   *
+   * @param {string} path
+   * @param {!Object} options
+   * @param {function(!File)} success
+   * @param {function(!FileError)=} error
+   */
+  getFile(path, options, success, error) {
+    this.filesEntry.getFile(path, options, success, error);
+  }
+
+  /**
+   * Remove filesEntry first, then remove infoEntry. Overrides DirectoryEntry.
+   *
+   * @param {function()} success
+   * @param {function(!FileError)=} error
+   */
+  removeRecursively(success, error) {
+    this.filesEntry.removeRecursively(
+        () => this.infoEntry.remove(success, error), error);
+  }
+
+  /**
+   * We must set entry.isNativeType to true, so that this is not considered a
+   * FakeEntry, and we are allowed to delete the item.
+   *
+   * @override FilesAppEntry
+   */
   get isNativeType() {
-    return false;
+    return true;
   }
 
   /** @override FilesAppEntry */
   getNativeEntry() {
-    return null;
+    return this.filesEntry;
   }
 
   /**
