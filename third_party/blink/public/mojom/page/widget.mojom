@@ -190,7 +190,7 @@ interface FrameWidgetHost {
   // session at the OS level.
   StartDragging(DragData drag_data,
                 AllowedDragOperations operations_allowed,
-                skia.mojom.Bitmap? image,
+                skia.mojom.BitmapWithArbitraryBpp? image,
                 gfx.mojom.Vector2d bitmap_offset_in_dip,
                 DragEventSourceInfo event_info);
 };

@@ -8,8 +8,21 @@ module skia.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "skia/public/mojom/image_info.mojom";
 
-[Stable]
-struct Bitmap {
+// The most common way to transfer an SkBitmap over IPC. This struct enforces
+// that the bitmap is 32bpp to prevent buffer-overflow problems when reading/
+// writing the pixel buffer.
+struct BitmapN32 {
+  BitmapN32ImageInfo image_info;
+  mojo_base.mojom.BigBuffer pixel_data;
+};
+
+// Marked stable as this is used in the crosapi. This struct should be
+// avoided whenever possible. If used, extreme care must be taken when
+// manipulating the pixels in the bitmap, either only using SkBitmap methods to
+// read and write to them, or taking care to not assume that there are 32 bits-
+// per-pixel.
+[Stable, RenamedFrom="skia.mojom.Bitmap"]
+struct BitmapWithArbitraryBpp {
   ImageInfo image_info;
   uint64 UNUSED_row_bytes;
   mojo_base.mojom.BigBuffer pixel_data;

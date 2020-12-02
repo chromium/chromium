@@ -53,7 +53,17 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "skia.mojom.Bitmap"
+          mojom = "skia.mojom.BitmapN32"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "skia.mojom.BitmapWithArbitraryBpp"
+          cpp = "::SkBitmap"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "skia.mojom.BitmapWithArbitraryBpp"
           cpp = "::SkBitmap"
           nullable_is_same_type = true
         },

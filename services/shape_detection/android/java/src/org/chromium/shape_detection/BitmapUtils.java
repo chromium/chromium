@@ -17,7 +17,8 @@ import java.nio.ByteBuffer;
  * Utility class to convert a Bitmap to a GMS core YUV Frame.
  */
 public class BitmapUtils {
-    public static Bitmap convertToBitmap(org.chromium.skia.mojom.Bitmap bitmapData) {
+    public static Bitmap convertToBitmap(
+            org.chromium.skia.mojom.BitmapWithArbitraryBpp bitmapData) {
         if (bitmapData.imageInfo == null) return null;
         int width = bitmapData.imageInfo.width;
         int height = bitmapData.imageInfo.height;
@@ -45,7 +46,7 @@ public class BitmapUtils {
         return bitmap;
     }
 
-    public static Frame convertToFrame(org.chromium.skia.mojom.Bitmap bitmapData) {
+    public static Frame convertToFrame(org.chromium.skia.mojom.BitmapWithArbitraryBpp bitmapData) {
         Bitmap bitmap = convertToBitmap(bitmapData);
         if (bitmap == null) {
             return null;

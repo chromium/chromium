@@ -22,13 +22,24 @@
 namespace skia {
 namespace {
 
-// A helper to construct a skia.mojom.Bitmap without using StructTraits
+// A helper to construct a skia.mojom.BitmapN32 without using StructTraits
 // to bypass checks on the sending/serialization side.
-mojo::StructPtr<skia::mojom::Bitmap> ConstructBitmap(
+mojo::StructPtr<skia::mojom::BitmapN32> ConstructBitmapN32(
     SkImageInfo info,
-    int row_bytes,
     std::vector<unsigned char> pixels) {
-  auto mojom_bitmap = skia::mojom::Bitmap::New();
+  auto mojom_bitmap = skia::mojom::BitmapN32::New();
+  mojom_bitmap->image_info = std::move(info);
+  mojom_bitmap->pixel_data = std::move(pixels);
+  return mojom_bitmap;
+}
+
+// A helper to construct a skia.mojom.BitmapWithArbitraryBpp without using
+// StructTraits to bypass checks on the sending/serialization side.
+mojo::StructPtr<skia::mojom::BitmapWithArbitraryBpp>
+ConstructBitmapWithArbitraryBpp(SkImageInfo info,
+                                int row_bytes,
+                                std::vector<unsigned char> pixels) {
+  auto mojom_bitmap = skia::mojom::BitmapWithArbitraryBpp::New();
   mojom_bitmap->image_info = std::move(info);
   mojom_bitmap->UNUSED_row_bytes = row_bytes;
   mojom_bitmap->pixel_data = std::move(pixels);
@@ -127,8 +138,13 @@ TEST(StructTraitsTest, Bitmap) {
   };
 
   {
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+    BitmapsEqual(input, output);
+  }
+  {
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                skia::mojom::BitmapWithArbitraryBpp>(input, output));
     BitmapsEqual(input, output);
   }
   {
@@ -161,8 +177,13 @@ TEST(StructTraitsTest, BitmapNull) {
 
   SkBitmap output;
   {
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+    IsDefaultInit(output);
+  }
+  {
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                skia::mojom::BitmapWithArbitraryBpp>(input, output));
     IsDefaultInit(output);
   }
   {
@@ -199,10 +220,17 @@ TEST(StructTraitsTest, VerifyMojomConstruction) {
   SkBitmap output;
 
   {
-    mojo::StructPtr<skia::mojom::Bitmap> input =
-        ConstructBitmap(SkImageInfo::MakeN32Premul(1, 1), 0, {1, 2, 3, 4});
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    mojo::StructPtr<skia::mojom::BitmapN32> input =
+        ConstructBitmapN32(SkImageInfo::MakeN32Premul(1, 1), {1, 2, 3, 4});
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+  }
+  {
+    mojo::StructPtr<skia::mojom::BitmapWithArbitraryBpp> input =
+        ConstructBitmapWithArbitraryBpp(SkImageInfo::MakeN32Premul(1, 1), 0,
+                                        {1, 2, 3, 4});
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                skia::mojom::BitmapWithArbitraryBpp>(input, output));
   }
   {
     mojo::StructPtr<skia::mojom::BitmapMappedFromTrustedProcess> input =
@@ -228,8 +256,12 @@ TEST(StructTraitsTest, BitmapTooWideToSerialize) {
   input.eraseColor(SK_ColorYELLOW);
   SkBitmap output;
   {
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+  }
+  {
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::BitmapWithArbitraryBpp>(input, output));
   }
   {
     EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
@@ -250,8 +282,12 @@ TEST(StructTraitsTest, BitmapTooTallToSerialize) {
   input.eraseColor(SK_ColorYELLOW);
   SkBitmap output;
   {
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+  }
+  {
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::BitmapWithArbitraryBpp>(input, output));
   }
   {
     EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
@@ -275,8 +311,11 @@ static void BadRowBytes() {
 }
 
 // We do not allow sending rowBytes() other than the minRowBytes().
-TEST(StructTraitsTest, BitmapSerializeInvalidRowBytes_Bitmap) {
-  BadRowBytes<skia::mojom::Bitmap>();
+TEST(StructTraitsTest, BitmapSerializeInvalidRowBytes_BitmapN32) {
+  BadRowBytes<skia::mojom::BitmapN32>();
+}
+TEST(StructTraitsTest, BitmapSerializeInvalidRowBytes_BitmapWithArbitraryBpp) {
+  BadRowBytes<skia::mojom::BitmapWithArbitraryBpp>();
 }
 TEST(StructTraitsTest,
      BitmapSerializeInvalidRowBytes_BitmapMappedFromTrustedProcess) {
@@ -287,16 +326,31 @@ TEST(StructTraitsTest, BitmapSerializeInvalidRowBytes_InlineBitmap) {
 }
 
 template <typename MojomType>
-static void BadColor() {
+static void BadColor(bool expect_crash) {
   SkImageInfo info = SkImageInfo::MakeA8(10, 5);
   SkBitmap input;
   EXPECT_TRUE(input.tryAllocPixels(info));
-  // This will crash.
-  EXPECT_DEATH(MojomType::SerializeAsMessage(&input), "");
+  if (expect_crash) {
+    // This will crash.
+    EXPECT_DEATH(MojomType::SerializeAsMessage(&input), "");
+  } else {
+    // This won't as the mojom allows arbitrary color formats.
+    MojomType::SerializeAsMessage(&input);
+  }
 }
 
-TEST(StructTraitsTest, InlineBitmapSerializeInvalidColorType_InlineBitmap) {
-  BadColor<skia::mojom::InlineBitmap>();
+TEST(StructTraitsTest, BitmapSerializeInvalidColorType_BitmapN32) {
+  BadColor<skia::mojom::BitmapN32>(/*expect_crash=*/true);
+}
+TEST(StructTraitsTest, BitmapSerializeInvalidColorType_BitmapWithArbitraryBpp) {
+  BadColor<skia::mojom::BitmapWithArbitraryBpp>(/*expect_crash=*/false);
+}
+TEST(StructTraitsTest,
+     BitmapSerializeInvalidColorType_BitmapMappedFromTrustedProcess) {
+  BadColor<skia::mojom::BitmapMappedFromTrustedProcess>(/*expect_crash=*/false);
+}
+TEST(StructTraitsTest, BitmapSerializeInvalidColorType_InlineBitmap) {
+  BadColor<skia::mojom::InlineBitmap>(/*expect_crash=*/true);
 }
 
 // The row_bytes field is ignored, and the minRowBytes() is always used.
@@ -306,10 +360,11 @@ TEST(StructTraitsTest, BitmapDeserializeIgnoresRowBytes) {
   size_t ignored_row_bytes = 8;
   size_t expected_row_bytes = 4;
   {
-    mojo::StructPtr<skia::mojom::Bitmap> input = ConstructBitmap(
-        SkImageInfo::MakeN32Premul(1, 1), ignored_row_bytes, {1, 2, 3, 4});
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
-        input, output));
+    mojo::StructPtr<skia::mojom::BitmapWithArbitraryBpp> input =
+        ConstructBitmapWithArbitraryBpp(SkImageInfo::MakeN32Premul(1, 1),
+                                        ignored_row_bytes, {1, 2, 3, 4});
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                skia::mojom::BitmapWithArbitraryBpp>(input, output));
     EXPECT_EQ(expected_row_bytes, output.rowBytes());
   }
   {
@@ -321,7 +376,8 @@ TEST(StructTraitsTest, BitmapDeserializeIgnoresRowBytes) {
     EXPECT_EQ(expected_row_bytes, output.rowBytes());
   }
   {
-    // skia::mojom::InlineBitmap has no row_bytes field to test.
+    // Neither skia::mojom::BitmapN32 nor skia::mojom::InlineBitmap have a
+    // row_bytes field to test.
   }
 }
 
@@ -331,10 +387,16 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooFewBytes) {
   std::vector<unsigned char> pixels = {1, 2, 3, 4};
   SkBitmap output;
   {
-    mojo::StructPtr<skia::mojom::Bitmap> input =
-        ConstructBitmap(info, 0, pixels);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    mojo::StructPtr<skia::mojom::BitmapN32> input =
+        ConstructBitmapN32(info, pixels);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+  }
+  {
+    mojo::StructPtr<skia::mojom::BitmapWithArbitraryBpp> input =
+        ConstructBitmapWithArbitraryBpp(info, 0, pixels);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::BitmapWithArbitraryBpp>(input, output));
   }
   {
     mojo::StructPtr<skia::mojom::BitmapMappedFromTrustedProcess> input =
@@ -356,10 +418,16 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooManyBytes) {
   std::vector<unsigned char> pixels = {1, 2, 3, 4, 5, 6, 7, 8};
   SkBitmap output;
   {
-    mojo::StructPtr<skia::mojom::Bitmap> input =
-        ConstructBitmap(info, 0, pixels);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::Bitmap>(
+    mojo::StructPtr<skia::mojom::BitmapN32> input =
+        ConstructBitmapN32(info, pixels);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::BitmapN32>(
         input, output));
+  }
+  {
+    mojo::StructPtr<skia::mojom::BitmapWithArbitraryBpp> input =
+        ConstructBitmapWithArbitraryBpp(info, 0, pixels);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::BitmapWithArbitraryBpp>(input, output));
   }
   {
     mojo::StructPtr<skia::mojom::BitmapMappedFromTrustedProcess> input =

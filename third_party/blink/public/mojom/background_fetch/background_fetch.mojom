@@ -131,7 +131,7 @@ interface BackgroundFetchService {
         string developer_id,
         array<FetchAPIRequest> requests,
         BackgroundFetchOptions options,
-        skia.mojom.Bitmap? icon,
+        skia.mojom.BitmapWithArbitraryBpp? icon,
         BackgroundFetchUkmData ukm_data)
       => (BackgroundFetchError error,
           BackgroundFetchRegistration? registration);
@@ -157,7 +157,7 @@ interface BackgroundFetchService {
 interface BackgroundFetchRegistrationService {
   // Updates the user interface for the Background Fetch registration.
   UpdateUI(string? title,
-           skia.mojom.Bitmap? icon)
+           skia.mojom.BitmapWithArbitraryBpp? icon)
       => (BackgroundFetchError error);
 
   // Aborts the Background Fetch registration.

@@ -16,10 +16,23 @@
 
 namespace mojo {
 
-// Struct traits to use SkBitmap for skia::mojom::Bitmap in Chrome C++ code.
+// Struct traits to convert between SkBitmap and mojom types.
+
 template <>
 struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
-    StructTraits<skia::mojom::BitmapDataView, SkBitmap> {
+    StructTraits<skia::mojom::BitmapN32DataView, SkBitmap> {
+  static bool IsNull(const SkBitmap& b) { return b.isNull(); }
+  static void SetToNull(SkBitmap* b) { b->reset(); }
+
+  static const SkImageInfo& image_info(const SkBitmap& b) { return b.info(); }
+  static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
+
+  static bool Read(skia::mojom::BitmapN32DataView data, SkBitmap* b);
+};
+
+template <>
+struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
+    StructTraits<skia::mojom::BitmapWithArbitraryBppDataView, SkBitmap> {
   static bool IsNull(const SkBitmap& b) { return b.isNull(); }
   static void SetToNull(SkBitmap* b) { b->reset(); }
 
@@ -27,7 +40,8 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
   static uint64_t UNUSED_row_bytes(const SkBitmap& b) { return 0; }
   static mojo_base::BigBufferView pixel_data(const SkBitmap& b);
 
-  static bool Read(skia::mojom::BitmapDataView data, SkBitmap* b);
+  static bool Read(skia::mojom::BitmapWithArbitraryBppDataView data,
+                   SkBitmap* b);
 };
 
 template <>

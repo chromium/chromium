@@ -111,7 +111,7 @@ interface PaintPreviewCompositor {
   BitmapForSeparatedFrame(mojo_base.mojom.UnguessableToken frame_guid,
                           gfx.mojom.Rect clip_rect,
                           float scale_factor) =>
-    (BitmapStatus status, skia.mojom.Bitmap? bitmap);
+    (BitmapStatus status, skia.mojom.BitmapWithArbitraryBpp? bitmap);
 
   // Starts the compositing process for |BitmapForMainFrame| calls using frame
   // data |request|. |status| will be negative on failure. If the root frame is
@@ -127,7 +127,7 @@ interface PaintPreviewCompositor {
   // |status|.
   // |BeginMainFrameComposite| must be called before this method.
   BitmapForMainFrame(gfx.mojom.Rect clip_rect, float scale_factor) =>
-    (BitmapStatus status, skia.mojom.Bitmap? bitmap);
+    (BitmapStatus status, skia.mojom.BitmapWithArbitraryBpp? bitmap);
 
   // Sets the root frame of the compositor. Used for tracing and diagnostics.
   SetRootFrameUrl(url.mojom.Url url);

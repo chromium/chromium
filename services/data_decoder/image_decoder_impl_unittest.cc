@@ -87,7 +87,7 @@ class BlinkInitializer : public blink::Platform {
     blink::CreateMainThreadAndInitialize(this, &binders);
   }
 
-  ~BlinkInitializer() override {}
+  ~BlinkInitializer() override = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BlinkInitializer);
@@ -118,7 +118,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
   // Approx max height for 3:2 image that will fit in the allotted space.
   // 1.5 for width/height ratio, 4 for bytes/pixel.
   int max_height_for_msg = sqrt(kTestMaxImageSize / (1.5 * 4));
-  int base_msg_size = sizeof(skia::mojom::Bitmap::Data_);
+  int base_msg_size = sizeof(skia::mojom::BitmapWithArbitraryBpp::Data_);
 
   // Sizes which should trigger dimension-halving 0, 1 and 2 times
   int heights[] = {max_height_for_msg - 10, max_height_for_msg + 10,

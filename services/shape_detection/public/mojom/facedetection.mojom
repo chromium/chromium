@@ -33,6 +33,6 @@ struct FaceDetectorOptions {
 
 interface FaceDetection {
   // |bitmap_data| contains tightly packed image pixels in row-major order.
-  Detect(skia.mojom.Bitmap bitmap_data)
+  Detect(skia.mojom.BitmapWithArbitraryBpp bitmap_data)
     => (array<FaceDetectionResult> results);
 };

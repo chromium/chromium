@@ -28,11 +28,14 @@ int64_t kPadding = 64;
 void ResizeImage(SkBitmap* decoded_image,
                  bool shrink_to_fit,
                  int64_t max_size_in_bytes) {
-  // When serialized, the space taken up by a skia::mojom::Bitmap excluding
-  // the pixel data payload should be:
-  //   sizeof(skia::mojom::Bitmap::Data_) + pixel data array header (8 bytes)
+  // When serialized, the space taken up by a
+  // skia::mojom::BitmapWithArbitraryBpp excluding the pixel data payload should
+  // be:
+  //   sizeof(skia::mojom::BitmapWithArbitraryBpp::Data_) +
+  //       pixel data array header (8 bytes)
   // Use a bigger number in case we need padding at the end.
-  int64_t struct_size = sizeof(skia::mojom::Bitmap::Data_) + kPadding;
+  int64_t struct_size =
+      sizeof(skia::mojom::BitmapWithArbitraryBpp::Data_) + kPadding;
   int64_t image_size = decoded_image->computeByteSize();
   int halves = 0;
   while (struct_size + (image_size >> 2 * halves) > max_size_in_bytes)

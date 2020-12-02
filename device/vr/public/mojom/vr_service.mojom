@@ -111,7 +111,7 @@ enum XRInteractionMode {
 };
 
 struct XRTrackedImage {
-  skia.mojom.Bitmap bitmap;
+  skia.mojom.BitmapWithArbitraryBpp bitmap;
   gfx.mojom.Size size_in_pixels;
   float width_in_meters;
 };

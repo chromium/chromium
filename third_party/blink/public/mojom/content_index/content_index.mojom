@@ -83,7 +83,7 @@ interface ContentIndexService {
 
   Add(int64 service_worker_registration_id,
       ContentDescription description,
-      array<skia.mojom.Bitmap> icon,
+      array<skia.mojom.BitmapWithArbitraryBpp> icon,
       url.mojom.Url launchUrl)
       => (ContentIndexError error);
   Delete(int64 service_worker_registration_id, string id)

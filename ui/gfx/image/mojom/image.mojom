@@ -9,7 +9,7 @@ import "skia/public/mojom/bitmap.mojom";
 [Stable]
 struct ImageSkiaRep {
   // Transport of the bitmap in this representation.
-  skia.mojom.Bitmap bitmap;
+  skia.mojom.BitmapWithArbitraryBpp bitmap;
 
   // Corresponding scale of the bitmap or 0 if unscaled.
   float scale;

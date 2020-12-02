@@ -31,11 +31,13 @@ public class TestUtils {
                 ContextUtils.getApplicationContext());
     }
 
-    public static org.chromium.skia.mojom.Bitmap mojoBitmapFromBitmap(Bitmap bitmap) {
+    public static org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmapFromBitmap(
+            Bitmap bitmap) {
         ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
         bitmap.copyPixelsToBuffer(buffer);
 
-        org.chromium.skia.mojom.Bitmap mojoBitmap = new org.chromium.skia.mojom.Bitmap();
+        org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmap =
+                new org.chromium.skia.mojom.BitmapWithArbitraryBpp();
         mojoBitmap.imageInfo = new ImageInfo();
         mojoBitmap.imageInfo.width = bitmap.getWidth();
         mojoBitmap.imageInfo.height = bitmap.getHeight();
@@ -45,13 +47,15 @@ public class TestUtils {
         return mojoBitmap;
     }
 
-    public static org.chromium.skia.mojom.Bitmap mojoBitmapFromFile(String relPath) {
+    public static org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmapFromFile(
+            String relPath) {
         String path = UrlUtils.getIsolatedTestFilePath("services/test/data/" + relPath);
         Bitmap bitmap = BitmapFactory.decodeFile(path);
         return mojoBitmapFromBitmap(bitmap);
     }
 
-    public static org.chromium.skia.mojom.Bitmap mojoBitmapFromText(String[] texts) {
+    public static org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmapFromText(
+            String[] texts) {
         final int x = 10;
         final int baseline = 100;
 

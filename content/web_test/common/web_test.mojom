@@ -43,7 +43,7 @@ struct WebTestRendererDumpResult {
   string? layout;
 
   // Image dump.
-  skia.mojom.Bitmap? pixels;
+  skia.mojom.BitmapWithArbitraryBpp? pixels;
   string actual_pixel_hash;
 
   // Selection rect dump.

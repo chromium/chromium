@@ -66,7 +66,7 @@ bool CreateSkBitmapForPixelData(SkBitmap* b,
 }  // namespace
 
 // static
-mojo_base::BigBufferView StructTraits<skia::mojom::BitmapDataView,
+mojo_base::BigBufferView StructTraits<skia::mojom::BitmapN32DataView,
                                       SkBitmap>::pixel_data(const SkBitmap& b) {
   CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
   return mojo_base::BigBufferView(base::make_span(
@@ -74,8 +74,33 @@ mojo_base::BigBufferView StructTraits<skia::mojom::BitmapDataView,
 }
 
 // static
-bool StructTraits<skia::mojom::BitmapDataView, SkBitmap>::Read(
-    skia::mojom::BitmapDataView data,
+bool StructTraits<skia::mojom::BitmapN32DataView, SkBitmap>::Read(
+    skia::mojom::BitmapN32DataView data,
+    SkBitmap* b) {
+  SkImageInfo image_info;
+  if (!data.ReadImageInfo(&image_info))
+    return false;
+
+  mojo_base::BigBufferView pixel_data_view;
+  if (!data.ReadPixelData(&pixel_data_view))
+    return false;
+
+  return CreateSkBitmapForPixelData(b, std::move(image_info),
+                                    pixel_data_view.data());
+}
+
+// static
+mojo_base::BigBufferView
+StructTraits<skia::mojom::BitmapWithArbitraryBppDataView, SkBitmap>::pixel_data(
+    const SkBitmap& b) {
+  CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
+  return mojo_base::BigBufferView(base::make_span(
+      static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
+}
+
+// static
+bool StructTraits<skia::mojom::BitmapWithArbitraryBppDataView, SkBitmap>::Read(
+    skia::mojom::BitmapWithArbitraryBppDataView data,
     SkBitmap* b) {
   SkImageInfo image_info;
   if (!data.ReadImageInfo(&image_info))

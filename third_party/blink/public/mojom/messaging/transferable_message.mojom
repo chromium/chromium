@@ -30,7 +30,7 @@ struct TransferableMessage {
   // Any ArrayBuffers being transferred as part of this message.
   array<SerializedArrayBufferContents> array_buffer_contents_array;
   // Any ImageBitmaps being transferred as part of this message.
-  array<skia.mojom.Bitmap> image_bitmap_contents_array;
+  array<skia.mojom.BitmapWithArbitraryBpp> image_bitmap_contents_array;
   // The user activation state, null if the frame isn't providing it.
   UserActivationSnapshot? user_activation;
 };

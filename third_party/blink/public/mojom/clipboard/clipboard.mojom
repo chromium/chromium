@@ -59,7 +59,7 @@ interface ClipboardHost {
   ReadRtf(ClipboardBuffer buffer) => (mojo_base.mojom.BigString result);
 
   [Sync]
-  ReadImage(ClipboardBuffer buffer) => (skia.mojom.Bitmap? image);
+  ReadImage(ClipboardBuffer buffer) => (skia.mojom.BitmapWithArbitraryBpp? image);
 
   [Sync]
   ReadCustomData(ClipboardBuffer buffer, mojo_base.mojom.String16 type) =>
@@ -89,7 +89,7 @@ interface ClipboardHost {
   WriteBookmark(string url,
                 mojo_base.mojom.String16 title);
 
-  WriteImage(skia.mojom.Bitmap image);
+  WriteImage(skia.mojom.BitmapWithArbitraryBpp image);
 
   CommitWrite();
 

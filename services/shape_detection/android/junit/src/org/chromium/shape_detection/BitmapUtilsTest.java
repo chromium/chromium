@@ -16,7 +16,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.mojo_base.BigBufferUtil;
-import org.chromium.skia.mojom.Bitmap;
+import org.chromium.skia.mojom.BitmapWithArbitraryBpp;
 import org.chromium.skia.mojom.ColorType;
 import org.chromium.skia.mojom.ImageInfo;
 
@@ -46,7 +46,7 @@ public class BitmapUtilsTest {
     @Test
     @Feature({"ShapeDetection"})
     public void testConversionFailsWithInvalidBitmap() {
-        Bitmap bitmap = new Bitmap();
+        BitmapWithArbitraryBpp bitmap = new BitmapWithArbitraryBpp();
         bitmap.pixelData = null;
         bitmap.imageInfo = new ImageInfo();
 
@@ -59,7 +59,7 @@ public class BitmapUtilsTest {
     @Test
     @Feature({"ShapeDetection"})
     public void testConversionFailsWithInvalidDimensions() {
-        Bitmap bitmap = new Bitmap();
+        BitmapWithArbitraryBpp bitmap = new BitmapWithArbitraryBpp();
         bitmap.imageInfo = new ImageInfo();
         bitmap.pixelData = BigBufferUtil.createBigBufferFromBytes(EMPTY_DATA);
         bitmap.imageInfo.width = INVALID_WIDTH;
@@ -74,7 +74,7 @@ public class BitmapUtilsTest {
     @Test
     @Feature({"ShapeDetection"})
     public void testConversionFailsWithWronglyWrappedData() {
-        Bitmap bitmap = new Bitmap();
+        BitmapWithArbitraryBpp bitmap = new BitmapWithArbitraryBpp();
         bitmap.imageInfo = new ImageInfo();
         bitmap.pixelData = BigBufferUtil.createBigBufferFromBytes(EMPTY_DATA);
         bitmap.imageInfo.width = VALID_WIDTH;
