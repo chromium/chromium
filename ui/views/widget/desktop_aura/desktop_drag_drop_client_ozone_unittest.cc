@@ -158,11 +158,19 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
  private:
   // aura::client::DragDropDelegate:
   void OnDragEntered(const ui::DropTargetEvent& event) override {
+    // The event must always have valid data.  This will crash if it doesn't.
+    // See crbug.com/1151836.
+    auto dummy_copy = event.data().provider().Clone();
+
     ++num_enters_;
     last_event_flags_ = event.flags();
   }
 
   int OnDragUpdated(const ui::DropTargetEvent& event) override {
+    // The event must always have valid data.  This will crash if it doesn't.
+    // See crbug.com/1151836.
+    auto dummy_copy = event.data().provider().Clone();
+
     ++num_updates_;
     last_event_flags_ = event.flags();
     return destination_operation_;
@@ -172,6 +180,10 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
 
   int OnPerformDrop(const ui::DropTargetEvent& event,
                     std::unique_ptr<ui::OSExchangeData> data) override {
+    // The event must always have valid data.  This will crash if it doesn't.
+    // See crbug.com/1151836.
+    auto dummy_copy = event.data().provider().Clone();
+
     ++num_drops_;
     received_data_ = std::move(data);
     last_event_flags_ = event.flags();
@@ -405,6 +417,22 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
   EXPECT_EQ(1, another_dragdrop_delegate->num_updates());
   EXPECT_EQ(0, another_dragdrop_delegate->num_drops());
   EXPECT_EQ(0, another_dragdrop_delegate->num_exits());
+}
+
+// crbug.com/1151836 was null dereference during drag and drop.
+//
+// A possible reason was invalid sequence of events, so here we just drop data
+// without any notifications that should come before (like drag enter or drag
+// motion).  Before this change, that would hit some DCHECKS in the debug build
+// or cause crash in the release one, now it is handled properly.  Methods of
+// FakeDragDropDelegate ensure that data in the event is always valid.
+//
+// The error message rendered in the console when this test is running is the
+// expected and valid side effect.
+//
+// See more information in the bug.
+TEST_F(DesktopDragDropClientOzoneTest, Bug1151836) {
+  platform_window_->OnDragDrop(nullptr);
 }
 
 }  // namespace views

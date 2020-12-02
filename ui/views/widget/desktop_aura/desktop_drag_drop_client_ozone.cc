@@ -250,26 +250,28 @@ void DesktopDragDropClientOzone::OnDragDrop(
   // before handling the actual drop.
   const bool posponed_enter_and_update = !data_to_drop_;
 
-  // If we had |data_to_drop_| already since the drag had entered the window,
-  // then we don't expect new data to come now, and vice versa.
-  DCHECK((data_to_drop_ && !data) || (!data_to_drop_ && data));
+  // If we didn't have |data_to_drop_| already since the drag had entered the
+  // window, take the new data that comes now.
   if (!data_to_drop_)
     data_to_drop_ = std::move(data);
 
-  // This will call the delegate's OnDragEntered if needed.
-  auto event = UpdateTargetAndCreateDropEvent(last_drag_point_, modifiers);
-  if (drag_drop_delegate_ && event) {
-    if (posponed_enter_and_update) {
-      // TODO(https://crbug.com/1014860): deal with drop refusals.
-      // The delegate's OnDragUpdated returns an operation that the delegate
-      // would accept.  Normally the accepted operation would be propagated
-      // properly, and if the delegate didn't accept it, the drop would never
-      // be called, but in this scenario of postponed updates we send all events
-      // at once.  Now we just drop, but perhaps we could call OnDragLeave
-      // and quit?
-      drag_drop_delegate_->OnDragUpdated(*event);
+  // crbug.com/1151836: check that we have data.
+  if (data_to_drop_) {
+    // This will call the delegate's OnDragEntered if needed.
+    auto event = UpdateTargetAndCreateDropEvent(last_drag_point_, modifiers);
+    if (drag_drop_delegate_ && event) {
+      if (posponed_enter_and_update) {
+        // TODO(https://crbug.com/1014860): deal with drop refusals.
+        // The delegate's OnDragUpdated returns an operation that the delegate
+        // would accept.  Normally the accepted operation would be propagated
+        // properly, and if the delegate didn't accept it, the drop would never
+        // be called, but in this scenario of postponed updates we send all
+        // events at once.  Now we just drop, but perhaps we could call
+        // OnDragLeave and quit?
+        drag_drop_delegate_->OnDragUpdated(*event);
+      }
+      drag_drop_delegate_->OnPerformDrop(*event, std::move(data_to_drop_));
     }
-    drag_drop_delegate_->OnPerformDrop(*event, std::move(data_to_drop_));
   }
   ResetDragDropTarget(false);
 }
@@ -340,6 +342,8 @@ std::unique_ptr<ui::DropTargetEvent>
 DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent(
     const gfx::PointF& location,
     int modifiers) {
+  DCHECK(data_to_drop_);
+
   const gfx::Point point(location.x(), location.y());
   aura::Window* window = GetTargetWindow(root_window_, point);
   if (!window) {
