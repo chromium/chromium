@@ -226,4 +226,28 @@ TEST_F(EphemeralRangeTest, commonAncesstorFlatTree) {
             range.CommonAncestorContainer());
 }
 
+TEST_F(EphemeralRangeTest, EquivalentPositions) {
+  SetBodyContent(
+      "<div id='first'></div>"
+      "<div id='last'></div>");
+  Element* first = GetDocument().getElementById("first");
+  Element* last = GetDocument().getElementById("last");
+  Position after_first = Position::AfterNode(*first);
+  Position before_last = Position::BeforeNode(*last);
+
+  // Test ranges created with different but equivalent positions.
+  EXPECT_NE(after_first, before_last);
+  EXPECT_TRUE(after_first.IsEquivalent(before_last));
+
+  EphemeralRange range1(after_first, before_last);
+  EXPECT_TRUE(range1.IsCollapsed());
+  EXPECT_EQ(after_first, range1.StartPosition());
+  EXPECT_EQ(after_first, range1.EndPosition());
+
+  EphemeralRange range2(before_last, after_first);
+  EXPECT_TRUE(range2.IsCollapsed());
+  EXPECT_EQ(before_last, range2.StartPosition());
+  EXPECT_EQ(before_last, range2.EndPosition());
+}
+
 }  // namespace blink

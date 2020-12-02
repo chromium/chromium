@@ -139,9 +139,10 @@ TEST_F(ApplyBlockElementCommandTest, FormatBlockCrossingUserModifyBoundary) {
   auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
                                                            html_names::kPreTag);
   // Shouldn't crash here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "^<b style=\"-webkit-user-modify:read-only\"><button>|</button></b>",
+      "<pre>|<br></pre>"
+      "<b style=\"-webkit-user-modify:read-only\"><button></button></b>",
       GetSelectionTextFromBody());
 }
 

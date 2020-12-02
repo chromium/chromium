@@ -27,7 +27,7 @@ EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(
     const PositionTemplate<Strategy>& start,
     const PositionTemplate<Strategy>& end)
     : start_position_(start),
-      end_position_(end)
+      end_position_(start.IsEquivalent(end) ? start : end)
 #if DCHECK_IS_ON()
       ,
       dom_tree_version_(start.IsNull() ? 0

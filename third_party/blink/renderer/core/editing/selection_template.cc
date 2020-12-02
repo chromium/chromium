@@ -273,6 +273,8 @@ SelectionTemplate<Strategy>::Builder::Extend(
   DCHECK_EQ(selection_.GetDocument(), position.GetDocument());
   DCHECK(selection_.Base().IsConnected()) << selection_.Base();
   DCHECK(selection_.AssertValid());
+  if (selection_.extent_.IsEquivalent(position))
+    return *this;
   selection_.extent_ = position;
   selection_.direction_ = Direction::kNotComputed;
   return *this;
