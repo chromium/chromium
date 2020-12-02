@@ -55,8 +55,8 @@ import org.chromium.chrome.browser.feed.library.testing.conformance.network.Netw
 import org.chromium.chrome.browser.feed.library.testing.host.logging.FakeBasicLoggingApi;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.IdentityServicesProviderJni;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamToken;
 import org.chromium.components.feed.core.proto.wire.ConsistencyTokenProto.ConsistencyToken;

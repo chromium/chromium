@@ -14,7 +14,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;

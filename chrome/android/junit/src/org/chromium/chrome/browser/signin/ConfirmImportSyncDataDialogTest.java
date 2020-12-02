@@ -26,6 +26,7 @@ import org.robolectric.shadows.ShadowToast;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 
 /** Tests for {@link ConfirmImportSyncDataDialog}. */

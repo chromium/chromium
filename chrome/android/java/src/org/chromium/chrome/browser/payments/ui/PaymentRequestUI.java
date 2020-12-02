@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSeparator;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService.PaymentUisShowStateReconciler;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;

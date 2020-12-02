@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamToken;
 import org.chromium.components.feed.core.proto.wire.ActionTypeProto;
 import org.chromium.components.feed.core.proto.wire.CapabilityProto.Capability;

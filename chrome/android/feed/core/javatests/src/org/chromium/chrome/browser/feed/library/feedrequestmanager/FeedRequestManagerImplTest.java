@@ -68,8 +68,8 @@ import org.chromium.chrome.browser.feed.library.testing.protocoladapter.FakeProt
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.IdentityServicesProviderJni;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamToken;
 import org.chromium.components.feed.core.proto.wire.ActionTypeProto.ActionType;

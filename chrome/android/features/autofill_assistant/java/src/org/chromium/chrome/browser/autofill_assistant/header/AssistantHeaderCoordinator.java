@@ -20,8 +20,8 @@ import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiControl
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderViewBinder.ViewHolder;
 import org.chromium.chrome.browser.signin.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
