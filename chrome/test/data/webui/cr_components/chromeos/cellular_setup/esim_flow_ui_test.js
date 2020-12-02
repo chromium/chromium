@@ -267,12 +267,22 @@ suite('CrComponentsEsimFlowUiTest', function() {
     profileList.selectItem(profileList.items[0]);
     Polymer.dom.flush();
 
-    // The 'Done' button should now be enabled.
+    // The 'Next' button should now be enabled.
     assertTrue(
-        eSimPage.buttonState.done ===
+        eSimPage.buttonState.next ===
         cellularSetup.ButtonState.SHOWN_AND_ENABLED);
     assertTrue(
         eSimPage.buttonState.skipDiscovery ===
         cellularSetup.ButtonState.HIDDEN);
+
+    // Simulate pressing 'Next'.
+    eSimPage.navigateForward();
+    await flushAsync();
+
+    // Should now be at the final page.
+    assertTrue(
+        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
+        eSimPage.selectedESimPageName_ === finalPage.id);
+    assertFalse(!!finalPage.$$('.error'));
   });
 });

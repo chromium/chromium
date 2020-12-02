@@ -22,11 +22,11 @@ Polymer({
     },
 
     /**
-     * @type {Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
      * @private
      */
-    selectedProfiles: {
-      type: Array,
+    selectedProfile: {
+      type: Object,
       notify: true,
     },
   },
@@ -36,6 +36,6 @@ Polymer({
    * @private
    */
   isProfileSelected_(profile) {
-    return this.selectedProfiles.some(p => p === profile);
+    return this.selectedProfile === profile;
   }
 });

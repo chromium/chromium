@@ -21,6 +21,12 @@ Polymer({
      * @type {boolean}
      */
     showError: Boolean,
+
+    /** @type {string} */
+    message: String,
+
+    /** @type {string} */
+    errorMessage: String,
   },
 
   /**
@@ -42,8 +48,7 @@ Polymer({
    * @private
    */
   getMessage_(showError) {
-    return showError ? this.i18n('finalPageErrorMessage') :
-                       this.i18n('finalPageMessage');
+    return showError ? this.errorMessage : this.message;
   },
 
   /**

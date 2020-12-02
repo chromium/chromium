@@ -29,16 +29,19 @@
       </setup-loading-page>
       <profile-discovery-list-page id="profileDiscoveryPage"
           pending-profiles="[[pendingProfiles_]]"
-          selected-profiles="{{selectedProfiles_}}">
+          selected-profile="{{selectedProfile_}}">
       </profile-discovery-list-page>
       <activation-code-page id="activationCodePage"
           activation-code="{{activationCode_}}"
+          show-no-profiles-message="[[getShowNoProfilesMessage_(pendingProfiles_)]]"
           show-error="{{showError_}}">
       </activation-code-page>
       <final-page
         id="finalPage"
         delegate="[[delegate]]"
-        show-error="[[showError_]]">
+        show-error="[[showError_]]"
+        message="[[i18n('eSimFinalPageMessage')]]"
+        error-message="[[i18n('eSimFinalPageErrorMessage')]]">
       </final-page>
     </iron-pages>
   </template>

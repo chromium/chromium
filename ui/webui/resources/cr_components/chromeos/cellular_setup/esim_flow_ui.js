@@ -15,7 +15,7 @@ cr.define('cellular_setup', function() {
   /* #export */ const ESimUiState = {
     PROFILE_SEARCH: 'profile-search',
     ACTIVATION_CODE_ENTRY: 'activation-code-entry',
-    MULTI_PROFILE_SELECTION: 'multi-profile-selection',
+    PROFILE_SELECTION: 'profile-selection',
     SETUP_FINISH: 'setup-finish',
   };
 
@@ -73,12 +73,12 @@ cr.define('cellular_setup', function() {
       },
 
       /**
-       * Profiles selected in profileDiscoveryPage to be installed.
-       * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+       * Profile selected in profileDiscoveryPage to be installed.
+       * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
        * @private
        */
-      selectedProfiles_: {
-        type: Array,
+      selectedProfile_: {
+        type: Object,
       },
 
       /** @private */
@@ -103,7 +103,7 @@ cr.define('cellular_setup', function() {
 
     observers: [
       'updateSelectedPage_(state_)', 'updateButtonBarState_(state_)',
-      'onSelectedProfilesChanged_(selectedProfiles_.splices)'
+      'onSelectedProfileChanged_(selectedProfile_)'
     ],
 
     /** @override */
@@ -148,7 +148,7 @@ cr.define('cellular_setup', function() {
                     this.handleProfileInstallResponse_.bind(this));
                 break;
               default:
-                this.state_ = ESimUiState.MULTI_PROFILE_SELECTION;
+                this.state_ = ESimUiState.PROFILE_SELECTION;
                 break;
             }
           });
@@ -203,7 +203,7 @@ cr.define('cellular_setup', function() {
         case ESimUiState.ACTIVATION_CODE_ENTRY:
           this.selectedESimPageName_ = ESimPageName.ACTIVATION_CODE;
           break;
-        case ESimUiState.MULTI_PROFILE_SELECTION:
+        case ESimUiState.PROFILE_SELECTION:
           this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY;
           break;
         case ESimUiState.SETUP_FINISH:
@@ -232,7 +232,7 @@ cr.define('cellular_setup', function() {
             skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
           break;
-        case ESimUiState.MULTI_PROFILE_SELECTION:
+        case ESimUiState.PROFILE_SELECTION:
           buttonState = {
             backward: cellularSetup.ButtonState.HIDDEN,
             cancel: this.delegate.shouldShowCancelButton() ?
@@ -273,17 +273,16 @@ cr.define('cellular_setup', function() {
     },
 
     /** @private */
-    onSelectedProfilesChanged_() {
-      if (this.selectedProfiles_.length > 0) {
+    onSelectedProfileChanged_() {
+      if (this.selectedProfile_) {
         this.set('buttonState.skipDiscovery', cellularSetup.ButtonState.HIDDEN);
-        // TODO(crbug.com/1093185): Install the profiles when 'Done' is pressed.
         this.set(
-            'buttonState.done', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+            'buttonState.next', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
       } else {
         this.set(
             'buttonState.skipDiscovery',
             cellularSetup.ButtonState.SHOWN_AND_ENABLED);
-        this.set('buttonState.done', cellularSetup.ButtonState.HIDDEN);
+        this.set('buttonState.next', cellularSetup.ButtonState.HIDDEN);
       }
     },
 
@@ -297,8 +296,13 @@ cr.define('cellular_setup', function() {
                   this.activationCode_, /*confirmationCode=*/ '')
               .then(this.handleProfileInstallResponse_.bind(this));
           break;
-        case ESimUiState.MULTI_PROFILE_SELECTION:
-          this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+        case ESimUiState.PROFILE_SELECTION:
+          if (this.selectedProfile_) {
+            this.selectedProfile_.installProfile('').then(
+                this.handleProfileInstallResponse_.bind(this));
+          } else {
+            this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY;
+          }
           break;
         default:
           assertNotReached();
@@ -312,6 +316,11 @@ cr.define('cellular_setup', function() {
     attemptBackwardNavigation() {
       // TODO(crbug.com/1093185): Handle state when camera is used
       return false;
+    },
+
+    /** @private */
+    getShowNoProfilesMessage_() {
+      return !(this.pendingProfiles_ && this.pendingProfiles_.length > 0);
     },
   });
 

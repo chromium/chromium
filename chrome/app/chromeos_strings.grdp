@@ -303,6 +303,12 @@
   <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of cellular setup when ChromeOS encountered an error completing activation.">
     An error occured during activation.
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_MESSAGE" desc="Message displayed under title in final success screen of eSIM cellular setup that tells user that their profile has been activated.">
+    Profile has been added successfully.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of eSIM cellular setup when ChromeOS encountered an error installing eSIM profiles.">
+    Unable to connect to a mobile network. For technical support, please contact your carrier.
+  </message>
   <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_PSIM_LABEL" desc="Label for physical SIM (pSIM) setup flow card radio select button during cellular setup">
     Physical SIM
   </message>
@@ -323,6 +329,9 @@
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
     Scan QR code using device camera or enter activation code provided by your carrier.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_NO_PROFILES" desc="Label for informing the user on ways to retrieve an eSim profile after no eSIM profiles have been found.">
+    No profiles were discovered. To setup a new network, scan QR code using device camera or enter activation code provided by your carrier.
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_USE_CAMERA" desc="Label for button that uses the camera to scan for QR codes when clicked.">
     Use camera to scan QR code

@@ -79,6 +79,11 @@ Polymer({
       type: Object,
       value: UiElement,
     },
+
+    /** @private */
+    showNoProfilesMessage: {
+      type: Boolean,
+    }
   },
 
   /**
@@ -324,5 +329,11 @@ Polymer({
       default:
         return false;
     }
+  },
+
+  /** @private */
+  getDescription_() {
+    return this.showNoProfilesMessage ? this.i18n('scanQRCodeNoProfiles') :
+                                        this.i18n('scanQRCode');
   },
 });
