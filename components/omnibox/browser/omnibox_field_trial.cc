@@ -841,6 +841,10 @@ int OmniboxFieldTrial::UnelideURLOnHoverThresholdMs() {
   return threshold < 0 ? kDefaultThresholdMs : threshold;
 }
 
+bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
+  return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";

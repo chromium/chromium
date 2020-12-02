@@ -4142,6 +4142,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kBookmarkPaths,
                                     kOmniboxBookmarkPathsVariations,
                                     "OmniboxBundledExperimentV1")},
+    {"omnibox-disable-cgi-param-matching",
+     flag_descriptions::kOmniboxDisableCGIParamMatchingName,
+     flag_descriptions::kOmniboxDisableCGIParamMatchingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kDisableCGIParamMatching)},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 

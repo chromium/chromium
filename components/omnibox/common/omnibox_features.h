@@ -75,6 +75,7 @@ extern const base::Feature kOnDeviceHeadProviderNonIncognito;
 // Provider-specific - These features change the behavior of specific providers.
 extern const base::Feature kOmniboxExperimentalSuggestScoring;
 extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
+extern const base::Feature kDisableCGIParamMatching;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;

@@ -270,6 +270,10 @@ const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
     "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, suggestions from a cgi param name match are scored to 0.
+const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path

@@ -42656,6 +42656,7 @@ from previous Chrome versions.
   <int value="-1241868814" label="WebAuthenticationPhoneSupport:disabled"/>
   <int value="-1241747717" label="enable-android-password-link"/>
   <int value="-1241002324" label="FocusMode:enabled"/>
+  <int value="-1239515260" label="OmniboxDisableCGIParamMatching:disabled"/>
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
   <int value="-1238992816" label="ShelfDimming:enabled"/>
   <int value="-1237921078" label="SyncUSSNigori:enabled"/>
@@ -43572,6 +43573,7 @@ from previous Chrome versions.
   <int value="-345838366" label="enable-hosted-apps-in-windows"/>
   <int value="-345324571" label="enable-quirks-client"/>
   <int value="-345181892" label="new-tab-button-position"/>
+  <int value="-345156835" label="OmniboxDisableCGIParamMatching:enabled"/>
   <int value="-344357771"
       label="WebAuthenticationCrosPlatformAuthenticator:enabled"/>
   <int value="-344343842" label="disable-experimental-app-list"/>

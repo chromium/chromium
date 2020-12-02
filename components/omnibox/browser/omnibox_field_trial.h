@@ -432,6 +432,10 @@ bool ShouldHidePathQueryRefOnInteraction();
 bool ShouldMaybeElideToRegistrableDomain();
 int UnelideURLOnHoverThresholdMs();
 
+// Returns true if CGI parameter names should not be considered when scoring
+// suggestions.
+bool ShouldDisableCGIParamMatching();
+
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 

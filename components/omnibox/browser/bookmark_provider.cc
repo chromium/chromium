@@ -88,7 +88,13 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   if (matches.empty())
     return;  // There were no matches.
   const base::string16 fixed_up_input(FixupUserInput(input).second);
-  for (const auto& bookmark_match : matches) {
+  for (auto& bookmark_match : matches) {
+    if (OmniboxFieldTrial::ShouldDisableCGIParamMatching()) {
+      RemoveQueryParamKeyMatches(bookmark_match);
+      if (bookmark_match.title_match_positions.empty() &&
+          bookmark_match.url_match_positions.empty())
+        continue;
+    }
     // Score the TitledUrlMatch. If its score is greater than 0 then the
     // AutocompleteMatch is created and added to matches_.
     int relevance = CalculateBookmarkMatchRelevance(bookmark_match);
@@ -235,4 +241,22 @@ int BookmarkProvider::CalculateBookmarkMatchRelevance(
       kURLCountBoost[std::min(base::size(kURLCountBoost), nodes.size()) - 1];
   relevance = std::min(kMaxBookmarkScore, relevance);
   return relevance;
+}
+
+void BookmarkProvider::RemoveQueryParamKeyMatches(TitledUrlMatch& match) {
+  const GURL& url = match.node->GetTitledUrlNodeUrl();
+  if (!url.has_query())
+    return;
+
+  // Remove any matches that are for query param keys. Since bookmark provider
+  // match positions are always at the beginning of words, we can just look at
+  // the preceding character for a '?' or '&' character.
+  base::EraseIf(match.url_match_positions,
+                [url](TitledUrlMatch::MatchPosition& position) {
+                  size_t query_begin =
+                      url.parsed_for_possibly_invalid_spec().query.begin;
+                  return ((query_begin <= position.first) &&
+                          (url.spec().at(position.first - 1) == '?' ||
+                           url.spec().at(position.first - 1) == '&'));
+                });
 }

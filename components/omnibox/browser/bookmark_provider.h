@@ -59,6 +59,10 @@ class BookmarkProvider : public AutocompleteProvider {
   int CalculateBookmarkMatchRelevance(
       const bookmarks::TitledUrlMatch& match) const;
 
+  // Removes any URL matches for query parameter keys (if the matching word
+  // starts immediately after a '?' or '&').
+  void RemoveQueryParamKeyMatches(bookmarks::TitledUrlMatch& match);
+
   AutocompleteProviderClient* client_;
   bookmarks::BookmarkModel* bookmark_model_;
 };

@@ -493,6 +493,8 @@ float ScoredHistoryMatch::GetTopicalityScore(
         url_matches, terms_to_word_starts_offsets, word_starts.url_word_starts_,
         0, host_pos, true);
   }
+  url::Component query = parsed.query;
+  url::Component key, value;
   for (const auto& url_match : url_matches) {
     // Calculate the offset in the URL string where the meaningful (word) part
     // of the term starts.  This takes into account times when a term starts
@@ -509,7 +511,23 @@ float ScoredHistoryMatch::GetTopicalityScore(
                                   (*next_word_starts == term_word_offset);
     if (term_word_offset >= query_pos) {
       // The match is in the query or ref component.
-      term_scores[url_match.term_num] += 5;
+      if (OmniboxFieldTrial::ShouldDisableCGIParamMatching()) {
+        // Only match cgi param values, NOT the param keys.
+        while (url::ExtractQueryKeyValue(url.spec().c_str(), &query, &key,
+                                         &value)) {
+          size_t value_begin = value.begin;
+          size_t value_end = value.end();
+          base::OffsetAdjuster::AdjustOffset(adjustments, &value_begin);
+          base::OffsetAdjuster::AdjustOffset(adjustments, &value_end);
+          if (term_word_offset >= value_begin &&
+              term_word_offset <= value_end) {
+            term_scores[url_match.term_num] += 5;
+            break;
+          }
+        }
+      } else {
+        term_scores[url_match.term_num] += 5;
+      }
     } else if (term_word_offset >= path_pos) {
       // The match is in the path component.
       term_scores[url_match.term_num] += 8;
