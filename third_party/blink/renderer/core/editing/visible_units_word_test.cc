@@ -24,8 +24,7 @@ class VisibleUnitsWordTest : public EditingTestBase {
       const std::string& selection_text,
       WordSide word_side = WordSide::kNextWordIfOnBoundary) {
     const Position position = SetSelectionTextToBody(selection_text).Base();
-    return GetCaretTextFromBody(
-        EndOfWord(CreateVisiblePosition(position), word_side).DeepEquivalent());
+    return GetCaretTextFromBody(EndOfWordPosition(position, word_side));
   }
 
   std::string DoNextWord(const std::string& selection_text) {
@@ -349,7 +348,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, EndOfWordBasic) {
   EXPECT_EQ("<p> (1) abc def|</p>", DoEndOfWord("<p> (1) abc d|ef</p>"));
   EXPECT_EQ("<p> (1) abc def|</p>", DoEndOfWord("<p> (1) abc de|f</p>"));
   EXPECT_EQ("<p> (1) abc def|</p>", DoEndOfWord("<p> (1) abc def|</p>"));
-  EXPECT_EQ("<p> (1) abc def|</p>", DoEndOfWord("<p> (1) abc def</p>|"));
+  EXPECT_EQ("<p> (1) abc def</p>|", DoEndOfWord("<p> (1) abc def</p>|"));
 }
 
 TEST_P(ParameterizedVisibleUnitsWordTest,
@@ -394,7 +393,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest,
       "<p> (1) abc def|</p>",
       DoEndOfWord("<p> (1) abc def|</p>", WordSide::kPreviousWordIfOnBoundary));
   EXPECT_EQ(
-      "<p> (1) abc def|</p>",
+      "<p> (1) abc def</p>|",
       DoEndOfWord("<p> (1) abc def</p>|", WordSide::kPreviousWordIfOnBoundary));
 }
 
@@ -413,54 +412,33 @@ TEST_P(ParameterizedVisibleUnitsWordTest, EndOfWordShadowDOM) {
   Node* four = shadow_root->getElementById("four")->firstChild();
   Node* five = shadow_root->getElementById("five")->firstChild();
 
-  EXPECT_EQ(
-      Position(five, 5),
-      EndOfWord(CreateVisiblePositionInDOMTree(*one, 0)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(five, 5),
-      EndOfWord(CreateVisiblePositionInFlatTree(*one, 0)).DeepEquivalent());
+  EXPECT_EQ(Position(five, 5), EndOfWordPosition(Position(*one, 0)));
+  EXPECT_EQ(PositionInFlatTree(five, 5),
+            EndOfWordPosition(PositionInFlatTree(*one, 0)));
 
-  EXPECT_EQ(
-      Position(five, 5),
-      EndOfWord(CreateVisiblePositionInDOMTree(*one, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(five, 5),
-      EndOfWord(CreateVisiblePositionInFlatTree(*one, 1)).DeepEquivalent());
+  EXPECT_EQ(Position(five, 5), EndOfWordPosition(Position(*one, 1)));
+  EXPECT_EQ(PositionInFlatTree(five, 5),
+            EndOfWordPosition(PositionInFlatTree(*one, 1)));
 
-  EXPECT_EQ(
-      Position(two, 2),
-      EndOfWord(CreateVisiblePositionInDOMTree(*two, 0)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(two, 2),
-      EndOfWord(CreateVisiblePositionInFlatTree(*two, 0)).DeepEquivalent());
+  EXPECT_EQ(Position(two, 2), EndOfWordPosition(Position(*two, 0)));
+  EXPECT_EQ(PositionInFlatTree(two, 2),
+            EndOfWordPosition(PositionInFlatTree(*two, 0)));
 
-  EXPECT_EQ(
-      Position(two, 2),
-      EndOfWord(CreateVisiblePositionInDOMTree(*two, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(two, 2),
-      EndOfWord(CreateVisiblePositionInFlatTree(*two, 1)).DeepEquivalent());
+  EXPECT_EQ(Position(two, 2), EndOfWordPosition(Position(*two, 1)));
+  EXPECT_EQ(PositionInFlatTree(two, 2),
+            EndOfWordPosition(PositionInFlatTree(*two, 1)));
 
-  EXPECT_EQ(
-      Position(three, 3),
-      EndOfWord(CreateVisiblePositionInDOMTree(*three, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(three, 3),
-      EndOfWord(CreateVisiblePositionInFlatTree(*three, 1)).DeepEquivalent());
+  EXPECT_EQ(Position(three, 3), EndOfWordPosition(Position(*three, 1)));
+  EXPECT_EQ(PositionInFlatTree(three, 3),
+            EndOfWordPosition(PositionInFlatTree(*three, 1)));
 
-  EXPECT_EQ(
-      Position(two, 2),
-      EndOfWord(CreateVisiblePositionInDOMTree(*four, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(two, 2),
-      EndOfWord(CreateVisiblePositionInFlatTree(*four, 1)).DeepEquivalent());
+  EXPECT_EQ(Position(two, 2), EndOfWordPosition(Position(*four, 1)));
+  EXPECT_EQ(PositionInFlatTree(two, 2),
+            EndOfWordPosition(PositionInFlatTree(*four, 1)));
 
-  EXPECT_EQ(
-      Position(five, 5),
-      EndOfWord(CreateVisiblePositionInDOMTree(*five, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(five, 5),
-      EndOfWord(CreateVisiblePositionInFlatTree(*five, 1)).DeepEquivalent());
+  EXPECT_EQ(Position(five, 5), EndOfWordPosition(Position(*five, 1)));
+  EXPECT_EQ(PositionInFlatTree(five, 5),
+            EndOfWordPosition(PositionInFlatTree(*five, 1)));
 }
 
 TEST_P(ParameterizedVisibleUnitsWordTest, EndOfWordTextSecurity) {

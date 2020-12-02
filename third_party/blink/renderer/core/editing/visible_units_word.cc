@@ -276,19 +276,6 @@ Position EndOfWordPosition(const Position& position, WordSide side) {
       EndOfWordPosition(ToPositionInFlatTree(position), side));
 }
 
-VisiblePosition EndOfWord(const VisiblePosition& position, WordSide side) {
-  return CreateVisiblePosition(
-      EndOfWordPosition(position.DeepEquivalent(), side),
-      TextAffinity::kUpstreamIfPossible);
-}
-
-VisiblePositionInFlatTree EndOfWord(const VisiblePositionInFlatTree& position,
-                                    WordSide side) {
-  return CreateVisiblePosition(
-      EndOfWordPosition(position.DeepEquivalent(), side),
-      TextAffinity::kUpstreamIfPossible);
-}
-
 // ----
 // TODO(editing-dev): Because of word boundary can not be an upstream position,
 // we should make this function to return |PositionInFlatTree|.

@@ -192,13 +192,17 @@ void SpellChecker::AdvanceToNextMisspelling(bool start_before_selection) {
   // next word so we start checking at a word boundary. Going back by one char
   // and then forward by a word does the trick.
   if (started_with_selection) {
-    VisiblePosition one_before_start =
-        PreviousPositionOf(CreateVisiblePosition(spelling_search_start));
+    const Position& one_before_start =
+        PreviousPositionOf(CreateVisiblePosition(spelling_search_start))
+            .DeepEquivalent();
     if (one_before_start.IsNotNull() &&
-        RootEditableElementOf(one_before_start.DeepEquivalent()) ==
-            RootEditableElementOf(spelling_search_start))
+        RootEditableElementOf(one_before_start) ==
+            RootEditableElementOf(spelling_search_start)) {
       spelling_search_start =
-          EndOfWord(one_before_start).ToParentAnchoredPosition();
+          CreateVisiblePosition(EndOfWordPosition(one_before_start),
+                                TextAffinity::kUpstreamIfPossible)
+              .ToParentAnchoredPosition();
+    }
     // else we were already at the start of the editable node
   }
 

@@ -125,14 +125,10 @@ CORE_EXPORT Position StartOfWordPosition(const Position&,
 CORE_EXPORT PositionInFlatTree
 StartOfWordPosition(const PositionInFlatTree&,
                     WordSide = kNextWordIfOnBoundary);
-CORE_EXPORT VisiblePosition EndOfWord(const VisiblePosition&,
-                                      WordSide = kNextWordIfOnBoundary);
 CORE_EXPORT Position EndOfWordPosition(const Position&,
                                        WordSide = kNextWordIfOnBoundary);
 CORE_EXPORT PositionInFlatTree
 EndOfWordPosition(const PositionInFlatTree&, WordSide = kNextWordIfOnBoundary);
-CORE_EXPORT VisiblePositionInFlatTree
-EndOfWord(const VisiblePositionInFlatTree&, WordSide = kNextWordIfOnBoundary);
 CORE_EXPORT PositionWithAffinity PreviousWordPosition(const Position&);
 CORE_EXPORT PositionWithAffinity NextWordPosition(
     const Position&,
