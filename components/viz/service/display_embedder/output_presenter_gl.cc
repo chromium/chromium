@@ -55,7 +55,8 @@ class PresenterImageGL : public OutputPresenter::Image {
 
   void BeginPresent() final;
   void EndPresent() final;
-  int present_count() const final;
+  int GetPresentCount() const final;
+  void OnContextLost() final;
 
   gl::GLImage* GetGLImage(std::unique_ptr<gfx::GpuFence>* fence);
 
@@ -138,8 +139,15 @@ void PresenterImageGL::EndPresent() {
   scoped_gl_read_access_.reset();
 }
 
-int PresenterImageGL::present_count() const {
+int PresenterImageGL::GetPresentCount() const {
   return present_count_;
+}
+
+void PresenterImageGL::OnContextLost() {
+  if (overlay_representation_)
+    overlay_representation_->OnContextLost();
+  if (gl_representation_)
+    gl_representation_->OnContextLost();
 }
 
 gl::GLImage* PresenterImageGL::GetGLImage(

@@ -65,7 +65,8 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
 
   void BeginPresent() final;
   void EndPresent() final;
-  int present_count() const final;
+  int GetPresentCount() const final;
+  void OnContextLost() final;
 
   uint32_t image_id() const { return image_id_; }
 
@@ -111,8 +112,12 @@ void PresenterImageFuchsia::EndPresent() {
     read_access_.reset();
 }
 
-int PresenterImageFuchsia::present_count() const {
+int PresenterImageFuchsia::GetPresentCount() const {
   return present_count_;
+}
+
+void PresenterImageFuchsia::OnContextLost() {
+  // Nothing to do here.
 }
 
 void PresenterImageFuchsia::TakeSemaphores(

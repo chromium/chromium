@@ -110,7 +110,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       presenter_(std::move(presenter)),
-      dependency_(deps),
+      context_state_(deps->GetSharedContextState()),
       representation_factory_(representation_factory),
       needs_background_image_(needs_background_image) {
   capabilities_.uses_default_gl_framebuffer = false;
@@ -135,6 +135,18 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
 }
 
 SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
+  // TODO(vasilyt): We should not need this when we stop using
+  // SharedImageBackingGLImage.
+  if (context_state_->context_lost()) {
+    for (auto& overlay : overlays_) {
+      overlay.OnContextLost();
+    }
+
+    for (auto& image : images_) {
+      image->OnContextLost();
+    }
+  }
+
   FreeAllSurfaces();
   // Clear and cancel swap_completion_callbacks_ to free all resource bind to
   // callbacks.
@@ -152,17 +164,17 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
     OutputPresenter::Image* image) {
   if (displayed_image_) {
     DCHECK_EQ(displayed_image_->skia_representation()->size(), image_size_);
-    DCHECK_EQ(displayed_image_->present_count() > 1, displayed_image_ == image);
+    DCHECK_EQ(displayed_image_->GetPresentCount() > 1,
+              displayed_image_ == image);
     displayed_image_->EndPresent();
-    if (!displayed_image_->present_count()) {
+    if (!displayed_image_->GetPresentCount()) {
       available_images_.push_back(displayed_image_);
       // Call BeginWriteSkia() for the next frame here to avoid some expensive
       // operations on the critical code path.
-      auto shared_context_state = dependency_->GetSharedContextState();
       if (!available_images_.front()->sk_surface() &&
-          shared_context_state->MakeCurrent(nullptr)) {
+          context_state_->MakeCurrent(nullptr)) {
         // BeginWriteSkia() may alter GL's state.
-        shared_context_state->set_need_context_state_reset(true);
+        context_state_->set_need_context_state_reset(true);
         available_images_.front()->BeginWriteSkia();
       }
     }
@@ -396,7 +408,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 #if defined(OS_APPLE)
   // TODO(vasilyt): We shouldn't need this after we stop using
   // SharedImageBackingGLImage as backing.
-  if (!dependency_->GetSharedContextState()->MakeCurrent(nullptr)) {
+  if (!context_state_->MakeCurrent(nullptr)) {
     for (auto& overlay : overlays_) {
       overlay.OnContextLost();
     }

@@ -53,7 +53,8 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 
     virtual void BeginPresent() = 0;
     virtual void EndPresent() = 0;
-    virtual int present_count() const = 0;
+    virtual int GetPresentCount() const = 0;
+    virtual void OnContextLost() = 0;
 
     base::WeakPtr<Image> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 

@@ -437,6 +437,15 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
 SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // We need to have context current or lost during the destruction.
+  bool has_context = false;
+  if (context_state_) {
+    context_state_->RemoveContextLostObserver(this);
+    has_context = MakeCurrent(/*need_framebuffer=*/false);
+    if (has_context)
+      release_current_last_.emplace(gl_surface_, context_state_);
+  }
+
   // |output_device_| may still need |shared_image_factory_|, so release it
   // first.
   output_device_.reset();
@@ -445,17 +454,10 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   // SharedContextState, we need to explicitly invoke the factory's destructor
   // before deleting ImplOnGpu's other member variables.
   shared_image_factory_.reset();
-  if (context_state_) {
-    context_state_->RemoveContextLostObserver(this);
-
-    // |context_provider_| and clients want either the context to be lost or
-    // made current on destruction.
-    if (MakeCurrent(/*need_framebuffer=*/false)) {
-      // This ensures any outstanding callbacks for promise images are
-      // performed.
-      gr_context()->flushAndSubmit();
-      release_current_last_.emplace(gl_surface_, context_state_);
-    }
+  if (has_context) {
+    // This ensures any outstanding callbacks for promise images are
+    // performed.
+    gr_context()->flushAndSubmit();
   }
 
   sync_point_client_state_->Destroy();

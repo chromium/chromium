@@ -49,7 +49,7 @@ bool OutputPresenter::Image::Initialize(
 
 void OutputPresenter::Image::BeginWriteSkia() {
   DCHECK(!scoped_skia_write_access_);
-  DCHECK(!present_count());
+  DCHECK(!GetPresentCount());
   DCHECK(end_semaphores_.empty());
 
   std::vector<GrBackendSemaphore> begin_semaphores;
