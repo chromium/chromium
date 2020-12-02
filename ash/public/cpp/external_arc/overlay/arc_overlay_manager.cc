@@ -119,9 +119,6 @@ void ArcOverlayManager::RegisterOverlayWindow(
     return;
   }
 
-  // Set a few properties of the shell root surface for its use as an overlay
-  shell_surface_base->root_surface()->SetFrame(exo::SurfaceFrameType::OVERLAY);
-
   // Use the shell surface widget window as the overlay
   DCHECK(shell_surface_base->GetWidget());
   DCHECK(shell_surface_base->GetWidget()->GetNativeWindow());
