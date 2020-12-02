@@ -163,6 +163,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   void DidFailInitialize() override;
   void DidCreateContextSuccessfully() override;
   void MaybeShutdownGpuProcess() override;
+  void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) override;
 #if defined(OS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override;
   void DidUpdateHDRStatus(bool hdr_enabled) override;

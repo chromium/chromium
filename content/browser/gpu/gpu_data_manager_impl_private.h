@@ -116,8 +116,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
                           int render_frame_id,
                           ThreeDAPIType requester);
 
-  bool UpdateActiveGpu(uint32_t vendor_id, uint32_t device_id);
-
   gpu::GpuMode GetGpuMode() const;
   void FallBackToNextGpuMode();
 

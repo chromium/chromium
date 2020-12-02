@@ -328,12 +328,6 @@ void GpuDataManagerImpl::DisableDomainBlockingFor3DAPIsForTesting() {
   private_->DisableDomainBlockingFor3DAPIsForTesting();
 }
 
-bool GpuDataManagerImpl::UpdateActiveGpu(uint32_t vendor_id,
-                                         uint32_t device_id) {
-  base::AutoLock auto_lock(lock_);
-  return private_->UpdateActiveGpu(vendor_id, device_id);
-}
-
 gpu::GpuMode GpuDataManagerImpl::GetGpuMode() const {
   base::AutoLock auto_lock(lock_);
   return private_->GetGpuMode();

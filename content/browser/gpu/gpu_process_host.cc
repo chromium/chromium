@@ -1044,6 +1044,10 @@ void GpuProcessHost::MaybeShutdownGpuProcess() {
   }
 }
 
+void GpuProcessHost::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
+  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, base::nullopt);
+}
+
 #if defined(OS_WIN)
 void GpuProcessHost::DidUpdateOverlayInfo(
     const gpu::OverlayInfo& overlay_info) {

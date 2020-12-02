@@ -19,7 +19,6 @@ enum GpuDataManagerTestingEntryEnum {
   kGpuDataManagerImplPrivateTest_GpuSideBlocklistingWebGL_1 = 3,
   kGpuDataManagerImplPrivateTest_GpuSideException = 4,
   kGpuDataManagerImplPrivateTest_BlocklistAllFeatures = 5,
-  kGpuDataManagerImplPrivateTest_UpdateActiveGpu = 6,
 };
 }  // namespace gpu
 
