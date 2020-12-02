@@ -704,8 +704,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   auto key_commitment_result = ReasonableKeyCommitmentResult();
   key_commitment_result->request_issuance_locally_on.push_back(
       mojom::TrustTokenKeyCommitmentResult::Os::kAndroid);
-  key_commitment_result->unavailable_local_issuance_fallback =
-      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback::
+  key_commitment_result->unavailable_local_operation_fallback =
+      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback::
           kReturnWithError;
   auto getter = std::make_unique<FixedKeyCommitmentGetter>(
       issuer, std::move(key_commitment_result));
@@ -777,8 +777,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   auto key_commitment_result = ReasonableKeyCommitmentResult();
   key_commitment_result->request_issuance_locally_on.push_back(
       mojom::TrustTokenKeyCommitmentResult::Os::kAndroid);
-  key_commitment_result->unavailable_local_issuance_fallback =
-      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback::
+  key_commitment_result->unavailable_local_operation_fallback =
+      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback::
           kWebIssuance;
   auto getter = std::make_unique<FixedKeyCommitmentGetter>(
       issuer, std::move(key_commitment_result));
@@ -832,8 +832,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   auto key_commitment_result = ReasonableKeyCommitmentResult();
   key_commitment_result->request_issuance_locally_on.push_back(
       mojom::TrustTokenKeyCommitmentResult::Os::kAndroid);
-  key_commitment_result->unavailable_local_issuance_fallback =
-      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback::
+  key_commitment_result->unavailable_local_operation_fallback =
+      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback::
           kReturnWithError;
   auto getter = std::make_unique<FixedKeyCommitmentGetter>(
       issuer, std::move(key_commitment_result));
@@ -868,8 +868,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   auto key_commitment_result = ReasonableKeyCommitmentResult();
   key_commitment_result->request_issuance_locally_on.push_back(
       mojom::TrustTokenKeyCommitmentResult::Os::kAndroid);
-  key_commitment_result->unavailable_local_issuance_fallback =
-      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback::
+  key_commitment_result->unavailable_local_operation_fallback =
+      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback::
           kWebIssuance;
   auto getter = std::make_unique<FixedKeyCommitmentGetter>(
       issuer, std::move(key_commitment_result));
@@ -911,8 +911,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   // Specify that we should request issuance locally on Android...
   key_commitment_result->request_issuance_locally_on.push_back(
       mojom::TrustTokenKeyCommitmentResult::Os::kAndroid);
-  key_commitment_result->unavailable_local_issuance_fallback =
-      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback::
+  key_commitment_result->unavailable_local_operation_fallback =
+      mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback::
           kReturnWithError;
 
   auto getter = std::make_unique<FixedKeyCommitmentGetter>(

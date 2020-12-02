@@ -23,11 +23,11 @@ const char kTrustTokenKeyCommitmentExpiryField[] = "expiry";
 const char kTrustTokenKeyCommitmentKeyField[] = "Y";
 const char kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField[] =
     "request_issuance_locally_on";
-const char kTrustTokenLocalIssuanceOsAndroid[] = "android";
-const char kTrustTokenKeyCommitmentUnavailableLocalIssuanceFallbackField[] =
-    "unavailable_local_issuance_fallback";
-const char kTrustTokenLocalIssuanceFallbackWebIssuance[] = "web_issuance";
-const char kTrustTokenLocalIssuanceFallbackReturnWithError[] =
+const char kTrustTokenLocalOperationOsAndroid[] = "android";
+const char kTrustTokenKeyCommitmentUnavailableLocalOperationFallbackField[] =
+    "unavailable_local_operation_fallback";
+const char kTrustTokenLocalOperationFallbackWebIssuance[] = "web_issuance";
+const char kTrustTokenLocalOperationFallbackReturnWithError[] =
     "return_with_error";
 
 namespace {
@@ -87,26 +87,26 @@ ParseKeyResult ParseSingleKeyExceptLabel(
 
 base::Optional<mojom::TrustTokenKeyCommitmentResult::Os> ParseOs(
     base::StringPiece os_string) {
-  if (os_string == kTrustTokenLocalIssuanceOsAndroid)
+  if (os_string == kTrustTokenLocalOperationOsAndroid)
     return mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
   return base::nullopt;
 }
 
 // Attempts to parse a string representation of a member of the
-// UnavailableLocalIssuanceFallback enum, returning true on success and false on
-// failure.
-bool ParseUnavailableLocalIssuanceFallback(
+// UnavailableLocalOperationFallback enum, returning true on success and false
+// on failure.
+bool ParseUnavailableLocalOperationFallback(
     base::StringPiece fallback_string,
-    mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback*
+    mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback*
         fallback_out) {
-  if (fallback_string == kTrustTokenLocalIssuanceFallbackWebIssuance) {
+  if (fallback_string == kTrustTokenLocalOperationFallbackWebIssuance) {
     *fallback_out = mojom::TrustTokenKeyCommitmentResult::
-        UnavailableLocalIssuanceFallback::kWebIssuance;
+        UnavailableLocalOperationFallback::kWebIssuance;
     return true;
   }
-  if (fallback_string == kTrustTokenLocalIssuanceFallbackReturnWithError) {
+  if (fallback_string == kTrustTokenLocalOperationFallbackReturnWithError) {
     *fallback_out = mojom::TrustTokenKeyCommitmentResult::
-        UnavailableLocalIssuanceFallback::kReturnWithError;
+        UnavailableLocalOperationFallback::kReturnWithError;
     return true;
   }
   return false;
@@ -114,12 +114,12 @@ bool ParseUnavailableLocalIssuanceFallback(
 
 // Given a per-issuer key commitment dictionary, looks for the local Trust
 // Tokens issuance-related fields request_issuance_locally_on and
-// unavailable_local_issuance_fallback.
+// unavailable_local_operation_fallback.
 //
 // Returns true if both are absent, or if both are present and well-formed; in
 // the latter case, updates |result| to with their parsed values. Otherwise,
 // returns false.
-bool ParseLocalIssuanceFieldsIfPresent(
+bool ParseLocalOperationFieldsIfPresent(
     const base::Value& value,
     mojom::TrustTokenKeyCommitmentResult* result) {
   const base::Value* maybe_request_issuance_locally_on =
@@ -151,10 +151,10 @@ bool ParseLocalIssuanceFieldsIfPresent(
   oses.erase(to_remove, oses.end());
 
   const std::string* maybe_fallback = value.FindStringKey(
-      kTrustTokenKeyCommitmentUnavailableLocalIssuanceFallbackField);
+      kTrustTokenKeyCommitmentUnavailableLocalOperationFallbackField);
   if (!maybe_fallback ||
-      !ParseUnavailableLocalIssuanceFallback(
-          *maybe_fallback, &result->unavailable_local_issuance_fallback)) {
+      !ParseUnavailableLocalOperationFallback(
+          *maybe_fallback, &result->unavailable_local_operation_fallback)) {
     return false;
   }
 
@@ -197,7 +197,7 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
     return nullptr;
   result->batch_size = *maybe_batch_size;
 
-  if (!ParseLocalIssuanceFieldsIfPresent(value, result.get()))
+  if (!ParseLocalOperationFieldsIfPresent(value, result.get()))
     return nullptr;
 
   // Parse the key commitments in the result (these are exactly the

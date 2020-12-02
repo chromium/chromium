@@ -205,19 +205,19 @@ struct TrustTokenKeyCommitmentResult {
   // one operating system, issuers could benefit from a couple different
   // fallback behaviors depending on their particular requirements.
   //
-  // |unavailable_local_issuance_fallback|'s value specifies what action to take
-  // when both of the following hold simultaneously:
+  // |unavailable_local_operation_fallback|'s value specifies what action to
+  // take when both of the following hold simultaneously:
   // (1) local issuance is specified on at least one OS (i.e.
   // |request_issuance_locally_on| is nonempty) and
   // (2) we're not on any of the specified OSes.
-  enum UnavailableLocalIssuanceFallback {
+  enum UnavailableLocalOperationFallback {
     // If we're not on a matching OS, instead attempt a standard web
     // issuance request against the issuance request's destination URL.
     kWebIssuance,
     // If we're not on a matching OS, just fail the issuance request.
     kReturnWithError,
   };
-  UnavailableLocalIssuanceFallback unavailable_local_issuance_fallback;
+  UnavailableLocalOperationFallback unavailable_local_operation_fallback;
 };
 
 // Struct FulfillTrustTokenIssuanceRequest represents a Trust Tokens issuance

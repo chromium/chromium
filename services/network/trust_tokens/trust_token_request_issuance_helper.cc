@@ -167,9 +167,9 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
           return is_current_os_callback_.Run(os);
         });
     if (!should_divert_issuance_request_to_os_ &&
-        commitment_result->unavailable_local_issuance_fallback ==
+        commitment_result->unavailable_local_operation_fallback ==
             mojom::TrustTokenKeyCommitmentResult::
-                UnavailableLocalIssuanceFallback::kReturnWithError) {
+                UnavailableLocalOperationFallback::kReturnWithError) {
       // If the issuer requests that issuance be mediated by the OS on at least
       // one platform, and we aren't on that platform, and the issuer has
       // configured that we should return with an error in this case, do so.

@@ -37,9 +37,9 @@ extern const char kTrustTokenKeyCommitmentOsAndroid[];
 // The desired fallback behavior when local issuance isn't available on the
 // requested operating system:
 extern const char
-    kTrustTokenKeyCommitmentUnavailableLocalIssuanceFallbackField[];
-extern const char kTrustTokenLocalIssuanceFallbackWebIssuance[];
-extern const char kTrustTokenLocalIssuanceFallbackReturnWithError[];
+    kTrustTokenKeyCommitmentUnavailableLocalOperationFallbackField[];
+extern const char kTrustTokenLocalOperationFallbackWebIssuance[];
+extern const char kTrustTokenLocalOperationFallbackReturnWithError[];
 
 // WARNING WARNING WARNING: When updating the parser implementation, please make
 // sure the normative source(s) of the key commitment result data structure's

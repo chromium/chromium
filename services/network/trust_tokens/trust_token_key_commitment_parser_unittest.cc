@@ -438,7 +438,7 @@ TEST(TrustTokenKeyCommitmentParser, RequestIssuanceLocallyOn) {
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android"],
-     "unavailable_local_issuance_fallback": "web_issuance"
+     "unavailable_local_operation_fallback": "web_issuance"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -458,7 +458,7 @@ TEST(TrustTokenKeyCommitmentParser, DeduplicatesRequestIssuanceLocallyOn) {
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android", "android", "android"],
-     "unavailable_local_issuance_fallback": "web_issuance"
+     "unavailable_local_operation_fallback": "web_issuance"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -495,7 +495,7 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeRequestIssuanceLocallyOn) {
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": "not an array",
-     "unavailable_local_issuance_fallback": "web_issuance"
+     "unavailable_local_operation_fallback": "web_issuance"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -514,7 +514,7 @@ TEST(TrustTokenKeyCommitmentParser,
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android", 47],
-     "unavailable_local_issuance_fallback": "web_issuance"
+     "unavailable_local_operation_fallback": "web_issuance"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -533,7 +533,7 @@ TEST(TrustTokenKeyCommitmentParser,
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android", "imaginaryOS"],
-     "unavailable_local_issuance_fallback": "web_issuance"
+     "unavailable_local_operation_fallback": "web_issuance"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -544,7 +544,7 @@ TEST(TrustTokenKeyCommitmentParser,
 }
 
 TEST(TrustTokenKeyCommitmentParser,
-     ProvidingLocalIssuanceOsRequiresSpecifyingIssuanceFallback) {
+     ProvidingLocalOperationOsRequiresSpecifyingIssuanceFallback) {
   std::string input =
       R"({
      "srrkey": "aaaa",
@@ -562,7 +562,7 @@ TEST(TrustTokenKeyCommitmentParser,
 }
 
 TEST(TrustTokenKeyCommitmentParser,
-     RejectsTypeUnsafeUnavailableLocalIssuanceFallback) {
+     RejectsTypeUnsafeUnavailableLocalOperationFallback) {
   std::string input =
       R"({
      "srrkey": "aaaa",
@@ -570,7 +570,7 @@ TEST(TrustTokenKeyCommitmentParser,
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android"],
-     "unavailable_local_issuance_fallback": 57
+     "unavailable_local_operation_fallback": 57
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -581,7 +581,7 @@ TEST(TrustTokenKeyCommitmentParser,
 }
 
 TEST(TrustTokenKeyCommitmentParser,
-     RejectsUnrecognizedUnavailableLocalIssuanceFallback) {
+     RejectsUnrecognizedUnavailableLocalOperationFallback) {
   std::string input =
       R"({
      "srrkey": "aaaa",
@@ -589,7 +589,7 @@ TEST(TrustTokenKeyCommitmentParser,
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android"],
-     "unavailable_local_issuance_fallback": "not a valid enum value"
+     "unavailable_local_operation_fallback": "not a valid enum value"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -599,7 +599,7 @@ TEST(TrustTokenKeyCommitmentParser,
   EXPECT_FALSE(result);
 }
 
-TEST(TrustTokenKeyCommitmentParser, ParsesLocalIssuanceFallbackWebIssuance) {
+TEST(TrustTokenKeyCommitmentParser, ParsesLocalOperationFallbackWebIssuance) {
   std::string input =
       R"({
      "srrkey": "aaaa",
@@ -607,7 +607,7 @@ TEST(TrustTokenKeyCommitmentParser, ParsesLocalIssuanceFallbackWebIssuance) {
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android"],
-     "unavailable_local_issuance_fallback": "web_issuance"
+     "unavailable_local_operation_fallback": "web_issuance"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -615,13 +615,13 @@ TEST(TrustTokenKeyCommitmentParser, ParsesLocalIssuanceFallbackWebIssuance) {
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->unavailable_local_issuance_fallback,
+  EXPECT_EQ(result->unavailable_local_operation_fallback,
             mojom::TrustTokenKeyCommitmentResult::
-                UnavailableLocalIssuanceFallback::kWebIssuance);
+                UnavailableLocalOperationFallback::kWebIssuance);
 }
 
 TEST(TrustTokenKeyCommitmentParser,
-     ParsesLocalIssuanceFallbackReturnWithError) {
+     ParsesLocalOperationFallbackReturnWithError) {
   std::string input =
       R"({
      "srrkey": "aaaa",
@@ -629,7 +629,7 @@ TEST(TrustTokenKeyCommitmentParser,
      "protocol_version": "TrustTokenV2PMB",
      "id": 1,
      "request_issuance_locally_on": ["android"],
-     "unavailable_local_issuance_fallback": "return_with_error"
+     "unavailable_local_operation_fallback": "return_with_error"
    })";
   // Double-check that the input is actually valid JSON.
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -637,9 +637,9 @@ TEST(TrustTokenKeyCommitmentParser,
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->unavailable_local_issuance_fallback,
+  EXPECT_EQ(result->unavailable_local_operation_fallback,
             mojom::TrustTokenKeyCommitmentResult::
-                UnavailableLocalIssuanceFallback::kReturnWithError);
+                UnavailableLocalOperationFallback::kReturnWithError);
 }
 
 TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
