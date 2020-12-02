@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
+#include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/task_environment.h"
@@ -22,6 +23,8 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #endif
 
+using testing::NotNull;
+using testing::StrEq;
 using testing::StrictMock;
 
 namespace policy {
@@ -312,7 +315,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, ValidatePayload) {
             version_info::GetVersionNumber());
 }
 
-// Ensures that records are added correctly.
+// Ensures that records are added correctly and that the payload is Base64
+// encoded.
 TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
   EXPECT_CALL(callback_observer_, OnURLLoadComplete).Times(1);
   const std::string kEncryptedWrappedRecord = "TEST_INFO";
@@ -331,6 +335,15 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
       GenerateEncryptedRecordDictionary(record);
   ASSERT_TRUE(record_value_result.has_value());
   EXPECT_EQ(record_list->GetList()[0], record_value_result.value());
+
+  std::string* encrypted_wrapped_record =
+      record_list->GetList()[0].FindStringKey(
+          EncryptedReportingJobConfiguration::GetEncryptedWrappedRecordPath());
+  ASSERT_THAT(encrypted_wrapped_record, NotNull());
+
+  std::string decoded_record;
+  ASSERT_TRUE(base::Base64Decode(*encrypted_wrapped_record, &decoded_record));
+  EXPECT_THAT(decoded_record, StrEq(kEncryptedWrappedRecord));
 }
 
 // Ensures that multiple records can be added to the request.

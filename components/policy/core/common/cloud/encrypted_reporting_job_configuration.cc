@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
+#include "base/base64.h"
 #include "base/strings/string_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/proto/record.pb.h"
@@ -75,8 +76,9 @@ base::Optional<base::Value> EncryptedReportingJobConfiguration::
 
   // Gap records won't fill in this field, so it can be missing.
   if (record.has_encrypted_wrapped_record()) {
-    record_dictionary.SetStringKey(kEncryptedWrappedRecord_,
-                                   record.encrypted_wrapped_record());
+    std::string base64_encode;
+    base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
+    record_dictionary.SetStringKey(kEncryptedWrappedRecord_, base64_encode);
   }
 
   return record_dictionary;
@@ -181,6 +183,12 @@ void EncryptedReportingJobConfiguration::UpdateContext(base::Value& context) {
 // static
 std::string EncryptedReportingJobConfiguration::GetEncryptedRecordListKey() {
   return kEncryptedRecordListKey_;
+}
+
+// static
+std::string
+EncryptedReportingJobConfiguration::GetEncryptedWrappedRecordPath() {
+  return EncryptedRecordDictionaryBuilder::GetEncryptedWrappedRecordPath();
 }
 
 std::string EncryptedReportingJobConfiguration::GetUmaString() const {

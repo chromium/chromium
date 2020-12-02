@@ -86,6 +86,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   void UpdateContext(base::Value& context);
 
   static std::string GetEncryptedRecordListKey();
+  static std::string GetEncryptedWrappedRecordPath();
 
  protected:
   std::string GetUmaString() const override;
