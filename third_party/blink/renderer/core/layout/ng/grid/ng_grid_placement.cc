@@ -16,9 +16,9 @@ NGGridPlacement::NGGridPlacement(
     const GridTrackSizingDirection major_direction,
     const ComputedStyle& grid_style,
     wtf_size_t minor_max_end_line,
-    NGGridBlockTrackCollection& row_collection,
-    NGGridBlockTrackCollection& column_collection,
-    Vector<NGGridLayoutAlgorithm::GridItemData>& items)
+    NGGridBlockTrackCollection* row_collection,
+    NGGridBlockTrackCollection* column_collection,
+    Vector<NGGridLayoutAlgorithm::GridItemData>* items)
     : row_auto_repeat_(row_auto_repeat),
       column_auto_repeat_(column_auto_repeat),
       row_explicit_start_(row_explicit_start),
@@ -30,9 +30,10 @@ NGGridPlacement::NGGridPlacement(
       minor_max_end_line_(minor_max_end_line),
       row_collection_(row_collection),
       column_collection_(column_collection),
-      items_(items)
-
-{
+      items_(items) {
+  DCHECK(row_collection_);
+  DCHECK(column_collection_);
+  DCHECK(items_);
   placement_cursor_major = ExplicitStart(major_direction_);
   placement_cursor_minor = ExplicitStart(minor_direction_);
 }
@@ -60,10 +61,10 @@ void NGGridPlacement::RunAutoPlacementAlgorithm() {
     DCHECK(grid_item);
     switch (grid_item->AutoPlacement(major_direction_)) {
       case NGGridLayoutAlgorithm::AutoPlacementType::kBoth:
-        PlaceAutoBothAxisGridItem(*grid_item);
+        PlaceAutoBothAxisGridItem(grid_item);
         break;
       case NGGridLayoutAlgorithm::AutoPlacementType::kMajor:
-        PlaceAutoMajorAxisGridItem(*grid_item);
+        PlaceAutoMajorAxisGridItem(grid_item);
         break;
       case NGGridLayoutAlgorithm::AutoPlacementType::kMinor:
       case NGGridLayoutAlgorithm::AutoPlacementType::kNotNeeded:
@@ -73,11 +74,11 @@ void NGGridPlacement::RunAutoPlacementAlgorithm() {
 }
 
 bool NGGridPlacement::PlaceNonAutoGridItems() {
-  for (NGGridLayoutAlgorithm::GridItemData& grid_item : items_) {
+  for (NGGridLayoutAlgorithm::GridItemData& grid_item : *items_) {
     bool has_definite_major_placement =
-        PlaceGridItem(major_direction_, grid_item);
+        PlaceGridItem(major_direction_, &grid_item);
     bool has_definite_minor_placement =
-        PlaceGridItem(minor_direction_, grid_item);
+        PlaceGridItem(minor_direction_, &grid_item);
 
     // If the item has definite positions on both axis then no auto placement is
     // needed.
@@ -131,104 +132,107 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis() {
     // Update placement and ensure track coverage.
     UpdatePlacementAndEnsureTrackCoverage(
         GridSpan::TranslatedDefiniteGridSpan(minor_start, minor_end),
-        minor_direction_, *grid_item);
+        minor_direction_, grid_item);
     }
   }
 
-void NGGridPlacement::PlaceAutoMajorAxisGridItem(
-    NGGridLayoutAlgorithm::GridItemData& grid_item) {
-  wtf_size_t major_span_size = GridPositionsResolver::SpanSizeForAutoPlacedItem(
-      grid_item.node.Style(), major_direction_);
-  switch (packing_behavior_) {
-    case PackingBehavior::kSparse:
-      // Set the minor position of the cursor to the grid item’s minor starting
-      // line. If this is less than the previous column position of the cursor,
-      // increment the major position by 1.
-      if (grid_item.StartLine(minor_direction_) < placement_cursor_minor) {
-        placement_cursor_major++;
-      }
-      break;
-    case PackingBehavior::kDense:
-      placement_cursor_major = ExplicitStart(major_direction_);
-      break;
-  }
+  void NGGridPlacement::PlaceAutoMajorAxisGridItem(
+      NGGridLayoutAlgorithm::GridItemData* grid_item) {
+    wtf_size_t major_span_size =
+        GridPositionsResolver::SpanSizeForAutoPlacedItem(
+            grid_item->node.Style(), major_direction_);
+    switch (packing_behavior_) {
+      case PackingBehavior::kSparse:
+        // Set the minor position of the cursor to the grid item’s minor
+        // starting line. If this is less than the previous column position of
+        // the cursor, increment the major position by 1.
+        if (grid_item->StartLine(minor_direction_) < placement_cursor_minor) {
+          placement_cursor_major++;
+        }
+        break;
+      case PackingBehavior::kDense:
+        placement_cursor_major = ExplicitStart(major_direction_);
+        break;
+    }
 
-  placement_cursor_minor = grid_item.StartLine(minor_direction_);
-  // Increment the cursor’s major position until a value is found where the grid
-  // item does not overlap any occupied grid cells
-  while (DoesItemOverlap(placement_cursor_major,
-                         placement_cursor_major + major_span_size,
-                         grid_item.StartLine(minor_direction_),
-                         grid_item.EndLine(minor_direction_))) {
-    placement_cursor_major++;
-  }
-
-  // Update item and track placement.
-  UpdatePlacementAndEnsureTrackCoverage(
-      GridSpan::TranslatedDefiniteGridSpan(
-          placement_cursor_major, placement_cursor_major + major_span_size),
-      major_direction_, grid_item);
-}
-
-void NGGridPlacement::PlaceAutoBothAxisGridItem(
-    NGGridLayoutAlgorithm::GridItemData& grid_item) {
-  if (packing_behavior_ == PackingBehavior::kDense) {
-    // Set the cursor’s major and minor positions to start-most row and column
-    // lines in the implicit grid.
-    placement_cursor_major = ExplicitStart(major_direction_);
-    placement_cursor_minor = ExplicitStart(minor_direction_);
-  }
-  wtf_size_t major_span_size = GridPositionsResolver::SpanSizeForAutoPlacedItem(
-      grid_item.node.Style(), major_direction_);
-  wtf_size_t minor_span_size = GridPositionsResolver::SpanSizeForAutoPlacedItem(
-      grid_item.node.Style(), minor_direction_);
-  // Check to see if there would be overlap if this item was placed at the
-  // cursor. If overlap exists, increment minor position until no conflict
-  // exists or the item would overflow the minor axis.
-  while (DoesItemOverlap(
-      placement_cursor_major, placement_cursor_major + major_span_size,
-      placement_cursor_minor, placement_cursor_minor + minor_span_size)) {
-    placement_cursor_minor++;
-    if (placement_cursor_minor + minor_span_size > ending_minor_line_) {
-      // If the cursor overflows the minor axis, increment cursor on the major
-      // axis and start from the beginning.
+    placement_cursor_minor = grid_item->StartLine(minor_direction_);
+    // Increment the cursor’s major position until a value is found where the
+    // grid item does not overlap any occupied grid cells
+    while (DoesItemOverlap(placement_cursor_major,
+                           placement_cursor_major + major_span_size,
+                           grid_item->StartLine(minor_direction_),
+                           grid_item->EndLine(minor_direction_))) {
       placement_cursor_major++;
-      placement_cursor_minor = starting_minor_line_;
     }
+
+    // Update item and track placement.
+    UpdatePlacementAndEnsureTrackCoverage(
+        GridSpan::TranslatedDefiniteGridSpan(
+            placement_cursor_major, placement_cursor_major + major_span_size),
+        major_direction_, grid_item);
   }
 
-  UpdatePlacementAndEnsureTrackCoverage(
-      GridSpan::TranslatedDefiniteGridSpan(
-          placement_cursor_major, placement_cursor_major + major_span_size),
-      major_direction_, grid_item);
-  UpdatePlacementAndEnsureTrackCoverage(
-      GridSpan::TranslatedDefiniteGridSpan(
-          placement_cursor_minor, placement_cursor_minor + minor_span_size),
-      minor_direction_, grid_item);
-}
+  void NGGridPlacement::PlaceAutoBothAxisGridItem(
+      NGGridLayoutAlgorithm::GridItemData* grid_item) {
+    if (packing_behavior_ == PackingBehavior::kDense) {
+      // Set the cursor’s major and minor positions to start-most row and column
+      // lines in the implicit grid.
+      placement_cursor_major = ExplicitStart(major_direction_);
+      placement_cursor_minor = ExplicitStart(minor_direction_);
+    }
+    wtf_size_t major_span_size =
+        GridPositionsResolver::SpanSizeForAutoPlacedItem(
+            grid_item->node.Style(), major_direction_);
+    wtf_size_t minor_span_size =
+        GridPositionsResolver::SpanSizeForAutoPlacedItem(
+            grid_item->node.Style(), minor_direction_);
+    // Check to see if there would be overlap if this item was placed at the
+    // cursor. If overlap exists, increment minor position until no conflict
+    // exists or the item would overflow the minor axis.
+    while (DoesItemOverlap(
+        placement_cursor_major, placement_cursor_major + major_span_size,
+        placement_cursor_minor, placement_cursor_minor + minor_span_size)) {
+      placement_cursor_minor++;
+      if (placement_cursor_minor + minor_span_size > ending_minor_line_) {
+        // If the cursor overflows the minor axis, increment cursor on the major
+        // axis and start from the beginning.
+        placement_cursor_major++;
+        placement_cursor_minor = starting_minor_line_;
+      }
+    }
 
-bool NGGridPlacement::PlaceGridItem(
-    GridTrackSizingDirection direction,
-    NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData& grid_item) {
-  GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
-      grid_style_, grid_item.node.Style(), direction, AutoRepeat(direction));
-  // Indefinite positions are resolved with the auto placement algorithm.
-  if (span.IsIndefinite())
-    return false;
+    UpdatePlacementAndEnsureTrackCoverage(
+        GridSpan::TranslatedDefiniteGridSpan(
+            placement_cursor_major, placement_cursor_major + major_span_size),
+        major_direction_, grid_item);
+    UpdatePlacementAndEnsureTrackCoverage(
+        GridSpan::TranslatedDefiniteGridSpan(
+            placement_cursor_minor, placement_cursor_minor + minor_span_size),
+        minor_direction_, grid_item);
+  }
 
-  span.Translate(ExplicitStart(direction));
-  UpdatePlacementAndEnsureTrackCoverage(span, direction, grid_item);
-  return true;
-}
+  bool NGGridPlacement::PlaceGridItem(
+      GridTrackSizingDirection direction,
+      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData* grid_item) {
+    GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
+        grid_style_, grid_item->node.Style(), direction, AutoRepeat(direction));
+    // Indefinite positions are resolved with the auto placement algorithm.
+    if (span.IsIndefinite())
+      return false;
 
-void NGGridPlacement::UpdatePlacementAndEnsureTrackCoverage(
-    GridSpan span,
-    GridTrackSizingDirection track_direction,
-    NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData& grid_item) {
-  grid_item.SetSpan(span, track_direction);
-  BlockCollection(track_direction)
-      .EnsureTrackCoverage(span.StartLine(), span.IntegerSpan());
-}
+    span.Translate(ExplicitStart(direction));
+    UpdatePlacementAndEnsureTrackCoverage(span, direction, grid_item);
+    return true;
+  }
+
+  void NGGridPlacement::UpdatePlacementAndEnsureTrackCoverage(
+      GridSpan span,
+      GridTrackSizingDirection track_direction,
+      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData* grid_item) {
+    grid_item->SetSpan(span, track_direction);
+    BlockCollection(track_direction)
+        .EnsureTrackCoverage(span.StartLine(), span.IntegerSpan());
+  }
 
 bool NGGridPlacement::DoesItemOverlap(wtf_size_t major_start,
                                       wtf_size_t major_end,
@@ -238,7 +242,7 @@ bool NGGridPlacement::DoesItemOverlap(wtf_size_t major_start,
   DCHECK_LE(minor_start, minor_end);
   // TODO(janewman): Implement smarter collision detection, iterating over all
   // items is not ideal and has large performance implications.
-  for (const NGGridLayoutAlgorithm::GridItemData& grid_item : items_) {
+  for (const NGGridLayoutAlgorithm::GridItemData& grid_item : *items_) {
     if (grid_item.Span(major_direction_).IsIndefinite())
       continue;
     // Only test against definite positions.
@@ -287,9 +291,9 @@ NGGridBlockTrackCollection& NGGridPlacement::BlockCollection(
     GridTrackSizingDirection direction) {
   switch (direction) {
     case kForRows:
-      return row_collection_;
+      return *row_collection_;
     case kForColumns:
-      return column_collection_;
+      return *column_collection_;
   }
 }
 

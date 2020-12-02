@@ -27,9 +27,9 @@ class CORE_EXPORT NGGridPlacement {
                            const GridTrackSizingDirection major_direction,
                            const ComputedStyle& grid_style,
                            wtf_size_t minor_max_end_line,
-                           NGGridBlockTrackCollection& row_collection,
-                           NGGridBlockTrackCollection& column_collection,
-                           Vector<NGGridLayoutAlgorithm::GridItemData>& items);
+                           NGGridBlockTrackCollection* row_collection,
+                           NGGridBlockTrackCollection* column_collection,
+                           Vector<NGGridLayoutAlgorithm::GridItemData>* items);
   void RunAutoPlacementAlgorithm();
 
  private:
@@ -42,21 +42,21 @@ class CORE_EXPORT NGGridPlacement {
   // Place item that has a definite position on the minor axis but need auto
   // placement on the major axis.
   void PlaceAutoMajorAxisGridItem(
-      NGGridLayoutAlgorithm::GridItemData& item_data);
+      NGGridLayoutAlgorithm::GridItemData* item_data);
   // Place items that need automatic placement on both the major and minor axis.
   void PlaceAutoBothAxisGridItem(
-      NGGridLayoutAlgorithm::GridItemData& item_data);
+      NGGridLayoutAlgorithm::GridItemData* item_data);
   // Places a grid item if it has a definite position in the given direction,
   // returns true if item was able to be positioned, false if item needs auto
   // positioning in the given direction.
   bool PlaceGridItem(
       GridTrackSizingDirection grid_direction,
-      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData& item_data);
+      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData* item_data);
 
   void UpdatePlacementAndEnsureTrackCoverage(
       GridSpan span,
       GridTrackSizingDirection track_direction,
-      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData& item_data);
+      NGGridLayoutAlgorithm::NGGridLayoutAlgorithm::GridItemData* item_data);
 
   // Returns true if the given placement would overlap with a placed item.
   bool DoesItemOverlap(wtf_size_t major_start,
@@ -83,9 +83,9 @@ class CORE_EXPORT NGGridPlacement {
   // major line.
   wtf_size_t minor_max_end_line_ = 0;
 
-  NGGridBlockTrackCollection& row_collection_;
-  NGGridBlockTrackCollection& column_collection_;
-  Vector<NGGridLayoutAlgorithm::GridItemData>& items_;
+  NGGridBlockTrackCollection* row_collection_;
+  NGGridBlockTrackCollection* column_collection_;
+  Vector<NGGridLayoutAlgorithm::GridItemData>* items_;
 
   wtf_size_t starting_minor_line_ = 0;
   wtf_size_t ending_minor_line_ = 0;
