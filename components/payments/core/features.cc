@@ -44,11 +44,11 @@ const base::Feature kWebPaymentsRedactShippingAddress{
 
 const base::Feature kAppStoreBilling {
   "AppStoreBilling",
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // OS_ANDROID
+#endif  // OS_ANDROID || OS_CHROMEOS
 };
 
 const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",

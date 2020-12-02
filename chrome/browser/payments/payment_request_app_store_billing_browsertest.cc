@@ -61,12 +61,17 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestAppStoreBillingTest,
   EXPECT_EQ(expected,
             content::EvalJs(GetActiveWebContents(), "createPaymentRequest()"));
 
+  std::string expected_error =
+      "NotSupportedError: The payment method "
+      "\"https://play.google.com/billing\" is not supported.";
+
+#if defined(OS_CHROMEOS)
+  expected_error = expected_error + " Unable to invoke Android apps.";
+#endif  // OS_CHROMEOS
+
   // We expect the standard NotSupportedError inside a TWA because Play Billing
   // isn't supported yet.
-  EXPECT_EQ(
-      "NotSupportedError: The payment method "
-      "\"https://play.google.com/billing\" is not supported.",
-      content::EvalJs(GetActiveWebContents(), "show()"));
+  EXPECT_EQ(expected_error, content::EvalJs(GetActiveWebContents(), "show()"));
 }
 
 // Prove that requesting with a non-app-store method would not produce the same
