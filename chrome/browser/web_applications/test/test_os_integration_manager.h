@@ -44,6 +44,10 @@ class TestOsIntegrationManager : public OsIntegrationManager {
     return num_create_shortcuts_calls_;
   }
 
+  size_t num_create_file_handlers_calls() const {
+    return num_create_file_handlers_calls_;
+  }
+
   size_t num_register_run_on_os_login_calls() const {
     return num_register_run_on_os_login_calls_;
   }
@@ -76,6 +80,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
 
  private:
   size_t num_create_shortcuts_calls_ = 0;
+  size_t num_create_file_handlers_calls_ = 0;
   size_t num_register_run_on_os_login_calls_ = 0;
   size_t num_add_app_to_quick_launch_bar_calls_ = 0;
   base::Optional<bool> did_add_to_desktop_;

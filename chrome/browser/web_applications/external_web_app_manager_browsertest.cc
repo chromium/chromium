@@ -14,11 +14,11 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
+#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -38,12 +38,15 @@ class ExternalWebAppManagerBrowserTest
  public:
   ExternalWebAppManagerBrowserTest() {
     ExternalWebAppManager::SkipStartupForTesting();
+    WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
+        [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
+          return std::make_unique<TestOsIntegrationManager>(profile, nullptr,
+                                                            nullptr, nullptr);
+        });
   }
 
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   GURL GetAppUrl() const {
@@ -125,6 +128,7 @@ class ExternalWebAppManagerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
                        LaunchQueryParamsBasic) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
@@ -156,6 +160,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
                        LaunchQueryParamsDuplicate) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL install_url = embedded_test_server()->GetURL(
@@ -190,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
                        LaunchQueryParamsComplex) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL install_url = embedded_test_server()->GetURL(
@@ -225,6 +231,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
   Profile* profile = browser()->profile();
 
@@ -566,6 +573,20 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
     EXPECT_EQ(provider.registrar().GetAppLaunchUrl(expectation.app_id),
               GURL(expectation.launch_url));
   }
+
+  // Note that default web apps *DO* show app icons on Chrome OS however it
+  // is done via the |WebAppsChromeOs| publishing live our current app state to
+  // the app service rather than writing shortcut files as the case on all other
+  // desktop platforms.
+  auto* test_os_integration_manager =
+      provider.os_integration_manager().AsTestOsIntegrationManager();
+  EXPECT_EQ(test_os_integration_manager->num_create_shortcuts_calls(), 0u);
+  EXPECT_EQ(test_os_integration_manager->num_create_file_handlers_calls(), 0u);
+  EXPECT_EQ(test_os_integration_manager->num_register_run_on_os_login_calls(),
+            0u);
+  EXPECT_EQ(
+      test_os_integration_manager->num_add_app_to_quick_launch_bar_calls(), 0u);
+  EXPECT_FALSE(test_os_integration_manager->did_add_to_desktop());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

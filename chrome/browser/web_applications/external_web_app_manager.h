@@ -56,6 +56,7 @@ class ExternalWebAppManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static void SkipStartupForTesting();
+  static void BypassOfflineManifestRequirementForTesting();
   static void SetConfigDirForTesting(const base::FilePath* config_dir);
   static void SetConfigsForTesting(const std::vector<base::Value>* configs);
   static void SetFileUtilsForTesting(const FileUtilsWrapper* file_utils);
