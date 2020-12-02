@@ -142,10 +142,12 @@ class Trash {
     trashDirs = await TrashDirs.getTrashDirs(entry.filesystem, config);
 
     // Check and remove old items max once per session.
-    this.removeOldItems_(trashDirs, config, Date.now()).then(() => {
-      // In-progress set is not required after removeOldItems_() runs.
-      this.inProgress_.delete(config.id);
-    });
+    if (this.inProgress_.has(config.id)) {
+      this.removeOldItems_(trashDirs, config, Date.now()).then(() => {
+        // In-progress set is not required after removeOldItems_() runs.
+        this.inProgress_.delete(config.id);
+      });
+    }
     this.trashDirs_[config.id] = trashDirs;
     return trashDirs;
   }
