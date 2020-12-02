@@ -126,8 +126,7 @@ class GranularityAdjuster final {
         return CreateVisiblePosition(word_start).DeepEquivalent();
       }
       case TextGranularity::kSentence:
-        return StartOfSentence(CreateVisiblePosition(passed_start))
-            .DeepEquivalent();
+        return StartOfSentencePosition(passed_start.GetPosition());
       case TextGranularity::kLine:
         return StartOfLine(CreateVisiblePosition(passed_start))
             .DeepEquivalent();
@@ -149,8 +148,7 @@ class GranularityAdjuster final {
         return StartOfParagraph(CreateVisiblePosition(passed_start))
             .DeepEquivalent();
       case TextGranularity::kSentenceBoundary:
-        return StartOfSentence(CreateVisiblePosition(passed_start))
-            .DeepEquivalent();
+        return StartOfSentencePosition(passed_start.GetPosition());
     }
 
     NOTREACHED();

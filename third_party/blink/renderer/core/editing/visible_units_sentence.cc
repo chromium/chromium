@@ -284,12 +284,4 @@ Position StartOfSentencePosition(const Position& position) {
       StartOfSentencePosition(ToPositionInFlatTree(position)));
 }
 
-VisiblePosition StartOfSentence(const VisiblePosition& c) {
-  return CreateVisiblePosition(StartOfSentencePosition(c.DeepEquivalent()));
-}
-
-VisiblePositionInFlatTree StartOfSentence(const VisiblePositionInFlatTree& c) {
-  return CreateVisiblePosition(StartOfSentencePosition(c.DeepEquivalent()));
-}
-
 }  // namespace blink

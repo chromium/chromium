@@ -134,47 +134,29 @@ TEST_F(VisibleUnitsSentenceTest, startOfSentence) {
   Node* three = shadow_root->getElementById("three")->firstChild();
   Node* four = shadow_root->getElementById("four")->firstChild();
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*one, 0))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*one, 0)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*one, 0))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*one, 0)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*one, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*one, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*one, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*one, 1)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*two, 0))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*two, 0)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*two, 0))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*two, 0)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*two, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*two, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*two, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*two, 1)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*three, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*three, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*three, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*three, 1)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*four, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*four, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*four, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*four, 1)));
 }
 
 TEST_F(VisibleUnitsSentenceTest, SentenceBoundarySkipTextControl) {
@@ -187,12 +169,10 @@ TEST_F(VisibleUnitsSentenceTest, SentenceBoundarySkipTextControl) {
             EndOfSentence(PositionInFlatTree(foo, 1)).GetPosition());
 
   EXPECT_EQ(Position(foo, 0),
-            StartOfSentence(CreateVisiblePosition(Position(bar, 3)))
-                .DeepEquivalent());
+            StartOfSentencePosition(Position(Position(bar, 3))));
 
   EXPECT_EQ(PositionInFlatTree(foo, 0),
-            StartOfSentence(CreateVisiblePosition(PositionInFlatTree(bar, 3)))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(bar, 3)));
 }
 
 }  // namespace blink

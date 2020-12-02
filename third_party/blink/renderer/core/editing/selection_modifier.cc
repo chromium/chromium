@@ -589,7 +589,8 @@ VisiblePosition SelectionModifier::ModifyExtendingBackwardInternal(
           ComputeVisibleExtent(selection_),
           LineDirectionPointForBlockDirectionNavigation(selection_.Extent()));
     case TextGranularity::kSentenceBoundary:
-      return StartOfSentence(StartForPlatform());
+      return CreateVisiblePosition(
+          StartOfSentencePosition(StartForPlatform().DeepEquivalent()));
     case TextGranularity::kLineBoundary:
       return LogicalStartOfLine(StartForPlatform());
     case TextGranularity::kParagraphBoundary:
@@ -682,7 +683,8 @@ VisiblePosition SelectionModifier::ModifyMovingBackward(
           LineDirectionPointForBlockDirectionNavigation(selection_.Start()));
       break;
     case TextGranularity::kSentenceBoundary:
-      pos = StartOfSentence(StartForPlatform());
+      pos = CreateVisiblePosition(
+          StartOfSentencePosition(StartForPlatform().DeepEquivalent()));
       break;
     case TextGranularity::kLineBoundary:
       pos = LogicalStartOfLine(StartForPlatform());
