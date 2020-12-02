@@ -20,6 +20,7 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,23 +80,11 @@ class TestCryptohomeClient : public chromeos::FakeCryptohomeClient {
   // using the TestCryptohomeClient. Should be empty for system token.
   explicit TestCryptohomeClient(const AccountId& account_id)
       : account_id_(account_id),
-        tpm_is_enabled_(true),
-        tpm_is_enabled_failure_count_(0),
-        tpm_is_enabled_succeeded_(false),
         get_tpm_token_info_failure_count_(0),
         get_tpm_token_info_not_set_count_(0),
         get_tpm_token_info_succeeded_(false) {}
 
   ~TestCryptohomeClient() override = default;
-
-  void set_tpm_is_enabled(bool value) {
-    tpm_is_enabled_ = value;
-  }
-
-  void set_tpm_is_enabled_failure_count(int value) {
-    ASSERT_GT(value, 0);
-    tpm_is_enabled_failure_count_ = value;
-  }
 
   void set_get_tpm_token_info_failure_count(int value) {
     ASSERT_GT(value, 0);
@@ -119,19 +108,6 @@ class TestCryptohomeClient : public chromeos::FakeCryptohomeClient {
 
  private:
   // FakeCryptohomeClient override.
-  void TpmIsEnabled(chromeos::DBusMethodCallback<bool> callback) override {
-    ASSERT_FALSE(tpm_is_enabled_succeeded_);
-    base::Optional<bool> result;
-    if (tpm_is_enabled_failure_count_ > 0) {
-      --tpm_is_enabled_failure_count_;
-    } else {
-      tpm_is_enabled_succeeded_ = true;
-      result.emplace(tpm_is_enabled_);
-    }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result));
-  }
-
   void Pkcs11GetTpmTokenInfo(
       chromeos::DBusMethodCallback<TpmTokenInfo> callback) override {
     ASSERT_TRUE(account_id_.empty());
@@ -155,7 +131,6 @@ class TestCryptohomeClient : public chromeos::FakeCryptohomeClient {
   // properly set before calling this.
   void HandleGetTpmTokenInfo(
       chromeos::DBusMethodCallback<TpmTokenInfo> callback) {
-    ASSERT_TRUE(tpm_is_enabled_succeeded_);
     ASSERT_FALSE(get_tpm_token_info_succeeded_);
     ASSERT_TRUE(pending_get_tpm_token_info_callback_.is_null());
 
@@ -193,9 +168,6 @@ class TestCryptohomeClient : public chromeos::FakeCryptohomeClient {
   }
 
   AccountId account_id_;
-  bool tpm_is_enabled_;
-  int tpm_is_enabled_failure_count_;
-  bool tpm_is_enabled_succeeded_;
   int get_tpm_token_info_failure_count_;
   int get_tpm_token_info_not_set_count_;
   bool get_tpm_token_info_succeeded_;
@@ -208,8 +180,12 @@ class TestCryptohomeClient : public chromeos::FakeCryptohomeClient {
 
 class SystemTPMTokenInfoGetterTest : public testing::Test {
  public:
-  SystemTPMTokenInfoGetterTest() = default;
-  ~SystemTPMTokenInfoGetterTest() override = default;
+  SystemTPMTokenInfoGetterTest() {
+    chromeos::TpmManagerClient::Get()->InitializeFake();
+  }
+  ~SystemTPMTokenInfoGetterTest() override {
+    chromeos::TpmManagerClient::Get()->Shutdown();
+  }
 
   void SetUp() override {
     cryptohome_client_.reset(new TestCryptohomeClient(EmptyAccountId()));
@@ -233,8 +209,12 @@ class SystemTPMTokenInfoGetterTest : public testing::Test {
 class UserTPMTokenInfoGetterTest : public testing::Test {
  public:
   UserTPMTokenInfoGetterTest()
-      : account_id_(AccountId::FromUserEmail("user@gmail.com")) {}
-  ~UserTPMTokenInfoGetterTest() override = default;
+      : account_id_(AccountId::FromUserEmail("user@gmail.com")) {
+    chromeos::TpmManagerClient::Get()->InitializeFake();
+  }
+  ~UserTPMTokenInfoGetterTest() override {
+    chromeos::TpmManagerClient::Get()->Shutdown();
+  }
 
   void SetUp() override {
     cryptohome_client_.reset(new TestCryptohomeClient(account_id_));
@@ -297,7 +277,10 @@ TEST_F(SystemTPMTokenInfoGetterTest, TokenSlotIdEqualsZero) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
-  cryptohome_client_->set_tpm_is_enabled(false);
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_enabled(false);
 
   bool completed = false;
   base::Optional<TpmTokenInfo> result;
@@ -310,7 +293,9 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TpmEnabledCallFails) {
-  cryptohome_client_->set_tpm_is_enabled_failure_count(1);
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->set_non_nonsensitive_status_dbus_erorr_count(1);
 
   bool completed = false;
   base::Optional<TpmTokenInfo> result;
@@ -385,7 +370,9 @@ TEST_F(SystemTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyFails) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
-  cryptohome_client_->set_tpm_is_enabled_failure_count(2);
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->set_non_nonsensitive_status_dbus_erorr_count(2);
   cryptohome_client_->set_get_tpm_token_info_failure_count(1);
   cryptohome_client_->set_get_tpm_token_info_not_set_count(3);
 
@@ -412,7 +399,9 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelayBounded) {
-  cryptohome_client_->set_tpm_is_enabled_failure_count(4);
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->set_non_nonsensitive_status_dbus_erorr_count(4);
   cryptohome_client_->set_get_tpm_token_info_failure_count(5);
   cryptohome_client_->set_get_tpm_token_info_not_set_count(6);
 

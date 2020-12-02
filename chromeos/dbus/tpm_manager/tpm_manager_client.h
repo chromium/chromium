@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     // is called.
     virtual ::tpm_manager::GetTpmNonsensitiveStatusReply*
     mutable_nonsensitive_status_reply() = 0;
+    // Sets how many times the `GetTpmNonsensitiveStatus()` returns D-Bus error
+    // before it works normally.
+    virtual void set_non_nonsensitive_status_dbus_erorr_count(int count) = 0;
     // Gets a mutable reply that is returned when `GetVersionInfo()` is called.
     virtual ::tpm_manager::GetVersionInfoReply*
     mutable_version_info_reply() = 0;

@@ -37,7 +37,14 @@ FakeTpmManagerClient::~FakeTpmManagerClient() = default;
 void FakeTpmManagerClient::GetTpmNonsensitiveStatus(
     const ::tpm_manager::GetTpmNonsensitiveStatusRequest& request,
     GetTpmNonsensitiveStatusCallback callback) {
-  PostProtoResponse(std::move(callback), nonsensitive_status_reply_);
+  ::tpm_manager::GetTpmNonsensitiveStatusReply reply;
+  if (nonsensitive_status_dbus_error_count_ != 0) {
+    --nonsensitive_status_dbus_error_count_;
+    reply.set_status(::tpm_manager::STATUS_DBUS_ERROR);
+  } else {
+    reply = nonsensitive_status_reply_;
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeTpmManagerClient::GetVersionInfo(
@@ -81,6 +88,11 @@ TpmManagerClient::TestInterface* FakeTpmManagerClient::GetTestInterface() {
 ::tpm_manager::GetTpmNonsensitiveStatusReply*
 FakeTpmManagerClient::mutable_nonsensitive_status_reply() {
   return &nonsensitive_status_reply_;
+}
+
+void FakeTpmManagerClient::set_non_nonsensitive_status_dbus_erorr_count(
+    int count) {
+  nonsensitive_status_dbus_error_count_ = count;
 }
 
 ::tpm_manager::GetVersionInfoReply*

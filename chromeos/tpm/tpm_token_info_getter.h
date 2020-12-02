@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
 
 namespace base {
@@ -78,8 +79,11 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
   // schedules the initialization step retry attempt after a timeout.
   void RetryLater();
 
+  // Callbacks for TpmManagerClient.
+  void OnGetTpmStatus(
+      const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
+
   // Cryptohome methods callbacks.
-  void OnTpmIsEnabled(base::Optional<bool> tpm_is_enabled);
   void OnPkcs11GetTpmTokenInfo(
       base::Optional<CryptohomeClient::TpmTokenInfo> token_info);
 

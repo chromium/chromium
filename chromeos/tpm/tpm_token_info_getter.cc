@@ -10,9 +10,12 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/task_runner.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
 namespace {
 
@@ -87,8 +90,10 @@ void TPMTokenInfoGetter::Continue() {
       NOTREACHED();
       break;
     case STATE_STARTED:
-      cryptohome_client_->TpmIsEnabled(base::BindOnce(
-          &TPMTokenInfoGetter::OnTpmIsEnabled, weak_factory_.GetWeakPtr()));
+      TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+          ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
+          base::BindOnce(&TPMTokenInfoGetter::OnGetTpmStatus,
+                         weak_factory_.GetWeakPtr()));
       break;
     case STATE_TPM_ENABLED:
       if (type_ == TYPE_SYSTEM) {
@@ -115,13 +120,15 @@ void TPMTokenInfoGetter::RetryLater() {
   tpm_request_delay_ = GetNextRequestDelayMs(tpm_request_delay_);
 }
 
-void TPMTokenInfoGetter::OnTpmIsEnabled(base::Optional<bool> tpm_is_enabled) {
-  if (!tpm_is_enabled.has_value()) {
+void TPMTokenInfoGetter::OnGetTpmStatus(
+    const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
+  if (reply.status() != ::tpm_manager::STATUS_SUCCESS) {
+    LOG(WARNING) << "Failed to get tpm status; status: " << reply.status();
     RetryLater();
     return;
   }
 
-  if (!tpm_is_enabled.value()) {
+  if (!reply.is_enabled()) {
     state_ = STATE_DONE;
     std::move(callback_).Run(base::nullopt);
     return;
