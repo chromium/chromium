@@ -45,7 +45,7 @@ const base::Feature kDisableDeJelly{"DisableDeJelly",
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.
 const base::Feature kDynamicColorGamut{"DynamicColorGamut",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Uses glClear to composite solid color quads whenever possible.
