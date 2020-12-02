@@ -1437,6 +1437,8 @@ source_set("chromeos") {
     "full_restore/full_restore_service.h",
     "full_restore/full_restore_service_factory.cc",
     "full_restore/full_restore_service_factory.h",
+    "full_restore/new_user_restore_pref_handler.cc",
+    "full_restore/new_user_restore_pref_handler.h",
     "guest_os/guest_os_external_protocol_handler.cc",
     "guest_os/guest_os_external_protocol_handler.h",
     "guest_os/guest_os_pref_names.cc",

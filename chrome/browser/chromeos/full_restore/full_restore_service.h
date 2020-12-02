@@ -5,14 +5,19 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_FULL_RESTORE_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_FULL_RESTORE_SERVICE_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync_preferences/pref_service_syncable_observer.h"
 
 class Profile;
 
 namespace chromeos {
 namespace full_restore {
+
+class NewUserRestorePrefHanlder;
 
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
@@ -22,11 +27,8 @@ namespace full_restore {
 // 2. For normal reboot, read the restore setting fromt the user pref, and based
 // on the setting to decide restore or not.
 //
-// TODO(crbug.com/909794):
-// 1. If the system crashed before reboot, show the notification notification.
-// Otherwise, read |kRestoreAppsAndPagesPrefName|
-// 2. Observe the AppRegistryCache to read the app info, and restore apps and
-// app windows.
+// TODO(crbug.com/909794): Observe the AppRegistryCache to read the app info,
+// and restore apps and app windows.
 class FullRestoreService : public KeyedService {
  public:
   explicit FullRestoreService(Profile* profile);
@@ -48,6 +50,8 @@ class FullRestoreService : public KeyedService {
   Profile* profile_ = nullptr;
 
   bool is_shut_down_ = false;
+
+  std::unique_ptr<NewUserRestorePrefHanlder> new_user_pref_handler_;
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };

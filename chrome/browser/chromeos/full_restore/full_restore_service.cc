@@ -9,12 +9,15 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
+#include "chrome/browser/chromeos/full_restore/new_user_restore_pref_handler.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -45,8 +48,20 @@ FullRestoreService::FullRestoreService(Profile* profile) : profile_(profile) {
   PrefService* prefs = profile->GetPrefs();
   DCHECK(prefs);
 
-  // TODO(crbug.com/909794):Set the default value if
-  // |kRestoreAppsAndPagesPrefName| doesn't exist from the user pref.
+  // If it is the first time to run Chrome OS, we don't have restore data, so we
+  // don't need to consider restoration.
+  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    new_user_pref_handler_ =
+        std::make_unique<NewUserRestorePrefHanlder>(profile_);
+    return;
+  }
+
+  // If it is the first time to migrate to the full restore release, we don't
+  // have other restore data, so we don't need to consider restoration.
+  if (!HasRestorePref(prefs)) {
+    SetDefaultRestorePrefIfNecessary(prefs);
+    return;
+  }
 
   RestoreOption restore_pref = static_cast<RestoreOption>(
       prefs->GetInteger(kRestoreAppsAndPagesPrefName));
