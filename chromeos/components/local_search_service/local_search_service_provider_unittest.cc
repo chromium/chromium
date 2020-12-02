@@ -15,7 +15,7 @@ namespace local_search_service {
 class LocalSearchServiceProviderTest : public testing::Test {
  public:
   void SetUp() override {
-    provider_ = std::make_unique<LocalSearchServiceProviderForTestting>();
+    provider_ = std::make_unique<LocalSearchServiceProviderForTesting>();
   }
 
  protected:

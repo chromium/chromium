@@ -8,6 +8,14 @@ namespace chromeos {
 namespace local_search_service {
 namespace prefs {
 
+// TODO(thanhdng): clean this up after LSS is sandboxed.
+const char kLocalSearchServiceSyncMetricsDailySample[] =
+    "local_search_service_sync.metrics.daily_sample";
+const char kLocalSearchServiceSyncMetricsCrosSettingsCount[] =
+    "local_search_service_sync.metrics.cros_settings_count";
+const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
+    "local_search_service_sync.metrics.help_app_count";
+
 const char kLocalSearchServiceMetricsDailySample[] =
     "local_search_service.metrics.daily_sample";
 const char kLocalSearchServiceMetricsCrosSettingsCount[] =

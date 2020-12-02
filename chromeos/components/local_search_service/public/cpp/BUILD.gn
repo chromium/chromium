@@ -4,7 +4,7 @@
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
-source_set("cpp") {
+source_set("local_search_service_provider") {
   sources = [
     "local_search_service_provider.cc",
     "local_search_service_provider.h",
@@ -13,5 +13,22 @@ source_set("cpp") {
   deps = [
     "//chromeos/components/local_search_service:local_search_service",
     "//chromeos/components/local_search_service/public/mojom",
+  ]
+}
+
+source_set("cpp") {
+  sources = [
+    "local_search_service_proxy.cc",
+    "local_search_service_proxy.h",
+    "local_search_service_proxy_factory.cc",
+    "local_search_service_proxy_factory.h",
+  ]
+
+  deps = [
+    ":local_search_service_provider",
+    "//chromeos/components/local_search_service:local_search_service",
+    "//chromeos/components/local_search_service:local_search_service_provider",
+    "//chromeos/components/local_search_service/public/mojom",
+    "//components/prefs:prefs",
   ]
 }

@@ -13,11 +13,10 @@ namespace local_search_service {
 
 // An implementation that runs LocalSearchService in-process for testing
 // purpose.
-class LocalSearchServiceProviderForTestting
-    : public LocalSearchServiceProvider {
+class LocalSearchServiceProviderForTesting : public LocalSearchServiceProvider {
  public:
-  LocalSearchServiceProviderForTestting();
-  ~LocalSearchServiceProviderForTestting() override;
+  LocalSearchServiceProviderForTesting();
+  ~LocalSearchServiceProviderForTesting() override;
 
   // LocalSearchServiceProvider:
   void BindLocalSearchService(

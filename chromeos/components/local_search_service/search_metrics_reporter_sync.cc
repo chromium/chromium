@@ -22,8 +22,8 @@ constexpr base::TimeDelta kCheckDailyEventInternal =
 // Prefs corresponding to IndexId values.
 constexpr std::array<const char*, SearchMetricsReporterSync::kNumberIndexIds>
     kDailyCountPrefs = {
-        prefs::kLocalSearchServiceMetricsCrosSettingsCount,
-        prefs::kLocalSearchServiceMetricsHelpAppCount,
+        prefs::kLocalSearchServiceSyncMetricsCrosSettingsCount,
+        prefs::kLocalSearchServiceSyncMetricsHelpAppCount,
 };
 
 // Histograms corresponding to IndexId values.
@@ -68,7 +68,7 @@ class SearchMetricsReporterSync::DailyEventObserver
 void SearchMetricsReporterSync::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   metrics::DailyEvent::RegisterPref(
-      registry, prefs::kLocalSearchServiceMetricsDailySample);
+      registry, prefs::kLocalSearchServiceSyncMetricsDailySample);
   for (const char* daily_count_pref : kDailyCountPrefs) {
     registry->RegisterIntegerPref(daily_count_pref, 0);
   }
@@ -79,7 +79,7 @@ SearchMetricsReporterSync::SearchMetricsReporterSync(
     : pref_service_(local_state_pref_service),
       daily_event_(std::make_unique<metrics::DailyEvent>(
           pref_service_,
-          prefs::kLocalSearchServiceMetricsDailySample,
+          prefs::kLocalSearchServiceSyncMetricsDailySample,
           kDailyEventIntervalName)) {
   for (size_t i = 0; i < kDailyCountPrefs.size(); ++i) {
     daily_counts_[i] = pref_service_->GetInteger(kDailyCountPrefs[i]);

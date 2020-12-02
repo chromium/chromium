@@ -77,8 +77,8 @@ TEST_F(SearchMetricsReporterSyncTest, CountAndReportEvents) {
 TEST_F(SearchMetricsReporterSyncTest, LoadInitialCountsFromPrefs) {
   // Create a new reporter and check that it loads its initial event counts from
   // prefs.
-  pref_service_.SetInteger(prefs::kLocalSearchServiceMetricsCrosSettingsCount,
-                           2);
+  pref_service_.SetInteger(
+      prefs::kLocalSearchServiceSyncMetricsCrosSettingsCount, 2);
   SetReporter(IndexId::kCrosSettings);
 
   TriggerDailyEventAndVerifyHistograms(

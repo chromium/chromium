@@ -9,16 +9,15 @@
 namespace chromeos {
 namespace local_search_service {
 
-LocalSearchServiceProviderForTestting::LocalSearchServiceProviderForTestting() {
+LocalSearchServiceProviderForTesting::LocalSearchServiceProviderForTesting() {
   LocalSearchServiceProvider::Set(this);
 }
 
-LocalSearchServiceProviderForTestting::
-    ~LocalSearchServiceProviderForTestting() {
+LocalSearchServiceProviderForTesting::~LocalSearchServiceProviderForTesting() {
   LocalSearchServiceProvider::Set(nullptr);
 }
 
-void LocalSearchServiceProviderForTestting::BindLocalSearchService(
+void LocalSearchServiceProviderForTesting::BindLocalSearchService(
     mojo::PendingReceiver<mojom::LocalSearchService> receiver) {
   service_ = std::make_unique<LocalSearchService>(std::move(receiver));
 }
