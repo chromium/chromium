@@ -88,6 +88,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   const gfx::Size& page_size() const { return page_size_; }
 
+  PrintPreviewHandler* handler() const { return handler_; }
+
   // Returns true if |page_number| is the last page in |pages_to_render_|.
   // |page_number| is a 0-based number.
   bool LastPageComposited(uint32_t page_number) const;

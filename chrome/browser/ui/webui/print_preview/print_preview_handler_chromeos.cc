@@ -1,0 +1,271 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
+
+#include <ctype.h>
+#include <stddef.h>
+
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/lazy_instance.h"
+#include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
+#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+#include "chrome/browser/ui/webui/print_preview/printer_handler.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/printing/printer_configuration.h"
+#include "components/cloud_devices/common/cloud_devices_urls.h"
+#include "components/printing/browser/printer_capabilities.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "content/public/browser/web_ui.h"
+
+namespace printing {
+
+class PrintPreviewHandlerChromeOS::AccessTokenService
+    : public OAuth2AccessTokenManager::Consumer {
+ public:
+  AccessTokenService() : OAuth2AccessTokenManager::Consumer("print_preview") {}
+
+  void RequestToken(base::OnceCallback<void(const std::string&)> callback) {
+    // There can only be one pending request at a time. See
+    // cloud_print_interface_js.js.
+    const signin::ScopeSet scopes{cloud_devices::kCloudPrintAuthScope};
+    DCHECK(!device_request_callback_);
+
+    DeviceOAuth2TokenService* token_service =
+        DeviceOAuth2TokenServiceFactory::Get();
+    device_request_ = token_service->StartAccessTokenRequest(scopes, this);
+    device_request_callback_ = std::move(callback);
+  }
+
+  void OnGetTokenSuccess(
+      const OAuth2AccessTokenManager::Request* request,
+      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
+    OnServiceResponse(request, token_response.access_token);
+  }
+
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
+                         const GoogleServiceAuthError& error) override {
+    OnServiceResponse(request, std::string());
+  }
+
+ private:
+  void OnServiceResponse(const OAuth2AccessTokenManager::Request* request,
+                         const std::string& access_token) {
+    DCHECK_EQ(request, device_request_.get());
+    std::move(device_request_callback_).Run(access_token);
+    device_request_.reset();
+  }
+
+  std::unique_ptr<OAuth2AccessTokenManager::Request> device_request_;
+  base::OnceCallback<void(const std::string&)> device_request_callback_;
+
+  DISALLOW_COPY_AND_ASSIGN(AccessTokenService);
+};
+
+PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {}
+
+PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() {}
+
+void PrintPreviewHandlerChromeOS::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "setupPrinter",
+      base::BindRepeating(&PrintPreviewHandlerChromeOS::HandlePrinterSetup,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getAccessToken",
+      base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetAccessToken,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "grantExtensionPrinterAccess",
+      base::BindRepeating(
+          &PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getEulaUrl",
+      base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetEulaUrl,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "requestPrinterStatus",
+      base::BindRepeating(
+          &PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate,
+          base::Unretained(this)));
+}
+
+void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
+  // Normally the handler and print preview will be destroyed together, but
+  // this is necessary for refresh or navigation from the chrome://print page.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
+    const base::ListValue* args) {
+  std::string callback_id;
+  std::string printer_id;
+  bool ok = args->GetString(0, &callback_id) &&
+            args->GetString(1, &printer_id) && !callback_id.empty();
+  DCHECK(ok);
+  MaybeAllowJavascript();
+
+  PrinterHandler* handler = GetPrinterHandler(PrinterType::kExtension);
+  handler->StartGrantPrinterAccess(
+      printer_id,
+      base::BindOnce(&PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+// |args| is expected to contain a string with representing the callback id
+// followed by a list of arguments the first of which should be the printer id.
+void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
+    const base::ListValue* args) {
+  std::string callback_id;
+  std::string printer_name;
+  MaybeAllowJavascript();
+  if (!args->GetString(0, &callback_id) || !args->GetString(1, &printer_name) ||
+      callback_id.empty() || printer_name.empty()) {
+    RejectJavascriptCallback(base::Value(callback_id),
+                             base::Value(printer_name));
+    return;
+  }
+
+  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  handler->StartGetCapability(
+      printer_name,
+      base::BindOnce(&PrintPreviewHandlerChromeOS::SendPrinterSetup,
+                     weak_factory_.GetWeakPtr(), callback_id, printer_name));
+}
+
+void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
+    const base::ListValue* args) {
+  std::string callback_id;
+
+  bool ok = args->GetString(0, &callback_id) && !callback_id.empty();
+  DCHECK(ok);
+  MaybeAllowJavascript();
+
+  if (!token_service_)
+    token_service_ = std::make_unique<AccessTokenService>();
+  token_service_->RequestToken(
+      base::BindOnce(&PrintPreviewHandlerChromeOS::SendAccessToken,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
+    const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetSize());
+  MaybeAllowJavascript();
+
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& destination_id = args->GetList()[1].GetString();
+
+  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  handler->StartGetEulaUrl(
+      destination_id, base::BindOnce(&PrintPreviewHandlerChromeOS::SendEulaUrl,
+                                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void PrintPreviewHandlerChromeOS::SendAccessToken(
+    const std::string& callback_id,
+    const std::string& access_token) {
+  VLOG(1) << "Get getAccessToken finished";
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(access_token));
+}
+
+void PrintPreviewHandlerChromeOS::SendEulaUrl(const std::string& callback_id,
+                                              const std::string& eula_url) {
+  VLOG(1) << "Get PPD license finished";
+  ResolveJavascriptCallback(base::Value(callback_id), base::Value(eula_url));
+}
+
+void PrintPreviewHandlerChromeOS::SendPrinterSetup(
+    const std::string& callback_id,
+    const std::string& printer_name,
+    base::Value destination_info) {
+  base::Value response(base::Value::Type::DICTIONARY);
+  base::Value* caps_value =
+      destination_info.is_dict()
+          ? destination_info.FindKeyOfType(kSettingCapabilities,
+                                           base::Value::Type::DICTIONARY)
+          : nullptr;
+  response.SetKey("printerId", base::Value(printer_name));
+  response.SetKey("success", base::Value(!!caps_value));
+  response.SetKey("capabilities",
+                  caps_value ? std::move(*caps_value)
+                             : base::Value(base::Value::Type::DICTIONARY));
+  if (caps_value) {
+    base::Value* printer =
+        destination_info.FindKeyOfType(kPrinter, base::Value::Type::DICTIONARY);
+    if (printer) {
+      base::Value* policies_value = printer->FindKeyOfType(
+          kSettingPolicies, base::Value::Type::DICTIONARY);
+      if (policies_value)
+        response.SetKey("policies", std::move(*policies_value));
+    }
+  } else {
+    LOG(WARNING) << "Printer setup failed";
+  }
+  ResolveJavascriptCallback(base::Value(callback_id), response);
+}
+
+PrintPreviewHandler* PrintPreviewHandlerChromeOS::GetPrintPreviewHandler() {
+  PrintPreviewUI* ui = static_cast<PrintPreviewUI*>(web_ui()->GetController());
+  return ui->handler();
+}
+
+PrinterHandler* PrintPreviewHandlerChromeOS::GetPrinterHandler(
+    PrinterType printer_type) {
+  return GetPrintPreviewHandler()->GetPrinterHandler(printer_type);
+}
+
+void PrintPreviewHandlerChromeOS::MaybeAllowJavascript() {
+  if (!IsJavascriptAllowed() &&
+      GetPrintPreviewHandler()->IsJavascriptAllowed()) {
+    AllowJavascript();
+  }
+}
+
+void PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo(
+    const std::string& callback_id,
+    const base::DictionaryValue& printer_info) {
+  if (printer_info.empty()) {
+    RejectJavascriptCallback(base::Value(callback_id), base::Value());
+    return;
+  }
+  ResolveJavascriptCallback(base::Value(callback_id), printer_info);
+}
+
+void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
+    const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetSize());
+
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& printer_id = args->GetList()[1].GetString();
+
+  MaybeAllowJavascript();
+  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  handler->StartPrinterStatusRequest(
+      printer_id,
+      base::BindOnce(&PrintPreviewHandlerChromeOS::OnPrinterStatusUpdated,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void PrintPreviewHandlerChromeOS::OnPrinterStatusUpdated(
+    const std::string& callback_id,
+    const base::Value& cups_printer_status) {
+  ResolveJavascriptCallback(base::Value(callback_id), cups_printer_status);
+}
+
+}  // namespace printing

@@ -72,6 +72,10 @@
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
+#endif
+
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #endif
@@ -450,6 +454,9 @@ content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
 PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
   auto handler = std::make_unique<PrintPreviewHandler>();
   PrintPreviewHandler* handler_ptr = handler.get();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  web_ui->AddMessageHandler(std::make_unique<PrintPreviewHandlerChromeOS>());
+#endif
   web_ui->AddMessageHandler(std::move(handler));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
