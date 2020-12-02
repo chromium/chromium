@@ -67,7 +67,7 @@ void MojoRendererService::Initialize(
     DCHECK(streams.has_value());
     media_resource_ = std::make_unique<MediaResourceShim>(
         std::move(*streams),
-        base::BindOnce(&MojoRendererService::OnStreamReady, weak_this_,
+        base::BindOnce(&MojoRendererService::OnAllStreamsReady, weak_this_,
                        base::Passed(&callback)));
     return;
   }
@@ -206,7 +206,7 @@ void MojoRendererService::OnVideoFrameRateChange(base::Optional<int> fps) {
   // TODO(liberato): plumb to |client_|.
 }
 
-void MojoRendererService::OnStreamReady(
+void MojoRendererService::OnAllStreamsReady(
     base::OnceCallback<void(bool)> callback) {
   DCHECK_EQ(state_, STATE_INITIALIZING);
 

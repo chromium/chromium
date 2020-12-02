@@ -91,7 +91,7 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
 
   // Called when the MediaResourceShim is ready to go (has a config,
   // pipe handle, etc) and can be handed off to a renderer for use.
-  void OnStreamReady(base::OnceCallback<void(bool)> callback);
+  void OnAllStreamsReady(base::OnceCallback<void(bool)> callback);
 
   // Called when |audio_renderer_| initialization has completed.
   void OnRendererInitializeDone(base::OnceCallback<void(bool)> callback,
