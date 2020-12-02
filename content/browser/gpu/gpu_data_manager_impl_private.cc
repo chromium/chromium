@@ -330,7 +330,17 @@ void DisplayReconfigCallback(CGDirectDisplayID display,
       reinterpret_cast<GpuDataManagerImpl*>(gpu_data_manager);
   DCHECK(manager);
 
-  manager->HandleGpuSwitch();
+  bool gpu_changed = false;
+  if (flags & kCGDisplayAddFlag) {
+    gpu::GPUInfo gpu_info;
+    if (gpu::CollectBasicGraphicsInfo(&gpu_info)) {
+      gpu_changed = manager->UpdateActiveGpu(gpu_info.active_gpu().vendor_id,
+                                             gpu_info.active_gpu().device_id);
+    }
+  }
+
+  if (gpu_changed)
+    manager->HandleGpuSwitch();
 }
 #endif  // OS_MAC
 
@@ -1362,6 +1372,70 @@ void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
                              if (host)
                                host->gpu_service()->DisplayMetricsChanged();
                            }));
+}
+
+bool GpuDataManagerImplPrivate::UpdateActiveGpu(uint32_t vendor_id,
+                                                uint32_t device_id) {
+  // Heuristics for dual-GPU detection.
+#if defined(OS_WIN)
+  // On Windows, "Microsoft Basic Render Driver" now shows up as a
+  // secondary GPU.
+  bool is_dual_gpu = gpu_info_.secondary_gpus.size() == 2;
+#else
+  bool is_dual_gpu = gpu_info_.secondary_gpus.size() == 1;
+#endif
+  // TODO(kbr/zmo): on Windows, at least, it's now possible to have a
+  // system with both low-power and high-performance GPUs from AMD.
+  const uint32_t kIntelID = 0x8086;
+  bool saw_intel_gpu = false;
+  bool saw_non_intel_gpu = false;
+
+  if (gpu_info_.gpu.vendor_id == vendor_id &&
+      gpu_info_.gpu.device_id == device_id) {
+    // The primary GPU is active.
+    if (gpu_info_.gpu.active)
+      return false;
+    gpu_info_.gpu.active = true;
+    for (size_t ii = 0; ii < gpu_info_.secondary_gpus.size(); ++ii) {
+      gpu_info_.secondary_gpus[ii].active = false;
+    }
+  } else {
+    // A secondary GPU is active.
+    for (size_t ii = 0; ii < gpu_info_.secondary_gpus.size(); ++ii) {
+      if (gpu_info_.secondary_gpus[ii].vendor_id == vendor_id &&
+          gpu_info_.secondary_gpus[ii].device_id == device_id) {
+        if (gpu_info_.secondary_gpus[ii].active)
+          return false;
+        gpu_info_.secondary_gpus[ii].active = true;
+      } else {
+        gpu_info_.secondary_gpus[ii].active = false;
+      }
+    }
+    gpu_info_.gpu.active = false;
+  }
+  active_gpu_heuristic_ = gl::GpuPreference::kDefault;
+  if (is_dual_gpu) {
+    if (gpu_info_.gpu.vendor_id == kIntelID) {
+      saw_intel_gpu = true;
+    } else {
+      saw_non_intel_gpu = true;
+    }
+    if (gpu_info_.secondary_gpus[0].vendor_id == kIntelID) {
+      saw_intel_gpu = true;
+    } else {
+      saw_non_intel_gpu = true;
+    }
+    if (saw_intel_gpu && saw_non_intel_gpu) {
+      if (vendor_id == kIntelID) {
+        active_gpu_heuristic_ = gl::GpuPreference::kLowPower;
+      } else {
+        active_gpu_heuristic_ = gl::GpuPreference::kHighPerformance;
+      }
+    }
+  }
+  GetContentClient()->SetGpuInfo(gpu_info_);
+  NotifyGpuInfoUpdate();
+  return true;
 }
 
 void GpuDataManagerImplPrivate::BlockDomainFrom3DAPIs(const GURL& url,

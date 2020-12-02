@@ -151,6 +151,10 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // Disables domain blocking for 3D APIs. For use only in tests.
   void DisableDomainBlockingFor3DAPIsForTesting();
 
+  // Set the active gpu.
+  // Return true if it's a different GPU from the previous active one.
+  bool UpdateActiveGpu(uint32_t vendor_id, uint32_t device_id);
+
   // Return mode describing what the GPU process will be launched to run.
   gpu::GpuMode GetGpuMode() const;
 

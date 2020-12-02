@@ -968,12 +968,9 @@ void GpuServiceImpl::WakeUpGpu() {
 
 void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
   DVLOG(1) << "GPU: GPU has switched";
-  if (!in_host_process()) {
+  if (!in_host_process())
     ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
         active_gpu_heuristic);
-    gpu::CollectGraphicsInfoGL(&gpu_info_);
-    gpu_host_->DidUpdateGPUInfo(gpu_info_);
-  }
 }
 
 void GpuServiceImpl::DisplayAdded() {

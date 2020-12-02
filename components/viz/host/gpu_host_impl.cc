@@ -507,10 +507,6 @@ void GpuHostImpl::DisableGpuCompositing() {
   delegate_->DisableGpuCompositing();
 }
 
-void GpuHostImpl::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
-  delegate_->DidUpdateGPUInfo(gpu_info);
-}
-
 #if defined(OS_WIN)
 void GpuHostImpl::DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) {
   delegate_->DidUpdateOverlayInfo(overlay_info);
