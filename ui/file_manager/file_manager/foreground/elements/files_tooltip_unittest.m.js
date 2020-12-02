@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+
+import {FilesTooltip} from './files_tooltip.m.js';
+// clang-format on
+
 /** @type {Element} */
 let chocolateButton;
 
@@ -57,19 +65,9 @@ const bodyContent = `
 
 const windowEdgePadding = 6;
 
-function setUp() {
+export function setUp() {
   /** @const {boolean} Assume files-ng in unittest. */
   const enableFilesNg = true;
-
-  // Mock LoadTimeData strings for files-ng case. These tests check top and
-  // left position values, which can differ in files-ng vs not-files-ng.
-  window.loadTimeData.data = {
-    FILES_NG_ENABLED: enableFilesNg,
-  };
-
-  window.loadTimeData.getString = id => {
-    return window.loadTimeData.data_[id] || id;
-  };
 
   /** @return {boolean} */
   window.isFilesNg = () => {
@@ -83,7 +81,7 @@ function setUp() {
   otherButton = document.querySelector('#other');
 
   tooltip = document.querySelector('files-tooltip');
-  assertNotEqual('none', window.getComputedStyle(tooltip).display);
+  assertNotEquals('none', window.getComputedStyle(tooltip).display);
   assertEquals('0', window.getComputedStyle(tooltip).opacity);
   assertEquals(enableFilesNg, tooltip.hasAttribute('files-ng'));
 
@@ -100,7 +98,7 @@ function waitForMutation(target) {
   });
 }
 
-function testFocus(callback) {
+export function testFocus(callback) {
   chocolateButton.focus();
 
   return reportPromise(
@@ -145,7 +143,7 @@ function testFocus(callback) {
       callback);
 }
 
-function testHover(callback) {
+export function testHover(callback) {
   chocolateButton.dispatchEvent(new MouseEvent('mouseover'));
 
   return reportPromise(
@@ -191,7 +189,7 @@ function testHover(callback) {
       callback);
 }
 
-function testClickHides(callback) {
+export function testClickHides(callback) {
   chocolateButton.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
 
   return reportPromise(
@@ -214,7 +212,7 @@ function testClickHides(callback) {
       callback);
 }
 
-function testCardTooltipHover(callback) {
+export function testCardTooltipHover(callback) {
   cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
 
   return reportPromise(
@@ -240,7 +238,7 @@ function testCardTooltipHover(callback) {
       callback);
 }
 
-function testCardtooltipRTL(callback) {
+export function testCardtooltipRTL(callback) {
   document.documentElement.setAttribute('dir', 'rtl');
   document.body.setAttribute('dir', 'rtl');
 

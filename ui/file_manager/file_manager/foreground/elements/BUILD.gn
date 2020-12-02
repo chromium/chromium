@@ -24,6 +24,7 @@ group("closure_compile") {
   deps = [
     ":closure_compile_internal",
     ":closure_compile_jsmodules",
+    ":js_test_gen_html_modules_type_check_auto",
     ":js_test_gen_html_type_check_auto",
   ]
 }
@@ -60,6 +61,7 @@ js_type_check("closure_compile_jsmodules") {
     ":files_ripple.m",
     ":files_safe_media.m",
     ":files_toggle_ripple.m",
+    ":files_tooltip.m",
   ]
 }
 
@@ -275,12 +277,27 @@ js_library("files_tooltip") {
   deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
-js_unittest("files_tooltip_unittest") {
+js_unittest("files_tooltip_unittest.m") {
   deps = [
-    ":files_tooltip",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":files_tooltip.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
   ]
+}
+
+polymer_modulizer("files_tooltip") {
+  js_file = "files_tooltip.js"
+  html_file = "files_tooltip.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+}
+
+js_library("files_tooltip.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_tooltip.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":files_tooltip_module" ]
 }
 
 js_unittest("files_toast_unittest") {
@@ -303,7 +320,6 @@ js_test_gen_html("js_test_gen_html") {
     ":files_message_unittest",
     ":files_password_dialog_unittest",
     ":files_toast_unittest",
-    ":files_tooltip_unittest",
     ":files_xf_elements_unittest",
   ]
   html_import = true
@@ -324,6 +340,19 @@ js_library("xf_display_panel") {
     ":xf_panel_item",
     "//ui/file_manager/file_manager/common/js:util",
   ]
+}
+
+js_test_gen_html("js_test_gen_html_modules") {
+  is_polymer3 = true
+  deps = [ ":files_tooltip_unittest.m" ]
+
+  closure_flags =
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "hide_warnings_for=third_party/",
+      ]
 }
 
 js_library("xf_panel_item") {

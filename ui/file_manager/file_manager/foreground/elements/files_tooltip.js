@@ -12,7 +12,7 @@
  * document.querySelector('files-tooltip').addTargets(
  *     document.querySelectorAll('[has-tooltip]'))
  */
-const FilesTooltip = Polymer({
+/* #export */ const FilesTooltip = Polymer({
   is: 'files-tooltip',
 
   properties: {
@@ -62,7 +62,7 @@ const FilesTooltip = Polymer({
     /**
      * Add <files-tooltip files-ng> for files-ng specific CSS styles.
      */
-    this.toggleAttribute('files-ng', util.isFilesNg());
+    this.toggleAttribute('files-ng', true);
   },
 
   /**
@@ -82,9 +82,6 @@ const FilesTooltip = Polymer({
    */
   addTargets: function(targets) {
     for (let i = 0; i < targets.length; i++) {
-      if (targets[i].hasAttribute('show-card-tooltip') && !util.isFilesNg()) {
-        continue;
-      }
       this.addTarget(targets[i]);
     }
   },
@@ -185,7 +182,7 @@ const FilesTooltip = Polymer({
     const rect = target.getBoundingClientRect();
 
     let top = rect.top + rect.height;
-    if (util.isFilesNg() && !useCardTooltip) {
+    if (!useCardTooltip) {
       top += 8;
     }
 

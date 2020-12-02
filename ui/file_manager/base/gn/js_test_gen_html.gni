@@ -32,6 +32,9 @@ import("//third_party/closure_compiler/js_unit_tests.gni")
 #     contain <script type="module" src="..._unittest.m.js"> and traditional
 #     <script>s for mocks.
 #
+#   is_polymer3:
+#     Boolean indicating that it's a test for a Polymer 3 element.
+#
 #
 # Non-Polymer example:
 #   js_test_gen_html("folder_tests") {
@@ -77,6 +80,7 @@ template("js_test_gen_html") {
                              "mocks",
                              "html_import",
                              "js_module",
+                             "is_polymer3",
                            ])
     testonly = true
     sources = []
@@ -105,6 +109,11 @@ template("js_test_gen_html") {
       args += [ "--js_module" ]
     }
 
+    # Polymer3 implies --js_module for the generated HTML.
+    if (defined(is_polymer3) && is_polymer3) {
+      args += [ "--js_module" ]
+    }
+
     if (defined(mocks)) {
       args += [ "--mocks" ] + rebase_path(mocks, root_build_dir)
       data = mocks
@@ -117,6 +126,9 @@ template("js_test_gen_html") {
     js_type_check(type_check_target_name) {
       if (defined(invoker.js_module) && invoker.js_module) {
         uses_js_modules = true
+      }
+      if (defined(invoker.is_polymer3) && invoker.is_polymer3) {
+        is_polymer3 = true
       }
       testonly = true
       forward_variables_from(invoker, [ "closure_flags" ])
