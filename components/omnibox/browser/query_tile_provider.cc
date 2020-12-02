@@ -17,13 +17,13 @@ namespace {
 const int kQueryTilesMatchRelevanceScore = 1599;
 
 // Helper function to determine if the omnibox text matches the previously
-// selected query tile, if any. If there is no query tile selected, empty input
+// selected |tile_query_text|. If |tile_query_text| is empty, empty input
 // text is considered a match.
-bool TextMatchesQueryTile(base::string16 input_text,
-                          base::Optional<query_tiles::Tile> tile) {
+bool TextMatchesTileQueryText(const base::string16& input_text,
+                              const std::string& tile_query_text) {
   auto trimmed_input =
       base::TrimWhitespace(input_text, base::TrimPositions::TRIM_TRAILING);
-  auto tile_text = base::UTF8ToUTF16(tile.has_value() ? tile->query_text : "");
+  auto tile_text = base::UTF8ToUTF16(tile_query_text);
   auto trimmed_tile_text =
       base::TrimWhitespace(tile_text, base::TrimPositions::TRIM_TRAILING);
   return trimmed_input == trimmed_tile_text;
@@ -122,7 +122,7 @@ bool QueryTileProvider::AllowQueryTileSuggestions(
 void QueryTileProvider::OnTopLevelTilesFetched(
     const AutocompleteInput& input,
     std::vector<query_tiles::Tile> tiles) {
-  BuildSuggestion(input, base::nullopt, std::move(tiles));
+  BuildSuggestion(input, /*tile_query_text=*/"", std::move(tiles));
 }
 
 void QueryTileProvider::OnSubTilesFetched(
@@ -133,13 +133,12 @@ void QueryTileProvider::OnSubTilesFetched(
   for (const auto& sub_tile : std::move(tile->sub_tiles))
     sub_tiles.emplace_back(std::move(*sub_tile.get()));
 
-  BuildSuggestion(input, tile, std::move(sub_tiles));
+  BuildSuggestion(input, tile->query_text, std::move(sub_tiles));
 }
 
-void QueryTileProvider::BuildSuggestion(
-    const AutocompleteInput& input,
-    base::Optional<query_tiles::Tile> parent,
-    std::vector<query_tiles::Tile> tiles) {
+void QueryTileProvider::BuildSuggestion(const AutocompleteInput& input,
+                                        const std::string& tile_query_text,
+                                        std::vector<query_tiles::Tile> tiles) {
   if (done_)
     return;
 
@@ -148,7 +147,8 @@ void QueryTileProvider::BuildSuggestion(
   if (tiles.empty())
     return;
 
-  bool is_showing_tile_text = TextMatchesQueryTile(input.text(), parent);
+  bool is_showing_tile_text =
+      TextMatchesTileQueryText(input.text(), tile_query_text);
   bool is_showing_url = input.type() == metrics::OmniboxInputType::URL &&
                         TextMatchesPageURL(input);
   bool show_query_tiles = is_showing_tile_text || is_showing_url;
@@ -162,7 +162,7 @@ void QueryTileProvider::BuildSuggestion(
   const TemplateURL* default_provider = GetDefaultSearchProvider(client_);
   match.keyword =
       default_provider ? default_provider->keyword() : base::string16();
-  match.query_tiles = tiles;
+  match.query_tiles = std::move(tiles);
 
   // The query tiles suggestion is shown as the default suggestion, unless there
   // is an edit URL suggestion which is shown as the first suggestion.

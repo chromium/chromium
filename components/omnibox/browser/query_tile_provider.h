@@ -58,11 +58,11 @@ class QueryTileProvider : public AutocompleteProvider {
   void OnSubTilesFetched(const AutocompleteInput& input,
                          base::Optional<query_tiles::Tile> tile);
 
-  // For the given |input| and optionally a selected tile denoted by |parent|,
-  // checks if a suggestion should be shown. If yes, builds a query tile
-  // suggestion with the matching |tiles|.
+  // For the given |input| and optionally a selected tile denoted by
+  // |tile_query_text|, checks if a suggestion should be shown. If yes, builds a
+  // query tile suggestion with the matching |tiles|.
   void BuildSuggestion(const AutocompleteInput& input,
-                       base::Optional<query_tiles::Tile> parent,
+                       const std::string& tile_query_text,
                        std::vector<query_tiles::Tile> tiles);
 
   AutocompleteProviderClient* const client_;
