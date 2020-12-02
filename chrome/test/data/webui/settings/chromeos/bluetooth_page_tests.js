@@ -35,7 +35,7 @@ function getFakePrefs() {
 
 /**
  * @param {number} numPairedDevices Number of paired devices to generate.
- * @param {number} numUnpairedDevices Number of unparied devices to generate.
+ * @param {number} numUnpairedDevices Number of unpaired devices to generate.
  * @return {!Array<!chrome.bluetooth.Device>} An array of fake bluetooth
  *     devices.
  */

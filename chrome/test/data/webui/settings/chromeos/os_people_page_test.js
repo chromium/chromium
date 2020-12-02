@@ -202,7 +202,7 @@ cr.define('settings_people_page', function() {
           'Setup button should be focused for settingId=315.');
     });
 
-    test('Deep link to guest browing on users page', async () => {
+    test('Deep link to guest browsing on users page', async () => {
       loadTimeData.overrideValues({isDeepLinkingEnabled: true});
 
       peoplePage = document.createElement('os-settings-people-page');
