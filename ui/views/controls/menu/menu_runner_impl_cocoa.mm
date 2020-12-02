@@ -27,85 +27,80 @@
 namespace {
 
 NSImage* NewTagImage() {
-  static NSImage* new_tag = []() {
-    // 1. Make the attributed string.
+  // 1. Make the attributed string.
 
-    NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
+  NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
 
-    // The preferred font is slightly smaller and slightly more bold than the
-    // menu font. The size change is required to make it look correct in the
-    // badge; we add a small degree of bold to prevent color smearing/blurring
-    // due to font smoothing. This ensures readability on all platforms and in
-    // both light and dark modes.
-    gfx::Font badge_font = gfx::Font(
-        new gfx::PlatformFontMac(gfx::PlatformFontMac::SystemFontType::kMenu));
-    badge_font =
-        badge_font.Derive(views::NewBadge::kNewBadgeFontSizeAdjustment,
-                          gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
+  // The preferred font is slightly smaller and slightly more bold than the
+  // menu font. The size change is required to make it look correct in the
+  // badge; we add a small degree of bold to prevent color smearing/blurring
+  // due to font smoothing. This ensures readability on all platforms and in
+  // both light and dark modes.
+  gfx::Font badge_font = gfx::Font(
+      new gfx::PlatformFontMac(gfx::PlatformFontMac::SystemFontType::kMenu));
+  badge_font = badge_font.Derive(views::NewBadge::kNewBadgeFontSizeAdjustment,
+                                 gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
 
-    NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
-        ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-            ui::NativeTheme::kColorId_TextOnProminentButtonColor));
+  NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
+      ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
+          ui::NativeTheme::kColorId_TextOnProminentButtonColor));
 
-    NSDictionary* badge_attrs = @{
-      NSFontAttributeName : badge_font.GetNativeFont(),
-      NSForegroundColorAttributeName : badge_text_color,
-    };
+  NSDictionary* badge_attrs = @{
+    NSFontAttributeName : badge_font.GetNativeFont(),
+    NSForegroundColorAttributeName : badge_text_color,
+  };
 
-    NSMutableAttributedString* badge_attr_string =
-        [[NSMutableAttributedString alloc] initWithString:badge_text
-                                               attributes:badge_attrs];
+  NSMutableAttributedString* badge_attr_string =
+      [[NSMutableAttributedString alloc] initWithString:badge_text
+                                             attributes:badge_attrs];
 
-    if (base::mac::IsOS10_10()) {
-      // The system font for 10.10 is Helvetica Neue, and when used for this
-      // "new tag" the letters look cramped. Track it out so that there's some
-      // breathing room. There is no tracking attribute, so instead add kerning
-      // to all but the last character.
-      [badge_attr_string
-          addAttribute:NSKernAttributeName
-                 value:@0.4
-                 range:NSMakeRange(0, [badge_attr_string length] - 1)];
-    }
+  if (base::mac::IsOS10_10()) {
+    // The system font for 10.10 is Helvetica Neue, and when used for this
+    // "new tag" the letters look cramped. Track it out so that there's some
+    // breathing room. There is no tracking attribute, so instead add kerning
+    // to all but the last character.
+    [badge_attr_string
+        addAttribute:NSKernAttributeName
+               value:@0.4
+               range:NSMakeRange(0, [badge_attr_string length] - 1)];
+  }
 
-    // 2. Calculate the size required.
+  // 2. Calculate the size required.
 
-    NSSize badge_size = [badge_attr_string size];
-    badge_size.width = trunc(badge_size.width);
-    badge_size.height = trunc(badge_size.height);
+  NSSize badge_size = [badge_attr_string size];
+  badge_size.width = trunc(badge_size.width);
+  badge_size.height = trunc(badge_size.height);
 
-    badge_size.width += 2 * views::NewBadge::kNewBadgeInternalPadding +
-                        2 * views::NewBadge::kNewBadgeHorizontalMargin;
-    badge_size.height += views::NewBadge::kNewBadgeInternalPaddingTopMac;
+  badge_size.width += 2 * views::NewBadge::kNewBadgeInternalPadding +
+                      2 * views::NewBadge::kNewBadgeHorizontalMargin;
+  badge_size.height += views::NewBadge::kNewBadgeInternalPaddingTopMac;
 
-    // 3. Craft the image.
+  // 3. Craft the image.
 
-    return [[NSImage
-         imageWithSize:badge_size
-               flipped:NO
-        drawingHandler:^(NSRect dest_rect) {
-          NSRect badge_frame = NSInsetRect(
-              dest_rect, views::NewBadge::kNewBadgeHorizontalMargin, 0);
-          NSBezierPath* rounded_badge_rect = [NSBezierPath
-              bezierPathWithRoundedRect:badge_frame
-                                xRadius:views::NewBadge::kNewBadgeCornerRadius
-                                yRadius:views::NewBadge::kNewBadgeCornerRadius];
-          NSColor* badge_color = skia::SkColorToSRGBNSColor(
-              ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-                  ui::NativeTheme::kColorId_ProminentButtonColor));
-          [badge_color set];
-          [rounded_badge_rect fill];
+  return [NSImage
+       imageWithSize:badge_size
+             flipped:NO
+      drawingHandler:^(NSRect dest_rect) {
+        NSRect badge_frame = NSInsetRect(
+            dest_rect, views::NewBadge::kNewBadgeHorizontalMargin, 0);
+        NSBezierPath* rounded_badge_rect = [NSBezierPath
+            bezierPathWithRoundedRect:badge_frame
+                              xRadius:views::NewBadge::kNewBadgeCornerRadius
+                              yRadius:views::NewBadge::kNewBadgeCornerRadius];
+        NSColor* badge_color = skia::SkColorToSRGBNSColor(
+            ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
+                ui::NativeTheme::kColorId_ProminentButtonColor));
+        [badge_color set];
+        [rounded_badge_rect fill];
 
-          NSPoint badge_text_location = NSMakePoint(
-              NSMinX(badge_frame) + views::NewBadge::kNewBadgeInternalPadding,
-              NSMinY(badge_frame) +
-                  views::NewBadge::kNewBadgeInternalPaddingTopMac);
-          [badge_attr_string drawAtPoint:badge_text_location];
+        NSPoint badge_text_location = NSMakePoint(
+            NSMinX(badge_frame) + views::NewBadge::kNewBadgeInternalPadding,
+            NSMinY(badge_frame) +
+                views::NewBadge::kNewBadgeInternalPaddingTopMac);
+        [badge_attr_string drawAtPoint:badge_text_location];
 
-          return YES;
-        }] retain];
-  }();
-
-  return new_tag;
+        return YES;
+      }];
 }
 
 }  // namespace
