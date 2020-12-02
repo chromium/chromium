@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -55,7 +55,9 @@ public class ConsentTextTracker {
     }
 
     /** A CharSequence -> CharSequence transformation. */
-    public interface TextTransformation { CharSequence transform(CharSequence input); }
+    public interface TextTransformation {
+        CharSequence transform(CharSequence input);
+    }
 
     private final Resources mResources;
     private final Map<TextView, TextViewMetadata> mTextViewToMetadataMap = new HashMap<>();
@@ -64,7 +66,7 @@ public class ConsentTextTracker {
      * Creates an instance of ConsentTextTracker.
      * @param resources Resources object to be used for converting IDs into strings.
      */
-    ConsentTextTracker(Resources resources) {
+    public ConsentTextTracker(Resources resources) {
         mResources = resources;
     }
 
