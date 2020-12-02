@@ -107,10 +107,11 @@ void ThumbnailGenerator::RetrieveThumbnail(
   if (base::StartsWith(mime_type, "video/",
                        base::CompareCase::INSENSITIVE_ASCII)) {
     auto parser = ThumbnailMediaParser::Create(mime_type, file_path);
-    parser->Start(base::BindOnce(&ThumbnailGenerator::OnVideoThumbnailRetrieved,
-                                 weak_factory_.GetWeakPtr(),
-                                 std::move(java_callback), icon_size,
-                                 std::move(parser)));
+    auto* const parser_ptr = parser.get();
+    parser_ptr->Start(
+        base::BindOnce(&ThumbnailGenerator::OnVideoThumbnailRetrieved,
+                       weak_factory_.GetWeakPtr(), std::move(java_callback),
+                       icon_size, std::move(parser)));
     return;
   }
 
