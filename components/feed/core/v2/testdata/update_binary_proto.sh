@@ -10,3 +10,6 @@ CHROMIUM_DIR=$(realpath $(dirname $(readlink -f $0))/../../../../..)
 cat "$CHROMIUM_DIR/components/feed/core/v2/testdata/response.textproto" | \
   "$CHROMIUM_DIR/components/feed/core/v2/tools/encode_feed_response.sh" > \
   "$CHROMIUM_DIR/components/test/data/feed/response.binarypb"
+
+cp "$CHROMIUM_DIR/components/test/data/feed/response.binarypb" \
+  "$CHROMIUM_DIR/chrome/test/data/android/feed/v2/feed_query_normal_response.binarypb"

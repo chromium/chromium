@@ -8,8 +8,8 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-import "components/feed/core/proto/v2/wire/duration.proto";
-import "components/feed/core/proto/v2/wire/token.proto";
+// UNUSED_IN_CHROME import "components/feed/core/proto/v2/wire/duration.proto";
+// UNUSED_IN_CHROME import "components/feed/core/proto/v2/wire/token.proto";
 
 // UNUSED_IN_CHROME message InPlaceUpdateHandle {
 // UNUSED_IN_CHROME optional feedwire.Duration use_after = 1;

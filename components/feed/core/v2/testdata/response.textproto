@@ -49,6 +49,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card1"
+          title: "card 1 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 1"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 1"
+          badge_id: "app/offline-badge/test-badge-1"
+        }
         xsurface_content {
           xsurface_output: "data2"
         }
@@ -91,6 +100,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card2"
+          title: "card 2 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 2"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 2"
+          badge_id: "app/offline-badge/test-badge-2"
+        }
         xsurface_content {
           xsurface_output: "data3"
         }
@@ -133,6 +151,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card3"
+          title: "card 3 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 3"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 3"
+          badge_id: "app/offline-badge/test-badge-3"
+        }
         xsurface_content {
           xsurface_output: "data4"
         }
@@ -175,6 +202,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card4"
+          title: "card 4 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 4"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 4"
+          badge_id: "app/offline-badge/test-badge-4"
+        }
         xsurface_content {
           xsurface_output: "data5"
         }
@@ -217,6 +253,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card5"
+          title: "card 5 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 5"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 5"
+          badge_id: "app/offline-badge/test-badge-5"
+        }
         xsurface_content {
           xsurface_output: "data6"
         }
@@ -259,6 +304,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card6"
+          title: "card 6 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 6"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 6"
+          badge_id: "app/offline-badge/test-badge-6"
+        }
         xsurface_content {
           xsurface_output: "data7"
         }
@@ -301,6 +355,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card7"
+          title: "card 7 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 7"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 7"
+          badge_id: "app/offline-badge/test-badge-7"
+        }
         xsurface_content {
           xsurface_output: "data8"
         }
@@ -343,6 +406,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card8"
+          title: "card 8 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 8"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 8"
+          badge_id: "app/offline-badge/test-badge-8"
+        }
         xsurface_content {
           xsurface_output: "data9"
         }
@@ -385,6 +457,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card9"
+          title: "card 9 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 9"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 9"
+          badge_id: "app/offline-badge/test-badge-9"
+      }
         xsurface_content {
           xsurface_output: "data10"
         }
@@ -427,6 +508,15 @@ feed_response {
       }
       renderable_unit: CONTENT
       content_extension {
+        prefetch_metadata {
+          uri: "http://www.google.com/search?q=card10"
+          title: "card 10 title"
+          image_url: "https://fonts.gstatic.com/s/i/googlematerialicons/bug_report/v6/gm_grey-24dp/2x/gm_bug_report_gm_grey_24dp.png"
+          publisher: "publisher 10"
+          favicon_url: "https://www.google.com/s2/favicons?domain=www.google.com"
+          snippet: "card 10"
+          badge_id: "app/offline-badge/test-badge-10"
+        }
         xsurface_content {
           xsurface_output: "data11"
         }
@@ -476,7 +566,7 @@ feed_response {
     #response_time_ms: 1587056924
     chrome_feed_response_metadata {
       privacy_notice_fulfilled: true
-      waa_on: true
+      logging_enabled: true
     }
   }
 }

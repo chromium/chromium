@@ -731,6 +731,14 @@ if (enable_feed_v1) {
   ]
 }
 
+if (enable_feed_v2) {
+  feed_test_java_sources += [
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2NewTabPageTest.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2TestHelper.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/TestFeedServer.java",
+  ]
+}
+
 feed_test_deps = []
 if (enable_feed_v1 || enable_feed_v2) {
   feed_test_deps += feed_deps + [

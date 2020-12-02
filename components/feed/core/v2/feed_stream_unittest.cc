@@ -1553,6 +1553,7 @@ TEST_F(FeedStreamTest, ReadNetworkResponse) {
 
   // The stream's user attributes are set, so activity logging is enabled.
   EXPECT_TRUE(stream_->IsActivityLoggingEnabled());
+  EXPECT_EQ(1, prefetch_service_.NewSuggestionsAvailableCallCount());
 }
 
 TEST_F(FeedStreamTest, ClearAllAfterLoadResultsInRefresh) {
