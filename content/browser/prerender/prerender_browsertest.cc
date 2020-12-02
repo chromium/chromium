@@ -66,6 +66,34 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return *storage_partition->GetPrerenderHostRegistry();
   }
 
+  // Adds <link rel=prerender> in the current main frame and waits until the
+  // completion of prerendering.
+  void AddPrerender(const GURL& prerendering_url) {
+    // Start watching new web contents to be created for prerendering.
+    content::TestNavigationObserver observer(prerendering_url);
+    observer.StartWatchingNewWebContents();
+    // Add the link tag that will prerender the URL.
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       JsReplace("add_prerender($1)", prerendering_url)));
+    observer.Wait();
+  }
+
+  // Navigates to the URL and waits until the completion of navigation.
+  //
+  // Navigations that could activate a prerendered page on the multiple
+  // WebContents architecture (not multiple-pages architecture known as MPArch)
+  // should use this function instead of the NavigateToURL() test helper. This
+  // is because the test helper accesses the predecessor WebContents to be
+  // destroyed during activation and results in crashes.
+  // See https://crbug.com/1154501 for the MPArch migration.
+  void NavigateWithLocation(const GURL& url) {
+    content::TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(
+        ExecJs(shell()->web_contents(), JsReplace("location = $1", url)));
+    observer.Wait();
+    EXPECT_EQ(shell()->web_contents()->GetURL(), url);
+  }
+
   GURL GetUrl(const std::string& path) {
     return ssl_server_.GetURL("a.test", path);
   }
@@ -91,38 +119,26 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All, PrerenderBrowserTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
-  const GURL kInitialUrl = GetUrl("/prerender/single_prerender.html");
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
-  // Start watching new web contents to be created for prerendering.
-  content::TestNavigationObserver navigation_observer(kPrerenderingUrl);
-  navigation_observer.StartWatchingNewWebContents();
-
-  // Navigate to a page that initiates prerendering for `kPrerenderingUrl`.
+  // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Wait until the completion of prerendering.
-  navigation_observer.Wait();
-
-  // A request should be issued for `kPrerenderingUrl`.
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
-  // PrerenderHost for `kPrerenderingUrl` should be registered in
-  // PrerenderHostRegistry.
+  // A prerender host for the URL should be registered.
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  // Activate the prerendered page. NavigateToURL() is not available here
-  // because the helper accesses the predecessor WebContents but it is destroyed
-  // during activation.
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
-  content::TestNavigationObserver activation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     JsReplace("location = $1", kPrerenderingUrl)));
-  activation_observer.Wait();
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
 
-  // PrerenderHost for `kPrerenderingUrl` should be consumed.
+  // The prerender host should be consumed.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   if (IsActivationDisabled()) {
@@ -135,45 +151,33 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
-  const GURL kInitialUrl = GetUrl("/prerender/multiple_prerenders.html");
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
 
-  // Start watching new web contents to be created for prerendering.
-  content::TestNavigationObserver navigation_observer1(kPrerenderingUrl1);
-  content::TestNavigationObserver navigation_observer2(kPrerenderingUrl2);
-  navigation_observer1.StartWatchingNewWebContents();
-  navigation_observer2.StartWatchingNewWebContents();
-
-  // Navigate to a page that initiates prerendering for `kPrerenderingUrl1` and
-  // `kPrerenderingUrl2`.
+  // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
-  // Wait until the completion of prerendering.
-  navigation_observer1.Wait();
-  navigation_observer2.Wait();
-
-  // Requests should be issued for `kPrerenderingUrl1` and `kPrerenderingUrl2`.
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl1` and
+  // `kPrerenderingUrl2`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl1), 0);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl2), 0);
+  AddPrerender(kPrerenderingUrl1);
+  AddPrerender(kPrerenderingUrl2);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 
-  // PrerenderHosts for `kPrerenderingUrl1` and `kPrerenderingUrl2` should be
-  // registered in PrerenderHostRegistry.
+  // Prerender hosts for `kPrerenderingUrl1` and `kPrerenderingUrl2` should be
+  // registered.
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  // Activate the prerendered page. NavigateToURL() is not available here
-  // because the helper accesses the predecessor WebContents but it is destroyed
-  // during activation.
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
-  content::TestNavigationObserver activation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     JsReplace("location = $1", kPrerenderingUrl2)));
-  activation_observer.Wait();
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl2);
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl2);
 
-  // PrerenderHosts should be consumed or destroyed for activation.
+  // The prerender hosts should be consumed or destroyed for activation.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
@@ -211,23 +215,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 
-  // PrerenderHosts for `kPrerenderingUrl1` and `kPrerenderingUrl2` should be
-  // registered in PrerenderHostRegistry.
+  // Prerender hosts for `kPrerenderingUrl1` and `kPrerenderingUrl2` should be
+  // registered.
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  // Activate the prerendered page. NavigateToURL() is not available here
-  // because the helper accesses the predecessor WebContents but it is destroyed
-  // during activation.
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
-  content::TestNavigationObserver activation_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     JsReplace("location = $1", kPrerenderingUrl1)));
-  activation_observer.Wait();
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl1);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl1);
 
-  // PrerenderHosts should be consumed or destroyed for activation.
+  // The prerender hosts should be consumed or destroyed for activation.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
