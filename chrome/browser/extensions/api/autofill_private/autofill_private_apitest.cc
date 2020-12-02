@@ -70,7 +70,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MAYBE_AddAndUpdateAddress) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddress")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
+// TODO(crbug.com/1154856): Disabled on Mac for flakiness.
+#if defined(OS_MAC)
+#define MAYBE_AddAndUpdateCreditCard DISABLED_AddAndUpdateCreditCard
+#else
+#define MAYBE_AddAndUpdateCreditCard AddAndUpdateCreditCard
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MAYBE_AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
 }
 
