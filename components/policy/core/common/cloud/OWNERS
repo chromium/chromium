@@ -1,2 +1,4 @@
 per-file machine_level_user_cloud_policy*=rogerta@chromium.org
 per-file machine_level_user_cloud_policy*=zmin@chromium.org
+per-file encrypted*=zatrudo@google.com
+per-file encrypted*=lbaraz@chromium.com
