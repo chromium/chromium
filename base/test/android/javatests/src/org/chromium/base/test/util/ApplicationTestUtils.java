@@ -99,7 +99,6 @@ public class ApplicationTestUtils {
      */
     public static <T extends Activity> T waitForActivityWithClass(
             Class<? extends Activity> activityClass, Stage stage, Runnable trigger) {
-        ThreadUtils.assertOnBackgroundThread();
         final CallbackHelper activityCallback = new CallbackHelper();
         final AtomicReference<T> activityRef = new AtomicReference<>();
         ActivityLifecycleCallback stateListener = (Activity newActivity, Stage newStage) -> {

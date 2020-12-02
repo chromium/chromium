@@ -6,6 +6,8 @@ package org.chromium.webview_shell.test;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
+import android.content.Intent;
+import android.support.test.rule.ActivityTestRule;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebStorage;
@@ -19,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.webview_shell.WebViewThreadTestActivity;
 
@@ -35,13 +36,12 @@ public class WebViewThreadTest {
     private WebViewThreadTestActivity mActivity;
 
     @Rule
-    public BaseActivityTestRule<WebViewThreadTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(WebViewThreadTestActivity.class);
+    public ActivityTestRule<WebViewThreadTestActivity> mActivityTestRule =
+            new ActivityTestRule<>(WebViewThreadTestActivity.class, false, false);
 
     @Before
     public void setUp() {
-        mActivityTestRule.launchActivity(null);
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = mActivityTestRule.launchActivity(new Intent());
     }
 
     @After

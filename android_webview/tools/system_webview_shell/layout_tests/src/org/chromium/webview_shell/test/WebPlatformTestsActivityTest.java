@@ -8,6 +8,7 @@ import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.os.Handler;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 import android.webkit.WebView;
 
 import androidx.test.filters.MediumTest;
@@ -18,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.webview_shell.WebPlatformTestsActivity;
@@ -64,12 +64,11 @@ public class WebPlatformTestsActivityTest {
     private WebPlatformTestsActivity mTestActivity;
 
     @Rule
-    public BaseActivityTestRule<WebPlatformTestsActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(WebPlatformTestsActivity.class);
+    public ActivityTestRule<WebPlatformTestsActivity> mActivityTestRule =
+            new ActivityTestRule<>(WebPlatformTestsActivity.class, false, true);
 
     @Before
     public void setUp() {
-        mActivityTestRule.launchActivity(null);
         mTestActivity = mActivityTestRule.getActivity();
     }
 

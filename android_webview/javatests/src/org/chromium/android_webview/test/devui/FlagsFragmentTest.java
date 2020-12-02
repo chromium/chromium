@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -59,8 +60,6 @@ import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -77,11 +76,12 @@ import java.util.Map;
 @RunWith(AwJUnit4ClassRunner.class)
 public class FlagsFragmentTest {
     @Rule
-    public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
+    public ActivityTestRule mRule =
+            new ActivityTestRule<MainActivity>(MainActivity.class, false, false);
 
     @Before
     public void setUp() throws Exception {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent();
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
     }

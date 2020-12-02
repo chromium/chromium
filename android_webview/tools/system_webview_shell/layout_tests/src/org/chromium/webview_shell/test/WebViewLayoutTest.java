@@ -4,8 +4,10 @@
 
 package org.chromium.webview_shell.test;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 
 import androidx.test.filters.MediumTest;
 
@@ -19,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -78,13 +79,12 @@ public class WebViewLayoutTest {
     private boolean mRebaseLine;
 
     @Rule
-    public BaseActivityTestRule<WebViewLayoutTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(WebViewLayoutTestActivity.class);
+    public ActivityTestRule<WebViewLayoutTestActivity> mActivityTestRule =
+            new ActivityTestRule<>(WebViewLayoutTestActivity.class, false, false);
 
     @Before
     public void setUp() {
-        mActivityTestRule.launchActivity(null);
-        mTestActivity = mActivityTestRule.getActivity();
+        mTestActivity = mActivityTestRule.launchActivity(new Intent());
         Bundle arguments = InstrumentationRegistry.getArguments();
         if (arguments != null) {
             String modeArgument = arguments.getString("mode");
