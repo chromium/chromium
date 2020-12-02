@@ -38,12 +38,19 @@ class LongScreenshotsTabService
       bool is_off_the_record);
   ~LongScreenshotsTabService() override;
 
+  // Define a list of statuses to describe the calling of paint preview and
+  // generation of the bitmap.
+  //
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.share.long_screenshots
   enum Status {
-    kOk = 0,
-    kDirectoryCreationFailed = 1,
-    kCaptureFailed = 2,
-    kProtoSerializationFailed = 3,
-    kWebContentsGone = 4,
+    kUnknown = 0,
+    kOk = 1,
+    kDirectoryCreationFailed = 2,
+    kCaptureFailed = 3,
+    kProtoSerializationFailed = 4,
+    kWebContentsGone = 5,
+    kNativeServiceUninitialized = 6,
   };
 
   using FinishedCallback = base::OnceCallback<void(Status)>;
