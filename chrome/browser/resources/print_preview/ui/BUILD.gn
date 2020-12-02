@@ -43,7 +43,6 @@ js_type_check("closure_compile_module") {
     ":plugin_proxy",
     ":preview_area",
     ":print_preview_search_box",
-    ":provisional_destination_resolver",
     ":scaling_settings",
     ":select_behavior",
     ":settings_behavior",
@@ -57,6 +56,7 @@ js_type_check("closure_compile_module") {
       ":destination_dropdown_cros",
       ":destination_select_cros",
       ":pin_settings",
+      ":provisional_destination_resolver",
     ]
   } else {
     deps += [
@@ -473,7 +473,6 @@ if (is_chromeos_ash) {
       ":destination_list",
       ":invitation_promo",
       ":print_preview_search_box",
-      ":provisional_destination_resolver",
       "..:metrics",
       "..:native_layer",
       "../data:destination",
@@ -540,16 +539,18 @@ js_library("print_preview_search_box") {
   ]
 }
 
-js_library("provisional_destination_resolver") {
-  deps = [
-    "../data:destination",
-    "../data:destination_store",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
+if (is_chromeos) {
+  js_library("provisional_destination_resolver") {
+    deps = [
+      "../data:destination",
+      "../data:destination_store",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+      "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:i18n_behavior.m",
+      "//ui/webui/resources/js:promise_resolver.m",
+    ]
+  }
 }
 
 js_library("highlight_utils") {
@@ -593,7 +594,6 @@ html_to_js("web_components") {
     "print_preview_search_box.js",
     "print_preview_shared_css.js",
     "print_preview_vars_css.js",
-    "provisional_destination_resolver.js",
     "scaling_settings.js",
     "settings_section.js",
     "settings_select.js",
@@ -606,6 +606,7 @@ html_to_js("web_components") {
       "destination_dropdown_cros.js",
       "destination_select_cros.js",
       "pin_settings.js",
+      "provisional_destination_resolver.js",
     ]
   } else {
     js_files += [

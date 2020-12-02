@@ -18,7 +18,6 @@ import './invitation_promo.js';
 import './print_preview_search_box.js';
 import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
-import './provisional_destination_resolver.js';
 import '../strings.m.js';
 import './throbber_css.js';
 
@@ -188,29 +187,10 @@ Polymer({
     const listItem = e.detail;
     const destination = listItem.destination;
 
-    // ChromeOS local destinations that don't have capabilities need to be
-    // configured before selecting, and provisional destinations need to be
-    // resolved. Other destinations can be selected.
-    if (destination.readyForSelection) {
-      this.selectDestination_(destination);
-      return;
-    }
-
-    // Provisional destinations
-    if (destination.isProvisional) {
-      this.$.provisionalResolver.resolveDestination(destination)
-          .then(this.selectDestination_.bind(this))
-          .catch(function() {
-            console.warn(
-                'Failed to resolve provisional destination: ' + destination.id);
-          })
-          .then(() => {
-            if (this.$.dialog.open && listItem && !listItem.hidden) {
-              listItem.focus();
-            }
-          });
-      return;
-    }
+    // No provisional or local CrOS destinations on desktop, so all destinations
+    // should be ready for selection.
+    assert(destination.readyForSelection);
+    this.selectDestination_(destination);
   },
 
   /**

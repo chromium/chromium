@@ -154,7 +154,6 @@ preprocess_if_expr("preprocess_generated") {
     "ui/print_preview_search_box.js",
     "ui/print_preview_shared_css.js",
     "ui/print_preview_vars_css.js",
-    "ui/provisional_destination_resolver.js",
     "ui/scaling_settings.js",
     "ui/settings_section.js",
     "ui/settings_select.js",
@@ -167,6 +166,7 @@ preprocess_if_expr("preprocess_generated") {
       "ui/destination_dropdown_cros.js",
       "ui/destination_select_cros.js",
       "ui/pin_settings.js",
+      "ui/provisional_destination_resolver.js",
       "ui/destination_dialog_cros.js",
     ]
   } else {
