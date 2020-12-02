@@ -203,7 +203,7 @@ bool IsAllowlisted(const std::vector<std::string>& allowlist,
 
 bool IsOriginPotentiallyTrustworthy(const url::Origin& origin) {
   // The code below is based on the specification at
-  // https://www.w3.org/TR/powerful-features/#is-origin-trustworthy.
+  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
 
   // 1. If origin is an opaque origin, return "Not Trustworthy".
   if (origin.opaque())
@@ -214,28 +214,28 @@ bool IsOriginPotentiallyTrustworthy(const url::Origin& origin) {
 
   // 3. If origin’s scheme is either "https" or "wss", return "Potentially
   //    Trustworthy".
+  // This is somewhat redundant with the GetSecureSchemes()-based check below.
   if (GURL::SchemeIsCryptographic(origin.scheme()))
     return true;
 
   // 4. If origin’s host component matches one of the CIDR notations 127.0.0.0/8
   //    or ::1/128 [RFC4632], return "Potentially Trustworthy".
-  //
-  // Diverging from the spec a bit here - in addition to the hostnames covered
-  // by https://www.w3.org/TR/powerful-features/#is-origin-trustworthy, the code
-  // below also considers "localhost" to be potentially secure.
-  //
-  // Cannot just pass |origin.host()| to |HostStringIsLocalhost|, because of the
-  // need to also strip the brackets from things like "[::1]".
+  // 5. If origin’s host component is "localhost" or falls within ".localhost",
+  //    and the user agent conforms to the name resolution rules in
+  //    [let-localhost-be-localhost], return "Potentially Trustworthy".
+  // TODO(https://crbug.com/1153337): This returns true for "localhost6",
+  // "localhost6.localdomain6" and "localhost.localdomain". Should these hosts
+  // be excluded?
   if (net::IsLocalhost(origin.GetURL()))
     return true;
 
-  // 5. If origin’s scheme component is file, return "Potentially Trustworthy".
+  // 6. If origin’s scheme component is file, return "Potentially Trustworthy".
   //
   // This is somewhat redundant with the GetLocalSchemes-based check below.
   if (origin.scheme() == url::kFileScheme)
     return true;
 
-  // 6. If origin’s scheme component is one which the user agent considers to be
+  // 7. If origin’s scheme component is one which the user agent considers to be
   //    authenticated, return "Potentially Trustworthy".
   //    Note: See §7.1 Packaged Applications for detail here.
   //
@@ -253,32 +253,31 @@ bool IsOriginPotentiallyTrustworthy(const url::Origin& origin) {
     return true;
   }
 
-  // 7. If origin has been configured as a trustworthy origin, return
+  // 8. If origin has been configured as a trustworthy origin, return
   //    "Potentially Trustworthy".
   //    Note: See §7.2 Development Environments for detail here.
   if (SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(origin))
     return true;
 
-  // 8. Return "Not Trustworthy".
+  // 9. Return "Not Trustworthy".
   return false;
 }
 
 bool IsUrlPotentiallyTrustworthy(const GURL& url) {
   // The code below is based on the specification at
-  // https://www.w3.org/TR/powerful-features/#is-url-trustworthy.
+  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
 
-  // 1. If url’s scheme is "data", return "Not Trustworthy".
-  //    Note: This aligns the definition of a secure context with the de facto
-  //    "data: URL as opaque origin" behavior that a majority of today’s
-  //    browsers have agreed upon, rather than the de jure "data: URL inherits
-  //    origin" behavior defined in HTML.
-  if (url.SchemeIs(url::kDataScheme))
-    return false;
-
-  // 2. If url is "about:blank" or "about:srcdoc", return "Potentially
+  // 1. If url is "about:blank" or "about:srcdoc", return "Potentially
   //    Trustworthy".
+  // TODO(https://crbug.com/1153335): This should probably instead rely on
+  // something like url.IsAboutBlank() || url.IsAboutSrcdoc().
   if (url.SchemeIs(url::kAboutScheme))
     return true;
+
+  // 2. If url’s scheme is "data", return "Potentially Trustworthy".
+  // TODO(https://crbug.com/1119740): The spec says we should return true here.
+  if (url.SchemeIs(url::kDataScheme))
+    return false;
 
   // 3. Return the result of executing §3.2 Is origin potentially trustworthy?
   //    on url’s origin.

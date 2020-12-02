@@ -41,9 +41,19 @@ TEST(IsPotentiallyTrustworthy, MainTest) {
   EXPECT_FALSE(IsOriginPotentiallyTrustworthy(opaque_origin));
 
   EXPECT_TRUE(IsPotentiallyTrustworthy("about:blank"));
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:blank?x=2"));
   EXPECT_TRUE(IsPotentiallyTrustworthy("about:blank#ref"));
-  EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc"));
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:blank?x=2#ref"));
 
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc"));
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc?x=2"));
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc#ref"));
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:srcdoc?x=2#ref"));
+
+  // TODO(https://crbug.com/1153335): This should return false.
+  EXPECT_TRUE(IsPotentiallyTrustworthy("about:about"));
+
+  // TODO(https://crbug.com/1119740): Should return true for data: URLs.
   EXPECT_FALSE(IsPotentiallyTrustworthy("data:test/plain;blah"));
   EXPECT_FALSE(IsPotentiallyTrustworthy("javascript:alert('blah')"));
 
@@ -89,6 +99,7 @@ TEST(IsPotentiallyTrustworthy, MainTest) {
 
   EXPECT_FALSE(IsPotentiallyTrustworthy("http://loopback"));
 
+  // TODO(https://crbug.com/1153337): Return false?
   EXPECT_TRUE(IsPotentiallyTrustworthy("http://localhost6"));
   EXPECT_TRUE(IsPotentiallyTrustworthy("ftp://localhost6.localdomain6"));
   EXPECT_TRUE(IsPotentiallyTrustworthy("http://localhost.localdomain"));

@@ -65,12 +65,6 @@ TEST(OriginUtilTest, IsOriginSecure) {
 
   EXPECT_FALSE(network_utils::IsOriginSecure(GURL("javascript:alert('blah')")));
 
-  // TODO(lukasza): data: URLs (and opaque origins associated with them) should
-  // be considered insecure according to
-  // https://www.w3.org/TR/powerful-features/#is-url-trustworthy.
-  // Unfortunately, changing the behavior of network_utils::IsOriginSecure
-  // breaks quite a few tests for now (e.g. considering data: insecure makes us
-  // think that https + data = mixed content).
   EXPECT_TRUE(network_utils::IsOriginSecure(GURL("data:test/plain;blah")));
 
   EXPECT_FALSE(network_utils::IsOriginSecure(

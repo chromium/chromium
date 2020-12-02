@@ -16,6 +16,8 @@ bool IsInsecureFormAction(const GURL& action_url) {
   // content either.
   // The data scheme is explicitly allowed in order to match blink's equivalent
   // check, since IsUrlPotentiallyTrustworthy excludes it.
+  // TODO(https://crbug.com/1119740): Remove the check for "data" scheme when
+  // it is handled by network::IsUrlPotentiallyTrustworthy.
   if (action_url.SchemeIs(url::kJavaScriptScheme) ||
       action_url.SchemeIs(url::kBlobScheme) ||
       action_url.SchemeIs(url::kFileSystemScheme) ||

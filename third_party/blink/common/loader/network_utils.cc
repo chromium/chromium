@@ -38,8 +38,8 @@ bool IsURLHandledByNetworkService(const GURL& url) {
 }
 
 bool IsOriginSecure(const GURL& url) {
-  // TODO(lukasza): data: URLs (and opaque origins associated with them) should
-  // be considered insecure according to
+  // TODO(https://crbug.com/1119740): data: URLs (and opaque origins associated
+  // with them) should be considered insecure according to
   // https://www.w3.org/TR/powerful-features/#is-url-trustworthy.
   // Unfortunately, changing this behavior of NetworkUtils::IsOriginSecure
   // breaks quite a few tests for now (e.g. considering data: insecure makes us

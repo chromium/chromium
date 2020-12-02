@@ -19,7 +19,7 @@ bool CONTENT_EXPORT OriginCanAccessServiceWorkers(const GURL& url);
 // This is based on SecurityOrigin::isPotentiallyTrustworthy and tries to mimic
 // its behavior.
 //
-// TODO(lukasza): Remove this function and use
+// TODO(https://crbug.com/1153336): Remove this function and use
 // network::IsOriginPotentiallyTrustworthy instead.
 bool CONTENT_EXPORT IsPotentiallyTrustworthyOrigin(const url::Origin& origin);
 

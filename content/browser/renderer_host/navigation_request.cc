@@ -2329,6 +2329,8 @@ void NavigationRequest::OnResponseStarted(
     // returns "Potentially Trustworthy" for data URLs, but
     // network::IsUrlPotentiallyTrustworthy returns false, so we need this
     // extra condition.
+    // TODO(https://crbug.com/1119740): Remove the check for "data" scheme when
+    // it is handled by network::IsUrlPotentiallyTrustworthy.
     if (network::IsUrlPotentiallyTrustworthy(url) ||
         url.SchemeIs(url::kDataScheme)) {
       // https://mikewest.github.io/corpp/#process-navigation-response
