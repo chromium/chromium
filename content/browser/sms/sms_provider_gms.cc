@@ -81,6 +81,10 @@ void SmsProviderGms::OnCancel(JNIEnv* env) {
   NotifyFailure(SmsFetcher::FailureType::kPromptCancelled);
 }
 
+void SmsProviderGms::OnNotAvailable(JNIEnv* env) {
+  NotifyFailure(SmsFetcher::FailureType::kBackendNotAvailable);
+}
+
 void SmsProviderGms::SetClientAndWindowForTesting(
     const base::android::JavaRef<jobject>& j_fake_client,
     const base::android::JavaRef<jobject>& j_window) {

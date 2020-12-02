@@ -159,6 +159,14 @@ class SmsProviderGmsAutoTest : public SmsProviderGmsBaseTest {
   }
 };
 
+// Fixture to be used with tests that are only applicable to the verification
+// backend.
+class SmsProviderGmsVerificationTest : public SmsProviderGmsBaseTest {
+  std::string GetSwitch() const override {
+    return switches::kWebOtpBackendSmsVerification;
+  }
+};
+
 }  // namespace
 
 TEST_P(SmsProviderGmsTest, Retrieve) {
@@ -285,6 +293,43 @@ TEST_F(SmsProviderGmsAutoTest, ExpectedFailuresShouldFallback) {
 
     TriggerAPIFailure("API_NOT_AVAILABLE");
     TriggerSmsForUserConsent("Hi\n@example.com #ABC123");
+
+    Mock::VerifyAndClearExpectations(observer());
+  }
+}
+
+// These tests are only valid with verification backend.
+
+TEST_F(SmsProviderGmsVerificationTest, ExpectedFailuresShouldCancel) {
+  {
+    EXPECT_CALL(*observer(),
+                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+        .Times(1);
+
+    provider()->Retrieve(main_rfh());
+    TriggerAPIFailure("API_NOT_CONNECTED");
+
+    Mock::VerifyAndClearExpectations(observer());
+  }
+
+  {
+    EXPECT_CALL(*observer(),
+                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+        .Times(1);
+
+    provider()->Retrieve(main_rfh());
+    TriggerAPIFailure("PLATFORM_NOT_SUPPORTED");
+
+    Mock::VerifyAndClearExpectations(observer());
+  }
+
+  {
+    EXPECT_CALL(*observer(),
+                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+        .Times(1);
+
+    provider()->Retrieve(main_rfh());
+    TriggerAPIFailure("API_NOT_AVAILABLE");
 
     Mock::VerifyAndClearExpectations(observer());
   }

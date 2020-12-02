@@ -683,6 +683,12 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
                             recorder);
     // Similar to kTimeout, the promise is not rejected here.
     return;
+  } else if (status == mojom::blink::SmsStatus::kBackendNotAvailable) {
+    // Similar to kTimeout, the promise is not rejected here.
+
+    // TODO(yigu): Add UMA to better understand this.
+    // http://crbug.com/1141024
+    return;
   }
   RecordSmsSuccessTime(base::TimeTicks::Now() - start_time, source_id,
                        recorder);

@@ -35,7 +35,10 @@ class SmsFetcher {
 
     kPromptTimeout = 3,
     kPromptCancelled = 4,
-    kMaxValue = kPromptCancelled,
+
+    // The underlying API is not available
+    kBackendNotAvailable = 5,
+    kMaxValue = kBackendNotAvailable,
   };
 
   // Indicates whether the subscriber needs to obtain its own user consent or
