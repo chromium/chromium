@@ -915,7 +915,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ExpectNoOutcomeUKM();
 }
 
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
+// Disabled test (fails intermittently on Android): https://crbug.com/1154692
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordUserCancelledAsOutcome) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
