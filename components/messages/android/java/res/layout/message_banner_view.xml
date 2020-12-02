@@ -3,16 +3,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!--
-    TODO(crbug.com/1111911): remove "UnusedResources" when this view is
-                               used outside of tests. -->
 <org.chromium.components.messages.MessageBannerView
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:ignore="UnusedResources"
-    android:layout_height="@dimen/message_banner_height"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:minHeight="@dimen/message_banner_height"
     android:layout_gravity="center_horizontal"
     android:orientation="horizontal"
     android:layout_marginTop="@dimen/message_shadow_top_margin"
@@ -20,6 +16,8 @@
     android:layout_marginStart="@dimen/message_shadow_lateral_margin"
     android:layout_marginEnd="@dimen/message_shadow_lateral_margin"
     android:elevation="@dimen/message_banner_elevation"
+    android:paddingTop="@dimen/message_banner_vertical_padding"
+    android:paddingBottom="@dimen/message_banner_vertical_padding"
     app:maxWidthPortrait="@dimen/message_max_width"
     app:maxWidthLandscape="@dimen/message_max_width"
     android:background="@drawable/message_bg_tinted">
@@ -35,12 +33,12 @@
         android:importantForAccessibility="no" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_weight="3"
         android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/message_title"
@@ -80,8 +78,8 @@
     <org.chromium.ui.widget.ButtonCompat
         style="@style/TextButton"
         android:id="@+id/message_primary_button"
-        android:layout_weight="0"
-        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:visibility="gone" />
