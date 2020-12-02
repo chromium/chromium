@@ -123,6 +123,8 @@ source_set("common") {
     "navigation_params.h",
     "navigation_params_mojom_traits.h",
     "navigation_params_utils.h",
+    "net/ip_address_space_util.cc",
+    "net/ip_address_space_util.h",
     "origin_util.cc",
     "pepper_file_util.cc",
     "pepper_file_util.h",

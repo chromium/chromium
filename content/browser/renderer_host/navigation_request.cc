@@ -70,6 +70,7 @@
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/navigation_params_utils.h"
+#include "content/common/net/ip_address_space_util.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -107,7 +108,6 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -4399,8 +4399,7 @@ void NavigationRequest::UpdateClientSecurityState() {
   DCHECK(!IsServedFromBackForwardCache());
 
   client_security_state_->ip_address_space =
-      network::CalculateClientAddressSpace(common_params_->url,
-                                           response_head_.get());
+      CalculateClientAddressSpace(common_params_->url, response_head_.get());
 
   client_security_state_->is_web_secure_context = IsWebSecureContext();
 
