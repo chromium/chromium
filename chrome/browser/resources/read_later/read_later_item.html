@@ -1,4 +1,4 @@
-<style>
+<style include="read-later-shared-style">
   /* TODO(corising): Add dark mode support for buttons and hover/focus states
    * (crbug/1147457).*/
   :host(:focus) {
@@ -43,25 +43,21 @@
   }
 
   cr-icon-button {
-    border-radius: 50%;
     --cr-icon-button-fill-color: transparent;
-    --cr-icon-button-icon-size: var(--mwb-icon-size);
-    --cr-icon-button-size: 24px;
     --cr-icon-button-margin-start: 0;
     --cr-icon-button-margin-end: 0;
   }
 
   :host(:hover) cr-icon-button,
   :host(:focus-within) cr-icon-button {
-    --cr-icon-button-fill-color: var(--google-grey-refresh-700);
+    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   }
 
-  cr-icon-button:hover {
-    background-color: rgba(var(--google-grey-900-rgb), .1);
-  }
-
-  cr-icon-button:focus {
-    box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), 0.4);
+  @media (prefers-color-scheme: dark) {
+    :host(:hover) cr-icon-button,
+    :host(:focus-within) cr-icon-button {
+      --cr-icon-button-ripple-opacity: 0.15;
+    }
   }
 
   #deleteButton {

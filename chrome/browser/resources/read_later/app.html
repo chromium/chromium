@@ -1,10 +1,11 @@
-<style include="mwb-shared-style">
+<style include="mwb-shared-style read-later-shared-style">
   #top-container {
     display: flex;
   }
 
   #header {
     align-items: center;
+    color: var(--cr-primary-text-color);
     display: flex;
     flex-grow: 1;
     font-size: 15px;
@@ -14,16 +15,15 @@
   }
 
   cr-icon-button {
-    border-radius: 50%;
     margin-inline-end: 4px;
     margin-top: 4px;
-    --cr-icon-button-fill-color: var(--google-grey-refresh-700);
-    --cr-icon-button-icon-size: var(--mwb-icon-size);
-    --cr-icon-button-size: 24px;
+    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   }
 
-  cr-icon-button:hover {
-    background-color: rgba(var(--google-grey-900-rgb), .1);
+  @media (prefers-color-scheme: dark) {
+    cr-icon-button {
+      --cr-icon-button-ripple-opacity: 0.15;
+    }
   }
 
   #read-later-list {

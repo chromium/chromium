@@ -12,6 +12,10 @@
     }
 
     body {
+      /* Using a var here for the background color is not currently an issue for
+         Read Later UI as it is shown asynchronously after the onload handler of
+         the main frame has completed. */
+      background-color: var(--mwb-background-color);
       margin: 0;
     }
   </style>
@@ -19,5 +23,7 @@
 <body>
   <read-later-app></read-later-app>
   <script type="module" src="app.js"></script>
+  <script type="module" src="chrome://resources/cr_elements/mwb_shared_vars.js">
+  </script>
 </body>
 </html>

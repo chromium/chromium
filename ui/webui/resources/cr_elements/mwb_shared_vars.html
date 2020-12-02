@@ -2,6 +2,9 @@
   <style>
     html {
       --mwb-background-color: white;
+      --mwb-icon-button-fill-color: var(--google-grey-refresh-700);
+      --mwb-icon-button-focus-ring-color: rgba(var(--google-blue-600-rgb), 0.4);
+      --mwb-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), 0.1);
       --mwb-icon-size: 16px;
       --mwb-item-height: 56px;
       --mwb-list-item-horizontal-margin: 16px;
@@ -14,6 +17,8 @@
     @media (prefers-color-scheme: dark) {
       html {
         --mwb-background-color: var(--google-grey-900);
+        --mwb-icon-button-fill-color: var(--google-grey-refresh-300);
+        --mwb-icon-button-hover-background-color: rgba(255, 255, 255), 0.1);
         --mwb-list-item-hover-background-color: rgb(55, 56, 58); /* #37383a */
         --mwb-list-item-selected-background-color: rgb(68, 69, 71); /* #444547 */
       }

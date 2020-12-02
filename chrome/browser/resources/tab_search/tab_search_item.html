@@ -4,12 +4,11 @@
   }
 
   :host(:hover, .selected) .button-container cr-icon-button {
-    --cr-icon-button-fill-color: var(--google-grey-refresh-700);
+    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   }
 
   @media (prefers-color-scheme: dark) {
     :host(:hover, .selected) .button-container cr-icon-button {
-      --cr-icon-button-fill-color: var(--google-grey-refresh-300);
       --cr-icon-button-ripple-opacity: 0.15;
     }
   }
@@ -21,17 +20,11 @@
   }
 
   .button-container cr-icon-button:hover {
-    background-color: rgba(var(--google-grey-900-rgb), 0.1);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .button-container cr-icon-button:hover {
-      background-color: rgba(var(--white-rgb), 0.1);
-    }
+    background-color: var(--mwb-icon-button-hover-background-color);
   }
 
   .button-container cr-icon-button:focus {
-    border-color: rgba(var(--google-blue-600-rgb), 0.4);
+    border-color: var(--mwb-icon-button-focus-ring-color);
   }
 
   .favicon {

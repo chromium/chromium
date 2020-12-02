@@ -71,6 +71,7 @@ preprocess_if_expr("preprocess_web_components") {
   in_files = [
     "app.js",
     "icons.js",
+    "read_later_shared_style.js",
     "read_later_item.js",
   ]
 }
@@ -115,6 +116,7 @@ html_to_js("web_components") {
   js_files = [
     "app.js",
     "icons.js",
+    "read_later_shared_style.js",
     "read_later_item.js",
   ]
 }
