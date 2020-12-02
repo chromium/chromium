@@ -274,6 +274,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     executable = "recipe:binary_size_trybot",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
