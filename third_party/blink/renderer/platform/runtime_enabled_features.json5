@@ -2026,6 +2026,10 @@
       implied_by: ["ExperimentalProductivityFeatures"]
     },
     {
+      name: "URLPattern",
+      status: "experimental",
+    },
+    {
       name: "UserActivationSameOriginVisibility",
     },
     {

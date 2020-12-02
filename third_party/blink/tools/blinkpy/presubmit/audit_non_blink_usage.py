@@ -1071,6 +1071,22 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/url_pattern/',
+        ],
+        'allowed': [
+            # Needed to work with std::string values returned from
+            # liburlpattern API.
+            "base::IsStringASCII",
+
+            # //third_party/liburlpattern
+            'liburlpattern::.+',
+
+            # The liburlpattern API requires using std::vector.
+            'std::vector',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/webaudio/',
         ],
         'allowed': ['audio_utilities::.+'],

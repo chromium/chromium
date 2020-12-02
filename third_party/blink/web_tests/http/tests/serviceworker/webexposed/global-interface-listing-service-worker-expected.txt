@@ -1536,6 +1536,12 @@ interface URL
     setter protocol
     setter search
     setter username
+interface URLPattern
+    attribute @@toStringTag
+    method constructor
+    method exec
+    method test
+    method toRegExp
 interface URLSearchParams
     attribute @@toStringTag
     method @@iterator

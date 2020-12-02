@@ -149,6 +149,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/speech",
     "//third_party/blink/renderer/modules/srcobject",
     "//third_party/blink/renderer/modules/storage",
+    "//third_party/blink/renderer/modules/url_pattern",
     "//third_party/blink/renderer/modules/vibration",
     "//third_party/blink/renderer/modules/video_rvfc",
     "//third_party/blink/renderer/modules/virtualkeyboard",

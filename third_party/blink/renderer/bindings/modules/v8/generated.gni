@@ -121,6 +121,8 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h",
   "$bindings_modules_v8_output_dir/usv_string_or_uint32_array.cc",
   "$bindings_modules_v8_output_dir/usv_string_or_uint32_array.h",
+  "$bindings_modules_v8_output_dir/usv_string_or_url_pattern_init.cc",
+  "$bindings_modules_v8_output_dir/usv_string_or_url_pattern_init.h",
   "$bindings_modules_v8_output_dir/usv_string_or_usv_string_sequence.cc",
   "$bindings_modules_v8_output_dir/usv_string_or_usv_string_sequence.h",
   "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.cc",
