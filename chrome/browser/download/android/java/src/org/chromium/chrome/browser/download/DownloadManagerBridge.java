@@ -93,7 +93,8 @@ public class DownloadManagerBridge {
             String filePath, long fileSizeBytes, String originalUrl, String referer,
             String downloadGuid) {
         assert !ThreadUtils.runningOnUiThread();
-        assert VERSION.SDK_INT < VERSION_CODES.Q : "Deprecated in Q, may cause crash.";
+        assert VERSION.SDK_INT < VERSION_CODES.Q
+            : "addCompletedDownload is deprecated in Q, may cause crash.";
         long downloadId = getDownloadIdForDownloadGuid(downloadGuid);
         if (downloadId != DownloadConstants.INVALID_DOWNLOAD_ID) return downloadId;
 

@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore.MediaColumns;
 import android.text.TextUtils;
@@ -545,9 +546,11 @@ public class DownloadManagerService implements DownloadController.Observer,
             public Pair<Boolean, Boolean> doInBackground() {
                 boolean success = mDisableAddCompletedDownloadForTesting
                         || ContentUriUtils.isContentUri(item.getDownloadInfo().getFilePath());
-                if (!success
-                        && !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
+                boolean shouldAddCompletedDownload =
+                        !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
+                        && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q);
+                if (!success && shouldAddCompletedDownload) {
                     long systemDownloadId = DownloadManagerBridge.addCompletedDownload(
                             info.getFileName(), info.getDescription(), info.getMimeType(),
                             info.getFilePath(), info.getBytesReceived(), info.getOriginalUrl(),

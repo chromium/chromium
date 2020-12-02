@@ -67,6 +67,8 @@ public class DownloadUtils {
     public static long addCompletedDownload(String fileName, String description, String mimeType,
             String filePath, long fileSizeBytes, String originalUrl, String referer) {
         assert !ThreadUtils.runningOnUiThread();
+        assert Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+            : "addCompletedDownload is deprecated in Q, may cause crash.";
         Context context = ContextUtils.getApplicationContext();
         DownloadManager manager =
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
