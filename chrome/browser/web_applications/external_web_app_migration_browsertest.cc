@@ -63,7 +63,6 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
  public:
   ExternalWebAppMigrationBrowserTest() {
     ExternalWebAppManager::SkipStartupForTesting();
-    ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
     disable_scope_ =
         extensions::ExtensionService::DisableExternalUpdatesForTesting();
   }

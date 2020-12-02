@@ -60,11 +60,6 @@ class WebAppProvider : public WebAppProviderBase {
   static WebAppProvider* Get(Profile* profile);
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
-  using OsIntegrationManagerFactory =
-      std::unique_ptr<OsIntegrationManager> (*)(Profile*);
-  static void SetOsIntegrationManagerFactoryForTesting(
-      OsIntegrationManagerFactory factory);
-
   explicit WebAppProvider(Profile* profile);
   WebAppProvider(const WebAppProvider&) = delete;
   WebAppProvider& operator=(const WebAppProvider&) = delete;

@@ -51,10 +51,8 @@ void TestOsIntegrationManager::InstallOsHooks(
   OsHooksResults os_hooks_results{false};
   last_options_ = options;
 
-  if (options.os_hooks[OsHookType::kFileHandlers]) {
-    ++num_create_file_handlers_calls_;
+  if (options.os_hooks[OsHookType::kFileHandlers])
     os_hooks_results[OsHookType::kFileHandlers] = true;
-  }
 
   did_add_to_desktop_ = options.add_to_desktop;
 

@@ -31,9 +31,7 @@ namespace {
 std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
     nullptr;
 
-}  // namespace
-
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
+std::vector<ExternalInstallOptions> GetPreinstalledAppData() {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
 
@@ -65,6 +63,8 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
   return {};
 }
 
+}  // namespace
+
 ScopedTestingPreinstalledAppData::ScopedTestingPreinstalledAppData() {
   DCHECK_EQ(nullptr, g_preinstalled_app_data_for_testing);
   g_preinstalled_app_data_for_testing = &apps;
@@ -73,6 +73,32 @@ ScopedTestingPreinstalledAppData::ScopedTestingPreinstalledAppData() {
 ScopedTestingPreinstalledAppData::~ScopedTestingPreinstalledAppData() {
   DCHECK_EQ(&apps, g_preinstalled_app_data_for_testing);
   g_preinstalled_app_data_for_testing = nullptr;
+}
+
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
+  std::vector<ExternalInstallOptions> result;
+
+  for (ExternalInstallOptions& app_data : GetPreinstalledAppData()) {
+    DCHECK_EQ(app_data.install_source, ExternalInstallSource::kExternalDefault);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // Non-Chrome OS platforms are not permitted to fetch the web app install
+    // URLs during start up.
+    DCHECK(app_data.only_use_app_info_factory);
+    DCHECK(app_data.app_info_factory);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    // Preinstalled web apps should not have OS shortcuts of any kind.
+    app_data.add_to_applications_menu = false;
+    app_data.add_to_desktop = false;
+    app_data.add_to_quick_launch_bar = false;
+    app_data.add_to_search = false;
+    app_data.add_to_management = false;
+    app_data.require_manifest = true;
+    result.push_back(std::move(app_data));
+  }
+
+  return result;
 }
 
 }  // namespace web_app
