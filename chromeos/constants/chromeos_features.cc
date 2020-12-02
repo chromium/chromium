@@ -266,6 +266,10 @@ const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables LocalSearchService to be initialized.
+const base::Feature kEnableLocalSearchService{
+    "EnableLocalSearchService", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -730,6 +734,10 @@ bool IsDiagnosticsAppEnabled() {
 
 bool IsHostnameSettingEnabled() {
   return base::FeatureList::IsEnabled(kEnableHostnameSetting);
+}
+
+bool IsLocalSearchServiceEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLocalSearchService);
 }
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {

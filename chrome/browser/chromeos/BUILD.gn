@@ -122,7 +122,7 @@ source_set("chromeos") {
     "//chromeos/components/drivefs",
     "//chromeos/components/drivefs/mojom",
     "//chromeos/components/help_app_ui",
-    "//chromeos/components/local_search_service",
+    "//chromeos/components/local_search_service/public/cpp:cpp",
     "//chromeos/components/media_app_ui",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/multidevice",

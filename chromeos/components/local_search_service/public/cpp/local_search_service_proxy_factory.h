@@ -8,6 +8,8 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
+class PrefService;
+
 namespace chromeos {
 namespace local_search_service {
 class LocalSearchServiceProxy;
@@ -18,6 +20,8 @@ class LocalSearchServiceProxyFactory
   static LocalSearchServiceProxy* GetForBrowserContext(
       content::BrowserContext* context);
   static LocalSearchServiceProxyFactory* GetInstance();
+
+  void SetLocalState(PrefService* local_state_pref_service);
 
   LocalSearchServiceProxyFactory(const LocalSearchServiceProxyFactory&) =
       delete;

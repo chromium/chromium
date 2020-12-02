@@ -129,6 +129,8 @@ extern const base::Feature kEmojiSuggestAddition;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEnableHostnameSetting;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kEnableLocalSearchService;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kExoOrdinalMotion;

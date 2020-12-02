@@ -10,18 +10,33 @@
 namespace chromeos {
 namespace local_search_service {
 
+namespace {
+
+PrefService* local_state = nullptr;
+
+}  // namespace
+
 // static
 LocalSearchServiceProxy* LocalSearchServiceProxyFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<LocalSearchServiceProxy*>(
+  DCHECK(local_state);
+  auto* local_search_service_proxy = static_cast<LocalSearchServiceProxy*>(
       LocalSearchServiceProxyFactory::GetInstance()
           ->GetServiceForBrowserContext(context, /*create=*/true));
+  local_search_service_proxy->SetLocalState(local_state);
+  return local_search_service_proxy;
 }
 
 // static
 LocalSearchServiceProxyFactory* LocalSearchServiceProxyFactory::GetInstance() {
   static base::NoDestructor<LocalSearchServiceProxyFactory> instance;
   return instance.get();
+}
+
+void LocalSearchServiceProxyFactory::SetLocalState(
+    PrefService* local_state_pref_service) {
+  DCHECK(local_state_pref_service);
+  local_state = local_state_pref_service;
 }
 
 LocalSearchServiceProxyFactory::LocalSearchServiceProxyFactory()

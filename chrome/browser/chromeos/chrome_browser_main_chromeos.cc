@@ -150,6 +150,7 @@
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/drivefs/fake_drivefs_launcher_client.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/power/dark_resume_controller.h"
 #include "chromeos/components/sensors/sensor_hal_dispatcher.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -765,6 +766,12 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::GetInstance()->Initialize(
         g_browser_process->local_state());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {
+    // Set |local_state| for LocalSearchServiceProxyFactory.
+    local_search_service::LocalSearchServiceProxyFactory::GetInstance()
+        ->SetLocalState(g_browser_process->local_state());
   }
 
   // Make sure that wallpaper boot transition and other delays in OOBE
