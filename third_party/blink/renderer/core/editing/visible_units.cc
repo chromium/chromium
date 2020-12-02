@@ -357,22 +357,21 @@ static Node* ParentEditingBoundary(const PositionTemplate<Strategy>& position) {
 // ---------
 
 template <typename Strategy>
-static VisiblePositionTemplate<Strategy> StartOfDocumentAlgorithm(
-    const VisiblePositionTemplate<Strategy>& visible_position) {
-  DCHECK(visible_position.IsValid()) << visible_position;
-  Node* node = visible_position.DeepEquivalent().AnchorNode();
+static PositionTemplate<Strategy> StartOfDocumentAlgorithm(
+    const PositionTemplate<Strategy>& position) {
+  const Node* const node = position.AnchorNode();
   if (!node || !node->GetDocument().documentElement())
-    return VisiblePositionTemplate<Strategy>();
+    return PositionTemplate<Strategy>();
 
-  return CreateVisiblePosition(PositionTemplate<Strategy>::FirstPositionInNode(
-      *node->GetDocument().documentElement()));
+  return PositionTemplate<Strategy>::FirstPositionInNode(
+      *node->GetDocument().documentElement());
 }
 
-VisiblePosition StartOfDocument(const VisiblePosition& c) {
+Position StartOfDocument(const Position& c) {
   return StartOfDocumentAlgorithm<EditingStrategy>(c);
 }
 
-VisiblePositionInFlatTree StartOfDocument(const VisiblePositionInFlatTree& c) {
+PositionInFlatTree StartOfDocument(const PositionInFlatTree& c) {
   return StartOfDocumentAlgorithm<EditingInFlatTreeStrategy>(c);
 }
 

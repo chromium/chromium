@@ -1597,7 +1597,7 @@ void Range::expand(const String& unit, ExceptionState& exception_state) {
     start = StartOfParagraph(start);
     end = EndOfParagraph(end);
   } else if (unit == "document") {
-    start = StartOfDocument(start);
+    start = CreateVisiblePosition(StartOfDocument(start.DeepEquivalent()));
     end = EndOfDocument(end);
   } else {
     return;

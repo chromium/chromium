@@ -143,7 +143,8 @@ class GranularityAdjuster final {
         return StartOfParagraph(pos).DeepEquivalent();
       }
       case TextGranularity::kDocumentBoundary:
-        return StartOfDocument(CreateVisiblePosition(passed_start))
+        return CreateVisiblePosition(
+                   StartOfDocument(passed_start.GetPosition()))
             .DeepEquivalent();
       case TextGranularity::kParagraphBoundary:
         return StartOfParagraph(CreateVisiblePosition(passed_start))

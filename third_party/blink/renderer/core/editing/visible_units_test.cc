@@ -780,17 +780,17 @@ TEST_F(VisibleUnitsTest, startOfDocument) {
   Node* two = GetDocument().getElementById("two")->firstChild();
 
   EXPECT_EQ(Position(one, 0),
-            StartOfDocument(CreateVisiblePositionInDOMTree(*one, 0))
+            CreateVisiblePosition(StartOfDocument(Position(*one, 0)))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 0),
-            StartOfDocument(CreateVisiblePositionInFlatTree(*one, 0))
+            CreateVisiblePosition(StartOfDocument(PositionInFlatTree(*one, 0)))
                 .DeepEquivalent());
 
   EXPECT_EQ(Position(one, 0),
-            StartOfDocument(CreateVisiblePositionInDOMTree(*two, 1))
+            CreateVisiblePosition(StartOfDocument(Position(*two, 1)))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 0),
-            StartOfDocument(CreateVisiblePositionInFlatTree(*two, 1))
+            CreateVisiblePosition(StartOfDocument(PositionInFlatTree(*two, 1)))
                 .DeepEquivalent());
 }
 

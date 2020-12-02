@@ -601,7 +601,7 @@ VisiblePosition SelectionModifier::ModifyExtendingBackwardInternal(
         return CreateVisiblePosition(
             StartOfEditableContent(pos.DeepEquivalent()));
       }
-      return StartOfDocument(pos);
+      return CreateVisiblePosition(StartOfDocument(pos.DeepEquivalent()));
     }
   }
   NOTREACHED() << static_cast<int>(granularity);
@@ -697,7 +697,7 @@ VisiblePosition SelectionModifier::ModifyMovingBackward(
         pos =
             CreateVisiblePosition(StartOfEditableContent(pos.DeepEquivalent()));
       } else {
-        pos = StartOfDocument(pos);
+        pos = CreateVisiblePosition(StartOfDocument(pos.DeepEquivalent()));
       }
       break;
   }

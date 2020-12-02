@@ -230,9 +230,8 @@ bool InSameParagraph(const VisiblePosition&,
 EphemeralRange ExpandToParagraphBoundary(const EphemeralRange&);
 
 // document
-CORE_EXPORT VisiblePosition StartOfDocument(const VisiblePosition&);
-CORE_EXPORT VisiblePositionInFlatTree
-StartOfDocument(const VisiblePositionInFlatTree&);
+CORE_EXPORT Position StartOfDocument(const Position&);
+CORE_EXPORT PositionInFlatTree StartOfDocument(const PositionInFlatTree&);
 CORE_EXPORT VisiblePosition EndOfDocument(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfDocument(const VisiblePositionInFlatTree&);
