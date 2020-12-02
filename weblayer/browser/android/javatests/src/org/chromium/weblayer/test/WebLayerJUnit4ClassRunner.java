@@ -4,10 +4,13 @@
 
 package org.chromium.weblayer.test;
 
+import android.support.test.InstrumentationRegistry;
+
 import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.SkipCheck;
+import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class WebLayerJUnit4ClassRunner extends BaseJUnit4ClassRunner {
 
     @Override
     protected List<SkipCheck> getSkipChecks() {
-        return addToList(super.getSkipChecks(), new MinWebLayerVersionSkipCheck());
+        return addToList(super.getSkipChecks(), new MinWebLayerVersionSkipCheck(),
+                new UiDisableIfSkipCheck(InstrumentationRegistry.getContext()));
     }
 }

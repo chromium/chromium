@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.weblayer.MediaCaptureCallback;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -87,6 +88,7 @@ public final class MediaCaptureTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1107380
     public void basic() throws Throwable {
         mActivityTestRule.navigateAndWait(
                 mActivityTestRule.getTestServer().getURL("/weblayer/test/data/getusermedia.html"));
@@ -116,6 +118,7 @@ public final class MediaCaptureTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1107380
     public void rememberPermission() throws Throwable {
         mActivityTestRule.navigateAndWait(
                 mActivityTestRule.getTestServer().getURL("/weblayer/test/data/getusermedia.html"));
@@ -145,8 +148,7 @@ public final class MediaCaptureTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = 20, sdk_is_less_than = 24,
-            message = "Failing on {Lollipop,Marshmallow} Tablet Tester. https://crbug.com/1107380")
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1107380
     public void twoStreams() throws Throwable {
         mActivityTestRule.navigateAndWait(
                 mActivityTestRule.getTestServer().getURL("/weblayer/test/data/getusermedia2.html"));
@@ -175,8 +177,7 @@ public final class MediaCaptureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @DisableIf.Build(sdk_is_greater_than = 20, sdk_is_less_than = 24,
-            message = "Failing on {Lollipop,Marshmallow} Tablet Tester. https://crbug.com/1107380")
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1107380
     public void twoStreamsNotification() throws Throwable {
         mActivityTestRule.navigateAndWait(
                 mActivityTestRule.getTestServer().getURL("/weblayer/test/data/getusermedia2.html"));
