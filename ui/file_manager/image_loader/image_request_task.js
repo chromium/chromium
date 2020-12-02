@@ -83,6 +83,11 @@ function ImageRequestTask(id, cache, request, callback) {
       /** @type {CanvasRenderingContext2D} */ (this.canvas_.getContext('2d'));
 
   /**
+   * @type {ImageOrientation|null}
+   */
+  this.renderOrientation_ = null;
+
+  /**
    * Callback to be called once downloading is finished.
    * @type {?function()}
    * @private
@@ -391,6 +396,7 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
     PiexLoader.load(this.request_.url, chrome.runtime.reload)
         .then(
             function(data) {
+              // TODO(crbug.com/1152084): use this.renderOrientation_.
               this.request_.orientation =
                   ImageOrientation.fromExifOrientation(data.orientation);
               this.ifd_ = data.ifd;
@@ -422,6 +428,9 @@ ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
   this.load(this.request_.url, (contentType, blob) => {
     this.image_.src = blob ? URL.createObjectURL(blob) : '!';
     this.contentType_ = contentType || null;
+    if (this.contentType_ === 'image/jpeg') {
+      this.renderOrientation_ = ImageOrientation.fromExifOrientation(1);
+    }
   }, onFailure);
 };
 
@@ -619,6 +628,13 @@ ImageRequestTask.prototype.sendImageData_ = function(width, height, data) {
  * @private
  */
 ImageRequestTask.prototype.onImageLoad_ = function() {
+  const requestOrientation = this.request_.orientation;
+
+  // Override the request orientation before processing if needed.
+  if (this.renderOrientation_) {
+    this.request_.orientation = this.renderOrientation_;
+  }
+
   // Perform processing if the url is not a data url, or if there are some
   // operations requested.
   let imageChanged = false;
@@ -630,6 +646,12 @@ ImageRequestTask.prototype.onImageLoad_ = function() {
     imageChanged = true;  // The image is now on the <canvas>.
   }
 
+  // Restore the request orientation after processing.
+  if (this.renderOrientation_) {
+    this.request_.orientation = requestOrientation;
+  }
+
+  // Finalize the request.
   this.sendImage_(imageChanged);
   this.cleanup_();
   this.downloadCallback_();
