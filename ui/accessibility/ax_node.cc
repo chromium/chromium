@@ -1312,11 +1312,13 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   // The descendants of a text field usually have State::kEditable, however in
   // the case of Role::kSearchBox or Role::kSpinButton being the text field
   // ancestor, its immediate descendant can have Role::kGenericContainer without
-  // State::kEditable.
+  // State::kEditable. Same with inline text boxes.
+  // TODO(nektar): Fix all such inconsistencies in Blink.
   for (AXNode* ancestor = const_cast<AXNode*>(this);
        ancestor &&
        (ancestor->data().HasState(ax::mojom::State::kEditable) ||
-        ancestor->data().role == ax::mojom::Role::kGenericContainer);
+        ancestor->data().role == ax::mojom::Role::kGenericContainer ||
+        ancestor->data().role == ax::mojom::Role::kInlineTextBox);
        ancestor = ancestor->GetUnignoredParent()) {
     if (ancestor->data().IsTextField())
       return ancestor;
@@ -1325,8 +1327,8 @@ AXNode* AXNode::GetTextFieldAncestor() const {
 }
 
 bool AXNode::IsDescendantOfPlainTextField() const {
-  AXNode* textfield_node = GetTextFieldAncestor();
-  return textfield_node && textfield_node->data().IsPlainTextField();
+  AXNode* text_field_node = GetTextFieldAncestor();
+  return text_field_node && text_field_node->data().IsPlainTextField();
 }
 
 }  // namespace ui

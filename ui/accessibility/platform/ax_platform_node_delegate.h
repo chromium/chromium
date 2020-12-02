@@ -143,8 +143,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // platform's accessibility layer.
   virtual bool IsChildOfLeaf() const = 0;
 
-  // Returns true if this current node is editable and the root editable node is
-  // a plain text field.
+  // Returns true if this node is either a plain text field , or one of its
+  // ancestors is.
   virtual bool IsDescendantOfPlainTextField() const = 0;
 
   // Returns true if this is a leaf node, meaning all its

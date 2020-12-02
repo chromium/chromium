@@ -561,7 +561,7 @@ bool AXPlatformNodeDelegateBase::IsWebContent() const {
 }
 
 bool AXPlatformNodeDelegateBase::HasVisibleCaretOrSelection() const {
-  return false;
+  return IsDescendantOfPlainTextField();
 }
 
 AXPlatformNode* AXPlatformNodeDelegateBase::GetTargetNodeForRelation(

@@ -184,7 +184,7 @@ class AX_EXPORT AXNode final {
   // reference count and clear out the object's data.
   void Destroy();
 
-  // Return true if this object is equal to or a descendant of |ancestor|.
+  // Returns true if this node is equal to or a descendant of |ancestor|.
   bool IsDescendantOf(const AXNode* ancestor) const;
 
   // Gets the text offsets where new lines start either from the node's data or
@@ -471,7 +471,8 @@ class AX_EXPORT AXNode final {
   // an editable region is synonymous to a text field.
   AXNode* GetTextFieldAncestor() const;
 
-  // Returns true if the ancestor of the current node is a plain text field.
+  // Returns true if this node is either a plain text field , or one of its
+  // ancestors is.
   bool IsDescendantOfPlainTextField() const;
 
   // Finds and returns a pointer to ordered set containing node.

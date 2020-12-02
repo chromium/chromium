@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       <html>
         <body>
           <div aria-value="wrapper">
-            <input type='text' aria-label='input_text'><span
+            <input type="text" aria-label="input_text"><span
               style="font-size: 12pt">Text1</span>
           </div>
           <div contenteditable="true">
@@ -541,7 +541,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // input, first change the value of the text input and then focus it. Only
   // editing the value won't show the cursor and only focusing will put the
   // cursor at the beginning of the text input, so both steps are necessary.
-  auto* input_text_node = FindNode(ax::mojom::Role::kTextField, "input_text");
+  BrowserAccessibility* input_text_node =
+      FindNode(ax::mojom::Role::kTextField, "input_text");
   ASSERT_NE(nullptr, input_text_node);
   EXPECT_TRUE(input_text_node->PlatformIsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
@@ -607,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   // Case 2: Inside of a rich text field, NormalizeTextRange should modify the
   //         text range endpoints.
-  auto* node = FindNode(ax::mojom::Role::kStaticText, "item");
+  BrowserAccessibility* node = FindNode(ax::mojom::Role::kStaticText, "item");
   ASSERT_NE(nullptr, node);
   EXPECT_TRUE(node->PlatformIsLeaf());
   EXPECT_EQ(0u, node->PlatformChildCount());

@@ -1393,15 +1393,14 @@ bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInPlainTextField(
   // reason, if we have a caret or a selection inside of an editable node,
   // restrict this to a plain text field as we gain nothing from using it in a
   // rich text field.
+  //
+  // Note that "AXPlatformNodeDelegate::IsDescendantOfPlainTextField()" also
+  // returns true when this node is at the root of a plain text field, i.e. the
+  // node could either be a descendant or it could be equivalent to the field's
+  // root node.
   AXPlatformNodeDelegate* delegate = GetDelegate(position.get());
-  if (delegate && delegate->HasVisibleCaretOrSelection()) {
-    if (!delegate->GetData().HasState(ax::mojom::State::kEditable) ||
-        (delegate->GetData().IsPlainTextField() ||
-         delegate->IsDescendantOfPlainTextField())) {
-      return true;
-    }
-  }
-  return false;
+  return delegate && delegate->HasVisibleCaretOrSelection() &&
+         delegate->IsDescendantOfPlainTextField();
 }
 
 // static
