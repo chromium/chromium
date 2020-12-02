@@ -216,7 +216,6 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     ASSERT_EQ(1u, received_messages.size());
     ExpectDialInternalMessageType(received_messages[0],
                                   DialInternalMessageType::kCustomDialLaunch);
-    std::string error_unused;
     auto internal_message =
         ParseDialInternalMessage(*received_messages[0]->message);
     ASSERT_TRUE(internal_message);
@@ -622,6 +621,57 @@ TEST_F(DialMediaRouteProviderTest, TerminateRouteFailsThenSucceeds) {
   TestSendCustomDialLaunchMessage();
   TestTerminateRouteFails();
   TestTerminateRoute();
+}
+
+TEST_F(DialMediaRouteProviderTest, GetDialAppinfoExtraData) {
+  const int seq_number = 12345;
+  const char kDialAppInfoRequestMessage[] = R"(
+      {
+        "type":"dial_app_info",
+        "sequenceNumber":%d,
+        "timeoutMillis":3000,
+        "clientId":"152127444812943594"
+      })";
+  std::map<std::string, std::string> extra_data = {
+      {"additionalKey1", "additional value 1"},
+      {"additionalKey2", "additional value 2"}};
+  TestCreateRoute();
+  TestSendClientConnectMessage();
+  TestSendCustomDialLaunchMessage();
+
+  const MediaRoute::Id& route_id = route_->media_route_id();
+  EXPECT_CALL(*mock_sink_service_.app_discovery_service(),
+              DoFetchDialAppInfo(_, _));
+  provider_->SendRouteMessage(
+      route_id, base::StringPrintf(kDialAppInfoRequestMessage, seq_number));
+  base::RunLoop().RunUntilIdle();
+  auto app_info_cb = mock_sink_service_.app_discovery_service()->PassCallback();
+  ASSERT_FALSE(app_info_cb.is_null());
+
+  auto app_info = CreateParsedDialAppInfoPtr("YouTube", DialAppState::kRunning);
+  app_info->extra_data = std::move(extra_data);
+  std::move(app_info_cb)
+      .Run(sink_.sink().id(), "YouTube",
+           DialAppInfoResult(std::move(app_info), DialAppInfoResultCode::kOk));
+
+  EXPECT_CALL(mock_router_, OnRouteMessagesReceived(route_id, _))
+      .WillOnce([&](const auto& route_id, auto messages) {
+        EXPECT_EQ(1UL, messages.size());
+        auto message = base::test::ParseJson(*messages[0]->message);
+
+        EXPECT_TRUE(message.FindStringKey("type"));
+        EXPECT_TRUE(message.FindIntKey("sequenceNumber"));
+        EXPECT_TRUE(message.FindStringPath("message.extraData.additionalKey1"));
+        EXPECT_TRUE(message.FindStringPath("message.extraData.additionalKey2"));
+
+        EXPECT_EQ("dial_app_info", *message.FindStringKey("type"));
+        EXPECT_EQ(seq_number, *message.FindIntKey("sequenceNumber"));
+        EXPECT_EQ("additional value 1",
+                  *message.FindStringPath("message.extraData.additionalKey1"));
+        EXPECT_EQ("additional value 2",
+                  *message.FindStringPath("message.extraData.additionalKey2"));
+      });
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace media_router

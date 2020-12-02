@@ -285,6 +285,8 @@ void DialMediaRouteProvider::HandleParsedRouteMessage(
   } else if (internal_message->type ==
              DialInternalMessageType::kCustomDialLaunch) {
     HandleCustomDialLaunchResponse(*activity, *internal_message);
+  } else if (internal_message->type == DialInternalMessageType::kDialAppInfo) {
+    HandleDiapAppInfoRequest(*activity, *internal_message, *sink);
   } else if (DialInternalMessageUtil::IsStopSessionMessage(*internal_message)) {
     logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
                      "Received a stop session message.", route.media_sink_id(),
@@ -367,6 +369,30 @@ void DialMediaRouteProvider::SendCustomDialLaunchMessage(
   message_sender_->SendMessages(route_id, std::move(messages));
 }
 
+void DialMediaRouteProvider::SendDialAppInfoResponse(
+    const MediaRoute::Id& route_id,
+    int sequence_number,
+    const MediaSink::Id& sink_id,
+    const std::string& app_name,
+    DialAppInfoResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* activity = activity_manager_->GetActivity(route_id);
+  auto* sink = media_sink_service_->GetSinkById(sink_id);
+  // TODO(crbug.com/1153895): If |result.app_info| is null, we may want to send
+  // an error message to the sender client.
+  if (!result.app_info || !activity || !sink) {
+    return;
+  }
+  mojom::RouteMessagePtr message =
+      internal_message_util_.CreateDialAppInfoMessage(
+          activity->launch_info, *sink, *result.app_info, sequence_number,
+          DialInternalMessageType::kDialAppInfo);
+  std::vector<mojom::RouteMessagePtr> messages;
+  messages.emplace_back(std::move(message));
+  message_sender_->SendMessages(route_id, std::move(messages));
+}
+
 void DialMediaRouteProvider::HandleCustomDialLaunchResponse(
     const DialActivity& activity,
     const DialInternalMessage& message) {
@@ -379,6 +405,17 @@ void DialMediaRouteProvider::HandleCustomDialLaunchResponse(
       media_route_id, CustomDialLaunchMessageBody::From(message),
       base::BindOnce(&DialMediaRouteProvider::HandleAppLaunchResult,
                      base::Unretained(this), media_route_id));
+}
+
+void DialMediaRouteProvider::HandleDiapAppInfoRequest(
+    const DialActivity& activity,
+    const DialInternalMessage& message,
+    const MediaSinkInternal& sink) {
+  media_sink_service_->app_discovery_service()->FetchDialAppInfo(
+      sink, activity.launch_info.app_name,
+      base::BindOnce(&DialMediaRouteProvider::SendDialAppInfoResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     activity.route.media_route_id(), message.sequence_number));
 }
 
 void DialMediaRouteProvider::HandleAppLaunchResult(

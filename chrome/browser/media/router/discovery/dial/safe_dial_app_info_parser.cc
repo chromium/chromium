@@ -26,6 +26,23 @@ DialAppState ParseDialAppState(const std::string& app_state) {
   return DialAppState::kUnknown;
 }
 
+void ProcessAdditionalDataElement(const base::Value& additional_data_element,
+                                  ParsedDialAppInfo* out_app_info) {
+  const base::Value* child_elements =
+      data_decoder::GetXmlElementChildren(additional_data_element);
+  if (!child_elements || !child_elements->is_list())
+    return;
+  for (const auto& child_element : child_elements->GetList()) {
+    std::string tag_name;
+    if (!data_decoder::GetXmlElementTagName(child_element, &tag_name))
+      continue;
+    std::string extra_data;
+    if (data_decoder::GetXmlElementText(child_element, &extra_data)) {
+      out_app_info->extra_data[tag_name] = extra_data;
+    }
+  }
+}
+
 // Parses |child_element| content, and sets corresponding fields of
 // |out_app_info|. Returns ParsingResult::kSuccess if parsing succeeds.
 SafeDialAppInfoParser::ParsingResult ProcessChildElement(
@@ -49,11 +66,10 @@ SafeDialAppInfoParser::ParsingResult ProcessChildElement(
     if (!data_decoder::GetXmlElementText(child_element, &state))
       return SafeDialAppInfoParser::ParsingResult::kFailToReadState;
     out_app_info->state = ParseDialAppState(state);
+  } else if (tag_name == "additionalData") {
+    ProcessAdditionalDataElement(child_element, out_app_info);
   } else {
-    std::string extra_data;
-    if (data_decoder::GetXmlElementText(child_element, &extra_data)) {
-      out_app_info->extra_data[tag_name] = extra_data;
-    }
+    // We ignore unexpected elements outside of <additionalData>.
   }
   return SafeDialAppInfoParser::ParsingResult::kSuccess;
 }
@@ -74,8 +90,7 @@ SafeDialAppInfoParser::ParsingResult ValidateParsedAppInfo(
 }  // namespace
 
 SafeDialAppInfoParser::SafeDialAppInfoParser() = default;
-
-SafeDialAppInfoParser::~SafeDialAppInfoParser() {}
+SafeDialAppInfoParser::~SafeDialAppInfoParser() = default;
 
 void SafeDialAppInfoParser::Parse(const std::string& xml_text,
                                   ParseCallback callback) {

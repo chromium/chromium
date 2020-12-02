@@ -215,7 +215,8 @@ TEST_F(DialInternalMessageUtilTest, CreateCustomDialLaunchMessage) {
         "label":"vgK6BDL84IzefOLUvy2OcgFPhoo",
         "receiverType":"dial",
         "volume":null
-      }
+      },
+      "extraData": {}
     },
     "sequenceNumber":%d,
     "timeoutMillis":0,

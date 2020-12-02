@@ -17,8 +17,8 @@ namespace media_router {
 
 // Used by MediaRouteProviders to buffer outgoing route messages until they
 // are ready to be sent.
-// TODO(imcheng): to be replaced by PresentationConnection mojom message pipes
-// which come with their own message buffering.
+// TODO(crbug.com/1154482): to be replaced by PresentationConnection mojom
+// message pipes which come with their own message buffering.
 class BufferedMessageSender {
  public:
   explicit BufferedMessageSender(mojom::MediaRouter* media_router);

@@ -28,7 +28,7 @@
 // The maximum number of retries allowed for GET requests.
 constexpr int kMaxRetries = 2;
 
-// DIAL devices are unlikely to expose uPnP functions other than DIAL, so 256kb
+// DIAL devices are unlikely to expose uPnP functions other than DIAL, so 256KB
 // should be more than sufficient.
 constexpr int kMaxResponseSizeBytes = 262144;
 

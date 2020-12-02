@@ -30,6 +30,7 @@ enum class DialInternalMessageType {
 
   // MR <-> Cast SDK
   kCustomDialLaunch,
+  kDialAppInfo,
 
   kOther
 };
@@ -123,15 +124,24 @@ class DialInternalMessageUtil final {
       const MediaSinkInternal& sink,
       const ParsedDialAppInfo& app_info) const;
 
+  // Creates an app info message used in a DIAL_APP_INFO response or a
+  // CUSTOM_DIAL_LAUNCH (called via CreateCustomDialLaunchMessage() above)
+  // message.
+  mojom::RouteMessagePtr CreateDialAppInfoMessage(
+      const DialLaunchInfo& launch_info,
+      const MediaSinkInternal& sink,
+      const ParsedDialAppInfo& app_info,
+      int sequence_number,
+      DialInternalMessageType type) const;
+
  private:
   base::Value CreateReceiver(const MediaSinkInternal& sink) const;
   base::Value CreateReceiverActionBody(const MediaSinkInternal& sink,
                                        DialReceiverAction action) const;
   base::Value CreateNewSessionBody(const DialLaunchInfo& launch_info,
                                    const MediaSinkInternal& sink) const;
-  base::Value CreateCustomDialLaunchBody(
-      const MediaSinkInternal& sink,
-      const ParsedDialAppInfo& app_info) const;
+  base::Value CreateDialAppInfoBody(const MediaSinkInternal& sink,
+                                    const ParsedDialAppInfo& app_info) const;
   base::Value CreateDialMessageCommon(DialInternalMessageType type,
                                       base::Value body,
                                       const std::string& client_id) const;

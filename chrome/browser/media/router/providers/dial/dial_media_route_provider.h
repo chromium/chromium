@@ -157,8 +157,16 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                                    const MediaSink::Id& sink_id,
                                    const std::string& app_name,
                                    DialAppInfoResult result);
+  void SendDialAppInfoResponse(const MediaRoute::Id& route_id,
+                               int sequence_number,
+                               const MediaSink::Id& sink_id,
+                               const std::string& app_name,
+                               DialAppInfoResult result);
   void HandleCustomDialLaunchResponse(const DialActivity& activity,
                                       const DialInternalMessage& message);
+  void HandleDiapAppInfoRequest(const DialActivity& activity,
+                                const DialInternalMessage& message,
+                                const MediaSinkInternal& sink);
   void HandleAppLaunchResult(const MediaRoute::Id& route_id, bool success);
   void DoTerminateRoute(const DialActivity& activity,
                         const MediaSinkInternal& sink,
