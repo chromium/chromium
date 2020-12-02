@@ -66,10 +66,6 @@ class PaintPreviewCompositorCollectionImpl
 
   mojo::Receiver<mojom::PaintPreviewCompositorCollection> receiver_{this};
 
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
-      discardable_shared_memory_manager_;
-
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<PaintPreviewCompositorImpl>>
       compositors_;
@@ -77,6 +73,13 @@ class PaintPreviewCompositorCollectionImpl
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader_;
 #endif
+
+  const bool initialize_environment_;
+
+  // Ensure the discardable memory manager is the last thing to get destructed.
+  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
 
   base::WeakPtrFactory<PaintPreviewCompositorCollectionImpl> weak_ptr_factory_{
       this};

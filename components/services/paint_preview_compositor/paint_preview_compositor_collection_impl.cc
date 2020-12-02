@@ -25,11 +25,12 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
     mojo::PendingReceiver<mojom::PaintPreviewCompositorCollection> receiver,
     bool initialize_environment,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : io_task_runner_(std ::move(io_task_runner)) {
+    : initialize_environment_(initialize_environment),
+      io_task_runner_(std ::move(io_task_runner)) {
   if (receiver)
     receiver_.Bind(std::move(receiver));
 
-  if (!initialize_environment)
+  if (!initialize_environment_)
     return;
 
     // Initialize font access for Skia.
@@ -86,11 +87,12 @@ void PaintPreviewCompositorCollectionImpl::SetDiscardableSharedMemoryManager(
 void PaintPreviewCompositorCollectionImpl::CreateCompositor(
     mojo::PendingReceiver<mojom::PaintPreviewCompositor> receiver,
     PaintPreviewCompositorCollectionImpl::CreateCompositorCallback callback) {
+  DCHECK(discardable_shared_memory_manager_ || !initialize_environment_);
   base::UnguessableToken token = base::UnguessableToken::Create();
   compositors_.insert(
       {token,
        std::make_unique<PaintPreviewCompositorImpl>(
-           std::move(receiver),
+           std::move(receiver), discardable_shared_memory_manager_,
            base::BindOnce(&PaintPreviewCompositorCollectionImpl::OnDisconnect,
                           weak_ptr_factory_.GetWeakPtr(), token))});
   std::move(callback).Run(token);

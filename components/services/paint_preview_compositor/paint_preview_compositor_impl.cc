@@ -83,9 +83,14 @@ base::Optional<PaintPreviewFrame> BuildFrame(
   return frame;
 }
 
-base::Optional<SkBitmap> CreateBitmap(sk_sp<SkPicture> skp,
-                                      const gfx::Rect& clip_rect,
-                                      float scale_factor) {
+// Holds a ref to the discardable_shared_memory_manager so it sticks around
+// until at least after skia is finished with it.
+base::Optional<SkBitmap> CreateBitmap(
+    scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+        discardable_shared_memory_manager,
+    sk_sp<SkPicture> skp,
+    const gfx::Rect& clip_rect,
+    float scale_factor) {
   TRACE_EVENT0("paint_preview", "PaintPreviewCompositorImpl::CreateBitmap");
   SkBitmap bitmap;
   // Use N32 rather than an alpha color type as frames cannot have transparent
@@ -106,7 +111,10 @@ base::Optional<SkBitmap> CreateBitmap(sk_sp<SkPicture> skp,
 
 PaintPreviewCompositorImpl::PaintPreviewCompositorImpl(
     mojo::PendingReceiver<mojom::PaintPreviewCompositor> receiver,
-    base::OnceClosure disconnect_handler) {
+    scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+        discardable_shared_memory_manager,
+    base::OnceClosure disconnect_handler)
+    : discardable_shared_memory_manager_(discardable_shared_memory_manager) {
   if (receiver) {
     receiver_.Bind(std::move(receiver));
     receiver_.set_disconnect_handler(std::move(disconnect_handler));
@@ -198,9 +206,10 @@ void PaintPreviewCompositorImpl::BitmapForSeparatedFrame(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives()},
-      base::BindOnce(&CreateBitmap, frame_it->second.skp, clip_rect,
-                     scale_factor),
+      {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&CreateBitmap, discardable_shared_memory_manager_,
+                     frame_it->second.skp, clip_rect, scale_factor),
       base::BindOnce(
           [](BitmapForSeparatedFrameCallback callback,
              const base::Optional<SkBitmap>& maybe_bitmap) {
@@ -275,8 +284,10 @@ void PaintPreviewCompositorImpl::BitmapForMainFrame(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives()},
-      base::BindOnce(&CreateBitmap, root_frame_, clip_rect, scale_factor),
+      {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&CreateBitmap, discardable_shared_memory_manager_,
+                     root_frame_, clip_rect, scale_factor),
       base::BindOnce(
           [](BitmapForMainFrameCallback callback,
              const base::Optional<SkBitmap>& maybe_bitmap) {
