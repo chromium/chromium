@@ -222,42 +222,34 @@ bool ConvertFromMjpegToI420(uint8_t* source_buffer_base_address,
   return result == 0;
 }
 
-bool ConvertFromAnyToNV12(CVPixelBufferRef source_pixel_buffer,
+void ConvertFromAnyToNV12(CVPixelBufferRef source_pixel_buffer,
                           const NV12Planes& destination) {
   auto pixel_format = CVPixelBufferGetPixelFormatType(source_pixel_buffer);
+  int ret;
   switch (pixel_format) {
     // UYVY a.k.a. 2vuy
     case kCVPixelFormatType_422YpCbCr8: {
       const uint8_t* src_uyvy = static_cast<const uint8_t*>(
           CVPixelBufferGetBaseAddress(source_pixel_buffer));
       size_t src_stride_uyvy = CVPixelBufferGetBytesPerRow(source_pixel_buffer);
-      return libyuv::UYVYToNV12(
-                 src_uyvy, src_stride_uyvy, destination.y_plane_data,
-                 destination.y_plane_stride, destination.uv_plane_data,
-                 destination.uv_plane_stride, destination.width,
-                 destination.height) == 0;
+      ret = libyuv::UYVYToNV12(
+          src_uyvy, src_stride_uyvy, destination.y_plane_data,
+          destination.y_plane_stride, destination.uv_plane_data,
+          destination.uv_plane_stride, destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     // YUY2 a.k.a. yuvs
     case kCMPixelFormat_422YpCbCr8_yuvs: {
       const uint8_t* src_yuy2 = static_cast<const uint8_t*>(
           CVPixelBufferGetBaseAddress(source_pixel_buffer));
       size_t src_stride_yuy2 = CVPixelBufferGetBytesPerRow(source_pixel_buffer);
-      return libyuv::YUY2ToNV12(
-                 src_yuy2, src_stride_yuy2, destination.y_plane_data,
-                 destination.y_plane_stride, destination.uv_plane_data,
-                 destination.uv_plane_stride, destination.width,
-                 destination.height) == 0;
-    }
-    // MJPEG a.k.a. dmb1
-    case kCMVideoCodecType_JPEG_OpenDML: {
-      uint8_t* src_jpg = static_cast<uint8_t*>(
-          CVPixelBufferGetBaseAddress(source_pixel_buffer));
-      size_t src_jpg_size = CVPixelBufferGetDataSize(source_pixel_buffer);
-      return libyuv::MJPGToNV12(
-          src_jpg, src_jpg_size, destination.y_plane_data,
+      ret = libyuv::YUY2ToNV12(
+          src_yuy2, src_stride_yuy2, destination.y_plane_data,
           destination.y_plane_stride, destination.uv_plane_data,
-          destination.uv_plane_stride, destination.width, destination.height,
-          destination.width, destination.height);
+          destination.uv_plane_stride, destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     // NV12 a.k.a. 420v
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange: {
@@ -275,7 +267,7 @@ bool ConvertFromAnyToNV12(CVPixelBufferRef source_pixel_buffer,
                destination.y_plane_data, destination.y_plane_stride,
                destination.uv_plane_data, destination.uv_plane_stride,
                destination.width, destination.height);
-      return true;
+      return;
     }
     // I420 a.k.a. y420
     case kCVPixelFormatType_420YpCbCr8Planar: {
@@ -293,56 +285,49 @@ bool ConvertFromAnyToNV12(CVPixelBufferRef source_pixel_buffer,
           CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 2));
       size_t src_stride_v =
           CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 2);
-      return libyuv::I420ToNV12(
-                 src_y, src_stride_y, src_u, src_stride_u, src_v, src_stride_v,
-                 destination.y_plane_data, destination.y_plane_stride,
-                 destination.uv_plane_data, destination.uv_plane_stride,
-                 destination.width, destination.height) == 0;
+      ret = libyuv::I420ToNV12(
+          src_y, src_stride_y, src_u, src_stride_u, src_v, src_stride_v,
+          destination.y_plane_data, destination.y_plane_stride,
+          destination.uv_plane_data, destination.uv_plane_stride,
+          destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     default:
       NOTREACHED() << "Pixel format " << pixel_format << " not supported.";
   }
-  return false;
 }
 
-// Returns true on success. Converting uncompressed pixel formats should never
-// fail, however MJPEG frames produces by some webcams have been observed to be
-// invalid in special circumstances (see https://crbug.com/1147867). To support
-// a graceful failure path in this case, this function may return false.
-bool ConvertFromAnyToI420(CVPixelBufferRef source_pixel_buffer,
+void ConvertFromAnyToI420(CVPixelBufferRef source_pixel_buffer,
                           const I420Planes& destination) {
   auto pixel_format = CVPixelBufferGetPixelFormatType(source_pixel_buffer);
+  int ret;
   switch (pixel_format) {
     // UYVY a.k.a. 2vuy
     case kCVPixelFormatType_422YpCbCr8: {
       const uint8_t* src_uyvy = static_cast<const uint8_t*>(
           CVPixelBufferGetBaseAddress(source_pixel_buffer));
       size_t src_stride_uyvy = CVPixelBufferGetBytesPerRow(source_pixel_buffer);
-      return libyuv::UYVYToI420(
-                 src_uyvy, src_stride_uyvy, destination.y_plane_data,
-                 destination.y_plane_stride, destination.u_plane_data,
-                 destination.u_plane_stride, destination.v_plane_data,
-                 destination.v_plane_stride, destination.width,
-                 destination.height) == 0;
+      ret = libyuv::UYVYToI420(
+          src_uyvy, src_stride_uyvy, destination.y_plane_data,
+          destination.y_plane_stride, destination.u_plane_data,
+          destination.u_plane_stride, destination.v_plane_data,
+          destination.v_plane_stride, destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     // YUY2 a.k.a. yuvs
     case kCMPixelFormat_422YpCbCr8_yuvs: {
       const uint8_t* src_yuy2 = static_cast<const uint8_t*>(
           CVPixelBufferGetBaseAddress(source_pixel_buffer));
       size_t src_stride_yuy2 = CVPixelBufferGetBytesPerRow(source_pixel_buffer);
-      return libyuv::YUY2ToI420(
-                 src_yuy2, src_stride_yuy2, destination.y_plane_data,
-                 destination.y_plane_stride, destination.u_plane_data,
-                 destination.u_plane_stride, destination.v_plane_data,
-                 destination.v_plane_stride, destination.width,
-                 destination.height) == 0;
-    }
-    // MJPEG a.k.a. dmb1
-    case kCMVideoCodecType_JPEG_OpenDML: {
-      uint8_t* src_jpg = static_cast<uint8_t*>(
-          CVPixelBufferGetBaseAddress(source_pixel_buffer));
-      size_t src_jpg_size = CVPixelBufferGetDataSize(source_pixel_buffer);
-      return ConvertFromMjpegToI420(src_jpg, src_jpg_size, destination);
+      ret = libyuv::YUY2ToI420(
+          src_yuy2, src_stride_yuy2, destination.y_plane_data,
+          destination.y_plane_stride, destination.u_plane_data,
+          destination.u_plane_stride, destination.v_plane_data,
+          destination.v_plane_stride, destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     // NV12 a.k.a. 420v
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange: {
@@ -356,12 +341,13 @@ bool ConvertFromAnyToI420(CVPixelBufferRef source_pixel_buffer,
           CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 1));
       size_t src_stride_uv =
           CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 1);
-      return libyuv::NV12ToI420(
-                 src_y, src_stride_y, src_uv, src_stride_uv,
-                 destination.y_plane_data, destination.y_plane_stride,
-                 destination.u_plane_data, destination.u_plane_stride,
-                 destination.v_plane_data, destination.v_plane_stride,
-                 destination.width, destination.height) == 0;
+      ret = libyuv::NV12ToI420(
+          src_y, src_stride_y, src_uv, src_stride_uv, destination.y_plane_data,
+          destination.y_plane_stride, destination.u_plane_data,
+          destination.u_plane_stride, destination.v_plane_data,
+          destination.v_plane_stride, destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     // I420 a.k.a. y420
     case kCVPixelFormatType_420YpCbCr8Planar: {
@@ -379,17 +365,18 @@ bool ConvertFromAnyToI420(CVPixelBufferRef source_pixel_buffer,
           CVPixelBufferGetBaseAddressOfPlane(source_pixel_buffer, 2));
       size_t src_stride_v =
           CVPixelBufferGetBytesPerRowOfPlane(source_pixel_buffer, 2);
-      return libyuv::I420Copy(
-                 src_y, src_stride_y, src_u, src_stride_u, src_v, src_stride_v,
-                 destination.y_plane_data, destination.y_plane_stride,
-                 destination.u_plane_data, destination.u_plane_stride,
-                 destination.v_plane_data, destination.v_plane_stride,
-                 destination.width, destination.height) == 0;
+      ret = libyuv::I420Copy(
+          src_y, src_stride_y, src_u, src_stride_u, src_v, src_stride_v,
+          destination.y_plane_data, destination.y_plane_stride,
+          destination.u_plane_data, destination.u_plane_stride,
+          destination.v_plane_data, destination.v_plane_stride,
+          destination.width, destination.height);
+      DCHECK_EQ(ret, 0);
+      return;
     }
     default:
       NOTREACHED() << "Pixel format " << pixel_format << " not supported.";
   }
-  return false;
 }
 
 // Returns true on success. MJPEG frames produces by some webcams have been
@@ -710,11 +697,7 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToI420(
       i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
           source_width, source_height, &intermediate_i420_buffer_);
     }
-    if (!ConvertFromAnyToI420(source_pixel_buffer, i420_fullscale_buffer)) {
-      // Only MJPEG conversions are known to be able to fail. Because X is an
-      // uncompressed pixel format, this conversion should never fail.
-      NOTREACHED();
-    }
+    ConvertFromAnyToI420(source_pixel_buffer, i420_fullscale_buffer);
   }
 
   // Step 2: Rescale I420.
