@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
@@ -28,7 +29,8 @@ ReadableStreamDefaultReader* ReadableStreamDefaultReader::Create(
 ReadableStreamDefaultReader::ReadableStreamDefaultReader(
     ScriptState* script_state,
     ReadableStream* stream,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state)
+    : ExecutionContextClient(ExecutionContext::From(script_state)) {
   // https://streams.spec.whatwg.org/#default-reader-constructor
   // 1. Perform ? SetUpReadableStreamDefaultReader(this, stream).
   SetUpDefaultReader(script_state, this, stream, exception_state);
@@ -140,6 +142,11 @@ void ReadableStreamDefaultReader::SetUpDefaultReader(
 void ReadableStreamDefaultReader::Trace(Visitor* visitor) const {
   visitor->Trace(read_requests_);
   ReadableStreamGenericReader::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
+}
+
+bool ReadableStreamDefaultReader::HasPendingActivity() const {
+  return !read_requests_.empty();
 }
 
 }  // namespace blink

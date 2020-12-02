@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -18,7 +20,9 @@ class ScriptState;
 class StreamPromiseResolver;
 
 class CORE_EXPORT ReadableStreamDefaultReader
-    : public ReadableStreamGenericReader {
+    : public ReadableStreamGenericReader,
+      public ActiveScriptWrappable<ReadableStreamDefaultReader>,
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -52,6 +56,8 @@ class CORE_EXPORT ReadableStreamDefaultReader
                                      ReadableStreamDefaultReader* reader);
 
   void Trace(Visitor*) const override;
+
+  bool HasPendingActivity() const final;
 
  private:
   friend class ReadableStreamDefaultController;

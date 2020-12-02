@@ -4,7 +4,8 @@
 
 // https://streams.spec.whatwg.org/#default-reader-class-definition
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=(Window,Worker,Worklet),
+    ActiveScriptWrappable
 ] interface ReadableStreamDefaultReader {
     [CallWith=ScriptState, RaisesException] constructor(ReadableStream stream);
     [CallWith=ScriptState] readonly attribute Promise<void>

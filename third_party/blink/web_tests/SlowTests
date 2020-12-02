@@ -739,8 +739,6 @@ crbug.com/1105270 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [
 crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
 crbug.com/1112304 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Slow ]
-crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.html [ Slow ]
-crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.worker.html [ Slow ]
 crbug.com/1115091 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tenative.https.html [ Slow ]
 crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Slow ]
 crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]

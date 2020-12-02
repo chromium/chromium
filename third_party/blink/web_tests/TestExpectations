@@ -5977,8 +5977,6 @@ crbug.com/1152496 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-sha
 crbug.com/1087242 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Failure Timeout Crash ]
 crbug.com/1149771 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]
 crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Timeout ]
-crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.html [ Pass Timeout ]
-crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.worker.html [ Pass Timeout ]
 crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
 
 #Sheriff 2020-11-26
