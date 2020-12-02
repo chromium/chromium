@@ -22,13 +22,19 @@ const State = chrome.automation.StateType;
 /**
  * A helper to check if |node| or any descendant is actionable.
  * @param {!AutomationNode} node
+ * @param {boolean} sawClickAncestorAction A node during this search has a
+ *     default action verb involving click ancestor or none.
  * @return {boolean}
  */
-const isActionableOrHasActionableDescendant = function(node) {
+const isActionableOrHasActionableDescendant = function(
+    node, sawClickAncestorAction = false) {
   // DefaultActionVerb does not have value 'none' even though it gets set.
   // Static text nodes are never actionable for the purposes of navigation even
   // if they have default action verb set.
-  if (node.role !== Role.STATIC_TEXT && node.defaultActionVerb !== 'none') {
+  if (node.role !== Role.STATIC_TEXT && node.defaultActionVerb !== 'none' &&
+      (node.defaultActionVerb !==
+           chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
+       sawClickAncestorAction)) {
     return true;
   }
 
@@ -36,8 +42,13 @@ const isActionableOrHasActionableDescendant = function(node) {
     return true;
   }
 
+  sawClickAncestorAction = sawClickAncestorAction ||
+      node.defaultActionVerb ===
+          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
+      node.defaultActionVerb === 'none';
   for (let i = 0; i < node.children.length; i++) {
-    if (isActionableOrHasActionableDescendant(node.children[i])) {
+    if (isActionableOrHasActionableDescendant(
+            node.children[i], sawClickAncestorAction)) {
       return true;
     }
   }
@@ -51,8 +62,12 @@ const isActionableOrHasActionableDescendant = function(node) {
  * @return {boolean}
  */
 const hasActionableDescendant = function(node) {
+  const sawClickAncestorAction = node.defaultActionVerb ===
+          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
+      node.defaultActionVerb === 'none';
   for (let i = 0; i < node.children.length; i++) {
-    if (isActionableOrHasActionableDescendant(node.children[i])) {
+    if (isActionableOrHasActionableDescendant(
+            node.children[i], sawClickAncestorAction)) {
       return true;
     }
   }

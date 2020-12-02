@@ -3266,3 +3266,33 @@ TEST_F('ChromeVoxBackgroundTest', 'MarkedContent', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'ClickAncestorAreNotActionable', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>Start</p>
+    <div id="button1" role="button" aria-label="OK">
+      <div role="group">OK</div>
+    </div>
+    <div id="button2" role="button" aria-label="cancel">
+      <a href="#cancel">more info</a>
+    </div>
+    <p>end</p>
+    <script>
+      document.getElementById('button1').addEventListener('click', () => {});
+      document.getElementById('button2').addEventListener('click', () => {});
+    </script>
+  `;
+  this.runWithLoadedTree(site, function(rootNode) {
+    mockFeedback.expectSpeech('Start')
+        .call(doCmd('nextObject'))
+        .expectSpeech('OK')
+        .call(doCmd('nextObject'))
+        .expectSpeech('cancel')
+        .call(doCmd('nextObject'))
+        .expectSpeech('more info')
+        .call(doCmd('nextObject'))
+        .expectSpeech('end')
+        .replay();
+  });
+});
