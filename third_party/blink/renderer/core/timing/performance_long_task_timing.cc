@@ -15,13 +15,13 @@ namespace blink {
 
 PerformanceLongTaskTiming::PerformanceLongTaskTiming(
     double start_time,
-    double end_time,
+    int duration,
     const AtomicString& name,
     const AtomicString& culprit_type,
     const AtomicString& culprit_src,
     const AtomicString& culprit_id,
     const AtomicString& culprit_name)
-    : PerformanceEntry(name, start_time, end_time) {
+    : PerformanceEntry(duration, name, start_time) {
   auto* attribution_entry = MakeGarbageCollected<TaskAttributionTiming>(
       "unknown", culprit_type, culprit_src, culprit_id, culprit_name);
   attribution_.push_back(*attribution_entry);

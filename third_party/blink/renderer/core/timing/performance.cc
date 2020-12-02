@@ -675,10 +675,15 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
                                     const AtomicString& container_src,
                                     const AtomicString& container_id,
                                     const AtomicString& container_name) {
+  double dom_high_res_start_time =
+      MonotonicTimeToDOMHighResTimeStamp(start_time);
   auto* entry = MakeGarbageCollected<PerformanceLongTaskTiming>(
-      MonotonicTimeToDOMHighResTimeStamp(start_time),
-      MonotonicTimeToDOMHighResTimeStamp(end_time), name, container_type,
-      container_src, container_id, container_name);
+      dom_high_res_start_time,
+      // Convert the delta between start and end times to an int to reduce the
+      // granularity of the duration to 1 ms.
+      static_cast<int>(MonotonicTimeToDOMHighResTimeStamp(end_time) -
+                       dom_high_res_start_time),
+      name, container_type, container_src, container_id, container_name);
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
     longtask_buffer_.push_back(entry);
   } else {

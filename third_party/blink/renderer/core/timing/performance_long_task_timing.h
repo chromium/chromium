@@ -19,8 +19,12 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // This constructor uses int for |duration| on purpose: to avoid exposing a
+  // high resolution value in its entry. Having it be int ensures 1 ms
+  // granularity, even though it is ultimately stored as a double in
+  // PerformanceEntry.
   PerformanceLongTaskTiming(double start_time,
-                            double end_time,
+                            int duration,
                             const AtomicString& name,
                             const AtomicString& culprit_type,
                             const AtomicString& culprit_src,

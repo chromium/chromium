@@ -50,6 +50,16 @@ PerformanceEntry::PerformanceEntry(const AtomicString& name,
       start_time_(start_time),
       index_(index_seq.GetNext()) {}
 
+PerformanceEntry::PerformanceEntry(double duration,
+                                   const AtomicString& name,
+                                   double start_time)
+    : duration_(duration),
+      name_(name),
+      start_time_(start_time),
+      index_(index_seq.GetNext()) {
+  DCHECK_GE(duration_, 0.0);
+}
+
 PerformanceEntry::~PerformanceEntry() = default;
 
 DOMHighResTimeStamp PerformanceEntry::startTime() const {
