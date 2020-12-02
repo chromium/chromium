@@ -111,12 +111,18 @@ if (!is_android && !is_mac) {
   group("chrome") {
     public_deps = [ ":chrome_initial" ]
     data_deps = [ ":chrome_initial" ]
+
+    # Do not add any more deps or data_deps to group("chrome").
+    # Because chrome_initial sets its output name to "chrome", running commands
+    # such as `ninja chrome` causes chrome_initial to be built instead. All
+    # deps and data_deps should be added to the chrome_initial target instead.
+    # Targets added here can only be built by explicitly using //chrome:chrome.
+    # Windows-only deps are OK because chrome_initial uses initialexe/chrome as
+    # the output name for that platform.
+    # See crbug.com/1146571.
     if (is_win) {
       public_deps += [ ":reorder_imports" ]
       data_deps += [ ":reorder_imports" ]
-    }
-    if (is_chromeos) {
-      data_deps += [ "//sandbox/linux:chrome_sandbox" ]
     }
   }
 
@@ -136,6 +142,10 @@ if (!is_android && !is_mac) {
     deps = [ "//printing/buildflags" ]
     data = [ "$root_out_dir/resources.pak" ]
     data_deps = []
+
+    if (is_chromeos) {
+      data_deps += [ "//sandbox/linux:chrome_sandbox" ]
+    }
 
     if (chromeos_is_browser_only && also_build_ash_chrome) {
       data_deps += [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
