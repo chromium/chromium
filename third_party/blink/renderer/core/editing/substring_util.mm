@@ -168,10 +168,10 @@ NSAttributedString* SubstringUtil::AttributedWordAtPoint(
     return nil;
 
   // Expand to word under point.
-  const VisibleSelection& selection = CreateVisibleSelectionWithGranularity(
+  const SelectionInDOMTree selection = ExpandWithGranularity(
       SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
       TextGranularity::kWord);
-  const EphemeralRange word_range = selection.ToNormalizedEphemeralRange();
+  const EphemeralRange word_range = NormalizeRange(selection);
 
   // Convert to NSAttributedString.
   NSAttributedString* string = AttributedSubstringFromRange(

@@ -277,14 +277,10 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
 
 bool ExpandSelectionToGranularity(LocalFrame& frame,
                                   TextGranularity granularity) {
-  const VisibleSelection& selection = CreateVisibleSelectionWithGranularity(
-      SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(
-              frame.Selection().ComputeVisibleSelectionInDOMTree().Base(),
-              frame.Selection().ComputeVisibleSelectionInDOMTree().Extent())
-          .Build(),
+  const SelectionInDOMTree& selection = ExpandWithGranularity(
+      frame.Selection().ComputeVisibleSelectionInDOMTree().AsSelection(),
       granularity);
-  const EphemeralRange new_range = selection.ToNormalizedEphemeralRange();
+  const EphemeralRange& new_range = NormalizeRange(selection);
   if (new_range.IsNull())
     return false;
   if (new_range.IsCollapsed())

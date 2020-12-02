@@ -66,7 +66,6 @@ class VisibleSelectionTemplate<Strategy>::Creator {
         ComputeVisibleSelection(selection, granularity));
   }
 
- private:
   static SelectionTemplate<Strategy> ComputeVisibleSelection(
       const SelectionTemplate<Strategy>& passed_selection,
       TextGranularity granularity) {
@@ -109,17 +108,15 @@ VisibleSelectionInFlatTree CreateVisibleSelection(
       selection, TextGranularity::kCharacter);
 }
 
-VisibleSelection CreateVisibleSelectionWithGranularity(
-    const SelectionInDOMTree& selection,
-    TextGranularity granularity) {
-  return VisibleSelection::Creator::CreateWithGranularity(selection,
-                                                          granularity);
+SelectionInDOMTree ExpandWithGranularity(const SelectionInDOMTree& selection,
+                                         TextGranularity granularity) {
+  return VisibleSelection::Creator::ComputeVisibleSelection(selection,
+                                                            granularity);
 }
 
-VisibleSelectionInFlatTree CreateVisibleSelectionWithGranularity(
-    const SelectionInFlatTree& selection,
-    TextGranularity granularity) {
-  return VisibleSelectionInFlatTree::Creator::CreateWithGranularity(
+SelectionInFlatTree ExpandWithGranularity(const SelectionInFlatTree& selection,
+                                          TextGranularity granularity) {
+  return VisibleSelectionInFlatTree::Creator::ComputeVisibleSelection(
       selection, granularity);
 }
 
@@ -190,21 +187,28 @@ EphemeralRange FirstEphemeralRangeOf(const VisibleSelection& selection) {
 template <typename Strategy>
 EphemeralRangeTemplate<Strategy>
 VisibleSelectionTemplate<Strategy>::ToNormalizedEphemeralRange() const {
-  if (IsNone())
+  return NormalizeRange(AsSelection());
+}
+
+template <typename Strategy>
+static EphemeralRangeTemplate<Strategy> NormalizeRangeAlgorithm(
+    const SelectionTemplate<Strategy>& selection) {
+  if (selection.IsNone())
     return EphemeralRangeTemplate<Strategy>();
 
   // Make sure we have an updated layout since this function is called
   // in the course of running edit commands which modify the DOM.
   // Failing to ensure this can result in equivalentXXXPosition calls returning
   // incorrect results.
-  DCHECK(!NeedsLayoutTreeUpdate(Start())) << *this;
+  DCHECK(!NeedsLayoutTreeUpdate(selection.Base())) << selection;
 
-  if (IsCaret()) {
+  if (selection.IsCaret()) {
     // If the selection is a caret, move the range start upstream. This
     // helps us match the conventions of text editors tested, which make
     // style determinations based on the character before the caret, if any.
     const PositionTemplate<Strategy> start =
-        MostBackwardCaretPosition(Start()).ParentAnchoredEquivalent();
+        MostBackwardCaretPosition(selection.ComputeStartPosition())
+            .ParentAnchoredEquivalent();
     return EphemeralRangeTemplate<Strategy>(start, start);
   }
   // If the selection is a range, select the minimum range that encompasses
@@ -218,8 +222,16 @@ VisibleSelectionTemplate<Strategy>::ToNormalizedEphemeralRange() const {
   // On a treasure map, <b>X</b> marks the spot.
   //                       ^ selected
   //
-  DCHECK(IsRange());
-  return NormalizeRange(EphemeralRangeTemplate<Strategy>(Start(), End()));
+  DCHECK(selection.IsRange());
+  return NormalizeRange(selection.ComputeRange());
+}
+
+EphemeralRange NormalizeRange(const SelectionInDOMTree& selection) {
+  return NormalizeRangeAlgorithm(selection);
+}
+
+EphemeralRangeInFlatTree NormalizeRange(const SelectionInFlatTree& selection) {
+  return NormalizeRangeAlgorithm(selection);
 }
 
 template <typename Strategy>

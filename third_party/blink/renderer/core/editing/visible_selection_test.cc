@@ -62,11 +62,9 @@ std::string VisibleSelectionTest::GetWordSelectionText(
     const std::string& selection_text) {
   const PositionInFlatTree position =
       ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base());
-  return GetSelectionTextInFlatTreeFromBody(
-      CreateVisibleSelectionWithGranularity(
-          SelectionInFlatTree::Builder().Collapse(position).Build(),
-          TextGranularity::kWord)
-          .AsSelection());
+  return GetSelectionTextInFlatTreeFromBody(ExpandWithGranularity(
+      SelectionInFlatTree::Builder().Collapse(position).Build(),
+      TextGranularity::kWord));
 }
 
 static void TestFlatTreePositionsToEqualToDOMTreePositions(
@@ -88,11 +86,11 @@ template <typename Strategy>
 VisibleSelectionTemplate<Strategy> ExpandUsingGranularity(
     const VisibleSelectionTemplate<Strategy>& selection,
     TextGranularity granularity) {
-  return CreateVisibleSelectionWithGranularity(
+  return CreateVisibleSelection(ExpandWithGranularity(
       typename SelectionTemplate<Strategy>::Builder()
           .SetBaseAndExtent(selection.Base(), selection.Extent())
           .Build(),
-      granularity);
+      granularity));
 }
 
 // For "editing/deleting/delete_after_block_image.html"
@@ -246,16 +244,15 @@ TEST_F(VisibleSelectionTest, ExpandUsingGranularityWithEmptyCell) {
       "<td id='first' width='50' height='25pt'>|</td>"
       "<td id='second' width='50' height='25pt'></td>"
       "</tr></table></div>");
-  const VisibleSelectionInFlatTree& selection =
-      CreateVisibleSelectionWithGranularity(
-          ConvertToSelectionInFlatTree(selection_in_dom_tree),
-          TextGranularity::kWord);
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(ConvertToSelectionInFlatTree(selection_in_dom_tree),
+                            TextGranularity::kWord);
   EXPECT_EQ(
       "<div contenteditable><table cellspacing=\"0\"><tbody><tr>"
       "<td height=\"25pt\" id=\"first\" width=\"50\">|</td>"
       "<td height=\"25pt\" id=\"second\" width=\"50\"></td>"
       "</tr></tbody></table></div>",
-      GetSelectionTextInFlatTreeFromBody(selection.AsSelection()));
+      GetSelectionTextInFlatTreeFromBody(selection));
 }
 
 TEST_F(VisibleSelectionTest, Initialisation) {
@@ -680,12 +677,11 @@ TEST_F(VisibleSelectionTest, WordGranularity) {
 TEST_F(VisibleSelectionTest, WordGranularityAfterTextControl) {
   const PositionInFlatTree position =
       ToPositionInFlatTree(SetCaretTextToBody("foo<input value=\"bla\">b|ar"));
-  const VisibleSelectionInFlatTree selection =
-      CreateVisibleSelectionWithGranularity(
-          SelectionInFlatTree::Builder().Collapse(position).Build(),
-          TextGranularity::kWord);
+  const SelectionInFlatTree selection = ExpandWithGranularity(
+      SelectionInFlatTree::Builder().Collapse(position).Build(),
+      TextGranularity::kWord);
   EXPECT_EQ("foo<input value=\"bla\"><div>bla</div></input>^bar|",
-            GetSelectionTextInFlatTreeFromBody(selection.AsSelection()));
+            GetSelectionTextInFlatTreeFromBody(selection));
 }
 
 // This is for crbug.com/627783, simulating restoring selection

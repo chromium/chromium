@@ -125,17 +125,17 @@ CORE_EXPORT VisibleSelection CreateVisibleSelection(const SelectionInDOMTree&);
 CORE_EXPORT VisibleSelectionInFlatTree
 CreateVisibleSelection(const SelectionInFlatTree&);
 
-CORE_EXPORT VisibleSelection
-CreateVisibleSelectionWithGranularity(const SelectionInDOMTree&,
-                                      TextGranularity);
+CORE_EXPORT SelectionInDOMTree ExpandWithGranularity(const SelectionInDOMTree&,
+                                                     TextGranularity);
 
-CORE_EXPORT VisibleSelectionInFlatTree
-CreateVisibleSelectionWithGranularity(const SelectionInFlatTree&,
-                                      TextGranularity);
+CORE_EXPORT SelectionInFlatTree
+ExpandWithGranularity(const SelectionInFlatTree&, TextGranularity);
 
 // We don't yet support multi-range selections, so we only ever have one range
 // to return.
 CORE_EXPORT EphemeralRange FirstEphemeralRangeOf(const VisibleSelection&);
+CORE_EXPORT EphemeralRange NormalizeRange(const SelectionInDOMTree&);
+CORE_EXPORT EphemeralRangeInFlatTree NormalizeRange(const SelectionInFlatTree&);
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const VisibleSelection&);
 CORE_EXPORT std::ostream& operator<<(std::ostream&,

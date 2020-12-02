@@ -1237,20 +1237,20 @@ void FrameSelection::MoveRangeSelectionInternal(
   if (new_selection.IsNone())
     return;
 
-  const VisibleSelection& visible_selection =
-      CreateVisibleSelectionWithGranularity(new_selection, granularity);
-  if (visible_selection.IsNone())
+  const SelectionInDOMTree& selection =
+      ExpandWithGranularity(new_selection, granularity);
+  if (selection.IsNone())
     return;
 
   SelectionInDOMTree::Builder builder;
-  if (visible_selection.IsBaseFirst()) {
-    builder.SetBaseAndExtent(visible_selection.Start(),
-                             visible_selection.End());
+  if (selection.IsBaseFirst()) {
+    builder.SetBaseAndExtent(selection.ComputeStartPosition(),
+                             selection.ComputeEndPosition());
   } else {
-    builder.SetBaseAndExtent(visible_selection.End(),
-                             visible_selection.Start());
+    builder.SetBaseAndExtent(selection.ComputeEndPosition(),
+                             selection.ComputeStartPosition());
   }
-  builder.SetAffinity(visible_selection.Affinity());
+  builder.SetAffinity(selection.Affinity());
   SetSelection(builder.Build(), SetSelectionOptions::Builder()
                                     .SetShouldCloseTyping(true)
                                     .SetShouldClearTypingStyle(true)

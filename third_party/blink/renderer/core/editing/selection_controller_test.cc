@@ -240,15 +240,14 @@ TEST_F(SelectionControllerTest, AdjustSelectionWithTrailingWhitespace) {
       "<div style='user-select:none'>abc</div>");
   Element* const input = GetDocument().QuerySelector("input");
 
-  const VisibleSelectionInFlatTree& selection =
-      CreateVisibleSelectionWithGranularity(
-          SelectionInFlatTree::Builder()
-              .Collapse(PositionInFlatTree::BeforeNode(*input))
-              .Extend(PositionInFlatTree::AfterNode(*input))
-              .Build(),
-          TextGranularity::kWord);
+  const SelectionInFlatTree& selection = ExpandWithGranularity(
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::BeforeNode(*input))
+          .Extend(PositionInFlatTree::AfterNode(*input))
+          .Build(),
+      TextGranularity::kWord);
   const SelectionInFlatTree& result =
-      AdjustSelectionWithTrailingWhitespace(selection.AsSelection());
+      AdjustSelectionWithTrailingWhitespace(selection);
 
   EXPECT_EQ(PositionInFlatTree::BeforeNode(*input),
             result.ComputeStartPosition());
