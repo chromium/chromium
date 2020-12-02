@@ -398,6 +398,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   bool ConsumeTransientUserActivationInFrameTree();
   void ClearUserActivationInFrameTree();
 
+  // Note: this is a temporary debug helper. Note that the despite the name,
+  // this is not the same thing as LocalFrame's FrameLifecycleState.
+  FrameLifecycle::State GetFrameLifecycle() const {
+    return lifecycle_.GetState();
+  }
+
   mutable FrameTree tree_node_;
 
   Member<Page> page_;

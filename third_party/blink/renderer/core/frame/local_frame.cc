@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -2102,9 +2103,17 @@ void LocalFrame::ForceSynchronousDocumentInstall(
 }
 
 bool LocalFrame::IsProvisional() const {
+  SCOPED_CRASH_KEY_NUMBER("inconsistent-frame-state", lifecycle,
+                          static_cast<int>(GetFrameLifecycle()));
   // Calling this after the frame is marked as completely detached is a bug, as
   // this state can no longer be accurately calculated.
   CHECK(!IsDetached());
+  // TODO(https://crbug.com/1154141): This are added for temporary debugging.
+  // If a LocalFrame is attached, it should have both a LocalFrameClient and a
+  // Page associated with it. Yet there are some crash reports that seem to
+  // indicate that GetPage() is somehow null... confirm this.
+  CHECK(Client());
+  CHECK(GetPage());
 
   if (IsMainFrame()) {
     return GetPage()->MainFrame() != this;
