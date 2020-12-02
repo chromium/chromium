@@ -378,6 +378,18 @@ struct BASE_EXPORT PartitionRoot {
   }
 
  private:
+  // |buckets| has `kNumBuckets` elements, but we sometimes access it at index
+  // `kNumBuckets`, which is occupied by the sentinel bucket. The correct layout
+  // is enforced by a static_assert() in partition_root.cc, so this is
+  // fine. However, UBSAN is correctly pointing out that there is an
+  // out-of-bounds access, so disable it for these accesses.
+  //
+  // See crbug.com/1150772 for an instance of Clusterfuzz / UBSAN detecting
+  // this.
+  ALWAYS_INLINE Bucket& NO_SANITIZE("undefined") bucket_at(size_t i) {
+    PA_DCHECK(i <= kNumBuckets);
+    return buckets[i];
+  }
   // Allocates memory, without initializing extras.
   //
   // - |flags| are as in AllocFlags().
@@ -1005,7 +1017,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     // the thread cache allocation will return nullptr.
     ret = tcache->GetFromCache(bucket_index);
     is_already_zeroed = false;
-    utilized_slot_size = buckets[bucket_index].slot_size;
+    utilized_slot_size = bucket_at(bucket_index).slot_size;
 
 #if DCHECK_IS_ON()
     // Make sure that the allocated pointer comes from the same place it would
@@ -1016,7 +1028,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       // set |utilized_slot_size|.
       PA_DCHECK(!slot_span->CanStoreRawSize());
       PA_DCHECK(IsValidSlotSpan(slot_span));
-      PA_DCHECK(slot_span->bucket == &buckets[bucket_index]);
+      PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
     }
 #endif
   }
@@ -1182,7 +1194,7 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::ActualSize(size_t size) {
 #else
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
   size = AdjustSizeForExtrasAdd(size);
-  auto& bucket = buckets[SizeToBucketIndex(size)];
+  auto& bucket = bucket_at(SizeToBucketIndex(size));
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % kSmallestBucket));
 

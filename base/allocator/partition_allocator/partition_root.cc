@@ -662,7 +662,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 
     size_t direct_mapped_allocations_total_size = 0;
     for (size_t i = 0; i < kNumBuckets; ++i) {
-      const Bucket* bucket = &buckets[i];
+      const Bucket* bucket = &bucket_at(i);
       // Don't report the pseudo buckets that the generic allocator sets up in
       // order to preserve a fast size->bucket map (see
       // PartitionRoot::Init() for details).
