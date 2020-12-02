@@ -314,10 +314,10 @@
           Chrome Remote Desktop
         </message>
         <message name="IDS_COMPANY_NAME" desc="The company name specified in the version information of each Chrome Remote Desktop Host executable.">
-          Google Inc.
+          Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2013 Google Inc. All Rights Reserved.
+          Copyright 2020 Google LLC All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
