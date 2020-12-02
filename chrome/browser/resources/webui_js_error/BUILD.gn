@@ -6,7 +6,7 @@ import("//chrome/browser/resources/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -25,7 +25,7 @@ if (optimize_webui) {
   }
 }
 
-preprocess_grit("preprocess") {
+preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"

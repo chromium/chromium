@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_grit.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
@@ -36,7 +36,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
-preprocess_grit("preprocess") {
+preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
@@ -47,7 +47,7 @@ preprocess_grit("preprocess") {
   ]
 }
 
-preprocess_grit("preprocess_web_components") {
+preprocess_if_expr("preprocess_web_components") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
@@ -60,14 +60,14 @@ preprocess_grit("preprocess_web_components") {
   ]
 }
 
-preprocess_grit("preprocess_fuse") {
+preprocess_if_expr("preprocess_fuse") {
   in_folder = "../../../../third_party/fusejs/dist/"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_fuse_manifest"
   in_files = [ "fuse.basic.esm.min.js" ]
 }
 
-preprocess_grit("preprocess_mojo") {
+preprocess_if_expr("preprocess_mojo") {
   deps = [ "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js" ]
   in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/"
   out_folder = "$target_gen_dir/$preprocess_folder"
