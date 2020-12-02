@@ -52,7 +52,6 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(bool, IsSetupInProgress, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetPreferredDataTypes, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetBackedOffDataTypes, (), (const override));
   MOCK_METHOD(void, StopAndClear, (), (override));
   MOCK_METHOD(void,
               OnDataTypeRequestsSyncStartup,

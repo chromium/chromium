@@ -139,6 +139,19 @@ bool ListPrefMatches(const char* pref_name) {
   return true;
 }
 
+base::Optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+    const std::string& pref_name,
+    fake_server::FakeServer* fake_server) {
+  for (const sync_pb::SyncEntity& entity :
+       fake_server->GetSyncEntitiesByModelType(syncer::PREFERENCES)) {
+    if (entity.specifics().preference().name() == pref_name) {
+      return entity.specifics().preference();
+    }
+  }
+
+  return base::nullopt;
+}
+
 }  // namespace preferences_helper
 
 PrefMatchChecker::PrefMatchChecker(const char* path) : path_(path) {
@@ -200,4 +213,23 @@ ClearedPrefMatchChecker::ClearedPrefMatchChecker(const char* path)
 bool ClearedPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for pref '" << GetPath() << "' to match";
   return preferences_helper::ClearedPrefMatches(GetPath());
+}
+
+FakeServerPrefMatchesValueChecker::FakeServerPrefMatchesValueChecker(
+    const std::string& pref_name,
+    const std::string& expected_value)
+    : pref_name_(pref_name), expected_value_(expected_value) {}
+
+bool FakeServerPrefMatchesValueChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  const base::Optional<sync_pb::PreferenceSpecifics> actual_specifics =
+      preferences_helper::GetPreferenceInFakeServer(pref_name_, fake_server());
+  if (!actual_specifics.has_value()) {
+    *os << "No sync entity in FakeServer for pref " << pref_name_;
+    return false;
+  }
+
+  *os << "Waiting until FakeServer value for pref " << pref_name_ << " becomes "
+      << expected_value_ << " but actual is " << actual_specifics->value();
+  return actual_specifics->value() == expected_value_;
 }

@@ -124,7 +124,6 @@ class ProfileSyncService : public SyncService,
   bool IsSetupInProgress() const override;
   ModelTypeSet GetPreferredDataTypes() const override;
   ModelTypeSet GetActiveDataTypes() const override;
-  ModelTypeSet GetBackedOffDataTypes() const override;
   void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;
@@ -240,6 +239,7 @@ class ProfileSyncService : public SyncService,
                                   create_http_post_provider_factory_cb);
 
   ModelTypeSet GetRegisteredDataTypesForTest() const;
+  ModelTypeSet GetThrottledDataTypesForTest() const;
 
   // Simulates that all policies just got loaded. This does nothing if the
   // policies were already loaded.

@@ -311,10 +311,6 @@ class SyncService : public KeyedService {
   // be the empty set. Once the configuration completes the set will be updated.
   virtual ModelTypeSet GetActiveDataTypes() const = 0;
 
-  // Returns the set of currently backed off data types (e.g. returns non-empty
-  // result when the network was disabled during last sync cycle).
-  virtual ModelTypeSet GetBackedOffDataTypes() const = 0;
-
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////

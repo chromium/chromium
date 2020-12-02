@@ -378,6 +378,14 @@ ModelTypeSet ProfileSyncService::GetRegisteredDataTypesForTest() const {
   return GetRegisteredDataTypes();
 }
 
+ModelTypeSet ProfileSyncService::GetThrottledDataTypesForTest() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (engine_ && engine_->IsInitialized()) {
+    return engine_->GetDetailedStatus().throttled_types;
+  }
+  return ModelTypeSet();
+}
+
 void ProfileSyncService::TriggerPoliciesLoadedForTest() {
   if (!startup_controller_->ArePoliciesReady()) {
     startup_controller_->OnFirstPoliciesLoaded(
@@ -1249,14 +1257,6 @@ ModelTypeSet ProfileSyncService::GetActiveDataTypes() const {
   if (!data_type_manager_ || GetAuthError().IsPersistentError())
     return ModelTypeSet();
   return data_type_manager_->GetActiveDataTypes();
-}
-
-ModelTypeSet ProfileSyncService::GetBackedOffDataTypes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (engine_ && engine_->IsInitialized()) {
-    return engine_->GetDetailedStatus().backed_off_types;
-  }
-  return ModelTypeSet();
 }
 
 void ProfileSyncService::SyncAllowedByPlatformChanged(bool allowed) {

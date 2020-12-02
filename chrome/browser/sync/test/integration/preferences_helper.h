@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/optional.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,8 +16,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/test/fake_server/fake_server.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -76,6 +81,12 @@ bool StringPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
 // Used to verify that the list preference with name |pref_name| has the
 // same value across all profiles.
 bool ListPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+
+// Returns a server-side preference in FakeServer for |pref_name| or nullopt if
+// no preference exists.
+base::Optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+    const std::string& pref_name,
+    fake_server::FakeServer* fake_server);
 
 }  // namespace preferences_helper
 
@@ -141,6 +152,22 @@ class ClearedPrefMatchChecker : public PrefMatchChecker {
 
   // PrefMatchChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
+};
+
+// Waits until GetPreferenceInFakeServer() returns an expected value.
+class FakeServerPrefMatchesValueChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  FakeServerPrefMatchesValueChecker(const std::string& pref_name,
+                                    const std::string& expected_value);
+
+ protected:
+  // StatusChangeChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const std::string pref_name_;
+  const std::string expected_value_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_PREFERENCES_HELPER_H_

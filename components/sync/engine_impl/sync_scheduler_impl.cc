@@ -820,7 +820,7 @@ void SyncSchedulerImpl::OnTypesThrottled(ModelTypeSet types,
                                          const TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SDVLOG(1) << "Throttling " << ModelTypeSetToString(types) << " for "
-            << throttle_duration.InMinutes() << " minutes.";
+            << throttle_duration.InSeconds() << " seconds.";
   nudge_tracker_.SetTypesThrottledUntil(types, throttle_duration,
                                         TimeTicks::Now());
   RestartWaiting();

@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
@@ -341,6 +343,61 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   EXPECT_TRUE(SessionHierarchyMatchChecker({{kURL.spec()}}, GetSyncService(0),
                                            GetFakeServer())
                   .Wait());
+}
+
+// Tests that throttling one datatype does not influence other datatypes.
+IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
+  const std::string kBookmarkFolderTitle = "title1";
+
+  ASSERT_TRUE(SetupClients());
+
+  // Set the preference to false initially which should get synced.
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(preferences_helper::GetPreferenceInFakeServer(
+                  prefs::kHomePageIsNewTabPage, GetFakeServer())
+                  .has_value());
+  ASSERT_EQ(preferences_helper::GetPreferenceInFakeServer(
+                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                ->value(),
+            "false");
+
+  // Start throttling PREFERENCES so further commits will be rejected by the
+  // server.
+  GetFakeServer()->SetThrottledTypes({syncer::PREFERENCES});
+
+  // Make local changes for PREFERENCES and BOOKMARKS, but the first is
+  // throttled.
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, true);
+  AddFolder(0, 0, kBookmarkFolderTitle);
+
+  // The bookmark should get committed successfully.
+  EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  GetSyncService(0), GetFakeServer(),
+                  {{kBookmarkFolderTitle, GURL()}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
+
+  // The preference should remain unsynced (still set to the previous value).
+  EXPECT_EQ(preferences_helper::GetPreferenceInFakeServer(
+                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                ->value(),
+            "false");
+
+  // PREFERENCES should now be throttled.
+  EXPECT_EQ(GetSyncService(0)->GetThrottledDataTypesForTest(),
+            syncer::ModelTypeSet{syncer::PREFERENCES});
+
+  // Unthrottle PREFERENCES to verify that sync can resume.
+  GetFakeServer()->SetThrottledTypes(syncer::ModelTypeSet());
+
+  // Eventually (depending on throttling delay, which is short in tests) the
+  // preference should be committed.
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(prefs::kHomePageIsNewTabPage, "true")
+          .Wait());
+  EXPECT_EQ(GetSyncService(0)->GetThrottledDataTypesForTest(),
+            syncer::ModelTypeSet());
 }
 
 }  // namespace

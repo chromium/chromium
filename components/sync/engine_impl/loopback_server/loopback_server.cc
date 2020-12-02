@@ -362,13 +362,14 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
     } else if (!throttled_datatypes_in_request.Empty()) {
       DLOG(WARNING) << "Throttled datatypes: "
                     << ModelTypeSetToString(throttled_datatypes_in_request);
-      response->set_error_code(sync_pb::SyncEnums::PARTIAL_FAILURE);
-      response->mutable_error()->set_error_type(
-          sync_pb::SyncEnums::PARTIAL_FAILURE);
+      response->set_error_code(sync_pb::SyncEnums::THROTTLED);
+      response->mutable_error()->set_error_type(sync_pb::SyncEnums::THROTTLED);
       for (ModelType type : throttled_datatypes_in_request) {
         response->mutable_error()->add_error_data_type_ids(
             syncer::GetSpecificsFieldNumberFromModelType(type));
       }
+      // Avoid tests waiting too long after throttling is disabled.
+      response->mutable_client_command()->set_throttle_delay_seconds(1);
     } else {
       UMA_HISTOGRAM_ENUMERATION(
           "Sync.Local.RequestTypeOnError", message.message_contents(),
