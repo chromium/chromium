@@ -34,14 +34,14 @@ DISCARDABLE_MEMORY_EXPORT extern const base::Feature kSchedulePeriodicPurge;
 // discardable memory segments through the browser process.
 class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
-      public base::trace_event::MemoryDumpProvider {
+      public base::trace_event::MemoryDumpProvider,
+      public base::RefCountedThreadSafe<ClientDiscardableSharedMemoryManager> {
  public:
   ClientDiscardableSharedMemoryManager(
       mojo::PendingRemote<mojom::DiscardableSharedMemoryManager> manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> periodic_purge_task_runner =
           nullptr);
-  ~ClientDiscardableSharedMemoryManager() override;
 
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
@@ -96,6 +96,8 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // These fields are only protected for testing, they would otherwise be
   // private. Everything else should be either public or private.
  protected:
+  friend class base::RefCountedThreadSafe<ClientDiscardableSharedMemoryManager>;
+  ~ClientDiscardableSharedMemoryManager() override;
   ClientDiscardableSharedMemoryManager(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> periodic_purge_task_runner);
@@ -134,7 +136,9 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     bool is_locked() const EXCLUSIVE_LOCKS_REQUIRED(manager_->GetLock());
 
     friend class ClientDiscardableSharedMemoryManager;
-    ClientDiscardableSharedMemoryManager* const manager_;
+    // We need to ensure that |manager_| outlives |this|, to avoid a
+    // use-after-free.
+    scoped_refptr<ClientDiscardableSharedMemoryManager> const manager_;
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span_;
     // Set to an invalid base::TimeTicks when |this| is Lock()-ed, and to
     // |TimeTicks::Now()| each time |this| is Unlock()-ed.

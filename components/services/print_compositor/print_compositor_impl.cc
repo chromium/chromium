@@ -112,7 +112,7 @@ void PrintCompositorImpl::SetDiscardableSharedMemoryManager(
   // Set up discardable memory manager.
   mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
       manager_remote(std::move(manager));
-  discardable_shared_memory_manager_ = std::make_unique<
+  discardable_shared_memory_manager_ = base::MakeRefCounted<
       discardable_memory::ClientDiscardableSharedMemoryManager>(
       std::move(manager_remote), io_task_runner_);
   base::DiscardableMemoryAllocator::SetInstance(

@@ -100,7 +100,7 @@ PpapiThread::PpapiThread(base::RepeatingClosure quit_closure,
         manager_remote;
     ChildThread::Get()->BindHostReceiver(
         manager_remote.InitWithNewPipeAndPassReceiver());
-    discardable_shared_memory_manager_ = std::make_unique<
+    discardable_shared_memory_manager_ = base::MakeRefCounted<
         discardable_memory::ClientDiscardableSharedMemoryManager>(
         std::move(manager_remote), GetIOTaskRunner());
     base::DiscardableMemoryAllocator::SetInstance(

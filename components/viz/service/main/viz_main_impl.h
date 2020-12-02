@@ -190,7 +190,7 @@ class VizMainImpl : public mojom::VizMain,
 
   mojo::AssociatedReceiver<mojom::VizMain> receiver_{this};
 
-  std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(VizMainImpl);
