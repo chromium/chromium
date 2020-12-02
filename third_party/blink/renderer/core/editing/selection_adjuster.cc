@@ -43,10 +43,9 @@ template <typename Strategy>
 SelectionTemplate<Strategy> ComputeAdjustedSelection(
     const SelectionTemplate<Strategy> selection,
     const EphemeralRangeTemplate<Strategy>& range) {
-  if (range.StartPosition().CompareTo(range.EndPosition()) == 0) {
+  if (range.IsCollapsed()) {
     return typename SelectionTemplate<Strategy>::Builder()
-        .Collapse(selection.IsBaseFirst() ? range.StartPosition()
-                                          : range.EndPosition())
+        .Collapse(range.StartPosition())
         .Build();
   }
   if (selection.IsBaseFirst()) {
