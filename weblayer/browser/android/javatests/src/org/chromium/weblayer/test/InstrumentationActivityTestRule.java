@@ -4,8 +4,6 @@
 
 package org.chromium.weblayer.test;
 
-import android.app.Activity;
-import android.app.Instrumentation.ActivityMonitor;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +11,10 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.Stage;
 
 import androidx.fragment.app.Fragment;
 
-import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -25,9 +22,8 @@ import org.junit.Rule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -37,7 +33,6 @@ import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -94,7 +89,8 @@ public class InstrumentationActivityTestRule
         intent.setComponent(
                 new ComponentName(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         InstrumentationActivity.class));
-        return launchActivity(intent);
+        launchActivity(intent);
+        return getActivity();
     }
 
     /**
@@ -144,49 +140,20 @@ public class InstrumentationActivityTestRule
         (new NavigationWaiter(url, tab, true /* expectFailure */, waitForPaint)).navigateAndWait();
     }
 
-    private void recreateActivityHelper(Runnable recreate) {
-        Activity activity = getActivity();
-        ActivityMonitor monitor =
-                new ActivityMonitor(InstrumentationActivity.class.getName(), null, false);
-        InstrumentationRegistry.getInstrumentation().addMonitor(monitor);
-
-        recreate.run();
-
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(monitor.getLastActivity(), Matchers.notNullValue());
-            Criteria.checkThat(monitor.getLastActivity(), Matchers.not(activity));
-        });
-        InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
-
-        // There is no way to rotate the activity using ActivityTestRule or even notify it.
-        // So we have to hack...
-        try {
-            Field field = ActivityTestRule.class.getDeclaredField("mActivity");
-            field.setAccessible(true);
-            field.set(this, monitor.getLastActivity());
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Recreates the Activity, blocking until finished.
      * After calling this, getActivity() returns the new Activity.
      */
     public void recreateActivity() {
-        recreateActivityHelper(() -> {
-            Activity activity = getActivity();
-            TestThreadUtils.runOnUiThreadBlocking(activity::recreate);
-        });
+        setActivity(ApplicationTestUtils.recreateActivity(getActivity()));
     }
 
     public void recreateByRotatingToLandscape() {
-        recreateActivityHelper(() -> {
-            Activity activity = getActivity();
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            });
-        });
+        setActivity(ApplicationTestUtils.waitForActivityWithClass(
+                InstrumentationActivity.class, Stage.RESUMED, () -> {
+                    getActivity().setRequestedOrientation(
+                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }));
     }
 
     /**

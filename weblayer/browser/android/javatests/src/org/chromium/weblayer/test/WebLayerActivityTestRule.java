@@ -7,13 +7,13 @@ package org.chromium.weblayer.test;
 import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 import android.text.TextUtils;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.test.BaseActivityTestRule;
 
 import java.io.File;
 import java.io.OutputStreamWriter;
@@ -24,11 +24,11 @@ import java.io.Writer;
  *
  * This rule contains some common setup needed to deal with WebLayer's multiple classloaders.
  */
-abstract class WebLayerActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
+abstract class WebLayerActivityTestRule<T extends Activity> extends BaseActivityTestRule<T> {
     private static final String COMMAND_LINE_FILE = "weblayer-command-line";
 
     public WebLayerActivityTestRule(Class<T> clazz) {
-        super(clazz, /*initialTouchMode=*/false, /*launchActivity=*/false);
+        super(clazz);
     }
 
     /**

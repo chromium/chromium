@@ -35,7 +35,8 @@ public class SiteSettingsActivityTestRule extends WebLayerActivityTestRule<SiteS
             return SiteSettingsActivity.createIntentForCategoryList(
                     getContext(), profileName, "".equals(profileName));
         });
-        return launchActivity(siteSettingsIntent);
+        launchActivity(siteSettingsIntent);
+        return getActivity();
     }
 
     public SiteSettingsActivity launchSingleSiteSettingsWithProfile(
@@ -49,7 +50,8 @@ public class SiteSettingsActivityTestRule extends WebLayerActivityTestRule<SiteS
             return SiteSettingsTestUtils.createIntentForSingleWebsite(
                     getContext(), profileName, "".equals(profileName), url);
         });
-        return launchActivity(siteSettingsIntent);
+        launchActivity(siteSettingsIntent);
+        return getActivity();
     }
 
     private Context getContext() {
