@@ -860,21 +860,6 @@
       },
     },
   },
-  # TODO(crbug.com/1087153): Remove this once the fleet is upgraded to 1909.
-  'win10_1803_intel_hd_630': {
-    'swarming': {
-      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
-      # used in conjunction with 'win10_nvidia_quadro_p400_stable_dimension_set'
-      # to trigger tests on multiple configurations.
-      'dimension_sets': [
-        {
-          'gpu': '8086:5912-24.20.100.6286|8086:5912-26.20.100.8141',
-          'os': 'Windows-10-17134|Windows-10-18363',
-          'pool': 'chromium.tests.gpu',
-        },
-      ],
-    },
-  },
   'win10_amd_rx_550': {
     'swarming': {
       'dimensions': {
@@ -915,10 +900,24 @@
   'win10_intel_hd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-24.20.100.6286|8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141',
+        'gpu': '8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu',
       },
+    },
+  },
+  'win10_intel_hd_630_stable_dimension_set': {
+    'swarming': {
+      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
+      # used in conjunction with 'win10_nvidia_quadro_p400_stable_dimension_set'
+      # to trigger tests on multiple configurations.
+      'dimension_sets': [
+        {
+          'gpu': '8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141',
+          'os': 'Windows-10',
+          'pool': 'chromium.tests.gpu',
+        },
+      ],
     },
   },
   'win10_intel_uhd_630_stable': {

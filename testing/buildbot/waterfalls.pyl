@@ -1916,7 +1916,7 @@
         'browser_config': 'release_x64',
         'mixins': [
           'win10_nvidia_quadro_p400_stable_dimension_set',
-          'win10_1803_intel_hd_630',
+          'win10_intel_hd_630_stable_dimension_set',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_asan_gtests_passthrough',
@@ -1929,7 +1929,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_1803_intel_hd_630',
+          'win10_intel_hd_630_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -1951,7 +1951,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_1803_intel_hd_630',
+          'win10_intel_hd_630_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -1975,9 +1975,7 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
-          # Some tests flakily fail on Windows 10 1709, but not Windows 10 1803,
-          # so explicitly target 1803 until the fleet is upgraded.
-          'win10_1803_intel_hd_630',
+          'win10_intel_hd_630_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -1999,7 +1997,7 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
-          'win10_1803_intel_hd_630',
+          'win10_intel_hd_630_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
