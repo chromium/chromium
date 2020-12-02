@@ -122,12 +122,11 @@ class LocationBarTablet extends LocationBarLayout {
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull WindowDelegate windowDelegate, @NonNull WindowAndroid windowAndroid,
-            @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull OneshotSupplier<AssistantVoiceSearchService> assistantVoiceSearchSupplier) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
                 locationBarDataProvider, profileSupplier, windowDelegate, windowAndroid,
-                overrideUrlLoadingDelegate, voiceRecognitionHandler, assistantVoiceSearchSupplier);
+                voiceRecognitionHandler, assistantVoiceSearchSupplier);
         mStatusCoordinator.setShowIconsWhenUrlFocused(true);
         if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
                     mLocationBarDataProvider.isIncognito())) {
