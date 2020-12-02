@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/script/module_script.h"
 
+#include "base/feature_list.h"
 #include "base/macros.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -121,6 +123,21 @@ bool ModuleScript::RunScriptOnWorkerOrWorklet(
   // TODO(nhiroki): Catch an error when an evaluation error happens.
   // (https://crbug.com/680046)
   ScriptEvaluationResult result = RunScriptAndReturnValue();
+
+  // Service workers prohibit async module graphs (those with top-level await),
+  // so the promise result from executing a service worker module is always
+  // settled. To maintain compatibility with synchronous module graphs, rejected
+  // promises are considered synchronous failures in service workers.
+  //
+  // https://github.com/w3c/ServiceWorker/pull/1444
+  if (base::FeatureList::IsEnabled(features::kTopLevelAwait) &&
+      global_scope.IsServiceWorkerGlobalScope() &&
+      result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
+    v8::Local<v8::Promise> promise = result.GetSuccessValue().As<v8::Promise>();
+    DCHECK_NE(promise->State(), v8::Promise::kPending);
+    return promise->State() == v8::Promise::kFulfilled;
+  }
+
   return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
 }
 

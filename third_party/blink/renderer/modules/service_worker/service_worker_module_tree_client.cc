@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_module_tree_client.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
@@ -37,6 +38,19 @@ void ServiceWorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
     worker_global_scope->close();
     return;
   }
+
+  // With top-level await: https://github.com/w3c/ServiceWorker/pull/1444
+  if (!module_script->HasEmptyRecord() &&
+      module_script->V8Module()->IsGraphAsync()) {
+    worker_reporting_proxy.DidFailToFetchModuleScript();
+    worker_global_scope->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Top-level await is disallowed in service workers."));
+    worker_global_scope->close();
+    return;
+  }
+
   worker_reporting_proxy.DidFetchScript();
 
   // (In the update case) Step 9: "Else, continue the rest of these steps after
