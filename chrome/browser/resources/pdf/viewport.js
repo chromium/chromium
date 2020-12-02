@@ -1147,22 +1147,25 @@ export class Viewport {
   }
 
   /**
-   * @param {boolean} fromScriptingAPI
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
    * @private
    */
-  arrowDownHandler_(fromScriptingAPI) {
-    if (fromScriptingAPI) {
-      this.position.y += SCROLL_INCREMENT;
+  arrowUpDownHandler_(e, formFieldFocused) {
+    if (hasKeyModifiers(e)) {
+      return;
     }
-  }
 
-  /**
-   * @param {boolean} fromScriptingAPI
-   * @private
-   */
-  arrowUpHandler_(fromScriptingAPI) {
-    if (fromScriptingAPI) {
-      this.position.y -= SCROLL_INCREMENT;
+    // Go to the previous/next page if Presentation mode is on and no form field
+    // is focused.
+    if (!(document.fullscreenElement === null || formFieldFocused)) {
+      e.key === 'ArrowDown' ? this.goToNextPage() : this.goToPreviousPage();
+      e.preventDefault();
+    } else if (
+        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
+            .fromScriptingAPI) {
+      const direction = e.key === 'ArrowDown' ? 1 : -1;
+      this.position.y += direction * SCROLL_INCREMENT;
     }
   }
 
@@ -1174,11 +1177,6 @@ export class Viewport {
    * @return {boolean} Whether the event was handled.
    */
   handleDirectionalKeyEvent(e, formFieldFocused) {
-    // Certain scroll events may be sent from outside of the extension.
-    const fromScriptingAPI =
-        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
-            .fromScriptingAPI;
-
     switch (e.key) {
       case '':
         if (e.shiftKey) {
@@ -1196,14 +1194,12 @@ export class Viewport {
       case 'ArrowLeft':
         this.arrowLeftHandler_(e, formFieldFocused);
         return true;
+      case 'ArrowDown':
       case 'ArrowUp':
-        this.arrowUpHandler_(!!fromScriptingAPI);
+        this.arrowUpDownHandler_(e, formFieldFocused);
         return true;
       case 'ArrowRight':
         this.arrowRightHandler_(e, formFieldFocused);
-        return true;
-      case 'ArrowDown':
-        this.arrowDownHandler_(!!fromScriptingAPI);
         return true;
       default:
         return false;

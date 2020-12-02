@@ -69,6 +69,24 @@ const tests = [
 
     chrome.test.succeed();
   },
+  async function testArrowKeysUpdatePage() {
+    await ensureFullscreen();
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
+    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowDown');
+    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+
+    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowUp');
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
+    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowRight');
+    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+
+    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowLeft');
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
+    chrome.test.succeed();
+  }
 ];
 
 chrome.test.runTests(tests);
