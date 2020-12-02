@@ -1339,28 +1339,30 @@ HTMLSpanElement* CreateTabSpanElement(Document& document) {
 
 PositionWithAffinity PositionRespectingEditingBoundary(
     const Position& position,
-    const PhysicalOffset& local_point,
-    Node* target_node) {
+    const HitTestResult& hit_test_result) {
+  Node* target_node = hit_test_result.InnerPossiblyPseudoNode();
+  DCHECK(target_node);
   const LayoutObject* target_object = target_node->GetLayoutObject();
   if (!target_object)
     return PositionWithAffinity();
 
-  PhysicalOffset selection_end_point = local_point;
   Element* editable_element = RootEditableElementOf(position);
+  if (!editable_element || editable_element->contains(target_node))
+    return hit_test_result.GetPosition();
 
-  if (editable_element && !editable_element->contains(target_node)) {
-    const LayoutObject* editable_object = editable_element->GetLayoutObject();
-    if (!editable_object)
-      return PositionWithAffinity();
+  const LayoutObject* editable_object = editable_element->GetLayoutObject();
+  if (!editable_object)
+    return PositionWithAffinity();
 
-    // TODO(yosin): Is this kIgnoreTransforms correct here?
-    PhysicalOffset absolute_point = target_object->LocalToAbsolutePoint(
-        selection_end_point, kIgnoreTransforms);
-    selection_end_point = editable_object->AbsoluteToLocalPoint(
-        absolute_point, kIgnoreTransforms);
-    target_object = editable_object;
-  }
-
+  // TODO(yosin): Is this kIgnoreTransforms correct here?
+  PhysicalOffset selection_end_point = hit_test_result.LocalPoint();
+  PhysicalOffset absolute_point = target_object->LocalToAbsolutePoint(
+      selection_end_point, kIgnoreTransforms);
+  selection_end_point =
+      editable_object->AbsoluteToLocalPoint(absolute_point, kIgnoreTransforms);
+  target_object = editable_object;
+  // TODO(kojii): Support fragment-based |PositionForPoint|. LayoutObject-based
+  // |PositionForPoint| may not work if NG block fragmented.
   return target_object->PositionForPoint(selection_end_point);
 }
 

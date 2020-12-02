@@ -505,10 +505,10 @@ PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
   HitTestResult result(request, location);
   frame->GetDocument()->GetLayoutView()->HitTest(location, result);
 
-  if (Node* node = result.InnerNode()) {
+  if (result.InnerNode()) {
     return PositionRespectingEditingBoundary(
         frame->Selection().ComputeVisibleSelectionInDOMTreeDeprecated().Start(),
-        result.LocalPoint(), node);
+        result);
   }
   return PositionWithAffinity();
 }

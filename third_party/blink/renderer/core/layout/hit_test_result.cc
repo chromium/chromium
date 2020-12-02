@@ -171,13 +171,13 @@ void HitTestResult::SetBoxFragment(
 }
 
 PositionWithAffinity HitTestResult::GetPosition() const {
-  if (!inner_possibly_pseudo_node_)
+  const Node* node = inner_possibly_pseudo_node_;
+  if (!node)
     return PositionWithAffinity();
-  LayoutObject* layout_object = GetLayoutObject();
+  LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
-  if (inner_possibly_pseudo_node_->IsPseudoElement() &&
-      inner_possibly_pseudo_node_->GetPseudoId() == kPseudoIdBefore) {
+  if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdBefore) {
     return PositionWithAffinity(
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }

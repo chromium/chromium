@@ -491,7 +491,7 @@ void SelectionController::UpdateSelectionForMouseDrag(
       Selection().SelectionHasFocus()
           ? PositionRespectingEditingBoundary(
                 Selection().ComputeVisibleSelectionInDOMTree().Start(),
-                hit_test_result.LocalPoint(), target)
+                hit_test_result)
           : PositionWithAffinity();
   const PositionInFlatTreeWithAffinity target_position =
       CreateVisiblePosition(
