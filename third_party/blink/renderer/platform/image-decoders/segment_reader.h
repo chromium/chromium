@@ -12,11 +12,12 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 class SkData;
-class SkROBuffer;
 template <typename T>
 class sk_sp;
 
 namespace blink {
+
+class ROBuffer;
 
 // Interface that looks like SharedBuffer. Used by ImageDecoders to use various
 // sources of input including:
@@ -24,7 +25,7 @@ namespace blink {
 //   - for when the caller already has a SharedBuffer
 // - SkData
 //   - for when the caller already has an SkData
-// - SkROBuffer
+// - ROBuffer
 //   - for when the caller wants to read/write in different threads
 //
 // Unlike SharedBuffer, this is a read-only interface. There is no way to
@@ -40,7 +41,7 @@ class PLATFORM_EXPORT SegmentReader
 
   // These versions use thread-safe input, so they are always thread-safe.
   static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<SkData>);
-  static scoped_refptr<SegmentReader> CreateFromSkROBuffer(sk_sp<SkROBuffer>);
+  static scoped_refptr<SegmentReader> CreateFromROBuffer(sk_sp<ROBuffer>);
 
   SegmentReader() = default;
   virtual ~SegmentReader() = default;

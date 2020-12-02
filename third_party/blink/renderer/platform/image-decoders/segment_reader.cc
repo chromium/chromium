@@ -9,11 +9,11 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkRWBuffer.h"
 
 namespace blink {
 
@@ -103,23 +103,23 @@ sk_sp<SkData> DataSegmentReader::GetAsSkData() const {
 
 class ROBufferSegmentReader final : public SegmentReader {
  public:
-  explicit ROBufferSegmentReader(sk_sp<SkROBuffer>);
+  explicit ROBufferSegmentReader(sk_sp<ROBuffer>);
 
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
-  sk_sp<SkROBuffer> ro_buffer_;
+  sk_sp<ROBuffer> ro_buffer_;
   mutable Mutex read_mutex_;
   // Position of the first char in the current block of iter_.
   mutable size_t position_of_block_ GUARDED_BY(read_mutex_);
-  mutable SkROBuffer::Iter iter_ GUARDED_BY(read_mutex_);
+  mutable ROBuffer::Iter iter_ GUARDED_BY(read_mutex_);
 
   DISALLOW_COPY_AND_ASSIGN(ROBufferSegmentReader);
 };
 
-ROBufferSegmentReader::ROBufferSegmentReader(sk_sp<SkROBuffer> buffer)
+ROBufferSegmentReader::ROBufferSegmentReader(sk_sp<ROBuffer> buffer)
     : ro_buffer_(std::move(buffer)),
       position_of_block_(0),
       iter_(ro_buffer_.get()) {}
@@ -136,8 +136,8 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
   MutexLocker lock(read_mutex_);
 
   if (position < position_of_block_) {
-    // SkROBuffer::Iter only iterates forwards. Start from the beginning.
-    iter_.reset(ro_buffer_.get());
+    // ROBuffer::Iter only iterates forwards. Start from the beginning.
+    iter_.Reset(ro_buffer_.get());
     position_of_block_ = 0;
   }
 
@@ -153,9 +153,9 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
     }
 
     // Move to next block.
-    if (!iter_.next()) {
+    if (!iter_.Next()) {
       // Reset to the beginning, so future calls can succeed.
-      iter_.reset(ro_buffer_.get());
+      iter_.Reset(ro_buffer_.get());
       position_of_block_ = 0;
       return 0;
     }
@@ -165,7 +165,7 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
 }
 
 static void UnrefROBuffer(const void* ptr, void* context) {
-  static_cast<SkROBuffer*>(context)->unref();
+  static_cast<ROBuffer*>(context)->unref();
 }
 
 sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
@@ -173,9 +173,9 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
     return nullptr;
 
   // Check to see if the data is already contiguous.
-  SkROBuffer::Iter iter(ro_buffer_.get());
-  const bool multiple_blocks = iter.next();
-  iter.reset(ro_buffer_.get());
+  ROBuffer::Iter iter(ro_buffer_.get());
+  const bool multiple_blocks = iter.Next();
+  iter.Reset(ro_buffer_.get());
 
   if (!multiple_blocks) {
     // Contiguous data. No need to copy.
@@ -190,7 +190,7 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
     size_t size = iter.size();
     memcpy(dst, iter.data(), size);
     dst += size;
-  } while (iter.next());
+  } while (iter.Next());
   return data;
 }
 
@@ -206,8 +206,8 @@ scoped_refptr<SegmentReader> SegmentReader::CreateFromSkData(
   return base::AdoptRef(new DataSegmentReader(std::move(data)));
 }
 
-scoped_refptr<SegmentReader> SegmentReader::CreateFromSkROBuffer(
-    sk_sp<SkROBuffer> buffer) {
+scoped_refptr<SegmentReader> SegmentReader::CreateFromROBuffer(
+    sk_sp<ROBuffer> buffer) {
   return base::AdoptRef(new ROBufferSegmentReader(std::move(buffer)));
 }
 

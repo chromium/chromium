@@ -31,13 +31,13 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkRWBuffer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -104,7 +104,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   // Copy of the data that is passed in, used by deferred decoding.
   // Allows creating readonly snapshots that may be read in another thread.
-  std::unique_ptr<SkRWBuffer> rw_buffer_;
+  std::unique_ptr<RWBuffer> rw_buffer_;
   std::unique_ptr<ImageDecoder> metadata_decoder_;
 
   String filename_extension_;
@@ -141,4 +141,4 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DEFERRED_IMAGE_DECODER_H_
