@@ -1273,7 +1273,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2435579801172349831">Abre todos os URL (<ph name="URL_COUNT" />) nunha ventá do modo de incógnito</translation>
 <translation id="2436186046335138073">Queres que se use <ph name="HANDLER_HOSTNAME" /> para abrir todas as ligazóns de <ph name="PROTOCOL" />?</translation>
-<translation id="2439545803278355377">Introduce o teu novo PIN. Debe ter un mínimo de catro caracteres e pode incluír letras, números ou outros caracteres.</translation>
 <translation id="2440604414813129000">Ver f&amp;onte</translation>
 <translation id="244231003699905658">O enderezo non é válido. Compróbao e téntao de novo.</translation>
 <translation id="2442916515643169563">Sombra do texto</translation>
@@ -1702,7 +1701,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="291056154577034373">SEN LER</translation>
 <translation id="2910718431259223434">Produciuse un erro. Téntao de novo ou ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permitir que os sitios garden e lean datos de cookies (recomendado)</translation>
-<translation id="2915016304249900997">Os detalles ocúltanse mentres compartes a pantalla</translation>
 <translation id="2915102088417824677">Consultar rexistro de actividade</translation>
 <translation id="2915873080513663243">Exploración automática</translation>
 <translation id="2915996080311180594">Reiniciar máis tarde</translation>
@@ -2421,6 +2419,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas partes</translation>
 <translation id="3755411799582650620">Agora o teu dispositivo <ph name="PHONE_NAME" /> tamén pode desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">O sitio está usando o teu micrófono</translation>
+<translation id="3756578970075173856">Establecer PIN</translation>
 <translation id="3757733214359997190">Non se atoparon sitios</translation>
 <translation id="375841316537350618">Descargando script de proxy...</translation>
 <translation id="3758842566811519622">Cookies establecidas</translation>
@@ -3310,7 +3309,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4830121310592638841">Preguntar cando un sitio queira abrir e colocar ventás nas túas pantallas</translation>
 <translation id="4830502475412647084">Instalando actualización do SO</translation>
 <translation id="4830573902900904548">O teu dispositivo <ph name="DEVICE_TYPE" /> non pode conectarse a Internet a través de <ph name="NETWORK_NAME" />. Selecciona outra rede. <ph name="LEARN_MORE_LINK_START" />Máis información<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833236810053292670">Mira as novidades do Chromebook</translation>
 <translation id="4833683849865011483">Atopouse 1 impresora no servidor de impresión</translation>
 <translation id="4836504898754963407">Xestionar impresións dixitais</translation>
 <translation id="4837128290434901661">Queres volver cambiar á Busca de Google?</translation>
@@ -4966,7 +4964,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6785518634832172390">O PIN debe ter como máximo 12 díxitos</translation>
 <translation id="6786747875388722282">Extensións</translation>
 <translation id="6787839852456839824">Atallos do teclado</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# contacto non está dispoñible. Para utilizar con el a función Compartir por Nearby, engade aos teus contactos os enderezos de correo electrónico asociados ás súas Contas de Google.}other{# contactos non están dispoñibles. Para utilizar con eles a función Compartir por Nearby, engade aos teus contactos os enderezos de correo electrónico asociados ás súas Contas de Google.}}</translation>
 <translation id="6788210894632713004">Extensión descomprimida</translation>
 <translation id="6789592661892473991">Dividir horizontalmente</translation>
 <translation id="6790428901817661496">Reproducir</translation>

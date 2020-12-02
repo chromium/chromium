@@ -9,7 +9,7 @@
 <translation id="1062407476771304334">Thay thế</translation>
 <translation id="1119069657431255176">Lưu trữ tar được nén bởi Bzip2</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
-<translation id="112387589102719461">Tiếng Anh (Mỹ) bằng bàn phím Programmer Dvorak</translation>
+<translation id="112387589102719461">Tiếng Anh (Mỹ) bằng bàn phím Dvorak cho lập trình viên</translation>
 <translation id="1134697384939541955">Tiếng Anh (Mỹ) bằng Bàn phím mở rộng</translation>
 <translation id="1148097584170732637">Đã tìm thấy <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
@@ -60,7 +60,7 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="162175252992296058">Tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ</translation>
-<translation id="1641780993263690097">Bính âm tiếng Trung</translation>
+<translation id="1641780993263690097">Tiếng Trung (bính âm)</translation>
 <translation id="1646019627374511909">Đang chọn chế độ xem được khi không có mạng cho <ph name="NUMBER_OF_ITEMS" /> tệp</translation>
 <translation id="164969095109328410">Thiết bị Chrome</translation>
 <translation id="1665611772925418501">Không thể sửa đổi tệp.</translation>
@@ -159,7 +159,7 @@
 <translation id="2676946222714718093">Đang phát trên</translation>
 <translation id="2718540689505416944">Cài đặt ứng dụng Linux</translation>
 <translation id="2724954091494693138">Tiếng Thổ Nhĩ Kỳ bằng bàn phím F</translation>
-<translation id="2732839045120506979">Tiếng Việt VNI</translation>
+<translation id="2732839045120506979">Tiếng Việt (VNI)</translation>
 <translation id="2735623501230989521">Cho phép ứng dụng Parallels Desktop truy cập vào các tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
 <translation id="2771816809568414714">Pho mát</translation>
 <translation id="2781645665747935084">Tiếng Bỉ</translation>
@@ -299,7 +299,7 @@
 <translation id="4325128273762811722">Tiếng Sloven</translation>
 <translation id="4326192123064055915">Cà phê</translation>
 <translation id="4336032328163998280">Thao tác sao chép không thành công. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="4348495354623233847">Tiếng Kurd Sorani bằng bàn phím dựa trên tiếng Ả Rập</translation>
+<translation id="4348495354623233847">Tiếng Soran (Trung Kurd) bằng bàn phím dựa trên tiếng Ả Rập</translation>
 <translation id="4363958938297989186">Tiếng Nga bằng bàn phím phiên âm</translation>
 <translation id="4364327530094270451">Quả dưa</translation>
 <translation id="4372884569765913867">1x1</translation>
@@ -347,7 +347,7 @@
 <translation id="4801956050125744859">Giữ cả hai</translation>
 <translation id="4804827417948292437">Quả bơ</translation>
 <translation id="4823651846660089135">Thiết bị chỉ đọc</translation>
-<translation id="4826849268470072925">Tiếng Tamil ITRANS</translation>
+<translation id="4826849268470072925">Tiếng Tamil (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> mục được chọn</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Xem</translation>
@@ -712,7 +712,7 @@
 <translation id="8395901698320285466">Kích thước</translation>
 <translation id="8437209419043462667">Hoa Kỳ</translation>
 <translation id="8456681095658380701">Tên không hợp lệ</translation>
-<translation id="8463494891489624050">Tiếng Việt VIQR</translation>
+<translation id="8463494891489624050">Tiếng Việt (VIQR)</translation>
 <translation id="8466234950814670489">Lưu trữ tar</translation>
 <translation id="8475647382427415476">Google Drive không thể đồng bộ hóa "<ph name="FILENAME" />" ngay bây giờ. Google Drive sẽ thử lại sau.</translation>
 <translation id="8477649328507734757">Hình tròn</translation>

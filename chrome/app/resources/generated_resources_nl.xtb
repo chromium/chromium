@@ -1274,7 +1274,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2435457462613246316">Wachtwoord weergeven</translation>
 <translation id="2435579801172349831">Alles (<ph name="URL_COUNT" />) openen in incognitovenster</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen?</translation>
-<translation id="2439545803278355377">Geef je nieuwe pincode op. Een pincode moet uit minstens vier tekens bestaan en mag bestaan uit letters, cijfers en andere tekens.</translation>
 <translation id="2440604414813129000">Br&amp;on weergeven</translation>
 <translation id="244231003699905658">Ongeldig adres. Controleer het adres en probeer het opnieuw.</translation>
 <translation id="2442916515643169563">Tekstschaduw</translation>
@@ -1703,7 +1702,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="291056154577034373">ONGELEZEN</translation>
 <translation id="2910718431259223434">Er is iets misgegaan. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Sites toestaan cookiegegevens op te slaan en te lezen (aanbevolen)</translation>
-<translation id="2915016304249900997">Details zijn verborgen terwijl je je scherm deelt</translation>
 <translation id="2915102088417824677">Activiteitenlogboek bekijken</translation>
 <translation id="2915873080513663243">Automatisch scannen</translation>
 <translation id="2915996080311180594">Later opnieuw opstarten</translation>
@@ -2422,6 +2420,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3753033997400164841">Eén keer opslaan, Overal gebruiken</translation>
 <translation id="3755411799582650620">Je <ph name="PHONE_NAME" /> kan deze <ph name="DEVICE_TYPE" /> nu ook ontgrendelen.</translation>
 <translation id="375636864092143889">Site gebruikt je microfoon</translation>
+<translation id="3756578970075173856">Pincode instellen</translation>
 <translation id="3757733214359997190">Geen sites gevonden</translation>
 <translation id="375841316537350618">Proxyscript downloaden...</translation>
 <translation id="3758842566811519622">Cookies ingesteld</translation>
@@ -3311,7 +3310,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4830121310592638841">Vragen als een site vensters op je schermen wil openen en plaatsen</translation>
 <translation id="4830502475412647084">OS-update installeren</translation>
 <translation id="4830573902900904548">Je <ph name="DEVICE_TYPE" /> kan geen verbinding maken met internet via <ph name="NETWORK_NAME" />. Kies een ander netwerk. <ph name="LEARN_MORE_LINK_START" />Meer informatie<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833236810053292670">Bekijk wat er nieuw is op je Chromebook</translation>
 <translation id="4833683849865011483">Er is één printer gevonden op de afdrukserver</translation>
 <translation id="4836504898754963407">Vingerafdrukken beheren</translation>
 <translation id="4837128290434901661">Teruggaan naar Google Zoeken?</translation>
@@ -4968,7 +4966,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6785518634832172390">Pincode mag maximaal 12 cijfers bevatten</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6787839852456839824">Sneltoetsen</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# contact is niet beschikbaar. Als je 'Dichtbij delen' met deze persoon wilt gebruiken, voeg je het e-mailadres dat bij dit Google-account hoort aan je contacten toe.}other{# contacten zijn niet beschikbaar Als je 'Dichtbij delen' met ze wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.}}</translation>
 <translation id="6788210894632713004">Uitgepakte extensie</translation>
 <translation id="6789592661892473991">Horizontaal splitsen</translation>
 <translation id="6790428901817661496">Spelen</translation>

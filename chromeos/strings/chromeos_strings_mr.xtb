@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1018656279737460067">रद्द झाले</translation>
+<translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
 <translation id="1075811647922107217">पेजचा आकार</translation>
 <translation id="1175697296044146566">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
@@ -101,6 +102,7 @@
 <translation id="4832079907277790330">Files अ‍ॅपमध्ये फोल्डर निवडा...</translation>
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
+<translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4985509611418653372">रन</translation>
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
@@ -164,6 +166,7 @@
 <translation id="7690294790491645610">नवीन पासवर्ड कन्फर्म करा</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7855434858642800953">स्कॅन केलेली फाइल सेव्ह केली आहे!</translation>
+<translation id="7928373994957558460">फाइलचे स्थान दाखवा</translation>
 <translation id="7936303884198020182">नेम सर्व्हर आढळले नाहीत</translation>
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
@@ -191,6 +194,7 @@
 <translation id="8910721771319628100">डीफॉल्ट नेटवर्क लेटंसी सीमेच्या वर आहे</translation>
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>
 <translation id="8928727111548978589">अयशस्वी झाले - कागद संपला आहे</translation>
+<translation id="8970109610781093811">पुन्हा चालवा</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>

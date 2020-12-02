@@ -1274,7 +1274,6 @@
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2435579801172349831">시크릿 창에서 모두(<ph name="URL_COUNT" />개) 열기</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />에서 모든 <ph name="PROTOCOL" /> 링크를 열도록 허용하시겠습니까?</translation>
-<translation id="2439545803278355377">새 PIN을 입력하세요. PIN은 4자 이상이어야 하며 문자, 숫자, 기타 문자를 포함할 수 있습니다.</translation>
 <translation id="2440604414813129000">소스 보기(&amp;O)</translation>
 <translation id="244231003699905658">잘못된 주소입니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="2442916515643169563">텍스트 음영</translation>
@@ -1703,7 +1702,6 @@
 <translation id="291056154577034373">읽지 않음</translation>
 <translation id="2910718431259223434">문제가 발생했습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2913331724188855103">사이트에서 쿠키 데이터를 저장하고 읽도록 허용(권장)</translation>
-<translation id="2915016304249900997">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="2915102088417824677">활동 로그 보기</translation>
 <translation id="2915873080513663243">자동 스캔</translation>
 <translation id="2915996080311180594">나중에 다시 시작</translation>
@@ -2422,6 +2420,7 @@
 <translation id="3753033997400164841">한 번만 저장하고 어디서나 사용하세요</translation>
 <translation id="3755411799582650620">이제 <ph name="PHONE_NAME" />에서도 이 <ph name="DEVICE_TYPE" />을(를) 잠금 해제할 수 있습니다.</translation>
 <translation id="375636864092143889">사이트에서 마이크를 사용하고 있습니다.</translation>
+<translation id="3756578970075173856">PIN 설정</translation>
 <translation id="3757733214359997190">사이트를 찾을 수 없습니다.</translation>
 <translation id="375841316537350618">프록시 스크립트 다운로드 중...</translation>
 <translation id="3758842566811519622">쿠키가 설정됨</translation>
@@ -3309,7 +3308,6 @@
 <translation id="4830121310592638841">열리는 사이트에서 화면에 창을 배치하려고 할 때 확인</translation>
 <translation id="4830502475412647084">OS 업데이트 설치 중</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" />에서 <ph name="NETWORK_NAME" /> 네트워크를 사용하여 인터넷에 연결할 수 없습니다. 다른 네트워크를 선택하세요. <ph name="LEARN_MORE_LINK_START" />자세히 알아보기<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833236810053292670">Chromebook의 새로운 기능 알아보기</translation>
 <translation id="4833683849865011483">인쇄 서버에 프린터 1대가 있습니다.</translation>
 <translation id="4836504898754963407">지문 관리</translation>
 <translation id="4837128290434901661">Google 검색으로 되돌리시겠습니까?</translation>
@@ -4966,7 +4964,6 @@
 <translation id="6785518634832172390">PIN은 12자리 이하여야 합니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787839852456839824">단축키</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}other{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}}</translation>
 <translation id="6788210894632713004">압축해제된 확장 프로그램</translation>
 <translation id="6789592661892473991">수평 분할</translation>
 <translation id="6790428901817661496">재생</translation>

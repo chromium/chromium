@@ -1273,7 +1273,6 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2435579801172349831">在無痕式視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
-<translation id="2439545803278355377">請輸入新的 PIN 碼。PIN 碼必須至少包含四個字元，可以使用字母、數字和其他字元。</translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">位址無效。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
@@ -1702,7 +1701,6 @@
 <translation id="291056154577034373">未讀取</translation>
 <translation id="2910718431259223434">發生錯誤。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2913331724188855103">允許網站儲存及讀取 Cookie 資料 (建議)</translation>
-<translation id="2915016304249900997">分享螢幕畫面時會隱藏詳細資料</translation>
 <translation id="2915102088417824677">查看活動記錄</translation>
 <translation id="2915873080513663243">自動掃描</translation>
 <translation id="2915996080311180594">稍後再重新啟動</translation>
@@ -2421,6 +2419,7 @@
 <translation id="3753033997400164841">只要儲存一次，即可在所有裝置上使用。</translation>
 <translation id="3755411799582650620">你的 <ph name="PHONE_NAME" /> 現在也可以解鎖這台 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="375636864092143889">網站正在使用你的麥克風</translation>
+<translation id="3756578970075173856">設定 PIN 碼</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
 <translation id="375841316537350618">正在下載 Proxy 指令碼...</translation>
 <translation id="3758842566811519622">已設定 Cookie</translation>
@@ -3309,7 +3308,6 @@
 <translation id="4830121310592638841">網站必須先詢問你，才能在你的畫面中開啟與放置視窗</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4830573902900904548">您的 <ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至網際網路，請選擇其他網路。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833236810053292670">看看 Chromebook 的新功能</translation>
 <translation id="4833683849865011483">在列印伺服器上找到 1 台印表機</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回 Google 搜尋嗎？</translation>
@@ -4966,7 +4964,6 @@
 <translation id="6785518634832172390">PIN 碼不能超過 12 個數字</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
 <translation id="6788210894632713004">未封裝擴充功能</translation>
 <translation id="6789592661892473991">水平分割</translation>
 <translation id="6790428901817661496">播放</translation>

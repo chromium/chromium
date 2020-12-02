@@ -1271,7 +1271,6 @@
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2435579801172349831">Барлығын (<ph name="URL_COUNT" />) инкогнито терезесінде ашу</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
-<translation id="2439545803278355377">Жаңа PIN кодын енгізіңіз. PIN коды кемінде төрт таңбадан, оның ішінде әріптерден, сандардан және тағы басқа таңбалардан тұруы қажет.</translation>
 <translation id="2440604414813129000">Д&amp;ереккөзді көру</translation>
 <translation id="244231003699905658">Мекенжай дұрыс емес. Оны тексеріп, қайталап көріңіз.</translation>
 <translation id="2442916515643169563">Мәтін көлеңкесі</translation>
@@ -1700,7 +1699,6 @@
 <translation id="291056154577034373">ОҚЫЛМАҒАН</translation>
 <translation id="2910718431259223434">Бірдеңе дұрыс болмады. Әрекетті қайталаңыз немесе құрылғының иесіне не әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Сайттарға cookie деректерін сақтауға және оқуға рұқсат беру (ұсынылған)</translation>
-<translation id="2915016304249900997">Экран бөлісіліп жатқанда, мәліметтер жасырын тұрады.</translation>
 <translation id="2915102088417824677">Әрекеттер журналын көру</translation>
 <translation id="2915873080513663243">Автоматты түрде сканерлеу</translation>
 <translation id="2915996080311180594">Кейін қайта қосу</translation>
@@ -2419,6 +2417,7 @@
 <translation id="3753033997400164841">Бір рет сақтаңыз. Кез келген құрылғыда пайдаланыңыз</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> телефоныңыз енді осы <ph name="DEVICE_TYPE" /> құрылғысын да құлыптан аша алады.</translation>
 <translation id="375636864092143889">Сайт микрофонды пайдалануда</translation>
+<translation id="3756578970075173856">PIN кодын орнату</translation>
 <translation id="3757733214359997190">Ешқандай сайт табылмады.</translation>
 <translation id="375841316537350618">Прокси сценарийі жүктелуде…</translation>
 <translation id="3758842566811519622">Cookie файлдары орнатылды</translation>
@@ -3308,7 +3307,6 @@
 <translation id="4830121310592638841">Сайт терезелерді ашып, экрандарға орналастырғысы келгенде сұрау</translation>
 <translation id="4830502475412647084">ОЖ жаңартылған нұсқасы орнатылуда</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> <ph name="NETWORK_NAME" /> көмегімен интернетке қосыла алмайды. Басқа желіні іздеңіз. <ph name="LEARN_MORE_LINK_START" />Толығырақ<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833236810053292670">Chromebook құрылғысындағы жаңалықтарды көріңіз</translation>
 <translation id="4833683849865011483">Басып шығару серверінен 1 принтер табылды.</translation>
 <translation id="4836504898754963407">Саусақ іздерін басқару</translation>
 <translation id="4837128290434901661">Google Search іздеу жүйесіне қайта ораласыз ба?</translation>
@@ -4964,7 +4962,6 @@
 <translation id="6785518634832172390">PIN коды 12 саннан аспауы керек</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
 <translation id="6787839852456839824">Пернелер тіркесімі</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# контакт қолжетімді емес. Nearby Share функциясын пайдалану үшін олардың Google есептік жазбасымен байланыстырылған электрондық пошта мекенжайын контактілеріңізге енгізіңіз.}other{# контакт қолжетімді емес. Nearby Share функциясын пайдалану үшін олардың Google есептік жазбасымен байланыстырылған электрондық пошта мекенжайын контактілеріңізге енгізіңіз.}}</translation>
 <translation id="6788210894632713004">Пакеттен шығарылған кеңейтім</translation>
 <translation id="6789592661892473991">Көлденеңінен бөлу</translation>
 <translation id="6790428901817661496">Ойнату</translation>

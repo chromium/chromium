@@ -1275,7 +1275,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="2435579801172349831">Otevřít vše (<ph name="URL_COUNT" />) v anonymním okně</translation>
 <translation id="2436186046335138073">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" />?</translation>
-<translation id="2439545803278355377">Zadejte nový PIN. PIN musí být dlouhý alespoň čtyři znaky a může obsahovat písmena, číslice i jiné znaky.</translation>
 <translation id="2440604414813129000">Zobrazit zdrojový kód</translation>
 <translation id="244231003699905658">Neplatná adresa. Zkontrolujte adresu a zkuste to znovu.</translation>
 <translation id="2442916515643169563">Stín textu</translation>
@@ -1704,7 +1703,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">NEPŘEČTENÉ</translation>
 <translation id="2910718431259223434">Došlo k chybě. Zkuste to znovu nebo kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Povolit webům ukládat a číst data souborů cookie (doporučeno)</translation>
-<translation id="2915016304249900997">Podrobnosti jsou při sdílení obrazovky skryty</translation>
 <translation id="2915102088417824677">Zobrazit protokol aktivity</translation>
 <translation id="2915873080513663243">Automatické prohledávání</translation>
 <translation id="2915996080311180594">Restartovat později</translation>
@@ -2423,6 +2421,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3753033997400164841">Uložte jednou. Používejte všude</translation>
 <translation id="3755411799582650620">Toto zařízení <ph name="DEVICE_TYPE" /> můžete odemknout také pomocí telefonu <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Web používá mikrofon</translation>
+<translation id="3756578970075173856">Nastavit PIN</translation>
 <translation id="3757733214359997190">Nebyly nalezeny žádné weby</translation>
 <translation id="375841316537350618">Stahování skriptu proxy...</translation>
 <translation id="3758842566811519622">Byly nastaveny soubory cookie</translation>
@@ -3311,7 +3310,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4830121310592638841">Zeptat se, když chce web otevřít okna a umístit je na obrazovky</translation>
 <translation id="4830502475412647084">Instalace aktualizace operačního systému</translation>
 <translation id="4830573902900904548">Váš <ph name="DEVICE_TYPE" /> se pomocí sítě <ph name="NETWORK_NAME" /> nemůže připojit k internetu. Zkuste prosím jinou síť. <ph name="LEARN_MORE_LINK_START" />Další informace<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833236810053292670">Zobrazit, co je na Chromebooku nového</translation>
 <translation id="4833683849865011483">Na tiskovém serveru byla nalezena jedna tiskárna</translation>
 <translation id="4836504898754963407">Správa otisků prstů</translation>
 <translation id="4837128290434901661">Změnit zpět na Vyhledávání Google?</translation>
@@ -4968,7 +4966,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6785518634832172390">PIN smí mít maximálně 12 číslic</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
 <translation id="6787839852456839824">Klávesové zkratky</translation>
-<translation id="6788036387349419582">{COUNT,plural, =1{# kontakt není dostupný. Chcete-li u něj používat sdílení nablízko, přidejte si do kontaktů e-mailovou adresu přidruženou k jeho účtu Google.}few{# kontakty nejsou dostupné. Chcete-li u nich používat sdílení nablízko, přidejte si do kontaktů e-mailovou adresu přidruženou k jejich účtům Google.}many{# kontaktu nejsou dostupné. Chcete-li u nich používat sdílení nablízko, přidejte si do kontaktů e-mailovou adresu přidruženou k jejich účtům Google.}other{# kontaktů není dostupných. Chcete-li u nich používat sdílení nablízko, přidejte si do kontaktů e-mailovou adresu přidruženou k jejich účtům Google.}}</translation>
 <translation id="6788210894632713004">Rozbalené rozšíření</translation>
 <translation id="6789592661892473991">Vodorovně rozdělit</translation>
 <translation id="6790428901817661496">Přehrát</translation>
