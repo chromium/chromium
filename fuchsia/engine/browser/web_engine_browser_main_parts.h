@@ -47,6 +47,7 @@ class WebEngineBrowserMainParts : public content::BrowserMainParts {
   }
 
   // content::BrowserMainParts overrides.
+  void PostEarlyInitialization() override;
   void PreMainMessageLoopRun() override;
   void PreDefaultMainMessageLoopRun(base::OnceClosure quit_closure) override;
   bool MainMessageLoopRun(int* result_code) override;

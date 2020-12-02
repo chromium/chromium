@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/important_file_writer_cleaner.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -58,6 +59,10 @@ WebEngineBrowserMainParts::WebEngineBrowserMainParts(
 
 WebEngineBrowserMainParts::~WebEngineBrowserMainParts() {
   display::Screen::SetScreenInstance(nullptr);
+}
+
+void WebEngineBrowserMainParts::PostEarlyInitialization() {
+  base::ImportantFileWriterCleaner::GetInstance().Initialize();
 }
 
 void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
@@ -129,6 +134,9 @@ void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
     delete parameters_.ui_task;
     run_message_loop_ = false;
   }
+
+  // Make sure temporary files associated with this process are cleaned up.
+  base::ImportantFileWriterCleaner::GetInstance().Start();
 }
 
 void WebEngineBrowserMainParts::PreDefaultMainMessageLoopRun(
@@ -153,4 +161,6 @@ void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
   context_binding_.reset();
   browser_context_.reset();
   screen_.reset();
+
+  base::ImportantFileWriterCleaner::GetInstance().Stop();
 }
