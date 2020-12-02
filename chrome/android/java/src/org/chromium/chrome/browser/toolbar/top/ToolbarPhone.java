@@ -1488,6 +1488,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         super.onAttachedToWindow();
 
         mToolbarShadow = (ImageView) getRootView().findViewById(R.id.toolbar_shadow);
+        updateShadowVisibility();
 
         // This is a workaround for http://crbug.com/574928. Since Jelly Bean is the lowest version
         // we support now and the next deprecation target, we decided to simply workaround.

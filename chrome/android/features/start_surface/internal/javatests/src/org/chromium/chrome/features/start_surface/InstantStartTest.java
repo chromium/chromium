@@ -107,6 +107,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -995,6 +996,43 @@ public class InstantStartTest {
         ChromeRenderTestRule.sanitize(surface);
         // TODO(crbug.com/1065314): fix favicon.
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    public void testShadowVisibility() throws IOException {
+        // clang-format on
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        int shadowVisibility =
+                mActivityTestRule.getActivity().findViewById(R.id.toolbar_shadow).getVisibility();
+
+        Assert.assertEquals(View.INVISIBLE, shadowVisibility);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    public void testShadowVisibilityWithoutInstantStart() throws IOException {
+        // clang-format on
+        startMainActivityFromLauncher();
+        onViewWaiting(withId(R.id.toolbar_shadow)).check(matches(isDisplayed()));
     }
 
     /**
