@@ -106,8 +106,6 @@ class CONTENT_EXPORT RenderWidget : public blink::WebWidgetClient {
   // passed into this object to asynchronously delete itself.
   void CloseForFrame(std::unique_ptr<RenderWidget> widget);
 
-  void ConvertViewportToWindow(blink::WebRect* rect);
-
   cc::LayerTreeHost* layer_tree_host() { return layer_tree_host_; }
 
  private:

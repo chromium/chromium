@@ -503,10 +503,10 @@ class RenderViewImplTest : public RenderViewTest {
   }
 
   gfx::Size MainWidgetSizeInDIPS() {
-    blink::WebSize widget_size = main_frame_widget()->Size();
-    blink::WebRect widget_rect(0, 0, widget_size.width, widget_size.height);
-    main_widget()->ConvertViewportToWindow(&widget_rect);
-    return gfx::Rect(widget_rect).size();
+    gfx::Rect widget_rect_in_dips =
+        main_frame_widget()->BlinkSpaceToEnclosedDIPs(
+            gfx::Rect(main_frame_widget()->Size()));
+    return widget_rect_in_dips.size();
   }
 
   int GetScrollbarWidth() {
@@ -1581,14 +1581,13 @@ TEST_F(RenderViewImplTextInputStateChanged,
   main_frame_widget()->UpdateTextInputState();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, updated_states().size());
-  blink::WebRect edit_context_control_bounds_expected(10, 20, 30, 40);
-  blink::WebRect edit_context_selection_bounds_expected(10, 20, 1, 5);
-  main_widget()->ConvertViewportToWindow(&edit_context_control_bounds_expected);
-  main_widget()->ConvertViewportToWindow(
-      &edit_context_selection_bounds_expected);
-  blink::WebRect actual_active_element_control_bounds(
+  gfx::Rect edit_context_control_bounds_expected =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(gfx::Rect(10, 20, 30, 40));
+  gfx::Rect edit_context_selection_bounds_expected =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(gfx::Rect(10, 20, 1, 5));
+  gfx::Rect actual_active_element_control_bounds(
       updated_states()[0]->edit_context_control_bounds.value());
-  blink::WebRect actual_active_element_selection_bounds(
+  gfx::Rect actual_active_element_selection_bounds(
       updated_states()[0]->edit_context_selection_bounds.value());
   EXPECT_EQ(edit_context_control_bounds_expected,
             actual_active_element_control_bounds);
@@ -1627,14 +1626,13 @@ TEST_F(RenderViewImplTextInputStateChanged,
   main_frame_widget()->UpdateTextInputState();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, updated_states().size());
-  blink::WebRect edit_context_control_bounds_expected(10, 20, 31, 41);
-  blink::WebRect edit_context_selection_bounds_expected(10, 20, 1, 5);
-  main_widget()->ConvertViewportToWindow(&edit_context_control_bounds_expected);
-  main_widget()->ConvertViewportToWindow(
-      &edit_context_selection_bounds_expected);
-  blink::WebRect actual_active_element_control_bounds(
+  gfx::Rect edit_context_control_bounds_expected =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(gfx::Rect(10, 20, 31, 41));
+  gfx::Rect edit_context_selection_bounds_expected =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(gfx::Rect(10, 20, 1, 5));
+  gfx::Rect actual_active_element_control_bounds(
       updated_states()[0]->edit_context_control_bounds.value());
-  blink::WebRect actual_active_element_selection_bounds(
+  gfx::Rect actual_active_element_selection_bounds(
       updated_states()[0]->edit_context_selection_bounds.value());
   EXPECT_EQ(edit_context_control_bounds_expected,
             actual_active_element_control_bounds);
@@ -1674,15 +1672,14 @@ TEST_F(RenderViewImplTextInputStateChanged,
   main_frame_widget()->UpdateTextInputState();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, updated_states().size());
-  blink::WebRect edit_context_control_bounds_expected(-2147483648, -2147483648,
-                                                      0, 2147483647);
-  blink::WebRect edit_context_selection_bounds_expected(10, 20, 1, 5);
-  main_widget()->ConvertViewportToWindow(&edit_context_control_bounds_expected);
-  main_widget()->ConvertViewportToWindow(
-      &edit_context_selection_bounds_expected);
-  blink::WebRect actual_active_element_control_bounds(
+  gfx::Rect edit_context_control_bounds_expected =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(
+          gfx::Rect(-2147483648, -2147483648, 0, 2147483647));
+  gfx::Rect edit_context_selection_bounds_expected =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(gfx::Rect(10, 20, 1, 5));
+  gfx::Rect actual_active_element_control_bounds(
       updated_states()[0]->edit_context_control_bounds.value());
-  blink::WebRect actual_active_element_selection_bounds(
+  gfx::Rect actual_active_element_selection_bounds(
       updated_states()[0]->edit_context_selection_bounds.value());
   EXPECT_EQ(edit_context_control_bounds_expected,
             actual_active_element_control_bounds);
@@ -1719,10 +1716,12 @@ TEST_F(RenderViewImplTextInputStateChanged, ActiveElementGetLayoutBounds) {
   blink::WebRect expected_control_bounds;
   blink::WebRect temp_selection_bounds;
   controller->GetLayoutBounds(&expected_control_bounds, &temp_selection_bounds);
-  main_widget()->ConvertViewportToWindow(&expected_control_bounds);
-  blink::WebRect actual_active_element_control_bounds(
+  gfx::Rect expected_control_bounds_in_dips =
+      main_frame_widget()->BlinkSpaceToEnclosedDIPs(expected_control_bounds);
+  gfx::Rect actual_active_element_control_bounds(
       updated_states()[0]->edit_context_control_bounds.value());
-  EXPECT_EQ(actual_active_element_control_bounds, expected_control_bounds);
+  EXPECT_EQ(actual_active_element_control_bounds,
+            expected_control_bounds_in_dips);
 }
 
 TEST_F(RenderViewImplTextInputStateChanged, VirtualKeyboardPolicyAuto) {
@@ -3000,12 +2999,9 @@ TEST_F(RenderViewImplBlinkSettingsTest, DefaultPageScaleSettings) {
 TEST_F(RenderViewImplDisableZoomForDSFTest,
        ConverViewportToWindowWithoutZoomForDSF) {
   SetDeviceScaleFactor(2.f);
-  blink::WebRect rect(20, 10, 200, 100);
-  main_widget()->ConvertViewportToWindow(&rect);
-  EXPECT_EQ(20, rect.x);
-  EXPECT_EQ(10, rect.y);
-  EXPECT_EQ(200, rect.width);
-  EXPECT_EQ(100, rect.height);
+  gfx::Rect rect(20, 10, 200, 100);
+  gfx::Rect rect_in_dips = main_frame_widget()->BlinkSpaceToEnclosedDIPs(rect);
+  EXPECT_EQ(rect, rect_in_dips);
 }
 
 TEST_F(RenderViewImplScaleFactorTest, ScreenMetricsEmulationWithOriginalDSF1) {
@@ -3069,22 +3065,20 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
        ConverViewportToWindowWithZoomForDSF) {
   SetDeviceScaleFactor(1.f);
   {
-    blink::WebRect rect(20, 10, 200, 100);
-    main_widget()->ConvertViewportToWindow(&rect);
-    EXPECT_EQ(20, rect.x);
-    EXPECT_EQ(10, rect.y);
-    EXPECT_EQ(200, rect.width);
-    EXPECT_EQ(100, rect.height);
+    gfx::Rect rect(20, 10, 200, 100);
+    gfx::Rect rect_in_dips =
+        main_frame_widget()->BlinkSpaceToEnclosedDIPs(rect);
+    EXPECT_EQ(rect, rect_in_dips);
   }
 
   SetDeviceScaleFactor(2.f);
   {
-    blink::WebRect rect(20, 10, 200, 100);
-    main_widget()->ConvertViewportToWindow(&rect);
-    EXPECT_EQ(10, rect.x);
-    EXPECT_EQ(5, rect.y);
-    EXPECT_EQ(100, rect.width);
-    EXPECT_EQ(50, rect.height);
+    gfx::Rect rect_in_dips = main_frame_widget()->BlinkSpaceToEnclosedDIPs(
+        gfx::Rect(20, 10, 200, 100));
+    EXPECT_EQ(10, rect_in_dips.x());
+    EXPECT_EQ(5, rect_in_dips.y());
+    EXPECT_EQ(100, rect_in_dips.width());
+    EXPECT_EQ(50, rect_in_dips.height());
   }
 }
 

@@ -88,7 +88,6 @@ class GpuBenchmarkingContext {
   explicit GpuBenchmarkingContext(content::RenderFrameImpl* frame)
       : web_frame_(frame->GetWebFrame()),
         web_view_(web_frame_->View()),
-        render_widget_(frame->GetLocalRootRenderWidget()),
         frame_widget_(frame->GetLocalRootWebFrameWidget()),
         layer_tree_host_(frame_widget_->LayerTreeHost()) {}
 
@@ -100,7 +99,6 @@ class GpuBenchmarkingContext {
     DCHECK(web_view_ != nullptr);
     return web_view_;
   }
-  content::RenderWidget* render_widget() const { return render_widget_; }
   WebFrameWidget* frame_widget() const { return frame_widget_; }
   cc::LayerTreeHost* layer_tree_host() const {
     DCHECK(layer_tree_host_ != nullptr);
@@ -110,7 +108,6 @@ class GpuBenchmarkingContext {
  private:
   WebLocalFrame* web_frame_;
   WebView* web_view_;
-  content::RenderWidget* render_widget_;
   WebFrameWidget* frame_widget_;
   cc::LayerTreeHost* layer_tree_host_;
 
@@ -1098,33 +1095,33 @@ void GpuBenchmarking::SetBrowserControlsShown(bool show) {
 float GpuBenchmarking::VisualViewportY() {
   GpuBenchmarkingContext context(render_frame_.get());
   float y = context.web_view()->VisualViewportOffset().y();
-  blink::WebRect rect(0, y, 0, 0);
-  context.render_widget()->ConvertViewportToWindow(&rect);
-  return rect.y;
+  gfx::RectF rect_in_dips =
+      context.frame_widget()->BlinkSpaceToDIPs(gfx::RectF(0, y, 0, 0));
+  return rect_in_dips.y();
 }
 
 float GpuBenchmarking::VisualViewportX() {
   GpuBenchmarkingContext context(render_frame_.get());
   float x = context.web_view()->VisualViewportOffset().x();
-  blink::WebRect rect(x, 0, 0, 0);
-  context.render_widget()->ConvertViewportToWindow(&rect);
-  return rect.x;
+  gfx::RectF rect_in_dips =
+      context.frame_widget()->BlinkSpaceToDIPs(gfx::RectF(x, 0, 0, 0));
+  return rect_in_dips.x();
 }
 
 float GpuBenchmarking::VisualViewportHeight() {
   GpuBenchmarkingContext context(render_frame_.get());
   float height = context.web_view()->VisualViewportSize().height();
-  blink::WebRect rect(0, 0, 0, height);
-  context.render_widget()->ConvertViewportToWindow(&rect);
-  return rect.height;
+  gfx::RectF rect_in_dips =
+      context.frame_widget()->BlinkSpaceToDIPs(gfx::RectF(0, 0, 0, height));
+  return rect_in_dips.height();
 }
 
 float GpuBenchmarking::VisualViewportWidth() {
   GpuBenchmarkingContext context(render_frame_.get());
   float width = context.web_view()->VisualViewportSize().width();
-  blink::WebRect rect(0, 0, width, 0);
-  context.render_widget()->ConvertViewportToWindow(&rect);
-  return rect.width;
+  gfx::RectF rect_in_dips =
+      context.frame_widget()->BlinkSpaceToDIPs(gfx::RectF(0, 0, width, 0));
+  return rect_in_dips.width();
 }
 
 bool GpuBenchmarking::Tap(gin::Arguments* args) {

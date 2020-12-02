@@ -2761,10 +2761,14 @@ int RenderFrameImpl::ShowContextMenu(
   DCHECK(client);  // A null client means "internal" when we issue callbacks.
   UntrustworthyContextMenuParams our_params(params);
 
-  blink::WebRect position_in_window(params.x, params.y, 0, 0);
-  GetLocalRootRenderWidget()->ConvertViewportToWindow(&position_in_window);
-  our_params.x = position_in_window.x;
-  our_params.y = position_in_window.y;
+  // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
+  // Determine if rounding is more appropriate.
+  gfx::Rect position_in_dips =
+      GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
+          gfx::Rect(params.x, params.y, 0, 0));
+
+  our_params.x = position_in_dips.x();
+  our_params.y = position_in_dips.y();
 
   our_params.custom_context.request_id = pending_context_menus_.Add(client);
   Send(new FrameHostMsg_ContextMenu(routing_id_, our_params));
@@ -4462,14 +4466,18 @@ void RenderFrameImpl::ShowContextMenu(
     params.y = host_context_menu_location.value().y();
   } else {
     // If the context menu request came from the renderer, the position in
-    // |params| is real, but they come in blink viewport coordiates, which
+    // |params| is real, but they come in blink viewport coordinates, which
     // include the device scale factor, but not emulation scale. Here we convert
-    // them to DIP coordiates relative to the WindowScreenRect.
-    blink::WebRect position_in_window(params.x, params.y, 0, 0);
-    GetLocalRootRenderWidget()->ConvertViewportToWindow(&position_in_window);
+    // them to DIP coordinates relative to the WindowScreenRect.
+    // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
+    // Determine if rounding is more appropriate.
+    gfx::Rect position_in_dips =
+        GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
+            gfx::Rect(params.x, params.y, 0, 0));
+
     const float scale = GetLocalRootWebFrameWidget()->GetEmulatorScale();
-    params.x = position_in_window.x * scale;
-    params.y = position_in_window.y * scale;
+    params.x = position_in_dips.x() * scale;
+    params.y = position_in_dips.y() * scale;
   }
 
   // Serializing a GURL longer than kMaxURLChars will fail, so don't do
@@ -4480,9 +4488,9 @@ void RenderFrameImpl::ShowContextMenu(
   if (params.src_url.spec().size() > url::kMaxURLChars)
     params.src_url = GURL();
 
-  blink::WebRect selection_in_window(data.selection_rect);
-  GetLocalRootRenderWidget()->ConvertViewportToWindow(&selection_in_window);
-  params.selection_rect = selection_in_window;
+  params.selection_rect =
+      GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
+          data.selection_rect);
 
 #if defined(OS_ANDROID)
   // The Samsung Email app relies on the context menu being shown after the
@@ -6444,13 +6452,12 @@ RenderFrameImpl::GetAgentGroupScheduler() {
 
 gfx::RectF RenderFrameImpl::ElementBoundsInWindow(
     const blink::WebElement& element) {
-  blink::WebRect bounding_box_in_window = element.BoundsInViewport();
-  GetLocalRootRenderWidget()->ConvertViewportToWindow(&bounding_box_in_window);
-  return gfx::RectF(bounding_box_in_window);
+  return gfx::RectF(GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
+      element.BoundsInViewport()));
 }
 
 void RenderFrameImpl::ConvertViewportToWindow(blink::WebRect* rect) {
-  GetLocalRootRenderWidget()->ConvertViewportToWindow(rect);
+  *rect = GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(*rect);
 }
 
 float RenderFrameImpl::GetDeviceScaleFactor() {
