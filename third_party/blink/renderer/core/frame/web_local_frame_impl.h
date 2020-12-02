@@ -467,6 +467,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   // useful.
   WebFrameWidgetImpl* LocalRootFrameWidget();
 
+  // Scroll the focused editable element into the rect.
+  void ScrollFocusedEditableElementIntoRect(const gfx::Rect& rect);
+  void ResetHasScrolledFocusedEditableIntoView();
+
   // Returns true if the frame is focused.
   bool IsFocused() const;
 
@@ -577,6 +581,11 @@ class CORE_EXPORT WebLocalFrameImpl final
   // TODO(crbug.com/1121077) After fixing the bug, make this member variable
   // only available when DCHECK_IS_ON().
   bool is_in_printing_ = false;
+
+  // Bookkeeping to suppress redundant scroll and focus requests for an already
+  // scrolled and focused editable node.
+  bool has_scrolled_focused_editable_node_into_rect_ = false;
+  gfx::Rect rect_for_scrolled_focused_editable_node_;
 
   WebHistoryItem current_history_item_;
 };

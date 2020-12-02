@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
@@ -279,7 +280,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SendScrollEndEventFromImplSide(
       cc::ElementId scroll_latched_element_id) override;
   WebInputMethodController* GetActiveWebInputMethodController() const override;
-  WebLocalFrame* FocusedWebLocalFrameInWidget() const override;
+  WebLocalFrameImpl* FocusedWebLocalFrameInWidget() const override;
   bool ScrollFocusedEditableElementIntoView() override;
   void ApplyViewportChangesForTesting(
       const ApplyViewportChangesArgs& args) override;

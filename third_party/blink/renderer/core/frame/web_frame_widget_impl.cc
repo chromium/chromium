@@ -150,7 +150,7 @@ FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
 
 void ForEachLocalFrameControlledByWidget(
     LocalFrame* frame,
-    const base::RepeatingCallback<void(WebLocalFrame*)>& callback) {
+    const base::RepeatingCallback<void(WebLocalFrameImpl*)>& callback) {
   callback.Run(WebLocalFrameImpl::FromFrame(frame));
   for (Frame* child = frame->FirstChild(); child;
        child = child->NextSibling()) {
@@ -1304,7 +1304,7 @@ void WebFrameWidgetImpl::RequestBeginMainFrameNotExpected(bool request) {
 void WebFrameWidgetImpl::DidCommitAndDrawCompositorFrame() {
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(),
-      WTF::BindRepeating([](WebLocalFrame* local_frame) {
+      WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
         local_frame->Client()->DidCommitAndDrawCompositorFrame();
       }));
 }
@@ -1477,8 +1477,8 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
       widget_base_->VisibleViewportSizeInDIPs()) {
     ForEachLocalFrameControlledByWidget(
         local_root_->GetFrame(),
-        WTF::BindRepeating([](WebLocalFrame* local_frame) {
-          local_frame->Client()->ResetHasScrolledFocusedEditableIntoView();
+        WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
+          local_frame->ResetHasScrolledFocusedEditableIntoView();
         }));
 
     // Propagate changes down to child local root RenderWidgets and
@@ -1887,7 +1887,7 @@ LocalFrame* WebFrameWidgetImpl::FocusedLocalFrameInWidget() const {
              : nullptr;
 }
 
-WebLocalFrame* WebFrameWidgetImpl::FocusedWebLocalFrameInWidget() const {
+WebLocalFrameImpl* WebFrameWidgetImpl::FocusedWebLocalFrameInWidget() const {
   return WebLocalFrameImpl::FromFrame(FocusedLocalFrameInWidget());
 }
 
@@ -2670,7 +2670,7 @@ void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(),
       WTF::BindRepeating(
-          [](WebMeaningfulLayout layout_type, WebLocalFrame* local_frame) {
+          [](WebMeaningfulLayout layout_type, WebLocalFrameImpl* local_frame) {
             local_frame->Client()->DidMeaningfulLayout(layout_type);
           },
           layout_type));
@@ -3549,7 +3549,7 @@ void WebFrameWidgetImpl::MoveRangeSelectionExtent(
 
 void WebFrameWidgetImpl::ScrollFocusedEditableNodeIntoRect(
     const gfx::Rect& rect_in_dips) {
-  WebLocalFrame* local_frame = FocusedWebLocalFrameInWidget();
+  WebLocalFrameImpl* local_frame = FocusedWebLocalFrameInWidget();
   if (!local_frame)
     return;
 
@@ -3557,8 +3557,8 @@ void WebFrameWidgetImpl::ScrollFocusedEditableNodeIntoRect(
   // on OOPIFs. Since we are starting a new scroll operation now, call
   // DidChangeVisibleViewport to ensure that we don't assume the element
   // is already in view and ignore the scroll.
-  local_frame->Client()->ResetHasScrolledFocusedEditableIntoView();
-  local_frame->Client()->ScrollFocusedEditableElementIntoRect(rect_in_dips);
+  local_frame->ResetHasScrolledFocusedEditableIntoView();
+  local_frame->ScrollFocusedEditableElementIntoRect(rect_in_dips);
 }
 
 void WebFrameWidgetImpl::ZoomToFindInPageRect(
@@ -3794,7 +3794,7 @@ WebFrameWidgetImpl::ScreenOrientationOverride() {
 void WebFrameWidgetImpl::WasHidden() {
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(),
-      WTF::BindRepeating([](WebLocalFrame* local_frame) {
+      WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
         local_frame->Client()->WasHidden();
       }));
 }
@@ -3802,7 +3802,7 @@ void WebFrameWidgetImpl::WasHidden() {
 void WebFrameWidgetImpl::WasShown(bool was_evicted) {
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(),
-      WTF::BindRepeating([](WebLocalFrame* local_frame) {
+      WTF::BindRepeating([](WebLocalFrameImpl* local_frame) {
         local_frame->Client()->WasShown();
       }));
   if (was_evicted) {

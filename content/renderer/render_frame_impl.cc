@@ -5383,8 +5383,6 @@ void RenderFrameImpl::NotifyAccessibilityModeChange(ui::AXMode new_mode) {
 }
 
 void RenderFrameImpl::FocusedElementChanged(const blink::WebElement& element) {
-  has_scrolled_focused_editable_node_into_rect_ = false;
-
   for (auto& observer : observers_)
     observer.FocusedElementChanged(element);
 }
@@ -5902,38 +5900,6 @@ void RenderFrameImpl::SyncSelectionIfRequired() {
     SetSelectedText(text, offset, range);
   }
   GetLocalRootWebFrameWidget()->UpdateSelectionBounds();
-}
-
-void RenderFrameImpl::ScrollFocusedEditableElementIntoRect(
-    const gfx::Rect& rect) {
-  // TODO(ekaramad): Perhaps we should remove |rect| since all it seems to be
-  // doing is helping verify if scrolling animation for a given focused editable
-  // element has finished.
-  blink::WebAutofillClient* autofill_client = frame_->AutofillClient();
-  if (has_scrolled_focused_editable_node_into_rect_ &&
-      rect == rect_for_scrolled_focused_editable_node_ && autofill_client) {
-    autofill_client->DidCompleteFocusChangeInFrame();
-    return;
-  }
-
-  if (!frame_->LocalRoot()
-           ->FrameWidget()
-           ->ScrollFocusedEditableElementIntoView()) {
-    return;
-  }
-
-  rect_for_scrolled_focused_editable_node_ = rect;
-  has_scrolled_focused_editable_node_into_rect_ = true;
-  if (!GetLocalRootRenderWidget()
-           ->layer_tree_host()
-           ->HasPendingPageScaleAnimation() &&
-      autofill_client) {
-    autofill_client->DidCompleteFocusChangeInFrame();
-  }
-}
-
-void RenderFrameImpl::ResetHasScrolledFocusedEditableIntoView() {
-  has_scrolled_focused_editable_node_into_rect_ = false;
 }
 
 void RenderFrameImpl::CreateAudioInputStream(

@@ -1114,6 +1114,7 @@ void LocalFrameClientImpl::FrameRectsChanged(const IntRect& frame_rect) {
 
 void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
   DCHECK(web_frame_->Client());
+  web_frame_->ResetHasScrolledFocusedEditableIntoView();
   web_frame_->Client()->FocusedElementChanged(element);
 }
 
