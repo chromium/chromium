@@ -935,9 +935,9 @@ class PDFExtensionPresentationModeEnabledTest : public PDFExtensionJSTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionPresentationModeEnabledTest, Fullscreen) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("fullscreen_test.js", "test.pdf");
+  // Use a PDF document with multiple pages, to exercise navigating between
+  // pages.
+  RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
 }
 
 class PDFExtensionJSTest : public PDFExtensionJSTestBase,

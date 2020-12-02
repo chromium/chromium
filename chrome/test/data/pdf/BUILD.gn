@@ -87,6 +87,7 @@ js_library("bookmarks_test") {
 
 js_library("gesture_detector_test") {
   deps = [
+    ":test_util",
     "//chrome/browser/resources/pdf:gesture_detector",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
@@ -129,6 +130,7 @@ js_library("download_controls_test") {
 
 js_library("fullscreen_test") {
   deps = [
+    ":test_util",
     "../webui:test_util.m",
     "//chrome/browser/resources/pdf:constants",
     "//chrome/browser/resources/pdf:pdf_viewer",

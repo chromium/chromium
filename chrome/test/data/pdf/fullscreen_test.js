@@ -6,6 +6,7 @@ import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehja
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
 import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {createWheelEvent} from './test_util.js';
 
 const viewer = /** @type {!PDFViewerElement} */ (
     document.body.querySelector('pdf-viewer'));
@@ -50,6 +51,22 @@ const tests = [
     chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
     pressAndReleaseKeyOn(viewer, 0, 'ctrl', ']');
     chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
+    chrome.test.succeed();
+  },
+  async function testWheelEventUpdatesPage() {
+    await ensureFullscreen();
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
+    // Simulate scrolling towards the bottom.
+    scroller.dispatchEvent(
+        createWheelEvent(40, {clientX: 0, clientY: 0}, false));
+    chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
+
+    // Simulate scrolling towards the top.
+    scroller.dispatchEvent(
+        createWheelEvent(-40, {clientX: 0, clientY: 0}, false));
+    chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
+
     chrome.test.succeed();
   },
 ];

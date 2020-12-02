@@ -111,6 +111,15 @@ export function getFilenameFromURL(url) {
   }
 }
 
+/**
+ * @param {string} event
+ * @param {!HTMLElement} target
+ * @return {!Promise<void>}
+ */
+function eventToPromise(event, target) {
+  return new Promise(resolve => listenOnce(target, event, resolve));
+}
+
 /** @type {string} */
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY = 'sidenavCollapsed';
 
@@ -541,12 +550,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   waitForSidenavTransition_() {
-    return new Promise(resolve => {
-      listenOnce(
-          /** @type {!ViewerPdfSidenavElement} */ (
-              this.shadowRoot.querySelector('#sidenav-container')),
-          'transitionend', e => resolve());
-    });
+    return eventToPromise(
+        'transitionend',
+        /** @type {!ViewerPdfSidenavElement} */
+        (this.shadowRoot.querySelector('#sidenav-container')));
   }
 
   /**
@@ -688,11 +695,33 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /** @private */
   onFullscreenClick_() {
     assert(this.presentationModeEnabled_);
-    this.shadowRoot.querySelector('#scroller').requestFullscreen().then(() => {
-      this.forceFit(FittingType.FIT_TO_HEIGHT);
-      // Nothing else to do here. The viewport will be updated as a result of a
-      // 'resize' event callback.
-    });
+
+    const onWheel = e => {
+      e.deltaY > 0 ? this.viewport.goToNextPage() :
+                     this.viewport.goToPreviousPage();
+    };
+
+    const scroller = /** @type {!HTMLElement} */ (
+        this.shadowRoot.querySelector('#scroller'));
+
+    Promise
+        .all([
+          eventToPromise('fullscreenchange', scroller),
+          scroller.requestFullscreen(),
+        ])
+        .then(() => {
+          this.forceFit(FittingType.FIT_TO_HEIGHT);
+
+          // Add a 'wheel' listener, only while in Presentation mode.
+          scroller.addEventListener('wheel', onWheel);
+          eventToPromise('fullscreenchange', scroller).then(() => {
+            assert(document.fullscreenElement === null);
+            scroller.removeEventListener('wheel', onWheel);
+          });
+
+          // Nothing else to do here. The viewport will be updated as a result
+          // of a 'resize' event callback.
+        });
   }
 
   /**

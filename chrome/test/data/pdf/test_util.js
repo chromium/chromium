@@ -336,3 +336,20 @@ export function waitFor(predicate) {
                        resolve(waitFor(predicate));
                      }, 0));
 }
+
+/**
+ * @param {number} deltaY
+ * @param {{clientX: number, clientY: number}} position
+ * @param {boolean} ctrlKey
+ * @return {!WheelEvent}
+ */
+export function createWheelEvent(deltaY, position, ctrlKey) {
+  return new WheelEvent('wheel', {
+    deltaY,
+    clientX: position.clientX,
+    clientY: position.clientY,
+    ctrlKey,
+    // Necessary for preventDefault() to work.
+    cancelable: true,
+  });
+}
