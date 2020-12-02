@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ExpectNoOutcomeUKM();
 }
 
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcomeUKM) {
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
@@ -949,34 +949,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcomeUKM) {
   content::FetchHistogramsFromChildProcesses();
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
   ExpectTimingUKM("TimeUserCancelMs");
-}
-
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcomeUMA) {
-  base::HistogramTester histogram_tester;
-  GURL url = GetTestUrl(nullptr, "simple_page.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  auto provider = std::make_unique<MockSmsProvider>();
-  MockSmsProvider* mock_provider_ptr = provider.get();
-  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
-
-  shell()->web_contents()->SetDelegate(&delegate_);
-
-  base::RunLoop loop;
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyFailure(FailureType::kPromptCancelled);
-    loop.Quit();
-  }));
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-       navigator.credentials.get({otp: {transport: ["sms"]}});
-     )"));
-  // Makes sure that all the renderer processes are initialized before recording
-  // and fetching the histograms.
-  FetchHistogramsFromChildProcesses();
-  loop.Run();
-
-  FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
 }
 
