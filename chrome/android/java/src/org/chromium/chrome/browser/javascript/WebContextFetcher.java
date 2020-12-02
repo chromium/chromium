@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.javascript;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
@@ -42,7 +44,8 @@ public class WebContextFetcher {
         }, renderFrameHost);
     }
 
-    private static Map<String, String> convertJsonToMap(String jsonString) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static Map<String, String> convertJsonToMap(String jsonString) {
         Map<String, String> fetchedContext = new HashMap<>();
         try {
             JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
@@ -67,6 +70,7 @@ public class WebContextFetcher {
             jsonReader.endObject();
         } catch (IOException e) {
             Log.e(TAG, "Failed to read web context json");
+            throw new AssertionError("Error parsing JSON string value.");
         }
         return fetchedContext;
     }
