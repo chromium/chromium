@@ -2505,7 +2505,13 @@ TEST_F(PartitionAllocTest, GetUsableSize) {
   }
 }
 
-TEST_F(PartitionAllocTest, Bookkeeping) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Disabled pending investigation: https://crbug.com/1154345
+#define MAYBE_Bookkeeping DISABLED_Bookkeeping
+#else
+#define MAYBE_Bookkeeping Bookkeeping
+#endif
+TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
   auto& root = *allocator.root();
 
   EXPECT_EQ(0U, root.total_size_of_committed_pages);
