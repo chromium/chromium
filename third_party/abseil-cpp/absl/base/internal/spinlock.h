@@ -15,11 +15,8 @@
 //
 
 //  Most users requiring mutual exclusion should use Mutex.
-//  SpinLock is provided for use in three situations:
+//  SpinLock is provided for use in two situations:
 //   - for use in code that Mutex itself depends on
-//   - to get a faster fast-path release under low contention (without an
-//     atomic read-modify-write) In return, SpinLock has worse behaviour under
-//     contention, which is why Mutex is preferred in most situations.
 //   - for async signal safety (see below)
 
 // SpinLock is async signal safe.  If a spinlock is used within a signal

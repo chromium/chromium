@@ -193,6 +193,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/escaping.cc"
   "strings/escaping.h"
   "strings/internal/cord_internal.h"
+  "strings/internal/cord_rep_flat.h"
   "strings/internal/charconv_bigint.cc"
   "strings/internal/charconv_bigint.h"
   "strings/internal/charconv_parse.cc"

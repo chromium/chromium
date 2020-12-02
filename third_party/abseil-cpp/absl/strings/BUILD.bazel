@@ -267,7 +267,10 @@ cc_test(
 
 cc_library(
     name = "cord_internal",
-    hdrs = ["internal/cord_internal.h"],
+    hdrs = [
+        "internal/cord_internal.h",
+        "internal/cord_rep_flat.h",
+    ],
     copts = ABSL_DEFAULT_COPTS,
     visibility = ["//visibility:private"],
     deps = [

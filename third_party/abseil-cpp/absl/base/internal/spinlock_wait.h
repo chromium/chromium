@@ -43,18 +43,16 @@ uint32_t SpinLockWait(std::atomic<uint32_t> *w, int n,
                       const SpinLockWaitTransition trans[],
                       SchedulingMode scheduling_mode);
 
-// If possible, wake some thread that has called SpinLockDelay(w, ...). If
-// "all" is true, wake all such threads.  This call is a hint, and on some
-// systems it may be a no-op; threads calling SpinLockDelay() will always wake
-// eventually even if SpinLockWake() is never called.
+// If possible, wake some thread that has called SpinLockDelay(w, ...). If `all`
+// is true, wake all such threads. On some systems, this may be a no-op; on
+// those systems, threads calling SpinLockDelay() will always wake eventually
+// even if SpinLockWake() is never called.
 void SpinLockWake(std::atomic<uint32_t> *w, bool all);
 
 // Wait for an appropriate spin delay on iteration "loop" of a
 // spin loop on location *w, whose previously observed value was "value".
 // SpinLockDelay() may do nothing, may yield the CPU, may sleep a clock tick,
-// or may wait for a delay that can be truncated by a call to SpinLockWake(w).
-// In all cases, it must return in bounded time even if SpinLockWake() is not
-// called.
+// or may wait for a call to SpinLockWake(w).
 void SpinLockDelay(std::atomic<uint32_t> *w, uint32_t value, int loop,
                    base_internal::SchedulingMode scheduling_mode);
 

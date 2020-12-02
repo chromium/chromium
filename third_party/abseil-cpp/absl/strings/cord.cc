@@ -36,6 +36,7 @@
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/internal/cord_internal.h"
+#include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
@@ -48,7 +49,11 @@ ABSL_NAMESPACE_BEGIN
 using ::absl::cord_internal::CordRep;
 using ::absl::cord_internal::CordRepConcat;
 using ::absl::cord_internal::CordRepExternal;
+using ::absl::cord_internal::CordRepFlat;
 using ::absl::cord_internal::CordRepSubstring;
+
+using ::absl::cord_internal::kMinFlatLength;
+using ::absl::cord_internal::kMaxFlatLength;
 
 using ::absl::cord_internal::CONCAT;
 using ::absl::cord_internal::EXTERNAL;
@@ -90,63 +95,8 @@ inline const CordRepExternal* CordRep::external() const {
 
 }  // namespace cord_internal
 
-static const size_t kFlatOverhead = offsetof(CordRep, data);
-
-// Largest and smallest flat node lengths we are willing to allocate
-// Flat allocation size is stored in tag, which currently can encode sizes up
-// to 4K, encoded as multiple of either 8 or 32 bytes.
-// If we allow for larger sizes, we need to change this to 8/64, 16/128, etc.
-// kMinFlatSize is bounded by tag needing to be at least FLAT * 8 bytes, and
-// ideally a 'nice' size aligning with allocation and cacheline sizes like 32.
-// kMaxFlatSize is bounded by the size resulting in a computed tag no greater
-// than MAX_FLAT_TAG. MAX_FLAT_TAG provides for additional 'high' tag values.
-static constexpr size_t kMinFlatSize = 32;
-static constexpr size_t kMaxFlatSize = 4096;
-static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
-static constexpr size_t kMinFlatLength = kMinFlatSize - kFlatOverhead;
-
-static constexpr size_t AllocatedSizeToTagUnchecked(size_t size) {
-  return (size <= 1024) ? size / 8 : 128 + size / 32 - 1024 / 32;
-}
-
-static_assert(kMinFlatSize / 8 >= FLAT, "");
-static_assert(AllocatedSizeToTagUnchecked(kMaxFlatSize) <= MAX_FLAT_TAG, "");
-
 // Prefer copying blocks of at most this size, otherwise reference count.
 static const size_t kMaxBytesToCopy = 511;
-
-// Helper functions for rounded div, and rounding to exact sizes.
-static size_t DivUp(size_t n, size_t m) { return (n + m - 1) / m; }
-static size_t RoundUp(size_t n, size_t m) { return DivUp(n, m) * m; }
-
-// Returns the size to the nearest equal or larger value that can be
-// expressed exactly as a tag value.
-static size_t RoundUpForTag(size_t size) {
-  return RoundUp(size, (size <= 1024) ? 8 : 32);
-}
-
-// Converts the allocated size to a tag, rounding down if the size
-// does not exactly match a 'tag expressible' size value. The result is
-// undefined if the size exceeds the maximum size that can be encoded in
-// a tag, i.e., if size is larger than TagToAllocatedSize(<max tag>).
-static uint8_t AllocatedSizeToTag(size_t size) {
-  const size_t tag = AllocatedSizeToTagUnchecked(size);
-  assert(tag <= std::numeric_limits<uint8_t>::max());
-  return tag;
-}
-
-// Converts the provided tag to the corresponding allocated size
-static constexpr size_t TagToAllocatedSize(uint8_t tag) {
-  return (tag <= 128) ? (tag * 8) : (1024 + (tag - 128) * 32);
-}
-
-// Converts the provided tag to the corresponding available data length
-static constexpr size_t TagToLength(uint8_t tag) {
-  return TagToAllocatedSize(tag) - kFlatOverhead;
-}
-
-// Enforce that kMaxFlatSize maps to a well-known exact tag value.
-static_assert(TagToAllocatedSize(224) == kMaxFlatSize, "Bad tag logic");
 
 constexpr uint64_t Fibonacci(unsigned char n, uint64_t a = 0, uint64_t b = 1) {
   return n == 0 ? a : Fibonacci(n - 1, b, a + b);
@@ -269,9 +219,7 @@ static void UnrefInternal(CordRep* rep) {
         continue;
       }
     } else if (rep->tag == EXTERNAL) {
-      CordRepExternal* rep_external = rep->external();
-      assert(rep_external->releaser_invoker != nullptr);
-      rep_external->releaser_invoker(rep_external);
+      CordRepExternal::Delete(rep);
       rep = nullptr;
     } else if (rep->tag == SUBSTRING) {
       CordRepSubstring* rep_substring = rep->substring();
@@ -283,17 +231,7 @@ static void UnrefInternal(CordRep* rep) {
         continue;
       }
     } else {
-      // Flat CordReps are allocated and constructed with raw ::operator new
-      // and placement new, and must be destructed and deallocated
-      // accordingly.
-#if defined(__cpp_sized_deallocation)
-      size_t size = TagToAllocatedSize(rep->tag);
-      rep->~CordRep();
-      ::operator delete(rep, size);
-#else
-      rep->~CordRep();
-      ::operator delete(rep);
-#endif
+      CordRepFlat::Delete(rep);
       rep = nullptr;
     }
 
@@ -383,22 +321,6 @@ static CordRep* MakeBalancedTree(CordRep** reps, size_t n) {
   return reps[0];
 }
 
-// Create a new flat node.
-static CordRep* NewFlat(size_t length_hint) {
-  if (length_hint <= kMinFlatLength) {
-    length_hint = kMinFlatLength;
-  } else if (length_hint > kMaxFlatLength) {
-    length_hint = kMaxFlatLength;
-  }
-
-  // Round size up so it matches a size we can exactly express in a tag.
-  const size_t size = RoundUpForTag(length_hint + kFlatOverhead);
-  void* const raw_rep = ::operator new(size);
-  CordRep* rep = new (raw_rep) CordRep();
-  rep->tag = AllocatedSizeToTag(size);
-  return VerifyTree(rep);
-}
-
 // Create a new tree out of the specified array.
 // The returned node has a refcount of 1.
 static CordRep* NewTree(const char* data,
@@ -409,7 +331,7 @@ static CordRep* NewTree(const char* data,
   size_t n = 0;
   do {
     const size_t len = std::min(length, kMaxFlatLength);
-    CordRep* rep = NewFlat(len + alloc_hint);
+    CordRep* rep = CordRepFlat::New(len + alloc_hint);
     rep->length = len;
     memcpy(rep->data, data, len);
     reps[n++] = VerifyTree(rep);
@@ -473,7 +395,7 @@ inline CordRep* Cord::InlineRep::force_tree(size_t extra_hint) {
     return data_.as_tree.rep;
   }
 
-  CordRep* result = NewFlat(len + extra_hint);
+  CordRep* result = CordRepFlat::New(len + extra_hint);
   result->length = len;
   static_assert(kMinFlatLength >= sizeof(data_.as_chars), "");
   memcpy(result->data, data_.as_chars, sizeof(data_.as_chars));
@@ -535,7 +457,7 @@ static inline bool PrepareAppendRegion(CordRep* root, char** region,
   }
 
   const size_t in_use = dst->length;
-  const size_t capacity = TagToLength(dst->tag);
+  const size_t capacity = static_cast<CordRepFlat*>(dst)->Capacity();
   if (in_use == capacity) {
     *region = nullptr;
     *size = 0;
@@ -579,10 +501,9 @@ void Cord::InlineRep::GetAppendRegion(char** region, size_t* size,
   }
 
   // Allocate new node.
-  CordRep* new_node =
-      NewFlat(std::max(static_cast<size_t>(root->length), max_length));
-  new_node->length =
-      std::min(static_cast<size_t>(TagToLength(new_node->tag)), max_length);
+  CordRepFlat* new_node =
+      CordRepFlat::New(std::max(static_cast<size_t>(root->length), max_length));
+  new_node->length = std::min(new_node->Capacity(), max_length);
   *region = new_node->data;
   *size = new_node->length;
   replace_tree(Concat(root, new_node));
@@ -607,8 +528,8 @@ void Cord::InlineRep::GetAppendRegion(char** region, size_t* size) {
   }
 
   // Allocate new node.
-  CordRep* new_node = NewFlat(root->length);
-  new_node->length = TagToLength(new_node->tag);
+  CordRepFlat* new_node = CordRepFlat::New(root->length);
+  new_node->length = new_node->Capacity();
   *region = new_node->data;
   *size = new_node->length;
   replace_tree(Concat(root, new_node));
@@ -618,7 +539,7 @@ void Cord::InlineRep::GetAppendRegion(char** region, size_t* size) {
 // will return true.
 static bool RepMemoryUsageLeaf(const CordRep* rep, size_t* total_mem_usage) {
   if (rep->tag >= FLAT) {
-    *total_mem_usage += TagToAllocatedSize(rep->tag);
+    *total_mem_usage += static_cast<const CordRepFlat*>(rep)->AllocatedSize();
     return true;
   }
   if (rep->tag == EXTERNAL) {
@@ -716,7 +637,8 @@ Cord& Cord::operator=(absl::string_view src) {
     return *this;
   }
   if (tree != nullptr && tree->tag >= FLAT &&
-      TagToLength(tree->tag) >= length && tree->refcount.IsOne()) {
+      static_cast<CordRepFlat*>(tree)->Capacity() >= length &&
+      tree->refcount.IsOne()) {
     // Copy in place if the existing FLAT node is reusable.
     memmove(tree->data, data, length);
     tree->length = length;
@@ -770,8 +692,9 @@ void Cord::InlineRep::AppendArray(const char* src_data, size_t src_size) {
     // either double the inlined size, or the added size + 10%.
     const size_t size1 = inline_length * 2 + src_size;
     const size_t size2 = inline_length + src_size / 10;
-    root = NewFlat(std::max<size_t>(size1, size2));
-    appended = std::min(src_size, TagToLength(root->tag) - inline_length);
+    root = CordRepFlat::New(std::max<size_t>(size1, size2));
+    appended = std::min(
+        src_size, static_cast<CordRepFlat*>(root)->Capacity() - inline_length);
     memcpy(root->data, data_.as_chars, inline_length);
     memcpy(root->data + inline_length, src_data, appended);
     root->length = inline_length + appended;
@@ -1747,7 +1670,7 @@ absl::string_view Cord::FlattenSlowPath() {
   // Try to put the contents into a new flat rep. If they won't fit in the
   // biggest possible flat node, use an external rep instead.
   if (total_size <= kMaxFlatLength) {
-    new_rep = NewFlat(total_size);
+    new_rep = CordRepFlat::New(total_size);
     new_rep->length = total_size;
     new_buffer = new_rep->data;
     CopyToArraySlowPath(new_buffer);
@@ -1862,7 +1785,8 @@ static void DumpNode(CordRep* rep, bool include_data, std::ostream* os) {
           *os << absl::CEscape(std::string(rep->external()->base, rep->length));
         *os << "]\n";
       } else {
-        *os << "FLAT cap=" << TagToLength(rep->tag) << " [";
+        *os << "FLAT cap=" << static_cast<CordRepFlat*>(rep)->Capacity()
+            << " [";
         if (include_data)
           *os << absl::CEscape(std::string(rep->data, rep->length));
         *os << "]\n";
@@ -1910,8 +1834,9 @@ static bool VerifyNode(CordRep* root, CordRep* start_node,
         worklist.push_back(node->concat()->left);
       }
     } else if (node->tag >= FLAT) {
-      ABSL_INTERNAL_CHECK(node->length <= TagToLength(node->tag),
-                          ReportError(root, node));
+      ABSL_INTERNAL_CHECK(
+          node->length <= static_cast<CordRepFlat*>(node)->Capacity(),
+          ReportError(root, node));
     } else if (node->tag == EXTERNAL) {
       ABSL_INTERNAL_CHECK(node->external()->base != nullptr,
                           ReportError(root, node));
@@ -1987,14 +1912,14 @@ std::ostream& operator<<(std::ostream& out, const Cord& cord) {
 }
 
 namespace strings_internal {
-size_t CordTestAccess::FlatOverhead() { return kFlatOverhead; }
-size_t CordTestAccess::MaxFlatLength() { return kMaxFlatLength; }
+size_t CordTestAccess::FlatOverhead() { return cord_internal::kFlatOverhead; }
+size_t CordTestAccess::MaxFlatLength() { return cord_internal::kMaxFlatLength; }
 size_t CordTestAccess::FlatTagToLength(uint8_t tag) {
-  return TagToLength(tag);
+  return cord_internal::TagToLength(tag);
 }
 uint8_t CordTestAccess::LengthToTag(size_t s) {
   ABSL_INTERNAL_CHECK(s <= kMaxFlatLength, absl::StrCat("Invalid length ", s));
-  return AllocatedSizeToTag(s + kFlatOverhead);
+  return cord_internal::AllocatedSizeToTag(s + cord_internal::kFlatOverhead);
 }
 size_t CordTestAccess::SizeofCordRepConcat() { return sizeof(CordRepConcat); }
 size_t CordTestAccess::SizeofCordRepExternal() {

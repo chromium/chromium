@@ -117,7 +117,10 @@ absl_source_set("str_format_internal") {
 }
 
 absl_source_set("cord_internal") {
-  public = [ "internal/cord_internal.h" ]
+  public = [
+    "internal/cord_internal.h",
+    "internal/cord_rep_flat.h",
+  ]
   visibility = [ ":*" ]
   deps = [
     ":strings",

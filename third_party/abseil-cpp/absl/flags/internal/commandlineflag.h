@@ -24,7 +24,7 @@ ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 
 // An alias for flag fast type id. This value identifies the flag value type
-// simialarly to typeid(T), without relying on RTTI being available. In most
+// similarly to typeid(T), without relying on RTTI being available. In most
 // cases this id is enough to uniquely identify the flag's value type. In a few
 // cases we'll have to resort to using actual RTTI implementation if it is
 // available.

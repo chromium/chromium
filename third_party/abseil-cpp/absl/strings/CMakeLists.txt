@@ -557,6 +557,7 @@ absl_cc_library(
   SRCS
     "cord.cc"
     "internal/cord_internal.h"
+    "internal/cord_rep_flat.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
