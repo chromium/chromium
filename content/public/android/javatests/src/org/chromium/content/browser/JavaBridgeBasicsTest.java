@@ -1087,4 +1087,39 @@ public class JavaBridgeBasicsTest {
         mActivityTestRule.executeJavaScript("testObject2.method.call(testObject1)");
         Assert.assertEquals(1, mTestController.waitForIntValue());
     }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    public void testWebViewAfterRenderViewSwapped(boolean useMojo) throws Throwable {
+        class TestObject {
+            private int mIndex;
+            TestObject(int index) {
+                mIndex = index;
+            }
+            public void method() {
+                mTestController.setIntValue(mIndex);
+            }
+        }
+        final TestObject testObject = new TestObject(1);
+        mActivityTestRule.injectObjectAndReload(testObject, "testObject");
+
+        // Load a fake url to swap RenderView.
+        mActivityTestRule.loadUrl(mActivityTestRule.getWebContents().getNavigationController(),
+                mActivityTestRule.getTestCallBackHelperContainer(),
+                new LoadUrlParams("chrome://test"));
+
+        mActivityTestRule.handleBlockingCallbackAction(
+                mActivityTestRule.getTestCallBackHelperContainer().getOnPageFinishedHelper(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mActivityTestRule.getWebContents().getNavigationController().goBack();
+                    }
+                });
+
+        mActivityTestRule.executeJavaScript("testObject.method()");
+        Assert.assertEquals(1, mTestController.waitForIntValue());
+    }
 }
