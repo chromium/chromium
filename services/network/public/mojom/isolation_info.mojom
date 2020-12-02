@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 
 // Mapped to net::IsolationInfo::RequestType, which is what consumers should
@@ -24,4 +25,5 @@ struct IsolationInfo {
   url.mojom.Origin? frame_origin;
   bool opaque_and_non_transient;
   SiteForCookies site_for_cookies;
+  array<SchemefulSite>? party_context;
 };

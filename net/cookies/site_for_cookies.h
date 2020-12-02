@@ -131,8 +131,9 @@ class NET_EXPORT SiteForCookies {
  private:
   SiteForCookies(const std::string& scheme, const std::string& host);
 
-  // Two schemes are considered compatible if they exactly match, they are both
-  // in ["https", "wss"], or they are both in ["http", "ws"].
+  // Returns true if |scheme_| and |other_scheme| are considered compatible if
+  // they exactly match, they are both in ["https", "wss"], or they are both in
+  // ["http", "ws"].
   bool CompatibleScheme(const std::string& other_scheme) const;
 
   bool IsSchemefullyFirstParty(const GURL& url) const;

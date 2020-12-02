@@ -51,6 +51,7 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
   base::Optional<url::Origin> frame_origin;
   net::SiteForCookies site_for_cookies;
   net::IsolationInfo::RequestType request_type;
+  base::Optional<std::vector<net::SchemefulSite>> mojo_party_context;
 
   if (!data.ReadTopFrameOrigin(&top_frame_origin)) {
     network::debug::SetDeserializationCrashKeyString("isolation_top_origin");
@@ -61,14 +62,23 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     return false;
   }
   if (!data.ReadSiteForCookies(&site_for_cookies) ||
-      !data.ReadRequestType(&request_type)) {
+      !data.ReadRequestType(&request_type) ||
+      !data.ReadPartyContext(&mojo_party_context)) {
     return false;
   }
 
+  base::Optional<std::set<net::SchemefulSite>> party_context;
+  if (mojo_party_context.has_value()) {
+    party_context = std::set<net::SchemefulSite>(mojo_party_context->begin(),
+                                                 mojo_party_context->end());
+    if (party_context->size() != mojo_party_context->size())
+      return false;
+  }
+
   base::Optional<net::IsolationInfo> isolation_info =
-      net::IsolationInfo::CreateIfConsistent(request_type, top_frame_origin,
-                                             frame_origin, site_for_cookies,
-                                             data.opaque_and_non_transient());
+      net::IsolationInfo::CreateIfConsistent(
+          request_type, top_frame_origin, frame_origin, site_for_cookies,
+          data.opaque_and_non_transient(), std::move(party_context));
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");
     return false;

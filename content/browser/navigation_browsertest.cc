@@ -816,7 +816,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-                  net::SiteForCookies::FromOrigin(origin))
+                  net::SiteForCookies::FromOrigin(origin),
+                  std::set<net::SchemefulSite>())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -834,7 +835,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-                  net::SiteForCookies::FromOrigin(origin))
+                  net::SiteForCookies::FromOrigin(origin),
+                  std::set<net::SchemefulSite>())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -854,7 +856,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
   ASSERT_TRUE(main_frame_request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-                  net::SiteForCookies::FromOrigin(origin))
+                  net::SiteForCookies::FromOrigin(origin),
+                  std::set<net::SchemefulSite>())
                   .IsEqualForTesting(
                       main_frame_request->trusted_params->isolation_info));
 
@@ -864,7 +867,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
   EXPECT_TRUE(
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
                                  origin, iframe_origin,
-                                 net::SiteForCookies::FromOrigin(origin))
+                                 net::SiteForCookies::FromOrigin(origin),
+                                 std::set<net::SchemefulSite>())
           .IsEqualForTesting(iframe_request->trusted_params->isolation_info));
 }
 

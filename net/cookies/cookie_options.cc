@@ -64,7 +64,7 @@ CookieOptions CookieOptions::MakeAllInclusive() {
   options.set_include_httponly();
   options.set_same_site_cookie_context(SameSiteCookieContext::MakeInclusive());
   options.set_do_not_update_access_time();
-  options.set_full_party_context(std::set<net::SchemefulSite>());
+  options.set_full_party_context(std::set<SchemefulSite>());
   return options;
 }
 

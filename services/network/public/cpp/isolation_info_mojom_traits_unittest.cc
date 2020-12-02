@@ -20,21 +20,34 @@ namespace mojo {
 TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://a.test/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://b.test/"));
+
+  const base::Optional<std::set<net::SchemefulSite>> kPartyContext1 =
+      base::nullopt;
+  const base::Optional<std::set<net::SchemefulSite>> kPartyContext2 =
+      std::set<net::SchemefulSite>();
+  const base::Optional<std::set<net::SchemefulSite>> kPartyContext3 =
+      std::set<net::SchemefulSite>{
+          net::SchemefulSite(url::Origin::Create(GURL("https://c.test/")))};
+
   std::vector<net::IsolationInfo> keys = {
       net::IsolationInfo(),
       net::IsolationInfo::CreateTransient(),
       net::IsolationInfo::CreateOpaqueAndNonTransient(),
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
-                                 kOrigin1, kOrigin1,
-                                 net::SiteForCookies::FromOrigin(kOrigin1)),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
+          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kSubFrame, kOrigin1, kOrigin2,
+          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
-                                 kOrigin1, kOrigin2,
-                                 net::SiteForCookies::FromOrigin(kOrigin1)),
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
-                                 kOrigin1, kOrigin2, net::SiteForCookies()),
+                                 kOrigin1, kOrigin2, net::SiteForCookies(),
+                                 kPartyContext3),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, kOrigin1, kOrigin1,
+          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext1),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 kOrigin1, kOrigin1,
-                                 net::SiteForCookies::FromOrigin(kOrigin1)),
+                                 url::Origin(), url::Origin(),
+                                 net::SiteForCookies(), kPartyContext1),
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  url::Origin(), url::Origin(),
                                  net::SiteForCookies()),

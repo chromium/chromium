@@ -2708,9 +2708,12 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     const url::Origin& frame_origin,
     net::IsolationInfo::RequestType request_type) const {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
+  net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
 
   net::SiteForCookies candidate_site_for_cookies =
-      net::SiteForCookies::FromOrigin(top_frame_origin);
+      net::SiteForCookies(top_frame_site);
+
+  std::set<net::SchemefulSite> party_context;
 
   if (GetContentClient()
           ->browser()
@@ -2718,35 +2721,40 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
               top_frame_origin.scheme(),
               GURL::SchemeIsCryptographic(frame_origin.scheme()))) {
     return net::IsolationInfo::Create(request_type, top_frame_origin,
-                                      frame_origin, candidate_site_for_cookies);
+                                      frame_origin, candidate_site_for_cookies,
+                                      std::move(party_context));
   }
 
-  // Make sure all ancestors have origins consistent with the candidate
-  // SiteForCookies of the main document. Otherwise, SameSite cookies may not be
-  // used. For frame requests, it's OK to skip checking the frame itself since
-  // each request will be validated against |site_for_cookies| anyway.
-  for (const RenderFrameHostImpl* rfh = this->parent_; rfh;
-       rfh = rfh->parent_) {
-    if (!candidate_site_for_cookies.IsEquivalent(
-            net::SiteForCookies::FromOrigin(rfh->last_committed_origin_))) {
-      return net::IsolationInfo::Create(request_type, top_frame_origin,
-                                        frame_origin, net::SiteForCookies());
-    }
-    candidate_site_for_cookies.MarkIfCrossScheme(rfh->last_committed_origin_);
-  }
-
+  // Walk up the frame tree to check SiteForCookies and compute the
+  // |party_context|.
+  //
   // If |request_type| is kOther, then IsolationInfo is being computed
-  // for subresource requests. In that case, also need to check the
-  // SiteForCookies against the frame origin.
-  if (request_type == net::IsolationInfo::RequestType::kOther &&
-      !candidate_site_for_cookies.IsEquivalent(
-          net::SiteForCookies::FromOrigin(frame_origin))) {
-    return net::IsolationInfo::Create(request_type, top_frame_origin,
-                                      frame_origin, net::SiteForCookies());
+  // for subresource requests. Check/compute starting from the frame itself.
+  // Otherwise, it's OK to skip checking the frame itself since it's stored in
+  // IsolationInfo for each request and will be validated later anyway.
+  //
+  // If origins are not consistent with the candidate SiteForCookies
+  // of the main document, SameSite cookies may not be used.
+  const RenderFrameHostImpl* initial_rfh = this;
+  if (request_type != net::IsolationInfo::RequestType::kOther)
+    initial_rfh = this->parent_;
+
+  for (const RenderFrameHostImpl* rfh = initial_rfh; rfh; rfh = rfh->parent_) {
+    const url::Origin& cur_origin =
+        rfh == this ? frame_origin : rfh->last_committed_origin_;
+    net::SchemefulSite cur_site = net::SchemefulSite(cur_origin);
+
+    if (top_frame_site != cur_site) {
+      party_context.insert(cur_site);
+    }
+    if (!candidate_site_for_cookies.IsEquivalent(net::SiteForCookies(cur_site)))
+      candidate_site_for_cookies = net::SiteForCookies();
+    candidate_site_for_cookies.MarkIfCrossScheme(cur_origin);
   }
 
   return net::IsolationInfo::Create(request_type, top_frame_origin,
-                                    frame_origin, candidate_site_for_cookies);
+                                    frame_origin, candidate_site_for_cookies,
+                                    std::move(party_context));
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(

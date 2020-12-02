@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
+#include <set>
 #include <string>
 #include <utility>
 
@@ -11,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -61,6 +63,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -3053,6 +3056,580 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   main_frame = web_contents()->GetMainFrame();
   main_frame->DidChangeActiveSchedulerTrackedFeatures(0b0u);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ComputeIsolationInfoForNavigationPartyContext) {
+  // Start second server for HTTPS.
+  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url = https_server()->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test(a.test, b.test(a.test(c.test), "
+      "b.test(b.test), c.test(d.test)))");
+
+  GURL b_url = https_server()->GetURL("b.test", "/");
+  GURL c_url = https_server()->GetURL("c.test", "/");
+  GURL d_url = https_server()->GetURL("d.test", "/");
+  net::SchemefulSite b_site(b_url);
+  net::SchemefulSite c_site(c_url);
+  net::SchemefulSite d_site(d_url);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // main frame
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ("https", main_frame->frame_tree_node()->current_origin().scheme());
+  EXPECT_EQ("a.test", main_frame->GetLastCommittedURL().host());
+  ASSERT_EQ(2u, main_frame->child_count());
+  std::set<net::SchemefulSite> expected_main_frame_party_context;
+  std::set<net::SchemefulSite> expected_main_frame_subresource_party_context;
+  // frame subresource
+  EXPECT_EQ(expected_main_frame_subresource_party_context,
+            main_frame->GetIsolationInfoForSubresources().party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_main_frame_party_context,
+            main_frame->ComputeIsolationInfoForNavigation(url).party_context());
+  EXPECT_EQ(
+      expected_main_frame_party_context,
+      main_frame->ComputeIsolationInfoForNavigation(b_url).party_context());
+
+  // a.test -> a.test
+  FrameTreeNode* child_a = main_frame->child_at(0);
+  EXPECT_EQ("a.test", child_a->current_url().host());
+  ASSERT_EQ(0u, child_a->child_count());
+  std::set<net::SchemefulSite> expected_child_a_party_context;
+  std::set<net::SchemefulSite> expected_child_a_subresource_party_context;
+  // frame subresource
+  EXPECT_EQ(expected_child_a_subresource_party_context,
+            child_a->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_a_party_context,
+            child_a->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_a_party_context,
+            child_a->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+
+  // a.test -> b.test
+  FrameTreeNode* child_b = main_frame->child_at(1);
+  EXPECT_EQ("b.test", child_b->current_url().host());
+  ASSERT_EQ(3u, child_b->child_count());
+  std::set<net::SchemefulSite> expected_child_b_party_context;
+  std::set<net::SchemefulSite> expected_child_b_subresource_party_context{
+      b_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_b_subresource_party_context,
+            child_b->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_b_party_context,
+            child_b->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_b_party_context,
+            child_b->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_b_party_context,
+            child_b->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+
+  // a.test -> b.test -> a.test
+  FrameTreeNode* child_ba = child_b->child_at(0);
+  EXPECT_EQ("a.test", child_ba->current_url().host());
+  ASSERT_EQ(1u, child_ba->child_count());
+  std::set<net::SchemefulSite> expected_child_ba_subresource_party_context{
+      b_site};
+  std::set<net::SchemefulSite> expected_child_ba_party_context{b_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_ba_subresource_party_context,
+            child_ba->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_ba_party_context,
+            child_ba->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_ba_party_context,
+            child_ba->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_ba_party_context,
+            child_ba->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+
+  // a.test -> b.test -> b.test
+  FrameTreeNode* child_bb = child_b->child_at(1);
+  EXPECT_EQ("b.test", child_bb->current_url().host());
+  ASSERT_EQ(1u, child_bb->child_count());
+  std::set<net::SchemefulSite> expected_child_bb_subresource_party_context{
+      b_site};
+  std::set<net::SchemefulSite> expected_child_bb_party_context{b_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_bb_subresource_party_context,
+            child_bb->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_bb_party_context,
+            child_bb->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_bb_party_context,
+            child_bb->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_bb_party_context,
+            child_bb->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+
+  // a.test -> b.test -> c.test
+  FrameTreeNode* child_bc = child_b->child_at(2);
+  EXPECT_EQ("c.test", child_bc->current_url().host());
+  ASSERT_EQ(1u, child_bc->child_count());
+  std::set<net::SchemefulSite> expected_child_bc_subresource_party_context{
+      b_site, c_site};
+  std::set<net::SchemefulSite> expected_child_bc_party_context{b_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_bc_subresource_party_context,
+            child_bc->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_bc_party_context,
+            child_bc->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_bc_party_context,
+            child_bc->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_bc_party_context,
+            child_bc->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+
+  // a.test -> b.test -> a.test -> c.test
+  FrameTreeNode* child_bac = child_ba->child_at(0);
+  EXPECT_EQ("c.test", child_bac->current_url().host());
+  std::set<net::SchemefulSite> expected_child_bac_subresource_party_context{
+      b_site, c_site};
+  std::set<net::SchemefulSite> expected_child_bac_party_context{b_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_bac_subresource_party_context,
+            child_bac->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_bac_party_context,
+            child_bac->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_bac_party_context,
+            child_bac->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_bac_party_context,
+            child_bac->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+
+  // a.test -> b.test -> b.test -> b.test
+  FrameTreeNode* child_bbb = child_bb->child_at(0);
+  EXPECT_EQ("b.test", child_bbb->current_url().host());
+  std::set<net::SchemefulSite> expected_child_bbb_subresource_party_context{
+      b_site};
+  std::set<net::SchemefulSite> expected_child_bbb_party_context{b_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_bbb_subresource_party_context,
+            child_bbb->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_bbb_party_context,
+            child_bbb->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_bbb_party_context,
+            child_bbb->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_bbb_party_context,
+            child_bbb->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+
+  // a.test -> b.test -> c.test ->d.test
+  FrameTreeNode* child_bcd = child_bc->child_at(0);
+  EXPECT_EQ("d.test", child_bcd->current_url().host());
+  std::set<net::SchemefulSite> expected_child_bcd_subresource_party_context{
+      b_site, c_site, d_site};
+  std::set<net::SchemefulSite> expected_child_bcd_party_context{b_site, c_site};
+  // frame subresource
+  EXPECT_EQ(expected_child_bcd_subresource_party_context,
+            child_bcd->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  EXPECT_EQ(expected_child_bcd_party_context,
+            child_bcd->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+  EXPECT_EQ(expected_child_bcd_party_context,
+            child_bcd->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(b_url)
+                .party_context());
+  EXPECT_EQ(expected_child_bcd_party_context,
+            child_bcd->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(c_url)
+                .party_context());
+  EXPECT_EQ(expected_child_bcd_party_context,
+            child_bcd->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(d_url)
+                .party_context());
+}
+
+// Ensure that http(s) schemes are distinct.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    ComputeIsolationInfoForNavigationPartyContextCrossScheme) {
+  // Start second server for HTTPS.
+  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL http_url =
+      embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
+  GURL https_url = https_server()->GetURL("a.test", "/title1.com");
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ(http_url, main_frame->GetLastCommittedURL());
+
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child_frame = main_frame->child_at(0);
+
+  // http://a.test -> https://a.test
+  const auto script = base::StringPrintf("window.location.href=\"%s\"; ",
+                                         https_url.spec().c_str());
+  TestNavigationObserver observer(web_contents());
+  ASSERT_TRUE(ExecuteScript(child_frame, script));
+  observer.Wait();
+  EXPECT_EQ(https_url, child_frame->current_url());
+  // frame subresource
+  std::set<net::SchemefulSite> expected_child_subresource_party_context{
+      net::SchemefulSite(https_url)};
+  EXPECT_EQ(expected_child_subresource_party_context,
+            child_frame->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  std::set<net::SchemefulSite> expected_child_party_context;
+  EXPECT_EQ(expected_child_party_context,
+            child_frame->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(http_url)
+                .party_context());
+}
+
+class RenderFrameHostImplSchemefulEnabledBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplSchemefulEnabledBrowserTest() {
+    scope_feature_list_.InitAndEnableFeature(net::features::kSchemefulSameSite);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scope_feature_list_;
+};
+
+// Similar to
+// RenderFrameHostImplBrowserTest_ComputeIsolationInfoForNavigationPartyContextCrossScheme
+// with net::features::kSchemefulSameSite enabled.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplSchemefulEnabledBrowserTest,
+    ComputeIsolationInfoForNavigationPartyContextCrossScheme) {
+  // Start second server for HTTPS.
+  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL http_url =
+      embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
+  GURL https_url = https_server()->GetURL("a.test", "/");
+
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ(http_url, main_frame->GetLastCommittedURL());
+
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child_frame = main_frame->child_at(0);
+
+  // http://a.test -> https://a.test
+  const auto script = base::StringPrintf("window.location.href=\"%s\"; ",
+                                         https_url.spec().c_str());
+  TestNavigationObserver observer(web_contents());
+  ASSERT_TRUE(ExecuteScript(child_frame, script));
+  observer.Wait();
+  EXPECT_EQ(https_url, child_frame->current_url());
+  // frame subresource
+  std::set<net::SchemefulSite> expected_child_subresource_party_context{
+      net::SchemefulSite(https_url)};
+  EXPECT_EQ(expected_child_subresource_party_context,
+            child_frame->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+
+  // frame being navigated
+  std::set<net::SchemefulSite> expected_child_party_context;
+  EXPECT_EQ(expected_child_party_context,
+            child_frame->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(http_url)
+                .party_context());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    ComputeIsolationInfoForNavigationPartyContextExceedMaxSize) {
+  GURL url = embedded_test_server()->GetURL(
+      "a.com",
+      "/cross_site_iframe_factory.html?a(a1(a2(a3(a4(a5(a6(a7(a8(a9(a10(a11("
+      "a12(a13(a14(a15(a16(a17(a18(a19("
+      "a20(a21(a2))))))))))))))))))))))");
+  static_assert(net::IsolationInfo::kPartyContextMaxSize == 20,
+                "kPartyContextMaxSize should have value 20.");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/");
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ("http", main_frame->frame_tree_node()->current_origin().scheme());
+  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child_a1 = main_frame->child_at(0);
+  FrameTreeNode* child = child_a1;
+  int child_count = 1;
+  for (; child->child_count() > 0; child = child->child_at(0)) {
+    ASSERT_EQ(1u, child->child_count());
+    child_count++;
+  }
+  ASSERT_EQ(22, child_count);
+
+  // innermost frame navigation.
+  EXPECT_EQ(base::nullopt, child->current_frame_host()
+                               ->ComputeIsolationInfoForNavigation(b_url)
+                               .party_context());
+  // innermost frame subresource.
+  EXPECT_EQ(base::nullopt, child->current_frame_host()
+                               ->GetIsolationInfoForSubresources()
+                               .party_context());
+
+  // parent of innermost frame navigation.
+  EXPECT_EQ(20u, child->parent()
+                     ->ComputeIsolationInfoForNavigation(b_url)
+                     .party_context()
+                     ->size());
+  // parent of innermost frame subresource.
+  EXPECT_EQ(base::nullopt,
+            child->parent()->GetIsolationInfoForSubresources().party_context());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    ComputeIsolationInfoForNavigationPartyContextAboutBlank) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/page_with_blank_iframe.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+
+  // a.com -> about:blank
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child_blank = main_frame->child_at(0);
+  EXPECT_TRUE(child_blank->current_url().IsAboutBlank());
+  EXPECT_EQ("a.com",
+            child_blank->current_frame_host()->GetLastCommittedOrigin().host());
+  // frame being navigated.
+  std::set<net::SchemefulSite> expected_child_blank_party_context;
+  EXPECT_EQ(expected_child_blank_party_context,
+            child_blank->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+
+  // Add another iframe under about:blank frame.
+  // a.com -> about:blank ->b.com
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/");
+  TestNavigationObserver observer(web_contents());
+  const auto script = base::StringPrintf(
+      "let f = document.createElement(\"iframe\");"
+      "f.src=\"%s\"; "
+      "document.body.appendChild(f);",
+      b_url.spec().c_str());
+  ASSERT_TRUE(ExecuteScript(child_blank->current_frame_host(), script));
+  observer.Wait();
+
+  ASSERT_EQ(1u, child_blank->child_count());
+  FrameTreeNode* child_b = child_blank->child_at(0u);
+  EXPECT_EQ("b.com", child_b->current_url().host());
+  // frame subresource
+  std::set<net::SchemefulSite> expected_child_b_subresource_party_context{
+      net::SchemefulSite(b_url)};
+  EXPECT_EQ(expected_child_b_subresource_party_context,
+            child_b->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated.
+  std::set<net::SchemefulSite> expected_child_b_party_context;
+  EXPECT_EQ(expected_child_b_party_context,
+            child_b->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ComputeIsolationInfoForNavigationPartyContextDataUrl) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/page_with_blank_iframe.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+
+  // a.com -> data url
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child_data = main_frame->child_at(0);
+  TestNavigationObserver observer1(web_contents());
+  EXPECT_TRUE(ExecuteScript(child_data->current_frame_host(),
+                            "window.location='data:text/html,foo'"));
+  observer1.Wait();
+  EXPECT_EQ("data", child_data->current_url().scheme());
+  // frame being navigated.
+  std::set<net::SchemefulSite> expected_child_data_party_context;
+  EXPECT_EQ(expected_child_data_party_context,
+            child_data->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(url)
+                .party_context());
+
+  // Add another iframe under data url frame.
+  // a.com -> data url ->b.com
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/");
+  const auto script = base::StringPrintf(
+      "let f = document.createElement(\"iframe\");"
+      "f.src=\"%s\"; "
+      "document.body.appendChild(f);",
+      b_url.spec().c_str());
+  TestNavigationObserver observer2(web_contents());
+  ASSERT_TRUE(ExecuteScript(child_data->current_frame_host(), script));
+  observer2.Wait();
+
+  ASSERT_EQ(1u, child_data->child_count());
+  FrameTreeNode* child_b = child_data->child_at(0u);
+  EXPECT_EQ("b.com", child_b->current_url().host());
+
+  // frame being navigated.
+  std::set<net::SchemefulSite> child_b_party_context =
+      child_b->current_frame_host()
+          ->ComputeIsolationInfoForNavigation(url)
+          .party_context()
+          .value();
+
+  EXPECT_EQ(1u, child_b_party_context.size());
+  for (net::SchemefulSite site : child_b_party_context) {
+    // check it's opaque instead of comparing the value of opaque site.
+    EXPECT_TRUE(site.opaque());
+  }
+
+  // frame subresource
+  net::SchemefulSite b_site(b_url);
+  std::set<net::SchemefulSite> child_b_subresource_party_context =
+      child_b->current_frame_host()
+          ->GetIsolationInfoForSubresources()
+          .party_context()
+          .value();
+
+  EXPECT_EQ(2u, child_b_subresource_party_context.size());
+  for (net::SchemefulSite site : child_b_subresource_party_context) {
+    if (!site.opaque()) {
+      EXPECT_EQ(b_site, site);
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ComputeIsolationInfoForNavigationPartyContextFileUrl) {
+  GURL file_url = GetFileURL(FILE_PATH_LITERAL("page_with_blank_iframe.html"));
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/");
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/");
+  EXPECT_TRUE(NavigateToURL(shell(), file_url));
+
+  RenderFrameHostImpl* main_frame = web_contents()->GetMainFrame();
+  EXPECT_EQ(file_url, main_frame->GetLastCommittedURL());
+
+  // file url -> a.com
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child_a = main_frame->child_at(0);
+  const auto script1 =
+      base::StringPrintf("window.location=\"%s\"; ", a_url.spec().c_str());
+  TestNavigationObserver observer1(web_contents());
+  ASSERT_TRUE(ExecuteScript(child_a->current_frame_host(), script1));
+  observer1.Wait();
+  EXPECT_EQ(a_url, child_a->current_url());
+  // frame subresource
+  std::set<net::SchemefulSite> expected_child_a_subresource_party_context{
+      net::SchemefulSite(a_url)};
+  EXPECT_EQ(expected_child_a_subresource_party_context,
+            child_a->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  std::set<net::SchemefulSite> expected_child_a_party_context;
+  EXPECT_EQ(expected_child_a_party_context,
+            child_a->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(file_url)
+                .party_context());
+
+  // file url -> a.com -> b.com
+  const auto script2 = base::StringPrintf(
+      "let f = document.createElement(\"iframe\");"
+      "f.src=\"%s\"; "
+      "document.body.appendChild(f);",
+      b_url.spec().c_str());
+  TestNavigationObserver observer2(web_contents());
+  ASSERT_TRUE(ExecuteScript(child_a->current_frame_host(), script2));
+  observer2.Wait();
+
+  ASSERT_EQ(1u, child_a->child_count());
+  FrameTreeNode* child_ab = child_a->child_at(0);
+  EXPECT_EQ(b_url, child_ab->current_url());
+
+  // frame subresource
+  std::set<net::SchemefulSite> expected_child_ab_subresource_party_context{
+      net::SchemefulSite(a_url), net::SchemefulSite(b_url)};
+  EXPECT_EQ(expected_child_ab_subresource_party_context,
+            child_ab->current_frame_host()
+                ->GetIsolationInfoForSubresources()
+                .party_context());
+  // frame being navigated
+  std::set<net::SchemefulSite> expected_child_ab_party_context{
+      net::SchemefulSite(a_url)};
+  EXPECT_EQ(expected_child_ab_party_context,
+            child_ab->current_frame_host()
+                ->ComputeIsolationInfoForNavigation(a_url)
+                .party_context());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

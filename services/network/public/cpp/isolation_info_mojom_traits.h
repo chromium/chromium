@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/isolation_info.mojom-shared.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
@@ -50,6 +51,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const net::SiteForCookies& site_for_cookies(
       const net::IsolationInfo& input) {
     return input.site_for_cookies();
+  }
+
+  static const base::Optional<std::set<net::SchemefulSite>> party_context(
+      const net::IsolationInfo& input) {
+    return input.party_context_;
   }
 
   static bool Read(network::mojom::IsolationInfoDataView data,

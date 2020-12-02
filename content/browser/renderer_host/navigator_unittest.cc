@@ -303,10 +303,10 @@ TEST_F(NavigatorTest, BeginNavigation) {
   EXPECT_EQ(kUrl2, subframe_request->common_params().url);
   EXPECT_EQ(kUrl2, subframe_loader->request_info()->common_params->url);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
-                                 url::Origin::Create(kUrl1),
-                                 url::Origin::Create(kUrl2),
-                                 net::SiteForCookies::FromUrl(kUrl1))
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kSubFrame,
+          url::Origin::Create(kUrl1), url::Origin::Create(kUrl2),
+          net::SiteForCookies::FromUrl(kUrl1), std::set<net::SchemefulSite>())
           .IsEqualForTesting(subframe_loader->request_info()->isolation_info));
 
   EXPECT_FALSE(subframe_loader->request_info()->is_main_frame);
@@ -344,10 +344,10 @@ TEST_F(NavigatorTest, BeginNavigation) {
   EXPECT_EQ(kUrl3, main_request->common_params().url);
   EXPECT_EQ(kUrl3, main_loader->request_info()->common_params->url);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
-                                 url::Origin::Create(kUrl3),
-                                 url::Origin::Create(kUrl3),
-                                 net::SiteForCookies::FromUrl(kUrl3))
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kMainFrame,
+          url::Origin::Create(kUrl3), url::Origin::Create(kUrl3),
+          net::SiteForCookies::FromUrl(kUrl3), std::set<net::SchemefulSite>())
           .IsEqualForTesting(main_loader->request_info()->isolation_info));
   EXPECT_TRUE(main_loader->request_info()->is_main_frame);
   EXPECT_FALSE(main_loader->request_info()->parent_is_main_frame);

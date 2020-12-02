@@ -131,11 +131,10 @@ class NET_EXPORT CookieOptions {
   bool return_excluded_cookies() const { return return_excluded_cookies_; }
 
   void set_full_party_context(
-      const base::Optional<std::set<net::SchemefulSite>>& full_party_context) {
+      const base::Optional<std::set<SchemefulSite>>& full_party_context) {
     full_party_context_ = full_party_context;
   }
-  const base::Optional<std::set<net::SchemefulSite>>& full_party_context()
-      const {
+  const base::Optional<std::set<SchemefulSite>>& full_party_context() const {
     return full_party_context_;
   }
 
@@ -152,7 +151,7 @@ class NET_EXPORT CookieOptions {
   SameSiteCookieContext same_site_cookie_context_;
   bool update_access_time_;
   bool return_excluded_cookies_ = false;
-  base::Optional<std::set<net::SchemefulSite>> full_party_context_;
+  base::Optional<std::set<SchemefulSite>> full_party_context_;
 };
 
 }  // namespace net
