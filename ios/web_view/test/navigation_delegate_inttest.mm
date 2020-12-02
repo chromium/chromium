@@ -83,6 +83,11 @@ TEST_F(NavigationDelegateTest, RequestFails) {
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetCloseSocketURL()));
   [(id)mock_delegate_ verify];
+
+  // Wait for the error text to be injected to make sure that the JavaScript has
+  // been correctly injected.
+  ASSERT_TRUE(ios_web_view::test::WaitForWebViewContainingTextOrTimeout(
+      web_view_, @"The network connection was lost."));
 }
 
 // Tests that a request is canceled and no further delegate methods are called
