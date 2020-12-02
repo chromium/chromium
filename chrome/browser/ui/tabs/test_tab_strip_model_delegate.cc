@@ -67,8 +67,9 @@ void TestTabStripModelDelegate::MoveTabsToNewWindow(
 void TestTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {}
 
-void TestTabStripModelDelegate::CreateHistoricalTab(
+base::Optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
+  return base::nullopt;
 }
 
 bool TestTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/site_instance.h"
@@ -37,7 +38,7 @@ namespace chrome {
 BrowserTabStripModelDelegate::BrowserTabStripModelDelegate(Browser* browser)
     : browser_(browser) {}
 
-BrowserTabStripModelDelegate::~BrowserTabStripModelDelegate() {}
+BrowserTabStripModelDelegate::~BrowserTabStripModelDelegate() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripModelDelegate, TabStripModelDelegate implementation:
@@ -141,22 +142,23 @@ void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
   chrome::MoveTabsToNewWindow(browser_, indices, group);
 }
 
-void BrowserTabStripModelDelegate::CreateHistoricalTab(
+base::Optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
   // We don't create historical tabs for incognito windows or windows without
   // profiles.
   if (!browser_->profile() || browser_->profile()->IsOffTheRecord())
-    return;
+    return base::nullopt;
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
 
   // We only create historical tab entries for tabbed browser windows.
   if (service && browser_->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
-    service->CreateHistoricalTab(
+    return service->CreateHistoricalTab(
         sessions::ContentLiveTab::GetForWebContents(contents),
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));
   }
+  return base::nullopt;
 }
 
 bool BrowserTabStripModelDelegate::RunUnloadListenerBeforeClosing(

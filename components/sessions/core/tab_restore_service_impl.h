@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -34,7 +35,8 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   // TabRestoreService:
   void AddObserver(TabRestoreServiceObserver* observer) override;
   void RemoveObserver(TabRestoreServiceObserver* observer) override;
-  void CreateHistoricalTab(LiveTab* live_tab, int index) override;
+  base::Optional<SessionID> CreateHistoricalTab(LiveTab* live_tab,
+                                                int index) override;
   void BrowserClosing(LiveTabContext* context) override;
   void BrowserClosed(LiveTabContext* context) override;
   void ClearEntries() override;

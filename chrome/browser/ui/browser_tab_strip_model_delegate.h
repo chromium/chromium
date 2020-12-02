@@ -42,7 +42,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override;
   void MoveTabsToNewWindow(const std::vector<int>& indices) override;
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override;
-  void CreateHistoricalTab(content::WebContents* contents) override;
+  base::Optional<SessionID> CreateHistoricalTab(
+      content::WebContents* contents) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;

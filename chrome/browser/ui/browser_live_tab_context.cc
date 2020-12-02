@@ -140,7 +140,8 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     bool pin,
     bool from_last_session,
     const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const SessionID* tab_id) {
   SessionStorageNamespace* storage_namespace =
       tab_platform_data
           ? static_cast<const sessions::ContentPlatformSpecificTabData*>(

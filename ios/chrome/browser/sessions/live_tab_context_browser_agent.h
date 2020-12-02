@@ -58,8 +58,8 @@ class LiveTabContextBrowserAgent
       bool pin,
       bool from_last_session,
       const sessions::PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override)
-      override;
+      const sessions::SerializedUserAgentOverride& user_agent_override,
+      const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
       base::Optional<tab_groups::TabGroupId> group,

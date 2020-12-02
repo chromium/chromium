@@ -61,6 +61,8 @@ class SESSIONS_EXPORT LiveTabContext {
   // Note: |tab_platform_data| may be null (e.g., if |from_last_session| is
   // true, as this data is not persisted, or if the platform does not provide
   // platform-specific data).
+  // |tab_id| is the tab's unique SessionID. Only present if a historical tab
+  // has been created by TabRestoreService.
   virtual LiveTab* AddRestoredTab(
       const std::vector<SerializedNavigationEntry>& navigations,
       int tab_index,
@@ -72,7 +74,8 @@ class SESSIONS_EXPORT LiveTabContext {
       bool pin,
       bool from_last_session,
       const PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override) = 0;
+      const sessions::SerializedUserAgentOverride& user_agent_override,
+      const SessionID* tab_id) = 0;
 
   // Note: |tab_platform_data| may be null (e.g., if |from_last_session| is
   // true, as this data is not persisted, or if the platform does not provide

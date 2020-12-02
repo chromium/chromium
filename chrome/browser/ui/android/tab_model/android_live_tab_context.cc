@@ -120,7 +120,8 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
     bool pin,
     bool from_last_session,
     const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const SessionID* tab_id) {
   Profile* profile = tab_model_->GetProfile();
 
   // Prepare navigation history.

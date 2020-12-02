@@ -27,6 +27,7 @@
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_constants.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/snapshotting_command_storage_manager.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -1223,8 +1224,10 @@ void TabRestoreServiceImpl::RemoveObserver(
   helper_.RemoveObserver(observer);
 }
 
-void TabRestoreServiceImpl::CreateHistoricalTab(LiveTab* live_tab, int index) {
-  helper_.CreateHistoricalTab(live_tab, index);
+base::Optional<SessionID> TabRestoreServiceImpl::CreateHistoricalTab(
+    LiveTab* live_tab,
+    int index) {
+  return helper_.CreateHistoricalTab(live_tab, index);
 }
 
 void TabRestoreServiceImpl::BrowserClosing(LiveTabContext* context) {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
@@ -115,8 +116,10 @@ class TabStripModelDelegate {
   virtual void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) = 0;
 
   // Creates an entry in the historical tab database for the specified
-  // WebContents.
-  virtual void CreateHistoricalTab(content::WebContents* contents) = 0;
+  // WebContents. Returns the tab's unique SessionID if a historical tab was
+  // created.
+  virtual base::Optional<SessionID> CreateHistoricalTab(
+      content::WebContents* contents) = 0;
 
   // Runs any unload listeners associated with the specified WebContents
   // before it is closed. If there are unload listeners that need to be run,

@@ -174,8 +174,10 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   virtual void RemoveObserver(TabRestoreServiceObserver* observer) = 0;
 
   // Creates a Tab to represent |live_tab| and notifies observers the list of
-  // entries has changed.
-  virtual void CreateHistoricalTab(LiveTab* live_tab, int index) = 0;
+  // entries has changed. If successful, returns the unique SessionID associated
+  // with the Tab.
+  virtual base::Optional<SessionID> CreateHistoricalTab(LiveTab* live_tab,
+                                                        int index) = 0;
 
   // TODO(blundell): Rename and fix comment.
   // Invoked when a browser is closing. If |context| is a tabbed browser with

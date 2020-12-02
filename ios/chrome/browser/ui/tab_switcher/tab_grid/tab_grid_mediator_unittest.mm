@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/mac/foundation_util.h"
+#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/sessions/core/live_tab.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_helper.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -65,7 +67,8 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
     NOTREACHED();
   }
 
-  void CreateHistoricalTab(sessions::LiveTab* live_tab, int index) override {
+  base::Optional<SessionID> CreateHistoricalTab(sessions::LiveTab* live_tab,
+                                                int index) override {
     auto tab = std::make_unique<Tab>();
     int entry_count =
         live_tab->IsInitialBlankNavigation() ? 0 : live_tab->GetEntryCount();
@@ -75,6 +78,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
       tab->navigations[i] = entry;
     }
     entries_.push_front(std::move(tab));
+    return base::nullopt;
   }
 
   void BrowserClosing(sessions::LiveTabContext* context) override {

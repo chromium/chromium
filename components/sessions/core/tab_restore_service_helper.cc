@@ -29,6 +29,7 @@
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -90,24 +91,27 @@ void TabRestoreServiceHelper::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-void TabRestoreServiceHelper::CreateHistoricalTab(LiveTab* live_tab,
-                                                  int index) {
+base::Optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
+    LiveTab* live_tab,
+    int index) {
   if (restoring_)
-    return;
+    return base::nullopt;
 
   // If an entire window is being closed than all of the tabs have already
   // been persisted via "BrowserClosing". Ignore the subsequent tab closing
   // notifications.
   LiveTabContext* context = client_->FindLiveTabContextForTab(live_tab);
   if (closing_contexts_.find(context) != closing_contexts_.end())
-    return;
+    return base::nullopt;
 
   auto local_tab = std::make_unique<Tab>();
   PopulateTab(local_tab.get(), index, context, live_tab);
   if (local_tab->navigations.empty())
-    return;
+    return base::nullopt;
 
+  SessionID id = local_tab->id;
   AddEntry(std::move(local_tab), true, true);
+  return id;
 }
 
 void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
@@ -349,7 +353,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
               tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
               static_cast<int>(tab_i) == window.selected_tab_index, tab.pinned,
               tab.from_last_session, tab.platform_data.get(),
-              tab.user_agent_override);
+              tab.user_agent_override, nullptr);
           if (restored_tab) {
             client_->OnTabRestored(
                 tab.navigations.at(tab.current_navigation_index).virtual_url());
@@ -665,8 +669,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
         tab.extension_app_id, tab.group,
         tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
         disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB, tab.pinned,
-        tab.from_last_session, tab.platform_data.get(),
-        tab.user_agent_override);
+        tab.from_last_session, tab.platform_data.get(), tab.user_agent_override,
+        &tab.id);
   }
   client_->OnTabRestored(
       tab.navigations.at(tab.current_navigation_index).virtual_url());
