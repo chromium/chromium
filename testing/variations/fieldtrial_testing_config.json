@@ -7365,6 +7365,8 @@
         {
             "platforms": [
                 "android",
+                "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -7372,8 +7374,27 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledOffThreadFinalization",
                     "enable_features": [
+                        "V8OffThreadFinalization"
+                    ],
+                    "disable_features": [
+                        "SmallScriptStreaming"
+                    ]
+                },
+                {
+                    "name": "EnabledSmallScripts",
+                    "enable_features": [
+                        "SmallScriptStreaming"
+                    ],
+                    "disable_features": [
+                        "V8OffThreadFinalization"
+                    ]
+                },
+                {
+                    "name": "EnabledOffThreadFinalizationAndSmallScripts",
+                    "enable_features": [
+                        "SmallScriptStreaming",
                         "V8OffThreadFinalization"
                     ]
                 }
