@@ -3075,6 +3075,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "isolation-by-default",
+    "owners": [ "mkwst", "clamy" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "kaleidoscope-ntp-module",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 92

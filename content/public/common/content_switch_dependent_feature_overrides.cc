@@ -87,6 +87,14 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnableExperimentalCookieFeatures,
        std::cref(net::features::kSchemefulSameSite),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+      // Overrides for --isolation-by-default.
+      {switches::kIsolationByDefault,
+       std::cref(features::kEmbeddingRequiresOptIn),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kIsolationByDefault,
+       std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides;
