@@ -32,14 +32,6 @@ const char WakeLock::kSupplementName[] = "WakeLock";
 
 // static
 WakeLock* WakeLock::wakeLock(NavigatorBase& navigator) {
-  ExecutionContext* context = navigator.GetExecutionContext();
-  if (!context ||
-      (!context->IsWindow() && !context->IsDedicatedWorkerGlobalScope())) {
-    // TODO(https://crbug.com/839117): Remove this check once the Exposed
-    // attribute is fixed to only expose this property in dedicated workers.
-    return nullptr;
-  }
-
   WakeLock* supplement = Supplement<NavigatorBase>::From<WakeLock>(navigator);
   if (!supplement && navigator.GetExecutionContext()) {
     supplement = MakeGarbageCollected<WakeLock>(navigator);

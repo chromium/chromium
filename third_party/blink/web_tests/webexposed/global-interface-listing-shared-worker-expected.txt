@@ -2825,13 +2825,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter permissions
 [Worker]     getter platform
 [Worker]     getter product
-[Worker]     getter serial
 [Worker]     getter storage
 [Worker]     getter storageBuckets
-[Worker]     getter usb
 [Worker]     getter userAgent
 [Worker]     getter userAgentData
-[Worker]     getter wakeLock
 [Worker]     method constructor
 [Worker] interface WritableStream
 [Worker]     attribute @@toStringTag

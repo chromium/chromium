@@ -95,22 +95,6 @@ UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
 const char USB::kSupplementName[] = "USB";
 
 USB* USB::usb(NavigatorBase& navigator) {
-  ExecutionContext* context = navigator.GetExecutionContext();
-  if (!context)
-    return nullptr;
-  if (!context->IsWindow() &&
-      (!context->IsDedicatedWorkerGlobalScope() ||
-       !RuntimeEnabledFeatures::WebUSBOnDedicatedWorkersEnabled())) {
-    // A bug in the WebIDL compiler causes this attribute to be incorrectly
-    // exposed in the other worker contexts if one of the RuntimeEnabled flags
-    // is enabled. Therefore, we will just return the empty usb_ member if the
-    // appropriate flag is not enabled for the current context, or if the
-    // current context is a ServiceWorkerGlobalScope.
-    // TODO(https://crbug.com/839117): Once this attribute stops being
-    // incorrectly exposed to the worker contexts, remove these checks.
-    return nullptr;
-  }
-
   USB* usb = Supplement<NavigatorBase>::From<USB>(navigator);
   if (!usb) {
     usb = MakeGarbageCollected<USB>(navigator);

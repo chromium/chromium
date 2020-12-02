@@ -2605,7 +2605,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter platform
 [Worker]     getter product
 [Worker]     getter storage
-[Worker]     getter usb
 [Worker]     getter userAgent
 [Worker]     method constructor
 [Worker] interface WritableStream

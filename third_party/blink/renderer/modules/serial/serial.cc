@@ -44,14 +44,6 @@ String TokenToString(const base::UnguessableToken& token) {
 const char Serial::kSupplementName[] = "Serial";
 
 Serial* Serial::serial(NavigatorBase& navigator) {
-  ExecutionContext* context = navigator.GetExecutionContext();
-  if (!context ||
-      (!context->IsWindow() && !context->IsDedicatedWorkerGlobalScope())) {
-    // TODO(https://crbug.com/839117): Remove this check once the Exposed
-    // attribute is fixed to only expose this property in dedicated workers.
-    return nullptr;
-  }
-
   Serial* serial = Supplement<NavigatorBase>::From<Serial>(navigator);
   if (!serial) {
     serial = MakeGarbageCollected<Serial>(navigator);

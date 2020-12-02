@@ -7,6 +7,7 @@
 // until System Wake Lock API was split from the Screen Wake Lock API.
 
 [
+  Exposed=DedicatedWorker,
   ImplementedAs=WakeLock,
   RuntimeEnabled=SystemWakeLock,
   SecureContext
