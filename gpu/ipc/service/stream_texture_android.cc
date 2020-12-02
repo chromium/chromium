@@ -76,9 +76,8 @@ void StreamTexture::RunCallback(
       weak_stream_texture->OnFrameAvailable();
   } else {
     task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&StreamTexture::RunCallback, std::move(task_runner),
-                       std::move(weak_stream_texture)));
+        FROM_HERE, base::BindOnce(&StreamTexture::RunCallback, task_runner,
+                                  std::move(weak_stream_texture)));
   }
 }
 
