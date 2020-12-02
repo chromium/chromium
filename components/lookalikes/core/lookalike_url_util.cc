@@ -317,9 +317,8 @@ bool IsCrossTLDMatch(const DomainInfo& embedded_target,
 }
 
 // Returns whether |embedded_target| is one of kDomainsPermittedInEndEmbeddings
-// and that |embedding_domain| ends with that domain (e.g. is of the form
-// "*-outlook.com" for each example.com in kDomainsPermittedInEndEmbeddings).
-// (e.g. will return true if |embedded_target| matches "evil-office.com"). Only
+// and that |embedding_domain| ends with that domain, e.g. "evil-office.com" is
+// permitted, as "office.com" is in kDomainsPermittedInEndEmbeddings.  Only
 // impacts Target Embedding matches.
 bool EndsWithPermittedDomains(const DomainInfo& embedded_target,
                               const std::string& embedding_domain) {
