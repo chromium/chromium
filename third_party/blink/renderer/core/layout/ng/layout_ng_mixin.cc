@@ -55,7 +55,11 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
     const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
     DCHECK(fragment);
     NGBoxFragmentPainter(*fragment).Paint(paint_info);
+    return;
   }
+
+  NOTREACHED();
+  Base::Paint(paint_info);
 }
 
 template <typename Base>
