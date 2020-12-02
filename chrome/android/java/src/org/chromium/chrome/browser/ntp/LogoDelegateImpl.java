@@ -133,6 +133,11 @@ public class LogoDelegateImpl implements LogoView.Delegate {
 
                 logoObserver.onLogoAvailable(logo, fromCache);
             }
+
+            @Override
+            public void onCachedLogoRevalidated() {
+                logoObserver.onCachedLogoRevalidated();
+            }
         };
 
         mLogoBridge.getCurrentLogo(wrapperCallback);
