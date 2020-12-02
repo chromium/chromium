@@ -1531,6 +1531,9 @@ void AutomationInternalCustomBindings::AddRoutes() {
             static_cast<ax::mojom::DefaultActionVerb>(
                 node->data().GetIntAttribute(
                     ax::mojom::IntAttribute::kDefaultActionVerb));
+        if (default_action_verb == ax::mojom::DefaultActionVerb::kNone)
+          return;
+
         const std::string& default_action_verb_str =
             ui::ToString(default_action_verb);
         result.Set(

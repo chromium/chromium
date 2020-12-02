@@ -28,10 +28,9 @@ const State = chrome.automation.StateType;
  */
 const isActionableOrHasActionableDescendant = function(
     node, sawClickAncestorAction = false) {
-  // DefaultActionVerb does not have value 'none' even though it gets set.
   // Static text nodes are never actionable for the purposes of navigation even
   // if they have default action verb set.
-  if (node.role !== Role.STATIC_TEXT && node.defaultActionVerb !== 'none' &&
+  if (node.role !== Role.STATIC_TEXT && node.defaultActionVerb &&
       (node.defaultActionVerb !==
            chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
        sawClickAncestorAction)) {
@@ -42,10 +41,9 @@ const isActionableOrHasActionableDescendant = function(
     return true;
   }
 
-  sawClickAncestorAction = sawClickAncestorAction ||
+  sawClickAncestorAction = sawClickAncestorAction || !node.defaultActionVerb ||
       node.defaultActionVerb ===
-          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
-      node.defaultActionVerb === 'none';
+          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR;
   for (let i = 0; i < node.children.length; i++) {
     if (isActionableOrHasActionableDescendant(
             node.children[i], sawClickAncestorAction)) {
@@ -62,9 +60,9 @@ const isActionableOrHasActionableDescendant = function(
  * @return {boolean}
  */
 const hasActionableDescendant = function(node) {
-  const sawClickAncestorAction = node.defaultActionVerb ===
-          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
-      node.defaultActionVerb === 'none';
+  const sawClickAncestorAction = !node.defaultActionVerb ||
+      node.defaultActionVerb ===
+          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR;
   for (let i = 0; i < node.children.length; i++) {
     if (isActionableOrHasActionableDescendant(
             node.children[i], sawClickAncestorAction)) {
