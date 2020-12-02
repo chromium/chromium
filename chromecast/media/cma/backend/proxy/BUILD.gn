@@ -3,9 +3,39 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
+import("//third_party/grpc/grpc_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# For .proto files with RPC definitions.
+# TODO(b/172295002): Move this and proto compilation to Openscreen.
+template("chromecast_media_grpc_library") {
+  grpc_library(target_name) {
+    proto_in_dir = "//"
+
+    # NOTE: For using built-in proto files like empty.proto.
+    import_dirs = [ "//third_party/protobuf/src" ]
+    use_protobuf_full = true
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+  }
+}
+
+chromecast_media_grpc_library("cast_audio_decoder_service_proto") {
+  # This rule cannot be built on android because it causes linker issues,
+  # as both `protobuf_lite` and `protobuf_full` are present.
+  assert(!is_android)
+
+  sources = [ "//third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.proto" ]
+}
 
 cast_source_set("proxy") {
   sources = [
+    "cast_runtime_audio_channel_broker.cc",
+    "cast_runtime_audio_channel_broker.h",
     "cma_backend_proxy.cc",
     "cma_backend_proxy.h",
     "multizone_audio_decoder_proxy.h",
@@ -14,6 +44,7 @@ cast_source_set("proxy") {
   ]
 
   deps = [
+    ":cast_audio_decoder_service_proto",
     "//base",
     "//chromecast/base",
     "//chromecast/media/api",
