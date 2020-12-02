@@ -1197,16 +1197,16 @@ CommandHandler.registerUndoDeleteToast = function(fileManager) {
    */
   const onDeleted = (e) => {
     if (e.reason === 'BEGIN' || e.reason === 'PROGRESS' ||
-        !e.trashedItems.length) {
+        !e.trashedEntries.length) {
       return;
     }
-    const message = e.trashedItems.length === 1 ?
-        strf('UNDO_DELETE_ONE', e.trashedItems[0].name) :
-        strf('UNDO_DELETE_SOME', e.trashedItems.length);
+    const message = e.trashedEntries.length === 1 ?
+        strf('UNDO_DELETE_ONE', e.trashedEntries[0].name) :
+        strf('UNDO_DELETE_SOME', e.trashedEntries.length);
     fileManager.ui.toast.show(message, {
       text: str('UNDO_DELETE_ACTION_LABEL'),
       callback: () => {
-        fileManager.fileOperationManager.restoreDeleted(e.trashedItems);
+        fileManager.fileOperationManager.restoreDeleted(e.trashedEntries);
       }
     });
   };

@@ -10,7 +10,7 @@
 // <include src="../../common/js/lru_cache.js">
 // <include src="../../common/js/progress_center_common.js">
 // <include src="../../common/js/importer_common.js">
-// <include src="../../common/js/trash_config.js">
+// <include src="../../common/js/trash.js">
 // <include src="metadata_proxy.js">
 // <include src="crostini.js">
 // <include src="device_handler.js">

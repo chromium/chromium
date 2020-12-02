@@ -33,7 +33,7 @@ js_type_check("closure_compile_module") {
     ":metrics_base",
     ":mock_entry",
     ":progress_center_common",
-    ":trash_config",
+    ":trash",
     ":util",
     "//ui/file_manager/base/js:volume_manager_types",
   ]
@@ -232,8 +232,16 @@ js_library("mock_entry.m") {
 js_library("progress_center_common") {
 }
 
-js_library("trash_config") {
-  deps = [ "//ui/file_manager/base/js:volume_manager_types" ]
+js_library("trash") {
+  deps = [
+    "//ui/file_manager/base/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+  ]
+  externs_list = [
+    "//ui/file_manager/externs/files_app_entry_interfaces.js",
+    "//ui/file_manager/externs/volume_info.js",
+    "//ui/file_manager/externs/volume_manager.js",
+  ]
 }
 
 js_library("unittest_util") {

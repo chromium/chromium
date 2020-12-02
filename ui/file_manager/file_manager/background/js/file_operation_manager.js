@@ -413,7 +413,7 @@ class FileOperationManagerImpl {
           totalBytes: 0,
           processedBytes: 0,
           cancelRequested: false,
-          trashedItems: [],
+          trashedEntries: [],
         }));
 
     // Obtains entry size and sum them up.
@@ -494,9 +494,9 @@ class FileOperationManagerImpl {
           .removeFileOrDirectory(
               assert(this.volumeManager_), task.entries[0],
               /*permanentlyDelete=*/ false)
-          .then(trashItem => {
-            if (trashItem) {
-              task.trashedItems.push(trashItem);
+          .then(trashEntry => {
+            if (trashEntry) {
+              task.trashedEntries.push(trashEntry);
             }
             this.eventRouter_.sendEntryChangedEvent(
                 util.EntryChangedKind.DELETED, task.entries[0]);
@@ -531,15 +531,15 @@ class FileOperationManagerImpl {
   /**
    * Restores files from trash.
    *
-   * @param {Array<!fileOperationUtil.TrashItem>} trashItems The trash items.
+   * @param {Array<!fileOperationUtil.TrashEntry>} trashEntries The trash items.
    */
-  restoreDeleted(trashItems) {
+  restoreDeleted(trashEntries) {
     const volumeManager = assert(this.volumeManager_);
-    while (trashItems.length) {
+    while (trashEntries.length) {
       this.trash_
           .restore(
               volumeManager,
-              /** @type {!TrashItem} */ (trashItems.pop()))
+              /** @type {!TrashEntry} */ (trashEntries.pop()))
           .catch(e => console.error('Error restoring deleted file', e));
     }
   }

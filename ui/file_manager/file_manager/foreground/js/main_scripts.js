@@ -87,7 +87,7 @@
 // <include src="../../common/js/util.js">
 // <include src="../../common/js/progress_center_common.js">
 // <include src="../../common/js/importer_common.js">
-// <include src="../../common/js/trash_config.js">
+// <include src="../../common/js/trash.js">
 //
 // <include src="constants.js">
 // <include src="crossover_search_utils.js">
@@ -160,7 +160,6 @@
 // <include src="toolbar_controller.js">
 // <include src="thumbnail_loader.js">
 // <include src="list_thumbnail_loader.js">
-// <include src="trash.js">
 // <include src="providers_model.js">
 // <include src="ui/actions_submenu.js">
 // <include src="ui/banners.js">

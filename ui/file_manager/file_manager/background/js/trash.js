@@ -8,25 +8,6 @@
  */
 
 /**
- * Result from calling Trash.removeFileOrDirectory().
- */
-class TrashItem {
-  /**
-   * @param {string} name Name of the file deleted.
-   * @param {!Entry} filesEntry Trash files entry.
-   * @param {!FileEntry} infoEntry Trash info entry.
-   * @param {string=} pathPrefix Optional prefix for 'Path=' in *.trashinfo. For
-   *     crostini, this is the user's homedir (/home/<username>).
-   */
-  constructor(name, filesEntry, infoEntry, pathPrefix = '') {
-    this.name = name;
-    this.filesEntry = filesEntry;
-    this.infoEntry = infoEntry;
-    this.pathPrefix = pathPrefix;
-  }
-}
-
-/**
  * Implementation of trash.
  */
 class Trash {
@@ -86,8 +67,8 @@ class Trash {
    * @param {!Entry} entry The entry to remove.
    * @param {boolean} permanentlyDelete If true, entry is deleted, else it is
    *     moved to trash.
-   * @return {!Promise<!TrashItem|undefined>} Promise which resolves when entry
-   *     is removed, rejects with DOMError.
+   * @return {!Promise<!TrashEntry|undefined>} Promise which resolves when entry
+   *     is removed, rejects with Error.
    */
   removeFileOrDirectory(volumeManager, entry, permanentlyDelete) {
     if (!permanentlyDelete) {
@@ -157,10 +138,11 @@ class Trash {
    * @param {!DirectoryEntry} trashInfoDir /.Trash/info directory.
    * @param {string} trashInfoName name of the *.trashinfo file.
    * @param {string} path path to use in *.trashinfo file.
+   * @param {!Date} deletionDate deletion date to use in *.trashinfo file.
    * @return {!Promise<!FileEntry>}
    * @private
    */
-  async writeTrashInfoFile_(trashInfoDir, trashInfoName, path) {
+  async writeTrashInfoFile_(trashInfoDir, trashInfoName, path, deletionDate) {
     return new Promise((resolve, reject) => {
       trashInfoDir.getFile(trashInfoName, {create: true}, infoFile => {
         infoFile.createWriter(writer => {
@@ -169,7 +151,7 @@ class Trash {
           };
           writer.onerror = reject;
           const info = `[Trash Info]\nPath=${path}\nDeletionDate=${
-              new Date().toISOString()}`;
+              deletionDate.toISOString()}`;
           writer.write(new Blob([info], {type: 'text/plain'}));
         }, reject);
       }, reject);
@@ -197,7 +179,7 @@ class Trash {
    *
    * @param {!Entry} entry The entry to remove.
    * @param {!TrashConfig} config trash config for entry.
-   * @return {!Promise<!TrashItem>}
+   * @return {!Promise<!TrashEntry>}
    * @private
    */
   async trashFileOrDirectory_(entry, config) {
@@ -213,40 +195,41 @@ class Trash {
     if (inProgress) {
       inProgress.add(trashInfoName);
     }
+    const path = config.pathPrefix + entry.fullPath;
+    const deletionDate = new Date();
     const infoEntry = await this.writeTrashInfoFile_(
-        trashDirs.info, trashInfoName, config.pathPrefix + entry.fullPath);
+        trashDirs.info, trashInfoName, path, deletionDate);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
-    return new TrashItem(entry.name, filesEntry, infoEntry, config.pathPrefix);
+    return new TrashEntry(
+        entry.name, deletionDate, filesEntry, infoEntry, config.pathPrefix);
   }
 
   /**
    * Restores the specified trash item.
    *
    * @param {!VolumeManager} volumeManager
-   * @param {!TrashItem} trashItem item in trash.
+   * @param {!TrashEntry} trashEntry entry in trash.
    * @return {Promise<void>} Promise which resolves when file is restored.
    */
-  async restore(volumeManager, trashItem) {
+  async restore(volumeManager, trashEntry) {
     // Read Path from info entry.
     const file = await new Promise(
-        (resolve, reject) => trashItem.infoEntry.file(resolve, reject));
+        (resolve, reject) => trashEntry.infoEntry.file(resolve, reject));
     const text = await file.text();
-    const found = text.match(/^Path=(.*)/m);
-    if (!found) {
-      throw new DOMException(`No Path found to restore in ${
-          trashItem.infoEntry.fullPath}, text=${text}`);
+    const path = TrashEntry.parsePath(text);
+    if (!path) {
+      throw new Error(`No Path found to restore in ${
+          trashEntry.infoEntry.fullPath}, text=${text}`);
+    } else if (!path.startsWith(trashEntry.pathPrefix)) {
+      throw new Error(`Path does not match expected prefix in ${
+          trashEntry.infoEntry.fullPath}, prefix=${
+          trashEntry.pathPrefix}, text=${text}`);
     }
-    const path = found[1];
-    if (!path.startsWith(trashItem.pathPrefix)) {
-      throw new DOMException(`Path does not match expected prefix in ${
-          trashItem.infoEntry.fullPath}, prefix=${trashItem.pathPrefix}, text=${
-          text}`);
-    }
-    const pathNoLeadingSlash = path.substring(trashItem.pathPrefix.length + 1);
+    const pathNoLeadingSlash = path.substring(trashEntry.pathPrefix.length + 1);
     const parts = pathNoLeadingSlash.split('/');
 
     // Move to last directory in path, making sure dirs are created if needed.
-    let dir = trashItem.filesEntry.filesystem.root;
+    let dir = trashEntry.filesEntry.filesystem.root;
     for (let i = 0; i < parts.length - 1; i++) {
       dir = await TrashDirs.getDirectory(dir, parts[i]);
     }
@@ -257,8 +240,8 @@ class Trash {
     // when we remove old items.
     const name =
         await fileOperationUtil.deduplicatePath(dir, parts[parts.length - 1]);
-    await this.moveTo_(trashItem.filesEntry, dir, name);
-    await this.permanentlyDeleteFileOrDirectory_(trashItem.infoEntry);
+    await this.moveTo_(trashEntry.filesEntry, dir, name);
+    await this.permanentlyDeleteFileOrDirectory_(trashEntry.infoEntry);
   }
 
   /**

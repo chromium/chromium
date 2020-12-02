@@ -1252,7 +1252,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
  *  infoEntry: !FileEntry
  * }}
  */
-fileOperationUtil.TrashItem;
+fileOperationUtil.TrashEntry;
 
 /**
  * @typedef {{
@@ -1262,7 +1262,7 @@ fileOperationUtil.TrashItem;
  *  totalBytes: number,
  *  processedBytes: number,
  *  cancelRequested: boolean,
- *  trashedItems: Array<!fileOperationUtil.TrashItem>,
+ *  trashedEntries: Array<!fileOperationUtil.TrashEntry>,
  * }}
  */
 fileOperationUtil.DeleteTask;
@@ -1389,7 +1389,7 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
     event.entries = task.entries;
     event.totalBytes = task.totalBytes;
     event.processedBytes = task.processedBytes;
-    event.trashedItems = task.trashedItems;
+    event.trashedEntries = task.trashedEntries;
     this.dispatchEvent(event);
   }
 };

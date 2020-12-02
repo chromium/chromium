@@ -69,9 +69,9 @@ class FileOperationManager extends EventTarget {
    * Restores files from trash.
    *
    * @param {Array<!{name: string, filesEntry: !Entry, infoEntry: !FileEntry}>}
-   *     trashItems The trash items.
+   *     trashEntries The trash entries.
    */
-  restoreDeleted(trashItems) {}
+  restoreDeleted(trashEntries) {}
 
   /**
    * Creates a zip file for the selection of files.

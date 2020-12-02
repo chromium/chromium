@@ -651,7 +651,7 @@ js_library("trash") {
     ":file_operation_util",
     "//ui/file_manager/base/js:volume_manager_types",
     "//ui/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/common/js:trash_config",
+    "//ui/file_manager/file_manager/common/js:trash",
   ]
 }
 

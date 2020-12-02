@@ -20,4 +20,4 @@ fileOperationUtil.EventRouter.EventType = {};
  *  infoEntry: !FileEntry
  * }}
  */
-fileOperationUtil.TrashItem;
+fileOperationUtil.TrashEntry;

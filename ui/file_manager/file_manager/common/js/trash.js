@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Trash UI entry types based on
+ * @fileoverview Trash implementation is based on
  * https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html.
  *
  * When you move /dir/hello.txt to trash, you get:
@@ -20,48 +20,132 @@
  */
 
 /**
- * Used to control the display of items in Trash. Combines the info from both
- * .Trash/info and ./Trash/files.
+ * Configuration for where Trash is stored in a volume.
+ */
+class TrashConfig {
+  /**
+   * @param {VolumeManagerCommon.VolumeType} volumeType
+   * @param {string} topDir Top directory of volume. Must end with a slash to
+   *     make comparisons simpler.
+   * @param {string} trashDir Trash directory. Must end with a slash to make
+   *     comparisons simpler.
+   * @param {boolean=} prefixPathWithRemoteMount Optional, if true, 'Path=' in
+   *     *.trashinfo is prefixed with the volume.remoteMountPath. For crostini,
+   *     this is the user's homedir (/home/<username>).
+   */
+  constructor(volumeType, topDir, trashDir, prefixPathWithRemoteMount = false) {
+    this.id = `${volumeType}-${topDir}`;
+    this.volumeType = volumeType;
+    this.topDir = topDir;
+    this.trashDir = trashDir;
+    this.prefixPathWithRemoteMount = prefixPathWithRemoteMount;
+    this.pathPrefix = '';
+  }
+}
+
+/**
+ * Volumes supported for Trash, and location of Trash dir. Items will be
+ * searched in order.
+ *
+ * @type {!Array<!TrashConfig>}
+ */
+TrashConfig.CONFIG = [
+  // MyFiles/Downloads is a separate volume on a physical device, and doing a
+  // move from MyFiles/Downloads/<path> to MyFiles/.Trash actually does a
+  // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.
+  new TrashConfig(
+      VolumeManagerCommon.VolumeType.DOWNLOADS, '/Downloads/',
+      '/Downloads/.Trash/'),
+  new TrashConfig(VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/'),
+  new TrashConfig(
+      VolumeManagerCommon.VolumeType.CROSTINI, '/', '/.local/share/Trash/',
+      /*prefixPathWithRemoteMount=*/ true),
+];
+
+/**
+ * Wrapper for /.Trash/files and /.Trash/info directories.
+ */
+class TrashDirs {
+  /**
+   * @param {!DirectoryEntry} files /.Trash/files directory entry.
+   * @param {!DirectoryEntry} info /.Trash/info directory entry.
+   */
+  constructor(files, info) {
+    this.files = files;
+    this.info = info;
+  }
+
+  /**
+   * Promise wrapper for FileSystemDirectoryEntry.getDirectory(). Creates dir if
+   * it does not exist.
+   *
+   * @param {!DirectoryEntry} dirEntry current directory.
+   * @param {string} path name of directory within dirEntry.
+   * @return {!Promise<!DirectoryEntry>} Promise which resolves with
+   *     <dirEntry>/<path>.
+   */
+  static getDirectory(dirEntry, path) {
+    return new Promise((resolve, reject) => {
+      dirEntry.getDirectory(path, {create: true}, resolve, reject);
+    });
+  }
+
+  /**
+   * Get trash dirs from file system as specified in config.
+   *
+   * @param {!FileSystem} fileSystem File system from volume with trash.
+   * @param {!TrashConfig} config Config specifying trash dir location.
+   * @return {!Promise<!TrashDirs>} Promise which resolves with trash dirs.
+   */
+  static async getTrashDirs(fileSystem, config) {
+    let trashRoot = fileSystem.root;
+    const parts = config.trashDir.split('/');
+    for (const part of parts) {
+      if (part) {
+        trashRoot = await TrashDirs.getDirectory(trashRoot, part);
+      }
+    }
+    const trashFiles = await TrashDirs.getDirectory(trashRoot, 'files');
+    const trashInfo = await TrashDirs.getDirectory(trashRoot, 'info');
+    return new TrashDirs(trashFiles, trashInfo);
+  }
+}
+
+/**
+ * Represents a file moved to trash. Combines the info from both .Trash/info and
+ * ./Trash/files.
  *
  * @implements {FilesAppEntry}
  */
 class TrashEntry {
   /**
-   * @param {string} path Path of deleted file from infoEntry.
+   * @param {string} name Name of the file deleted.
    * @param {!Date} deletionDate DeletionDate of deleted file from infoEntry.
-   * @param {!FileEntry} infoEntry trash info entry.
    * @param {!Entry} filesEntry trash files entry.
-   * @param {string} rootLabel Root label to prefix display name.
+   * @param {!FileEntry} infoEntry trash info entry.
+   * @param {string=} pathPrefix Optional prefix for 'Path=' in *.trashinfo. For
+   *     crostini, this is the user's homedir (/home/<username>).
    */
-  constructor(path, deletionDate, infoEntry, filesEntry, rootLabel) {
+  constructor(name, deletionDate, filesEntry, infoEntry, pathPrefix = '') {
+    this.name = name;
+    this.filesEntry = filesEntry;
+    this.infoEntry = infoEntry;
+    this.pathPrefix = pathPrefix;
+
     /** @private */
     this.deletionDate_ = deletionDate;
-
-    /** @private */
-    this.infoEntry_ = infoEntry;
-
-    /** @private */
-    this.filesEntry_ = filesEntry;
 
     /** @override Entry */
     this.filesystem = filesEntry.filesystem;
 
     /** @override Entry */
-    this.fullPath = path;
+    this.fullPath = filesEntry.fullPath;
 
     /** @override Entry */
     this.isDirectory = filesEntry.isDirectory;
 
     /** @override Entry  */
     this.isFile = filesEntry.isFile;
-
-    /**
-     * Show the root label and the whole Path=<path> from infoEntry as the name.
-     * This allows users to differentiate deleted files such as /a/hello.txt and
-     * /b/hello.txt.
-     * @override Entry
-     */
-    this.name = rootLabel + path.replace(/\//g, ' › ');
 
     /** @override FileEntry */
     this.file = filesEntry.file;
@@ -75,7 +159,7 @@ class TrashEntry {
 
   /** @override Entry */
   toURL() {
-    return 'trash://' + this.infoEntry_.toURL();
+    return 'trash://' + this.infoEntry.toURL();
   }
 
   /**
@@ -85,7 +169,7 @@ class TrashEntry {
    * @override Entry
    */
   getMetadata(success, error) {
-    this.filesEntry_.getMetadata(m => {
+    this.filesEntry.getMetadata(m => {
       success({modificationTime: this.deletionDate_, size: m.size});
     }, error);
   }
@@ -104,7 +188,34 @@ class TrashEntry {
   getNativeEntry() {
     return null;
   }
+
+  /**
+   * Parse Path from info entry text, or null if parse fails.
+   * @param {string} text text of info entry.
+   * @return {?string} path or null if parse fails.
+   */
+  static parsePath(text) {
+    const found = text.match(/^Path=(.*)/m);
+    return found ? found[1] : null;
+  }
+
+  /**
+   * Parse DeletionDate from info entry text, or null if parse fails.
+   * @param {string} text text of info entry.
+   * @return {?Date} deletion date or null if parse fails.
+   */
+  static parseDeletionDate(text) {
+    const found = text.match(/^DeletionDate=(.*)/m);
+    if (found) {
+      const n = Date.parse(found[1]);
+      if (!Number.isNaN(n)) {
+        return new Date(n);
+      }
+    }
+    return null;
+  }
 }
+
 /**
  * Reads all entries in each of .Trash/info and .Trash/files and produces a
  * single stream of TrashEntry.
@@ -157,9 +268,9 @@ class TrashDirectoryReader {
       return error('Ignoring unexpected trash info file');
     }
 
-    const name = infoEntry.name.substring(0, infoEntry.name.length - 10);
-    const filesEntry = this.filesEntries_[name];
-    delete this.filesEntries_[name];
+    const fileName = infoEntry.name.substring(0, infoEntry.name.length - 10);
+    const filesEntry = this.filesEntries_[fileName];
+    delete this.filesEntries_[fileName];
 
     // Ignore any .trashinfo file with no matching file entry.
     if (!filesEntry) {
@@ -169,24 +280,21 @@ class TrashDirectoryReader {
     const file =
         await new Promise((resolve, reject) => infoEntry.file(resolve, reject));
     const text = await file.text();
-    let found = text.match(/^Path=(.*)/m);
-    if (!found) {
+    const path = TrashEntry.parsePath(text);
+    if (!path) {
       return error('Ignoring trash info file with no Path', text);
     }
-    const path = found[1];
 
-    found = text.match(/^DeletionDate=(.*)/m);
-    if (!found) {
-      return error('Ignoring trash info file with no DeletionDate', text);
-    }
-
-    const d = Date.parse(found[1]);
-    if (!found) {
+    const deletionDate = TrashEntry.parseDeletionDate(text);
+    if (!deletionDate) {
       return error('Ignoring trash info file with invalid DeletionDate', text);
     }
 
-    return new TrashEntry(
-        path, new Date(d), infoEntry, filesEntry, this.rootLabel_);
+    // Show the root label and the whole Path=<path> from infoEntry as the name.
+    // This allows users to differentiate deleted files such as /a/hello.txt and
+    // /b/hello.txt.
+    const trashName = this.rootLabel_ + path.replace(/\//g, ' › ');
+    return new TrashEntry(trashName, deletionDate, filesEntry, infoEntry);
   }
 
   /**
