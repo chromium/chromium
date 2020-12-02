@@ -608,7 +608,7 @@ const base::Feature kSmartDimNewMlAgent{"SmartDimNewMlAgent",
 // Uses the V3 (~2019-05 era) Smart Dim model instead of the default V2
 // (~2018-11) model.
 const base::Feature kSmartDimModelV3{"SmartDimModelV3",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // This feature:
 // - Creates a new "Sync your settings" section in Chrome OS settings
