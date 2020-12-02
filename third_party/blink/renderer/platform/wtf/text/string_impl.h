@@ -644,6 +644,8 @@ inline bool EqualIgnoringASCIICase(const CharacterTypeA* a,
 }
 
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
+                                                const StringImpl*);
+WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
                                                 const LChar*);
 
 inline wtf_size_t Find(const LChar* characters,

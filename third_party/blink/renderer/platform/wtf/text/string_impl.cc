@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -1684,15 +1685,14 @@ int CodeUnitCompareIgnoringASCIICase(wtf_size_t l1,
   return (l1 > l2) ? 1 : -1;
 }
 
+template <typename CharacterType>
 int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
-                                     const LChar* string2) {
-  wtf_size_t length1 = string1 ? string1->length() : 0;
-  wtf_size_t length2 = SafeCast<wtf_size_t>(
-      string2 ? strlen(reinterpret_cast<const char*>(string2)) : 0);
-
+                                     const CharacterType* string2,
+                                     wtf_size_t length2) {
   if (!string1)
     return length2 > 0 ? -1 : 0;
 
+  wtf_size_t length1 = string1->length();
   if (!string2)
     return length1 > 0 ? 1 : 0;
 
@@ -1702,6 +1702,23 @@ int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
   }
   return CodeUnitCompareIgnoringASCIICase(length1, length2,
                                           string1->Characters16(), string2);
+}
+
+int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
+                                     const LChar* string2) {
+  return CodeUnitCompareIgnoringASCIICase(
+      string1, string2,
+      string2 ? strlen(reinterpret_cast<const char*>(string2)) : 0);
+}
+
+int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
+                                     const StringImpl* string2) {
+  if (!string2)
+    return string1 && string1->length() > 0 ? 1 : 0;
+  return VisitCharacters(
+      *string2, [string1](const auto* chars, wtf_size_t length) {
+        return CodeUnitCompareIgnoringASCIICase(string1, chars, length);
+      });
 }
 
 }  // namespace WTF
