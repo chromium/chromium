@@ -16,21 +16,18 @@ namespace arc {
 namespace keymaster {
 
 CertStoreBridge::CertStoreBridge(content::BrowserContext* context)
-    : context_(context), weak_ptr_factory_(this) {
+    : weak_ptr_factory_(this) {
   VLOG(2) << "CertStoreBridge::CertStoreBridge";
 }
 
 CertStoreBridge::~CertStoreBridge() {
   VLOG(2) << "CertStoreBridge::~CertStoreBridge";
-  security_token_operation_.reset();
 }
 
 void CertStoreBridge::GetSecurityTokenOperation(
     mojo::PendingReceiver<mojom::SecurityTokenOperation> operation_receiver,
     GetSecurityTokenOperationCallback callback) {
   VLOG(2) << "CertStoreBridge::GetSecurityTokenOperation";
-  security_token_operation_ = std::make_unique<SecurityTokenOperationBridge>(
-      context_, std::move(operation_receiver));
   std::move(callback).Run();
 }
 

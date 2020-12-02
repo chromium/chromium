@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/enterprise/cert_store/arc_smart_card_manager_bridge.h"
+#include "chrome/browser/chromeos/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -205,12 +205,12 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   filtered_policies->SetKey(kArcCaCerts, std::move(ca_certs));
 }
 
-void AddRequiredKeyPairs(const ArcSmartCardManagerBridge* smart_card_manager,
+void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
                          base::Value* filtered_policies) {
-  if (!smart_card_manager)
+  if (!cert_store_service)
     return;
   base::Value cert_names(base::Value::Type::LIST);
-  for (const auto& name : smart_card_manager->get_required_cert_names()) {
+  for (const auto& name : cert_store_service->get_required_cert_names()) {
     base::Value value(base::Value::Type::DICTIONARY);
     value.SetStringKey("alias", name);
     cert_names.Append(std::move(value));
@@ -218,12 +218,11 @@ void AddRequiredKeyPairs(const ArcSmartCardManagerBridge* smart_card_manager,
   filtered_policies->SetKey(kArcRequiredKeyPairs, std::move(cert_names));
 }
 
-std::string GetFilteredJSONPolicies(
-    const policy::PolicyMap& policy_map,
-    const std::string& guid,
-    bool is_affiliated,
-    const ArcSmartCardManagerBridge* smart_card_manager,
-    const Profile* profile) {
+std::string GetFilteredJSONPolicies(const policy::PolicyMap& policy_map,
+                                    const std::string& guid,
+                                    bool is_affiliated,
+                                    const CertStoreService* cert_store_service,
+                                    const Profile* profile) {
   base::Value filtered_policies(base::Value::Type::DICTIONARY);
   // Parse ArcPolicy as JSON string before adding other policies to the
   // dictionary.
@@ -311,7 +310,7 @@ std::string GetFilteredJSONPolicies(
 
   filtered_policies.SetStringKey("guid", guid);
 
-  AddRequiredKeyPairs(smart_card_manager, &filtered_policies);
+  AddRequiredKeyPairs(cert_store_service, &filtered_policies);
 
   std::string policy_json;
   JSONStringValueSerializer serializer(&policy_json);
@@ -572,11 +571,11 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
   const Profile* const profile = Profile::FromBrowserContext(context_);
   const user_manager::User* const user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  const ArcSmartCardManagerBridge* smart_card_manager =
-      ArcSmartCardManagerBridge::GetForBrowserContext(context_);
+  const CertStoreService* cert_store_service =
+      CertStoreService::GetForBrowserContext(context_);
 
   return GetFilteredJSONPolicies(policy_map, instance_guid_,
-                                 user->IsAffiliated(), smart_card_manager,
+                                 user->IsAffiliated(), cert_store_service,
                                  profile);
 }
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/enterprise/cert_store/security_token_operation_bridge.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,12 +45,8 @@ class CertStoreBridge : public mojom::CertStoreHost {
       std::unique_ptr<mojo::Receiver<mojom::CertStoreHost>> receiver);
   void OnConnectionClosed();
 
-  content::BrowserContext* context_;  // not owned.
-
   // Points to a proxy bound to the implementation in arc-keymasterd.
   mojo::Remote<keymaster::mojom::CertStoreInstance> cert_store_proxy_;
-
-  std::unique_ptr<SecurityTokenOperationBridge> security_token_operation_;
 
   std::unique_ptr<mojo::Receiver<mojom::CertStoreHost>> receiver_;
 

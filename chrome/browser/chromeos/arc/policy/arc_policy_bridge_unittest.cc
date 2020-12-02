@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/enterprise/cert_store/arc_smart_card_manager_bridge.h"
+#include "chrome/browser/chromeos/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -211,7 +211,7 @@ class ArcPolicyBridgeTestBase {
     profile_ = testing_profile_manager_->CreateTestingProfile(kTestUserEmail);
     ASSERT_TRUE(profile_);
 
-    smart_card_manager_ = GetArcSmartCardManager();
+    cert_store_service_ = GetCertStoreService();
 
     // TODO(hidehiko): Use Singleton instance tied to BrowserContext.
     policy_bridge_ = std::make_unique<ArcPolicyBridge>(
@@ -271,13 +271,12 @@ class ArcPolicyBridgeTestBase {
     }
   }
 
-  // Specifies a testing factory for ArcSmartCardManagerBridge and returns
-  // instance.
+  // Specifies a testing factory for CertStoreService and returns instance.
   // Returns nullptr by default.
-  // Override if the test wants to use a real smart card manager.
-  virtual ArcSmartCardManagerBridge* GetArcSmartCardManager() {
-    return static_cast<ArcSmartCardManagerBridge*>(
-        ArcSmartCardManagerBridge::GetFactory()->SetTestingFactoryAndUse(
+  // Override if the test wants to use a real cert store service.
+  virtual CertStoreService* GetCertStoreService() {
+    return static_cast<CertStoreService*>(
+        CertStoreService::GetFactory()->SetTestingFactoryAndUse(
             profile(),
             base::BindRepeating(
                 [](content::BrowserContext* profile)
@@ -291,9 +290,7 @@ class ArcPolicyBridgeTestBase {
   base::RunLoop& run_loop() { return run_loop_; }
   TestingProfile* profile() { return profile_; }
   ArcBridgeService* bridge_service() { return bridge_service_.get(); }
-  ArcSmartCardManagerBridge* smart_card_manager() {
-    return smart_card_manager_;
-  }
+  CertStoreService* cert_store_service() { return cert_store_service_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -303,7 +300,7 @@ class ArcPolicyBridgeTestBase {
   base::RunLoop run_loop_;
   TestingProfile* profile_;
   std::unique_ptr<ArcBridgeService> bridge_service_;
-  ArcSmartCardManagerBridge* smart_card_manager_;  // Not owned.
+  CertStoreService* cert_store_service_;  // Not owned.
 
   std::unique_ptr<ArcPolicyBridge> policy_bridge_;
   std::string instance_guid_;
@@ -341,17 +338,14 @@ class ArcPolicyBridgeAffiliatedTest : public ArcPolicyBridgeTestBase,
 // Tests required key pair policy.
 class ArcPolicyBridgeRequiredKeyPairTest : public ArcPolicyBridgeTest {
  protected:
-  ArcSmartCardManagerBridge* GetArcSmartCardManager() override {
-    return static_cast<ArcSmartCardManagerBridge*>(
-        ArcSmartCardManagerBridge::GetFactory()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(
-                           [](ArcBridgeService* bridge_service,
-                              content::BrowserContext* profile)
-                               -> std::unique_ptr<KeyedService> {
-                             return std::make_unique<ArcSmartCardManagerBridge>(
-                                 profile, bridge_service, nullptr, nullptr);
-                           },
-                           bridge_service())));
+  CertStoreService* GetCertStoreService() override {
+    return static_cast<CertStoreService*>(
+        CertStoreService::GetFactory()->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* profile)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<CertStoreService>(nullptr);
+            })));
   }
 };
 
@@ -687,13 +681,13 @@ INSTANTIATE_TEST_SUITE_P(ArcPolicyBridgeAffiliatedTestInstance,
                          ArcPolicyBridgeAffiliatedTest,
                          testing::Bool());
 
-// Tests that if smart card manager is non-null, the required key pair policy is
+// Tests that if cert store service is non-null, the required key pair policy is
 // set to the required certificate list.
 TEST_F(ArcPolicyBridgeRequiredKeyPairTest, RequiredKeyPairsBasicTest) {
-  EXPECT_TRUE(smart_card_manager());
+  EXPECT_TRUE(cert_store_service());
 
   // One certificate is required to be installed.
-  smart_card_manager()->set_required_cert_names_for_testing(
+  cert_store_service()->set_required_cert_names_for_testing(
       std::vector<std::string>({kFakeCertName}));
   GetPoliciesAndVerifyResult("{\"guid\":\"" + instance_guid() + "\"," +
                              base::StringPrintf(kRequiredKeyPairFormat,
@@ -702,7 +696,7 @@ TEST_F(ArcPolicyBridgeRequiredKeyPairTest, RequiredKeyPairsBasicTest) {
                              "}");
 
   // An empty list is required to be installed.
-  smart_card_manager()->set_required_cert_names_for_testing(
+  cert_store_service()->set_required_cert_names_for_testing(
       std::vector<std::string>());
   GetPoliciesAndVerifyResult(
       "{\"guid\":\"" + instance_guid() + "\"," +

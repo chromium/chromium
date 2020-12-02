@@ -138,11 +138,14 @@ std::string ArcCertInstaller::InstallArcCert(
   command_proto.set_payload(
       base::StringPrintf("{\"type\":\"INSTALL_KEY_PAIR\","
                          "\"payload\":\"{"
-                         "\\\"key\\\"=\\\"%s\\\","
+                         "\\\"key\\\":\\\"%s\\\","
                          "\\\"alias\\\":\\\"%s\\\","
-                         "\\\"certs\\\":[\\\"%s\\\"]}\"}",
+                         "\\\"certs\\\":[\\\"%s\\\"],"
+                         "\\\"is_user_selectable\\\":false"
+                         "}\"}",
                          pkcs12.c_str(), name.c_str(), der_cert64.c_str()));
-  if (!job || !job->Init(queue_->GetNowTicks(), command_proto, nullptr /* signed_command */)) {
+  if (!job || !job->Init(queue_->GetNowTicks(), command_proto,
+                         nullptr /* signed_command */)) {
     LOG(ERROR) << "Initialization of remote command failed";
     known_cert_names_.erase(name);
     return "";
