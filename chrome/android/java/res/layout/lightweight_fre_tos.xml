@@ -48,8 +48,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:minHeight="@dimen/fre_loading_spinner_size"
             android:contentDescription="@string/sync_loading"
-            android:visibility="gone">
+            android:visibility="invisible">
 
             <org.chromium.components.browser_ui.widget.LoadingView
                 android:id="@+id/loading_view"

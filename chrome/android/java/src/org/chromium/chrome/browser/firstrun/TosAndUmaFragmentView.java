@@ -39,6 +39,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
     private View mTitle;
     private View mLogo;
     private View mLoadingSpinnerContainer;
+    private View mPrivacyDisclaimer;
     private View mShadow;
 
     private int mLastHeight;
@@ -75,6 +76,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
         mTitle = findViewById(R.id.title);
         mLogo = findViewById(R.id.image);
         mLoadingSpinnerContainer = findViewById(R.id.loading_view_container);
+        mPrivacyDisclaimer = findViewById(R.id.privacy_disclaimer);
         mShadow = findViewById(R.id.shadow);
 
         // Set up shadow.
@@ -127,6 +129,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
             setSpinnerLayoutParams(useWideScreenLayout, width, height);
 
             setContentLayoutParams(useWideScreenLayout);
+            setPrivacyDisclaimerLayoutParams(useWideScreenLayout);
 
             setBottomGroupLayoutParams(useWideScreenLayout);
         }
@@ -222,6 +225,14 @@ public class TosAndUmaFragmentView extends FrameLayout {
                 (MarginLayoutParams) mContentWrapper.getLayoutParams();
         contentWrapperLayoutParams.setMarginStart(useWideScreen ? 0 : mContentMargin);
         mContentWrapper.setLayoutParams(contentWrapperLayoutParams);
+    }
+
+    private void setPrivacyDisclaimerLayoutParams(boolean useWideScreen) {
+        LinearLayout.LayoutParams privacyDisclaimerParams =
+                (LinearLayout.LayoutParams) mPrivacyDisclaimer.getLayoutParams();
+        privacyDisclaimerParams.gravity = useWideScreen ? Gravity.START : Gravity.CENTER;
+        privacyDisclaimerParams.setMarginStart(useWideScreen ? 0 : mContentMargin);
+        mPrivacyDisclaimer.setLayoutParams(privacyDisclaimerParams);
     }
 
     private void setBottomGroupLayoutParams(boolean useWideScreen) {

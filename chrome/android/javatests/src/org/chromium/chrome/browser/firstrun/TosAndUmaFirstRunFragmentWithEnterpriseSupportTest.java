@@ -90,7 +90,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;

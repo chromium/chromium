@@ -72,7 +72,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:layout_marginTop="@dimen/fre_vertical_spacing"
                     android:layout_marginEnd="@dimen/fre_content_margin"
                     android:gravity="center_vertical"
                     android:orientation="vertical" >
@@ -81,6 +80,7 @@
                         android:id="@+id/tos_and_privacy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/fre_vertical_spacing"
                         android:layout_marginBottom="@dimen/fre_tos_bottom_margin"
                         android:lineSpacingMultiplier="1.4"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
@@ -93,15 +93,17 @@
                         android:text="@string/fre_send_report_check"
                         android:paddingStart="@dimen/fre_tos_checkbox_padding"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-
-                    <include
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/fre_content_margin"
-                        android:layout_marginBottom="@dimen/fre_vertical_spacing"
-                        android:visibility="gone"
-                        layout="@layout/fre_tos_privacy_disclaimer" />
                 </LinearLayout>
+
+                <include
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/fre_content_margin"
+                    android:layout_marginTop="@dimen/fre_policy_privacy_disclaimer_top_margin"
+                    android:layout_marginBottom="@dimen/fre_vertical_spacing"
+                    android:visibility="gone"
+                    layout="@layout/fre_tos_privacy_disclaimer" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

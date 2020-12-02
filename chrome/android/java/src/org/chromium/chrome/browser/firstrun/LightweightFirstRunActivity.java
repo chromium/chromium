@@ -172,7 +172,7 @@ public class LightweightFirstRunActivity
     }
 
     private void setTosComponentVisibility(boolean isVisible) {
-        int visibility = isVisible ? View.VISIBLE : View.INVISIBLE;
+        int visibility = isVisible ? View.VISIBLE : View.GONE;
         mTosAndPrivacyTextView.setVisibility(visibility);
         mLightweightFreButtons.setVisibility(visibility);
     }

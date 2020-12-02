@@ -152,12 +152,12 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         RecordHistogram.recordTimesHistogram("MobileFre.CctTos.LoadingDuration",
                 SystemClock.elapsedRealtime() - mViewCreatedTimeMs);
 
+        boolean hasAccessibilityFocus = mLoadingSpinnerContainer.isAccessibilityFocused();
+        mLoadingSpinnerContainer.setVisibility(View.GONE);
         if (mSkipTosDialogPolicyListener.get()) {
             exitCctFirstRun();
         } else {
             // Else, show the UMA as the loading spinner is GONE.
-            boolean hasAccessibilityFocus = mLoadingSpinnerContainer.isAccessibilityFocused();
-            mLoadingSpinnerContainer.setVisibility(View.GONE);
             setTosAndUmaVisible(true);
 
             if (hasAccessibilityFocus) {
@@ -174,7 +174,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         // TODO(crbug.com/1108582): Save a shared pref indicating Enterprise CCT FRE is complete,
         //  and skip waiting for future cold starts.
         Log.d(TAG, "TosAndUmaFirstRunFragmentWithEnterpriseSupport finished.");
-
         mPrivacyDisclaimer.setVisibility(View.VISIBLE);
         mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
 

@@ -159,6 +159,7 @@
     <dimen name="fre_bottom_loading_spinner_size">24dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_size">18dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_padding">8dp</dimen>
+    <dimen name="fre_policy_privacy_disclaimer_top_margin">16dp</dimen>
 
     <dimen name="fre_button_vertical_margin">24dp</dimen>
     <!-- fre_button_bar_height = 68dp = layout_height (48dp) + 2 * layout_marginBottom(10dp) -->
