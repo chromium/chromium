@@ -1048,6 +1048,26 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   event_generator->MoveMouseTo(gfx::Point(50, 50));
   EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
 
+  // Enter tablet mode, the cursor should be hidden.
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  // To avoid flaky failures due to mouse devices blocking entering tablet mode,
+  // we detach all mouse devices. This shouldn't affect testing the cursor
+  // status.
+  tablet_mode_controller_test_api.DetachAllMice();
+  tablet_mode_controller_test_api.EnterTabletMode();
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+
+  // Move mouse but it should still be invisible.
+  event_generator->MoveMouseTo(gfx::Point(100, 100));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+
+  // Return to clamshell mode, mouse should appear again.
+  tablet_mode_controller_test_api.LeaveTabletMode();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
+
   // Tests that when exiting capture mode that the cursor is restored to its
   // original state.
   controller->Stop();
