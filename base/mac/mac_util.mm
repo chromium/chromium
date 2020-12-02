@@ -67,20 +67,12 @@ class LoginItemsFileList {
     for (id login_item in login_items_array.get()) {
       LSSharedFileListItemRef item =
           reinterpret_cast<LSSharedFileListItemRef>(login_item);
-      base::ScopedCFTypeRef<CFErrorRef> error;
       ScopedCFTypeRef<CFURLRef> item_url(
-          LSSharedFileListItemCopyResolvedURL(item, 0, error.InitializeInto()));
+          LSSharedFileListItemCopyResolvedURL(item, 0, nullptr));
 
-      // This function previously used LSSharedFileListItemResolve(), which
-      // could return a NULL URL even when returning no error. This caused
-      // <https://crbug.com/760989>. It's not clear one way or the other whether
-      // LSSharedFileListItemCopyResolvedURL() shares this behavior, so this
-      // check remains in place.
-      if (!error && item_url) {
-        if (CFEqual(item_url, url)) {
-          return ScopedCFTypeRef<LSSharedFileListItemRef>(
-              item, base::scoped_policy::RETAIN);
-        }
+      if (item_url && CFEqual(item_url, url)) {
+        return ScopedCFTypeRef<LSSharedFileListItemRef>(
+            item, base::scoped_policy::RETAIN);
       }
     }
 
