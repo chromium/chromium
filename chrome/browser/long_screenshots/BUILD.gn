@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
-
 source_set("services") {
   sources = [
     "long_screenshots_tab_service.cc",
@@ -17,8 +15,4 @@ source_set("services") {
     "//components/paint_preview/browser",
     "//components/paint_preview/common/mojom",
   ]
-}
-
-java_cpp_enum("long_screenshots_tab_service_status_enum") {
-  sources = [ "long_screenshots_tab_service.h" ]
 }
