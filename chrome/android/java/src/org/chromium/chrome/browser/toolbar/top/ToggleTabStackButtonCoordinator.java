@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 
 /**
  * Root component for the tab switcher button on the toolbar. Intended to own the
@@ -37,6 +39,10 @@ public class ToggleTabStackButtonCoordinator {
     static final String MAIN_INTENT_FROM_LAUNCHER_PARAM_NAME = "isMainIntentFromLauncher";
     @VisibleForTesting
     static final String INTENT_WITH_EFFECT_PARAM_NAME = "intentWithEffect";
+    // This is used to lookup the name of a feature used to track a cohort of users who triggered
+    // a particular IPH, or would have triggered for control groups with the tracking_only
+    // configuration.
+    private static final String COHORT_FEATURE_NAME_PARAM_NAME = "cohortFeatureName";
 
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
@@ -56,7 +62,6 @@ public class ToggleTabStackButtonCoordinator {
      * @param context The Android context used for various view operations.
      * @param toggleTabStackButton The concrete {@link ToggleTabStackButton} class for this MVC
      *         component.
-     * @param activityTabProvider Provides the current active tab.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param isIncognitoSupplier Supplier for whether the current tab is incognito.
      * @param intentMetadataOneshotSupplier Potentially delayed information about launching intent.
@@ -64,6 +69,7 @@ public class ToggleTabStackButtonCoordinator {
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param setNewTabButtonHighlightCallback Delegate to highlight the new tab button.
      * @param activityTabSupplier Supplier of the activity tab.
+     * @param tracker Feature engagement interface to check triggered state.
      */
     public ToggleTabStackButtonCoordinator(Context context,
             ToggleTabStackButton toggleTabStackButton, UserEducationHelper userEducationHelper,
@@ -72,7 +78,7 @@ public class ToggleTabStackButtonCoordinator {
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             Callback<Boolean> setNewTabButtonHighlightCallback,
-            ObservableSupplier<Tab> activityTabSupplier) {
+            ObservableSupplier<Tab> activityTabSupplier, @NonNull Tracker tracker) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
@@ -89,6 +95,9 @@ public class ToggleTabStackButtonCoordinator {
                 handlePageLoadFinished();
             }
         });
+
+        CohortUtils.tagCohortGroupIfTriggered(tracker, FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
+                COHORT_FEATURE_NAME_PARAM_NAME);
     }
 
     /** Cleans up callbacks and observers. */
