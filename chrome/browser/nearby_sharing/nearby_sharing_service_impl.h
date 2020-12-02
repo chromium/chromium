@@ -57,6 +57,7 @@ class Profile;
 class NearbySharingServiceImpl
     : public NearbySharingService,
       public nearby_share::mojom::NearbyShareSettingsObserver,
+      public NearbyShareCertificateManager::Observer,
       public NearbyProcessManager::Observer,
       public device::BluetoothAdapter::Observer,
       public NearbyConnectionsManager::IncomingConnectionListener,
@@ -134,6 +135,10 @@ class NearbySharingServiceImpl
   void OnVisibilityChanged(nearby_share::mojom::Visibility visibility) override;
   void OnAllowedContactsChanged(
       const std::vector<std::string>& allowed_contacts) override;
+
+  // NearbyShareCertificateManager::Observer:
+  void OnPublicCertificatesDownloaded() override;
+  void OnPrivateCertificatesChanged() override;
 
   // NearbyConnectionsManager::DiscoveryListener:
   void OnEndpointDiscovered(const std::string& endpoint_id,
