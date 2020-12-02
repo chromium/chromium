@@ -58,6 +58,7 @@ js_type_check("closure_compile_jsmodules") {
     ":files_icon_button.m",
     ":files_metadata_box.m",
     ":files_metadata_entry.m",
+    ":files_quick_view.m",
     ":files_ripple.m",
     ":files_safe_media.m",
     ":files_toast.m",
@@ -189,6 +190,28 @@ js_library("files_quick_view") {
     "$externs_path/webview_tag.js",
     "$externs_path/pending_polymer.js",
   ]
+}
+
+polymer_modulizer("files_quick_view") {
+  js_file = "files_quick_view.js"
+  html_file = "files_quick_view.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
+}
+
+js_library("files_quick_view.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_quick_view.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+  extra_deps = [ ":files_quick_view_module" ]
 }
 
 js_library("files_ripple") {

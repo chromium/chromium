@@ -11,12 +11,14 @@
 <link rel="import" href="files_safe_media.html">
 <link rel="import" href="files_tooltip.html">
 <link rel="import" href="icons.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 
 <dom-module id="files-quick-view">
-  <link rel="import" type="css" href="chrome://resources/css/text_defaults.css">
-  <link rel="import" type="css" href="../css/common.css">
-  <link rel="import" type="css" href="files_quick_view.css">
   <template>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="foreground/css/common.css">
+    <link rel="stylesheet" href="foreground/elements/files_quick_view.css">
+
     <dialog id="dialog" on-close="onDialogClose_">
       <div id="toolbar">
         <div class="buttons-group">
@@ -101,6 +103,5 @@
       <files-tooltip></files-tooltip>
     </dialog>
   </template>
-
   <script src="files_quick_view.js"></script>
 </dom-module>

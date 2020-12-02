@@ -142,7 +142,7 @@ const FilesQuickView = Polymer({
    * @return {!FilesMetadataBoxElement}
    */
   getFilesMetadataBox: function() {
-    return this.$['metadata-box'];
+    return /** @type {!FilesMetadataBoxElement} */ (this.$['metadata-box']);
   },
 
   /**
