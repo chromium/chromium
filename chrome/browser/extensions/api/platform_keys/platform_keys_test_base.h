@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/test/https_forwarder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -24,7 +24,7 @@ class ScopedTestSystemNSSKeySlot;
 // availability, device enrollment status, user affiliation and user policy.
 // Every test case is supposed to have a PRE_ test case which must call
 // PlatformKeysTestBase::RunPreTest.
-class PlatformKeysTestBase : public extensions::ExtensionApiTest {
+class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
  public:
   enum class SystemTokenStatus { EXISTS, DOES_NOT_EXIST };
 
@@ -42,7 +42,7 @@ class PlatformKeysTestBase : public extensions::ExtensionApiTest {
   ~PlatformKeysTestBase() override;
 
  protected:
-  // ExtensionApiTest:
+  // MixinBasedExtensionApiTest:
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;

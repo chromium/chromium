@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -74,11 +75,11 @@ void PlatformKeysTestBase::SetUp() {
   chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
       ->SetTestingMode(true);
 
-  extensions::ExtensionApiTest::SetUp();
+  extensions::MixinBasedExtensionApiTest::SetUp();
 }
 
 void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
-  extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+  extensions::MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
 
   policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
       command_line);
@@ -93,7 +94,7 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
-  extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+  extensions::MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
   chromeos::SessionManagerClient::InitializeFakeInMemory();
 
@@ -167,11 +168,11 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
     loop.Run();
   }
 
-  extensions::ExtensionApiTest::SetUpOnMainThread();
+  extensions::MixinBasedExtensionApiTest::SetUpOnMainThread();
 }
 
 void PlatformKeysTestBase::TearDownOnMainThread() {
-  extensions::ExtensionApiTest::TearDownOnMainThread();
+  extensions::MixinBasedExtensionApiTest::TearDownOnMainThread();
 
   chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
       ->SetTestingMode(false);
