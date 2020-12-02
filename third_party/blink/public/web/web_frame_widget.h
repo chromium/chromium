@@ -217,6 +217,13 @@ class WebFrameWidget : public WebWidget {
   virtual FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() = 0;
 
  private:
+  // This is a private virtual method so we don't expose cc::LayerTreeHost
+  // outside of this class. Friend classes may be added in order to access it.
+  virtual cc::LayerTreeHost* LayerTreeHost() = 0;
+
+  // GPU benchmarking extension needs access to the LayerTreeHost
+  friend class GpuBenchmarkingContext;
+
   // This private constructor and the class/friend declaration ensures that
   // WebFrameWidgetImpl is the only concrete subclass that implements
   // WebFrameWidget, so that it is safe to downcast to WebFrameWidgetImpl.

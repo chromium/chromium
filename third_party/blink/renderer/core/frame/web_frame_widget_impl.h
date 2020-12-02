@@ -307,6 +307,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetDeviceScaleFactorForTesting(float factor) override;
   void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
+  // TODO(dtapuska): Move this into private scope to match the interface
+  // definition.
+  cc::LayerTreeHost* LayerTreeHost() override;
 
   // Called when a drag-n-drop operation should begin.
   virtual void StartDragging(const WebDragData&,
@@ -515,7 +518,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BatterySavingsChanged(BatterySavingsFlags savings);
 
   const viz::LocalSurfaceId& LocalSurfaceIdFromParent();
-  cc::LayerTreeHost* LayerTreeHost();
 
   ScreenMetricsEmulator* DeviceEmulator();
 

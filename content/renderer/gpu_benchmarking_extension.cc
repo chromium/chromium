@@ -78,6 +78,48 @@
 #include <wrl/client.h>
 #endif
 
+namespace blink {
+
+// This class allows us to access the LayerTreeHost on WebFrameWidget. It is
+// hidden from the public interface. It also extracts some commonly
+// used objects from RenderFrameImpl.
+class GpuBenchmarkingContext {
+ public:
+  explicit GpuBenchmarkingContext(content::RenderFrameImpl* frame)
+      : web_frame_(frame->GetWebFrame()),
+        web_view_(web_frame_->View()),
+        render_widget_(frame->GetLocalRootRenderWidget()),
+        frame_widget_(frame->GetLocalRootWebFrameWidget()),
+        layer_tree_host_(frame_widget_->LayerTreeHost()) {}
+
+  WebLocalFrame* web_frame() const {
+    DCHECK(web_frame_ != nullptr);
+    return web_frame_;
+  }
+  WebView* web_view() const {
+    DCHECK(web_view_ != nullptr);
+    return web_view_;
+  }
+  content::RenderWidget* render_widget() const { return render_widget_; }
+  WebFrameWidget* frame_widget() const { return frame_widget_; }
+  cc::LayerTreeHost* layer_tree_host() const {
+    DCHECK(layer_tree_host_ != nullptr);
+    return layer_tree_host_;
+  }
+
+ private:
+  WebLocalFrame* web_frame_;
+  WebView* web_view_;
+  content::RenderWidget* render_widget_;
+  WebFrameWidget* frame_widget_;
+  cc::LayerTreeHost* layer_tree_host_;
+
+  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarkingContext);
+};
+
+}  // namespace blink
+
+using blink::GpuBenchmarkingContext;
 using blink::WebImageCache;
 using blink::WebLocalFrame;
 using blink::WebPrivatePtr;
@@ -188,42 +230,6 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
   v8::Persistent<v8::Function> callback_;
   v8::Persistent<v8::Context> context_;
   DISALLOW_COPY_AND_ASSIGN(CallbackAndContext);
-};
-
-// This class is a mostly unnecessary helper class. It extracts some commonly
-// used objects from RenderFrameImpl.
-class GpuBenchmarkingContext {
- public:
-  explicit GpuBenchmarkingContext(RenderFrameImpl* frame)
-      : web_frame_(frame->GetWebFrame()),
-        web_view_(web_frame_->View()),
-        render_widget_(frame->GetLocalRootRenderWidget()),
-        frame_widget_(frame->GetLocalRootWebFrameWidget()),
-        layer_tree_host_(render_widget_->layer_tree_host()) {}
-
-  WebLocalFrame* web_frame() const {
-    DCHECK(web_frame_ != nullptr);
-    return web_frame_;
-  }
-  WebView* web_view() const {
-    DCHECK(web_view_ != nullptr);
-    return web_view_;
-  }
-  RenderWidget* render_widget() const { return render_widget_; }
-  blink::WebFrameWidget* frame_widget() const { return frame_widget_; }
-  cc::LayerTreeHost* layer_tree_host() const {
-    DCHECK(layer_tree_host_ != nullptr);
-    return layer_tree_host_;
-  }
-
- private:
-  WebLocalFrame* web_frame_;
-  WebView* web_view_;
-  RenderWidget* render_widget_;
-  blink::WebFrameWidget* frame_widget_;
-  cc::LayerTreeHost* layer_tree_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarkingContext);
 };
 
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
