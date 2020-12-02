@@ -496,12 +496,12 @@ void DataTypeManagerImpl::DownloadCompleted(
     association_types_info_->first_sync_types = succeeded_configuration_types;
     association_types_info_->download_ready_time = base::Time::Now();
     StartNextAssociation(association_types_info_->types);
-  } else if (download_types_queue_.empty()) {
-    // There's nothing more to download or associate (implying either there were
-    // no types to associate or they associated as part of |ready_types|).
+  }
+  DCHECK(!association_types_info_);
+
+  if (download_types_queue_.empty()) {
     state_ = CONFIGURED;
-    ConfigureResult result(OK, last_requested_types_);
-    NotifyDone(result);
+    NotifyDone(ConfigureResult(OK, last_requested_types_));
     return;
   }
 
@@ -667,11 +667,6 @@ void DataTypeManagerImpl::StartNextAssociation(
   }
 
   association_types_info_.reset();
-  // If there's nothing more to download either, then we're done configuring.
-  if (download_types_queue_.empty()) {
-    state_ = CONFIGURED;
-    NotifyDone(ConfigureResult(OK, types_to_associate));
-  }
 }
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
