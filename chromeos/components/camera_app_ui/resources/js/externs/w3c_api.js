@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* eslint-disable no-unused-vars, no-var, valid-jsdoc */
+/* eslint-disable no-undef, no-unused-vars, no-var, valid-jsdoc */
+
+// TODO(b/172879638): Remove this extern once we have
+// https://github.com/google/closure-compiler/pull/3735 merged in Closure
+// Compiler and Chromium.
+
+/** @type {string} */
+OffscreenCanvasRenderingContext2D.prototype.imageSmoothingQuality;
 
 // TODO(b/172879638): Upstream the externs of BarcodeDetector to Closure
 // Compiler.

@@ -378,6 +378,11 @@ module.exports = {
     'trustedTypes': 'readable',
     'BarcodeDetector': 'readable',
     'webkitRequestFileSystem': 'readable',
+
+    // TODO(b/172879638): Remove this once we have
+    // https://github.com/sindresorhus/globals/pull/171 merged in ESLint and
+    // Chromium.
+    'OffscreenCanvasRenderingContext2D': 'readable',
   },
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
