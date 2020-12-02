@@ -16,8 +16,8 @@ class SharesheetExpandButton : public views::Button {
   SharesheetExpandButton(const SharesheetExpandButton&) = delete;
   SharesheetExpandButton& operator=(const SharesheetExpandButton&) = delete;
 
-  void SetDefaultView();
-  void SetExpandedView();
+  void SetToDefaultState();
+  void SetToExpandedState();
 
  private:
   // views::View overrides

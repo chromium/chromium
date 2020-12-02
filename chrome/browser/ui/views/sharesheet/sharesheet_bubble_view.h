@@ -66,6 +66,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
                                   views::GridLayout* default_layout,
                                   views::GridLayout* expanded_layout);
   void ExpandButtonPressed();
+  void AnimateToExpandedState();
   void TargetButtonPressed(TargetInfo target);
   void UpdateAnchorPosition();
   void SetToDefaultBubbleSizing();

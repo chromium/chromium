@@ -42,10 +42,10 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
   label_->SetEnabledColor(kLabelColor);
 
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  SetDefaultView();
+  SetToDefaultState();
 }
 
-void SharesheetExpandButton::SetDefaultView() {
+void SharesheetExpandButton::SetToDefaultState() {
   icon_->SetImage(
       gfx::CreateVectorIcon(kCaretDownIcon, kCaretIconSize, kLabelColor));
   auto display_name = l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL);
@@ -53,7 +53,7 @@ void SharesheetExpandButton::SetDefaultView() {
   SetAccessibleName(display_name);
 }
 
-void SharesheetExpandButton::SetExpandedView() {
+void SharesheetExpandButton::SetToExpandedState() {
   icon_->SetImage(
       gfx::CreateVectorIcon(kCaretUpIcon, kCaretIconSize, kLabelColor));
   auto display_name =

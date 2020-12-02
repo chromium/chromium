@@ -77,9 +77,6 @@ constexpr int kShortSpacing = 20;
 constexpr int kSpacing = 24;
 constexpr int kTitleLineHeight = 24;
 
-constexpr float kSharesheetOpacityTranslucent = 0.0f;
-constexpr float kSharesheetOpacityOpaque = 1.0f;
-
 constexpr char kTitleFont[] = "GoogleSans, Medium, 16px";
 constexpr char kExpandViewTitleFont[] = "Roboto, Medium, 15px";
 
@@ -87,6 +84,8 @@ constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
 
 constexpr auto kAnimateDelay = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kQuickAnimateTime = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kSlowAnimateTime = base::TimeDelta::FromMilliseconds(200);
 
 // Resize Percentage.
 constexpr int kStretchy = 1.0;
@@ -291,11 +290,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 }
 
 void SharesheetBubbleView::ShowActionView() {
-  constexpr auto kSharesheetViewChangeOpacityFadeTime =
-      base::TimeDelta::FromMilliseconds(100);
   constexpr float kShareActionScaleUpFactor = 0.9f;
-  constexpr auto kShareActionScaleUpTime =
-      base::TimeDelta::FromMilliseconds(200);
 
   main_view_->SetPaintToLayer();
   ui::Layer* main_view_layer = main_view_->layer();
@@ -304,9 +299,9 @@ void SharesheetBubbleView::ShowActionView() {
   // |main_view_| opacity fade out.
   auto scoped_settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
       main_view_layer->GetAnimator());
-  scoped_settings->SetTransitionDuration(kSharesheetViewChangeOpacityFadeTime);
+  scoped_settings->SetTransitionDuration(kQuickAnimateTime);
   scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
-  main_view_layer->SetOpacity(kSharesheetOpacityTranslucent);
+  main_view_layer->SetOpacity(0.0f);
   main_view_->SetVisible(false);
 
   share_action_view_->SetPaintToLayer();
@@ -316,7 +311,7 @@ void SharesheetBubbleView::ShowActionView() {
       gfx::RoundedCornersF(kCornerRadius));
 
   share_action_view_->SetVisible(true);
-  share_action_view_layer->SetOpacity(kSharesheetOpacityTranslucent);
+  share_action_view_layer->SetOpacity(0.0f);
   gfx::Transform transform = gfx::GetScaleTransform(
       gfx::Rect(share_action_view_layer->size()).CenterPoint(),
       kShareActionScaleUpFactor);
@@ -328,10 +323,9 @@ void SharesheetBubbleView::ShowActionView() {
       ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
 
   // |share_action_view_| scale & opacity fade in.
-  share_action_scoped_settings->SetTransitionDuration(kShareActionScaleUpTime);
+  share_action_scoped_settings->SetTransitionDuration(kSlowAnimateTime);
   share_action_scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
-  share_action_scoped_settings->SetTransitionDuration(
-      kSharesheetViewChangeOpacityFadeTime);
+  share_action_scoped_settings->SetTransitionDuration(kQuickAnimateTime);
   share_action_scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
 
   // Delay |share_action_view_| animate so that we can see |main_view_| fade out
@@ -339,7 +333,7 @@ void SharesheetBubbleView::ShowActionView() {
   share_action_view_layer->GetAnimator()->SchedulePauseForProperties(
       kAnimateDelay, ui::LayerAnimationElement::TRANSFORM |
                          ui::LayerAnimationElement::OPACITY);
-  share_action_view_layer->SetOpacity(kSharesheetOpacityOpaque);
+  share_action_view_layer->SetOpacity(1.0f);
   share_action_view_layer->SetTransform(gfx::Transform());
 }
 
@@ -349,15 +343,13 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
   height_ = height;
 
   // Animate from the old bubble to the new bubble.
-  constexpr auto kBubbleTransformTime = base::TimeDelta::FromMilliseconds(200);
-
   ui::Layer* layer = View::GetWidget()->GetLayer();
   const gfx::Transform transform =
       gfx::TransformBetweenRects(old_bounds, gfx::RectF(width, height));
   layer->SetTransform(transform);
   auto scoped_settings =
       std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
-  scoped_settings->SetTransitionDuration(kBubbleTransformTime);
+  scoped_settings->SetTransitionDuration(kSlowAnimateTime);
   scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
   layer->GetAnimator()->SchedulePauseForProperties(
       kAnimateDelay, ui::LayerAnimationElement::TRANSFORM);
@@ -484,18 +476,37 @@ void SharesheetBubbleView::CreateBubble() {
 
 void SharesheetBubbleView::ExpandButtonPressed() {
   show_expanded_view_ = !show_expanded_view_;
-  if (show_expanded_view_)
-    expand_button_->SetExpandedView();
-  else
-    expand_button_->SetDefaultView();
+  ResizeBubble(kDefaultBubbleWidth, show_expanded_view_ ? kExpandedBubbleHeight
+                                                        : kDefaultBubbleHeight);
+  if (show_expanded_view_) {
+    expand_button_->SetToExpandedState();
+    AnimateToExpandedState();
+  } else {
+    expand_button_->SetToDefaultState();
+  }
   // Scrollview has separators that overlaps with |expand_button_separator_|
   // to create a double line when both are visible, so when scrollview is
   // expanded we hide our separator.
   expand_button_separator_->SetVisible(!show_expanded_view_);
   expanded_view_->SetVisible(show_expanded_view_);
   expanded_view_separator_->SetVisible(show_expanded_view_);
-  ResizeBubble(kDefaultBubbleWidth, show_expanded_view_ ? kExpandedBubbleHeight
-                                                        : kDefaultBubbleHeight);
+}
+
+void SharesheetBubbleView::AnimateToExpandedState() {
+  expanded_view_->SetVisible(true);
+  expanded_view_->SetPaintToLayer();
+  ui::Layer* expanded_view_layer = expanded_view_->layer();
+  expanded_view_layer->SetFillsBoundsOpaquely(false);
+  expanded_view_layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kCornerRadius));
+  expanded_view_layer->SetOpacity(0.0f);
+  // |expanded_view_| opacity fade in.
+  auto scoped_settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
+      expanded_view_layer->GetAnimator());
+  scoped_settings->SetTransitionDuration(kQuickAnimateTime);
+  scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
+
+  expanded_view_layer->SetOpacity(1.0f);
 }
 
 void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
@@ -540,13 +551,11 @@ void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
   constexpr float kSharesheetScaleUpFactor = 0.8f;
   constexpr auto kSharesheetScaleUpTime =
       base::TimeDelta::FromMilliseconds(150);
-  constexpr auto kSharesheetOpacityFadeInTime =
-      base::TimeDelta::FromMilliseconds(100);
 
   views::Widget* widget = View::GetWidget();
   ui::Layer* layer = widget->GetLayer();
 
-  layer->SetOpacity(kSharesheetOpacityTranslucent);
+  layer->SetOpacity(0.0f);
   widget->ShowInactive();
   gfx::Transform transform = gfx::GetScaleTransform(
       gfx::Rect(layer->size()).CenterPoint(), kSharesheetScaleUpFactor);
@@ -558,9 +567,9 @@ void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
   scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
   layer->SetTransform(gfx::Transform());
 
-  scoped_settings->SetTransitionDuration(kSharesheetOpacityFadeInTime);
+  scoped_settings->SetTransitionDuration(kQuickAnimateTime);
   scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
-  layer->SetOpacity(kSharesheetOpacityOpaque);
+  layer->SetOpacity(1.0f);
   widget->Activate();
 }
 
@@ -579,7 +588,7 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
   // This aborts any running animations and starts the current one.
   scoped_settings->SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer->SetOpacity(kSharesheetOpacityTranslucent);
+  layer->SetOpacity(0.0f);
   // We are closing the native widget during the close animation which results
   // in destroying the layer and the animation and the observer not calling
   // back. Thus it is safe to use base::Unretained here.
