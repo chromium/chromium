@@ -34,17 +34,10 @@ TEST_PAGES_LOCATION_BY_REPO = {
         ],
         'revision': 'a4ca7fbc92825b4993d9a7fa1844206e0c718454',
     },
-    'adapter': {
-        'files': [
-            'adapter-latest.js',
-        ],
-        'revision': 'bc3f52c57baaae789df6965c43f418cc995a9edb',
-    },
 }
 
 ADDED_SCRIPT_TAGS = (
     '<script src="%s.js"></script>\n'
-    '<script src="adapter-latest.js"></script>\n'
     '</body></html>'
 )
 
@@ -75,13 +68,12 @@ class TemporaryDirectory(object):
       self._closed = True
 
 
-def CopyJSFile(origin, destination, has_copyright=True):
+def CopyJSFile(origin, destination):
   contents = []
   with open(origin) as input_file:
     contents = input_file.readlines()
 
-  if has_copyright:
-    contents = contents[COPYRIGHT_NOTICE_LENGTH:]
+  contents = contents[COPYRIGHT_NOTICE_LENGTH:]
   contents = [JS_COPYRIGHT_NOTICE] + contents
 
   with open(destination, 'w') as output_file:
@@ -117,7 +109,7 @@ def main():
           '  * Deletes the <meta> tags.\n'
           '  * Discards the CSS files and corresponding link tags.\n'
           '  * Discards the JS files and corresponding script tags except for '
-          'main.js and adapter-latest.js.\n'
+          'main.js.\n'
           '  * Renames the index.html and main.js files for each test to '
           'testname.html and testname.js.'))
 
@@ -148,11 +140,6 @@ def main():
                    os.path.join(args.destination, test_name + '.js'))
         CopyHTMLFile(test_name, os.path.join(test_dir, 'index.html'),
                      os.path.join(args.destination, test_name + '.html'))
-
-      for test_file in repo_info.get('files', []):
-        file_name = os.path.basename(test_file)
-        CopyJSFile(os.path.join(temp_dir, repo_name, test_file),
-                   os.path.join(args.destination, file_name), False)
 
 
 if __name__ == '__main__':
