@@ -632,6 +632,10 @@ class WebTestDirMerger(DirMerger):
         self.add_helper(FilenameRegexMatch(r'chromedriver\.log$'),
                         MergeFilesKeepFiles(self.filesystem))
 
+        # keep system log for tests on fuchsia platform. See ./port/fuchsia.py
+        self.add_helper(FilenameRegexMatch(r'system_log$'),
+                        MergeFilesKeepFiles(self.filesystem))
+
         # These JSON files have "result style" JSON in them.
         results_json_file_merger = MergeFilesJSONP(
             self.filesystem,
