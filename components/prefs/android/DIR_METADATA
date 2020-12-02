@@ -1,0 +1,5 @@
+monorail {
+  component: "Internals>Preferences"
+}
+
+os: ANDROID
