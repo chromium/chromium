@@ -295,18 +295,18 @@ class PrivateSetMembershipHelper {
 
   // Tries to load the result of a previous execution of the private set
   // memberhsip protocol from local state. Returns decision value if it has been
-  // made and is valid, otherwise nullptr.
-  const base::Value* GetPrivateSetMembershipCachedDecision() const {
+  // made and is valid, otherwise nullopt.
+  base::Optional<bool> GetPrivateSetMembershipCachedDecision() const {
     const PrefService::Preference* has_psm_server_state_pref =
         local_state_->FindPreference(prefs::kShouldRetrieveDeviceState);
 
     if (!has_psm_server_state_pref ||
         has_psm_server_state_pref->IsDefaultValue() ||
         !has_psm_server_state_pref->GetValue()->is_bool()) {
-      return nullptr;
+      return base::nullopt;
     }
 
-    return has_psm_server_state_pref->GetValue();
+    return has_psm_server_state_pref->GetValue()->GetBool();
   }
 
   // Indicate whether an error occurred while executing the private set
@@ -1034,12 +1034,12 @@ bool AutoEnrollmentClientImpl::PrivateSetMembershipRetryStep() {
       private_set_membership_helper_->IsCheckMembershipInProgress())
     return false;
 
-  const base::Value* private_set_membership_server_state =
+  const base::Optional<bool> private_set_membership_server_state =
       private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
 
-  if (private_set_membership_server_state) {
+  if (private_set_membership_server_state.has_value()) {
     LOG(WARNING) << "PSM Cached: psm_server_state="
-                 << private_set_membership_server_state->GetBool();
+                 << private_set_membership_server_state.value();
     return false;
   } else {
     private_set_membership_helper_->CheckMembership(base::BindOnce(
@@ -1387,8 +1387,6 @@ void AutoEnrollmentClientImpl::RecordPrivateSetMembershipHashDanceComparison() {
   // Make sure to only record once per instance.
   recorded_psm_hash_dance_comparison_ = true;
 
-  bool private_set_membership_decision =
-      private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
   bool private_set_membership_error =
       private_set_membership_helper_->HasPrivateSetMembershipError();
 
@@ -1414,8 +1412,15 @@ void AutoEnrollmentClientImpl::RecordPrivateSetMembershipHashDanceComparison() {
 
   auto comparison = PrivateSetMembershipHashDanceComparison::kEqualResults;
   if (!hash_dance_error && !private_set_membership_error) {
+    base::Optional<bool> private_set_membership_decision =
+        private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
+
+    // There was no error and this function is only invoked after PSM has been
+    // performed, so there must be a decision.
+    DCHECK(private_set_membership_decision.has_value());
+
     comparison =
-        (hash_dance_decision == private_set_membership_decision)
+        (hash_dance_decision == private_set_membership_decision.value())
             ? PrivateSetMembershipHashDanceComparison::kEqualResults
             : PrivateSetMembershipHashDanceComparison::kDifferentResults;
   } else if (hash_dance_error && !private_set_membership_error) {
