@@ -57,6 +57,8 @@ class ServiceLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription_;
   base::OnceClosure connection_lost_cb_;
   base::SequenceChecker sequence_checker_;
+
+  media::VideoFrameFeedback last_feedback_;
 };
 
 }  // namespace content

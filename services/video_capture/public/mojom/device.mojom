@@ -26,4 +26,7 @@ interface Device {
       => (bool success);
   TakePhoto()
       => (media.mojom.Blob? blob);
+  // |feedback| contains consumer feedback like resource utilization,
+  // maximum requested frame-rate and resolution.
+  ProcessFeedback(media.mojom.VideoFrameFeedback feedback);
 };

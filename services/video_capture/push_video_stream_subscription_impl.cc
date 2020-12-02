@@ -162,4 +162,19 @@ void PushVideoStreamSubscriptionImpl::OnConnectionLost() {
     std::move(on_closed_handler_).Run(base::DoNothing());
 }
 
+void PushVideoStreamSubscriptionImpl::ProcessFeedback(
+    const media::VideoFrameFeedback& feedback) {
+  switch (status_) {
+    case Status::kCreationCallbackNotYetRun:  // Fall through.
+    case Status::kClosed:
+      // Ignore the call.
+      return;
+    case Status::kNotYetActivated:  // Fall through.
+    case Status::kActive:           // Fall through.
+    case Status::kSuspended:
+      (*device_)->ProcessFeedback(feedback);
+      return;
+  }
+}
+
 }  // namespace video_capture

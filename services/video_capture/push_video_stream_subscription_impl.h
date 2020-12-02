@@ -45,6 +45,7 @@ class PushVideoStreamSubscriptionImpl
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
   void Close(CloseCallback callback) override;
+  void ProcessFeedback(const media::VideoFrameFeedback& feedback) override;
 
  private:
   enum class Status {

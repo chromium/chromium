@@ -55,6 +55,10 @@ interface PushVideoStreamSubscription {
   // requested for the new subscription will be ignored unless
   // |force_reopen_with_new_settings| is set to true.
   Close() => ();
+
+  // |feedback| contains consumer feedback like resource utilization,
+  // maximum requested frame-rate and resolution.
+  ProcessFeedback(media.mojom.VideoFrameFeedback feedback);
 };
 
 // Provides shared access to a specific video source to potentially multiple

@@ -35,6 +35,10 @@ struct MEDIA_EXPORT VideoFrameFeedback {
            max_framerate_fps == other.max_framerate_fps;
   }
 
+  bool operator!=(const VideoFrameFeedback& other) const {
+    return !(*this == other);
+  }
+
   // Combine constraints of two different sinks resulting in constraints fitting
   // both of them.
   void Combine(const VideoFrameFeedback& other);

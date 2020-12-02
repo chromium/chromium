@@ -112,6 +112,11 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::TakePhoto(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void GpuMemoryBufferVirtualDeviceMojoAdapter::ProcessFeedback(
+    const media::VideoFrameFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void GpuMemoryBufferVirtualDeviceMojoAdapter::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_frame_handler_.is_bound())

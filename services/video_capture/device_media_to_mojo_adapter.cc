@@ -151,6 +151,12 @@ void DeviceMediaToMojoAdapter::TakePhoto(TakePhotoCallback callback) {
   device_->TakePhoto(std::move(scoped_callback));
 }
 
+void DeviceMediaToMojoAdapter::ProcessFeedback(
+    const media::VideoFrameFeedback& feedback) {
+  // Feedback ID is not propagated by mojo interface.
+  device_->OnUtilizationReport(/*frame_feedback_id=*/0, feedback);
+}
+
 void DeviceMediaToMojoAdapter::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!device_started_)

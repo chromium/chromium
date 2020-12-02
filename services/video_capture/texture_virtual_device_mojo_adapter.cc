@@ -106,6 +106,11 @@ void TextureVirtualDeviceMojoAdapter::TakePhoto(TakePhotoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void TextureVirtualDeviceMojoAdapter::ProcessFeedback(
+    const media::VideoFrameFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void TextureVirtualDeviceMojoAdapter::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_frame_handler_.is_bound())
