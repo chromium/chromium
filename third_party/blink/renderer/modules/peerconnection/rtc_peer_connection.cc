@@ -818,8 +818,7 @@ RTCPeerConnection::RTCPeerConnection(
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          SchedulingPolicy{
-              SchedulingPolicy::RecordMetricsForBackForwardCache()});
+          SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
 }
 
 RTCPeerConnection::~RTCPeerConnection() {

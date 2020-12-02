@@ -97,7 +97,7 @@ IDBTransaction::IDBTransaction(
               ->GetScheduler()
               ->RegisterFeature(
                   SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
-                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {
+                  {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(database_);
   DCHECK(!scope_.IsEmpty()) << "Non-versionchange transactions must operate "
                                "on a well-defined set of stores";

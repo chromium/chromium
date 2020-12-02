@@ -104,7 +104,7 @@ HID::HID(Navigator& navigator)
       feature_handle_for_scheduler_(
           navigator.DomWindow()->GetScheduler()->RegisterFeature(
               SchedulingPolicy::Feature::kWebHID,
-              {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+              {SchedulingPolicy::DisableBackForwardCache()})) {}
 
 HID::~HID() {
   DCHECK(get_devices_promises_.IsEmpty());

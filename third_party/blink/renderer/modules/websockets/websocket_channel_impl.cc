@@ -218,11 +218,9 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
         SchedulingPolicy::Feature::kWebSocket,
         base::FeatureList::IsEnabled(kAllowAggressiveThrottlingWithWebSocket)
-            ? SchedulingPolicy{SchedulingPolicy::
-                                   RecordMetricsForBackForwardCache()}
-            : SchedulingPolicy{
-                  SchedulingPolicy::DisableAggressiveThrottling(),
-                  SchedulingPolicy::RecordMetricsForBackForwardCache()});
+            ? SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()}
+            : SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling(),
+                               SchedulingPolicy::DisableBackForwardCache()});
   }
 
   if (MixedContentChecker::IsMixedContent(

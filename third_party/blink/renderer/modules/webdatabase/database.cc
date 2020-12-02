@@ -240,7 +240,7 @@ Database::Database(DatabaseContext* database_context,
               ->GetScheduler()
               ->RegisterFeature(
                   SchedulingPolicy::Feature::kWebDatabase,
-                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {
+                  {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(IsMainThread());
   context_thread_security_origin_ =
       database_context_->GetSecurityOrigin()->IsolatedCopy();

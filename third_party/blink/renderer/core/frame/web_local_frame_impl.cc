@@ -1588,7 +1588,7 @@ void WebLocalFrameImpl::DispatchBeforePrintEvent(
   // popup properly.
   GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
       blink::SchedulingPolicy::Feature::kPrinting,
-      {blink::SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {blink::SchedulingPolicy::DisableBackForwardCache()});
 
   GetFrame()->GetDocument()->SetPrinting(Document::kBeforePrinting);
   DispatchPrintEventRecursively(event_type_names::kBeforeprint);

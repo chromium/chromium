@@ -63,7 +63,7 @@ HTMLPortalElement::HTMLPortalElement(
       feature_handle_for_scheduler_(
           document.GetExecutionContext()->GetScheduler()->RegisterFeature(
               SchedulingPolicy::Feature::kPortal,
-              {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {
+              {SchedulingPolicy::DisableBackForwardCache()})) {
   if (remote_portal) {
     DCHECK(portal_token);
     was_just_adopted_ = true;

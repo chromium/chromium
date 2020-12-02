@@ -111,7 +111,7 @@ IDBDatabase::IDBDatabase(
           context
               ? context->GetScheduler()->RegisterFeature(
                     SchedulingPolicy::Feature::kIndexedDBConnection,
-                    {SchedulingPolicy::RecordMetricsForBackForwardCache()})
+                    {SchedulingPolicy::DisableBackForwardCache()})
               : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()) {
   database_callbacks_->Connect(this);
 }

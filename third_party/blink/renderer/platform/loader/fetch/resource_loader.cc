@@ -423,7 +423,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
         feature_handle_for_scheduler_ =
             frame_or_worker_scheduler->RegisterFeature(
                 GetFeatureFromRequestContextType(request_context),
-                {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+                {SchedulingPolicy::DisableBackForwardCache()});
       }
     }
   }
@@ -1037,12 +1037,12 @@ void ResourceLoader::DidReceiveResponseInternal(
     if (response.CacheControlContainsNoCache()) {
       frame_or_worker_scheduler->RegisterStickyFeature(
           SchedulingPolicy::Feature::kSubresourceHasCacheControlNoCache,
-          {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+          {SchedulingPolicy::DisableBackForwardCache()});
     }
     if (response.CacheControlContainsNoStore()) {
       frame_or_worker_scheduler->RegisterStickyFeature(
           SchedulingPolicy::Feature::kSubresourceHasCacheControlNoStore,
-          {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+          {SchedulingPolicy::DisableBackForwardCache()});
     }
   }
 

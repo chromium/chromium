@@ -69,7 +69,7 @@ SharedWorker::SharedWorker(ExecutionContext* context)
       is_being_connected_(false),
       feature_handle_for_scheduler_(context->GetScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kSharedWorker,
-          {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+          {SchedulingPolicy::DisableBackForwardCache()})) {}
 
 SharedWorker* SharedWorker::Create(ExecutionContext* context,
                                    const String& url,

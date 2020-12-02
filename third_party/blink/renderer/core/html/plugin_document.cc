@@ -190,7 +190,7 @@ PluginDocument::PluginDocument(const DocumentInit& initializer)
   LockCompatibilityMode();
   GetExecutionContext()->GetScheduler()->RegisterStickyFeature(
       SchedulingPolicy::Feature::kContainsPlugins,
-      {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {SchedulingPolicy::DisableBackForwardCache()});
 }
 
 DocumentParser* PluginDocument::CreateParser() {

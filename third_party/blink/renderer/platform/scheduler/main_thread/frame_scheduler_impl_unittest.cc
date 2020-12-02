@@ -2478,7 +2478,7 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
 
   auto feature_handle1 = frame_scheduler_->RegisterFeature(
       SchedulingPolicy::Feature::kWebSocket,
-      {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {SchedulingPolicy::DisableBackForwardCache()});
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
@@ -2489,7 +2489,7 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
 
   auto feature_handle2 = frame_scheduler_->RegisterFeature(
       SchedulingPolicy::Feature::kWebRTC,
-      {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {SchedulingPolicy::DisableBackForwardCache()});
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
@@ -2528,7 +2528,7 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
 
   auto feature_handle = frame_scheduler_->RegisterFeature(
       SchedulingPolicy::Feature::kWebSocket,
-      {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {SchedulingPolicy::DisableBackForwardCache()});
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
@@ -2539,7 +2539,7 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
 
   frame_scheduler_->RegisterStickyFeature(
       SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
-      {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {SchedulingPolicy::DisableBackForwardCache()});
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
@@ -2596,11 +2596,11 @@ TEST_F(FrameSchedulerImplTest, FeatureUpload) {
                 frame_scheduler->RegisterStickyFeature(
                     SchedulingPolicy::Feature::
                         kMainResourceHasCacheControlNoStore,
-                    {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+                    {SchedulingPolicy::DisableBackForwardCache()});
                 frame_scheduler->RegisterStickyFeature(
                     SchedulingPolicy::Feature::
                         kMainResourceHasCacheControlNoCache,
-                    {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+                    {SchedulingPolicy::DisableBackForwardCache()});
                 // Ensure that the feature upload is delayed.
                 testing::Mock::VerifyAndClearExpectations(delegate);
                 EXPECT_CALL(
@@ -2635,7 +2635,7 @@ TEST_F(FrameSchedulerImplTest, FeatureUpload_FrameDestruction) {
                  FeatureHandle* feature_handle) {
                 *feature_handle = frame_scheduler->RegisterFeature(
                     SchedulingPolicy::Feature::kWebSocket,
-                    {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+                    {SchedulingPolicy::DisableBackForwardCache()});
                 // Ensure that the feature upload is delayed.
                 testing::Mock::VerifyAndClearExpectations(delegate);
                 EXPECT_CALL(*delegate,

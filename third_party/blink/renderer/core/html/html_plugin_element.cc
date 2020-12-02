@@ -132,7 +132,7 @@ HTMLPlugInElement::HTMLPlugInElement(
   if (auto* context = doc.GetExecutionContext()) {
     context->GetScheduler()->RegisterStickyFeature(
         SchedulingPolicy::Feature::kContainsPlugins,
-        {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+        {SchedulingPolicy::DisableBackForwardCache()});
   }
 }
 

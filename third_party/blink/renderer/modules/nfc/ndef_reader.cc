@@ -50,7 +50,7 @@ constexpr char kInvalidStateErrorMessage[] = "A scan() operation is ongoing.";
 NDEFReader* NDEFReader::Create(ExecutionContext* context) {
   context->GetScheduler()->RegisterStickyFeature(
       SchedulingPolicy::Feature::kWebNfc,
-      {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {SchedulingPolicy::DisableBackForwardCache()});
   return MakeGarbageCollected<NDEFReader>(context);
 }
 

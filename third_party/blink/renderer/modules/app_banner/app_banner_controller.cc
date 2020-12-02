@@ -46,7 +46,7 @@ void AppBannerController::BannerPromptRequest(
   // hidden properly. We disable bfcache to avoid these issues.
   frame_->GetFrameScheduler()->RegisterStickyFeature(
       blink::SchedulingPolicy::Feature::kAppBanner,
-      {blink::SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {blink::SchedulingPolicy::DisableBackForwardCache()});
 
   mojom::AppBannerPromptReply reply =
       frame_->DomWindow()->DispatchEvent(*BeforeInstallPromptEvent::Create(

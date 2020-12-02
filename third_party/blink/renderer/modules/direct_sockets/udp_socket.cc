@@ -21,7 +21,7 @@ UDPSocket::UDPSocket(ScriptPromiseResolver& resolver)
               ->RegisterFeature(
                   SchedulingPolicy::Feature::
                       kOutstandingNetworkRequestDirectSocket,
-                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {
+                  {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(resolver_);
 }
 

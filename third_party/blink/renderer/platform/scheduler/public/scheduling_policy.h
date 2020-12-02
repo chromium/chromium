@@ -19,11 +19,11 @@ struct PLATFORM_EXPORT SchedulingPolicy {
 
   // List of opt-outs which form a policy.
   struct DisableAggressiveThrottling {};
-  struct RecordMetricsForBackForwardCache {};
+  struct DisableBackForwardCache {};
 
   struct ValidPolicies {
     ValidPolicies(DisableAggressiveThrottling);
-    ValidPolicies(RecordMetricsForBackForwardCache);
+    ValidPolicies(DisableBackForwardCache);
   };
 
   template <class... ArgTypes,
@@ -35,7 +35,7 @@ struct PLATFORM_EXPORT SchedulingPolicy {
             base::trait_helpers::HasTrait<DisableAggressiveThrottling,
                                           ArgTypes...>()),
         disable_back_forward_cache(
-            base::trait_helpers::HasTrait<RecordMetricsForBackForwardCache,
+            base::trait_helpers::HasTrait<DisableBackForwardCache,
                                           ArgTypes...>()) {}
 
   SchedulingPolicy() {}

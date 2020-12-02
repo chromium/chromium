@@ -55,7 +55,7 @@ void WakeLockManager::AcquireWakeLock(ScriptPromiseResolver* resolver) {
     feature_handle_for_scheduler_ =
         execution_context_->GetScheduler()->RegisterFeature(
             SchedulingPolicy::Feature::kWakeLock,
-            {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+            {SchedulingPolicy::DisableBackForwardCache()});
   }
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   // 5.2. Let lock be a new WakeLockSentinel object with its type attribute set

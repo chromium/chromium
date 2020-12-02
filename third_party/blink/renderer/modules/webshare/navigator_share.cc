@@ -131,7 +131,7 @@ NavigatorShare::ShareClientImpl::ShareClientImpl(
               ->GetScheduler()
               ->RegisterFeature(
                   SchedulingPolicy::Feature::kWebShare,
-                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+                  {SchedulingPolicy::DisableBackForwardCache()})) {}
 
 void NavigatorShare::ShareClientImpl::Callback(mojom::blink::ShareError error) {
   if (navigator_) {

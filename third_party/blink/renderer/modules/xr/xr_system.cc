@@ -835,7 +835,7 @@ XRSystem::XRSystem(Navigator& navigator)
               ->GetFrameScheduler()
               ->RegisterFeature(
                   SchedulingPolicy::Feature::kWebXR,
-                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+                  {SchedulingPolicy::DisableBackForwardCache()})) {}
 
 void XRSystem::FocusedFrameChanged() {
   // Tell all sessions that focus changed.

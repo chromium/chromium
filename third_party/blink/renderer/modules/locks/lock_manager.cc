@@ -242,7 +242,7 @@ ScriptPromise LockManager::request(ScriptState* script_state,
 
   context->GetScheduler()->RegisterStickyFeature(
       blink::SchedulingPolicy::Feature::kWebLocks,
-      {blink::SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {blink::SchedulingPolicy::DisableBackForwardCache()});
 
   // 5. If origin is an opaque origin, then reject promise with a
   // "SecurityError" DOMException.

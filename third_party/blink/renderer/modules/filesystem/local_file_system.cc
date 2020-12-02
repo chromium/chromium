@@ -85,7 +85,7 @@ void LocalFileSystem::RequestFileSystem(
       WrapCrossThreadPersistent(this), type, std::move(callbacks), sync_type));
   GetSupplementable()->GetScheduler()->RegisterStickyFeature(
       blink::SchedulingPolicy::Feature::kWebFileSystem,
-      {blink::SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      {blink::SchedulingPolicy::DisableBackForwardCache()});
 }
 
 void LocalFileSystem::RequestFileSystemCallback(
