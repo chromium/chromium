@@ -1,6 +1,7 @@
 <style>
   :host {
-    display: block;
+    align-items: center;
+    display: flex;
     touch-action: none;
   }
 
@@ -9,14 +10,9 @@
   }
 
   label {
-    align-items: center;
     box-sizing: border-box;
     cursor: pointer;
-    display: flex;
     flex: 1;
-    padding: var(--toggle-row-label-vertical-padding, 0)
-             var(--toggle-row-label-horizontal-padding, 0);
-    width: 100%;
   }
 
   cr-toggle {
@@ -28,11 +24,11 @@
     margin-inline-end: 20px;
   }
 </style>
-<label id="label">
+<label id="label" aria-hidden="true">
   <input id="native" type="checkbox" checked="[[checked]]"
       on-change="onNativeChange_" on-click="onNativeClick_"
       disabled="[[disabled]]">
   <slot></slot>
-  <cr-toggle id="crToggle" checked="{{checked}}" aria-labelledby="label"
-      on-change="onCrToggleChange_" disabled="[[disabled]]"></cr-toggle>
 </label>
+<cr-toggle id="crToggle" checked="{{checked}}" aria-labelledby="label"
+    on-change="onCrToggleChange_" disabled="[[disabled]]"></cr-toggle>
