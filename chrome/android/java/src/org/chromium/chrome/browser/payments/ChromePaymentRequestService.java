@@ -94,13 +94,13 @@ public class ChromePaymentRequestService
     private SkipToGPayHelper mSkipToGPayHelper;
     private boolean mIsGooglePayBridgeActivated;
     /**
-     * True if the browser should skip showing PaymentRequest UI.
+     * True if the browser has skipped showing the app selector UI (PaymentRequest UI).
      *
      * <p>In cases where there is a single payment app and the merchant does not request shipping
      * or billing, the browser can skip showing UI as the app selector UI is not benefiting the user
      * at all.
      */
-    private boolean mShouldSkipAppSelector;
+    private boolean mHasSkippedAppSelector;
 
     /** The delegate of this class */
     public interface Delegate extends PaymentRequestService.Delegate {
@@ -247,12 +247,17 @@ public class ChromePaymentRequestService
         boolean urlPaymentMethodIdentifiersSupported =
                 PaymentRequestService.isUrlPaymentMethodIdentifiersSupported(
                         mSpec.getMethodData().keySet());
-        mShouldSkipAppSelector = shouldSkipAppSelector
-                // Only allowing payment apps that own their own UIs.
-                // This excludes AutofillPaymentInstrument as its UI is rendered inline in
-                // the app selector UI, thus can't be skipped.
-                && (urlPaymentMethodIdentifiersSupported || mDelegate.skipUiForBasicCard());
-        if (!mShouldSkipAppSelector && mSkipToGPayHelper == null) {
+        // Only allowing payment apps that own their own UIs.
+        // This excludes AutofillPaymentInstrument as its UI is rendered inline in
+        // the app selector UI, thus can't be skipped.
+        if (!urlPaymentMethodIdentifiersSupported && !mDelegate.skipUiForBasicCard()) {
+            shouldSkipAppSelector = false;
+        }
+        if (mSkipToGPayHelper != null) shouldSkipAppSelector = true;
+
+        if (shouldSkipAppSelector) {
+            mHasSkippedAppSelector = true;
+        } else {
             mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
         }
         return null;
@@ -279,7 +284,7 @@ public class ChromePaymentRequestService
     public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
         // If we are skipping showing the app selector UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
-        if (mShouldSkipAppSelector || mSkipToGPayHelper != null) {
+        if (mHasSkippedAppSelector) {
             assert !mPaymentUiService.getPaymentApps().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
@@ -440,7 +445,7 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
         }
 
-        if (isFinishedQueryingPaymentApps && !mShouldSkipAppSelector) {
+        if (isFinishedQueryingPaymentApps && !mHasSkippedAppSelector) {
             boolean providedInformationToPaymentRequestUI =
                     mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
             if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
@@ -676,7 +681,7 @@ public class ChromePaymentRequestService
 
         // Showing the app selector UI if we were previously skipping it so the loading
         // spinner shows up until the merchant notifies that payment was completed.
-        if (mShouldSkipAppSelector && mPaymentUiService.getPaymentRequestUI() != null) {
+        if (mHasSkippedAppSelector && mPaymentUiService.getPaymentRequestUI() != null) {
             mPaymentUiService.getPaymentRequestUI().showProcessingMessageAfterUiSkip();
         }
     }
@@ -698,7 +703,7 @@ public class ChromePaymentRequestService
         }
 
         // When skipping UI, any errors/cancel from fetching payment details should abort payment.
-        if (mShouldSkipAppSelector) {
+        if (mHasSkippedAppSelector) {
             assert !TextUtils.isEmpty(errorMessage);
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             disconnectFromClientWithDebugMessage(errorMessage);
