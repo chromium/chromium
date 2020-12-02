@@ -72,6 +72,9 @@ public class ContentViewRenderView
     // The native side of this object.
     private long mNativeContentViewRenderView;
 
+    private int mMinimumSurfaceWidth;
+    private int mMinimumSurfaceHeight;
+
     // An invisible view that notifies observers of changes to window insets and safe area.
     private InsetObserverView mInsetObserverView;
 
@@ -616,16 +619,23 @@ public class ContentViewRenderView
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             int existingHeight = getMeasuredHeight();
+            int width = MeasureSpec.getSize(widthMeasureSpec);
+            int height = MeasureSpec.getSize(heightMeasureSpec);
+
+            if (width <= mMinimumSurfaceWidth && height <= mMinimumSurfaceHeight) {
+                width = mMinimumSurfaceWidth;
+                height = mMinimumSurfaceHeight;
+            }
+
             // If width is the same and height shrinks, then check if we should
             // avoid this resize for displaying the soft keyboard.
-            if (getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec)
-                    && existingHeight > MeasureSpec.getSize(heightMeasureSpec)
+            if (getMeasuredWidth() == width && existingHeight > height
                     && shouldAvoidSurfaceResizeForSoftKeyboard()) {
                 // Just set the height to the current height.
-                heightMeasureSpec =
-                        MeasureSpec.makeMeasureSpec(existingHeight, MeasureSpec.EXACTLY);
+                height = existingHeight;
             }
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
         }
 
         @Override
@@ -711,6 +721,11 @@ public class ContentViewRenderView
         }
         assert mRequested.getMode() == mode;
         if (callback != null) mRequested.addCallback(callback);
+    }
+
+    public void setMinimumSurfaceSize(int width, int height) {
+        mMinimumSurfaceWidth = width;
+        mMinimumSurfaceHeight = height;
     }
 
     /**

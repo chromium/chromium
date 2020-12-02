@@ -335,6 +335,10 @@ public final class BrowserViewController
                 callback);
     }
 
+    public void setMinimumSurfaceSize(int width, int height) {
+        mContentViewRenderView.setMinimumSurfaceSize(width, height);
+    }
+
     public void onTopControlsChanged(int topControlsOffsetY, int topContentOffsetY) {
         mTopControlsContainerView.onOffsetsChanged(topControlsOffsetY, topContentOffsetY);
     }

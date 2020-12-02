@@ -13,12 +13,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.ContextMenu;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -433,6 +435,10 @@ public class WebLayerShellActivity extends AppCompatActivity {
         // when the shell is rotated in the foreground).
         fragment.setRetainInstance(true);
         mBrowser = Browser.fromFragment(fragment);
+        Display display = getDisplay();
+        Point point = new Point();
+        display.getRealSize(point);
+        mBrowser.setMinimumSurfaceSize(point.x, point.y);
         mProfile = mBrowser.getProfile();
         mProfile.setUserIdentityCallback(new UserIdentityCallback() {
             @Override
