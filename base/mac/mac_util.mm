@@ -41,8 +41,14 @@ class LoginItemsFileList {
 
   bool Initialize() WARN_UNUSED_RESULT {
     DCHECK(!login_items_.get()) << __func__ << " called more than once.";
+    // The LSSharedFileList suite of functions has been deprecated. Instead,
+    // a LoginItems helper should be registered with SMLoginItemSetEnabled()
+    // https://crbug.com/1154377.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     login_items_.reset(LSSharedFileListCreate(
         nullptr, kLSSharedFileListSessionLoginItems, nullptr));
+#pragma clang diagnostic pop
     DLOG_IF(ERROR, !login_items_.get()) << "Couldn't get a Login Items list.";
     return login_items_.get();
   }
@@ -61,14 +67,20 @@ class LoginItemsFileList {
 
     NSURL* url = [NSURL fileURLWithPath:[base::mac::MainBundle() bundlePath]];
 
+#pragma clang diagnostic push  // https://crbug.com/1154377
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     base::scoped_nsobject<NSArray> login_items_array(
         CFToNSCast(LSSharedFileListCopySnapshot(login_items_, nullptr)));
+#pragma clang diagnostic pop
 
     for (id login_item in login_items_array.get()) {
       LSSharedFileListItemRef item =
           reinterpret_cast<LSSharedFileListItemRef>(login_item);
+#pragma clang diagnostic push  // https://crbug.com/1154377
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       ScopedCFTypeRef<CFURLRef> item_url(
           LSSharedFileListItemCopyResolvedURL(item, 0, nullptr));
+#pragma clang diagnostic pop
 
       if (item_url && CFEqual(item_url, url)) {
         return ScopedCFTypeRef<LSSharedFileListItemRef>(
@@ -84,9 +96,12 @@ class LoginItemsFileList {
 };
 
 bool IsHiddenLoginItem(LSSharedFileListItemRef item) {
+#pragma clang diagnostic push  // https://crbug.com/1154377
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   ScopedCFTypeRef<CFBooleanRef> hidden(reinterpret_cast<CFBooleanRef>(
       LSSharedFileListItemCopyProperty(item,
           reinterpret_cast<CFStringRef>(kLSSharedFileListLoginItemHidden))));
+#pragma clang diagnostic pop
 
   return hidden && hidden == kCFBooleanTrue;
 }
@@ -183,11 +198,16 @@ void AddToLoginItems(bool hide_on_startup) {
 
   // Remove the old item, it has wrong hide flag, we'll create a new one.
   if (item.get()) {
+#pragma clang diagnostic push  // https://crbug.com/1154377
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     LSSharedFileListItemRemove(login_items.GetLoginFileList(), item);
+#pragma clang diagnostic pop
   }
 
   NSURL* url = [NSURL fileURLWithPath:[base::mac::MainBundle() bundlePath]];
 
+#pragma clang diagnostic push  // https://crbug.com/1154377
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   BOOL hide = hide_on_startup ? YES : NO;
   NSDictionary* properties =
       @{(NSString*)kLSSharedFileListLoginItemHidden : @(hide) };
@@ -197,6 +217,7 @@ void AddToLoginItems(bool hide_on_startup) {
       login_items.GetLoginFileList(), kLSSharedFileListItemLast, NULL, NULL,
       reinterpret_cast<CFURLRef>(url),
       reinterpret_cast<CFDictionaryRef>(properties), NULL));
+#pragma clang diagnostic pop
 
   if (!new_item.get()) {
     DLOG(ERROR) << "Couldn't insert current app into Login Items list.";
@@ -213,7 +234,10 @@ void RemoveFromLoginItems() {
   if (!item.get())
     return;
 
+#pragma clang diagnostic push  // https://crbug.com/1154377
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   LSSharedFileListItemRemove(login_items.GetLoginFileList(), item);
+#pragma clang diagnostic pop
 }
 
 bool WasLaunchedAsLoginOrResumeItem() {
