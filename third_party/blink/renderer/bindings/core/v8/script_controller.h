@@ -61,6 +61,8 @@ class SecurityOrigin;
 class CORE_EXPORT ScriptController final
     : public GarbageCollected<ScriptController> {
  public:
+  // TODO(crbug.com/1111134): Move this enum to V8ScriptRunner and remove
+  // #include "script_controller.h" from v8_script_runner.h.
   enum ExecuteScriptPolicy {
     kExecuteScriptWhenScriptsDisabled,
     kDoNotExecuteScriptWhenScriptsDisabled
@@ -82,7 +84,8 @@ class CORE_EXPORT ScriptController final
       const ScriptSourceCode&,
       const KURL& base_url,
       SanitizeScriptErrors,
-      const ScriptFetchOptions& = ScriptFetchOptions());
+      const ScriptFetchOptions&,
+      ScriptController::ExecuteScriptPolicy);
 
   v8::Local<v8::Value> EvaluateMethodInMainWorld(
       v8::Local<v8::Function> function,

@@ -153,7 +153,8 @@ void ScheduledAction::Execute(ExecutionContext* context) {
         script_state_->GetContext(),
         ScriptSourceCode(code_,
                          ScriptSourceLocationType::kEvalForScheduledAction),
-        KURL(), SanitizeScriptErrors::kDoNotSanitize);
+        KURL(), SanitizeScriptErrors::kDoNotSanitize, ScriptFetchOptions(),
+        ScriptController::kDoNotExecuteScriptWhenScriptsDisabled);
   } else {
     WorkerGlobalScope* worker = To<WorkerGlobalScope>(context);
     DCHECK(worker->GetThread()->IsCurrentThread());

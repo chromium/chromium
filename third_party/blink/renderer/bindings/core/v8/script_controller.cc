@@ -87,16 +87,17 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
     const ScriptSourceCode& source,
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
-    const ScriptFetchOptions& fetch_options) {
-    ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
-        GetIsolate(), ScriptState::From(context), window_.Get(), source,
-        base_url, sanitize_script_errors, fetch_options,
-        V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+    const ScriptFetchOptions& fetch_options,
+    ScriptController::ExecuteScriptPolicy policy) {
+  ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
+      GetIsolate(), ScriptState::From(context), window_.Get(), source, base_url,
+      sanitize_script_errors, fetch_options, policy,
+      V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 
-    if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
-      return result.GetSuccessValue();
+  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
+    return result.GetSuccessValue();
 
-    return v8::Local<v8::Value>();
+  return v8::Local<v8::Value>();
 }
 
 TextPosition ScriptController::EventHandlerPosition() const {
@@ -274,10 +275,6 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options,
     ExecuteScriptPolicy policy) {
-  if (!CanExecuteScript(policy)) {
-    return v8::Local<v8::Value>();
-  }
-
   // |script_state->GetContext()| should be initialized already due to the
   // WindowProxy() call inside ToScriptStateForMainWorld().
   ScriptState* script_state = ToScriptStateForMainWorld(window_->GetFrame());
@@ -288,7 +285,7 @@ v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
 
   return ExecuteScriptAndReturnValue(script_state->GetContext(), source_code,
                                      base_url, sanitize_script_errors,
-                                     fetch_options);
+                                     fetch_options, policy);
 }
 
 v8::Local<v8::Value> ScriptController::EvaluateMethodInMainWorld(
@@ -355,8 +352,10 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptInIsolatedWorld(
   // WindowProxy() inside ToScriptState() above. Add a helper which makes that
   // obvious?
 
-  return ExecuteScriptAndReturnValue(script_state->GetContext(), source,
-                                     base_url, sanitize_script_errors);
+  return ExecuteScriptAndReturnValue(
+      script_state->GetContext(), source, base_url, sanitize_script_errors,
+      ScriptFetchOptions(),
+      ScriptController::kExecuteScriptWhenScriptsDisabled);
 }
 
 scoped_refptr<DOMWrapperWorld>
