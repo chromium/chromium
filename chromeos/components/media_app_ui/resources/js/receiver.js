@@ -270,7 +270,7 @@ async function loadFiles(fileList) {
     await app.loadFiles(fileList);
   } else {
     // Note we don't await in this case, which may affect b/152729704.
-    window.customLaunchData = {files: fileList};
+    window.customLaunchData.files = fileList;
   }
 }
 
@@ -313,6 +313,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Ensure that if no files are loaded into the media app there is a default
 // empty file list available.
 window.customLaunchData = {
+  delegate: DELEGATE,
   files: new ReceivedFileList({files: [], currentFileIndex: -1})
 };
 
