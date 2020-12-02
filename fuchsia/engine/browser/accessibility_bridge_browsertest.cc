@@ -659,9 +659,39 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
   EXPECT_TRUE(
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kPageIframeTitle));
 
-  // TODO(https://crbug.com/1128954): Add support for combining AXTrees.
-  // Expect that the contents of the iframe are not available in the semantic
-  // tree.
+  // Data that is part of the iframe should be in the semantic tree.
+  EXPECT_TRUE(
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kButtonName1));
+
+  // Makes the iframe navigate to a different page.
+  GURL out_of_process_url_2 = second_test_server.GetURL(kPage2Path);
+  const auto script =
+      base::StringPrintf("document.getElementById(\"iframeId\").src = '%s'",
+                         out_of_process_url_2.spec().c_str());
+
+  frame_ptr_->ExecuteJavaScript(
+      {"*"}, cr_fuchsia::MemBufferFromString(script, "test2"),
+      [](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
+        CHECK(result.is_response());
+      });
+
+  semantics_manager_.semantic_tree()->RunUntilCommitCountIs(4);
+
+  // check that the iframe navigated to a different page.
+  EXPECT_TRUE(semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName));
+
+  // Old iframe data should be gone.
   EXPECT_FALSE(
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kButtonName1));
+
+  // Makes the main page navigate to a different page, causing the iframe to go
+  // away.
+  LoadPage(kPage2Path, kPage2Title);
+
+  semantics_manager_.semantic_tree()->RunUntilCommitCountIs(5);
+
+  // We've navigated to a different page that has no iframes. Only one frame
+  // should be present.
+  num_frames = frame_impl_->web_contents_for_test()->GetAllFrames().size();
+  EXPECT_EQ(num_frames, 1);
 }
