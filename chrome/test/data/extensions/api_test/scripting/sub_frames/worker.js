@@ -45,25 +45,21 @@ chrome.test.runTests([
   async function disallowedTopFrameAccess() {
     const query = {url: 'http://d.com/*'};
     let tab = await getSingleTab(query);
-    const results = await new Promise(resolve => {
-      chrome.scripting.executeScript(
-          {
-            target: {
-              tabId: tab.id,
-              allFrames: true,
-            },
-            function: injectedFunction,
+    chrome.scripting.executeScript(
+        {
+          target: {
+            tabId: tab.id,
+            allFrames: true,
           },
-          resolve);
-    });
-    chrome.test.assertNoLastError();
-
-    // The extension doesn't have access to the top frame (d.com), but does to
-    // one of the subframes (b.com). This injection should succeed (leading to a
-    // single result).
-    chrome.test.assertEq(1, results.length);
-    const url1 = new URL(results[0].result);
-    chrome.test.assertEq('b.com', url1.hostname);
-    chrome.test.succeed();
+          function: injectedFunction,
+        },
+        results => {
+          chrome.test.assertLastError(
+              `Cannot access contents of url "${tab.url}". ` +
+                'Extension manifest must request permission ' +
+                'to access this host.');
+          chrome.test.assertEq(undefined, results);
+          chrome.test.succeed();
+        });
   },
 ]);
