@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/notification_types.h"
 #include "net/dns/mock_host_resolver.h"
@@ -22,7 +23,7 @@
 
 namespace chromeos {
 
-class SelectToSpeakLiveSiteTest : public InProcessBrowserTest {
+class AccessibilityLiveSiteTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSelectToSpeakEnabled());
@@ -40,9 +41,10 @@ class SelectToSpeakLiveSiteTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // To avoid depending on external resources, browser tests don't allow
-    // non-local DNS queries by default. Override this for this specific
-    // manual test suite.
+    // TODO: this logic currently doesn't work and the test never passes due to
+    // inability to lookup docs.google.com. To avoid depending on external
+    // resources, browser tests don't allow non-local DNS queries by default.
+    // Override this for this specific manual test suite.
     scoped_refptr<net::RuleBasedHostResolverProc> resolver =
         new net::RuleBasedHostResolverProc(host_resolver());
     resolver->AllowDirectLookup("*.google.com");
@@ -55,7 +57,7 @@ class SelectToSpeakLiveSiteTest : public InProcessBrowserTest {
     mock_host_resolver_override_.reset();
   }
 
-  SpeechMonitor speech_monitor_;
+  test::SpeechMonitor speech_monitor_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
   std::unique_ptr<net::ScopedDefaultHostResolverProc>
@@ -72,7 +74,8 @@ class SelectToSpeakLiveSiteTest : public InProcessBrowserTest {
 // To visually see what's happening while the test is running,
 // add this option:
 //    --enable-pixel-output-in-tests
-IN_PROC_BROWSER_TEST_F(SelectToSpeakLiveSiteTest, GoogleDocsSupport) {
+IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
+                       SelectToSpeakGoogleDocsSupport) {
   const char* kGoogleDocsUrl =
       "https://docs.google.com/document/d/"
       "1qpu3koSIHpBzQbxeEE-dofSKXCIgdc4yJLI-o1LpCPs/view";
@@ -87,7 +90,6 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakLiveSiteTest, GoogleDocsSupport) {
 
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_contents, "Long-string-to-test-select-to-speak");
-
   gfx::Rect bounds = browser()->window()->GetBounds();
   generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
   generator_->MoveMouseTo(bounds.x() + 8, bounds.y() + 200);
@@ -97,11 +99,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakLiveSiteTest, GoogleDocsSupport) {
   generator_->ReleaseLeftButton();
   generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
 
-  for (;;) {
-    std::string utterance = speech_monitor_.GetNextUtterance();
-    if (utterance == kTextFoundInGoogleDoc)
-      break;
-  }
+  speech_monitor_.ExpectSpeech(kTextFoundInGoogleDoc);
+  speech_monitor_.Replay();
 }
 
 }  // namespace chromeos

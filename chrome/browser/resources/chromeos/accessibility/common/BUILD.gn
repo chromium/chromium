@@ -32,6 +32,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "constants.js",
     "event_generator.js",
     "event_handler.js",
+    "gdocs_script.js",
     "instance_checker.js",
     "key_code.js",
     "rect_util.js",

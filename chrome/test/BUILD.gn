@@ -6344,7 +6344,7 @@ if (!is_android) {
     # test against live sites, as a way to catch potential regressions.
     test("accessibility_live_site_tests") {
       sources = [
-        "../browser/chromeos/accessibility/select_to_speak_live_site_browsertest.cc",
+        "../browser/chromeos/accessibility/accessibility_live_site_browsertest.cc",
         "base/interactive_test_utils.cc",
         "base/interactive_test_utils.h",
         "base/interactive_test_utils_aura.cc",

@@ -37,7 +37,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
-    "select_to_speak_gdocs_script.js",
     "select_to_speak_main.js",
     "select_to_speak_options.js",
     "unchecked.png",
