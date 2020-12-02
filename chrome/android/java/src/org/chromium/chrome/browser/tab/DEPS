@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/TabHidingType.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabCoordinator.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",

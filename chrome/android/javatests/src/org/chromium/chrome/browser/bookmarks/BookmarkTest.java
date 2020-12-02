@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader.PromoState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -258,9 +260,25 @@ public class BookmarkTest {
         });
     }
 
+    private void waitForOfflinePageSaved(String url) throws Exception {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflinePageBridge bridge =
+                    OfflinePageBridge.getForProfile(Profile.getLastUsedRegularProfile());
+            bridge.getAllPages((items) -> {
+                for (OfflinePageItem item : items) {
+                    if (url.startsWith(item.getUrl())) {
+                        callbackHelper.notifyCalled();
+                    }
+                }
+            });
+        });
+        callbackHelper.waitForFirst();
+    }
+
     @Test
     @SmallTest
-    public void testAddBookmark() {
+    public void testAddBookmark() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
         Assert.assertFalse(mBookmarkModel.isBookmarkModelLoaded());
@@ -281,6 +299,8 @@ public class BookmarkTest {
             Assert.assertEquals(mTestPage, item.getUrl());
             Assert.assertEquals(TEST_PAGE_TITLE_GOOGLE, item.getTitle());
         });
+
+        waitForOfflinePageSaved(mTestPage);
 
         // Click the star button again to launch the edit activity.
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
@@ -1556,7 +1576,6 @@ public class BookmarkTest {
         Assert.assertEquals("The 1st view should be reading list.", BookmarkType.READING_LIST,
                 getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
-        onView(withText("No unread pages")).check(matches(isDisplayed()));
 
         Assert.assertEquals("The 2nd view should be a divider.", BookmarkListEntry.ViewType.DIVIDER,
                 getAdapter().getItemViewType(1));
@@ -1591,6 +1610,46 @@ public class BookmarkTest {
         });
         onView(withText("Reading list")).check(matches(isDisplayed()));
         onView(withText("2 unread pages")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testAddReadingListItemFromBottomSheet() throws Exception {
+        mActivityTestRule.loadUrl(mTestPage);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting());
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        // Click the star icon to trigger bookmark bottom sheet.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(), R.id.bookmark_this_page_id);
+
+        // Click the reading list folder in the bottom sheet, and wait for reading list item added.
+        onView(withText("Reading list")).check(matches(isDisplayed())).perform(click());
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestPage) != null);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Check reading list item states.
+            BookmarkItem readingListItem = mBookmarkModel.getReadingListItem(mTestPage);
+            Assert.assertEquals(mTestPage, readingListItem.getUrl());
+            Assert.assertEquals(TEST_PAGE_TITLE_GOOGLE, readingListItem.getTitle());
+            Assert.assertFalse(readingListItem.isRead());
+
+            // Snackbar has been shown.
+            SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+            Snackbar currentSnackbar = snackbarManager.getCurrentSnackbarForTesting();
+            Assert.assertEquals("Add to reading list snackbar not shown.",
+                    Snackbar.UMA_READING_LIST_BOOKMARK_ADDED,
+                    currentSnackbar.getIdentifierForTesting());
+        });
+
+        waitForOfflinePageSaved(mTestPage);
+
+        // Click the star button again to launch the edit activity.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(), R.id.bookmark_this_page_id);
+        waitForEditActivity();
     }
 
     /**

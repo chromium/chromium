@@ -13,9 +13,11 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -24,8 +26,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
+import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,6 +39,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -53,28 +58,68 @@ public class BookmarkUtils {
 
     /**
      * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the
-     * bookmark. If not, add the bookmark to bookmarkmodel, and show a snackbar notifying the user.
+     * normal bookmark or show the reading list page for reading list bookmark.
+     * If not, add the bookmark to {@link BookmarkModel}, and show a snackbar notifying the user.
      *
-     * Note: Takes ownership of bookmarkModel, and will call |destroy| on it when finished.
-     *
-     * @param existingBookmarkId The bookmark ID if the tab has already been bookmarked.
+     * @param existingBookmarkItem The {@link BookmarkItem} if the tab has already been bookmarked.
      * @param bookmarkModel The bookmark model.
      * @param tab The tab to add or edit a bookmark.
-     * @param snackbarManager The SnackbarManager used to show the snackbar.
+     * @param snackbarManager The {@link SnackbarManager} used to show the snackbar.
+     * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      * @param activity Current activity.
      * @param fromCustomTab boolean indicates whether it is called by Custom Tab.
-     * @return Bookmark ID of the bookmark. Could be <code>null</code> if bookmark didn't exist
-     *   and bookmark model failed to create it.
+     * @param callback Invoked with the resulting bookmark ID, which could be null if unsuccessful.
      */
-    public static BookmarkId addOrEditBookmark(long existingBookmarkId, BookmarkModel bookmarkModel,
-            Tab tab, SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab) {
-        if (existingBookmarkId != BookmarkId.INVALID_ID) {
-            BookmarkId bookmarkId = new BookmarkId(existingBookmarkId, BookmarkType.NORMAL);
-            startEditActivity(activity, bookmarkId);
-            bookmarkModel.destroy();
-            return bookmarkId;
+    public static void addOrEditBookmark(@Nullable BookmarkItem existingBookmarkItem,
+            BookmarkModel bookmarkModel, Tab tab, SnackbarManager snackbarManager,
+            BottomSheetController bottomSheetController, Activity activity, boolean fromCustomTab,
+            Callback<BookmarkId> callback) {
+        assert bookmarkModel.isBookmarkModelLoaded();
+        if (existingBookmarkItem != null) {
+            startEditActivity(activity, existingBookmarkItem.getId());
+            callback.onResult(existingBookmarkItem.getId());
+            return;
         }
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
+            // Show a bottom sheet to let the user select target bookmark folder.
+            showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
+                    activity, fromCustomTab, callback);
+            return;
+        }
+
+        BookmarkId newBookmarkId = addBookmarkAndShowSnackbar(
+                bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
+        callback.onResult(newBookmarkId);
+    }
+
+    private static void showBookmarkBottomSheet(BookmarkModel bookmarkModel, Tab tab,
+            SnackbarManager snackbarManager, BottomSheetController bottomSheetController,
+            Activity activity, boolean fromCustomTab, Callback<BookmarkId> callback) {
+        BookmarkBottomSheetCoordinator bookmarkBottomSheet =
+                new BookmarkBottomSheetCoordinator(activity, bottomSheetController, bookmarkModel);
+        bookmarkBottomSheet.show((selectedBookmarkItem) -> {
+            if (selectedBookmarkItem == null) {
+                callback.onResult(null);
+                return;
+            }
+
+            // Add to the selected bookmark folder.
+            BookmarkId newBookmarkId;
+            if (selectedBookmarkItem.getId().getType() == BookmarkType.READING_LIST) {
+                newBookmarkId = BookmarkUtils.addToReadingList(tab.getOriginalUrl(), tab.getTitle(),
+                        snackbarManager, bookmarkModel, activity);
+            } else {
+                newBookmarkId = addBookmarkAndShowSnackbar(
+                        bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
+            }
+            callback.onResult(newBookmarkId);
+        });
+    }
+
+    // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
+    private static BookmarkId addBookmarkAndShowSnackbar(BookmarkModel bookmarkModel, Tab tab,
+            SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab) {
         BookmarkId bookmarkId =
                 addBookmarkInternal(activity, bookmarkModel, tab.getTitle(), tab.getOriginalUrl());
 
@@ -115,8 +160,6 @@ public class BookmarkUtils {
                     null);
         }
         snackbarManager.showSnackbar(snackbar);
-
-        bookmarkModel.destroy();
         return bookmarkId;
     }
 
@@ -127,24 +170,25 @@ public class BookmarkUtils {
      * @param url The associated URL.
      * @param title The title of the reading list item being added.
      * @param snackbarManager The snackbar manager that will be used to show a snackbar.
+     * @param bookmarkModel The bookmark model that talks to the bookmark backend.
      * @param context The associated context.
+     * @return The bookmark ID created after saving the article to the reading list.
      */
-    public static void addToReadingList(
-            String url, String title, SnackbarManager snackbarManager, Context context) {
-        BookmarkModel bookmarkModel = new BookmarkModel();
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            BookmarkId bookmarkId = bookmarkModel.addToReadingList(title, url);
+    public static BookmarkId addToReadingList(String url, String title,
+            SnackbarManager snackbarManager, BookmarkModel bookmarkModel, Context context) {
+        assert bookmarkModel.isBookmarkModelLoaded();
+        BookmarkId bookmarkId = bookmarkModel.addToReadingList(title, url);
 
-            if (bookmarkId != null) {
-                Snackbar snackbar = Snackbar.make(context.getString(R.string.reading_list_saved),
-                        new SnackbarController() {}, Snackbar.TYPE_ACTION,
-                        Snackbar.UMA_READING_LIST_BOOKMARK_ADDED);
-                snackbarManager.showSnackbar(snackbar);
+        if (bookmarkId != null) {
+            Snackbar snackbar = Snackbar.make(context.getString(R.string.reading_list_saved),
+                    new SnackbarController() {}, Snackbar.TYPE_ACTION,
+                    Snackbar.UMA_READING_LIST_BOOKMARK_ADDED);
+            snackbarManager.showSnackbar(snackbar);
 
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                        .notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
-            }
-        });
+            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                    .notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
+        }
+        return bookmarkId;
     }
 
     /**

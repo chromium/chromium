@@ -220,6 +220,11 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       const base::android::JavaParamRef<jstring>& j_title,
       const base::android::JavaParamRef<jstring>& j_url);
 
+  base::android::ScopedJavaLocalRef<jobject> GetReadingListItem(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jstring>& j_url);
+
   void SetReadStatus(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj,
                      const base::android::JavaParamRef<jstring>& j_url,

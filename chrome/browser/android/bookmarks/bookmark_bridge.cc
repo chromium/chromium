@@ -185,6 +185,15 @@ jlong BookmarkBridge::GetBookmarkIdForWebContents(
                 ->IsOffTheRecord());
   GURL url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
       web_contents->GetURL());
+
+  // TODO(crbug.com/1150559): This is a hack to avoid a historical issue that
+  // this function doesn't wait for any backend loaded.
+  if (reading_list_manager_->IsLoaded()) {
+    const auto* node = reading_list_manager_->Get(url);
+    if (node)
+      return node->id();
+  }
+
   // Get all the nodes for |url| and sort them by date added.
   std::vector<const bookmarks::BookmarkNode*> nodes;
   bookmarks::ManagedBookmarkService* managed =
@@ -819,14 +828,21 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
   const BookmarkNode* node = reading_list_manager_->Add(
       GURL(base::android::ConvertJavaStringToUTF16(env, j_url)),
       base::android::ConvertJavaStringToUTF8(env, j_title));
+  DCHECK(node);
+  return JavaBookmarkIdCreateBookmarkId(env, node->id(), GetBookmarkType(node));
+}
 
-  ScopedJavaLocalRef<jobject> j_bookark_id;
-  if (node) {
-    j_bookark_id =
-        JavaBookmarkIdCreateBookmarkId(env, node->id(), GetBookmarkType(node));
-  }
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListItem(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jstring>& j_url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsLoaded());
 
-  return j_bookark_id;
+  const BookmarkNode* node = reading_list_manager_->Get(
+      GURL(base::android::ConvertJavaStringToUTF16(env, j_url)));
+
+  return node ? CreateJavaBookmark(node) : ScopedJavaLocalRef<jobject>();
 }
 
 void BookmarkBridge::SetReadStatus(JNIEnv* env,

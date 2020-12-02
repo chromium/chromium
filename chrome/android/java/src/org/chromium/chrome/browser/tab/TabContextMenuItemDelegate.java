@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuItemDelegate;
@@ -270,10 +271,14 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onReadLater(String url, String title) {
-        BookmarkUtils.addToReadingList(
-                url, title, mSnackbarManagerSupplier.get(), mTab.getContext());
-        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        BookmarkModel bookmarkModel = new BookmarkModel();
+        bookmarkModel.finishLoadingBookmarkModel(() -> {
+            BookmarkUtils.addToReadingList(
+                    url, title, mSnackbarManagerSupplier.get(), bookmarkModel, mTab.getContext());
+            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                    .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+            bookmarkModel.destroy();
+        });
     }
 
     @Override

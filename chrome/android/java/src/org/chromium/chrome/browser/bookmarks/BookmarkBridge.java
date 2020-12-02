@@ -299,7 +299,8 @@ public class BookmarkBridge {
 
     /**
      * @param tab Tab whose current URL is checked against.
-     * @return {@code true} if the current Tab URL has a bookmark associated with it.
+     * @return {@code true} if the current Tab URL has a bookmark associated with it. If the
+     *         bookmark backend is not loaded, return {@code false}.
      */
     public boolean hasBookmarkIdForTab(Tab tab) {
         ThreadUtils.assertOnUiThread();
@@ -311,7 +312,8 @@ public class BookmarkBridge {
 
     /**
      * @param tab Tab whose current URL is checked against.
-     * @return User-editable bookmark ID.
+     * @return User-editable bookmark ID or {@link BookmarkId#INVALID_ID} if bookmark backend is
+     *         not loaded or the tab is frozen.
      */
     public long getUserBookmarkIdForTab(Tab tab) {
         ThreadUtils.assertOnUiThread();
@@ -844,9 +846,23 @@ public class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         assert title != null;
         assert url != null;
+        assert mIsNativeBookmarkModelLoaded;
 
         return BookmarkBridgeJni.get().addToReadingList(
                 mNativeBookmarkBridge, BookmarkBridge.this, title, url);
+    }
+
+    /**
+     * @param url The URL of the reading list item.
+     * @return The reading list item with the URL, or null if no such reading list item.
+     */
+    public BookmarkItem getReadingListItem(String url) {
+        ThreadUtils.assertOnUiThread();
+        assert url != null;
+        assert mIsNativeBookmarkModelLoaded;
+
+        return BookmarkBridgeJni.get().getReadingListItem(
+                mNativeBookmarkBridge, BookmarkBridge.this, url);
     }
 
     /**
@@ -1093,6 +1109,8 @@ public class BookmarkBridge {
                 int index, String title, String url);
         BookmarkId addToReadingList(
                 long nativeBookmarkBridge, BookmarkBridge caller, String title, String url);
+        BookmarkItem getReadingListItem(
+                long nativeBookmarkBridge, BookmarkBridge caller, String url);
         void setReadStatus(
                 long nativeBookmarkBridge, BookmarkBridge caller, String url, boolean read);
         void undo(long nativeBookmarkBridge, BookmarkBridge caller);
