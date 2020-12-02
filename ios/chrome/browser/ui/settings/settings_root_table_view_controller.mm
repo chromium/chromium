@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -120,8 +121,13 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                            action:nil];
   [self setToolbarItems:@[ flexibleSpace, self.deleteButton, flexibleSpace ]
                animated:YES];
+  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.styler.tableViewBackgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+  } else {
     self.styler.tableViewBackgroundColor =
         UIColor.cr_systemGroupedBackgroundColor;
+  }
   [super viewDidLoad];
   self.styler.cellBackgroundColor =
       UIColor.cr_secondarySystemGroupedBackgroundColor;

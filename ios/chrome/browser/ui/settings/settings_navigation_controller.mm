@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -291,11 +292,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
 
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.view.backgroundColor = UIColor.cr_systemGroupedBackgroundColor;
-    self.navigationBar.translucent = NO;
-    self.navigationBar.barTintColor = UIColor.cr_systemGroupedBackgroundColor;
-    self.toolbar.translucent = NO;
-    self.toolbar.barTintColor = UIColor.cr_systemGroupedBackgroundColor;
+    self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   }
 
   self.navigationBar.prefersLargeTitles = YES;

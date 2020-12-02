@@ -33,6 +33,7 @@ group("resources") {
     ":red_color",
     ":red_dark_color",
     ":scrim_background_color",
+    ":secondary_background_color",
     ":separator_color",
     ":solid_button_text_color",
     ":table_view_row_highlight_color",
@@ -217,4 +218,8 @@ colorset("toolbar_button_dark_color") {
 
 colorset("toolbar_shadow_color") {
   sources = [ "toolbar_shadow_color.colorset/Contents.json" ]
+}
+
+colorset("secondary_background_color") {
+  sources = [ "secondary_background_color.colorset/Contents.json" ]
 }
