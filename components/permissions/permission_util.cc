@@ -36,8 +36,6 @@ std::string PermissionUtil::GetPermissionString(
       return "Midi";
     case ContentSettingsType::BACKGROUND_SYNC:
       return "BackgroundSync";
-    case ContentSettingsType::PLUGINS:
-      return "Flash";
     case ContentSettingsType::SENSORS:
       return "Sensors";
     case ContentSettingsType::ACCESSIBILITY_EVENTS:
@@ -195,7 +193,6 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::BACKGROUND_SYNC:
-    case ContentSettingsType::PLUGINS:
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
