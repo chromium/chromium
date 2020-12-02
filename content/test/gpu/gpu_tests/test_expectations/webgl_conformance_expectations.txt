@@ -466,6 +466,7 @@ crbug.com/1108676 [ mac ] conformance/ogles/GL/asin/asin_001_to_006.html [ Retry
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/929009 [ mac amd ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
+crbug.com/1154745 [ mac amd-0x6821 angle-opengl ] conformance/ogles/GL/lessThan/lessThan_001_to_008.html [ RetryOnFailure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
