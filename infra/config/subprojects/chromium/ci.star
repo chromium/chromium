@@ -2467,6 +2467,7 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "try-warmer",
+    builderless = False,
     console_view_entry = ci.console_view_entry(
         category = "infra",
         short_name = "warmer",
