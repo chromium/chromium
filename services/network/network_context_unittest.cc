@@ -2438,10 +2438,10 @@ bool SetCookieHelper(NetworkContext* network_context,
   base::RunLoop run_loop;
   bool result = false;
   cookie_manager->SetCanonicalCookie(
-      net::CanonicalCookie(key, value, url.host(), "/", base::Time(),
-                           base::Time(), base::Time(), true, false,
-                           net::CookieSameSite::NO_RESTRICTION,
-                           net::COOKIE_PRIORITY_LOW, false),
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          key, value, url.host(), "/", base::Time(), base::Time(), base::Time(),
+          true, false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_LOW, false),
       url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&SetCookieCallback, &run_loop, &result));
   run_loop.Run();
@@ -2459,12 +2459,12 @@ TEST_F(NetworkContextTest, CookieManager) {
   // Set a cookie through the cookie interface.
   base::RunLoop run_loop1;
   bool result = false;
-  net::CanonicalCookie cookie("TestCookie", "1", "www.test.com", "/",
-                              base::Time(), base::Time(), base::Time(), false,
-                              false, net::CookieSameSite::LAX_MODE,
-                              net::COOKIE_PRIORITY_LOW, false);
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
+      base::Time(), false, false, net::CookieSameSite::LAX_MODE,
+      net::COOKIE_PRIORITY_LOW, false);
   cookie_manager_remote->SetCanonicalCookie(
-      cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
       net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&SetCookieCallback, &run_loop1, &result));
   run_loop1.Run();
@@ -3926,17 +3926,17 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
   std::unique_ptr<net::URLRequest> request =
       context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
-  net::CanonicalCookie cookie("TestCookie", "1", "www.test.com", "/",
-                              base::Time(), base::Time(), base::Time(), false,
-                              false, net::CookieSameSite::LAX_MODE,
-                              net::COOKIE_PRIORITY_LOW, false);
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
+      base::Time(), false, false, net::CookieSameSite::LAX_MODE,
+      net::COOKIE_PRIORITY_LOW, false);
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, cookie, nullptr, true));
+          *request, *cookie, nullptr, true));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, cookie, nullptr, true));
+          *request, *cookie, nullptr, true));
 }
 
 TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
@@ -3946,15 +3946,15 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
   std::unique_ptr<net::URLRequest> request =
       context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
-  net::CanonicalCookie cookie("TestCookie", "1", "www.test.com", "/",
-                              base::Time(), base::Time(), base::Time(), false,
-                              false, net::CookieSameSite::LAX_MODE,
-                              net::COOKIE_PRIORITY_LOW, false);
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
+      base::Time(), false, false, net::CookieSameSite::LAX_MODE,
+      net::COOKIE_PRIORITY_LOW, false);
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, cookie, nullptr, true));
+          *request, *cookie, nullptr, true));
 }
 
 TEST_F(NetworkContextTest, CanGetCookiesFalseIfCookiesBlocked) {
