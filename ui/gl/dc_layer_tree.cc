@@ -19,12 +19,17 @@ bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
 }
 }  // namespace
 
+VideoProcessorWrapper::VideoProcessorWrapper() = default;
+VideoProcessorWrapper::~VideoProcessorWrapper() = default;
+VideoProcessorWrapper::VideoProcessorWrapper(VideoProcessorWrapper&& other) =
+    default;
+VideoProcessorWrapper& VideoProcessorWrapper::operator=(
+    VideoProcessorWrapper&& other) = default;
+
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
-                         bool disable_vp_scaling,
-                         bool reset_vp_when_colorspace_changes)
+                         bool disable_vp_scaling)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
-      disable_vp_scaling_(disable_vp_scaling),
-      reset_vp_when_colorspace_changes_(reset_vp_when_colorspace_changes) {}
+      disable_vp_scaling_(disable_vp_scaling) {}
 
 DCLayerTree::~DCLayerTree() = default;
 
@@ -65,49 +70,42 @@ bool DCLayerTree::Initialize(
   return true;
 }
 
-bool DCLayerTree::InitializeVideoProcessor(
+VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     const gfx::Size& input_size,
     const gfx::Size& output_size,
-    const gfx::ColorSpace& input_color_space,
-    const gfx::ColorSpace& output_color_space,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    bool is_yuv_swapchain) {
-  if (!video_device_) {
+    bool is_hdr_output) {
+  VideoProcessorWrapper& video_processor_wrapper =
+      GetOrCreateVideoProcessor(is_hdr_output);
+
+  if (!video_processor_wrapper.video_device) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
-    if (FAILED(d3d11_device_.As(&video_device_))) {
+    if (FAILED(d3d11_device_.As(&video_processor_wrapper.video_device))) {
       DLOG(ERROR) << "Failed to retrieve video device from D3D11 device";
       DCHECK(false);
       DirectCompositionSurfaceWin::DisableOverlays();
-      return false;
+      return nullptr;
     }
-    DCHECK(video_device_);
+    DCHECK(video_processor_wrapper.video_device);
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     d3d11_device_->GetImmediateContext(&context);
     DCHECK(context);
-    context.As(&video_context_);
-    DCHECK(video_context_);
+    context.As(&video_processor_wrapper.video_context);
+    DCHECK(video_processor_wrapper.video_context);
   }
 
-  bool colorspace_changed = !(input_color_space == video_input_color_space_ &&
-                              output_color_space == video_output_color_space_ &&
-                              is_yuv_video_output_ == is_yuv_swapchain);
-  if (video_processor_ && SizeContains(video_input_size_, input_size) &&
-      SizeContains(video_output_size_, output_size) &&
-      !(colorspace_changed && reset_vp_when_colorspace_changes_)) {
-    if (colorspace_changed) {
-      SetColorSpaceForVideoProcessor(input_color_space, output_color_space,
-                                     std::move(swap_chain), is_yuv_swapchain);
-    }
-    return true;
-  }
+  if (video_processor_wrapper.video_processor &&
+      SizeContains(video_processor_wrapper.video_input_size, input_size) &&
+      SizeContains(video_processor_wrapper.video_output_size, output_size))
+    return &video_processor_wrapper;
+
   TRACE_EVENT2("gpu", "DCLayerTree::InitializeVideoProcessor", "input_size",
                input_size.ToString(), "output_size", output_size.ToString());
-  video_input_size_ = input_size;
-  video_output_size_ = output_size;
+  video_processor_wrapper.video_input_size = input_size;
+  video_processor_wrapper.video_output_size = output_size;
 
-  video_processor_.Reset();
-  video_processor_enumerator_.Reset();
+  video_processor_wrapper.video_processor.Reset();
+  video_processor_wrapper.video_processor_enumerator.Reset();
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC desc = {};
   desc.InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE;
   desc.InputFrameRate.Numerator = 60;
@@ -119,8 +117,9 @@ bool DCLayerTree::InitializeVideoProcessor(
   desc.OutputWidth = output_size.width();
   desc.OutputHeight = output_size.height();
   desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
-  HRESULT hr = video_device_->CreateVideoProcessorEnumerator(
-      &desc, &video_processor_enumerator_);
+  HRESULT hr =
+      video_processor_wrapper.video_device->CreateVideoProcessorEnumerator(
+          &desc, &video_processor_wrapper.video_processor_enumerator);
   base::UmaHistogramSparse(
       "GPU.DirectComposition.CreateVideoProcessorEnumerator", hr);
   if (FAILED(hr)) {
@@ -129,11 +128,11 @@ bool DCLayerTree::InitializeVideoProcessor(
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
     DirectCompositionSurfaceWin::DisableOverlays();
-    return false;
+    return nullptr;
   }
-
-  hr = video_device_->CreateVideoProcessor(video_processor_enumerator_.Get(), 0,
-                                           &video_processor_);
+  hr = video_processor_wrapper.video_device->CreateVideoProcessor(
+      video_processor_wrapper.video_processor_enumerator.Get(), 0,
+      &video_processor_wrapper.video_processor);
   base::UmaHistogramSparse(
       "GPU.DirectComposition.VideoDeviceCreateVideoProcessor", hr);
   if (FAILED(hr)) {
@@ -142,55 +141,21 @@ bool DCLayerTree::InitializeVideoProcessor(
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
     DirectCompositionSurfaceWin::DisableOverlays();
-    return false;
+    return nullptr;
   }
   // Auto stream processing (the default) can hurt power consumption.
-  video_context_->VideoProcessorSetStreamAutoProcessingMode(
-      video_processor_.Get(), 0, FALSE);
-  SetColorSpaceForVideoProcessor(input_color_space, output_color_space,
-                                 std::move(swap_chain), is_yuv_swapchain);
-  return true;
+  video_processor_wrapper.video_context
+      ->VideoProcessorSetStreamAutoProcessingMode(
+          video_processor_wrapper.video_processor.Get(), 0, FALSE);
+  return &video_processor_wrapper;
 }
 
-void DCLayerTree::SetColorSpaceForVideoProcessor(
-    const gfx::ColorSpace& input_color_space,
-    const gfx::ColorSpace& output_color_space,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    bool is_yuv_swapchain) {
-  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
-  if (SUCCEEDED(swap_chain.As(&swap_chain3)) &&
-      SUCCEEDED(video_context_.As(&context1))) {
-    DCHECK(swap_chain3);
-    DCHECK(context1);
-    // Set input color space.
-    context1->VideoProcessorSetStreamColorSpace1(
-        video_processor_.Get(), 0,
-        gfx::ColorSpaceWin::GetDXGIColorSpace(input_color_space));
-    // Set output color space.
-    DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
-        gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space,
-                                              /*force_yuv=*/is_yuv_swapchain);
-
-    if (SUCCEEDED(swap_chain3->SetColorSpace1(output_dxgi_color_space))) {
-      context1->VideoProcessorSetOutputColorSpace1(video_processor_.Get(),
-                                                   output_dxgi_color_space);
-    }
-  } else {
-    // This can't handle as many different types of color spaces, so use it
-    // only if ID3D11VideoContext1 isn't available.
-    D3D11_VIDEO_PROCESSOR_COLOR_SPACE src_d3d11_color_space =
-        gfx::ColorSpaceWin::GetD3D11ColorSpace(input_color_space);
-    video_context_->VideoProcessorSetStreamColorSpace(video_processor_.Get(), 0,
-                                                      &src_d3d11_color_space);
-    D3D11_VIDEO_PROCESSOR_COLOR_SPACE output_d3d11_color_space =
-        gfx::ColorSpaceWin::GetD3D11ColorSpace(output_color_space);
-    video_context_->VideoProcessorSetOutputColorSpace(
-        video_processor_.Get(), &output_d3d11_color_space);
-  }
-  video_input_color_space_ = input_color_space;
-  video_output_color_space_ = output_color_space;
-  is_yuv_video_output_ = is_yuv_swapchain;
+VideoProcessorWrapper& DCLayerTree::GetOrCreateVideoProcessor(bool is_hdr) {
+  VideoProcessorType video_processor_type =
+      is_hdr ? VideoProcessorType::kHDR : VideoProcessorType::kSDR;
+  return video_processor_map_
+      .try_emplace(video_processor_type, VideoProcessorWrapper())
+      .first->second;
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChain1>

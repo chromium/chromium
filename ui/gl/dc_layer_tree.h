@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -22,15 +23,41 @@ namespace gl {
 class DirectCompositionChildSurfaceWin;
 class SwapChainPresenter;
 
+enum class VideoProcessorType { kSDR, kHDR };
+
+// Cache video processor and its size.
+struct VideoProcessorWrapper {
+  VideoProcessorWrapper();
+  ~VideoProcessorWrapper();
+  VideoProcessorWrapper(VideoProcessorWrapper&& other);
+  VideoProcessorWrapper& operator=(VideoProcessorWrapper&& other);
+  VideoProcessorWrapper(const VideoProcessorWrapper&) = delete;
+  VideoProcessorWrapper& operator=(VideoProcessorWrapper& other) = delete;
+
+  // Input and output size of video processor .
+  gfx::Size video_input_size;
+  gfx::Size video_output_size;
+
+  // The video processor is cached so SwapChains don't have to recreate it
+  // whenever they're created.
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context;
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
+  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
+      video_processor_enumerator;
+};
+
 // DCLayerTree manages a tree of direct composition visuals, and associated
 // swap chains for given overlay layers.  It maintains a list of pending layers
 // submitted using ScheduleDCLayer() that are presented and committed in
 // CommitAndClearPendingOverlays().
 class DCLayerTree {
  public:
-  DCLayerTree(bool disable_nv12_dynamic_textures,
-              bool disable_vp_scaling,
-              bool reset_vp_when_colorspace_changes);
+  using VideoProcessorMap =
+      base::flat_map<VideoProcessorType, VideoProcessorWrapper>;
+
+  DCLayerTree(bool disable_nv12_dynamic_textures, bool disable_vp_scaling);
+
   ~DCLayerTree();
 
   // Returns true on success.
@@ -50,13 +77,9 @@ class DCLayerTree {
   // at least given input and output size.  The video processor is shared across
   // layers so the same one can be reused if it's large enough.  Returns true on
   // success.
-  bool InitializeVideoProcessor(
-      const gfx::Size& input_size,
-      const gfx::Size& output_size,
-      const gfx::ColorSpace& input_color_space,
-      const gfx::ColorSpace& output_color_space,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      bool is_yuv_swapchain);
+  VideoProcessorWrapper* InitializeVideoProcessor(const gfx::Size& input_size,
+                                                  const gfx::Size& output_size,
+                                                  bool is_hdr_output);
 
   void SetNeedsRebuildVisualTree() { needs_rebuild_visual_tree_ = true; }
 
@@ -66,22 +89,7 @@ class DCLayerTree {
 
   bool disable_vp_scaling() const { return disable_vp_scaling_; }
 
-  const Microsoft::WRL::ComPtr<ID3D11VideoDevice>& video_device() const {
-    return video_device_;
-  }
-
-  const Microsoft::WRL::ComPtr<ID3D11VideoContext>& video_context() const {
-    return video_context_;
-  }
-
-  const Microsoft::WRL::ComPtr<ID3D11VideoProcessor>& video_processor() const {
-    return video_processor_;
-  }
-
-  const Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>&
-  video_processor_enumerator() const {
-    return video_processor_enumerator_;
-  }
+  VideoProcessorWrapper& GetOrCreateVideoProcessor(bool is_hdr);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
       size_t index) const;
@@ -100,37 +108,21 @@ class DCLayerTree {
   HWND window() const { return window_; }
 
  private:
-  void SetColorSpaceForVideoProcessor(
-      const gfx::ColorSpace& input_color_space,
-      const gfx::ColorSpace& output_color_space,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      bool is_yuv_swapchain);
-
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_scaling_;
-  const bool reset_vp_when_colorspace_changes_;
 
   HWND window_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
 
-  // The video processor is cached so SwapChains don't have to recreate it
-  // whenever they're created.
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device_;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
-      video_processor_enumerator_;
-
-  // Current video processor input and output size.
-  gfx::Size video_input_size_;
-  gfx::Size video_output_size_;
+  // Store video processor for SDR/HDR mode separately, which could avoid
+  // problem in (http://crbug.com/1121061).
+  VideoProcessorMap video_processor_map_;
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;
   gfx::ColorSpace video_output_color_space_;
-  bool is_yuv_video_output_ = false;
 
   // Set to true if a direct composition visual tree needs rebuild.
   bool needs_rebuild_visual_tree_ = false;

@@ -31,8 +31,6 @@ CreateDirectCompositionSurfaceSettings(
       workarounds.disable_nv12_dynamic_textures;
   settings.disable_vp_scaling = workarounds.disable_vp_scaling;
   settings.use_angle_texture_offset = features::IsUsingSkiaRenderer();
-  settings.reset_vp_when_colorspace_changes =
-      workarounds.reset_vp_when_colorspace_changes;
   settings.force_root_surface_full_damage =
       features::IsUsingSkiaRenderer() &&
       gl::ShouldForceDirectCompositionRootSurfaceFullDamage();

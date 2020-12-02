@@ -1087,9 +1087,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
   // TODO(sunnyps): Ensure output color space for YUV swap chains is Rec709 or
   // Rec601 so that the conversion from gfx::ColorSpace to DXGI_COLOR_SPACE
   // doesn't need a |force_yuv| parameter (and the associated plumbing).
-  gfx::ColorSpace output_color_space = IsYUVSwapChainFormat(swap_chain_format_)
-                                           ? src_color_space
-                                           : gfx::ColorSpace::CreateSRGB();
+  bool is_yuv_swapchain = IsYUVSwapChainFormat(swap_chain_format_);
+  gfx::ColorSpace output_color_space =
+      is_yuv_swapchain ? src_color_space : gfx::ColorSpace::CreateSRGB();
   if (base::FeatureList::IsEnabled(kFallbackBT709VideoToBT601) &&
       (output_color_space == gfx::ColorSpace::CreateREC709())) {
     output_color_space = gfx::ColorSpace::CreateREC601();
@@ -1097,17 +1097,48 @@ bool SwapChainPresenter::VideoProcessorBlt(
   if (content_is_hdr)
     output_color_space = gfx::ColorSpace::CreateHDR10();
 
-  if (!layer_tree_->InitializeVideoProcessor(
-          content_rect.size(), swap_chain_size_, src_color_space,
-          output_color_space, swap_chain_,
-          IsYUVSwapChainFormat(swap_chain_format_))) {
+  VideoProcessorWrapper* video_processor_wrapper =
+      layer_tree_->InitializeVideoProcessor(
+          content_rect.size(), swap_chain_size_, output_color_space.IsHDR());
+  if (!video_processor_wrapper)
     return false;
-  }
 
   Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
-      layer_tree_->video_context();
+      video_processor_wrapper->video_context;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
-      layer_tree_->video_processor();
+      video_processor_wrapper->video_processor;
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
+  Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
+  if (SUCCEEDED(swap_chain_.As(&swap_chain3)) &&
+      SUCCEEDED(video_context.As(&context1))) {
+    DCHECK(swap_chain3);
+    DCHECK(context1);
+    // Set input color space.
+    context1->VideoProcessorSetStreamColorSpace1(
+        video_processor.Get(), 0,
+        gfx::ColorSpaceWin::GetDXGIColorSpace(src_color_space));
+    // Set output color space.
+    DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
+        gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space,
+                                              /*force_yuv=*/is_yuv_swapchain);
+
+    if (SUCCEEDED(swap_chain3->SetColorSpace1(output_dxgi_color_space))) {
+      context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
+                                                   output_dxgi_color_space);
+    }
+  } else {
+    // This can't handle as many different types of color spaces, so use it
+    // only if ID3D11VideoContext1 isn't available.
+    D3D11_VIDEO_PROCESSOR_COLOR_SPACE src_d3d11_color_space =
+        gfx::ColorSpaceWin::GetD3D11ColorSpace(src_color_space);
+    video_context->VideoProcessorSetStreamColorSpace(video_processor.Get(), 0,
+                                                     &src_d3d11_color_space);
+    D3D11_VIDEO_PROCESSOR_COLOR_SPACE output_d3d11_color_space =
+        gfx::ColorSpaceWin::GetD3D11ColorSpace(output_color_space);
+    video_context->VideoProcessorSetOutputColorSpace(video_processor.Get(),
+                                                     &output_d3d11_color_space);
+  }
   Microsoft::WRL::ComPtr<ID3D11VideoContext2> context2;
   base::Optional<DXGI_HDR_METADATA_HDR10> display_metadata =
       layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata();
@@ -1141,9 +1172,10 @@ bool SwapChainPresenter::VideoProcessorBlt(
     }
 
     Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device =
-        layer_tree_->video_device();
+        video_processor_wrapper->video_device;
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
-        video_processor_enumerator = layer_tree_->video_processor_enumerator();
+        video_processor_enumerator =
+            video_processor_wrapper->video_processor_enumerator;
 
     D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_desc = {};
     input_desc.ViewDimension = D3D11_VPIV_DIMENSION_TEXTURE2D;
