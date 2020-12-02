@@ -623,7 +623,8 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
     version_info::Channel channel = chrome::GetChannel();
     bool is_canary_dev = (channel == version_info::Channel::CANARY ||
                           channel == version_info::Channel::DEV);
-    gwp_asan::EnableForPartitionAlloc(is_canary_dev, process_type.c_str());
+    gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
+                                      process_type.c_str());
   }
 #endif
 
