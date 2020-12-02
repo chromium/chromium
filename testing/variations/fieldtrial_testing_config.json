@@ -3479,21 +3479,6 @@
             ]
         }
     ],
-    "IOSDragAndDrop": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DragAndDrop"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFullPageScreenshot": [
         {
             "platforms": [

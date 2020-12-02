@@ -9,7 +9,7 @@
 #endif
 
 const base::Feature kDragAndDrop{"DragAndDrop",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+                                 base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool DragAndDropIsEnabled() {
   return base::FeatureList::IsEnabled(kDragAndDrop);

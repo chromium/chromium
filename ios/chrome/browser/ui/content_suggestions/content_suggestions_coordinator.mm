@@ -349,6 +349,7 @@
         ->GetDiscoverFeedProvider()
         ->RemoveFeedViewController(self.discoverFeedViewController);
   }
+  self.contentSuggestionsVisible = nil;
   _visible = NO;
 }
 

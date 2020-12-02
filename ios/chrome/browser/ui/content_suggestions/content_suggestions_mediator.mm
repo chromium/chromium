@@ -213,6 +213,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
   _discoverFeedProviderObserverBridge.reset();
+  _suggestionBridge.reset();
+  _mostVisitedBridge.reset();
+  _mostVisitedSites.reset();
+  _contentArticlesExpanded = nil;
 }
 
 - (void)reloadAllData {
