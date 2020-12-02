@@ -76,6 +76,9 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
                                                       ExceptionState&);
 
   ScriptPromise GetDatabaseInfo(ScriptState*, ExceptionState&);
+  // This method is exposed specifically for DevTools.
+  void GetDatabaseInfo(ScriptState*,
+                       std::unique_ptr<mojom::blink::IDBCallbacks> callbacks);
 
   void SetFactoryForTesting(mojo::Remote<mojom::blink::IDBFactory> factory);
 

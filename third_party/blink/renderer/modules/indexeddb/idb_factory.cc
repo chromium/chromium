@@ -282,39 +282,35 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
   return resolver->Promise();
 }
 
-IDBRequest* IDBFactory::GetDatabaseNames(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
-  IDB_TRACE("IDBFactory::getDatabaseNamesRequestSetup");
-  IDBRequest::AsyncTraceState metrics("IDBFactory::getDatabaseNames");
-  IDBRequest* request = IDBRequest::Create(script_state, IDBRequest::Source(),
-                                           nullptr, std::move(metrics));
+void IDBFactory::GetDatabaseInfo(
+    ScriptState* script_state,
+    std::unique_ptr<mojom::blink::IDBCallbacks> callbacks) {
   // TODO(jsbell): Used only by inspector; remove unneeded checks/exceptions?
-  if (!IsContextValid(ExecutionContext::From(script_state)))
-    return nullptr;
+  if (!IsContextValid(ExecutionContext::From(script_state))) {
+    return;
+  }
+
   if (!ExecutionContext::From(script_state)
            ->GetSecurityOrigin()
            ->CanAccessDatabase()) {
-    exception_state.ThrowSecurityError(
-        "access to the Indexed Database API is denied in this context.");
-    return nullptr;
-  }
-
-  if (ExecutionContext::From(script_state)->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(ExecutionContext::From(script_state),
-                      WebFeature::kFileAccessedDatabase);
+    callbacks->Error(mojom::blink::IDBException::kAbortError,
+                     "Access to the IndexedDB API is denied in this context.");
+    return;
   }
 
   if (!AllowIndexedDB(script_state)) {
-    request->HandleResponse(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
-    return request;
+    callbacks->Error(mojom::blink::IDBException::kUnknownError,
+                     kPermissionDeniedErrorMessage);
+    return;
   }
 
-  auto callbacks = request->CreateWebCallbacks();
-  callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
+  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::move(callbacks),
+      pending_callbacks.InitWithNewEndpointAndPassReceiver());
+
   GetFactory(ExecutionContext::From(script_state))
-      ->GetDatabaseNames(GetCallbacksProxy(std::move(callbacks)));
-  return request;
+      ->GetDatabaseInfo(std::move(pending_callbacks));
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,

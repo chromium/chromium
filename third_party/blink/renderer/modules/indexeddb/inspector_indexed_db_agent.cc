@@ -109,40 +109,51 @@ Response AssertIDBFactory(LocalDOMWindow* dom_window, IDBFactory*& result) {
   return Response::Success();
 }
 
-class GetDatabaseNamesCallback final : public NativeEventListener {
+class GetDatabaseNamesCallback final : public mojom::blink::IDBCallbacks {
  public:
-  GetDatabaseNamesCallback(
-      std::unique_ptr<RequestDatabaseNamesCallback> request_callback,
-      const String& security_origin)
-      : request_callback_(std::move(request_callback)),
-        security_origin_(security_origin) {}
+  explicit GetDatabaseNamesCallback(
+      std::unique_ptr<RequestDatabaseNamesCallback> request_callback)
+      : request_callback_(std::move(request_callback)) {}
   ~GetDatabaseNamesCallback() override = default;
 
-  void Invoke(ExecutionContext*, Event* event) override {
-    if (event->type() != event_type_names::kSuccess) {
-      request_callback_->sendFailure(
-          Response::ServerError("Unexpected event type."));
-      return;
-    }
+  void Error(mojom::blink::IDBException code, const String& message) override {
+    request_callback_->sendFailure(
+        Response::ServerError("Could not obtain database names."));
+  }
 
-    IDBRequest* idb_request = static_cast<IDBRequest*>(event->target());
-    IDBAny* request_result = idb_request->ResultAsAny();
-    if (request_result->GetType() != IDBAny::kDOMStringListType) {
-      request_callback_->sendFailure(
-          Response::ServerError("Unexpected result type."));
-      return;
-    }
-
-    DOMStringList* database_names_list = request_result->DomStringList();
+  void SuccessNamesAndVersionsList(
+      Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions) override {
     auto database_names = std::make_unique<protocol::Array<String>>();
-    for (uint32_t i = 0; i < database_names_list->length(); ++i)
-      database_names->emplace_back(database_names_list->item(i));
+    for (const auto& name_and_version : names_and_versions)
+      database_names->emplace_back(name_and_version->name);
     request_callback_->sendSuccess(std::move(database_names));
+  }
+
+  void SuccessStringList(const Vector<String>&) override { NOTREACHED(); }
+
+  void SuccessDatabase(
+      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_backend,
+      const IDBDatabaseMetadata& metadata) override {
+    NOTREACHED();
+  }
+
+  void SuccessInteger(int64_t value) override { NOTREACHED(); }
+
+  void Success() override { NOTREACHED(); }
+
+  void Blocked(int64_t old_version) override { NOTREACHED(); }
+
+  void UpgradeNeeded(
+      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
+      int64_t old_version,
+      mojom::blink::IDBDataLoss data_loss,
+      const String& data_loss_message,
+      const IDBDatabaseMetadata& metadata) override {
+    NOTREACHED();
   }
 
  private:
   std::unique_ptr<RequestDatabaseNamesCallback> request_callback_;
-  String security_origin_;
 };
 
 class DeleteCallback final : public NativeEventListener {
@@ -760,21 +771,9 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
     request_callback->sendFailure(Response::InternalError());
     return;
   }
-  ScriptState::Scope scope(script_state);
-  DummyExceptionStateForTesting exception_state;
-  IDBRequest* idb_request =
-      idb_factory->GetDatabaseNames(script_state, exception_state);
-  if (exception_state.HadException()) {
-    request_callback->sendFailure(
-        Response::ServerError("Could not obtain database names."));
-    return;
-  }
-  idb_request->addEventListener(
-      event_type_names::kSuccess,
-      MakeGarbageCollected<GetDatabaseNamesCallback>(
-          std::move(request_callback),
-          frame->DomWindow()->GetSecurityOrigin()->ToRawString()),
-      false);
+  idb_factory->GetDatabaseInfo(
+      script_state,
+      std::make_unique<GetDatabaseNamesCallback>(std::move(request_callback)));
 }
 
 void InspectorIndexedDBAgent::requestDatabase(
