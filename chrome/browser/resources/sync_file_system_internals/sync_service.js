@@ -19,7 +19,7 @@ const SyncService = (function() {
 
   /**
    * Called when service status is initially retrieved or updated via events.
-   * @param {string} Service status enum as a string.
+   * @param {string} statusString Service status enum as a string.
    */
   SyncService.onGetServiceStatus = function(statusString) {
     $('service-status').textContent = statusString;
@@ -35,7 +35,7 @@ const SyncService = (function() {
 
   /**
    * Handles callback from getNotificationSource.
-   * @param {string} Notification source as a string.
+   * @param {string} sourceString Notification source as a string.
    */
   SyncService.onGetNotificationSource = function(sourceString) {
     $('notification-source').textContent = sourceString;
@@ -61,7 +61,11 @@ const SyncService = (function() {
 
   /**
    * Handles callback from getUpdateLog.
-   * @param {Array} list List of dictionaries containing 'id', 'time', 'logEvent'.
+   * @param {!Array<!{
+   *   id: number,
+   *   logEvent: string,
+   *   time: string,
+   * }>} logEntries List of dictionaries containing 'id', 'time', 'logEvent'.
    */
   SyncService.onGetLog = function(logEntries) {
     const itemContainer = $('log-entries');

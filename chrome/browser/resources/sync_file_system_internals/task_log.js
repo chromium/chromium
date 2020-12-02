@@ -14,8 +14,12 @@ const TaskLog = (function() {
 
   /**
    * Handles per-task log event.
-   * @param {Object} taskLog a dictionary containing 'duration',
-   * 'task_description', 'result_description' and 'details'.
+   * @param {!{
+   *   duration: number,
+   *   task_description: string,
+   *   result_description: string,
+   *   details: !Array,
+   * }} taskLog
    */
   TaskLog.onTaskLogRecorded = function(taskLog) {
     const details = document.createElement('td');
@@ -37,7 +41,7 @@ const TaskLog = (function() {
 
     const tr = document.createElement('tr');
     tr.appendChild(createElementFromText(
-        'td', taskLog.duration, {'class': 'task-log-duration'}));
+        'td', taskLog.duration.toString(), {'class': 'task-log-duration'}));
     tr.appendChild(createElementFromText(
         'td', taskLog.task_description, {'class': 'task-log-description'}));
     tr.appendChild(createElementFromText(

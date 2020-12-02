@@ -19,7 +19,11 @@ const FileMetadata = (function() {
 
   /**
    * Renders result of getFileMetadata as a table.
-   * @param {Array} list of dictionaries containing 'extensionName',
+   * @param {!Array<!{
+   *   extensionName: string,
+   *   extensionID: string,
+   *   status: string,
+   * }>} extensionStatuses of dictionaries containing 'extensionName',
    *     'extensionID', 'status'.
    */
   FileMetadata.onGetExtensions = function(extensionStatuses) {
@@ -48,7 +52,7 @@ const FileMetadata = (function() {
   };
 
   /**
-   * @return {string} extension ID that's currently selected in drop down box.
+   * @return {?string} extension ID that's currently selected in drop down box.
    */
   function getSelectedExtensionId() {
     const dropDown = $('extensions-select').options;
@@ -106,8 +110,8 @@ const FileMetadata = (function() {
   };
 
   /**
-   * @param {string} file type string.
-   * @return {HTMLElement} TD with file or folder icon depending on type.
+   * @param {string} type file type string.
+   * @return {!HTMLElement} TD with file or folder icon depending on type.
    */
   function createFileIconCell(type) {
     const img = document.createElement('div');
@@ -123,7 +127,7 @@ const FileMetadata = (function() {
     const imgWrapper = document.createElement('div');
     imgWrapper.appendChild(img);
 
-    const td = document.createElement('td');
+    const td = /** @type {!HTMLElement} */ (document.createElement('td'));
     td.className = 'file-icon-cell';
     td.appendChild(imgWrapper);
     td.appendChild(document.createTextNode(type));

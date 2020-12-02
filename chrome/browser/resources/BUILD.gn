@@ -53,6 +53,7 @@ if (enable_js_type_check) {
         "settings:closure_compile",
         "settings:closure_compile_module",
         "signin:closure_compile",
+        "sync_file_system_internals:closure_compile",
         "tab_search:closure_compile",
         "usb_internals:closure_compile",
         "user_manager:closure_compile",
