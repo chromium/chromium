@@ -30,7 +30,7 @@ public class BookmarkFolderRow extends BookmarkRow {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        setStartIconDrawable(BookmarkUtils.getFolderIcon(getContext()));
+        setStartIconDrawable(BookmarkUtils.getFolderIcon(getContext(), BookmarkType.NORMAL));
     }
 
     // BookmarkRow implementation.
@@ -45,7 +45,7 @@ public class BookmarkFolderRow extends BookmarkRow {
         BookmarkItem item = super.setBookmarkId(bookmarkId, location);
         mTitleView.setText(item.getTitle());
 
-        // Set description.
+        // Set description and icon.
         if (item.getId().getType() == BookmarkType.READING_LIST) {
             int unreadCount = mDelegate.getModel().getUnreadCount(bookmarkId);
             mDescriptionView.setText(unreadCount > 0
@@ -60,12 +60,16 @@ public class BookmarkFolderRow extends BookmarkRow {
                                     R.plurals.bookmarks_count, childCount, childCount)
                             : getResources().getString(R.string.no_bookmarks));
         }
+
+        setStartIconDrawable(BookmarkUtils.getFolderIcon(getContext(), item.getId().getType()));
         return item;
     }
 
     @Override
     protected ColorStateList getDefaultStartIconTint() {
+        @BookmarkType
+        int type = (mBookmarkId == null) ? BookmarkType.NORMAL : mBookmarkId.getType();
         return AppCompatResources.getColorStateList(
-                getContext(), BookmarkUtils.getFolderIconTint());
+                getContext(), BookmarkUtils.getFolderIconTint(type));
     }
 }

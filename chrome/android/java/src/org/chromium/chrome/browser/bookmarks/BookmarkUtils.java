@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
@@ -301,18 +303,25 @@ public class BookmarkUtils {
 
     /**
      * @param context {@link Context} used to retrieve the drawable.
-     * @return A {@link TintedDrawable} to use for displaying bookmark folders.
+     * @param type The bookmark type of the folder.
+     * @return A {@link Drawable} to use for displaying bookmark folders.
      */
-    public static TintedDrawable getFolderIcon(Context context) {
+    public static Drawable getFolderIcon(Context context, @BookmarkType int type) {
+        if (type == BookmarkType.READING_LIST) {
+            return UiUtils.getTintedDrawable(
+                    context, R.drawable.ic_reading_list_folder, getFolderIconTint(type));
+        }
         return TintedDrawable.constructTintedDrawable(
-                context, R.drawable.ic_folder_blue_24dp, getFolderIconTint());
+                context, R.drawable.ic_folder_blue_24dp, getFolderIconTint(type));
     }
 
     /**
+     * @param type The bookmark type.
      * @return The tint used on the bookmark folder icon.
      */
-    public static int getFolderIconTint() {
-        return R.color.default_icon_color_tint_list;
+    public static int getFolderIconTint(@BookmarkType int type) {
+        return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_blue
+                                                   : R.color.default_icon_color_tint_list;
     }
 
     private static void openUrl(Context context, String url, ComponentName componentName) {

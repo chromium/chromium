@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarks.bottomsheet;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.IntDef;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -39,10 +42,19 @@ class BookmarkBottomSheetItemProperties {
             new PropertyModel.ReadableObjectPropertyKey<>();
 
     /**
+     * The pair of {@link Drawable} and the color resource id(as Integer) of the bottom sheet item
+     * icon. e.g. A folder icon and its color resource id.
+     */
+    static final PropertyModel
+            .ReadableObjectPropertyKey<Pair<Drawable, Integer>> ICON_DRAWABLE_AND_COLOR =
+            new PropertyModel.ReadableObjectPropertyKey<>();
+
+    /**
      * A callback invoked when the bottom sheet bookmark item is clicked.
      */
     static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
             new PropertyModel.ReadableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TITLE, SUBTITLE, ON_CLICK_LISTENER};
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {TITLE, SUBTITLE, ICON_DRAWABLE_AND_COLOR, ON_CLICK_LISTENER};
 }
