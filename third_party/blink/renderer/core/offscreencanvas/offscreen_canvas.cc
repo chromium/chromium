@@ -395,15 +395,9 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
       (Is3d() ? RuntimeEnabledFeatures::WebGLImageChromiumEnabled()
               : RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
 
-  // If this context has a placeholder, the resource needs to be optimized for
-  // displaying on screen. In the case we are hardware compositing, we also
-  // try to enable the usage of the image as scanout buffer (overlay).
-  uint32_t shared_image_usage_flags = 0u;
-  if (HasPlaceholderCanvas()) {
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_DISPLAY;
-    if (composited_mode)
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  }
+  uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  if (composited_mode)
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   if (can_use_gpu) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
