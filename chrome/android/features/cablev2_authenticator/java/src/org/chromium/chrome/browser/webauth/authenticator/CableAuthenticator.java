@@ -325,7 +325,7 @@ class CableAuthenticator {
 
     private boolean onRegisterResponse(int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null) {
-            Log.e(TAG, "Failed with result code" + resultCode);
+            Log.e(TAG, "Failed with result code " + resultCode);
             onAuthenticatorAssertionResponse(CTAP2_ERR_OPERATION_DENIED, null, null, null, null);
             return false;
         }
@@ -374,7 +374,7 @@ class CableAuthenticator {
 
     private boolean onSignResponse(int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null) {
-            Log.e(TAG, "Failed with result code" + resultCode);
+            Log.e(TAG, "Failed with result code " + resultCode);
             onAuthenticatorAssertionResponse(CTAP2_ERR_OPERATION_DENIED, null, null, null, null);
             return false;
         }

@@ -703,6 +703,8 @@ class CTAP2Processor : public Transaction {
       }
       response.insert(response.end(), response_payload->begin(),
                       response_payload->end());
+    } else {
+      platform_->OnStatus(Platform::Status::CTAP_ERROR);
     }
 
     transaction_done_ = true;
@@ -741,6 +743,8 @@ class CTAP2Processor : public Transaction {
       }
       response.insert(response.end(), response_payload->begin(),
                       response_payload->end());
+    } else {
+      platform_->OnStatus(Platform::Status::CTAP_ERROR);
     }
 
     transaction_done_ = true;

@@ -76641,6 +76641,36 @@ others/histograms.xml -->
   <int value="7" label="Timeout"/>
 </enum>
 
+<enum name="WebAuthenticationCableV2MobileEvent">
+  <int value="0" label="QR read"/>
+  <int value="1" label="Server-linked connection started"/>
+  <int value="2" label="Cloud message received"/>
+  <int value="3" label="USB connection"/>
+  <int value="4" label="Authenticator setup"/>
+  <int value="5" label="Connected to tunnel server"/>
+  <int value="6" label="Handshake completed"/>
+  <int value="7" label="Request received"/>
+  <int value="8" label="CTAP response with non-zero status"/>
+  <int value="9" label="Unlinked all devices"/>
+  <int value="10" label="Showed notification"/>
+  <int value="11" label="Notification pressed"/>
+  <int value="12" label="User unselected linking checkbox during QR scan"/>
+</enum>
+
+<enum name="WebAuthenticationCableV2MobileResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unexpected EOF"/>
+  <int value="2" label="Failed to connect to tunnel server"/>
+  <int value="3" label="Handshake failure"/>
+  <int value="4" label="Decryption failure"/>
+  <int value="5" label="Invalid CBOR received"/>
+  <int value="6" label="Invalid CTAP received"/>
+  <int value="7" label="Unknown command"/>
+  <int value="8" label="Internal error"/>
+  <int value="9" label="Invalid QR"/>
+  <int value="10" label="Invalid server link data"/>
+</enum>
+
 <enum name="WebAuthenticationFidoTransport">
   <int value="0" label="USB HID"/>
   <int value="1" label="Near Field Communication"/>

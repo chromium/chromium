@@ -40,6 +40,7 @@ class Platform {
     TUNNEL_SERVER_CONNECT = 1,
     HANDSHAKE_COMPLETE = 2,
     REQUEST_RECEIVED = 3,
+    CTAP_ERROR = 4,
   };
 
   enum class Error {
