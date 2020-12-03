@@ -372,6 +372,17 @@ export function scanningAppTest() {
   }
 
   /**
+   * Clicks the "Ok" button to close the scan failed dialog.
+   * @return {!Promise}
+   */
+  function clickOkButton() {
+    const button = scanningApp.$$('#okButton');
+    assertTrue(!!button);
+    button.click();
+    return flushTasks();
+  }
+
+  /**
    * Returns whether the "More settings" section is expanded or not.
    * @return {boolean}
    */
@@ -536,6 +547,41 @@ export function scanningAppTest() {
         });
   });
 
+  test('ScanFailed', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          scanButton =
+              /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          // Click the Scan button and wait till the scan is started.
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          // Simulate a progress update.
+          return fakeScanService_.simulateProgress(1, 17);
+        })
+        .then(() => {
+          // Simulate the scan failing.
+          return fakeScanService_.simulateScanComplete(false, {'path': ''});
+        })
+        .then(() => {
+          // The scan failed dialog should open.
+          assertTrue(scanningApp.$$('#scanFailedDialog').open);
+          // Click the dialog's Ok button to return to READY state.
+          return clickOkButton();
+        })
+        .then(() => {
+          // After the dialog closes, the scan button should be enabled and
+          // ready to start a new scan.
+          assertFalse(scanningApp.$$('#scanFailedDialog').open);
+          assertFalse(scanButton.disabled);
+          assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
+        });
+  });
+
   test('CancelScan', () => {
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -588,7 +634,7 @@ export function scanningAppTest() {
               isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
           assertTrue(scanningApp.$$('#toast').open);
           assertFalse(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
+              /** @type {!HTMLElement} */ (scanningApp.$$('#toastInfoIcon'))));
           assertFalse(isVisible(
               /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
           assertEquals(
@@ -632,7 +678,7 @@ export function scanningAppTest() {
           // After canceling fails, the error toast should pop up.
           assertTrue(scanningApp.$$('#toast').open);
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
+              /** @type {!HTMLElement} */ (scanningApp.$$('#toastInfoIcon'))));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
           assertEquals(
@@ -667,7 +713,7 @@ export function scanningAppTest() {
         .then(() => {
           assertTrue(scanningApp.$$('#toast').open);
           assertTrue(isVisible(
-              /** @type {!HTMLElement} */ (scanningApp.$$('#infoIcon'))));
+              /** @type {!HTMLElement} */ (scanningApp.$$('#toastInfoIcon'))));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (scanningApp.$$('#getHelpLink'))));
           assertEquals(

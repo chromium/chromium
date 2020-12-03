@@ -87,7 +87,7 @@
     min-width: 280px;
   }
 
-  #infoIcon {
+  #toastInfoIcon {
     fill: var(--google-red-refresh-300);
     margin-inline-end: 10px;
     margin-inline-start: -8px;
@@ -106,6 +106,21 @@
   #getHelpLink {
     color: var(--google-blue-refresh-300);
     text-decoration: none;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 340px;
+  }
+
+  cr-dialog [slot=title] {
+    font-weight: 500;
+    padding-bottom: 12px;
+  }
+
+  #dialogInfoIcon {
+    display: block;
+    fill: var(--google-red-600);
+    margin-bottom: 14px;
   }
 </style>
 <div id="scanningContainer">
@@ -181,7 +196,7 @@
   </div>
   <cr-toast id="toast" duration="5000">
     <div id="toastDiv">
-      <iron-icon id="infoIcon" icon="cr:info-outline"
+      <iron-icon id="toastInfoIcon" icon="cr:info-outline"
           hidden="[[!showToastInfoIcon_]]"></iron-icon>
       <span id="toastText">[[i18n(toastMessageKey_)]]</span>
       <!-- TODO(gavinwill): Add href to the help link when available -->
@@ -191,4 +206,23 @@
       </div>
     </div>
   </cr-toast>
+  <cr-dialog id="scanFailedDialog">
+    <div slot="title">
+      <iron-icon id="dialogInfoIcon" icon="cr:info-outline"></iron-icon>
+      [[i18n('scanFailedDialogTitleText')]]
+    </div>
+    <div slot="body">
+      [[i18n('scanFailedDialogBodyText')]]
+    </div>
+    <div slot="button-container">
+      <!-- TODO(gavinwill): Add href to the help link when available -->
+      <cr-button class="cancel-button">
+        [[i18n('getHelpLinkText')]]
+      </cr-button>
+      <cr-button id="okButton" class="action-button"
+          on-click="onDialogOkClick_">
+        [[i18n('okButtonLabel')]]
+      </cr-button>
+    </div>
+  </cr-dialog>
 </div>

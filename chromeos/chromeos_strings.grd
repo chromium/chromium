@@ -592,6 +592,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_FILE_NOT_FOUND_TOAST_TEXT" desc="The message displayed when attempting to open a saved scan file and it is either missing or deleted.">
         File not found
       </message>
+      <message name="IDS_SCANNING_APP_SCAN_FAILED_DIALOG_TITLE_TEXT" desc="The text displayed as the title of the dialog shown when a scan job fails.">
+        Couldn't complete scanning
+      </message>
+      <message name="IDS_SCANNING_APP_SCAN_FAILED_DIALOG_BODY_TEXT" desc="The text displayed as the body of the dialog shown when a scan job fails. The text advises the user to make sure their Chromebook has enough space to save files.">
+        Check the scanner and try again. Make sure there is enough local space to save scanned files.
+      </message>
+      <message name="IDS_SCANNING_APP_OK_BUTTON_LABEL" desc="The label for the button to acknowledge and close the dialog shown when a scan job fails.">
+        Ok
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

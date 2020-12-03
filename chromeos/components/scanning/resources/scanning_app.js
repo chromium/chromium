@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -271,14 +272,13 @@ Polymer({
    * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
    */
   onScanComplete(success, lastScannedFilePath) {
-    if (success) {
-      this.lastScannedFilePath_ = lastScannedFilePath;
-      this.setAppState_(AppState.DONE);
+    if (!success) {
+      this.$.scanFailedDialog.showModal();
       return;
     }
 
-    this.statusText_ = 'Scan failed.';
-    this.setAppState_(AppState.READY);
+    this.lastScannedFilePath_ = lastScannedFilePath;
+    this.setAppState_(AppState.DONE);
   },
 
   /**
@@ -544,5 +544,11 @@ Polymer({
   /** @private */
   onFileNotFound_() {
     this.showToast_('fileNotFoundToastText');
+  },
+
+  /** @private */
+  onDialogOkClick_() {
+    this.$.scanFailedDialog.close();
+    this.setAppState_(AppState.READY);
   },
 });
