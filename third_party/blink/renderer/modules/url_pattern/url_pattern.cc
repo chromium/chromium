@@ -18,16 +18,20 @@ namespace blink {
 
 // A struct representing all the information needed to match a particular
 // component of a URL.
-struct URLPattern::Component {
+class URLPattern::Component final
+    : public GarbageCollected<URLPattern::Component> {
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(regexp); }
+
   // The pattern compiled down to a js regular expression.
-  std::unique_ptr<ScriptRegexp> regexp;
+  Member<ScriptRegexp> regexp;
 
   // The names to be applied to the regular expression capture groups.  Note,
   // liburlpattern regular expressions do not use named capture groups directly.
   WTF::Vector<String> name_list;
 
-  Component(std::unique_ptr<ScriptRegexp> r, WTF::Vector<String> n)
-      : regexp(std::move(r)), name_list(std::move(n)) {}
+  Component(ScriptRegexp* r, WTF::Vector<String> n)
+      : regexp(r), name_list(std::move(n)) {}
 };
 
 namespace {
@@ -176,73 +180,71 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   // be used for matching.  Components that match any input may have a
   // nullptr Component struct pointer.
 
-  auto protocol_component = CompilePattern(
+  auto* protocol_component = CompilePattern(
       protocol, kDefaultPattern, "protocol", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto username_component = CompilePattern(
+  auto* username_component = CompilePattern(
       username, kDefaultPattern, "username", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto password_component = CompilePattern(
+  auto* password_component = CompilePattern(
       password, kDefaultPattern, "password", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto hostname_component =
+  auto* hostname_component =
       CompilePattern(hostname, kDefaultPattern, "hostname", HostnameOptions(),
                      exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto port_component = CompilePattern(port, kDefaultPattern, "port",
-                                       DefaultOptions(), exception_state);
+  auto* port_component = CompilePattern(port, kDefaultPattern, "port",
+                                        DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto pathname_component =
+  auto* pathname_component =
       CompilePattern(pathname, kDefaultPathnamePattern, "pathname",
                      PathnameOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto search_component = CompilePattern(search, kDefaultPattern, "search",
-                                         DefaultOptions(), exception_state);
+  auto* search_component = CompilePattern(search, kDefaultPattern, "search",
+                                          DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto hash_component = CompilePattern(hash, kDefaultPattern, "hash",
-                                       DefaultOptions(), exception_state);
+  auto* hash_component = CompilePattern(hash, kDefaultPattern, "hash",
+                                        DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   return MakeGarbageCollected<URLPattern>(
-      std::move(protocol_component), std::move(username_component),
-      std::move(password_component), std::move(hostname_component),
-      std::move(port_component), std::move(pathname_component),
-      std::move(search_component), std::move(hash_component),
-      base::PassKey<URLPattern>());
+      protocol_component, username_component, password_component,
+      hostname_component, port_component, pathname_component, search_component,
+      hash_component, base::PassKey<URLPattern>());
 }
 
-URLPattern::URLPattern(std::unique_ptr<Component> protocol,
-                       std::unique_ptr<Component> username,
-                       std::unique_ptr<Component> password,
-                       std::unique_ptr<Component> hostname,
-                       std::unique_ptr<Component> port,
-                       std::unique_ptr<Component> pathname,
-                       std::unique_ptr<Component> search,
-                       std::unique_ptr<Component> hash,
+URLPattern::URLPattern(Component* protocol,
+                       Component* username,
+                       Component* password,
+                       Component* hostname,
+                       Component* port,
+                       Component* pathname,
+                       Component* search,
+                       Component* hash,
                        base::PassKey<URLPattern> key)
-    : protocol_(std::move(protocol)),
-      username_(std::move(username)),
-      password_(std::move(password)),
-      hostname_(std::move(hostname)),
-      port_(std::move(port)),
-      pathname_(std::move(pathname)),
-      search_(std::move(search)),
-      hash_(std::move(hash)) {}
+    : protocol_(protocol),
+      username_(username),
+      password_(password),
+      hostname_(hostname),
+      port_(port),
+      pathname_(pathname),
+      search_(search),
+      hash_(hash) {}
 
 bool URLPattern::test(const USVStringOrURLPatternInit& input,
                       ExceptionState& exception_state) {
@@ -336,8 +338,20 @@ String URLPattern::toRegExp(const String& component,
   return String();
 }
 
+void URLPattern::Trace(Visitor* visitor) const {
+  visitor->Trace(protocol_);
+  visitor->Trace(username_);
+  visitor->Trace(password_);
+  visitor->Trace(hostname_);
+  visitor->Trace(port_);
+  visitor->Trace(pathname_);
+  visitor->Trace(search_);
+  visitor->Trace(hash_);
+  ScriptWrappable::Trace(visitor);
+}
+
 // static
-std::unique_ptr<URLPattern::Component> URLPattern::CompilePattern(
+URLPattern::Component* URLPattern::CompilePattern(
     const String& pattern,
     const String& default_pattern,
     StringView component,
@@ -368,7 +382,7 @@ std::unique_ptr<URLPattern::Component> URLPattern::CompilePattern(
   auto case_sensitive = options.sensitive ? WTF::kTextCaseSensitive
                                           : WTF::kTextCaseASCIIInsensitive;
   DCHECK(base::IsStringASCII(regexp_string));
-  auto regexp = std::make_unique<ScriptRegexp>(
+  ScriptRegexp* regexp = MakeGarbageCollected<ScriptRegexp>(
       String(regexp_string.data(), regexp_string.size()), case_sensitive);
   if (!regexp->IsValid()) {
     // TODO: Figure out which embedded regex expression caused the failure
@@ -386,8 +400,8 @@ std::unique_ptr<URLPattern::Component> URLPattern::CompilePattern(
     wtf_name_list.push_back(String(name.data(), name.size()));
   }
 
-  return std::make_unique<URLPattern::Component>(std::move(regexp),
-                                                 std::move(wtf_name_list));
+  return MakeGarbageCollected<URLPattern::Component>(std::move(regexp),
+                                                     std::move(wtf_name_list));
 }
 
 }  // namespace blink

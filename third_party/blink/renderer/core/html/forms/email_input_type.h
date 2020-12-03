@@ -44,7 +44,7 @@ class EmailInputType final : public BaseTextInputType {
                                                        const String&);
   CORE_EXPORT static bool IsValidEmailAddress(const ScriptRegexp&,
                                               const String&);
-  CORE_EXPORT static std::unique_ptr<ScriptRegexp> CreateEmailRegexp();
+  CORE_EXPORT static ScriptRegexp* CreateEmailRegexp();
 
  private:
   void CountUsage() override;

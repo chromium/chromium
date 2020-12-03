@@ -21,20 +21,20 @@ class USVStringOrURLPatternInit;
 
 class URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
-  struct Component;
+  class Component;
 
  public:
   static URLPattern* Create(const URLPatternInit* init,
                             ExceptionState& exception_state);
 
-  URLPattern(std::unique_ptr<Component> protocol,
-             std::unique_ptr<Component> username,
-             std::unique_ptr<Component> password,
-             std::unique_ptr<Component> hostname,
-             std::unique_ptr<Component> port,
-             std::unique_ptr<Component> pathname,
-             std::unique_ptr<Component> search,
-             std::unique_ptr<Component> hash,
+  URLPattern(Component* protocol,
+             Component* username,
+             Component* password,
+             Component* hostname,
+             Component* port,
+             Component* pathname,
+             Component* search,
+             Component* hash,
              base::PassKey<URLPattern> key);
 
   bool test(const USVStringOrURLPatternInit& input,
@@ -45,6 +45,8 @@ class URLPattern : public ScriptWrappable {
 
   // TODO: define a stringifier
 
+  void Trace(Visitor* visitor) const override;
+
  private:
   // A utility function that takes a given |pattern| and compiles it into a
   // Component structure.  If the |pattern| matches the given |default_pattern|
@@ -52,23 +54,22 @@ class URLPattern : public ScriptWrappable {
   // the Component is not constructed and the nullptr value should be treated as
   // matching any input value for the component.  The |component| string is used
   // for exception messages.  The |options| control how the pattern is compiled.
-  static std::unique_ptr<Component> CompilePattern(
-      const String& pattern,
-      const String& default_pattern,
-      StringView component,
-      const liburlpattern::Options& options,
-      ExceptionState& exception_state);
+  static Component* CompilePattern(const String& pattern,
+                                   const String& default_pattern,
+                                   StringView component,
+                                   const liburlpattern::Options& options,
+                                   ExceptionState& exception_state);
 
   // The compiled patterns for each URL component.  If a Component member is
   // nullptr then it should be treated as a wildcard matching any input.
-  std::unique_ptr<Component> protocol_;
-  std::unique_ptr<Component> username_;
-  std::unique_ptr<Component> password_;
-  std::unique_ptr<Component> hostname_;
-  std::unique_ptr<Component> port_;
-  std::unique_ptr<Component> pathname_;
-  std::unique_ptr<Component> search_;
-  std::unique_ptr<Component> hash_;
+  Member<Component> protocol_;
+  Member<Component> username_;
+  Member<Component> password_;
+  Member<Component> hostname_;
+  Member<Component> port_;
+  Member<Component> pathname_;
+  Member<Component> search_;
+  Member<Component> hash_;
 };
 
 }  // namespace blink

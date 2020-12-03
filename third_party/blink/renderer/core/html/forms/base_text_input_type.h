@@ -40,6 +40,9 @@ class ScriptRegexp;
 // Base of email, password, search, tel, text, and URL types.
 // They support maxlength, selection functions, and so on.
 class BaseTextInputType : public TextFieldInputType {
+ public:
+  void Trace(Visitor* visitor) const override;
+
  protected:
   BaseTextInputType(HTMLInputElement&);
   ~BaseTextInputType() override;
@@ -57,7 +60,7 @@ class BaseTextInputType : public TextFieldInputType {
 
   // regexp_ and pattern_for_regexp_ are mutable because they are kinds of
   // cache.
-  mutable std::unique_ptr<ScriptRegexp> regexp_;
+  mutable Member<ScriptRegexp> regexp_;
   mutable AtomicString pattern_for_regexp_;
 };
 

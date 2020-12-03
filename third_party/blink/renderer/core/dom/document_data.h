@@ -33,6 +33,7 @@ class DocumentData final : public GarbageCollected<DocumentData> {
     visitor->Trace(floc_service_);
     visitor->Trace(has_trust_tokens_answerer_);
     visitor->Trace(pending_has_trust_tokens_resolvers_);
+    visitor->Trace(email_regexp_);
   }
 
  private:
@@ -60,7 +61,7 @@ class DocumentData final : public GarbageCollected<DocumentData> {
       pending_has_trust_tokens_resolvers_;
 
   // To do email regex checks.
-  std::unique_ptr<ScriptRegexp> email_regexp_;
+  Member<ScriptRegexp> email_regexp_;
 
   friend class Document;
 };

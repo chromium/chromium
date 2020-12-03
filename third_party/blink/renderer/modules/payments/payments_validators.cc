@@ -26,7 +26,9 @@ static constexpr size_t kMaximumStringLength = 2 * 1024;
 bool PaymentsValidators::IsValidCurrencyCodeFormat(
     const String& code,
     String* optional_error_message) {
-  if (ScriptRegexp("^[A-Z]{3}$", kTextCaseUnicodeInsensitive).Match(code) == 0)
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>(
+      "^[A-Z]{3}$", kTextCaseUnicodeInsensitive);
+  if (regexp->Match(code) == 0)
     return true;
 
   if (optional_error_message) {
@@ -41,8 +43,9 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
 bool PaymentsValidators::IsValidAmountFormat(const String& amount,
                                              const String& item_name,
                                              String* optional_error_message) {
-  if (ScriptRegexp("^-?[0-9]+(\\.[0-9]+)?$", kTextCaseSensitive)
-          .Match(amount) == 0)
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>("^-?[0-9]+(\\.[0-9]+)?$",
+                                                    kTextCaseSensitive);
+  if (regexp->Match(amount) == 0)
     return true;
 
   if (optional_error_message) {
@@ -56,7 +59,9 @@ bool PaymentsValidators::IsValidAmountFormat(const String& amount,
 bool PaymentsValidators::IsValidCountryCodeFormat(
     const String& code,
     String* optional_error_message) {
-  if (ScriptRegexp("^[A-Z]{2}$", kTextCaseSensitive).Match(code) == 0)
+  auto* regexp =
+      MakeGarbageCollected<ScriptRegexp>("^[A-Z]{2}$", kTextCaseSensitive);
+  if (regexp->Match(code) == 0)
     return true;
 
   if (optional_error_message)
@@ -147,9 +152,9 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
   if (!url.IsValid()) {
     // Syntax for a valid standardized PMI:
     // https://www.w3.org/TR/payment-method-id/#dfn-syntax-of-a-standardized-payment-method-identifier
-    return ScriptRegexp("^[a-z]+[0-9a-z]*(-[a-z]+[0-9a-z]*)*$",
-                        kTextCaseSensitive)
-               .Match(identifier) == 0;
+    auto* regexp = MakeGarbageCollected<ScriptRegexp>(
+        "^[a-z]+[0-9a-z]*(-[a-z]+[0-9a-z]*)*$", kTextCaseSensitive);
+    return regexp->Match(identifier) == 0;
   }
 
   // URL PMI validation rules:

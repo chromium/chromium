@@ -125,4 +125,8 @@ int ScriptRegexp::Match(const String& string,
   return match_offset.As<v8::Int32>()->Value() + start_from;
 }
 
+void ScriptRegexp::Trace(Visitor* visitor) const {
+  visitor->Trace(regex_);
+}
+
 }  // namespace blink

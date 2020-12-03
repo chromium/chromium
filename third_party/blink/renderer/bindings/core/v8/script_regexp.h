@@ -29,7 +29,8 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -37,9 +38,7 @@ namespace blink {
 
 enum MultilineMode { kMultilineDisabled, kMultilineEnabled };
 
-class CORE_EXPORT ScriptRegexp {
-  USING_FAST_MALLOC(ScriptRegexp);
-
+class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
  public:
   enum CharacterMode {
     BMP,    // NOLINT
@@ -61,8 +60,10 @@ class CORE_EXPORT ScriptRegexp {
   // exceptionMessage is available only if !isValid().
   String ExceptionMessage() const { return exception_message_; }
 
+  void Trace(Visitor* visitor) const;
+
  private:
-  ScopedPersistent<v8::RegExp> regex_;
+  TraceWrapperV8Reference<v8::RegExp> regex_;
   String exception_message_;
 
   DISALLOW_COPY_AND_ASSIGN(ScriptRegexp);

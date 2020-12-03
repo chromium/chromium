@@ -1565,7 +1565,8 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
 std::unique_ptr<protocol::Array<protocol::CSS::Value>>
 InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
                                          const String& sheet_text) {
-  ScriptRegexp comment("/\\*[^]*?\\*/", kTextCaseSensitive, kMultilineEnabled);
+  auto* comment = MakeGarbageCollected<ScriptRegexp>(
+      "/\\*[^]*?\\*/", kTextCaseSensitive, kMultilineEnabled);
   auto result = std::make_unique<protocol::Array<protocol::CSS::Value>>();
   const Vector<SourceRange>& ranges = source_data->selector_ranges;
   for (wtf_size_t i = 0, size = ranges.size(); i < size; ++i) {
@@ -1576,7 +1577,7 @@ InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
     // meaningful parts.
     int match_length;
     int offset = 0;
-    while ((offset = comment.Match(selector, offset, &match_length)) >= 0)
+    while ((offset = comment->Match(selector, offset, &match_length)) >= 0)
       selector.replace(offset, match_length, "");
 
     std::unique_ptr<protocol::CSS::Value> simple_selector =
