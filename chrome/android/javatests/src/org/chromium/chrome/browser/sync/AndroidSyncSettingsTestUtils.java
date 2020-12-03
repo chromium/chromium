@@ -26,11 +26,6 @@ public class AndroidSyncSettingsTestUtils {
                 () -> SyncContentResolverDelegate.overrideForTests(delegate));
     }
 
-    public static boolean getIsSyncEnabledOnUiThread() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> AndroidSyncSettings.get().isSyncEnabled());
-    }
-
     public static boolean getIsChromeSyncEnabledOnUiThread() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> AndroidSyncSettings.get().isChromeSyncEnabled());

@@ -155,7 +155,8 @@ public class SyncTest {
                 mSyncTestRule.setUpAccountAndEnableSyncForTesting());
         String authority = AndroidSyncSettings.getContractAuthority();
 
-        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsChromeSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
 
         // Disabling Android sync should turn Chrome sync engine off.
@@ -175,7 +176,8 @@ public class SyncTest {
     public void testStopAndStartSyncThroughAndroidMasterSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
-        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsChromeSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
 
         // Disabling Android's master sync should turn Chrome sync engine off.
@@ -197,7 +199,8 @@ public class SyncTest {
                 mSyncTestRule.setUpAccountAndEnableSyncForTesting());
         String authority = AndroidSyncSettings.getContractAuthority();
 
-        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsChromeSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
         Assert.assertTrue(SyncTestUtil.canSyncFeatureStart());
 
@@ -231,7 +234,8 @@ public class SyncTest {
                 mSyncTestRule.setUpAccountAndEnableSyncForTesting());
         String authority = AndroidSyncSettings.getContractAuthority();
 
-        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getIsChromeSyncEnabledOnUiThread());
+        Assert.assertTrue(AndroidSyncSettingsTestUtils.getDoesMasterSyncAllowSyncOnUiThread());
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
         Assert.assertTrue(SyncTestUtil.canSyncFeatureStart());
 

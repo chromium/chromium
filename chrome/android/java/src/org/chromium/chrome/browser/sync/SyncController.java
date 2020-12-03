@@ -100,9 +100,8 @@ public class SyncController
         mProfileSyncService.setSyncAllowedByPlatform(
                 AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync());
 
-        boolean isSyncEnabled = AndroidSyncSettings.get().isSyncEnabled();
-        if (isSyncEnabled == mProfileSyncService.isSyncRequested()) return;
-        if (isSyncEnabled) {
+        if (isSyncEnabledInAndroidSyncSettings() == mProfileSyncService.isSyncRequested()) return;
+        if (isSyncEnabledInAndroidSyncSettings()) {
             mProfileSyncService.requestStart();
             return;
         }
@@ -138,11 +137,11 @@ public class SyncController
     public void syncStateChanged() {
         ThreadUtils.assertOnUiThread();
         if (mProfileSyncService.isSyncRequested()) {
-            if (!AndroidSyncSettings.get().isSyncEnabled()) {
+            if (!isSyncEnabledInAndroidSyncSettings()) {
                 AndroidSyncSettings.get().enableChromeSync();
             }
         } else {
-            if (AndroidSyncSettings.get().isSyncEnabled()) {
+            if (isSyncEnabledInAndroidSyncSettings()) {
                 // Both Android's master and Chrome sync setting are enabled, so we want to disable
                 // the Chrome sync setting to match isSyncRequested. We have to be careful not to
                 // disable it when isSyncRequested becomes false due to master sync being disabled
@@ -192,5 +191,14 @@ public class SyncController
             return;
         }
         mProfileSyncService.setSessionsId(SESSION_TAG_PREFIX + uniqueTag);
+    }
+
+    /**
+     * Checks both the master sync for the device, and Chrome sync setting for the given account.
+     * If no user is currently signed in it returns false.
+     */
+    private boolean isSyncEnabledInAndroidSyncSettings() {
+        return AndroidSyncSettings.get().doesMasterSyncSettingAllowChromeSync()
+                && AndroidSyncSettings.get().isChromeSyncEnabled();
     }
 }

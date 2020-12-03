@@ -131,26 +131,12 @@ public class AndroidSyncSettings {
     }
 
     /**
-     * Checks whether sync is currently enabled from Chrome for the currently signed in account.
+     * DEPRECATED - DO NOT USE! You probably want ProfileSyncService.isSyncRequested() instead.
      *
-     * It checks both the master sync for the device, and Chrome sync setting for the given account.
-     * If no user is currently signed in it returns false.
-     *
-     * @return true if sync is on, false otherwise
+     * @return The state of the Chrome sync setting for the given account,
+     * *ignoring* the master sync setting.
      */
-    public boolean isSyncEnabled() {
-        ThreadUtils.assertOnUiThread();
-        return mChromeSyncEnabled && doesMasterSyncSettingAllowChromeSync();
-    }
-
-    /**
-     * Checks whether sync is currently enabled for Chrome for a given account.
-     *
-     * It checks only Chrome sync setting for the given account,
-     * and ignores the master sync setting.
-     *
-     * @return true if sync is on, false otherwise
-     */
+    @Deprecated
     public boolean isChromeSyncEnabled() {
         ThreadUtils.assertOnUiThread();
         return mChromeSyncEnabled;
