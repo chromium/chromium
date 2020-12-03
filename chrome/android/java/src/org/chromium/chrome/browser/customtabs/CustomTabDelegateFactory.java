@@ -356,6 +356,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final MultiWindowUtils mMultiWindowUtils;
     private final PendingIntent mFocusIntent;
     private final Verifier mVerifier;
+    private final boolean mShouldShowOpenInChromeMenuItemInContextMenu;
 
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
     private ExternalNavigationDelegateImpl mNavigationDelegate;
@@ -377,13 +378,15 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param verifier Decides how to handle navigation to a new URL.
      * @param ephemeralTabCoordinatorSupplier A provider of {@link EphemeralTabCoordinator} that
      *                                        shows preview tab.
+     * @param shouldShowOpenInChromeMenuItemInContextMenu Whether 'open in chrome' is shown.
      */
     private CustomTabDelegateFactory(ChromeActivity<?> activity, boolean shouldHideBrowserControls,
             boolean isOpenedByChrome, @Nullable String webApkScopeUrl,
             @WebDisplayMode int displayMode, boolean shouldEnableEmbeddedMediaExperience,
             BrowserControlsVisibilityDelegate visibilityDelegate, ExternalAuthUtils authUtils,
             MultiWindowUtils multiWindowUtils, @Nullable PendingIntent focusIntent,
-            Verifier verifier, Lazy<EphemeralTabCoordinator> ephemeralTabCoordinator) {
+            Verifier verifier, Lazy<EphemeralTabCoordinator> ephemeralTabCoordinator,
+            boolean shouldShowOpenInChromeMenuItemInContextMenu) {
         mActivity = activity;
         mShouldHideBrowserControls = shouldHideBrowserControls;
         mIsOpenedByChrome = isOpenedByChrome;
@@ -397,6 +400,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mFocusIntent = focusIntent;
         mVerifier = verifier;
         mEphemeralTabCoordinator = ephemeralTabCoordinator;
+        mShouldShowOpenInChromeMenuItemInContextMenu = shouldShowOpenInChromeMenuItemInContextMenu;
     }
 
     @Inject
@@ -410,7 +414,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 getDisplayMode(intentDataProvider),
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(), visibilityDelegate,
                 authUtils, multiWindowUtils, intentDataProvider.getFocusIntent(), verifier,
-                ephemeralTabCoordinator);
+                ephemeralTabCoordinator,
+                intentDataProvider.shouldShowOpenInChromeMenuItemInContextMenu());
     }
 
     /**
@@ -419,7 +424,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      */
     static CustomTabDelegateFactory createDummy() {
         return new CustomTabDelegateFactory(null, false, false, null, WebDisplayMode.BROWSER, false,
-                null, null, null, null, null, () -> null);
+                null, null, null, null, null, () -> null, true);
     }
 
     @Override
@@ -465,19 +470,28 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         return new ExternalNavigationHandler(mNavigationDelegate);
     }
 
+    @VisibleForTesting
+    TabContextMenuItemDelegate createTabContextMenuItemDelegate(Tab tab) {
+        TabModelSelector tabModelSelector =
+                mActivity != null ? mActivity.getTabModelSelector() : null;
+        return new TabContextMenuItemDelegate(tab, tabModelSelector,
+                EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
+                        -> null,
+                () -> {}, mActivity == null ? null : mActivity::getSnackbarManager) {
+            @Override
+            public boolean supportsOpenInChromeFromCct() {
+                return mShouldShowOpenInChromeMenuItemInContextMenu;
+            }
+        };
+    }
+
     @Override
     public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
         @ChromeContextMenuPopulator.ContextMenuMode
         int contextMenuMode = getContextMenuMode(mActivityType);
         Supplier<ShareDelegate> shareDelegateSupplier =
                 mActivity == null ? null : mActivity.getShareDelegateSupplier();
-        TabModelSelector tabModelSelector =
-                mActivity != null ? mActivity.getTabModelSelector() : null;
-        return new ChromeContextMenuPopulatorFactory(
-                new TabContextMenuItemDelegate(tab, tabModelSelector,
-                        EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
-                                -> null,
-                        () -> {}, mActivity == null ? null : mActivity::getSnackbarManager),
+        return new ChromeContextMenuPopulatorFactory(createTabContextMenuItemDelegate(tab),
                 shareDelegateSupplier, contextMenuMode, AppHooks.get().getExternalAuthUtils());
     }
 

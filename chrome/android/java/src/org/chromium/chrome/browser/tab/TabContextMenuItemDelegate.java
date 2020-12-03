@@ -317,6 +317,15 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
     }
 
+    /**
+     * Returns whether the 'open in chrome' menu item should be shown. This is only called when the
+     * context menu is shown in cct.
+     */
+    @Override
+    public boolean supportsOpenInChromeFromCct() {
+        return true;
+    }
+
     @Override
     public void onOpenInNewChromeTabFromCCT(String linkUrl, boolean isIncognito) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl));

@@ -55,6 +55,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mShowDownload;
     private final boolean mIsOpenedByChrome;
     private final boolean mIsIncognito;
+    private final boolean mShowOpenInChrome;
 
     private final List<String> mMenuEntries;
     private final Map<MenuItem, Integer> mItemToIndexMap = new HashMap<MenuItem, Integer>();
@@ -63,6 +64,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
     /**
      * Creates an {@link CustomTabAppMenuPropertiesDelegate} instance.
+     *
+     * @param showOpenInChrome Whether 'open in chrome' is shown, depending upon other state.
      */
     public CustomTabAppMenuPropertiesDelegate(Context context,
             ActivityTabProvider activityTabProvider,
@@ -71,7 +74,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
             boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager, boolean showOpenInChrome) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
                 toolbarManager, decorView, null, bookmarkBridgeSupplier, modalDialogManager);
         mVerifier = verifier;
@@ -82,6 +85,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mShowStar = showStar;
         mShowDownload = showDownload;
         mIsIncognito = isIncognito;
+        mShowOpenInChrome = showOpenInChrome;
     }
 
     @Override
@@ -202,6 +206,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             prepareTranslateMenuItem(menu, currentTab);
 
+            if (!mShowOpenInChrome) {
+                openInChromeItemVisible = false;
+            }
             MenuItem openInChromeItem = menu.findItem(R.id.open_in_browser_id);
             if (openInChromeItemVisible) {
                 String title = mIsIncognito ?

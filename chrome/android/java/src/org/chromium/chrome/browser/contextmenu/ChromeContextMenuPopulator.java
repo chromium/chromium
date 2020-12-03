@@ -540,7 +540,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                               .second;
             if (mMode == ContextMenuMode.WEB_APP) {
                 items.add(createListItem(Item.OPEN_IN_CHROME));
-            } else if (mMode == ContextMenuMode.CUSTOM_TAB) {
+            } else if (mMode == ContextMenuMode.CUSTOM_TAB
+                    && mItemDelegate.supportsOpenInChromeFromCct()) {
                 boolean addNewEntries = false;
                 try {
                     URI uri = new URI(mParams.getUrl());
