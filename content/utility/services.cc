@@ -9,7 +9,9 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/child/child_process.h"
@@ -60,6 +62,11 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "sandbox/linux/services/libc_interceptor.h"
 #include "sandbox/policy/sandbox_type.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+#include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"  // nogncheck
+#include "services/shape_detection/shape_detection_service.h"  // nogncheck
+#endif
 
 namespace content {
 
@@ -168,6 +175,15 @@ auto RunAudio(mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
   return audio::CreateStandaloneService(std::move(receiver));
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+auto RunShapeDetectionService(
+    mojo::PendingReceiver<shape_detection::mojom::ShapeDetectionService>
+        receiver) {
+  return std::make_unique<shape_detection::ShapeDetectionService>(
+      std::move(receiver));
+}
+#endif
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 auto RunCdmService(mojo::PendingReceiver<media::mojom::CdmService> receiver) {
   return std::make_unique<media::CdmService>(
@@ -224,6 +240,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunStorageService);
   services.Add(RunTracing);
   services.Add(RunVideoCapture);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+  services.Add(RunShapeDetectionService);
+#endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   services.Add(RunCdmService);

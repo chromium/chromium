@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 
@@ -34,6 +35,8 @@ source_set("utility") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",
     "//content:export",
@@ -75,6 +78,13 @@ source_set("utility") {
     deps += [
       "//chromeos/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
+    ]
+  }
+
+  if (is_ash && is_chrome_branded) {
+    deps += [
+      "//services/shape_detection:lib",
+      "//services/shape_detection/public/mojom",
     ]
   }
 

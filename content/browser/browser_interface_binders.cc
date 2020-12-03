@@ -7,7 +7,9 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
@@ -48,6 +50,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -172,9 +175,17 @@ namespace {
 void BindShapeDetectionServiceOnIOThread(
     mojo::PendingReceiver<shape_detection::mojom::ShapeDetectionService>
         receiver) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+  content::ServiceProcessHost::Launch<
+      shape_detection::mojom::ShapeDetectionService>(
+      std::move(receiver), content::ServiceProcessHost::Options()
+                               .WithDisplayName("Shape Detection Service")
+                               .Pass());
+#else
   auto* gpu = GpuProcessHost::Get();
   if (gpu)
     gpu->RunService(std::move(receiver));
+#endif
 }
 
 shape_detection::mojom::ShapeDetectionService* GetShapeDetectionService() {
