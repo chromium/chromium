@@ -9,7 +9,6 @@
 
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -21,6 +20,10 @@ namespace sharesheet {
 class SharesheetServiceDelegate;
 }
 
+namespace content {
+class WebContents;
+}
+
 class SharesheetExpandButton;
 
 class SharesheetBubbleView : public views::BubbleDialogDelegateView {
@@ -29,7 +32,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   SharesheetBubbleView(views::View* anchor_view,
                        sharesheet::SharesheetServiceDelegate* delegate);
-  SharesheetBubbleView(gfx::NativeWindow native_window,
+  SharesheetBubbleView(content::WebContents* web_contents,
                        sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
   SharesheetBubbleView& operator=(const SharesheetBubbleView&) = delete;

@@ -15,7 +15,6 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
@@ -61,16 +60,13 @@ class SharesheetService : public KeyedService {
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
                   sharesheet::CloseCallback close_callback);
-  void OnBubbleClosed(gfx::NativeWindow native_window,
-                      const base::string16& active_action);
-  void OnTargetSelected(gfx::NativeWindow native_window,
+  void OnBubbleClosed(uint32_t id, const base::string16& active_action);
+  void OnTargetSelected(uint32_t delegate_id,
                         const base::string16& target_name,
                         const TargetType type,
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
-  SharesheetServiceDelegate* GetOrCreateDelegate(
-      gfx::NativeWindow native_window);
-  SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);
+  SharesheetServiceDelegate* GetDelegate(uint32_t delegate_id);
 
   // If the files to share contains a Google Drive hosted document, only the
   // drive share action will be shown.
@@ -94,16 +90,18 @@ class SharesheetService : public KeyedService {
                     SharesheetServiceIconLoaderCallback callback,
                     apps::mojom::IconValuePtr icon_value);
 
-  void OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
+  void OnAppIconsLoaded(std::unique_ptr<SharesheetServiceDelegate> delegate,
                         apps::mojom::IntentPtr intent,
                         sharesheet::CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
 
-  void ShowBubbleWithDelegate(SharesheetServiceDelegate* delegate,
-                              apps::mojom::IntentPtr intent,
-                              bool contains_hosted_document,
-                              sharesheet::CloseCallback close_callback);
+  void ShowBubbleWithDelegate(
+      std::unique_ptr<SharesheetServiceDelegate> delegate,
+      apps::mojom::IntentPtr intent,
+      bool contains_hosted_document,
+      sharesheet::CloseCallback close_callback);
 
+  uint32_t delegate_counter_ = 0;
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
   apps::AppServiceProxy* app_service_proxy_;

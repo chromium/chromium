@@ -19,7 +19,6 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/view.h"
 
@@ -46,18 +45,20 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    sharesheet::CloseCallback close_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
-  auto* sharesheet_service_delegate =
-      GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
-  ShowBubbleWithDelegate(sharesheet_service_delegate, std::move(intent),
-                         contains_hosted_document, std::move(close_callback));
+  auto sharesheet_service_delegate =
+      std::make_unique<SharesheetServiceDelegate>(delegate_counter_++,
+                                                  web_contents, this);
+  ShowBubbleWithDelegate(std::move(sharesheet_service_delegate),
+                         std::move(intent), contains_hosted_document,
+                         std::move(close_callback));
 }
 
 // Cleanup delegate when bubble closes.
-void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
+void SharesheetService::OnBubbleClosed(uint32_t id,
                                        const base::string16& active_action) {
   auto iter = active_delegates_.begin();
   while (iter != active_delegates_.end()) {
-    if ((*iter)->GetNativeWindow() == native_window) {
+    if ((*iter)->GetId() == id) {
       if (!active_action.empty()) {
         ShareAction* share_action =
             sharesheet_action_cache_->GetActionFromName(active_action);
@@ -71,12 +72,12 @@ void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
   }
 }
 
-void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
+void SharesheetService::OnTargetSelected(uint32_t delegate_id,
                                          const base::string16& target_name,
                                          const TargetType type,
                                          apps::mojom::IntentPtr intent,
                                          views::View* share_action_view) {
-  SharesheetServiceDelegate* delegate = GetDelegate(native_window);
+  SharesheetServiceDelegate* delegate = GetDelegate(delegate_id);
   if (delegate == nullptr)
     return;
 
@@ -105,23 +106,11 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
   }
 }
 
-SharesheetServiceDelegate* SharesheetService::GetOrCreateDelegate(
-    gfx::NativeWindow native_window) {
-  auto* delegate = GetDelegate(native_window);
-  if (delegate == nullptr) {
-    auto new_delegate =
-        std::make_unique<SharesheetServiceDelegate>(native_window, this);
-    delegate = new_delegate.get();
-    active_delegates_.push_back(std::move(new_delegate));
-  }
-  return delegate;
-}
-
 SharesheetServiceDelegate* SharesheetService::GetDelegate(
-    gfx::NativeWindow native_window) {
+    uint32_t delegate_id) {
   auto iter = active_delegates_.begin();
   while (iter != active_delegates_.end()) {
-    if ((*iter)->GetNativeWindow() == native_window) {
+    if ((*iter)->GetId() == delegate_id) {
       return iter->get();
     }
     ++iter;
@@ -190,16 +179,17 @@ void SharesheetService::OnIconLoaded(
 }
 
 void SharesheetService::OnAppIconsLoaded(
-    SharesheetServiceDelegate* delegate,
+    std::unique_ptr<SharesheetServiceDelegate> delegate,
     apps::mojom::IntentPtr intent,
     sharesheet::CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
   delegate->ShowBubble(std::move(targets), std::move(intent),
                        std::move(close_callback));
+  active_delegates_.push_back(std::move(delegate));
 }
 
 void SharesheetService::ShowBubbleWithDelegate(
-    SharesheetServiceDelegate* delegate,
+    std::unique_ptr<SharesheetServiceDelegate> delegate,
     apps::mojom::IntentPtr intent,
     bool contains_hosted_document,
     sharesheet::CloseCallback close_callback) {
@@ -222,7 +212,7 @@ void SharesheetService::ShowBubbleWithDelegate(
       intent_launch_info.size());
   LoadAppIcons(std::move(intent_launch_info), std::move(targets), 0,
                base::BindOnce(&SharesheetService::OnAppIconsLoaded,
-                              weak_factory_.GetWeakPtr(), delegate,
+                              weak_factory_.GetWeakPtr(), std::move(delegate),
                               std::move(intent), std::move(close_callback)));
 }
 
