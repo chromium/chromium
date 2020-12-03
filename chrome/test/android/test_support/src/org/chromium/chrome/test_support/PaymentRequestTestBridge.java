@@ -14,6 +14,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
@@ -159,7 +160,7 @@ public class PaymentRequestTestBridge {
         }
 
         @Override
-        public void onAppListReady(List<EditableOption> apps, PaymentItem total) {
+        public void onAppListReady(List<PaymentApp> apps, PaymentItem total) {
             String[] appLabels = new String[apps.size()];
             String[] appSublabels = new String[apps.size()];
             String[] appTotals = new String[apps.size()];

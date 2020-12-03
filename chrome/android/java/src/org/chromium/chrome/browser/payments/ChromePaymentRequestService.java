@@ -149,7 +149,7 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public List<PaymentApp> getPaymentApps() {
-        return mPaymentUiService.getPaymentAppsInPaymentAppList();
+        return mPaymentUiService.getPaymentApps();
     }
 
     // Implements BrowserPaymentRequest:
@@ -230,11 +230,6 @@ public class ChromePaymentRequestService
     @Override
     public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             boolean shouldSkipAppSelector) {
-        // Send AppListReady signal when all apps are created and request.show() is called.
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onAppListReady(
-                    mPaymentUiService.getPaymentApps(), total);
-        }
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
         String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
@@ -642,7 +637,7 @@ public class ChromePaymentRequestService
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS;
             }
         } else {
-            PaymentApp firstApp = (PaymentApp) mPaymentUiService.getPaymentApps().get(0);
+            PaymentApp firstApp = mPaymentUiService.getPaymentApps().get(0);
             if (firstApp.isAutofillInstrument()) {
                 missingFields = ((AutofillPaymentInstrument) (firstApp)).getMissingFields();
             }

@@ -335,16 +335,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mMerchantSupportsAutofillCards;
     }
 
-    /** @return Get the payment apps of the PaymentRequest UI. */
-    public List<EditableOption> getPaymentApps() {
-        return mPaymentMethodsSection.getItems();
-    }
-
-    /**
-     * @return Get the payment apps of the PaymentRequest UI in the form of a {@link PaymentApp}
-     *         list.
-     */
-    public List<PaymentApp> getPaymentAppsInPaymentAppList() {
+    /** @return The payment apps. */
+    public List<PaymentApp> getPaymentApps() {
         List<PaymentApp> paymentApps = new ArrayList<>();
         for (EditableOption each : mPaymentMethodsSection.getItems()) {
             paymentApps.add((PaymentApp) each);

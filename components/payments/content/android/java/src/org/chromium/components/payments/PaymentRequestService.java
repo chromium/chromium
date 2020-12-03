@@ -12,7 +12,6 @@ import androidx.collection.ArrayMap;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
-import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.payments.BrowserPaymentRequest.Factory;
@@ -159,7 +158,7 @@ public class PaymentRequestService
         void onCanMakePaymentReturned();
         void onHasEnrolledInstrumentCalled();
         void onHasEnrolledInstrumentReturned();
-        void onAppListReady(@Nullable List<EditableOption> paymentApps, PaymentItem total);
+        void onAppListReady(@Nullable List<PaymentApp> paymentApps, PaymentItem total);
         void onNotSupportedError();
         void onConnectionTerminated();
         void onAbortCalled();
@@ -773,7 +772,11 @@ public class PaymentRequestService
 
         PaymentNotShownError ensureError = ensureHasSupportedPaymentMethods();
         if (ensureError != null) return ensureError;
-
+        // Send AppListReady signal when all apps are created and request.show() is called.
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onAppListReady(
+                    mBrowserPaymentRequest.getPaymentApps(), mSpec.getRawTotal());
+        }
         boolean shouldSkip = shouldSkipAppSelector();
         String showError = mBrowserPaymentRequest.showOrSkipAppSelector(
                 mIsShowWaitingForUpdatedDetails, mSpec.getRawTotal(), shouldSkip);
