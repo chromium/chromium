@@ -500,6 +500,11 @@ void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
     return;
+
+  // Do not announce empty text.
+  if (text.empty())
+    return;
+
   Java_WebContentsAccessibilityImpl_announceLiveRegionText(
       env, obj, base::android::ConvertUTF16ToJavaString(env, text));
 }
@@ -750,19 +755,28 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoParent(
         env, obj, info, android_node->unique_id());
   }
+
+  // Build a vector of child ids
+  std::vector<int> child_ids;
   for (BrowserAccessibility::PlatformChildIterator it =
            node->PlatformChildrenBegin();
        it != node->PlatformChildrenEnd(); ++it) {
     auto* android_node = static_cast<BrowserAccessibilityAndroid*>(it.get());
-    Java_WebContentsAccessibilityImpl_addAccessibilityNodeInfoChild(
-        env, obj, info, android_node->unique_id());
+    child_ids.push_back(android_node->unique_id());
   }
+  if (child_ids.size()) {
+    Java_WebContentsAccessibilityImpl_addAccessibilityNodeInfoChildren(
+        env, obj, info,
+        base::android::ToJavaIntArray(env, child_ids.data(), child_ids.size()));
+  }
+
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBooleanAttributes(
       env, obj, info, unique_id, node->IsReportingCheckable(),
       node->IsChecked(), node->IsClickable(), node->IsContentInvalid(),
       node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
       node->HasImage(), node->IsPasswordField(), node->IsScrollable(),
       node->IsSelected(), node->IsVisibleToUser());
+
   Java_WebContentsAccessibilityImpl_addAccessibilityNodeInfoActions(
       env, obj, info, unique_id, node->CanScrollForward(),
       node->CanScrollBackward(), node->CanScrollUp(), node->CanScrollDown(),
@@ -778,7 +792,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       base::android::ConvertUTF8ToJavaString(env, node->GetRoleString()),
       base::android::ConvertUTF16ToJavaString(env, node->GetRoleDescription()),
       base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()));
+      base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
+      node->CanOpenPopup(), node->IsDismissable(), node->IsMultiLine(),
+      node->AndroidInputType(), node->AndroidLiveRegionType(),
+      base::android::ConvertUTF16ToJavaString(
+          env, node->GetContentInvalidErrorMessage()));
 
   ScopedJavaLocalRef<jintArray> suggestion_starts_java;
   ScopedJavaLocalRef<jintArray> suggestion_ends_java;
@@ -818,13 +836,6 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
 
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
-
-  Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoAttributes(
-      env, obj, info, node->CanOpenPopup(), node->IsDismissable(),
-      node->IsMultiLine(), node->AndroidInputType(),
-      node->AndroidLiveRegionType(),
-      base::android::ConvertUTF16ToJavaString(
-          env, node->GetContentInvalidErrorMessage()));
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoOAttributes(
       env, obj, info, node->HasCharacterLocations(),
@@ -870,17 +881,13 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
   if (!node)
     return false;
 
-  Java_WebContentsAccessibilityImpl_setAccessibilityEventBooleanAttributes(
+  // We will always set boolean, classname, list and scroll attributes.
+  Java_WebContentsAccessibilityImpl_setAccessibilityEventBaseAttributes(
       env, obj, event, node->IsChecked(), node->IsEnabled(),
-      node->IsPasswordField(), node->IsScrollable());
-  Java_WebContentsAccessibilityImpl_setAccessibilityEventClassName(
-      env, obj, event,
+      node->IsPasswordField(), node->IsScrollable(), node->GetItemIndex(),
+      node->GetItemCount(), node->GetScrollX(), node->GetScrollY(),
+      node->GetMaxScrollX(), node->GetMaxScrollY(),
       base::android::ConvertUTF8ToJavaString(env, node->GetClassName()));
-  Java_WebContentsAccessibilityImpl_setAccessibilityEventListAttributes(
-      env, obj, event, node->GetItemIndex(), node->GetItemCount());
-  Java_WebContentsAccessibilityImpl_setAccessibilityEventScrollAttributes(
-      env, obj, event, node->GetScrollX(), node->GetScrollY(),
-      node->GetMaxScrollX(), node->GetMaxScrollY());
 
   switch (event_type) {
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGED: {

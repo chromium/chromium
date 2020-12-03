@@ -1369,8 +1369,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     }
 
     @CalledByNative
-    private void addAccessibilityNodeInfoChild(AccessibilityNodeInfo node, int childId) {
-        node.addChild(mView, childId);
+    private void addAccessibilityNodeInfoChildren(AccessibilityNodeInfo node, int[] childIds) {
+        for (int childId : childIds) {
+            node.addChild(mView, childId);
+        }
     }
 
     @CalledByNative
@@ -1535,7 +1537,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @CalledByNative
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfo node, boolean isRoot,
-            String className, String role, String roleDescription, String hint, String targetUrl) {
+            String className, String role, String roleDescription, String hint, String targetUrl,
+            boolean canOpenPopup, boolean dismissable, boolean multiLine, int inputType,
+            int liveRegion, String errorMessage) {
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
@@ -1548,6 +1552,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         if (isRoot) {
             bundle.putCharSequence(
                     "ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES", mSupportedHtmlElementTypes);
+        }
+
+        node.setCanOpenPopup(canOpenPopup);
+        node.setDismissable(dismissable);
+        node.setMultiLine(multiLine);
+        node.setInputType(inputType);
+
+        // Deliberately don't call setLiveRegion because TalkBack speaks
+        // the entire region anytime it changes. Instead Chrome will
+        // call announceLiveRegionText() only on the nodes that change.
+        // node.setLiveRegion(liveRegion);
+
+        // We only apply the |errorMessage| if {@link setAccessibilityNodeInfoBooleanAttributes}
+        // set |contentInvalid| to true based on throttle delay.
+        if (node.isContentInvalid()) {
+            node.setError(errorMessage);
         }
     }
 
@@ -1697,27 +1717,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     }
 
     @CalledByNative
-    protected void setAccessibilityNodeInfoAttributes(AccessibilityNodeInfo node,
-            boolean canOpenPopup, boolean dismissable, boolean multiLine, int inputType,
-            int liveRegion, String errorMessage) {
-        node.setCanOpenPopup(canOpenPopup);
-        node.setDismissable(dismissable);
-        node.setMultiLine(multiLine);
-        node.setInputType(inputType);
-
-        // Deliberately don't call setLiveRegion because TalkBack speaks
-        // the entire region anytime it changes. Instead Chrome will
-        // call announceLiveRegionText() only on the nodes that change.
-        // node.setLiveRegion(liveRegion);
-
-        // We only apply the |errorMessage| if {@link setAccessibilityNodeInfoBooleanAttributes}
-        // set |contentInvalid| to true based on throttle delay.
-        if (node.isContentInvalid()) {
-            node.setError(errorMessage);
-        }
-    }
-
-    @CalledByNative
     protected void setAccessibilityNodeInfoCollectionInfo(
             AccessibilityNodeInfo node, int rowCount, int columnCount, boolean hierarchical) {
         node.setCollectionInfo(
@@ -1762,33 +1761,21 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     }
 
     @CalledByNative
-    private void setAccessibilityEventBooleanAttributes(AccessibilityEvent event, boolean checked,
-            boolean enabled, boolean password, boolean scrollable) {
+    private void setAccessibilityEventBaseAttributes(AccessibilityEvent event, boolean checked,
+            boolean enabled, boolean password, boolean scrollable, int currentItemIndex,
+            int itemCount, int scrollX, int scrollY, int maxScrollX, int maxScrollY,
+            String className) {
         event.setChecked(checked);
         event.setEnabled(enabled);
         event.setPassword(password);
         event.setScrollable(scrollable);
-    }
-
-    @CalledByNative
-    private void setAccessibilityEventClassName(AccessibilityEvent event, String className) {
-        event.setClassName(className);
-    }
-
-    @CalledByNative
-    private void setAccessibilityEventListAttributes(
-            AccessibilityEvent event, int currentItemIndex, int itemCount) {
         event.setCurrentItemIndex(currentItemIndex);
         event.setItemCount(itemCount);
-    }
-
-    @CalledByNative
-    private void setAccessibilityEventScrollAttributes(
-            AccessibilityEvent event, int scrollX, int scrollY, int maxScrollX, int maxScrollY) {
         event.setScrollX(scrollX);
         event.setScrollY(scrollY);
         event.setMaxScrollX(maxScrollX);
         event.setMaxScrollY(maxScrollY);
+        event.setClassName(className);
     }
 
     @CalledByNative
