@@ -2682,6 +2682,11 @@ const char kCCTTargetTranslateLanguageDescription[] =
     "Enables specify target language the page should be translated to "
     "in Chrome Custom Tabs.";
 
+const char kContinuousSearchName[] = "Continuous Search Navigation";
+const char kContinuousSearchDescription[] =
+    "Enables caching of search results to permit a more seamless search "
+    "experience.";
+
 const char kChromeShareHighlightsAndroidName[] =
     "Chrome Share text highlights on Android";
 const char kChromeShareHighlightsAndroidDescription[] =

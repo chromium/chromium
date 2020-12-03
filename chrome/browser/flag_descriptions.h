@@ -1558,6 +1558,9 @@ extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 extern const char kCCTTargetTranslateLanguageName[];
 extern const char kCCTTargetTranslateLanguageDescription[];
 
+extern const char kContinuousSearchName[];
+extern const char kContinuousSearchDescription[];
+
 extern const char kShareButtonInTopToolbarName[];
 extern const char kShareButtonInTopToolbarDescription[];
 

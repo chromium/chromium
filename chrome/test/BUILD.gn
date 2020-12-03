@@ -4355,6 +4355,7 @@ test("unit_tests") {
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
       "//chrome/android:chrome_java",
+      "//chrome/browser/continuous_search/internal:unit_tests",
       "//chrome/browser/long_screenshots:services",
       "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",
       "//chrome/browser/optimization_guide/android:native_java_unittests",

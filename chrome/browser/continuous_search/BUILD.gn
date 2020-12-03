@@ -1,0 +1,53 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "android/java/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelper.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/continuous_search/internal:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelperTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/continuous_search/internal:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/junit",
+    "//url:gurl_java",
+  ]
+}
+
+source_set("continuous_search") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/continuous_search/internal",
+  ]
+}

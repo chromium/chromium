@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulator.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
+  "+chrome/browser/continuous_search/android/java/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelper.java",
   "+chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ui/TabObscuringHandler.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/webapps/WebDisplayMode.java",

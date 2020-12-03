@@ -42734,6 +42734,7 @@ from previous Chrome versions.
   <int value="-1197245070" label="CookieDeprecationMessages:disabled"/>
   <int value="-1197035323" label="ZeroSuggestRedirectToChrome:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>
+  <int value="-1195034892" label="ContinuousSearch:disabled"/>
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
@@ -43244,6 +43245,7 @@ from previous Chrome versions.
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
+  <int value="-704459022" label="ContinuousSearch:enabled"/>
   <int value="-704232562" label="UseMonitorColorSpace:enabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-700300613" label="use-fake-device-for-media-stream:disabled"/>

@@ -194,6 +194,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
+#include "chrome/browser/continuous_search/features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "components/browser_ui/site_settings/android/features.h"
@@ -6875,6 +6876,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSwipeToMoveCursorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
 #endif  // defined(OS_ANDROID)
+
     {"change-password-affiliation",
      flag_descriptions::kChangePasswordAffiliationInfoName,
      flag_descriptions::kChangePasswordAffiliationInfoDescription, kOsAll,
@@ -6891,6 +6893,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyCheckWeakPasswordsName,
      flag_descriptions::kSafetyCheckWeakPasswordsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSafetyCheckWeakPasswords)},
+
+#if defined(OS_ANDROID)
+    {"continuous-search", flag_descriptions::kContinuousSearchName,
+     flag_descriptions::kContinuousSearchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(continuous_search::features::kContinuousSearch)},
+#endif  // defined(OS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

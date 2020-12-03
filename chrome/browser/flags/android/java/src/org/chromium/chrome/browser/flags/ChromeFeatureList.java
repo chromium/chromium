@@ -280,6 +280,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE =
             "ContextualSearchTapDisableOverride";
     public static final String CONTEXTUAL_SEARCH_TRANSLATIONS = "ContextualSearchTranslations";
+    public static final String CONTINUOUS_SEARCH = "ContinuousSearch";
     public static final String COOKIES_WITHOUT_SAME_SITE_MUST_BE_SECURE =
             "CookiesWithoutSameSiteMustBeSecure";
     public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";

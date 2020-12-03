@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchTabHelper;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
@@ -33,6 +34,7 @@ public final class TabHelpers {
         MediaSessionTabHelper.createForTab(tab);
         TaskTabHelper.createForTab(tab, parentTab);
         TabBrowserControlsConstraintsHelper.createForTab(tab);
+        ContinuousSearchTabHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
 
         // TODO(jinsukkim): Do this by having something observe new tab creation.

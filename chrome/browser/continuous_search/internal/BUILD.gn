@@ -1,0 +1,64 @@
+# Copyright 2020 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java" ]
+}
+
+android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserver.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResult.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultGroup.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListener.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultMetadata.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducer.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultUserData.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultUserDataObserver.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
+}
+
+source_set("internal") {
+  sources = [
+    "search_url_helper.cc",
+    "search_url_helper.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/google/core/common",
+    "//url",
+    "//url:gurl_android",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "search_url_helper_unittest.cc" ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

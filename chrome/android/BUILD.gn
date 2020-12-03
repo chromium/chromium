@@ -303,6 +303,7 @@ android_library("chrome_java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/consent_auditor/android:java",
     "//chrome/browser/contextmenu:java",
+    "//chrome/browser/continuous_search:java",
     "//chrome/browser/device:java",
     "//chrome/browser/download/android:factory_java",
     "//chrome/browser/download/android:java",
@@ -1036,6 +1037,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/contextmenu:java",
+    "//chrome/browser/continuous_search:javatests",
     "//chrome/browser/device:java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/download/internal/android:javatests",
@@ -1253,6 +1255,7 @@ android_library("chrome_test_java") {
   srcjar_deps = [ "//chrome/browser:tos_dialog_behavior_generated_enum" ]
 
   data = [
+    "//chrome/browser/continuous_search/testdata/",
     "//chrome/test/data/android/",
     "//chrome/test/data/autofill/",
     "//chrome/test/data/background_sync/",
