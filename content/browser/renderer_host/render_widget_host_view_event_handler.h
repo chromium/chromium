@@ -18,7 +18,6 @@
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/scoped_keyboard_hook.h"
-#include "ui/aura/window_tracker.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gestures/motion_event_aura.h"
 #include "ui/latency/latency_info.h"
@@ -289,10 +288,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // This flag when set ensures that we send over a notification to blink that
   // the current view has focus.
   bool set_focus_on_mouse_down_or_key_event_ = false;
-
-  // Used to track the state of the window we're created from. Only used when
-  // created fullscreen.
-  std::unique_ptr<aura::WindowTracker> host_tracker_;
 
   // Used to record the last position of the mouse.
   // While the mouse is locked, they store the last known position just as mouse

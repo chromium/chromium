@@ -119,7 +119,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Overridden from RenderWidgetHostViewBase:
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
                    const gfx::Rect& pos) override;
-  void InitAsFullscreen(RenderWidgetHostView* reference_host_view) override;
   void Focus() override;
   void UpdateCursor(const WebCursor& cursor) override;
   void DisplayCursor(const WebCursor& cursor) override;
@@ -598,9 +597,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Tracks the ancestors of the RWHVA window for window location changes.
   std::unique_ptr<WindowAncestorObserver> ancestor_window_observer_;
 
-  // Are we in the process of closing?  Tracked so fullscreen views can avoid
-  // sending a second shutdown request to the host when they lose the focus
-  // after requesting shutdown for another reason (e.g. Escape key).
+  // Are we in the process of closing?  Tracked so we don't try to shutdown
+  // again while inside shutdown, causing a double-free.
   bool in_shutdown_;
 
   // True if in the process of handling a window bounds changed notification.

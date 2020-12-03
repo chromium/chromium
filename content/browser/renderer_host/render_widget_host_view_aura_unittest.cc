@@ -253,9 +253,11 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
   ~FakeRenderWidgetHostViewAura() override {}
 
   void UseFakeDispatcher() {
-    dispatcher_ = new FakeWindowEventDispatcher(window()->GetHost());
-    std::unique_ptr<aura::WindowEventDispatcher> dispatcher(dispatcher_);
-    aura::test::SetHostDispatcher(window()->GetHost(), std::move(dispatcher));
+    aura::WindowTreeHost* host = window()->GetHost();
+    DCHECK(host);
+    auto dispatcher = std::make_unique<FakeWindowEventDispatcher>(host);
+    dispatcher_ = dispatcher.get();
+    aura::test::SetHostDispatcher(host, std::move(dispatcher));
   }
 
   void RunOnCompositingDidCommit() {
@@ -1062,23 +1064,6 @@ TEST_F(RenderWidgetHostViewAuraTest, DestructionBeforeProperInitialization) {
   // Terminate the test without initializing |view_|.
 }
 
-// Checks that a fullscreen view has the correct show-state and receives the
-// focus.
-TEST_F(RenderWidgetHostViewAuraTest, FocusFullscreen) {
-  view_->InitAsFullscreen(parent_view_);
-  aura::Window* window = view_->GetNativeView();
-  ASSERT_TRUE(window != nullptr);
-  EXPECT_EQ(ui::SHOW_STATE_FULLSCREEN,
-            window->GetProperty(aura::client::kShowStateKey));
-
-  // Check that we requested and received the focus.
-  EXPECT_TRUE(window->HasFocus());
-
-  // Check that we'll also say it's okay to activate the window when there's an
-  // ActivationClient defined.
-  EXPECT_TRUE(view_->ShouldActivate());
-}
-
 // Checks that a popup is positioned correctly relative to its parent using
 // screen coordinates.
 TEST_F(RenderWidgetHostViewAuraTest, PositionChildPopup) {
@@ -1159,29 +1144,6 @@ TEST_F(RenderWidgetHostViewAuraTest, ParentMovementUpdatesScreenRect) {
             widget_host_->screen_rects().at(0).first);
   EXPECT_EQ(gfx::Rect(10, 10, 300, 300),
             widget_host_->screen_rects().at(0).second);
-}
-
-// Checks that a fullscreen view is destroyed when it loses the focus.
-TEST_F(RenderWidgetHostViewAuraTest, DestroyFullscreenOnBlur) {
-  view_->InitAsFullscreen(parent_view_);
-  aura::Window* window = view_->GetNativeView();
-  ASSERT_TRUE(window != nullptr);
-  ASSERT_TRUE(window->HasFocus());
-
-  // After we create and focus another window, the RWHVA's window should be
-  // destroyed.
-  TestWindowObserver observer(window);
-  aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> sibling(new aura::Window(&delegate));
-  sibling->Init(ui::LAYER_TEXTURED);
-  sibling->Show();
-  window->parent()->AddChild(sibling.get());
-  sibling->Focus();
-  ASSERT_TRUE(sibling->HasFocus());
-  ASSERT_TRUE(observer.destroyed());
-
-  widget_host_ = nullptr;
-  view_ = nullptr;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2425,7 +2387,8 @@ TEST_F(RenderWidgetHostViewAuraTest,
 // Checks that touch-event state is maintained correctly for multiple touch
 // points.
 TEST_F(RenderWidgetHostViewAuraTest, MultiTouchPointsStates) {
-  view_->InitAsFullscreen(parent_view_);
+  view_->InitAsChild(parent_view_->GetNativeView());
+  view_->Focus();
   view_->Show();
   view_->UseFakeDispatcher();
 
@@ -5106,7 +5069,8 @@ TEST_F(RenderWidgetHostViewAuraTest, SetCanScrollForWebMouseWheelEvent) {
 // Ensures that the mapping from ui::TouchEvent to blink::WebTouchEvent doesn't
 // lose track of the number of acks required.
 TEST_F(RenderWidgetHostViewAuraTest, CorrectNumberOfAcksAreDispatched) {
-  view_->InitAsFullscreen(parent_view_);
+  view_->InitAsChild(parent_view_->GetNativeView());
+  view_->Focus();
   view_->Show();
   view_->UseFakeDispatcher();
 
@@ -5513,7 +5477,10 @@ TEST_F(RenderWidgetHostViewAuraTest,
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
-  view_->InitAsFullscreen(parent_view_);
+  // TODO(flackr): This test fails as the gesture events are not generated
+  // unless the `view_` is parented directly to the root window.
+  view_->InitAsChild(parent_view_->GetNativeView()->GetRootWindow());
+  view_->Focus();
   view_->Show();
 
   aura::Window* root = view_->GetNativeView()->GetRootWindow();

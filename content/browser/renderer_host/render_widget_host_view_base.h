@@ -405,12 +405,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void InitAsPopup(RenderWidgetHostView* parent_host_view,
                            const gfx::Rect& bounds) = 0;
 
-  // Perform all the initialization steps necessary for this object to represent
-  // a full screen window.
-  // |reference_host_view| is the view associated with the creating page that
-  // helps to position the full screen widget on the correct monitor.
-  virtual void InitAsFullscreen(RenderWidgetHostView* reference_host_view) = 0;
-
   // Sets the cursor for this view to the one associated with the specified
   // cursor_type.
   virtual void UpdateCursor(const WebCursor& cursor) = 0;
@@ -490,8 +484,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   void StopFling();
 
-  bool is_fullscreen() { return is_fullscreen_; }
-
   void set_is_currently_scrolling_viewport(
       bool is_currently_scrolling_viewport) {
     is_currently_scrolling_viewport_ = is_currently_scrolling_viewport;
@@ -551,9 +543,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
   RenderWidgetHostImpl* host_;
-
-  // Is this a fullscreen view?
-  bool is_fullscreen_ = false;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;

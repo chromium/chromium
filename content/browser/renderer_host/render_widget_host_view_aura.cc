@@ -166,7 +166,7 @@ void RenderWidgetHostViewAura::ApplyEventObserverForPopupExit(
   DCHECK(event.type() == ui::ET_MOUSE_PRESSED ||
          event.type() == ui::ET_TOUCH_PRESSED);
 
-  if (in_shutdown_ || is_fullscreen_)
+  if (in_shutdown_)
     return;
 
   // |target| may be null.
@@ -396,31 +396,6 @@ void RenderWidgetHostViewAura::InitAsPopup(
 
   event_observer_for_popup_exit_ =
       std::make_unique<EventObserverForPopupExit>(this);
-
-  device_scale_factor_ = GetDeviceScaleFactor();
-}
-
-void RenderWidgetHostViewAura::InitAsFullscreen(
-    RenderWidgetHostView* reference_host_view) {
-  DCHECK_EQ(widget_type_, WidgetType::kFrame);
-  is_fullscreen_ = true;
-  CreateAuraWindow(aura::client::WINDOW_TYPE_NORMAL);
-  window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
-
-  aura::Window* parent = nullptr;
-  gfx::Rect bounds;
-  if (reference_host_view) {
-    aura::Window* reference_window =
-        static_cast<RenderWidgetHostViewAura*>(reference_host_view)->window_;
-    event_handler_->TrackHost(reference_window);
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(reference_window);
-    parent = reference_window->GetRootWindow();
-    bounds = display.bounds();
-  }
-  aura::client::ParentWindowWithContext(window_, parent, bounds);
-  Show();
-  Focus();
 
   device_scale_factor_ = GetDeviceScaleFactor();
 }
@@ -1827,9 +1802,7 @@ bool RenderWidgetHostViewAura::ShouldActivate() const {
   if (!host)
     return true;
   const ui::Event* event = host->dispatcher()->current_event();
-  if (!event)
-    return true;
-  return is_fullscreen_;
+  return !event;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1896,31 +1869,6 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
       host()->GetRootBrowserAccessibilityManager();
   if (manager)
     manager->OnWindowBlurred();
-
-  // If we lose the focus while fullscreen, close the window; Pepper Flash
-  // won't do it for us (unlike NPAPI Flash). However, we do not close the
-  // window if we lose the focus to a window on another display.
-  display::Screen* screen = display::Screen::GetScreen();
-  bool focusing_other_display =
-      gained_focus && screen->GetNumDisplays() > 1 &&
-      (screen->GetDisplayNearestWindow(window_).id() !=
-       screen->GetDisplayNearestWindow(gained_focus).id());
-  if (is_fullscreen_ && !in_shutdown_ && !focusing_other_display) {
-#if defined(OS_WIN)
-    // On Windows, if we are switching to a non Aura Window on a different
-    // screen we should not close the fullscreen window.
-    if (!gained_focus) {
-      POINT point = {0};
-      ::GetCursorPos(&point);
-      if (screen->GetDisplayNearestWindow(window_).id() !=
-          screen->GetDisplayNearestPoint(gfx::Point(point)).id()) {
-        return;
-      }
-    }
-#endif
-    Shutdown();
-    return;
-  }
 
   // Close the child popup window if we lose focus (e.g. due to a JS alert or
   // system modal dialog). This is particularly important if

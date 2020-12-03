@@ -367,12 +367,6 @@ void RenderWidgetHostViewMac::InitAsPopup(
   ns_view_->InitAsPopup(pos, has_shadow);
 }
 
-void RenderWidgetHostViewMac::InitAsFullscreen(
-    RenderWidgetHostView* reference_host_view) {
-  // This path appears never to be reached.
-  NOTREACHED();
-}
-
 RenderWidgetHostViewBase*
 RenderWidgetHostViewMac::GetFocusedViewForTextSelection() {
   // We obtain the TextSelection from focused RWH which is obtained from the
