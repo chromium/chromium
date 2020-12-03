@@ -59,7 +59,7 @@ specific_include_rules = {
     "+third_party/brotli",
   ],
 
-  "ssl_client_socket_impl\.cc": [
+  "cert_compression\.cc": [
     "+third_party/brotli",
   ],
 

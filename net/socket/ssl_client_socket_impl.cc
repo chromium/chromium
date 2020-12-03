@@ -52,6 +52,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_values.h"
+#include "net/ssl/cert_compression.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -66,10 +67,6 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
-
-#if !defined(NET_DISABLE_BROTLI)
-#include "third_party/brotli/include/brotli/decode.h"
-#endif
 
 namespace net {
 
@@ -239,31 +236,6 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
                                 : RSAKeyUsage::kMissingDigitalSignature;
 }
 
-#if !defined(NET_DISABLE_BROTLI)
-int DecompressBrotliCert(SSL* ssl,
-                         CRYPTO_BUFFER** out,
-                         size_t uncompressed_len,
-                         const uint8_t* in,
-                         size_t in_len) {
-  uint8_t* data;
-  bssl::UniquePtr<CRYPTO_BUFFER> decompressed(
-      CRYPTO_BUFFER_alloc(&data, uncompressed_len));
-  if (!decompressed) {
-    return 0;
-  }
-
-  size_t output_size = uncompressed_len;
-  if (BrotliDecoderDecompress(in_len, in, &output_size, data) !=
-          BROTLI_DECODER_RESULT_SUCCESS ||
-      output_size != uncompressed_len) {
-    return 0;
-  }
-
-  *out = decompressed.release();
-  return 1;
-}
-#endif
-
 }  // namespace
 
 class SSLClientSocketImpl::SSLContext {
@@ -323,11 +295,7 @@ class SSLClientSocketImpl::SSLContext {
 
     SSL_CTX_set_msg_callback(ssl_ctx_.get(), MessageCallback);
 
-#if !defined(NET_DISABLE_BROTLI)
-    SSL_CTX_add_cert_compression_alg(
-        ssl_ctx_.get(), TLSEXT_cert_compression_brotli,
-        nullptr /* compression not supported */, DecompressBrotliCert);
-#endif
+    ConfigureCertificateCompression(ssl_ctx_.get());
 
     if (base::FeatureList::IsEnabled(features::kPostQuantumCECPQ2)) {
       static const int kCurves[] = {NID_CECPQ2, NID_X25519,
