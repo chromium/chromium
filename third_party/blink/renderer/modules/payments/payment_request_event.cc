@@ -359,8 +359,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
                                  "PaymentDetailsModifier");
 
   if (response->modifiers) {
-    auto* modifiers =
-        MakeGarbageCollected<HeapVector<Member<PaymentDetailsModifier>>>();
+    HeapVector<Member<PaymentDetailsModifier>> modifiers;
     for (const auto& response_modifier : *response->modifiers) {
       if (!response_modifier)
         continue;
@@ -390,15 +389,14 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
           return;
         }
         mod->setData(ScriptValue(script_state->GetIsolate(), parsed_value));
-        modifiers->emplace_back(mod);
+        modifiers.emplace_back(mod);
       }
     }
-    dictionary->setModifiers(*modifiers);
+    dictionary->setModifiers(modifiers);
   }
 
   if (response->shipping_options) {
-    auto* shipping_options =
-        MakeGarbageCollected<HeapVector<Member<PaymentShippingOption>>>();
+    HeapVector<Member<PaymentShippingOption>> shipping_options;
     for (const auto& response_shipping_option : *response->shipping_options) {
       if (!response_shipping_option)
         continue;
@@ -411,9 +409,9 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
       shipping_option->setId(response_shipping_option->id);
       shipping_option->setLabel(response_shipping_option->label);
       shipping_option->setSelected(response_shipping_option->selected);
-      shipping_options->emplace_back(shipping_option);
+      shipping_options.emplace_back(shipping_option);
     }
-    dictionary->setShippingOptions(*shipping_options);
+    dictionary->setShippingOptions(shipping_options);
   }
 
   if (response->stringified_payment_method_errors &&
