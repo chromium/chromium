@@ -47,10 +47,10 @@ ConfigureReason GetReasonForProgrammaticReconfigure(
 
 }  // namespace
 
-DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo() {}
+DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo() = default;
 DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo(
     const AssociationTypesInfo& other) = default;
-DataTypeManagerImpl::AssociationTypesInfo::~AssociationTypesInfo() {}
+DataTypeManagerImpl::AssociationTypesInfo::~AssociationTypesInfo() = default;
 
 DataTypeManagerImpl::DataTypeManagerImpl(
     ModelTypeSet initial_types,
@@ -67,8 +67,7 @@ DataTypeManagerImpl::DataTypeManagerImpl(
       debug_info_listener_(debug_info_listener),
       model_load_manager_(controllers, this),
       observer_(observer),
-      encryption_handler_(encryption_handler),
-      download_started_(false) {
+      encryption_handler_(encryption_handler) {
   DCHECK(configurer_);
   DCHECK(observer_);
 
@@ -324,7 +323,6 @@ void DataTypeManagerImpl::Restart() {
   download_types_queue_ = PrioritizeTypes(last_enabled_types_);
   association_types_info_.reset();
 
-  download_started_ = false;
   model_load_manager_.Initialize(
       /*desired_types=*/last_enabled_types_,
       /*preferred_types=*/last_requested_types_, last_requested_context_);
@@ -333,8 +331,6 @@ void DataTypeManagerImpl::Restart() {
 void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // TODO(crbug.com/1102837): Should we handle |needs_reconfigure_| here,
   // before even starting the downloads?
-  DCHECK(!download_started_);
-  download_started_ = true;
   // TODO(pavely): By now some of datatypes in |download_types_queue_| could
   // have failed loading and should be excluded from configuration. I need to
   // adjust |download_types_queue_| for such types.
@@ -488,14 +484,12 @@ void DataTypeManagerImpl::DownloadCompleted(
   DCHECK(download_types_queue_.front() == downloaded_types);
   download_types_queue_.pop();
 
-  // Those types that were already downloaded (non first sync/error types)
-  // are already done. Just finalize the newly downloaded types if necessary.
   if (association_types_info_) {
     // A non-empty |association_types_info_| means there were actually types
-    // downloading. Finalize those.
+    // downloading. Record stats for those.
     association_types_info_->first_sync_types = succeeded_configuration_types;
     association_types_info_->download_ready_time = base::Time::Now();
-    StartNextAssociation(association_types_info_->types);
+    RecordConfigurationStats(association_types_info_->types);
   }
   DCHECK(!association_types_info_);
 
@@ -537,8 +531,10 @@ void DataTypeManagerImpl::StartNextDownload(
   association_types_info_->high_priority_types_before =
       high_priority_types_before;
 
-  // Finalize the types that are already downloaded.
-  StartNextAssociation(ready_types);
+  // Record stats for the types that are already downloaded. The remaining types
+  // will be handled once their download finishes (which happens as part of
+  // ConfigureDataTypes).
+  RecordConfigurationStats(ready_types);
 }
 
 ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
@@ -641,22 +637,21 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   return Difference(active_types, types_to_download);
 }
 
-void DataTypeManagerImpl::StartNextAssociation(
-    ModelTypeSet types_to_associate) {
+void DataTypeManagerImpl::RecordConfigurationStats(ModelTypeSet types) {
   DCHECK(association_types_info_);
   DCHECK(state_ == CONFIGURING);
 
-  for (ModelType type : types_to_associate) {
+  for (ModelType type : types) {
     if (ProtocolTypes().Has(type)) {
-      RecordConfigurationStats(type);
+      RecordConfigurationStatsImpl(type);
     }
   }
 
   // If any pending types weren't covered here, then we're not done yet.
-  if (types_to_associate != association_types_info_->types) {
-    DCHECK_EQ(association_types_info_->ready_types, types_to_associate);
+  if (types != association_types_info_->types) {
+    DCHECK_EQ(association_types_info_->ready_types, types);
     // The remaining types are still downloading; this method will get called
-    // again (with UNREADY_AT_CONFIG) once the download finishes.
+    // again (with the full set of types) once the download finishes.
     DCHECK(association_types_info_->download_ready_time.is_null());
     return;
   }
@@ -685,7 +680,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   }
 }
 
-void DataTypeManagerImpl::RecordConfigurationStats(ModelType type) {
+void DataTypeManagerImpl::RecordConfigurationStatsImpl(ModelType type) {
   DCHECK(association_types_info_);
 
   if (!debug_info_listener_.IsInitialized())

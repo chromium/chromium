@@ -80,8 +80,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   };
   using DataTypeConfigStateMap = std::map<ModelType, DataTypeConfigState>;
 
-  void RecordConfigurationStats(ModelType type);
-
   // Return model types in |state_map| that match |state|.
   static ModelTypeSet GetDataTypesInState(
       DataTypeConfigState state,
@@ -142,11 +140,9 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Will kick off configuration of any new ready types.
   void StartNextDownload(ModelTypeSet high_priority_types_before);
 
-  // Finalize a set of data types that have finished downloading.
-  // TODO(crbug.com/1102837): Simplify and rename this. "Association" doesn't
-  // exist anymore; all this does is record configuration stats and eventually
-  // update |state_|.
-  void StartNextAssociation(ModelTypeSet types_to_associate);
+  void RecordConfigurationStats(ModelTypeSet types);
+
+  void RecordConfigurationStatsImpl(ModelType type);
 
   void StopImpl(ShutdownReason reason);
 
@@ -237,11 +233,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Timing stats of data type configuration.
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
-
-  // Configuration process is started when ModelLoadManager notifies
-  // DataTypeManager that all types are ready for configure.
-  // This flag ensures that this process is started only once.
-  bool download_started_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
 
