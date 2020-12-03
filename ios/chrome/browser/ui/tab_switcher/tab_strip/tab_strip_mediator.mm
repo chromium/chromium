@@ -161,6 +161,25 @@ int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   [self populateConsumerItems];
 }
 
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  DCHECK_EQ(_webStateList, webStateList);
+  if (webStateList->IsBatchInProgress())
+    return;
+  // If the selected index changes as a result of the last webstate being
+  // detached, atIndex will be -1.
+  if (atIndex == -1) {
+    [self.consumer selectItemWithID:nil];
+    return;
+  }
+
+  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(newWebState);
+  [self.consumer selectItemWithID:tabHelper->tab_id()];
+}
+
 #pragma mark - TabFaviconDataSource
 
 - (void)faviconForIdentifier:(NSString*)identifier
@@ -207,6 +226,7 @@ int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
       base::checked_cast<int>(self.webStateList->count()), std::move(webState),
       (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
       WebStateOpener());
+  [self.consumer selectItemWithID:GetActiveTabId(self.webStateList)];
 }
 
 - (void)selectTab:(int)index {

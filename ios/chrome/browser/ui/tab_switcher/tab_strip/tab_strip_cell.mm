@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 
+#import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,13 +22,7 @@ const CGFloat kTitleInset = 10.0;
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
-    NSString* imageName = @"tabstrip_background_tab";
-    UIImage* image = [UIImage imageNamed:imageName];
-    UIEdgeInsets insets =
-        UIEdgeInsetsMake(0, kTabBackgroundLeftCapInset, image.size.height + 1.0,
-                         image.size.width - kTabBackgroundLeftCapInset + 1.0);
-    self.backgroundView = [[UIImageView alloc]
-        initWithImage:[image resizableImageWithCapInsets:insets]];
+    [self setupBackgroundViews];
 
     UIImage* favicon = [[UIImage imageNamed:@"default_world_favicon"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -83,6 +78,43 @@ const CGFloat kTitleInset = 10.0;
   [super prepareForReuse];
   self.titleLabel.text = nil;
   self.itemIdentifier = nil;
+  self.selected = NO;
+}
+
+- (void)setupBackgroundViews {
+  self.backgroundView = [self resizeableBackgroundImageForStateSelected:NO];
+  self.selectedBackgroundView =
+      [self resizeableBackgroundImageForStateSelected:YES];
+}
+
+#pragma mark - UIView
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self setupBackgroundViews];
+}
+
+#pragma mark - Private
+
+// Updates this tab's style based on the value of |selected| and the current
+// incognito style.
+- (UIView*)resizeableBackgroundImageForStateSelected:(BOOL)selected {
+  // Style the background image first.
+  NSString* state = (selected ? @"foreground" : @"background");
+  NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
+
+  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
+  // Radar filled: b/137942721.
+  UIImage* resolvedImage = [UIImage imageNamed:imageName
+                                      inBundle:nil
+                 compatibleWithTraitCollection:self.traitCollection];
+  UIEdgeInsets insets = UIEdgeInsetsMake(
+      0, kTabBackgroundLeftCapInset, resolvedImage.size.height + 1.0,
+      resolvedImage.size.width - kTabBackgroundLeftCapInset + 1.0);
+  UIImage* backgroundImage =
+      StretchableImageFromUIImage(resolvedImage, kTabBackgroundLeftCapInset, 0);
+  return [[UIImageView alloc]
+      initWithImage:[backgroundImage resizableImageWithCapInsets:insets]];
 }
 
 // Selector registered to the close button.

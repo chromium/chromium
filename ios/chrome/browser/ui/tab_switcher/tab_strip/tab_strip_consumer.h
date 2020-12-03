@@ -23,6 +23,9 @@
 // The consumer should ignore this call if |itemID| has not yet been inserted.
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item;
 
+// Tells the consumer to update the selected item ID to be |selectedItemID|.
+- (void)selectItemWithID:(NSString*)selectedItemID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_CONSUMER_H_

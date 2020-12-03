@@ -126,6 +126,10 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
   [self.collectionView reloadData];
+  [self.collectionView
+      selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                   animated:YES
+             scrollPosition:UICollectionViewScrollPositionNone];
 }
 
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
@@ -141,6 +145,20 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   // |cell| may be nil if it is scrolled offscreen.
   if (cell)
     [self configureCell:cell withItem:item];
+}
+
+- (void)selectItemWithID:(NSString*)selectedItemID {
+  if (self.selectedItemID == selectedItemID)
+    return;
+
+  [self.collectionView
+      deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                     animated:YES];
+  self.selectedItemID = selectedItemID;
+  [self.collectionView
+      selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                   animated:YES
+             scrollPosition:UICollectionViewScrollPositionNone];
 }
 
 #pragma mark - Private
@@ -177,6 +195,12 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
 - (void)sendNewTabCommand {
   [self.delegate addNewItem];
+}
+
+#pragma mark - Private properties
+
+- (NSUInteger)selectedIndex {
+  return [self indexOfItemWithID:self.selectedItemID];
 }
 
 #pragma mark - UICollectionViewDelegate
