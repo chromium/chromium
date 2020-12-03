@@ -632,7 +632,7 @@ void ResourceLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
   if (response_body_loader_) {
     if (defers != WebURLLoader::DeferType::kNotDeferred &&
         !response_body_loader_->IsSuspended()) {
-      response_body_loader_->Suspend();
+      response_body_loader_->Suspend(defers);
       if (defers == WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
         response_body_loader_->EvictFromBackForwardCacheIfDrained();
       }
@@ -1080,7 +1080,7 @@ void ResourceLoader::DidStartLoadingResponseBody(
   DataPipeBytesConsumer::CompletionNotifier* completion_notifier = nullptr;
   DidStartLoadingResponseBodyInternal(
       *MakeGarbageCollected<DataPipeBytesConsumer>(
-          GetLoadingTaskRunner(), std::move(body), &completion_notifier));
+          task_runner_for_body_loader_, std::move(body), &completion_notifier));
   data_pipe_completion_notifier_ = completion_notifier;
 }
 

@@ -23,6 +23,8 @@
 namespace content {
 namespace {
 
+constexpr size_t kDefaultMaxBufferedBodyBytes = 100 * 1000;
+
 // Determines whether it is safe to redirect from |from_url| to |to_url|.
 bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
   return IsSafeRedirectTarget(from_url, to_url) &&
@@ -155,7 +157,11 @@ class URLLoaderClientImpl::BodyBuffer final
         writable_(std::move(writable)),
         writable_watcher_(FROM_HERE,
                           mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                          std::move(task_runner)) {
+                          std::move(task_runner)),
+        max_bytes_drained_(base::GetFieldTrialParamByFeatureAsInt(
+            blink::features::kLoadingTasksUnfreezable,
+            "max_buffered_bytes",
+            kDefaultMaxBufferedBodyBytes)) {
     pipe_drainer_ =
         std::make_unique<mojo::DataPipeDrainer>(this, std::move(readable));
     writable_watcher_.Watch(
@@ -176,6 +182,13 @@ class URLLoaderClientImpl::BodyBuffer final
     SCOPED_CRASH_KEY_STRING256(
         OnDataAvailable, last_loaded_url,
         owner_->last_loaded_url().possibly_invalid_spec());
+    total_bytes_drained_ += num_bytes;
+
+    if (total_bytes_drained_ > max_bytes_drained_ &&
+        owner_->IsDeferredWithBackForwardCache()) {
+      owner_->EvictFromBackForwardCache();
+      return;
+    }
     buffered_body_.emplace(static_cast<const char*>(data),
                            static_cast<const char*>(data) + num_bytes);
     WriteBufferedBody(MOJO_RESULT_OK);
@@ -250,6 +263,8 @@ class URLLoaderClientImpl::BodyBuffer final
   // memory as soon as we finish sending a chunk completely.
   base::queue<std::vector<char>> buffered_body_;
   uint32_t offset_in_current_chunk_ = 0;
+  size_t total_bytes_drained_ = 0;
+  const size_t max_bytes_drained_;
   bool draining_ = true;
 };
 
@@ -369,6 +384,9 @@ void URLLoaderClientImpl::OnReceiveResponse(
                                              std::move(response_head));
   }
 }
+void URLLoaderClientImpl::EvictFromBackForwardCache() {
+  resource_dispatcher_->EvictFromBackForwardCache(request_id_);
+}
 
 void URLLoaderClientImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
@@ -376,7 +394,7 @@ void URLLoaderClientImpl::OnReceiveRedirect(
   DCHECK(!has_received_response_head_);
   if (deferred_state_ ==
       blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
-    resource_dispatcher_->EvictFromBackForwardCache(request_id_);
+    EvictFromBackForwardCache();
     // Close the connections and dispatch and OnComplete message.
     url_loader_.reset();
     url_loader_client_receiver_.reset();
@@ -453,13 +471,17 @@ void URLLoaderClientImpl::OnStartLoadingResponseBody(
                                                      std::move(body));
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kLoadingTasksUnfreezable)) {
+
+  if (deferred_state_ !=
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
     // Defer the message, storing the original body pipe.
     StoreAndDispatch(
         std::make_unique<DeferredOnStartLoadingResponseBody>(std::move(body)));
     return;
   }
+
+  DCHECK(
+      base::FeatureList::IsEnabled(blink::features::kLoadingTasksUnfreezable));
   // We want to run loading tasks while deferred (but without dispatching the
   // messages). Drain the original pipe containing the response body into a
   // new pipe so that we won't block the network service if we're deferred for

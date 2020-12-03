@@ -54,7 +54,7 @@ class URLLoaderClientImplTest : public ::testing::Test,
                                 public ::testing::WithParamInterface<bool> {
  protected:
   URLLoaderClientImplTest() : dispatcher_(new ResourceDispatcher()) {
-    if (BufferingEnabled()) {
+    if (DeferWithBackForwardCacheEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kLoadingTasksUnfreezable);
     }
@@ -75,7 +75,7 @@ class URLLoaderClientImplTest : public ::testing::Test,
     EXPECT_TRUE(url_loader_client_);
   }
 
-  bool BufferingEnabled() { return GetParam(); }
+  bool DeferWithBackForwardCacheEnabled() { return GetParam(); }
 
   void TearDown() override { url_loader_client_.reset(); }
 
@@ -327,11 +327,87 @@ TEST_P(URLLoaderClientImplTest, DeferWithResponseBody) {
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 }
 
-TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
-  // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
-  // deferred.
+TEST_P(URLLoaderClientImplTest,
+       DeferredAndDeferredWithBackForwardCacheTransitions) {
+  if (!DeferWithBackForwardCacheEnabled())
+    return;
+  // Call OnReceiveResponse and OnStartLoadingResponseBody while
+  // deferred (not for back-forward cache).
   dispatcher_->SetDefersLoading(request_id_,
                                 blink::WebURLLoader::DeferType::kDeferred);
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write data to the response body pipe.
+  std::string msg1 = "he";
+  uint32_t size = msg1.size();
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg1.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg1.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Defer for back-forward cache.
+  dispatcher_->SetDefersLoading(
+      request_id_,
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+  std::string msg2 = "ll";
+  size = msg2.size();
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg2.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg2.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Defer not for back-forward cache again.
+  dispatcher_->SetDefersLoading(
+      request_id_,
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache);
+  std::string msg3 = "o";
+  size = msg3.size();
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg3.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg3.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Stop deferring.
+  dispatcher_->SetDefersLoading(request_id_,
+                                blink::WebURLLoader::DeferType::kNotDeferred);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write more data to the pipe while not deferred.
+  std::string msg4 = "world";
+  size = msg4.size();
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg4.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg4.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("helloworld", GetRequestPeerContextBody(&request_peer_context_));
+}
+
+TEST_P(URLLoaderClientImplTest,
+       DeferredWithBackForwardCacheStoppedDeferringBeforeClosing) {
+  if (!DeferWithBackForwardCacheEnabled())
+    return;
+  // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
+  // deferred.
+  dispatcher_->SetDefersLoading(
+      request_id_,
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache);
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -364,7 +440,7 @@ TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
   EXPECT_TRUE(request_peer_context_.received_response);
   // When the body is buffered, we'll wait until the pipe is closed before
   // sending the OnComplete message.
-  EXPECT_NE(BufferingEnabled(), request_peer_context_.complete);
+  EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 
   // Write more data to the pipe while not deferred.
@@ -375,7 +451,7 @@ TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
   EXPECT_EQ(msg2.size(), size);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(request_peer_context_.received_response);
-  EXPECT_NE(BufferingEnabled(), request_peer_context_.complete);
+  EXPECT_FALSE(request_peer_context_.complete);
   EXPECT_EQ("helloworld", GetRequestPeerContextBody(&request_peer_context_));
 
   // Close the response body pipe.
@@ -428,11 +504,14 @@ TEST_P(URLLoaderClientImplTest, DeferBodyWithoutOnComplete) {
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 }
 
-TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
+TEST_P(URLLoaderClientImplTest, DeferredWithBackForwardCacheLongResponseBody) {
+  if (!DeferWithBackForwardCacheEnabled())
+    return;
   // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
   // deferred.
-  dispatcher_->SetDefersLoading(request_id_,
-                                blink::WebURLLoader::DeferType::kDeferred);
+  dispatcher_->SetDefersLoading(
+      request_id_,
+      blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache);
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -456,15 +535,10 @@ TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
     MojoResult result = producer_handle->WriteData(
         body.c_str() + start_position, &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
-      if (BufferingEnabled()) {
         // When we buffer the body the pipe gets drained asynchronously, so it's
         // possible to keep writing to the pipe if we wait.
         base::RunLoop().RunUntilIdle();
         continue;
-      } else
-        // When we don't buffer the body, however, nothing is draining the pipe
-        // so we can't write more even if we wait.
-        break;
     }
     EXPECT_EQ(MOJO_RESULT_OK, result);
     EXPECT_GE(bytes_remaining, bytes_sent);
@@ -473,7 +547,7 @@ TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
   // Ensure we've written all that we can write. When buffering is disabled, we
   // can only write |body_size| - |bytes_remaining| bytes.
   const uint32_t bytes_written = body_size - bytes_remaining;
-  DCHECK_EQ(BufferingEnabled(), body_size == bytes_written);
+  EXPECT_EQ(body_size, bytes_written);
   producer_handle.reset();
 
   // Stop deferring.
@@ -483,7 +557,7 @@ TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
   EXPECT_TRUE(request_peer_context_.received_response);
   // When the body is buffered, BodyBuffer shouldn't be finished writing to the
   // new response body pipe at this point (because nobody is reading it).
-  EXPECT_NE(BufferingEnabled(), request_peer_context_.complete);
+  EXPECT_FALSE(request_peer_context_.complete);
 
   // Calling GetRequestPeerContextBody to read data from the new response body
   // pipe will make BodyBuffer write the rest of the body to the pipe.
@@ -494,8 +568,7 @@ TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
   }
   // Ensure that we've read everything we've written.
   EXPECT_EQ(bytes_written, bytes_read);
-  EXPECT_EQ(body.substr(0, bytes_written),
-            GetRequestPeerContextBody(&request_peer_context_));
+  EXPECT_EQ(body, GetRequestPeerContextBody(&request_peer_context_));
   EXPECT_TRUE(request_peer_context_.complete);
 }
 
