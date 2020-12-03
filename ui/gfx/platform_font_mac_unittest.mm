@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #import "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,16 +173,8 @@ TEST(PlatformFontMacTest, DerivedFineGrainedFonts) {
   EXPECT_EQ(static_cast<int>(Weight::LIGHT), DerivedIntWeight(Weight::LIGHT));
   EXPECT_EQ(static_cast<int>(Weight::NORMAL), DerivedIntWeight(Weight::NORMAL));
   EXPECT_EQ(static_cast<int>(Weight::MEDIUM), DerivedIntWeight(Weight::MEDIUM));
-  if (base::mac::IsAtMostOS10_10()) {
-    // If a SEMIBOLD system font is requested, 10.10 will return the bold system
-    // font, but somehow bearing a weight number of 0.24, which is really a
-    // medium weight (0.23).
-    EXPECT_EQ(static_cast<int>(Weight::MEDIUM),
-              DerivedIntWeight(Weight::SEMIBOLD));
-  } else {
-    EXPECT_EQ(static_cast<int>(Weight::SEMIBOLD),
-              DerivedIntWeight(Weight::SEMIBOLD));
-  }
+  EXPECT_EQ(static_cast<int>(Weight::SEMIBOLD),
+            DerivedIntWeight(Weight::SEMIBOLD));
   EXPECT_EQ(static_cast<int>(Weight::BOLD), DerivedIntWeight(Weight::BOLD));
   EXPECT_EQ(static_cast<int>(Weight::EXTRA_BOLD),
             DerivedIntWeight(Weight::EXTRA_BOLD));

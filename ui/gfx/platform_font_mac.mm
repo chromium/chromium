@@ -126,63 +126,26 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
 
 // Converts a Font::Weight value to the corresponding NSFontWeight value.
 NSFontWeight ToNSFontWeight(Weight weight) {
-  if (@available(macOS 10.11, *)) {
-    switch (weight) {
-      case Weight::THIN:
-        return NSFontWeightUltraLight;
-      case Weight::EXTRA_LIGHT:
-        return NSFontWeightThin;
-      case Weight::LIGHT:
-        return NSFontWeightLight;
-      case Weight::INVALID:
-      case Weight::NORMAL:
-        return NSFontWeightRegular;
-      case Weight::MEDIUM:
-        return NSFontWeightMedium;
-      case Weight::SEMIBOLD:
-        return NSFontWeightSemibold;
-      case Weight::BOLD:
-        return NSFontWeightBold;
-      case Weight::EXTRA_BOLD:
-        return NSFontWeightHeavy;
-      case Weight::BLACK:
-        return NSFontWeightBlack;
-    }
-  } else {
-    // See third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.mm.
-    uint64_t int_value = 0;
-    switch (weight) {
-      case Weight::THIN:
-        int_value = 0xbfe99999a0000000;  // NSFontWeightUltraLight;
-        break;
-      case Weight::EXTRA_LIGHT:
-        int_value = 0xbfe3333340000000;  // NSFontWeightThin;
-        break;
-      case Weight::LIGHT:
-        int_value = 0xbfd99999a0000000;  // NSFontWeightLight;
-        break;
-      case Weight::INVALID:
-      case Weight::NORMAL:
-        int_value = 0x0000000000000000;  // NSFontWeightRegular;
-        break;
-      case Weight::MEDIUM:
-        int_value = 0x3fcd70a3e0000000;  // NSFontWeightMedium;
-        break;
-      case Weight::SEMIBOLD:
-        int_value = 0x3fd3333340000000;  // NSFontWeightSemibold;
-        break;
-      case Weight::BOLD:
-        int_value = 0x3fd99999a0000000;  // NSFontWeightBold;
-        break;
-      case Weight::EXTRA_BOLD:
-        int_value = 0x3fe1eb8520000000;  // NSFontWeightHeavy;
-        break;
-      case Weight::BLACK:
-        int_value = 0x3fe3d70a40000000;  // NSFontWeightBlack;
-        break;
-    }
-
-    return bit_cast<CGFloat>(int_value);
+  switch (weight) {
+    case Weight::THIN:
+      return NSFontWeightUltraLight;
+    case Weight::EXTRA_LIGHT:
+      return NSFontWeightThin;
+    case Weight::LIGHT:
+      return NSFontWeightLight;
+    case Weight::INVALID:
+    case Weight::NORMAL:
+      return NSFontWeightRegular;
+    case Weight::MEDIUM:
+      return NSFontWeightMedium;
+    case Weight::SEMIBOLD:
+      return NSFontWeightSemibold;
+    case Weight::BOLD:
+      return NSFontWeightBold;
+    case Weight::EXTRA_BOLD:
+      return NSFontWeightHeavy;
+    case Weight::BLACK:
+      return NSFontWeightBlack;
   }
 }
 
@@ -356,13 +319,8 @@ Font PlatformFontMac::DeriveFont(int size_delta,
   // versions of the macOS.
 
   if (system_font_type_ == SystemFontType::kGeneral) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-    // +[NSFont systemFontOfSize:weight:] is declared as available on 10.11+,
-    // but actually it is there and works on 10.10.
     NSFont* derived = [NSFont systemFontOfSize:font_spec_.size + size_delta
                                         weight:ToNSFontWeight(weight)];
-#pragma clang diagnostic pop
     NSFontTraitMask italic_trait_mask =
         (style & Font::ITALIC) ? NSItalicFontMask : NSUnitalicFontMask;
     derived = [[NSFontManager sharedFontManager] convertFont:derived
@@ -559,16 +517,9 @@ NSFont* PlatformFontMac::NSFontWithSpec(FontSpec font_spec) const {
 
   // If that doesn't find a font, whip up a system font to stand in for the
   // specified font.
-  if (@available(macOS 10.11, *)) {
-    font = [NSFont systemFontOfSize:font_spec.size
-                             weight:ToNSFontWeight(font_spec.weight)];
-    return [font_manager convertFont:font toHaveTrait:traits];
-  } else {
-    font = [NSFont systemFontOfSize:font_spec.size];
-    if (font_spec.weight >= Weight::BOLD)
-      traits |= NSBoldFontMask;
-    return [font_manager convertFont:font toHaveTrait:traits];
-  }
+  font = [NSFont systemFontOfSize:font_spec.size
+                           weight:ToNSFontWeight(font_spec.weight)];
+  return [font_manager convertFont:font toHaveTrait:traits];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

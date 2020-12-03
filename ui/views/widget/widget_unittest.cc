@@ -1217,11 +1217,6 @@ TEST_F(WidgetTest, GetWindowPlacement) {
 #else
 TEST_F(DesktopWidgetTest, GetWindowPlacement) {
 #endif
-#if defined(OS_APPLE)
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582
-#endif
-
   SKIP_TEST_IF_NOT_OZONE_X11();
 
   WidgetAutoclosePtr widget;

@@ -21,13 +21,6 @@ TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   if (this->delegate_.SkipTest())
     return;
 
-#if defined(OS_APPLE)
-  // This functionality is disabled on Yosemite because it is suspected of
-  // causing performance regressions on old hardware. https://crbug.com/606850.
-  if (base::mac::IsOS10_10())
-    return;
-#endif
-
   const gfx::Size image_size(256, 256);
 
   GLuint framebuffer =

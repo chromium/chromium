@@ -6043,13 +6043,6 @@ TEST_F(RenderTextTest, Multiline_SurrogatePairsOrCombiningChars) {
 TEST_F(RenderTextTest, Multiline_ZeroWidthChars) {
   RenderTextHarfBuzz* render_text = GetRenderText();
 
-#if defined(OS_APPLE)
-  // Don't use Helvetica Neue on 10.10 - it has a buggy zero-width space that
-  // actually gets some width. See http://crbug.com/799333.
-  if (base::mac::IsOS10_10())
-    render_text->SetFontList(FontList("Arial, 12px"));
-#endif
-
   render_text->SetMultiline(true);
   render_text->SetWordWrapBehavior(WRAP_LONG_WORDS);
 

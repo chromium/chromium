@@ -433,8 +433,6 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
 // Test minimized states triggered externally, implied visibility and restored
 // bounds whilst minimized.
 TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582
   Widget* widget = new Widget;
   Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(init_params));
@@ -834,10 +832,6 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
 // deminiaturize on the parent window (after attempting to show the child while
 // the parent was miniaturized).
 TEST_F(NativeWidgetMacTest, VisibleAfterNativeParentDeminiaturize) {
-  // Disabled on 10.10 due to flakes. See http://crbug.com/777247.
-  if (base::mac::IsOS10_10())
-    return;
-
   NSWindow* native_parent = MakeBorderlessNativeParent();
   [native_parent makeKeyAndOrderFront:nil];
   [native_parent miniaturize:nil];

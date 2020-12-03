@@ -428,10 +428,6 @@ TEST_F(SelectFileDialogMacTest, DialogMessage) {
 
 // Verify that multiple file dialogs are corrected handled.
 TEST_F(SelectFileDialogMacTest, MultipleDialogs) {
-  // TODO(https://crbug.com/852536): Test fails on 10.10.
-  if (base::mac::IsOS10_10())
-    return;
-
   FileDialogArguments args(GetDefaultArguments());
   SelectFileWithParams(args);
   NSSavePanel* panel1 = GetPanel();

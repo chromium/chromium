@@ -54,17 +54,6 @@ NSImage* NewTagImage() {
       [[NSMutableAttributedString alloc] initWithString:badge_text
                                              attributes:badge_attrs];
 
-  if (base::mac::IsOS10_10()) {
-    // The system font for 10.10 is Helvetica Neue, and when used for this
-    // "new tag" the letters look cramped. Track it out so that there's some
-    // breathing room. There is no tracking attribute, so instead add kerning
-    // to all but the last character.
-    [badge_attr_string
-        addAttribute:NSKernAttributeName
-               value:@0.4
-               range:NSMakeRange(0, [badge_attr_string length] - 1)];
-  }
-
   // 2. Calculate the size required.
 
   NSSize badge_size = [badge_attr_string size];

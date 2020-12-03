@@ -22,7 +22,7 @@ namespace ui {
 // CATransactionCoordinator is an interface to undocumented macOS APIs which
 // run callbacks at different stages of committing a CATransaction to the
 // window server. There is no guarantee that it will call registered observers
-// at all: it does nothing on macOS older than 10.11.
+// at all.
 //
 // - Pre-commit: After all outstanding CATransactions have committed and after
 //   layout, but before the new layer tree has been sent to the window server.
@@ -84,7 +84,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
   CATransactionCoordinator();
   ~CATransactionCoordinator();
 
-  API_AVAILABLE(macos(10.11))
   void SynchronizeImpl();
   void PreCommitHandler();
   void PostCommitHandler();

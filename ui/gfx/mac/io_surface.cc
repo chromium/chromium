@@ -288,11 +288,6 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
     return nullptr;
   }
 
-  // IOSurface clearing causes significant performance regression on about half
-  // of all devices running Yosemite. https://crbug.com/606850#c22.
-  if (base::mac::IsOS10_10())
-    should_clear = false;
-
   if (should_clear) {
     // Zero-initialize the IOSurface. Calling IOSurfaceLock/IOSurfaceUnlock
     // appears to be sufficient. https://crbug.com/584760#c17

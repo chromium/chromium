@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "testing/platform_test.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -20,11 +19,8 @@ namespace {
 
 typedef CocoaTest GrabWindowSnapshotTest;
 
-TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
-  // TODO(https://crbug.com/685088): This test fails on MacOS 10.11 and above.
-  if (base::mac::IsAtLeastOS10_11())
-    return;
-
+// TODO(https://crbug.com/685088): This test fails.
+TEST_F(GrabWindowSnapshotTest, DISABLED_TestGrabWindowSnapshot) {
   // Launch a test window so we can take a snapshot.
   NSRect frame = NSMakeRect(0, 0, 400, 400);
   NSWindow* window = test_window();
