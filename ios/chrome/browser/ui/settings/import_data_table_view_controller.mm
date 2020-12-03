@@ -8,9 +8,9 @@
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_multiline_detail_item.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(fromEmail);
   DCHECK(toEmail);
 
-  self = [super initWithStyle:SettingsTableViewStyle()];
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _delegate = delegate;
     _fromEmail = [fromEmail copy];

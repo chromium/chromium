@@ -130,3 +130,15 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "table_view_utils.h",
+    "table_view_utils.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/util",
+  ]
+}

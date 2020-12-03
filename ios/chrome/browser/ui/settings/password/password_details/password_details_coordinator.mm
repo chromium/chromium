@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -89,7 +89,7 @@
 
 - (void)start {
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithStyle:SettingsTableViewStyle()];
+      initWithStyle:ChromeTableViewStyle()];
 
   self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_password
                                                passwordCheckManager:_manager];

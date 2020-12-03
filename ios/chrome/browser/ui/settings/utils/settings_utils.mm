@@ -6,8 +6,6 @@
 
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,12 +24,4 @@ ProceduralBlockWithURL BlockToOpenURL(UIResponder* responder,
     [weakHandler closeSettingsUIAndOpenURL:command];
   };
   return [blockToOpenURL copy];
-}
-
-UITableViewStyle SettingsTableViewStyle() {
-  if (@available(iOS 13, *)) {
-    if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
-      return UITableViewStyleInsetGrouped;
-  }
-  return UITableViewStyleGrouped;
 }

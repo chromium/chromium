@@ -16,8 +16,4 @@
 ProceduralBlockWithURL BlockToOpenURL(UIResponder* responder,
                                       id<ApplicationCommands> handler);
 
-// Returns an UITableViewStyle according to the state of the kSettingsRefresh
-// flag and the width of the current device.
-UITableViewStyle SettingsTableViewStyle();
-
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_SETTINGS_UTILS_H_
